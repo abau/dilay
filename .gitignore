@@ -1,0 +1,4 @@
+*.swp
+obj/
+test/
+dilay
