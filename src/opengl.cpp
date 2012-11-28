@@ -1,57 +1,58 @@
 #include <GL/glew.h>
-#include <GL/glfw.h>
 #include <GL/gl.h>
 #include <iostream>
 #include <stdexcept>
-
 #include "opengl.hpp"
+
+//////////////
 #include "state.hpp"
 
-bool OpenGL :: isWireframe = false;
+bool    OpenGL :: _isWireframe = false;
+GLuint  OpenGL :: _mvpId       = -1;
+GLuint  OpenGL :: _programId   = -1;
+GLuint  OpenGL :: _colorId     = -1;
+GLuint  OpenGL :: _vertexId    = -1;
 
-void onResize (int width, int height) {
-  State :: global().camera ().updateResolution (width,height);
-}
+void OpenGL :: initialize () {
+  static bool isInitialized = false;
 
-void OpenGL :: initialize (int width, int height) {
-  std::cout << "Initializing OpenGL\n";
-  if ( !glfwInit() ) {
-    std::cout << "Error while initializing glfw\n";
-    exit (EXIT_FAILURE);
+  if ( ! isInitialized ) {
+    std::cout << "Initializing OpenGL\n";
+    GLenum err = glewInit ();
+    if (err  != GLEW_OK ) {
+      std::string e1 = std::string ("Error while initializing glew: ");
+      std::string e2 = std::string ((const char*)glewGetErrorString (err));
+      throw (std::runtime_error (e1 + e2));
+    }
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glEnable    (GL_DEPTH_TEST);
+    glDepthFunc (GL_LESS);
+    glEnable    (GL_CULL_FACE);
+
+    OpenGL :: loadShaders ("shader/vertex.shader", "shader/fragment.shader" );
+
+    State :: global ().setMesh(WingedMesh::triangle (glm::vec3 (0,0,0), glm::vec3 (0,0,1), glm::vec3 (1,0,0)));
+    State :: global ().mesh ()->bufferData ();
+    isInitialized = true;
   }
-  if ( !glfwOpenWindow(width, height, 0,0,0,0, 32,0, GLFW_WINDOW ) ) {
-    std::cout << "Error while opening window using glfw\n";
-    glfwTerminate ();
-    exit (EXIT_FAILURE);
-  }
-
-  if ( glewInit () != GLEW_OK ) {
-    std::cout << "Error while initializing glew\n";
-    exit (EXIT_FAILURE);
-  }
-
-  glEnable      (GL_DEPTH_TEST);
-  glDepthFunc   (GL_LESS);
-  glEnable      (GL_CULL_FACE);
-
-  onResize (width,height);
-  glfwSetWindowSizeCallback (onResize);
 }
 
 void OpenGL :: shutdown () {
-  std::cout << "Shuting down OpenGL\n";
-  glfwTerminate();
+  OpenGL :: releaseProgram ();
 }
 
 void OpenGL :: toggleWireframe () {
-  isWireframe = ! isWireframe;
-  if (isWireframe)
+  _isWireframe = ! _isWireframe;
+  if (_isWireframe)
     glPolygonMode (GL_FRONT, GL_LINE);
   else
     glPolygonMode (GL_FRONT, GL_FILL);
 }
 
 void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShader) {
+  OpenGL :: releaseProgram ();
+
   Maybe <GLuint> vsId = OpenGL :: compileShader (GL_VERTEX_SHADER, vertexShader);
   Maybe <GLuint> fsId = OpenGL :: compileShader (GL_FRAGMENT_SHADER, fragmentShader);
 
@@ -62,8 +63,6 @@ void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShade
     glAttachShader (programId, fsId.data ());
     glLinkProgram  (programId);
 
-    OpenGL :: showInfoLog (programId, "");
-
     GLint status;
     glGetProgramiv(programId, GL_LINK_STATUS, &status);
 
@@ -71,9 +70,13 @@ void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShade
     glDeleteShader(fsId.data ());
 
     if (status == GL_TRUE) {
-      State :: global ().setProgramId (programId);
+      OpenGL :: _programId = programId;
+      OpenGL :: _mvpId     = glGetUniformLocation (programId, "mvp");
+      OpenGL :: _vertexId  = glGetAttribLocation  (programId, "vertex");
+      OpenGL :: _colorId   = glGetUniformLocation (programId, "color");
       return;
     }
+    OpenGL :: showInfoLog (programId, "");
   }
   else if (vsId.isDefined ()) glDeleteShader(vsId.data ());
   else if (fsId.isDefined ()) glDeleteShader(fsId.data ());
@@ -85,7 +88,7 @@ void OpenGL :: showInfoLog (GLuint id, const char* filePath) {
   GLsizei infoLogLength;
   glGetShaderiv(id, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-  if (infoLogLength > 1) {
+  if (infoLogLength > 0) {
     GLchar* infoLog = new char[infoLogLength];
     glGetShaderInfoLog(id, infoLogLength, NULL, infoLog);
     std::cout << filePath << std::endl << infoLog << std::endl;
@@ -100,11 +103,18 @@ Maybe <GLuint> OpenGL :: compileShader (GLenum shaderType, const char* filePath)
   glShaderSource(shaderId, 1, code , NULL);
   glCompileShader(shaderId);
 
-  OpenGL :: showInfoLog (shaderId, filePath);
-
   GLint status;
   glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-  if (status == GL_FALSE)
+  if (status == GL_FALSE) {
+    OpenGL :: showInfoLog (shaderId, filePath);
     return Maybe <GLuint> :: nothing ();
+  }
   return Maybe <GLuint> (shaderId);
+}
+
+void OpenGL :: releaseProgram () {
+  if (glIsProgram (_programId) == GL_TRUE) {
+    glDeleteProgram (_programId);
+    OpenGL :: _programId = -1;
+  }
 }

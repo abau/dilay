@@ -1,34 +1,25 @@
 #include <GL/glew.h>
-#include <GL/glfw.h>
 #include <GL/gl.h>
-#include <glm/glm.hpp>
-#include <iostream>
-
-#include "opengl.hpp"
-#include "adaptive-mesh.hpp"
-#include "winged-mesh.hpp"
+#include <QApplication>
+#include <QGLFormat>
+#include "view/gl-widget.hpp"
 #include "state.hpp"
-#include "ray.hpp"
 
-void GLFWCALL handleKey          (int, int);
-void GLFWCALL handleMousePos     (int, int);
-void GLFWCALL handleMouseWheel   (int);
-void GLFWCALL handleMouseButton  (int, int);
+int main(int argv, char **args) {
+  QApplication app(argv, args);
 
-int  initWidth  = 1024;
-int  initHeight = 768;
+  QGLFormat glFormat;
+  glFormat.setVersion( 2, 1 );
+  glFormat.setProfile( QGLFormat::CoreProfile ); 
 
-int main( void ) {
-  OpenGL :: initialize (initWidth,initHeight);
-  OpenGL :: loadShaders ("shader/vertex.shader", "shader/fragment.shader");
+  GLWidget w (glFormat);
+  w.show ();
 
   State :: global ().initialize  ();
+  return app.exec();
+}
 
-  glfwSetKeyCallback          (handleKey);
-  glfwSetMousePosCallback     (handleMousePos);
-  glfwSetMouseWheelCallback   (handleMouseWheel);
-  glfwSetMouseButtonCallback  (handleMouseButton);
-
+/*
   State :: global ().setMesh(WingedMesh::triangle (glm::vec3 (0,0,0), glm::vec3 (0,0,1), glm::vec3 (1,0,0)));
   State :: global ().mesh ()->bufferData ();
 
@@ -129,3 +120,4 @@ void GLFWCALL handleMouseButton (int button, int action) {
       break;
   }
 }
+*/

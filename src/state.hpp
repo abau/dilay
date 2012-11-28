@@ -16,7 +16,6 @@ class State {
 
     bool          isRunning    () const        { return this->_isRunning; }
     WingedMesh*   mesh         () const        { return this->_mesh; }
-    GLuint        programId    () const        { return this->_programId; } 
     Camera&       camera       ()              { return this->_camera; }       
     const Camera& camera       () const        { return this->_camera; }       
 
@@ -24,12 +23,9 @@ class State {
     void          terminate    ()              { this->_isRunning = false; }
 
     void          initialize   ();
-    void          setProgramId (GLuint);
-
   private:
     bool        _isRunning;
     WingedMesh* _mesh;
-    GLuint      _programId;
     Camera      _camera;
 };
 #endif

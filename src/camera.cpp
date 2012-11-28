@@ -1,6 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "camera.hpp"
+#include "opengl.hpp"
 
 Camera :: Camera () {
   this->_gazeStepSize            = 1.0f;
@@ -28,7 +29,7 @@ void Camera :: updateView () {
 
 void Camera :: modelViewProjection (const glm::mat4& model) const {
   glm::mat4 mvp = this->_projection * this->_view * model;
-  glUniformMatrix4fv(this->_mvpId, 1, GL_FALSE, &mvp[0][0]);
+  glUniformMatrix4fv(OpenGL :: mvpId (), 1, GL_FALSE, &mvp[0][0]);
 }
 
 void Camera :: stepAlongGaze (bool forward) {

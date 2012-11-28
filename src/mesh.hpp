@@ -6,8 +6,7 @@
 #define MESH
 
 class Mesh {
-  public:
-                 Mesh           ();
+  public:        Mesh           ();
                  ~Mesh          ();
     unsigned int numVertices    () const;
     unsigned int numIndices     () const;

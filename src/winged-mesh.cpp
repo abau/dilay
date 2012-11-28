@@ -131,9 +131,8 @@ Maybe <FaceIntersection> WingedMesh :: intersectRay (const Ray& ray) {
 }
 
 WingedMesh* WingedMesh :: triangle ( const glm::vec3& a, const glm::vec3& b
-                                  , const glm::vec3& c) {
-  WingedMesh* m = new WingedMesh;
-
+                                   , const glm::vec3& c) {
+  WingedMesh*   m  = new WingedMesh ();
   LinkedVertex* v1 = m->addVertex (a, 0);
   LinkedVertex* v2 = m->addVertex (b, 0);
   LinkedVertex* v3 = m->addVertex (c, 0);

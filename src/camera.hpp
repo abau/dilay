@@ -10,7 +10,6 @@ class Camera {
   public:
                       Camera                ();
     void              initialize            ();
-    void              setMvpId              (GLuint id) { this->_mvpId = id; }
 
     int               resolutionWidth       () { return this->_resolutionWidth; }
     int               resolutionHeight      () { return this->_resolutionHeight; }
@@ -42,8 +41,6 @@ class Camera {
     int               _resolutionHeight;
     float             _nearClipping;
     float             _farClipping;
-    GLuint            _mvpId;
-
 };
 
 #endif

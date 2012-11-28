@@ -1,5 +1,6 @@
 #include "mesh.hpp"
 #include "state.hpp"
+#include "opengl.hpp"
 
 Mesh :: Mesh () : modelMatrix (glm::mat4 (1.0f)) {
   glGenBuffers (1, &this->vertexBufferId);
@@ -61,14 +62,16 @@ void Mesh :: bufferData () {
 
 void Mesh :: render () {
   State :: global ().camera ().modelViewProjection (this->modelMatrix);
+  glUniform4f(OpenGL :: colorId (), 1.0f,0.0f,0.0f,1.0f);
 
-  // DEPRECATED: use vertex arrays (glEnableVertexAttribArray(0))
-  glEnableClientState   (GL_VERTEX_ARRAY);
+  glEnableVertexAttribArray(0);
+
   glBindBuffer          (GL_ARRAY_BUFFER, this->vertexBufferId);
-  glVertexPointer       (3, GL_FLOAT, 0, 0);               
+  glVertexAttribPointer (OpenGL :: vertexId (), 3, GL_FLOAT, GL_FALSE, 0, 0);               
   glBindBuffer          (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
   glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-  glDisableClientState  (GL_VERTEX_ARRAY);
+
+  glDisableVertexAttribArray(0);
 }
 
 // Static

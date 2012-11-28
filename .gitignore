@@ -1,4 +1,6 @@
 *.swp
 obj/
+moc/
 test/
 dilay
+Makefile
