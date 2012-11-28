@@ -4,12 +4,6 @@
 // LinkedElement //////////////////////////////////////////
 template <class T>
 class LinkedElement {
-  private:
-    T                  _data;
-    LinkedElement <T>* _prev;
-    LinkedElement <T>* _next;
-
-    LinkedElement (const LinkedElement <T>&) {}
   public:
     LinkedElement (const T&, LinkedElement <T>*, LinkedElement <T>*);
 
@@ -24,6 +18,14 @@ class LinkedElement {
     void                     setNext (LinkedElement <T>*);
     bool                     hasPrev () const;
     bool                     hasNext () const;
+
+  private:
+    LinkedElement (const LinkedElement <T>&) {}
+
+    T                  _data;
+    LinkedElement <T>* _prev;
+    LinkedElement <T>* _next;
+
 };
 
 template <class T>
@@ -48,9 +50,6 @@ bool LinkedElement <T> :: hasNext () const { return this->_next != 0; }
 // LinkedIterator /////////////////////////////////////////
 template <class T>
 class LinkedIterator {
-  private:
-    LinkedElement <T>* element;
-
   public:
     LinkedIterator (LinkedElement <T>*);
 
@@ -59,6 +58,9 @@ class LinkedIterator {
     LinkedElement <T>* prev ();
     LinkedElement <T>* next ();
     bool               hasElement () const;
+
+  private:
+    LinkedElement <T>* element;
 };
 
 template <class T>
@@ -84,9 +86,6 @@ bool LinkedIterator <T> :: hasElement () const { return this->element != 0; }
 // LinkedConstIterator ////////////////////////////////////
 template <class T>
 class LinkedConstIterator {
-  private:
-    const LinkedElement <T>* element;
-
   public:
     LinkedConstIterator (const LinkedElement <T>*);
 
@@ -95,6 +94,9 @@ class LinkedConstIterator {
     const LinkedElement <T>* prev ();
     const LinkedElement <T>* next ();
     bool                     hasElement () const;
+
+  private:
+    const LinkedElement <T>* element;
 };
 
 template <class T>
@@ -120,11 +122,6 @@ bool LinkedConstIterator <T> :: hasElement () const { return this->element != 0;
 // LinkedList /////////////////////////////////////////////
 template <class T>
 class LinkedList {
-  private:
-    unsigned int       _numElements;
-    LinkedElement <T>* start;
-    LinkedElement <T>* end;
-
   public:
     typedef LinkedElement <T>      Element;
     typedef LinkedIterator<T>      Iterator;
@@ -142,6 +139,11 @@ class LinkedList {
     ConstIterator frontIterator () const;
     Iterator      backIterator  (); 
     ConstIterator backIterator  () const; 
+
+  private:
+    unsigned int       _numElements;
+    LinkedElement <T>* start;
+    LinkedElement <T>* end;
 };
 
 template <class T>

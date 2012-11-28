@@ -26,20 +26,6 @@ void Camera :: updateView () {
   this->_view     = glm::lookAt ( this->_eyePoint, this->_gazePoint, this->_up );
 }
 
-void Camera :: updateProjection () {
-  glViewport (0,0,this->_resolutionWidth,this->_resolutionHeight);
-  this->_projection = glm::perspective ( 
-      45.0f
-    , float (this->_resolutionWidth) / float (this->_resolutionHeight)
-    , this->_nearClipping, this->_farClipping);
-}
-
-void Camera :: updateResolution (int width, int height) {
-  this->_resolutionWidth  = width;
-  this->_resolutionHeight = height;
-  this->updateProjection ();
-}
-
 void Camera :: modelViewProjection (const glm::mat4& model) const {
   glm::mat4 mvp = this->_projection * this->_view * model;
   glUniformMatrix4fv(this->_mvpId, 1, GL_FALSE, &mvp[0][0]);
@@ -80,3 +66,18 @@ Ray Camera :: getRay (int x, int y) {
                                );
   return Ray (this->_eyePoint, glm::normalize (p - this->_eyePoint));
 }
+
+void Camera :: updateProjection () {
+  glViewport (0,0,this->_resolutionWidth,this->_resolutionHeight);
+  this->_projection = glm::perspective ( 
+      45.0f
+    , float (this->_resolutionWidth) / float (this->_resolutionHeight)
+    , this->_nearClipping, this->_farClipping);
+}
+
+void Camera :: updateResolution (int width, int height) {
+  this->_resolutionWidth  = width;
+  this->_resolutionHeight = height;
+  this->updateProjection ();
+}
+

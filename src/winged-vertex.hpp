@@ -8,10 +8,6 @@ class WingedMesh;
 class WingedEdge;
 
 class WingedVertex {
-  private:
-    const unsigned int           _index;
-    LinkedElement <WingedEdge>*  edge;
-
   public:
     WingedVertex (unsigned int, LinkedElement <WingedEdge>*);
 
@@ -20,6 +16,10 @@ class WingedVertex {
     void         setEdge  (LinkedElement <WingedEdge>*);
     void         addIndex (WingedMesh&);
     glm::vec3    vertex   (const WingedMesh&) const;
+
+  private:
+    const unsigned int           _index;
+    LinkedElement <WingedEdge>*  edge;
 };
 
 #endif

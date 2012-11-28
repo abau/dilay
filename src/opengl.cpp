@@ -13,34 +13,6 @@ void onResize (int width, int height) {
   State :: global().camera ().updateResolution (width,height);
 }
 
-void OpenGL :: showInfoLog (GLuint id, const char* filePath) {
-  GLsizei infoLogLength;
-  glGetShaderiv(id, GL_INFO_LOG_LENGTH, &infoLogLength);
-
-  if (infoLogLength > 1) {
-    GLchar* infoLog = new char[infoLogLength];
-    glGetShaderInfoLog(id, infoLogLength, NULL, infoLog);
-    std::cout << filePath << std::endl << infoLog << std::endl;
-    delete[] (infoLog);
-  }
-}
-
-Maybe <GLuint> OpenGL :: compileShader (GLenum shaderType, const char* filePath) {
-  GLuint       shaderId   = glCreateShader(shaderType);
-  std::string  shaderCode = Util :: readFile (filePath);
-  const char* code[1]    = { shaderCode.c_str () };
-  glShaderSource(shaderId, 1, code , NULL);
-  glCompileShader(shaderId);
-
-  OpenGL :: showInfoLog (shaderId, filePath);
-
-  GLint status;
-  glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-  if (status == GL_FALSE)
-    return Maybe <GLuint> :: nothing ();
-  return Maybe <GLuint> (shaderId);
-}
-
 void OpenGL :: initialize (int width, int height) {
   std::cout << "Initializing OpenGL\n";
   if ( !glfwInit() ) {
@@ -109,4 +81,30 @@ void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShade
   throw (std::runtime_error ("Can not load shaders: see info log above"));
 }
 
+void OpenGL :: showInfoLog (GLuint id, const char* filePath) {
+  GLsizei infoLogLength;
+  glGetShaderiv(id, GL_INFO_LOG_LENGTH, &infoLogLength);
 
+  if (infoLogLength > 1) {
+    GLchar* infoLog = new char[infoLogLength];
+    glGetShaderInfoLog(id, infoLogLength, NULL, infoLog);
+    std::cout << filePath << std::endl << infoLog << std::endl;
+    delete[] (infoLog);
+  }
+}
+
+Maybe <GLuint> OpenGL :: compileShader (GLenum shaderType, const char* filePath) {
+  GLuint       shaderId   = glCreateShader(shaderType);
+  std::string  shaderCode = Util :: readFile (filePath);
+  const char* code[1]    = { shaderCode.c_str () };
+  glShaderSource(shaderId, 1, code , NULL);
+  glCompileShader(shaderId);
+
+  OpenGL :: showInfoLog (shaderId, filePath);
+
+  GLint status;
+  glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
+  if (status == GL_FALSE)
+    return Maybe <GLuint> :: nothing ();
+  return Maybe <GLuint> (shaderId);
+}

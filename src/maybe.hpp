@@ -6,9 +6,6 @@
 
 template <class T>
 class Maybe {
-  private:
-    T* _data;
-
   public:
     Maybe ()                   : _data (0)         {}
     Maybe (const T& d)         : _data (new T (d)) {}
@@ -34,5 +31,8 @@ class Maybe {
     bool isDefined () const { return ! this->isNothing (); }
 
     static Maybe <T> nothing () { return Maybe (); }
+
+  private:
+    T* _data;
 };
 #endif

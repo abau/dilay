@@ -6,12 +6,6 @@
 #define TRIANGLE
 
 class Triangle {
-  private:
-    const glm::vec3 _vertex1;
-    const glm::vec3 _vertex2;
-    const glm::vec3 _vertex3;
-
-
   public:
     Triangle (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
       : _vertex1 (v1), _vertex2 (v2), _vertex3 (v3) {}
@@ -24,8 +18,12 @@ class Triangle {
     glm::vec3         edge2   () const;
     glm::vec3         normal  () const;
 
-
     Maybe <glm::vec3> intersectRay (const Ray&) const;
+
+  private:
+    const glm::vec3 _vertex1;
+    const glm::vec3 _vertex2;
+    const glm::vec3 _vertex3;
 };
 
 #endif

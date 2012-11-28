@@ -4,9 +4,6 @@
 #define DEPTH
 
 class Depth {
-  private:
-    int _value;
-
   public:
     Depth () : _value (0) {}
     Depth (int v) : _value (v) {}
@@ -25,6 +22,9 @@ class Depth {
     bool operator!= (const Depth& d) { return this->_value != d.value (); }
     bool operator>= (const Depth& d) { return this->_value >= d.value (); }
     bool operator>  (const Depth& d) { return this->_value >  d.value (); }
+
+  private:
+    int _value;
 };
 
 std::ostream& operator<<(std::ostream&, const Depth&);

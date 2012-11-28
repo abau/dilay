@@ -24,14 +24,6 @@ typedef Edges   ::ConstIterator EdgeConstIterator;
 typedef Faces   ::ConstIterator FaceConstIterator;
 
 class WingedMesh {
-  private:
-    Mesh                     mesh;
-    Vertices                 vertices;
-    Edges                    edges;
-    Faces                    faces;
-
-    void                     addIndices         ();
-
   public:
     void                     addIndex       (unsigned int);
     LinkedVertex*            addVertex      (const glm::vec3&, LinkedEdge*);
@@ -60,6 +52,14 @@ class WingedMesh {
     Maybe <FaceIntersection> intersectRay   (const Ray&);
 
     static WingedMesh* triangle (const glm::vec3&, const glm::vec3&, const glm::vec3&);
+
+  private:
+    void                     addIndices         ();
+
+    Mesh                     mesh;
+    Vertices                 vertices;
+    Edges                    edges;
+    Faces                    faces;
 };
 
 #endif

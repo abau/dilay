@@ -57,14 +57,6 @@ glm::vec3 WingedMesh :: vertex  (unsigned int index) const {
   return mesh.vertex (index);
 }
 
-void WingedMesh :: addIndices () {
-  FaceIterator it = this->faceIterator ();
-  while (it.hasElement ()) {
-    it.data ().addIndices (*this);
-    it.next ();
-  }
-}
-
 void WingedMesh :: rebuildIndices () {
   this->mesh.clearIndices ();
   this->addIndices ();
@@ -170,4 +162,12 @@ WingedMesh* WingedMesh :: triangle ( const glm::vec3& a, const glm::vec3& b
   m->addIndices ();
 
   return m;
+}
+
+void WingedMesh :: addIndices () {
+  FaceIterator it = this->faceIterator ();
+  while (it.hasElement ()) {
+    it.data ().addIndices (*this);
+    it.next ();
+  }
 }

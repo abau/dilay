@@ -8,21 +8,6 @@
 class WingedMesh;
 
 class WingedEdge {
-  private:
-    const Id      _id;
-
-    LinkedVertex* _vertex1;
-    LinkedVertex* _vertex2;
-
-    LinkedFace*   _leftFace;
-    LinkedFace*   _rightFace;
-
-    LinkedEdge*   _leftPredecessor;
-    LinkedEdge*   _leftSuccessor;
-
-    LinkedEdge*   _rightPredecessor;
-    LinkedEdge*   _rightSuccessor;
-
   public:
     WingedEdge ( LinkedVertex*, LinkedVertex*, LinkedFace*, LinkedFace*
                , LinkedEdge*, LinkedEdge*, LinkedEdge*, LinkedEdge*);
@@ -76,6 +61,21 @@ class WingedEdge {
 
     float               lengthSqr           (const WingedMesh&) const;
     LinkedEdge*         successor           (const WingedFace&, unsigned int);
+
+  private:
+    const Id      _id;
+
+    LinkedVertex* _vertex1;
+    LinkedVertex* _vertex2;
+
+    LinkedFace*   _leftFace;
+    LinkedFace*   _rightFace;
+
+    LinkedEdge*   _leftPredecessor;
+    LinkedEdge*   _leftSuccessor;
+
+    LinkedEdge*   _rightPredecessor;
+    LinkedEdge*   _rightSuccessor;
 };
 
 #endif

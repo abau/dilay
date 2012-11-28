@@ -6,14 +6,6 @@
 #define MESH
 
 class Mesh {
-  private: 
-    glm::mat4                  modelMatrix;
-    std::vector<   GLfloat   > vertices;
-    std::vector< unsigned int> indices;
-
-    GLuint                     vertexBufferId;
-    GLuint                     indexBufferId;
-
   public:
                  Mesh           ();
                  ~Mesh          ();
@@ -33,6 +25,14 @@ class Mesh {
 
     static Mesh  triangle       (const glm::vec3&, const glm::vec3&, const glm::vec3&);
     static Mesh  cube           (const glm::vec3&, float);
+
+  private: 
+    glm::mat4                  modelMatrix;
+    std::vector<   GLfloat   > vertices;
+    std::vector< unsigned int> indices;
+
+    GLuint                     vertexBufferId;
+    GLuint                     indexBufferId;
 };
 
 #endif 

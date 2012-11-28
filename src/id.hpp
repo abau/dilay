@@ -4,14 +4,13 @@
 typedef unsigned long IdType;
 
 class Id {
-  private:
-    static IdType nextId;
-
-    const  IdType _id;
-
   public:
     Id ();
 
     IdType get () const { return this->_id; }
+
+  private:
+    static IdType nextId;
+    const  IdType _id;
 };
 #endif

@@ -10,11 +10,6 @@ class WingedMesh;
 class WingedEdge;
 
 class WingedFace {
-  private:
-    const Id    _id;
-    LinkedEdge* _edge;
-    Depth       _depth;
-
   public:
     WingedFace (LinkedEdge*, Depth);
 
@@ -28,6 +23,11 @@ class WingedFace {
     LinkedEdge& longestEdge   (const WingedMesh&);
     void        increaseDepth ();
     void        decreaseDepth ();
+
+  private:
+    const Id    _id;
+    LinkedEdge* _edge;
+    Depth       _depth;
 };
 
 #endif

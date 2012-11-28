@@ -8,12 +8,6 @@
 #define STATE
 
 class State {
-  private:
-    bool        _isRunning;
-    WingedMesh* _mesh;
-    GLuint      _programId;
-    Camera      _camera;
-
   public:
     State ();
     ~State ();
@@ -31,5 +25,11 @@ class State {
 
     void          initialize   ();
     void          setProgramId (GLuint);
+
+  private:
+    bool        _isRunning;
+    WingedMesh* _mesh;
+    GLuint      _programId;
+    Camera      _camera;
 };
 #endif
