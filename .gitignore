@@ -4,3 +4,4 @@ moc/
 test/
 dilay
 Makefile
+src/session.vim
