@@ -4,6 +4,7 @@
 #ifndef MAYBE
 #define MAYBE
 
+// Maybe ////////////////////
 template <class T>
 class Maybe {
   public:
@@ -14,7 +15,7 @@ class Maybe {
     ~Maybe () { this->undefine (); }
 
     const Maybe<T>& operator=(const Maybe<T>& d) {
-      if (this == &d) return d;
+      if (this == &d) return *this;
       Maybe <T> tmp (d);
       Util :: swap (this->_data, tmp._data);
       return *this;
@@ -50,5 +51,36 @@ class Maybe {
 
   private:
     T* _data;
+};
+
+// MaybePtr /////////////////
+template <class T>
+class MaybePtr {
+  public:
+    MaybePtr ()                      : _ptr (0)  {}
+    MaybePtr (T* d)                  : _ptr (d) {}
+    MaybePtr (const MaybePtr <T>& d) : _ptr (d.isNothing () ? 0 : d._ptr) {}
+
+    ~MaybePtr () { this->undefine (); }
+
+    friend std::ostream& operator<<(std::ostream& os, const Maybe<T>& d) {
+      if (d.isDefined ()) os << "DefinedPtr { " << *(d.ptr ()) << " }" ;
+      else                os << "NothingPtr";
+      return os;
+    }
+
+    T*        ptr       ()           { return this->_ptr; }
+    const T*  ptr       () const     { return this->_ptr; }
+
+    bool      isNothing () const     { return this->_ptr == 0; }
+    bool      isDefined () const     { return ! this->isNothing (); }
+
+    void      define    (T* d)       { this->_ptr = d; }
+    void      undefine  ()           { this->_ptr = 0; }
+
+    static MaybePtr <T> nothing ()   { return MaybePtr (); }
+
+  private:
+    T* _ptr;
 };
 #endif

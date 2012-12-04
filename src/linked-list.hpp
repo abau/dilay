@@ -127,14 +127,15 @@ class LinkedList {
     typedef LinkedIterator<T>      Iterator;
     typedef LinkedConstIterator<T> ConstIterator;
 
-    LinkedList ();
-    LinkedList (const LinkedList <T>&);
-    ~LinkedList ();
+    LinkedList  ();
+    LinkedList  (const LinkedList <T>&);
+    ~LinkedList ()                       { this->eraseAll (); }
 
     unsigned int  numElements   () const { return this->_numElements; }
     Element*      insertFront   (const T&);
     Element*      insertBack    (const T&);
     void          erase         (LinkedElement <T>*);
+    void          eraseAll      ();
     Iterator      frontIterator ();
     ConstIterator frontIterator () const;
     Iterator      backIterator  (); 
@@ -163,15 +164,6 @@ LinkedList <T> :: LinkedList (const LinkedList <T>& source) {
   while (it.hasElement ()) {
     this->insertBack (it.data ());
     it.next ();
-  }
-}
-
-template <class T>
-LinkedList <T> :: ~LinkedList () {
-  while (this->start != 0) {
-    LinkedElement <T>* e = this->start;
-    this->start          = this->start->next ();
-    delete (e);
   }
 }
 
@@ -210,19 +202,29 @@ LinkedElement <T>* LinkedList <T> :: insertBack (const T& e) {
 template <class T>
 void LinkedList <T> :: erase (LinkedElement <T>* e) { 
   if (e == this->start) 
-    this->start = e->getNext ();
+    this->start = e->next ();
  
   if (e == this->end) 
-    this->end = e->getPrev ();
+    this->end = e->prev ();
  
   if (e->hasPrev ())
-    e->getPrev ()->setNext (e->getNext ());
+    e->prev ()->setNext (e->next ());
 
   if (e->hasNext ()) 
-    e->getNext ()->setPrev (e->getPrev ());
+    e->next ()->setPrev (e->prev ());
 
   delete (e);
   this->_numElements--;
+}
+
+template <class T>
+void LinkedList <T> :: eraseAll () { 
+  LinkedIterator <T> it = this->frontIterator ();
+  while (it.hasElement ()) {
+    LinkedElement <T>* e = it.linkedElement ();
+    it.next ();
+    this->erase (e);
+  }
 }
 
 template <class T>

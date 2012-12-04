@@ -6,7 +6,7 @@ TEMPLATE    =  app
 TARGET      =  dilay
 DEPENDPATH  += src src/view
 INCLUDEPATH += src src/view
-CONFIG      += warn_on
+CONFIG      += warn_on debug
 LIBS        += -lGL -lGLEW
 QT          += opengl
 MOC_DIR     =  moc
@@ -28,6 +28,7 @@ SOURCES += src/adaptive-mesh.cpp \
            src/winged-edge.cpp \
            src/winged-face.cpp \
            src/winged-mesh.cpp \
+           src/winged-mesh-util.cpp \
            src/winged-vertex.cpp
 
 HEADERS += src/adaptive-mesh.hpp \
@@ -48,4 +49,5 @@ HEADERS += src/adaptive-mesh.hpp \
            src/winged-edge.hpp \
            src/winged-face.hpp \
            src/winged-mesh.hpp \
+           src/winged-mesh-util.hpp \
            src/winged-vertex.hpp

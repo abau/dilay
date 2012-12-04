@@ -9,23 +9,17 @@
 
 class State {
   public:
-    State ();
-    ~State ();
+    static State&     global       ();
 
-    static State& global ();
+    WingedMesh&       mesh         ()              { return this->_mesh; }
+    const WingedMesh& mesh         () const        { return this->_mesh; }
+    Camera&           camera       ()              { return this->_camera; }       
+    const Camera&     camera       () const        { return this->_camera; }       
 
-    bool          isRunning    () const        { return this->_isRunning; }
-    WingedMesh*   mesh         () const        { return this->_mesh; }
-    Camera&       camera       ()              { return this->_camera; }       
-    const Camera& camera       () const        { return this->_camera; }       
-
-    void          setMesh      (WingedMesh* m) { this->_mesh      = m; }
-    void          terminate    ()              { this->_isRunning = false; }
-
-    void          initialize   ();
+    void              initialize   ();
+    void              setMesh      (const Mesh& m) { this->_mesh.fromMesh (m); }
   private:
-    bool        _isRunning;
-    WingedMesh* _mesh;
+    WingedMesh  _mesh;
     Camera      _camera;
 };
 #endif

@@ -7,6 +7,8 @@
 #define STRING_ID(x)    ((x) == 0 ? std::string ("NULL") : Util::toString ((x)->data ().id ()))
 #define STRING_INDEX(x) ((x) == 0 ? std::string ("NULL") : Util::toString ((x)->data ().index ()))
 
+#define PRIVATE_ASSIGNMENT_OP(x) const x & operator=(const x &);
+
 template <class T> class LinkedElement;
 class WingedVertex;
 class WingedEdge;

@@ -9,8 +9,9 @@ int main(int argv, char **args) {
   QApplication app(argv, args);
 
   QGLFormat glFormat;
-  glFormat.setVersion( 2, 1 );
-  glFormat.setProfile( QGLFormat::CoreProfile ); 
+  glFormat.setVersion (2,1);
+  glFormat.setProfile (QGLFormat::CoreProfile); 
+  glFormat.setDepth   (true); 
 
   GLWidget w (glFormat);
   w.show ();
@@ -64,56 +65,6 @@ void GLFWCALL handleKey (int key, int action) {
         }
         case 'W': {
           OpenGL :: toggleWireframe ();
-          break;
-        }
-      }
-      break;
-  }
-}
-
-void GLFWCALL handleMousePos (int x, int y) {
-  static int currentX = x;
-  static int currentY = y;
-
-  if (glfwGetMouseButton (GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
-    if (x > currentX)
-      State :: global ().camera ().verticalRotation (currentX - x);
-    else if (x < currentX)
-      State :: global ().camera ().verticalRotation (currentX - x);
-
-    if (y > currentY)
-      State :: global ().camera ().horizontalRotation (currentY - y);
-    else if (y < currentY)
-      State :: global ().camera ().horizontalRotation (currentY - y);
-  }
-  currentX = x;
-  currentY = y;
-}
-
-void GLFWCALL handleMouseWheel (int pos) {
-  static int currentPos = 0;
-  if (pos > currentPos)
-    State :: global ().camera ().stepAlongGaze (true);
-  else if (pos < currentPos)
-    State :: global ().camera ().stepAlongGaze (false);
-  currentPos = pos;
-}
-
-void GLFWCALL handleMouseButton (int button, int action) {
-  switch (action) {
-    case GLFW_PRESS:
-      switch (button) {
-        case GLFW_MOUSE_BUTTON_LEFT: {
-          int x,y;
-          glfwGetMousePos (&x,&y);
-          int reversedY = State :: global ().camera ().resolutionHeight () - y;
-          Ray ray = State :: global ().camera ().getRay (x,reversedY);
-          Maybe <FaceIntersection> i = State :: global ().mesh ()->intersectRay (ray);
-          if (i.isDefined ()) 
-            AdaptiveMesh :: splitFaceRegular (*State :: global ().mesh (),i.data().face());
-            State :: global ().mesh ()->rebuildIndices ();
-            State :: global ().mesh ()->bufferData ();
-
           break;
         }
       }

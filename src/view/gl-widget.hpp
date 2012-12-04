@@ -17,7 +17,10 @@ class GLWidget : public QGLWidget {
  
     virtual void keyPressEvent      (QKeyEvent*);
     virtual void mouseMoveEvent     (QMouseEvent*);
+    virtual void mousePressEvent    (QMouseEvent*);
     virtual void mouseReleaseEvent  (QMouseEvent*);
+    virtual void resizeEvent        (QResizeEvent*);
+    virtual void wheelEvent         (QWheelEvent*);
 
   private:
     MouseMovement _mouseMovement;

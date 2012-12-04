@@ -2,14 +2,35 @@
 #include "state.hpp"
 #include "opengl.hpp"
 
-Mesh :: Mesh () : modelMatrix (glm::mat4 (1.0f)) {
-  glGenBuffers (1, &this->vertexBufferId);
-  glGenBuffers (1, &this->indexBufferId);
-}
+Mesh :: Mesh () : modelMatrix    (glm::mat4 (1.0f))
+                , vertexBufferId (0)
+                , indexBufferId  (0) 
+                {}
+
+Mesh :: Mesh (const Mesh& source)
+                : modelMatrix     (source.modelMatrix)
+                , vertices        (source.vertices)
+                , indices         (source.indices)
+                , vertexBufferId  (0)
+                , indexBufferId   (0) 
+                {}
 
 Mesh :: ~Mesh () {
   glDeleteBuffers (1, &this->vertexBufferId);
   glDeleteBuffers (1, &this->indexBufferId);
+  this->vertexBufferId = 0;
+  this->indexBufferId  = 0;
+}
+
+const Mesh& Mesh :: operator= (const Mesh& source) {
+  if (this == &source) return *this;
+  Mesh tmp (source);
+  Util :: swap (this->modelMatrix   , tmp.modelMatrix);
+  Util :: swap (this->vertices      , tmp.vertices);
+  Util :: swap (this->indices       , tmp.indices);
+  Util :: swap (this->vertexBufferId, tmp.vertexBufferId);
+  Util :: swap (this->indexBufferId , tmp.indexBufferId);
+  return *this;
 }
 
 unsigned int Mesh :: numVertices () const { return this->vertices.size () / 3; }
@@ -32,6 +53,8 @@ glm::vec3 Mesh :: vertex (unsigned int i) const {
       );
 }
 
+unsigned int Mesh :: index (unsigned int i) const { return this->indices [i]; }
+
 unsigned int Mesh :: addVertex (GLfloat x, GLfloat y, GLfloat z) {
   this->vertices.push_back (x);
   this->vertices.push_back (y);
@@ -51,6 +74,11 @@ unsigned int Mesh :: addVertex (const glm::vec3& v, unsigned int i) {
 void Mesh :: clearIndices () { this->indices.clear (); }
 
 void Mesh :: bufferData () {
+  if (this->vertexBufferId == 0)
+    glGenBuffers (1, &this->vertexBufferId);
+  if (this->indexBufferId == 0)
+    glGenBuffers (1, &this->indexBufferId);
+
   glBindBuffer ( GL_ARRAY_BUFFER, this->vertexBufferId );
   glBufferData ( GL_ARRAY_BUFFER, this->sizeOfVertices ()
                , &this->vertices[0], GL_STATIC_DRAW);
@@ -62,16 +90,22 @@ void Mesh :: bufferData () {
 
 void Mesh :: render () {
   State :: global ().camera ().modelViewProjection (this->modelMatrix);
-  glUniform4f(OpenGL :: colorId (), 1.0f,0.0f,0.0f,1.0f);
+  glUniform4f(OpenGL :: colorId (), 1.0f,1.0f,1.0f,1.0f);
+
+  glBindBuffer          (GL_ARRAY_BUFFER, this->vertexBufferId);
+  glBindBuffer          (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
 
   glEnableVertexAttribArray(0);
 
-  glBindBuffer          (GL_ARRAY_BUFFER, this->vertexBufferId);
   glVertexAttribPointer (OpenGL :: vertexId (), 3, GL_FLOAT, GL_FALSE, 0, 0);               
-  glBindBuffer          (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
   glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
   glDisableVertexAttribArray(0);
+}
+
+void Mesh :: reset () {
+  this->vertices.clear ();
+  this->indices .clear ();
 }
 
 // Static

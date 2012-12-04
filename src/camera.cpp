@@ -7,8 +7,8 @@ Camera :: Camera () {
   this->_gazeStepSize            = 1.0f;
   this->_verticalRotationAngle   = 0.5f;
   this->_horizontalRotationAngle = 0.5f;
-  this->_gazePoint               = glm::vec3 (0.0f);
-  this->_toEyePoint              = glm::vec3 (0.0f,0.0f,3.0f);
+  this->_gazePoint               = glm::vec3 (0.0f,0.0f,0.0f);
+  this->_toEyePoint              = glm::vec3 (3.0f,3.0f,3.0f);
   this->_up                      = glm::vec3 (0.0f,1.0f,0.0f);
   this->_right                   = glm::vec3 (1.0f,0.0f,0.0f);
   this->_resolutionWidth         = 1024;
@@ -42,7 +42,7 @@ void Camera :: stepAlongGaze (bool forward) {
 }
 
 void Camera :: verticalRotation (int steps) {
-  float angle     = this->_verticalRotationAngle * float (steps);
+  float angle       = this->_verticalRotationAngle * float (-steps);
 
   glm::fquat q      = glm::angleAxis (angle,this->_up);
   this->_right      = glm::rotate (q, this->_right);
@@ -51,7 +51,7 @@ void Camera :: verticalRotation (int steps) {
 }
 
 void Camera :: horizontalRotation (int steps) {
-  float angle     = this->_horizontalRotationAngle * float (steps);
+  float angle       = this->_horizontalRotationAngle * float (-steps);
 
   glm::fquat q      = glm::angleAxis (angle,this->_right);
   this->_toEyePoint = glm::rotate (q, this->_toEyePoint);

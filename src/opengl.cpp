@@ -25,15 +25,18 @@ void OpenGL :: initialize () {
       throw (std::runtime_error (e1 + e2));
     }
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
+
     glEnable    (GL_DEPTH_TEST);
     glDepthFunc (GL_LESS);
     glEnable    (GL_CULL_FACE);
 
     OpenGL :: loadShaders ("shader/vertex.shader", "shader/fragment.shader" );
+    OpenGL :: toggleWireframe ();
 
-    State :: global ().setMesh(WingedMesh::triangle (glm::vec3 (0,0,0), glm::vec3 (0,0,1), glm::vec3 (1,0,0)));
-    State :: global ().mesh ()->bufferData ();
+    //State :: global ().setMesh(Mesh::triangle (glm::vec3 (0,0,0), glm::vec3 (0,0,1), glm::vec3 (1,0,0)));
+    State :: global ().setMesh(Mesh::cube (glm::vec3 (0,0,0), 1.0f));
+    State :: global ().mesh ().bufferData ();
     isInitialized = true;
   }
 }
