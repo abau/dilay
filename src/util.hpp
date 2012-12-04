@@ -21,7 +21,7 @@ typedef LinkedElement <WingedFace>   LinkedFace;
 std::ostream& operator<<(std::ostream&, const glm::vec3&);
 
 namespace Util {
-  const float epsilon = 0.00001;
+  const float epsilon = 0.000001;
 
   template <class T>
   std::string toString (const T& t) {
