@@ -28,13 +28,11 @@ void OpenGL :: initialize () {
     glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
 
     glEnable    (GL_DEPTH_TEST);
-    glDepthFunc (GL_LESS);
+    glDepthFunc (GL_LEQUAL);
     glEnable    (GL_CULL_FACE);
 
     OpenGL :: loadShaders ("shader/vertex.shader", "shader/fragment.shader" );
-    OpenGL :: toggleWireframe ();
 
-    //State :: global ().setMesh(Mesh::triangle (glm::vec3 (0,0,0), glm::vec3 (0,0,1), glm::vec3 (1,0,0)));
     State :: global ().setMesh(Mesh::cube (glm::vec3 (0,0,0), 1.0f));
     State :: global ().mesh ().bufferData ();
     isInitialized = true;

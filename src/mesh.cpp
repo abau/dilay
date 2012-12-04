@@ -90,7 +90,7 @@ void Mesh :: bufferData () {
 
 void Mesh :: render () {
   State :: global ().camera ().modelViewProjection (this->modelMatrix);
-  glUniform4f(OpenGL :: colorId (), 1.0f,1.0f,1.0f,1.0f);
+  glUniform4f           (OpenGL :: colorId (), 0.2f,0.2f,0.6f,1.0f);
 
   glBindBuffer          (GL_ARRAY_BUFFER, this->vertexBufferId);
   glBindBuffer          (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
@@ -98,7 +98,26 @@ void Mesh :: render () {
   glEnableVertexAttribArray(0);
 
   glVertexAttribPointer (OpenGL :: vertexId (), 3, GL_FLOAT, GL_FALSE, 0, 0);               
+
+  // Render solid
+  glDepthMask           (GL_FALSE);
+
   glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+
+  glDepthMask           (GL_TRUE);
+
+  // Render wireframe
+  glUniform4f           (OpenGL :: colorId (), 1.0f,1.0f,1.0f,1.0f);
+  glPolygonMode         (GL_FRONT, GL_LINE);
+  //glEnable              (GL_POLYGON_OFFSET_LINE);
+  //glPolygonOffset       (-2.0f,-2.0f);
+  //glDepthMask           (GL_FALSE);
+
+  glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+
+  glPolygonMode         (GL_FRONT, GL_FILL);
+  //glDisable             (GL_POLYGON_OFFSET_LINE);
+  //glDepthMask           (GL_TRUE);
 
   glDisableVertexAttribArray(0);
 }

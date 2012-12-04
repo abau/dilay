@@ -13,7 +13,7 @@ Camera :: Camera () {
   this->_right                   = glm::vec3 (1.0f,0.0f,0.0f);
   this->_resolutionWidth         = 1024;
   this->_resolutionHeight        = 800;
-  this->_nearClipping            = 0.01f;
+  this->_nearClipping            = 0.1f;
   this->_farClipping             = 1000.0f;
 }
 
