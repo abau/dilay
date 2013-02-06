@@ -61,9 +61,6 @@ void WingedMesh :: rebuildIndices () {
   this->addIndices ();
 }
 
-void WingedMesh :: bufferData () { this->mesh.bufferData (); }
-void WingedMesh :: render     () { this->mesh.render (); }
-
 void WingedMesh :: reset () {
   this->mesh    .reset ();
   this->vertices.eraseAll ();

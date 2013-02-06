@@ -1,3 +1,4 @@
+#include <glm/gtc/matrix_transform.hpp>
 #include "mesh.hpp"
 #include "state.hpp"
 #include "opengl.hpp"
@@ -88,43 +89,53 @@ void Mesh :: bufferData () {
                , &this->indices[0], GL_STATIC_DRAW);
 }
 
-void Mesh :: render () {
+void Mesh :: renderBegin () {
   State :: global ().camera ().modelViewProjection (this->modelMatrix);
-  glUniform4f           (OpenGL :: colorId (), 0.2f,0.2f,0.6f,1.0f);
 
-  glBindBuffer          (GL_ARRAY_BUFFER, this->vertexBufferId);
-  glBindBuffer          (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
+  glBindBuffer              (GL_ARRAY_BUFFER, this->vertexBufferId);
+  glBindBuffer              (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
 
-  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray (0);
 
-  glVertexAttribPointer (OpenGL :: vertexId (), 3, GL_FLOAT, GL_FALSE, 0, 0);               
+  glVertexAttribPointer     (OpenGL :: vertexId (), 3, GL_FLOAT, GL_FALSE, 0, 0);               
+}
 
-  // Render solid
-  glDepthMask           (GL_FALSE);
+void Mesh :: renderSolid () {
+  this->renderBegin ();
+  glUniform4f       (OpenGL :: colorId (), 0.2f,0.2f,0.6f,1.0f);
+  //glDepthMask       (GL_FALSE);
+  glDrawElements    (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+  //glDepthMask       (GL_TRUE);
+  this->renderEnd   ();
+}
 
-  glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+void Mesh :: renderWireframe () {
+  this->renderBegin ();
+  glUniform4f       (OpenGL :: colorId (), 1.0f,1.0f,1.0f,1.0f);
+  glPolygonMode     (GL_FRONT, GL_LINE);
+  //glEnable          (GL_POLYGON_OFFSET_LINE);
+  //glPolygonOffset   (-2.0f,-2.0f);
+  //glDepthMask       (GL_FALSE);
 
-  glDepthMask           (GL_TRUE);
+  glDrawElements    (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
-  // Render wireframe
-  glUniform4f           (OpenGL :: colorId (), 1.0f,1.0f,1.0f,1.0f);
-  glPolygonMode         (GL_FRONT, GL_LINE);
-  //glEnable              (GL_POLYGON_OFFSET_LINE);
-  //glPolygonOffset       (-2.0f,-2.0f);
-  //glDepthMask           (GL_FALSE);
+  glPolygonMode     (GL_FRONT, GL_FILL);
+  //glDisable         (GL_POLYGON_OFFSET_LINE);
+  //glDepthMask       (GL_TRUE);
+  this->renderEnd   ();
+}
 
-  glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-
-  glPolygonMode         (GL_FRONT, GL_FILL);
-  //glDisable             (GL_POLYGON_OFFSET_LINE);
-  //glDepthMask           (GL_TRUE);
-
+void Mesh :: renderEnd () {
   glDisableVertexAttribArray(0);
 }
 
 void Mesh :: reset () {
   this->vertices.clear ();
   this->indices .clear ();
+}
+
+void Mesh :: translate (const glm::vec3& v) {
+  this->modelMatrix = glm::translate (this->modelMatrix, v);
 }
 
 // Static

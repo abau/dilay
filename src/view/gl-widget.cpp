@@ -8,6 +8,8 @@
 #include "maybe.hpp"
 #include "adaptive-mesh.hpp"
 
+#include "cursor/sphere.hpp"
+
 GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
 void GLWidget :: initializeGL () {
@@ -17,7 +19,13 @@ void GLWidget :: initializeGL () {
 void GLWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram(OpenGL :: programId ());
-  State :: global ().mesh ().render ();
+
+  State :: global ().mesh ().renderSolid ();
+
+  CursorSphere cs;
+  cs.render ();
+
+  State :: global ().mesh ().renderWireframe ();
 }
 
 void GLWidget :: resizeGL (int w, int h) {

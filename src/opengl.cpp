@@ -26,12 +26,11 @@ void OpenGL :: initialize () {
     }
 
     glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
+    glDepthFunc (GL_LEQUAL); 
 
-    glEnable    (GL_DEPTH_TEST);
-    glDepthFunc (GL_LEQUAL);
-    glEnable    (GL_CULL_FACE);
-
-    OpenGL :: loadShaders ("shader/vertex.shader", "shader/fragment.shader" );
+    OpenGL :: enableCulling   ();
+    OpenGL :: enableDepthTest ();
+    OpenGL :: loadShaders     ("shader/vertex.shader", "shader/fragment.shader" );
 
     State :: global ().setMesh(Mesh::cube (glm::vec3 (0,0,0), 1.0f));
     State :: global ().mesh ().bufferData ();
