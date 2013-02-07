@@ -4,14 +4,9 @@
 #include <stdexcept>
 #include "opengl.hpp"
 
-//////////////
-#include "state.hpp"
-
-bool    OpenGL :: _isWireframe = false;
 GLuint  OpenGL :: _mvpId       = -1;
 GLuint  OpenGL :: _programId   = -1;
 GLuint  OpenGL :: _colorId     = -1;
-GLuint  OpenGL :: _vertexId    = -1;
 
 void OpenGL :: initialize () {
   static bool isInitialized = false;
@@ -32,22 +27,12 @@ void OpenGL :: initialize () {
     OpenGL :: enableDepthTest ();
     OpenGL :: loadShaders     ("shader/vertex.shader", "shader/fragment.shader" );
 
-    State :: global ().setMesh(Mesh::cube (glm::vec3 (0,0,0), 1.0f));
-    State :: global ().mesh ().bufferData ();
     isInitialized = true;
   }
 }
 
 void OpenGL :: shutdown () {
   OpenGL :: releaseProgram ();
-}
-
-void OpenGL :: toggleWireframe () {
-  _isWireframe = ! _isWireframe;
-  if (_isWireframe)
-    glPolygonMode (GL_FRONT, GL_LINE);
-  else
-    glPolygonMode (GL_FRONT, GL_FILL);
 }
 
 void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShader) {
@@ -72,7 +57,6 @@ void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShade
     if (status == GL_TRUE) {
       OpenGL :: _programId = programId;
       OpenGL :: _mvpId     = glGetUniformLocation (programId, "mvp");
-      OpenGL :: _vertexId  = glGetAttribLocation  (programId, "vertex");
       OpenGL :: _colorId   = glGetUniformLocation (programId, "color");
       return;
     }
@@ -82,6 +66,23 @@ void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShade
   else if (fsId.isDefined ()) glDeleteShader(fsId.data ());
 
   throw (std::runtime_error ("Can not load shaders: see info log above"));
+}
+
+void OpenGL :: setColor (float r, float g, float b, float a) {
+  glUniform4f (OpenGL :: _colorId, r, g, b, a);
+}
+
+void OpenGL :: setColor (float r, float g, float b) {
+  OpenGL :: setColor (r, g, b, 1.0f);
+}
+
+void OpenGL :: setMvp (const GLfloat* mvp) {
+  glUniformMatrix4fv (OpenGL :: _mvpId, 1, GL_FALSE, mvp);
+}
+
+
+void OpenGL :: setDefaultProgram  () {
+  glUseProgram(OpenGL :: _programId);
 }
 
 void OpenGL :: showInfoLog (GLuint id, const char* filePath) {

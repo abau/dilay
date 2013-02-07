@@ -7,7 +7,7 @@
 
 class CursorSphere {
   public:
-         CursorSphere ();
+         CursorSphere (float);
     void setPosition  (const glm::vec3& v) { this->mesh.translate (v); }
     void render       ();
 
@@ -15,7 +15,8 @@ class CursorSphere {
     PRIVATE_ASSIGNMENT_OP(CursorSphere)
 
     Mesh       mesh;
-    static int steps;
+    static int rings;
+    static int sectors;
 };
 
 #endif

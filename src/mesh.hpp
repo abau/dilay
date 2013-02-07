@@ -34,15 +34,19 @@ class Mesh {
     void         translate       (const glm::vec3&);
 
     static Mesh  triangle        (const glm::vec3&, const glm::vec3&, const glm::vec3&);
-    static Mesh  cube            (const glm::vec3&, float);
+    static Mesh  cube            (float);
+    static Mesh  sphere          (float,int,int);
 
   private: // cf. copy-constructor, operator=
     glm::mat4                    modelMatrix;
     std::vector<   GLfloat   >   vertices;
     std::vector< unsigned int>   indices;
 
+    GLuint                       arrayObjectId; 
     GLuint                       vertexBufferId;
     GLuint                       indexBufferId;
+
+    static const GLuint          vertexArrayIndex = 0;
 };
 
 #endif 

@@ -1,9 +1,12 @@
+#define  _USE_MATH_DEFINES
+#include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include "mesh.hpp"
 #include "state.hpp"
 #include "opengl.hpp"
 
 Mesh :: Mesh () : modelMatrix    (glm::mat4 (1.0f))
+                , arrayObjectId  (0)
                 , vertexBufferId (0)
                 , indexBufferId  (0) 
                 {}
@@ -12,13 +15,16 @@ Mesh :: Mesh (const Mesh& source)
                 : modelMatrix     (source.modelMatrix)
                 , vertices        (source.vertices)
                 , indices         (source.indices)
+                , arrayObjectId   (0)
                 , vertexBufferId  (0)
                 , indexBufferId   (0) 
                 {}
 
 Mesh :: ~Mesh () {
-  glDeleteBuffers (1, &this->vertexBufferId);
-  glDeleteBuffers (1, &this->indexBufferId);
+  glDeleteVertexArrays  (1, &this->arrayObjectId);
+  glDeleteBuffers       (1, &this->vertexBufferId);
+  glDeleteBuffers       (1, &this->indexBufferId);
+  this->arrayObjectId  = 0;
   this->vertexBufferId = 0;
   this->indexBufferId  = 0;
 }
@@ -29,6 +35,7 @@ const Mesh& Mesh :: operator= (const Mesh& source) {
   Util :: swap (this->modelMatrix   , tmp.modelMatrix);
   Util :: swap (this->vertices      , tmp.vertices);
   Util :: swap (this->indices       , tmp.indices);
+  Util :: swap (this->arrayObjectId , tmp.arrayObjectId);
   Util :: swap (this->vertexBufferId, tmp.vertexBufferId);
   Util :: swap (this->indexBufferId , tmp.indexBufferId);
   return *this;
@@ -75,58 +82,61 @@ unsigned int Mesh :: addVertex (const glm::vec3& v, unsigned int i) {
 void Mesh :: clearIndices () { this->indices.clear (); }
 
 void Mesh :: bufferData () {
+  if (this->arrayObjectId == 0)
+    glGenVertexArrays (1, &this->arrayObjectId);
   if (this->vertexBufferId == 0)
-    glGenBuffers (1, &this->vertexBufferId);
+    glGenBuffers      (1, &this->vertexBufferId);
   if (this->indexBufferId == 0)
-    glGenBuffers (1, &this->indexBufferId);
+    glGenBuffers      (1, &this->indexBufferId);
 
-  glBindBuffer ( GL_ARRAY_BUFFER, this->vertexBufferId );
-  glBufferData ( GL_ARRAY_BUFFER, this->sizeOfVertices ()
-               , &this->vertices[0], GL_STATIC_DRAW);
+  glBindVertexArray          (this->arrayObjectId);
+  glEnableVertexAttribArray  (0);
 
-  glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId );
-  glBufferData ( GL_ELEMENT_ARRAY_BUFFER, this->sizeOfIndices ()
-               , &this->indices[0], GL_STATIC_DRAW);
+  glBindBuffer               ( GL_ARRAY_BUFFER, this->vertexBufferId );
+  glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfVertices ()
+                             , &this->vertices[0], GL_STATIC_DRAW);
+  glEnableVertexAttribArray  ( Mesh :: vertexArrayIndex);
+  glVertexAttribPointer      ( Mesh :: vertexArrayIndex, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+  glBindBuffer               ( GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId );
+  glBufferData               ( GL_ELEMENT_ARRAY_BUFFER, this->sizeOfIndices ()
+                             , &this->indices[0], GL_STATIC_DRAW);
+
+  glBindVertexArray          (0);
 }
 
 void Mesh :: renderBegin () {
   State :: global ().camera ().modelViewProjection (this->modelMatrix);
-
-  glBindBuffer              (GL_ARRAY_BUFFER, this->vertexBufferId);
-  glBindBuffer              (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
-
-  glEnableVertexAttribArray (0);
-
-  glVertexAttribPointer     (OpenGL :: vertexId (), 3, GL_FLOAT, GL_FALSE, 0, 0);               
+  glBindVertexArray (this->arrayObjectId);
 }
 
 void Mesh :: renderSolid () {
-  this->renderBegin ();
-  glUniform4f       (OpenGL :: colorId (), 0.2f,0.2f,0.6f,1.0f);
-  //glDepthMask       (GL_FALSE);
-  glDrawElements    (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-  //glDepthMask       (GL_TRUE);
-  this->renderEnd   ();
+  this->renderBegin  ();
+  OpenGL :: setColor (0.2f, 0.2f, 0.6f);
+  //glDepthMask        (GL_FALSE);
+  glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+  //glDepthMask        (GL_TRUE);
+  this->renderEnd    ();
 }
 
 void Mesh :: renderWireframe () {
-  this->renderBegin ();
-  glUniform4f       (OpenGL :: colorId (), 1.0f,1.0f,1.0f,1.0f);
-  glPolygonMode     (GL_FRONT, GL_LINE);
-  //glEnable          (GL_POLYGON_OFFSET_LINE);
-  //glPolygonOffset   (-2.0f,-2.0f);
-  //glDepthMask       (GL_FALSE);
+  this->renderBegin  ();
+  OpenGL :: setColor (1.0f, 1.0f, 1.0f);
+  glPolygonMode      (GL_FRONT, GL_LINE);
+  //glEnable           (GL_POLYGON_OFFSET_LINE);
+  //glPolygonOffset    (-2.0f,-2.0f);
+  //glDepthMask        (GL_FALSE);
 
-  glDrawElements    (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+  glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
-  glPolygonMode     (GL_FRONT, GL_FILL);
-  //glDisable         (GL_POLYGON_OFFSET_LINE);
-  //glDepthMask       (GL_TRUE);
-  this->renderEnd   ();
+  glPolygonMode      (GL_FRONT, GL_FILL);
+  //glDisable          (GL_POLYGON_OFFSET_LINE);
+  //glDepthMask        (GL_TRUE);
+  this->renderEnd    ();
 }
 
 void Mesh :: renderEnd () {
-  glDisableVertexAttribArray(0);
+  glBindVertexArray (0);
 }
 
 void Mesh :: reset () {
@@ -147,17 +157,17 @@ Mesh Mesh :: triangle (const glm::vec3& a, const glm::vec3& b, const glm::vec3& 
   return m;
 }
 
-Mesh Mesh :: cube (const glm::vec3& c, float side) {
+Mesh Mesh :: cube (float side) {
   float d = side * 0.5f;
   Mesh m;
-  m.addVertex ( glm::vec3 (c.x - d, c.y - d, c.z - d) );
-  m.addVertex ( glm::vec3 (c.x - d, c.y - d, c.z + d) );
-  m.addVertex ( glm::vec3 (c.x - d, c.y + d, c.z - d) );
-  m.addVertex ( glm::vec3 (c.x - d, c.y + d, c.z + d) );
-  m.addVertex ( glm::vec3 (c.x + d, c.y - d, c.z - d) );
-  m.addVertex ( glm::vec3 (c.x + d, c.y - d, c.z + d) );
-  m.addVertex ( glm::vec3 (c.x + d, c.y + d, c.z - d) );
-  m.addVertex ( glm::vec3 (c.x + d, c.y + d, c.z + d) );
+  m.addVertex ( glm::vec3 (-d, -d, -d) );
+  m.addVertex ( glm::vec3 (-d, -d, +d) );
+  m.addVertex ( glm::vec3 (-d, +d, -d) );
+  m.addVertex ( glm::vec3 (-d, +d, +d) );
+  m.addVertex ( glm::vec3 (+d, -d, -d) );
+  m.addVertex ( glm::vec3 (+d, -d, +d) );
+  m.addVertex ( glm::vec3 (+d, +d, -d) );
+  m.addVertex ( glm::vec3 (+d, +d, +d) );
 
   m.addIndex (0); m.addIndex (1); m.addIndex (2);
   m.addIndex (3); m.addIndex (2); m.addIndex (1);
@@ -177,5 +187,57 @@ Mesh Mesh :: cube (const glm::vec3& c, float side) {
   m.addIndex (0); m.addIndex (4); m.addIndex (1);
   m.addIndex (5); m.addIndex (1); m.addIndex (4);
 
+  return m;
+}
+
+Mesh Mesh :: sphere (float radius, int rings, int sectors) {
+  assert (rings > 1 && sectors > 2);
+  float ringStep   =        M_PI / float (rings);
+  float sectorStep = 2.0f * M_PI / float (sectors);
+  float phi        = ringStep;
+  float theta      = 0.0f;
+  Mesh  m;
+
+  // Inner rings vertices
+  for (int r = 0; r < rings - 1; r++) {
+    for (int s = 0; s < sectors; s++) {
+      float x = radius * sin (theta) * sin (phi);
+      float y = radius * cos (phi);
+      float z = radius * cos (theta) * sin (phi);
+
+      m.addVertex (glm::vec3 (x,y,z));
+
+      theta += sectorStep;
+    }
+    phi += ringStep;
+  }
+
+  // Caps vertices
+  unsigned int topCapIndex = m.addVertex (glm::vec3 (0.0f, radius, 0.0f));
+  unsigned int botCapIndex = m.addVertex (glm::vec3 (0.0f,-radius, 0.0f));
+
+  // Inner rings indices
+  for (int r = 0; r < rings - 2; r++) {
+    for (int s = 0; s < sectors; s++) {
+      m.addIndex ((sectors * r) + s);
+      m.addIndex ((sectors * (r+1)) + s);
+      m.addIndex ((sectors * r) + ((s+1) % sectors));
+
+      m.addIndex ((sectors * (r+1)) + ((s+1) % sectors));
+      m.addIndex ((sectors * r) + ((s+1) % sectors));
+      m.addIndex ((sectors * (r+1)) + s);
+    }
+  }
+
+  // Caps indices
+  for (int s = 0; s < sectors; s++) {
+    m.addIndex (topCapIndex);
+    m.addIndex (s);
+    m.addIndex ((s+1) % sectors);
+
+    m.addIndex (botCapIndex);
+    m.addIndex ((sectors * (rings-2)) + ((s+1) % sectors));
+    m.addIndex ((sectors * (rings-2)) + s);
+  }
   return m;
 }

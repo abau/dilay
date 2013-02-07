@@ -29,7 +29,7 @@ void Camera :: updateView () {
 
 void Camera :: modelViewProjection (const glm::mat4& model) const {
   glm::mat4 mvp = this->_projection * this->_view * model;
-  glUniformMatrix4fv(OpenGL :: mvpId (), 1, GL_FALSE, &mvp[0][0]);
+  OpenGL :: setMvp (&mvp[0][0]);
 }
 
 void Camera :: stepAlongGaze (bool forward) {

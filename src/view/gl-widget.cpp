@@ -1,4 +1,5 @@
 #include <GL/glew.h>
+#include <QApplication>
 #include "gl-widget.hpp"
 #include "opengl.hpp"
 #include "state.hpp"
@@ -14,15 +15,17 @@ GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
 void GLWidget :: initializeGL () {
   OpenGL :: initialize ();
+  State  :: global ().setMesh( Mesh :: sphere (1.0f,2,3) );
+  State  :: global ().mesh ().bufferData ();
 }
 
 void GLWidget :: paintGL () {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glUseProgram(OpenGL :: programId ());
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  OpenGL :: setDefaultProgram ();
 
   State :: global ().mesh ().renderSolid ();
 
-  CursorSphere cs;
+  CursorSphere cs (2.0f);
   cs.render ();
 
   State :: global ().mesh ().renderWireframe ();
@@ -33,19 +36,14 @@ void GLWidget :: resizeGL (int w, int h) {
   glViewport (0,0,w, h < 1 ? 1 : h );
 }
 
-void GLWidget :: keyPressEvent (QKeyEvent* e)
-{
-  /*
-    switch ( e->key() )
-    {
-        case Qt::Key_Escape:
-            QCoreApplication::instance()->quit();
-            break;
- 
-        default:
-            QGLWidget::keyPressEvent( e );
-    }
-    */
+void GLWidget :: keyPressEvent (QKeyEvent* e) {
+  switch (e->key()) {
+    case Qt::Key_Escape:
+      QCoreApplication::instance()->quit();
+      break;
+    default:
+      QGLWidget::keyPressEvent (e);
+  }
 }
 
 void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
