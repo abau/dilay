@@ -15,7 +15,7 @@ GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
 void GLWidget :: initializeGL () {
   OpenGL :: initialize ();
-  State  :: global ().setMesh( Mesh :: sphere (1.0f,2,3) );
+  State  :: global ().setMesh( Mesh :: sphere (1.0f,3,4) );
   State  :: global ().mesh ().bufferData ();
 }
 
@@ -23,12 +23,7 @@ void GLWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   OpenGL :: setDefaultProgram ();
 
-  State :: global ().mesh ().renderSolid ();
-
-  CursorSphere cs (2.0f);
-  cs.render ();
-
-  State :: global ().mesh ().renderWireframe ();
+  State :: global ().mesh ().render ();
 }
 
 void GLWidget :: resizeGL (int w, int h) {
@@ -40,6 +35,10 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
   switch (e->key()) {
     case Qt::Key_Escape:
       QCoreApplication::instance()->quit();
+      break;
+    case Qt::Key_W:
+      State :: global ().mesh ().toggleRenderMode ();
+      this->update ();
       break;
     default:
       QGLWidget::keyPressEvent (e);

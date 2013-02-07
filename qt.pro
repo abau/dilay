@@ -43,6 +43,7 @@ HEADERS += src/adaptive-mesh.hpp \
            src/mesh.hpp \
            src/opengl.hpp \
            src/ray.hpp \
+           src/rendermode.hpp \
            src/selection/selection.hpp \
            src/state.hpp \
            src/triangle.hpp \

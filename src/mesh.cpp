@@ -9,6 +9,7 @@ Mesh :: Mesh () : modelMatrix    (glm::mat4 (1.0f))
                 , arrayObjectId  (0)
                 , vertexBufferId (0)
                 , indexBufferId  (0) 
+                , renderMode     (RenderWireframe)
                 {}
 
 Mesh :: Mesh (const Mesh& source)
@@ -18,6 +19,7 @@ Mesh :: Mesh (const Mesh& source)
                 , arrayObjectId   (0)
                 , vertexBufferId  (0)
                 , indexBufferId   (0) 
+                , renderMode      (RenderWireframe)
                 {}
 
 Mesh :: ~Mesh () {
@@ -38,6 +40,7 @@ const Mesh& Mesh :: operator= (const Mesh& source) {
   Util :: swap (this->arrayObjectId , tmp.arrayObjectId);
   Util :: swap (this->vertexBufferId, tmp.vertexBufferId);
   Util :: swap (this->indexBufferId , tmp.indexBufferId);
+  Util :: swap (this->renderMode    , tmp.renderMode);
   return *this;
 }
 
@@ -110,17 +113,27 @@ void Mesh :: renderBegin () {
   glBindVertexArray (this->arrayObjectId);
 }
 
+void Mesh :: render () {
+  if (this->renderMode == RenderSolid)
+    return this->renderSolid ();
+  else if (this->renderMode == RenderWireframe)
+    return this->renderWireframe ();
+}
+
 void Mesh :: renderSolid () {
   this->renderBegin  ();
   OpenGL :: setColor (0.2f, 0.2f, 0.6f);
-  //glDepthMask        (GL_FALSE);
   glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-  //glDepthMask        (GL_TRUE);
   this->renderEnd    ();
 }
 
 void Mesh :: renderWireframe () {
   this->renderBegin  ();
+  OpenGL :: setColor (0.2f, 0.2f, 0.6f);
+  glDepthMask        (GL_FALSE);
+  glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+  glDepthMask        (GL_TRUE);
+
   OpenGL :: setColor (1.0f, 1.0f, 1.0f);
   glPolygonMode      (GL_FRONT, GL_LINE);
   //glEnable           (GL_POLYGON_OFFSET_LINE);
@@ -142,6 +155,10 @@ void Mesh :: renderEnd () {
 void Mesh :: reset () {
   this->vertices.clear ();
   this->indices .clear ();
+}
+
+void Mesh :: toggleRenderMode () {
+  this->renderMode = RenderModeUtil :: toggle (this->renderMode);
 }
 
 void Mesh :: translate (const glm::vec3& v) {
