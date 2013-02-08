@@ -15,7 +15,6 @@ OBJECTS_DIR =  obj
 SOURCES += src/adaptive-mesh.cpp \
            src/camera.cpp \
            src/cursor/sphere.cpp \
-           src/depth.cpp \
            src/id.cpp \
            src/main.cpp \
            src/mesh.cpp \
@@ -35,7 +34,6 @@ SOURCES += src/adaptive-mesh.cpp \
 HEADERS += src/adaptive-mesh.hpp \
            src/camera.hpp \
            src/cursor/sphere.hpp \
-           src/depth.hpp \
            src/id.hpp \
            src/intersection.hpp \
            src/linked-list.hpp \

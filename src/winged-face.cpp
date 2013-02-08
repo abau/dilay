@@ -1,7 +1,7 @@
 #include "winged-face.hpp"
 #include "winged-edge.hpp"
 
-WingedFace :: WingedFace (LinkedEdge* e, Depth d) : _depth (d) {
+WingedFace :: WingedFace (LinkedEdge* e) {
   this->_edge = e;
 }
 
@@ -44,6 +44,3 @@ LinkedEdge& WingedFace :: longestEdge (const WingedMesh& mesh) {
   else
     return e3;
 }
-
-void WingedFace :: increaseDepth () { this->_depth.increase (); }
-void WingedFace :: decreaseDepth () { this->_depth.decrease (); }

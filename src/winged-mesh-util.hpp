@@ -6,8 +6,9 @@
 #define WINGED_MESH_UTIL
 
 namespace WingedMeshUtil {
-  void                  printStatistics (const WingedMesh&);
-  MaybePtr <LinkedEdge> findEdge        (WingedMesh&, unsigned int, unsigned int);
+  void                    printStatistics (const WingedMesh&);
+  MaybePtr <LinkedEdge>   findEdge        (WingedMesh&, unsigned int, unsigned int);
+  MaybePtr <LinkedVertex> findVertex      (WingedMesh&, unsigned int);
 }
 
 #endif

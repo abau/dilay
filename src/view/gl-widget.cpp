@@ -8,6 +8,7 @@
 #include "intersection.hpp"
 #include "maybe.hpp"
 #include "adaptive-mesh.hpp"
+#include "winged-mesh-util.hpp"
 
 #include "cursor/sphere.hpp"
 
@@ -15,7 +16,8 @@ GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
 void GLWidget :: initializeGL () {
   OpenGL :: initialize ();
-  State  :: global ().setMesh( Mesh :: sphere (1.0f,3,4) );
+  State  :: global ().setMesh( Mesh :: sphere (1.0f,3,3) );
+  //State  :: global ().setMesh( Mesh :: cube (1.0f) );
   State  :: global ().mesh ().bufferData ();
 }
 
@@ -39,6 +41,9 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
     case Qt::Key_W:
       State :: global ().mesh ().toggleRenderMode ();
       this->update ();
+      break;
+    case Qt::Key_I:
+      WingedMeshUtil :: printStatistics (State :: global ().mesh ());
       break;
     default:
       QGLWidget::keyPressEvent (e);

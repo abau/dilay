@@ -4,8 +4,7 @@ LinkedFace* splitFaceAlong ( WingedMesh& mesh, LinkedFace& faceToSplit
                            , LinkedEdge& splitAlong
                            , LinkedEdge& leftPred, LinkedEdge& leftSucc
                            , LinkedEdge& rightPred, LinkedEdge& rightSucc) {
-  faceToSplit.data ().increaseDepth ();
-  LinkedFace* newLeft = mesh.addFace (WingedFace (0,faceToSplit.data ().depth ()));
+  LinkedFace* newLeft = mesh.addFace (WingedFace (0));
 
   newLeft   ->data ().setEdge             (&splitAlong);
   faceToSplit.data ().setEdge             (&splitAlong);
@@ -73,20 +72,22 @@ void AdaptiveMesh :: splitFace (WingedMesh& mesh, LinkedFace& face) {
 
 void AdaptiveMesh :: splitFaceRegular (WingedMesh& mesh, LinkedFace& face) {
   LinkedEdge& edge = face.data().longestEdge(mesh);
-  AdaptiveMesh :: equalizeFaces (mesh, edge);
+  AdaptiveMesh :: equalizeFaces (mesh, face, edge);
   AdaptiveMesh :: splitEdge     (mesh, edge);
 }
 
-void AdaptiveMesh :: equalizeFaces (WingedMesh& mesh, LinkedEdge& linkedEdge) {
-  WingedEdge& edge    = linkedEdge.data ();
+void AdaptiveMesh :: equalizeFaces ( WingedMesh& mesh
+                                   , LinkedFace& linkedFace
+                                   , LinkedEdge& linkedEdge
+                                   ) {
+  WingedEdge& edge      = linkedEdge.data ();
+  WingedFace& face      = linkedFace.data ();
 
-  if (  edge.leftFace () == 0 || edge.rightFace () == 0
-     || edge.leftFace ()->data ().depth () == edge.rightFace ()->data ().depth ())
+  LinkedFace* otherLinkedFace = edge.otherFace (face);
+  LinkedEdge& otherLinkedEdge = otherLinkedFace->data ().longestEdge (mesh);
+
+  if (&linkedEdge == &otherLinkedEdge)
     return;
-  else if (edge.leftFace ()->data ().depth () < edge.rightFace ()->data ().depth ()) 
-    splitFaceRegular (mesh, *edge.leftFace ());
-  else 
-    splitFaceRegular (mesh, *edge.rightFace ());
-
-  equalizeFaces (mesh, linkedEdge);
+  splitFaceRegular (mesh, *otherLinkedFace);
+  equalizeFaces    (mesh, linkedFace, linkedEdge);
 }

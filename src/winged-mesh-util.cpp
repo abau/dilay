@@ -4,6 +4,7 @@
 
 void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
   std::cout << "Number of vertices: " << mesh.numVertices () << std::endl;
+  std::cout << "Number of winged vertices: " << mesh.numWingedVertices () << std::endl;
   std::cout << "Number of edges: "    << mesh.numEdges ()    << std::endl;
   std::cout << "Number of faces: "    << mesh.numFaces ()    << std::endl;
 
@@ -39,7 +40,6 @@ void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
     const WingedFace& f = fIt.data ();
 
     std::cout << "Face "  << f.id () 
-      << "\n\tdepth:\t\t" << f.depth () 
       << std::endl;
     fIt.next ();
   }
@@ -57,4 +57,16 @@ MaybePtr <LinkedEdge> WingedMeshUtil :: findEdge ( WingedMesh&  mesh
     eIt.next ();
   }
   return MaybePtr <LinkedEdge> :: nothing ();
+}
+
+MaybePtr <LinkedVertex> WingedMeshUtil :: findVertex ( WingedMesh&  mesh
+                                                     , unsigned int vertex) {
+  VertexIterator vIt = mesh.vertexIterator ();
+  while (vIt.hasElement ()) {
+    if (vIt.data ().index () == vertex) { 
+      return MaybePtr <LinkedVertex> (vIt.linkedElement ());
+    }
+    vIt.next ();
+  }
+  return MaybePtr <LinkedVertex> :: nothing ();
 }

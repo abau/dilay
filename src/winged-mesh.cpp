@@ -1,13 +1,12 @@
 #include <limits>
 #include "winged-mesh.hpp"
 #include "winged-mesh-util.hpp"
-#include "depth.hpp"
 
 void WingedMesh :: addIndex (unsigned int index) {
   this->mesh.addIndex (index);
 }
 
-LinkedVertex* WingedMesh :: addVertex ( const glm::vec3& v, LinkedEdge* e) {
+LinkedVertex* WingedMesh :: addVertex (const glm::vec3& v, LinkedEdge* e) {
   unsigned int index = this->mesh.addVertex (v);
   return this->vertices.insertBack (WingedVertex (index, e));
 }
@@ -41,6 +40,10 @@ FaceConstIterator WingedMesh :: faceIterator () const {
 }
 
 unsigned int WingedMesh :: numVertices () const { 
+  return this->mesh.numVertices (); 
+}
+
+unsigned int WingedMesh :: numWingedVertices () const { 
   return this->vertices.numElements (); 
 }
 
@@ -72,12 +75,16 @@ void WingedMesh :: fromMesh (const Mesh& m) {
   this->reset ();
   this->mesh = m;
 
+  for (unsigned int i = 0; i < m.numVertices (); i++) {
+    this->vertices.insertBack (WingedVertex (i, 0));
+  }
+
   for (unsigned int i = 0; i < m.numIndices (); i += 3) {
     unsigned int index1 = m.index (i + 0);
     unsigned int index2 = m.index (i + 1);
     unsigned int index3 = m.index (i + 2);
 
-    LinkedFace*  f      = this->addFace (WingedFace (0,Depth :: null ()));
+    LinkedFace*  f      = this->addFace (WingedFace (0));
     LinkedEdge*  e1     = this->findOrAddEdge (index1, index2, f);
     LinkedEdge*  e2     = this->findOrAddEdge (index2, index3, f);
     LinkedEdge*  e3     = this->findOrAddEdge (index3, index1, f);
@@ -121,9 +128,9 @@ void WingedMesh :: addIndices () {
   }
 }
 
-LinkedEdge* WingedMesh :: findOrAddEdge  ( unsigned int index1, unsigned int index2
+LinkedEdge* WingedMesh :: findOrAddEdge  ( unsigned int index1
+                                         , unsigned int index2
                                          , LinkedFace* face) {
-
   LinkedEdge*  e     = 0;
   MaybePtr <LinkedEdge> findEdge = WingedMeshUtil :: findEdge (*this, index2, index1);
   if (findEdge.isDefined ()) {
@@ -131,8 +138,12 @@ LinkedEdge* WingedMesh :: findOrAddEdge  ( unsigned int index1, unsigned int ind
     e->data ().setRightFace (face);
   }
   else {
-    LinkedVertex* v1 = this->vertices.insertBack (WingedVertex (index1, 0));
-    LinkedVertex* v2 = this->vertices.insertBack (WingedVertex (index2, 0));
+    MaybePtr <LinkedVertex> mV1 = WingedMeshUtil :: findVertex (*this, index1);
+    MaybePtr <LinkedVertex> mV2 = WingedMeshUtil :: findVertex (*this, index2);
+    assert (mV1.isDefined () && mV2.isDefined ());
+
+    LinkedVertex* v1 = mV1.ptr ();
+    LinkedVertex* v2 = mV2.ptr ();
                   e  = this->addEdge (WingedEdge (v1, v2, face, 0, 0, 0, 0, 0 ));
     v1->data ().setEdge     (e);
     v2->data ().setEdge     (e);
