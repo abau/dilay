@@ -14,38 +14,38 @@ class WingedEdge {
 
     IdType              id               () const { return this->_id.get (); }
 
-    LinkedVertex*       vertex1          ()       { return this->_vertex1; }
-    LinkedVertex*       vertex2          ()       { return this->_vertex2; }
-    LinkedFace*         leftFace         ()       { return this->_leftFace; }
-    LinkedFace*         rightFace        ()       { return this->_rightFace; }
-    LinkedEdge*         leftPredecessor  ()       { return this->_leftPredecessor; }
-    LinkedEdge*         leftSuccessor    ()       { return this->_leftSuccessor; }
-    LinkedEdge*         rightPredecessor ()       { return this->_rightPredecessor; }
-    LinkedEdge*         rightSuccessor   ()       { return this->_rightSuccessor; }
+          LinkedVertex* vertex1          ()       { return this->_vertex1; }
+          LinkedVertex* vertex2          ()       { return this->_vertex2; }
+          LinkedFace*   leftFace         ()       { return this->_leftFace; }
+          LinkedFace*   rightFace        ()       { return this->_rightFace; }
+          LinkedEdge*   leftPredecessor  ()       { return this->_leftPredecessor; }
+          LinkedEdge*   leftSuccessor    ()       { return this->_leftSuccessor; }
+          LinkedEdge*   rightPredecessor ()       { return this->_rightPredecessor; }
+          LinkedEdge*   rightSuccessor   ()       { return this->_rightSuccessor; }
 
-    CONST0(LinkedVertex*, vertex1)
-    CONST0(LinkedVertex*, vertex2)
-    CONST0(LinkedFace*  , leftFace)
-    CONST0(LinkedFace*  , rightFace)
-    CONST0(LinkedEdge*  , leftPredecessor)
-    CONST0(LinkedEdge*  , leftSuccessor)
-    CONST0(LinkedEdge*  , rightPredecessor)
-    CONST0(LinkedEdge*  , rightSuccessor)
+    const LinkedVertex* vertex1          () const { return this->_vertex1; }
+    const LinkedVertex* vertex2          () const { return this->_vertex2; }
+    const LinkedFace*   leftFace         () const { return this->_leftFace; }
+    const LinkedFace*   rightFace        () const { return this->_rightFace; }
+    const LinkedEdge*   leftPredecessor  () const { return this->_leftPredecessor; }
+    const LinkedEdge*   leftSuccessor    () const { return this->_leftSuccessor; }
+    const LinkedEdge*   rightPredecessor () const { return this->_rightPredecessor; }
+    const LinkedEdge*   rightSuccessor   () const { return this->_rightSuccessor; }
 
     bool                isLeftFace          (const WingedFace&) const;
     bool                isRightFace         (const WingedFace&) const;
 
-    LinkedVertex*       firstVertex         (const WingedFace&);
-    LinkedVertex*       secondVertex        (const WingedFace&);
-    LinkedEdge*         predecessor         (const WingedFace&);
-    LinkedEdge*         successor           (const WingedFace&);
-    LinkedFace*         otherFace           (const WingedFace&);
+          LinkedVertex* firstVertex         (const WingedFace&);
+          LinkedVertex* secondVertex        (const WingedFace&);
+          LinkedEdge*   predecessor         (const WingedFace&);
+          LinkedEdge*   successor           (const WingedFace&);
+          LinkedFace*   otherFace           (const WingedFace&);
 
-    CONST1(LinkedVertex*, firstVertex , const WingedFace&, f) 
-    CONST1(LinkedVertex*, secondVertex, const WingedFace&, f)
-    CONST1(LinkedEdge*  , predecessor , const WingedFace&, f)
-    CONST1(LinkedEdge*  , successor   , const WingedFace&, f)
-    CONST1(LinkedFace*  , otherFace   , const WingedFace&, f)
+    const LinkedVertex* firstVertex         (const WingedFace&) const;
+    const LinkedVertex* secondVertex        (const WingedFace&) const;
+    const LinkedEdge*   predecessor         (const WingedFace&) const;
+    const LinkedEdge*   successor           (const WingedFace&) const;
+    const LinkedFace*   otherFace           (const WingedFace&) const;
 
     void                setVertex1          (LinkedVertex*);
     void                setVertex2          (LinkedVertex*);
