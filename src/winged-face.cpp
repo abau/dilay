@@ -46,8 +46,9 @@ LinkedEdge& WingedFace :: longestEdge (const WingedMesh& mesh) {
 }
 
 glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
-  glm::vec3 v1 = this->_edge->data ().vector (mesh);
-  glm::vec3 v2 = this->_edge->data ().successor (*this)->data ().vector (mesh);
+  glm::vec3 v1 = this->_edge->data ().vertex (*this,0)->data ().vertex (mesh);
+  glm::vec3 v2 = this->_edge->data ().vertex (*this,1)->data ().vertex (mesh);
+  glm::vec3 v3 = this->_edge->data ().vertex (*this,2)->data ().vertex (mesh);
 
-  return glm::normalize (glm::cross (v1,v2));
+  return glm::normalize (glm::cross (v2-v1, v3-v2));
 }

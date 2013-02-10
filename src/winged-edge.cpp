@@ -34,6 +34,19 @@ bool WingedEdge :: isRightFace (const WingedFace& face) const {
   return ! this->isLeftFace (face); 
 }
 
+bool WingedEdge :: isVertex1 (const WingedVertex& vertex) const {
+  if (this->_vertex1 != 0 && &vertex == &this->_vertex1->data ())
+    return true;
+  else if (this->_vertex2 != 0 && &vertex == &this->_vertex2->data ())
+    return false;
+  else
+    assert (false);
+}
+
+bool WingedEdge :: isVertex2 (const WingedVertex& vertex) const { 
+  return ! this->isVertex1 (vertex);
+}
+
 LinkedVertex* WingedEdge :: firstVertex (const WingedFace& face) {
   return this->isLeftFace (face) ? this->vertex1 () : this->vertex2 (); }
 
@@ -100,9 +113,7 @@ LinkedEdge* WingedEdge :: successor (const WingedFace& face, unsigned int index)
   else            return this->successor (face)->data ().successor (face,index-1);
 }
 
-glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
-  glm::vec3 v1 = this->vertex1 ()->data ().vertex (mesh);
-  glm::vec3 v2 = this->vertex2 ()->data ().vertex (mesh);
-  return v2 - v1;
+LinkedVertex* WingedEdge :: vertex (const WingedFace& face, unsigned int index) {
+  if (index == 0) return this->firstVertex (face);
+  else            return this->successor (face)->data ().vertex (face,index-1);
 }
-

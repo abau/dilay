@@ -17,9 +17,10 @@ void GLWidget :: initializeGL () {
   OpenGL :: initialize ();
 
   this->_axis.initialize ();
-  //State :: global ().setMesh (Mesh :: sphere (1.0f,3,3));
+  //State :: global ().setMesh (Mesh :: sphere (1.0f,30,30));
   State :: global ().setMesh (Mesh :: cube (1.0f));
   State :: global ().mesh ().bufferData ();
+
 }
 
 void GLWidget :: paintGL () {

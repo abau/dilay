@@ -18,12 +18,13 @@ class WingedVertex {
     void                   setEdge       (LinkedElement <WingedEdge>*);
     void                   addIndex      (WingedMesh&);
     glm::vec3              vertex        (const WingedMesh&) const;
+    std::set <WingedEdge*> adjacentEdges () const;
     std::set <WingedFace*> adjacentFaces () const;
     glm::vec3              normal        (const WingedMesh&) const;
 
   private:
     const unsigned int           _index;
-    LinkedElement <WingedEdge>*  edge;
+    LinkedElement <WingedEdge>*  _edge;
 };
 
 #endif
