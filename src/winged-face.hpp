@@ -19,6 +19,7 @@ class WingedFace {
     void        addIndices    (WingedMesh&);
     Triangle    triangle      (const WingedMesh&) const;
     LinkedEdge& longestEdge   (const WingedMesh&);
+    glm::vec3   normal        (const WingedMesh&) const;
 
   private:
     const Id    _id;

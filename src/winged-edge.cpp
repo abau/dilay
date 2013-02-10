@@ -99,3 +99,10 @@ LinkedEdge* WingedEdge :: successor (const WingedFace& face, unsigned int index)
   if (index == 0) return this->successor (face);
   else            return this->successor (face)->data ().successor (face,index-1);
 }
+
+glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
+  glm::vec3 v1 = this->vertex1 ()->data ().vertex (mesh);
+  glm::vec3 v2 = this->vertex2 ()->data ().vertex (mesh);
+  return v2 - v1;
+}
+

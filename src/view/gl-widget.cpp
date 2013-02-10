@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include <QApplication>
 #include "gl-widget.hpp"
 #include "opengl.hpp"
@@ -16,16 +15,17 @@ GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
 void GLWidget :: initializeGL () {
   OpenGL :: initialize ();
-  State  :: global ().setMesh( Mesh :: sphere (1.0f,3,3) );
-  //State  :: global ().setMesh( Mesh :: cube (1.0f) );
-  State  :: global ().mesh ().bufferData ();
+
+  this->_axis.initialize ();
+  //State :: global ().setMesh (Mesh :: sphere (1.0f,3,3));
+  State :: global ().setMesh (Mesh :: cube (1.0f));
+  State :: global ().mesh ().bufferData ();
 }
 
 void GLWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  OpenGL :: setDefaultProgram ();
-
-  State :: global ().mesh ().render ();
+  State :: global ().render ();
+  this->_axis.render ();
 }
 
 void GLWidget :: resizeGL (int w, int h) {

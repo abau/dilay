@@ -74,11 +74,11 @@ void WingedMesh :: reset () {
 void WingedMesh :: fromMesh (const Mesh& m) {
   this->reset ();
   this->mesh = m;
-
+  // Vertices
   for (unsigned int i = 0; i < m.numVertices (); i++) {
     this->vertices.insertBack (WingedVertex (i, 0));
   }
-
+  // Indices
   for (unsigned int i = 0; i < m.numIndices (); i += 3) {
     unsigned int index1 = m.index (i + 0);
     unsigned int index2 = m.index (i + 1);
@@ -96,13 +96,17 @@ void WingedMesh :: fromMesh (const Mesh& m) {
     e3->data ().setPredecessor (f->data (),e2);
     e3->data ().setSuccessor   (f->data (),e1);
   }
+  // Normals
+  for ( VertexIterator it = this->vertices.frontIterator ()
+      ; it.hasElement (); it.next ()) {
+    this->mesh.addNormal (it.data ().normal (*this));
+  }
 }
 
 Maybe <FaceIntersection> WingedMesh :: intersectRay (const Ray& ray) {
   FaceIterator it                       = this->faceIterator ();
   Maybe <FaceIntersection> intersection = Maybe <FaceIntersection> :: nothing ();
   float                    minDistance  = std :: numeric_limits <float> :: max ();
-
 
   while (it.hasElement ()) {
     Maybe <glm::vec3> i = it.data ().triangle (*this).intersectRay (ray); 

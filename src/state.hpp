@@ -17,9 +17,10 @@ class State {
     const Camera&     camera       () const        { return this->_camera; }       
 
     void              initialize   ();
+    void              render       ();
     void              setMesh      (const Mesh& m) { this->_mesh.fromMesh (m); }
   private:
-    WingedMesh  _mesh;
-    Camera      _camera;
+    WingedMesh        _mesh;
+    Camera            _camera;
 };
 #endif

@@ -11,3 +11,7 @@ State& State :: global () {
 void State :: initialize () { 
   this->_camera.initialize ();
 }
+
+void State :: render () {
+  this->_mesh.render ();
+}

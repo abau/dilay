@@ -3,16 +3,17 @@
 #include <iostream>
 #include <stdexcept>
 #include "opengl.hpp"
+#include "util.hpp"
 
-GLuint  OpenGL :: _mvpId       = -1;
-GLuint  OpenGL :: _programId   = -1;
-GLuint  OpenGL :: _colorId     = -1;
+GLuint  OpenGL :: _programIds [] = {GLuint (-1), GLuint (-1)};
+GLuint  OpenGL :: _mvpId         = -1;
+GLuint  OpenGL :: _colorId       = -1;
 
 void OpenGL :: initialize () {
   static bool isInitialized = false;
 
   if ( ! isInitialized ) {
-    std::cout << "Initializing OpenGL\n";
+    std::cout << "Initializing OpenGL... ";
     GLenum err = glewInit ();
     if (err  != GLEW_OK ) {
       std::string e1 = std::string ("Error while initializing glew: ");
@@ -23,49 +24,25 @@ void OpenGL :: initialize () {
     glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
     glDepthFunc (GL_LEQUAL); 
 
-    OpenGL :: enableCulling   ();
-    OpenGL :: enableDepthTest ();
-    OpenGL :: loadShaders     ("shader/vertex.shader", "shader/fragment.shader" );
+    glEnable  (GL_CULL_FACE);
+    glEnable  (GL_DEPTH_TEST); 
 
+    OpenGL :: _programIds [RenderSolid] = 
+      OpenGL :: loadShaders ( "shader/light-vertex.shader"
+                            , "shader/light-fragment.shader" 
+                            );
+    OpenGL :: _programIds [RenderWireframe] = 
+      OpenGL :: loadShaders ( "shader/simple-vertex.shader"
+                            , "shader/simple-fragment.shader" 
+                            );
     isInitialized = true;
+    std::cout << "done" << std::endl;
   }
 }
 
 void OpenGL :: shutdown () {
-  OpenGL :: releaseProgram ();
-}
-
-void OpenGL :: loadShaders ( const char* vertexShader, const char* fragmentShader) {
-  OpenGL :: releaseProgram ();
-
-  Maybe <GLuint> vsId = OpenGL :: compileShader (GL_VERTEX_SHADER, vertexShader);
-  Maybe <GLuint> fsId = OpenGL :: compileShader (GL_FRAGMENT_SHADER, fragmentShader);
-
-  if (vsId.isDefined () && fsId.isDefined ()) {
-
-    GLuint programId = glCreateProgram();
-    glAttachShader (programId, vsId.data ());
-    glAttachShader (programId, fsId.data ());
-    glLinkProgram  (programId);
-
-    GLint status;
-    glGetProgramiv(programId, GL_LINK_STATUS, &status);
-
-    glDeleteShader(vsId.data ());
-    glDeleteShader(fsId.data ());
-
-    if (status == GL_TRUE) {
-      OpenGL :: _programId = programId;
-      OpenGL :: _mvpId     = glGetUniformLocation (programId, "mvp");
-      OpenGL :: _colorId   = glGetUniformLocation (programId, "color");
-      return;
-    }
-    OpenGL :: showInfoLog (programId, "");
-  }
-  else if (vsId.isDefined ()) glDeleteShader(vsId.data ());
-  else if (fsId.isDefined ()) glDeleteShader(fsId.data ());
-
-  throw (std::runtime_error ("Can not load shaders: see info log above"));
+  for (int rm = 0; rm < RenderModeUtil :: numRenderModes; rm++)
+    OpenGL :: releaseProgram (rm);
 }
 
 void OpenGL :: setColor (float r, float g, float b, float a) {
@@ -80,24 +57,65 @@ void OpenGL :: setMvp (const GLfloat* mvp) {
   glUniformMatrix4fv (OpenGL :: _mvpId, 1, GL_FALSE, mvp);
 }
 
-
-void OpenGL :: setDefaultProgram  () {
-  glUseProgram(OpenGL :: _programId);
+void OpenGL :: setProgram (RenderMode renderMode) {
+  GLuint programId = OpenGL :: _programIds [renderMode];
+  glUseProgram (programId);
+  OpenGL :: _mvpId   = glGetUniformLocation (programId, "mvp");
+  OpenGL :: _colorId = glGetUniformLocation (programId, "color");
 }
 
-void OpenGL :: showInfoLog (GLuint id, const char* filePath) {
-  GLsizei infoLogLength;
-  glGetShaderiv(id, GL_INFO_LOG_LENGTH, &infoLogLength);
-
-  if (infoLogLength > 0) {
-    GLchar* infoLog = new char[infoLogLength];
-    glGetShaderInfoLog(id, infoLogLength, NULL, infoLog);
-    std::cout << filePath << std::endl << infoLog << std::endl;
-    delete[] (infoLog);
+void OpenGL :: safeDeleteArray (GLuint& id) {
+  if (glIsVertexArray (id) == GL_TRUE) {
+    glDeleteVertexArrays (1,&id);
+    id = 0;
   }
 }
 
-Maybe <GLuint> OpenGL :: compileShader (GLenum shaderType, const char* filePath) {
+void OpenGL :: safeDeleteBuffer (GLuint& id) {
+  if (glIsBuffer (id) == GL_TRUE) {
+    glDeleteBuffers (1,&id);
+    id = 0;
+  }
+}
+
+void OpenGL :: showInfoLog (GLuint id, const char* filePath) {
+  const int maxLogLength = 1000;
+  char      logBuffer[maxLogLength];
+  GLsizei   logLength;
+  glGetShaderInfoLog(id, maxLogLength, &logLength, logBuffer);
+  if (logLength > 0)
+    std::cout << filePath << ": " << logBuffer << std::endl;
+}
+
+GLuint OpenGL :: loadShaders (const char* vertexShader, const char* fragmentShader) {
+  GLuint vsId = OpenGL :: compileShader (GL_VERTEX_SHADER, vertexShader);
+  GLuint fsId = OpenGL :: compileShader (GL_FRAGMENT_SHADER, fragmentShader);
+
+  GLuint programId = glCreateProgram();
+  glAttachShader (programId, vsId);
+  glAttachShader (programId, fsId);
+
+  glBindAttribLocation (programId, OpenGL :: PositionIndex, "position");
+  glBindAttribLocation (programId, OpenGL :: NormalIndex,   "normal");
+
+  glLinkProgram (programId);
+
+  GLint status;
+  glGetProgramiv(programId, GL_LINK_STATUS, &status);
+
+  glDeleteShader(vsId);
+  glDeleteShader(fsId);
+
+  if (status == GL_FALSE) {
+    OpenGL :: showInfoLog (programId, "");
+    glDeleteShader(vsId);
+    glDeleteShader(fsId);
+    throw (std::runtime_error ("Can not link shader shader program: see info log above"));
+  }
+  return programId;
+}
+
+GLuint OpenGL :: compileShader (GLenum shaderType, const char* filePath) {
   GLuint       shaderId   = glCreateShader(shaderType);
   std::string  shaderCode = Util :: readFile (filePath);
   const char* code[1]    = { shaderCode.c_str () };
@@ -108,14 +126,13 @@ Maybe <GLuint> OpenGL :: compileShader (GLenum shaderType, const char* filePath)
   glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
   if (status == GL_FALSE) {
     OpenGL :: showInfoLog (shaderId, filePath);
-    return Maybe <GLuint> :: nothing ();
+    throw (std::runtime_error ("Can not compile shader: see info log above"));
   }
-  return Maybe <GLuint> (shaderId);
+  return shaderId;
 }
 
-void OpenGL :: releaseProgram () {
-  if (glIsProgram (_programId) == GL_TRUE) {
-    glDeleteProgram (_programId);
-    OpenGL :: _programId = -1;
+void OpenGL :: releaseProgram (GLuint id) {
+  if (glIsProgram (id) == GL_TRUE) {
+    glDeleteProgram (id);
   }
 }

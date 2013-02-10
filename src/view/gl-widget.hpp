@@ -1,6 +1,8 @@
+#include <GL/glew.h>
 #include <QGLWidget>
 #include <QMouseEvent>
 #include "view/mouse-movement.hpp"
+#include "axis.hpp"
 
 #ifndef VIEW_GL_WIDGET
 #define VIEW_GL_WIDGET
@@ -24,6 +26,7 @@ class GLWidget : public QGLWidget {
 
   private:
     MouseMovement _mouseMovement;
+    Axis          _axis;
 };
 
 #endif

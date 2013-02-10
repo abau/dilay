@@ -15,14 +15,17 @@ class Mesh {
 
     unsigned int numVertices      () const;
     unsigned int numIndices       () const;
+    unsigned int numNormals       () const;
     unsigned int sizeOfVertices   () const;
     unsigned int sizeOfIndices    () const;
+    unsigned int sizeOfNormals    () const;
     glm::vec3    vertex           (unsigned int) const;
     unsigned int index            (unsigned int) const;
     void         addIndex         (unsigned int);
     unsigned int addVertex        (GLfloat, GLfloat, GLfloat);
     unsigned int addVertex        (const glm::vec3&);
-    unsigned int addVertex        (const glm::vec3&, unsigned int);
+    unsigned int addNormal        (GLfloat, GLfloat, GLfloat);
+    unsigned int addNormal        (const glm::vec3&);
     void         clearIndices     ();
 
     void         bufferData       ();
@@ -41,17 +44,18 @@ class Mesh {
     static Mesh  sphere           (float,int,int);
 
   private: // cf. copy-constructor, operator=
-    glm::mat4                    modelMatrix;
-    std::vector<   GLfloat   >   vertices;
-    std::vector< unsigned int>   indices;
+    glm::mat4                     modelMatrix;
+    std::vector<   GLfloat   >    vertices;
+    std::vector< unsigned int>    indices;
+    std::vector<   GLfloat   >    normals;
+    bool                          hasNormals;
 
-    GLuint                       arrayObjectId; 
-    GLuint                       vertexBufferId;
-    GLuint                       indexBufferId;
+    GLuint                        arrayObjectId; 
+    GLuint                        vertexBufferId;
+    GLuint                        indexBufferId;
+    GLuint                        normalBufferId;
 
-    RenderMode                   renderMode;
-
-    static const GLuint          vertexArrayIndex = 0;
+    RenderMode                    renderMode;
 };
 
 #endif 

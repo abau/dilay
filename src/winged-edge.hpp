@@ -63,6 +63,7 @@ class WingedEdge {
 
     float               lengthSqr           (const WingedMesh&) const;
     LinkedEdge*         successor           (const WingedFace&, unsigned int);
+    glm::vec3           vector              (const WingedMesh&) const;
 
   private:
     const Id      _id;

@@ -3,24 +3,25 @@
 #include "winged-mesh-util.hpp"
 
 void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
-  std::cout << "Number of vertices: " << mesh.numVertices () << std::endl;
+  std::cout << "Number of vertices: "        << mesh.numVertices () << std::endl;
   std::cout << "Number of winged vertices: " << mesh.numWingedVertices () << std::endl;
-  std::cout << "Number of edges: "    << mesh.numEdges ()    << std::endl;
-  std::cout << "Number of faces: "    << mesh.numFaces ()    << std::endl;
+  std::cout << "Number of edges: "           << mesh.numEdges ()    << std::endl;
+  std::cout << "Number of faces: "           << mesh.numFaces ()    << std::endl;
 
-  VertexConstIterator vIt = mesh.vertexIterator ();
-  while (vIt.hasElement ()) {
-    glm::vec3 v = mesh.vertex (vIt.data ().index ());
+  for ( VertexConstIterator it = mesh.vertexIterator ()
+      ; it.hasElement (); it.next ()) {
+    glm::vec3 v = mesh.vertex (it.data ().index ());
+    glm::vec3 n = it.data ().normal (mesh);
 
-    std::cout << "Vertex " << vIt.data ().index () 
-      << "\n\tposition: " << v.x << " " << v.y << " " << v.z  
-      << std::endl;
-    vIt.next ();
+    std::cout << "Vertex " << it.data ().index () 
+              << "\n\tposition: " << Util :: toString (v)
+              << "\n\tnormal: "   << Util :: toString (n)
+              << std::endl;
   }
 
-  EdgeConstIterator eIt = mesh.edgeIterator ();
-  while (eIt.hasElement ()) {
-    const WingedEdge& e = eIt.data ();
+  for ( EdgeConstIterator it = mesh.edgeIterator ()
+      ; it.hasElement (); it.next ()) {
+    const WingedEdge& e = it.data ();
 
     std::cout << "Edge " << e.id () 
       << "\n\tvertex 1:\t\t"        << STRING_INDEX(e.vertex1 ()) 
@@ -32,16 +33,15 @@ void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
       << "\n\tright predecessor:\t" << STRING_ID(e.rightPredecessor ())   
       <<   "\tright successor:\t"   << STRING_ID(e.rightSuccessor ())   
       << std::endl;
-    eIt.next ();
   }
 
-  FaceConstIterator fIt = mesh.faceIterator ();
-  while (fIt.hasElement ()) {
-    const WingedFace& f = fIt.data ();
+  for ( FaceConstIterator it = mesh.faceIterator ()
+      ; it.hasElement (); it.next ()) {
+    glm::vec3 n = it.data ().normal (mesh);
 
-    std::cout << "Face "  << f.id () 
-      << std::endl;
-    fIt.next ();
+    std::cout << "Face "        << it.data ().id () 
+              << "\n\tnormal: " << Util :: toString (n)
+              << std::endl;
   }
 }
 

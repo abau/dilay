@@ -1,31 +1,33 @@
-#include "maybe.hpp"
+#include "rendermode.hpp"
 
 #ifndef OPENGL
 #define OPENGL
 
 class OpenGL {
   public:
-    static void initialize         ();
-    static void shutdown           ();
-    static void loadShaders        (const char*, const char*);
-    static void setColor           (float,float,float,float);
-    static void setColor           (float,float,float);
-    static void setMvp             (const GLfloat*);
-    static void setDefaultProgram  ();
+    enum VertexAttributIndex { PositionIndex = 0
+                             , NormalIndex   = 1
+                             };
 
-    static void   enableCulling    () { glEnable  (GL_CULL_FACE); }
-    static void   disableCulling   () { glDisable (GL_CULL_FACE); }
-    static void   enableDepthTest  () { glEnable  (GL_DEPTH_TEST); }
-    static void   disableDepthTest () { glDisable (GL_DEPTH_TEST); }
+    static void initialize       ();
+    static void shutdown         ();
+    static void setColor         (float,float,float,float);
+    static void setColor         (float,float,float);
+    static void setMvp           (const GLfloat*);
+    static void setProgram       (RenderMode);
+
+    static void safeDeleteArray  (GLuint&);
+    static void safeDeleteBuffer (GLuint&);
 
   private:
-    static GLuint _programId;
+    static GLuint _programIds [RenderModeUtil :: numRenderModes];
     static GLuint _mvpId;
     static GLuint _colorId;
 
-    static void           showInfoLog    (GLuint, const char*);
-    static Maybe <GLuint> compileShader  (GLenum, const char*);
-    static void           releaseProgram ();
+    static void   showInfoLog    (GLuint, const char*);
+    static GLuint loadShaders    (const char*, const char*);
+    static GLuint compileShader  (GLenum, const char*);
+    static void   releaseProgram (GLuint);
 };
 
 #endif

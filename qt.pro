@@ -13,6 +13,7 @@ MOC_DIR     =  moc
 OBJECTS_DIR =  obj
 
 SOURCES += src/adaptive-mesh.cpp \
+           src/axis.cpp \
            src/camera.cpp \
            src/cursor/sphere.cpp \
            src/id.cpp \
@@ -32,6 +33,7 @@ SOURCES += src/adaptive-mesh.cpp \
            src/winged-vertex.cpp
 
 HEADERS += src/adaptive-mesh.hpp \
+           src/axis.hpp \
            src/camera.hpp \
            src/cursor/sphere.hpp \
            src/id.hpp \
