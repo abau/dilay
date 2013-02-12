@@ -105,6 +105,10 @@ unsigned int Mesh :: addNormal (const glm::vec3& v) {
 }
 
 void Mesh :: clearIndices () { this->indices.clear (); }
+void Mesh :: clearNormals () { 
+  this->normals.clear (); 
+  this->hasNormals = false;
+}
 
 void Mesh :: bufferData () {
   if (this->arrayObjectId == 0)
@@ -181,8 +185,8 @@ void Mesh :: renderEnd () {
 
 void Mesh :: reset () {
   this->vertices.clear ();
-  this->indices .clear ();
-  this->normals .clear ();
+  this->clearIndices ();
+  this->clearNormals ();
 }
 
 void Mesh :: toggleRenderMode () {

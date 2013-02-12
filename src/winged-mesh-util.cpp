@@ -15,6 +15,7 @@ void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
 
     std::cout << "Vertex " << it.data ().index () 
               << "\n\tposition: " << Util :: toString (v)
+              << "\n\tedge: " << STRING_ID(it.data ().edge ())
               << "\n\tnormal: "   << Util :: toString (n)
               << std::endl;
   }
@@ -39,7 +40,8 @@ void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
       ; it.hasElement (); it.next ()) {
     glm::vec3 n = it.data ().normal (mesh);
 
-    std::cout << "Face "        << it.data ().id () 
+    std::cout << "Face "         << it.data ().id () 
+              << "\n\tedge:\t\t" << STRING_ID(it.data().edge())
               << "\n\tnormal: " << Util :: toString (n)
               << std::endl;
   }

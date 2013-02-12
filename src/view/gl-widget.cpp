@@ -17,8 +17,8 @@ void GLWidget :: initializeGL () {
   OpenGL :: initialize ();
 
   this->_axis.initialize ();
-  //State :: global ().setMesh (Mesh :: sphere (1.0f,30,30));
-  State :: global ().setMesh (Mesh :: cube (1.0f));
+  State :: global ().setMesh (Mesh :: sphere (1.0f,30,30));
+  //State :: global ().setMesh (Mesh :: cube (1.0f));
   State :: global ().mesh ().bufferData ();
 
 }
@@ -68,6 +68,7 @@ void GLWidget :: mousePressEvent (QMouseEvent* e) {
     if (i.isDefined ()) {
       AdaptiveMesh :: splitFaceRegular (State :: global ().mesh (),i.data().face());
       State :: global ().mesh ().rebuildIndices ();
+      State :: global ().mesh ().rebuildNormals ();
       State :: global ().mesh ().bufferData ();
       this->update ();
     }

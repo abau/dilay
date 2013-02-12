@@ -14,6 +14,7 @@ class WingedFace {
 
     IdType      id            () const { return this->_id.get (); }
     LinkedEdge* edge          ()       { return this->_edge; }
+    const LinkedEdge* edge          () const { return this->_edge; }
 
     void        setEdge       (LinkedElement <WingedEdge>*);
     void        addIndices    (WingedMesh&);

@@ -27,6 +27,7 @@ class Mesh {
     unsigned int addNormal        (GLfloat, GLfloat, GLfloat);
     unsigned int addNormal        (const glm::vec3&);
     void         clearIndices     ();
+    void         clearNormals     ();
 
     void         bufferData       ();
     void         renderBegin      ();

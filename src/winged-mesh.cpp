@@ -61,7 +61,16 @@ glm::vec3 WingedMesh :: vertex  (unsigned int index) const {
 
 void WingedMesh :: rebuildIndices () {
   this->mesh.clearIndices ();
-  this->addIndices ();
+  for ( FaceIterator it = this->faceIterator (); it.hasElement (); it.next ()) {
+    it.data ().addIndices (*this);
+  }
+}
+
+void WingedMesh :: rebuildNormals () {
+  this->mesh.clearNormals ();
+  for ( VertexIterator it = this->vertexIterator (); it.hasElement (); it.next ()) {
+    this->mesh.addNormal (it.data ().normal (*this));
+  }
 }
 
 void WingedMesh :: reset () {
@@ -78,7 +87,7 @@ void WingedMesh :: fromMesh (const Mesh& m) {
   for (unsigned int i = 0; i < m.numVertices (); i++) {
     this->vertices.insertBack (WingedVertex (i, 0));
   }
-  // Indices
+  // Faces & Edges
   for (unsigned int i = 0; i < m.numIndices (); i += 3) {
     unsigned int index1 = m.index (i + 0);
     unsigned int index2 = m.index (i + 1);
@@ -97,10 +106,7 @@ void WingedMesh :: fromMesh (const Mesh& m) {
     e3->data ().setSuccessor   (f->data (),e1);
   }
   // Normals
-  for ( VertexIterator it = this->vertices.frontIterator ()
-      ; it.hasElement (); it.next ()) {
-    this->mesh.addNormal (it.data ().normal (*this));
-  }
+  this->rebuildNormals ();
 }
 
 Maybe <FaceIntersection> WingedMesh :: intersectRay (const Ray& ray) {
@@ -122,14 +128,6 @@ Maybe <FaceIntersection> WingedMesh :: intersectRay (const Ray& ray) {
     it.next ();
   }
   return intersection;
-}
-
-void WingedMesh :: addIndices () {
-  FaceIterator it = this->faceIterator ();
-  while (it.hasElement ()) {
-    it.data ().addIndices (*this);
-    it.next ();
-  }
 }
 
 LinkedEdge* WingedMesh :: findOrAddEdge  ( unsigned int index1

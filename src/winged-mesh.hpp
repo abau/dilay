@@ -47,6 +47,7 @@ class WingedMesh {
     glm::vec3                vertex            (unsigned int) const;
 
     void                     rebuildIndices    ();
+    void                     rebuildNormals    ();
     void                     bufferData        () { this->mesh.bufferData (); }
     void                     renderBegin       () { this->mesh.renderBegin (); }
     void                     render            () { this->mesh.render (); }
@@ -59,7 +60,6 @@ class WingedMesh {
   private:
     PRIVATE_ASSIGNMENT_OP(WingedMesh)
 
-    void                     addIndices        ();
     LinkedEdge*              findOrAddEdge     (unsigned int,unsigned int,LinkedFace*);
 
     Mesh                     mesh;

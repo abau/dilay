@@ -1,37 +1,38 @@
 #include "adaptive-mesh.hpp"
 
-LinkedFace* splitFaceAlong ( WingedMesh& mesh, LinkedFace& faceToSplit
-                           , LinkedEdge& splitAlong
-                           , LinkedEdge& leftPred, LinkedEdge& leftSucc
-                           , LinkedEdge& rightPred, LinkedEdge& rightSucc) {
-  LinkedFace* newLeft = mesh.addFace (WingedFace (0));
+LinkedFace* splitFaceWith ( WingedMesh& mesh, LinkedFace& faceToSplit
+                          , LinkedEdge& leftPred, LinkedEdge& leftSucc
+                          , LinkedEdge& rightPred, LinkedEdge& rightSucc) {
 
-  newLeft   ->data ().setEdge             (&splitAlong);
-  faceToSplit.data ().setEdge             (&splitAlong);
+  LinkedEdge* splitAlong = mesh.addEdge (WingedEdge (0,0,0,0,0,0,0,0));
+  LinkedFace* newLeft    = mesh.addFace (WingedFace (0));
 
-  splitAlong .data ().setVertex1          (leftPred.data ().secondVertex (faceToSplit.data()));
-  splitAlong .data ().setVertex2          (leftSucc.data ().firstVertex  (faceToSplit.data()));
+  newLeft   ->data ().setEdge             (splitAlong);
+  faceToSplit.data ().setEdge             (splitAlong);
 
-  splitAlong .data ().setLeftFace         (newLeft);
-  splitAlong .data ().setRightFace        (&faceToSplit);
+  splitAlong->data ().setVertex1          (leftPred.data ().secondVertex (faceToSplit.data()));
+  splitAlong->data ().setVertex2          (leftSucc.data ().firstVertex  (faceToSplit.data()));
 
-  splitAlong .data ().setLeftPredecessor  (&leftPred);
-  splitAlong .data ().setLeftSuccessor    (&leftSucc);
-  splitAlong .data ().setRightPredecessor (&rightPred);
-  splitAlong .data ().setRightSuccessor   (&rightSucc);
+  splitAlong->data ().setLeftFace         (newLeft);
+  splitAlong->data ().setRightFace        (&faceToSplit);
+
+  splitAlong->data ().setLeftPredecessor  (&leftPred);
+  splitAlong->data ().setLeftSuccessor    (&leftSucc);
+  splitAlong->data ().setRightPredecessor (&rightPred);
+  splitAlong->data ().setRightSuccessor   (&rightSucc);
 
   leftPred   .data ().setFace             (faceToSplit.data (), newLeft);
   leftPred   .data ().setPredecessor      (newLeft->data ()   , &leftSucc);
-  leftPred   .data ().setSuccessor        (newLeft->data ()   , &splitAlong);
+  leftPred   .data ().setSuccessor        (newLeft->data ()   , splitAlong);
 
   leftSucc   .data ().setFace             (faceToSplit.data (), newLeft);
-  leftSucc   .data ().setPredecessor      (newLeft->data ()   , &splitAlong);
+  leftSucc   .data ().setPredecessor      (newLeft->data ()   , splitAlong);
   leftSucc   .data ().setSuccessor        (newLeft->data ()   , &leftPred);
 
   rightPred  .data ().setPredecessor      (faceToSplit.data (), &rightSucc);
-  rightPred  .data ().setSuccessor        (faceToSplit.data (), &splitAlong);
+  rightPred  .data ().setSuccessor        (faceToSplit.data (), splitAlong);
 
-  rightSucc  .data ().setPredecessor      (faceToSplit.data (), &splitAlong);
+  rightSucc  .data ().setPredecessor      (faceToSplit.data (), splitAlong);
   rightSucc  .data ().setSuccessor        (faceToSplit.data (), &rightPred);
 
   return newLeft;
@@ -48,21 +49,19 @@ void AdaptiveMesh :: splitEdge (WingedMesh& mesh, LinkedEdge& edgeToSplit) {
     , &edgeToSplit);
 
   e.setVertex1 (vNew);
-
   LinkedEdge* eNew   = mesh.addEdge (WingedEdge 
                                         ( v1, vNew
                                         , e.leftFace (), e.rightFace ()
-                                        , e.leftPredecessor (), 0
-                                        , e.rightPredecessor (), 0));
+                                        , e.leftPredecessor (), 0, 0, 0));
+  v1->data ().setEdge (eNew);
+
   if (e.leftFace () != 0) {
-    LinkedEdge* eLeft = mesh.addEdge (WingedEdge (0,0,0,0,0,0,0,0));
-    splitFaceAlong (mesh, *e.leftFace (), *eLeft, *eNew, *e.leftPredecessor ()
-                                                , *e.leftSuccessor (), edgeToSplit ); 
+    splitFaceWith (mesh, *e.leftFace (), *eNew              , *e.leftPredecessor ()
+                                       , *e.leftSuccessor (), edgeToSplit ); 
   }
   if (e.rightFace () != 0) {
-    LinkedEdge* eRight = mesh.addEdge (WingedEdge (0,0,0,0,0,0,0,0));
-    splitFaceAlong (mesh, *e.rightFace (), *eRight, edgeToSplit, *e.rightPredecessor ()
-                                                  , *e.rightSuccessor (), *eNew ); 
+    splitFaceWith (mesh, *e.rightFace (), edgeToSplit         , *e.rightPredecessor ()
+                                        , *e.rightSuccessor (), *eNew ); 
   }
 }
 
