@@ -13,8 +13,8 @@ class WingedVertex {
   public:
     WingedVertex (unsigned int, LinkedElement <WingedEdge>*);
 
-    unsigned int           index         () const { return this->_index; }
-    const LinkedElement <WingedEdge>* edge () const { return this->_edge;}
+    unsigned int                index () const { return this->_index; }
+    LinkedElement <WingedEdge>* edge  () const { return this->_edge;}
 
     void                   setEdge       (LinkedElement <WingedEdge>*);
     void                   addIndex      (WingedMesh&);

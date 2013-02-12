@@ -28,7 +28,7 @@ Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
       );
 }
 
-LinkedEdge& WingedFace :: longestEdge (const WingedMesh& mesh) {
+LinkedEdge& WingedFace :: longestEdge (const WingedMesh& mesh) const {
   LinkedEdge& e1 = *this->_edge->data ().successor (*this,0);
   LinkedEdge& e2 = *this->_edge->data ().successor (*this,1);
   LinkedEdge& e3 = *this->_edge->data ().successor (*this,2);
