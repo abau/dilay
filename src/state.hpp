@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "winged-mesh.hpp"
 #include "camera.hpp"
+#include "cursor-sphere.hpp"
 
 #ifndef STATE
 #define STATE
@@ -12,9 +13,8 @@ class State {
     static State&     global       ();
 
     WingedMesh&       mesh         ()              { return this->_mesh; }
-    const WingedMesh& mesh         () const        { return this->_mesh; }
     Camera&           camera       ()              { return this->_camera; }       
-    const Camera&     camera       () const        { return this->_camera; }       
+    CursorSphere&     cursor       ()              { return this->_cursor; }
 
     void              initialize   ();
     void              render       ();
@@ -22,5 +22,6 @@ class State {
   private:
     WingedMesh        _mesh;
     Camera            _camera;
+    CursorSphere      _cursor;
 };
 #endif

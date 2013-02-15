@@ -1,5 +1,5 @@
 #include <sstream>
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 #ifndef UTIL
 #define UTIL

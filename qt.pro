@@ -12,30 +12,29 @@ QT          += opengl
 MOC_DIR     =  moc
 OBJECTS_DIR =  obj
 
-SOURCES += src/adaptive-mesh.cpp \
-           src/axis.cpp \
+SOURCES += src/axis.cpp \
            src/camera.cpp \
-           src/cursor/sphere.cpp \
+           src/cursor-sphere.cpp \
            src/id.cpp \
            src/main.cpp \
            src/mesh.cpp \
            src/opengl.cpp \
            src/ray.cpp \
            src/state.cpp \
+           src/subdivision-util.cpp \
            src/triangle.cpp \
            src/util.cpp \
-           src/view/gl-widget.cpp \
-           src/view/mouse-movement.cpp \
+           src/view-gl-widget.cpp \
+           src/view-mouse-movement.cpp \
            src/winged-edge.cpp \
            src/winged-face.cpp \
            src/winged-mesh.cpp \
            src/winged-mesh-util.cpp \
            src/winged-vertex.cpp
 
-HEADERS += src/adaptive-mesh.hpp \
-           src/axis.hpp \
+HEADERS += src/axis.hpp \
            src/camera.hpp \
-           src/cursor/sphere.hpp \
+           src/cursor-sphere.hpp \
            src/id.hpp \
            src/intersection.hpp \
            src/linked-list.hpp \
@@ -44,12 +43,13 @@ HEADERS += src/adaptive-mesh.hpp \
            src/opengl.hpp \
            src/ray.hpp \
            src/rendermode.hpp \
-           src/selection/selection.hpp \
            src/state.hpp \
+           src/subdivision-util.hpp \
            src/triangle.hpp \
            src/util.hpp \
-           src/view/gl-widget.hpp \
-           src/view/mouse-movement.hpp \
+           src/view-gl-widget.hpp \
+           src/view-light.hpp \
+           src/view-mouse-movement.hpp \
            src/winged-edge.hpp \
            src/winged-face.hpp \
            src/winged-mesh.hpp \

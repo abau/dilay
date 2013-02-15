@@ -39,6 +39,7 @@ class Mesh {
     void         toggleRenderMode ();
 
     void         translate        (const glm::vec3&);
+    void         setPosition      (const glm::vec3&);
 
     static Mesh  triangle         (const glm::vec3&,const glm::vec3&,const glm::vec3&);
     static Mesh  cube             (float);

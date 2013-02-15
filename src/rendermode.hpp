@@ -1,16 +1,21 @@
 #ifndef RENDERMODE
 #define RENDERMODE
 
-enum RenderMode { RenderSolid = 0, RenderWireframe = 1}; // c.f. numRenderModes
+enum RenderMode { RenderSolid     = 0 // c.f. numRenderModes
+                , RenderWireframe = 1
+                , RenderFlat      = 2
+                }; 
 
 class RenderModeUtil {
   public:
-    static const int numRenderModes = 2;
+    static const int numRenderModes = 3;
 
     static RenderMode toggle (RenderMode renderMode) {
       if (renderMode == RenderSolid)
         return RenderWireframe;
-      else 
+      else if (renderMode == RenderWireframe)
+        return RenderFlat;
+      else
         return RenderSolid;
     }
 };

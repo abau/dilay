@@ -1,4 +1,4 @@
-#include "adaptive-mesh.hpp"
+#include "subdivision-util.hpp"
 
 LinkedFace* splitFaceWith ( WingedMesh& mesh, LinkedFace& faceToSplit
                           , LinkedEdge& leftPred, LinkedEdge& leftSucc
@@ -38,19 +38,15 @@ LinkedFace* splitFaceWith ( WingedMesh& mesh, LinkedFace& faceToSplit
   return newLeft;
 }
 
-void AdaptiveMesh :: splitEdge (WingedMesh& mesh, LinkedEdge& edgeToSplit) {
-  WingedEdge&   e  = edgeToSplit.data ();
-  LinkedVertex* v1 = e.vertex1 ();
-  LinkedVertex* v2 = e.vertex2 ();
+void SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit
+                               , const glm::vec3& vNew) {
+  WingedEdge&   e         = edgeToSplit.data ();
+  LinkedVertex* v1        = edgeToSplit.data ().vertex1 ();
+  LinkedVertex* linkedNew = mesh.addVertex (vNew, &edgeToSplit);
 
-  LinkedVertex* vNew = mesh.addVertex 
-    ( Util :: between ( mesh.vertex (v1->data ().index ())
-                      , mesh.vertex (v2->data ().index ()))
-    , &edgeToSplit);
-
-  e.setVertex1 (vNew);
+  e.setVertex1 (linkedNew);
   LinkedEdge* eNew   = mesh.addEdge (WingedEdge 
-                                        ( v1, vNew
+                                        ( v1, linkedNew
                                         , e.leftFace (), e.rightFace ()
                                         , e.leftPredecessor (), 0, 0, 0));
   v1->data ().setEdge (eNew);
@@ -65,17 +61,17 @@ void AdaptiveMesh :: splitEdge (WingedMesh& mesh, LinkedEdge& edgeToSplit) {
   }
 }
 
-void AdaptiveMesh :: splitFace (WingedMesh& mesh, LinkedFace& face) {
-  AdaptiveMesh :: splitEdge (mesh,face.data().longestEdge(mesh));
+void SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit) {
+  SubdivUtil :: splitEdge ( mesh, edgeToSplit, edgeToSplit.data ().middle (mesh));
 }
 
-void AdaptiveMesh :: splitFaceRegular (WingedMesh& mesh, LinkedFace& face) {
+void SubdivUtil :: splitFaceRegular (WingedMesh& mesh, LinkedFace& face) {
   LinkedEdge& edge = face.data().longestEdge(mesh);
-  AdaptiveMesh :: equalizeFaces (mesh, face, edge);
-  AdaptiveMesh :: splitEdge     (mesh, edge);
+  SubdivUtil :: equalizeFaces (mesh, face, edge);
+  SubdivUtil :: splitEdge     (mesh, edge);
 }
 
-void AdaptiveMesh :: equalizeFaces ( WingedMesh& mesh
+void SubdivUtil :: equalizeFaces ( WingedMesh& mesh
                                    , LinkedFace& linkedFace
                                    , LinkedEdge& linkedEdge
                                    ) {

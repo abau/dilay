@@ -1,4 +1,4 @@
-#include "view/mouse-movement.hpp"
+#include "view-mouse-movement.hpp"
 
 void MouseMovement :: update  (const QPoint& p) {
   if (this->_newPos.isDefined ()) 

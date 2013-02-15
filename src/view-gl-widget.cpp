@@ -1,26 +1,21 @@
 #include <QApplication>
-#include "gl-widget.hpp"
+#include "view-gl-widget.hpp"
 #include "opengl.hpp"
 #include "state.hpp"
 
 #include "ray.hpp"
 #include "intersection.hpp"
 #include "maybe.hpp"
-#include "adaptive-mesh.hpp"
 #include "winged-mesh-util.hpp"
-
-#include "cursor/sphere.hpp"
 
 GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
 void GLWidget :: initializeGL () {
+  this->setMouseTracking (true);
   OpenGL :: initialize ();
 
   this->_axis.initialize ();
-  State :: global ().setMesh (Mesh :: sphere (1.0f,30,30));
-  //State :: global ().setMesh (Mesh :: cube (1.0f));
-  State :: global ().mesh ().bufferData ();
-
+  State :: global ().initialize ();
 }
 
 void GLWidget :: paintGL () {
@@ -52,6 +47,16 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
 }
 
 void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
+  if (e->buttons () == Qt :: NoButton) {
+    int reversedY = State :: global ().camera ().resolutionHeight () - e->y ();
+    Ray ray = State :: global ().camera ().getRay (e->x (), reversedY);
+    Maybe <FaceIntersection> i = State :: global ().mesh ().intersectRay (ray);
+
+    if (i.isDefined ()) {
+      State :: global ().cursor ().setPosition (i.data ().position ());
+      this->update ();
+    }
+  }
   if (e->buttons () == Qt :: MiddleButton) {
     this->_mouseMovement.update (e->pos ());
     State :: global ().camera ().verticalRotation   (this->_mouseMovement.dX ());
@@ -66,10 +71,12 @@ void GLWidget :: mousePressEvent (QMouseEvent* e) {
     Ray ray = State :: global ().camera ().getRay (e->x (), reversedY);
     Maybe <FaceIntersection> i = State :: global ().mesh ().intersectRay (ray);
     if (i.isDefined ()) {
+      /*
       AdaptiveMesh :: splitFaceRegular (State :: global ().mesh (),i.data().face());
       State :: global ().mesh ().rebuildIndices ();
       State :: global ().mesh ().rebuildNormals ();
       State :: global ().mesh ().bufferData ();
+      */
       this->update ();
     }
   }

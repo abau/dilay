@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <QGLWidget>
 #include <QMouseEvent>
-#include "view/mouse-movement.hpp"
+#include "view-mouse-movement.hpp"
 #include "axis.hpp"
 
 #ifndef VIEW_GL_WIDGET

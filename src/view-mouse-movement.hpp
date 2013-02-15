@@ -1,5 +1,5 @@
-#include "maybe.hpp"
 #include <QPoint>
+#include "maybe.hpp"
 
 #ifndef VIEW_MOUSE_MOVEMENT
 #define VIEW_MOUSE_MOVEMENT

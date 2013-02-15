@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 #include <QApplication>
 #include <QGLFormat>
-#include "view/gl-widget.hpp"
+#include "view-gl-widget.hpp"
 #include "state.hpp"
 
 int main(int argv, char **args) {
@@ -17,7 +17,6 @@ int main(int argv, char **args) {
   GLWidget w (glFormat);
   w.show ();
 
-  State :: global ().initialize  ();
   return app.exec();
 }
 

@@ -102,3 +102,8 @@ LinkedVertex* WingedEdge :: vertex (const WingedFace& face, unsigned int index) 
   if (index == 0) return this->firstVertex (face);
   else            return this->successor (face)->data ().vertex (face,index-1);
 }
+
+glm::vec3 WingedEdge :: middle (const WingedMesh& mesh) const {
+  return Util :: between ( this->vertex1 ()->data ().vertex (mesh)
+                         , this->vertex2 ()->data ().vertex (mesh));
+}

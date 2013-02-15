@@ -1,11 +1,11 @@
 #include "winged-mesh.hpp"
 
-#ifndef ADAPTIVE_MESH
-#define ADAPTIVE_MESH
+#ifndef SUBDIVISION_UTIL
+#define SUBDIVISION_UTIL
 
-namespace AdaptiveMesh {
+namespace SubdivUtil {
   void splitEdge         (WingedMesh&, LinkedEdge&);
-  void splitFace         (WingedMesh&, LinkedFace&);
+  void splitEdge         (WingedMesh&, LinkedEdge&, const glm::vec3&);
   void splitFaceRegular  (WingedMesh&, LinkedFace&);
   void equalizeFaces     (WingedMesh&, LinkedFace&, LinkedEdge&);
 }

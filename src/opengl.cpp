@@ -5,9 +5,12 @@
 #include "opengl.hpp"
 #include "util.hpp"
 
-GLuint  OpenGL :: _programIds [] = {GLuint (-1), GLuint (-1)};
-GLuint  OpenGL :: _mvpId         = -1;
-GLuint  OpenGL :: _colorId       = -1;
+GLuint  OpenGL :: _programIds [RenderModeUtil :: numRenderModes];
+GLuint  OpenGL :: _mvpId;
+GLuint  OpenGL :: _colorId;
+GLuint  OpenGL :: _light1PositionId;
+GLuint  OpenGL :: _light1ColorId;
+GLuint  OpenGL :: _light1IrradianceId;
 
 void OpenGL :: initialize () {
   static bool isInitialized = false;
@@ -35,6 +38,10 @@ void OpenGL :: initialize () {
       OpenGL :: loadShaders ( "shader/simple-vertex.shader"
                             , "shader/simple-fragment.shader" 
                             );
+    OpenGL :: _programIds [RenderFlat] = 
+      OpenGL :: loadShaders ( "shader/flat-light-vertex.shader"
+                            , "shader/flat-light-fragment.shader" 
+                            );
     isInitialized = true;
     std::cout << "done" << std::endl;
   }
@@ -58,10 +65,19 @@ void OpenGL :: setMvp (const GLfloat* mvp) {
 }
 
 void OpenGL :: setProgram (RenderMode renderMode) {
-  GLuint programId = OpenGL :: _programIds [renderMode];
+  GLuint programId            = OpenGL :: _programIds [renderMode];
   glUseProgram (programId);
-  OpenGL :: _mvpId   = glGetUniformLocation (programId, "mvp");
-  OpenGL :: _colorId = glGetUniformLocation (programId, "color");
+  OpenGL :: _mvpId            = glGetUniformLocation (programId, "mvp");
+  OpenGL :: _colorId          = glGetUniformLocation (programId, "color");
+  OpenGL :: _light1PositionId = glGetUniformLocation (programId, "light1Position");
+  OpenGL :: _light1ColorId    = glGetUniformLocation (programId, "light1Color");
+  OpenGL :: _light1IrradianceId = glGetUniformLocation (programId, "light1Irradiance");
+}
+
+void OpenGL :: setViewLight1 (const ViewLight& light) {
+  OpenGL :: glUniformVec3 (OpenGL :: _light1PositionId,   light.position ());
+  OpenGL :: glUniformVec3 (OpenGL :: _light1ColorId,      light.color ());
+            glUniform1f   (OpenGL :: _light1IrradianceId, light.irradiance ());
 }
 
 void OpenGL :: safeDeleteArray (GLuint& id) {
@@ -135,4 +151,8 @@ void OpenGL :: releaseProgram (GLuint id) {
   if (glIsProgram (id) == GL_TRUE) {
     glDeleteProgram (id);
   }
+}
+
+void OpenGL :: glUniformVec3 (GLuint id, const glm::vec3& v) {
+  glUniform3f (id, v.x, v.y, v.z);
 }

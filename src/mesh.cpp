@@ -7,10 +7,6 @@
 
 Mesh :: Mesh () : modelMatrix     (glm::mat4 (1.0f))
                 , hasNormals      (false)
-                , arrayObjectId   (0)
-                , vertexBufferId  (0)
-                , indexBufferId   (0) 
-                , normalBufferId  (0) 
                 , renderMode      (RenderWireframe)
                 {}
 
@@ -20,10 +16,6 @@ Mesh :: Mesh (const Mesh& source)
                 , indices         (source.indices)
                 , normals         (source.normals)
                 , hasNormals      (source.hasNormals)
-                , arrayObjectId   (0)
-                , vertexBufferId  (0)
-                , indexBufferId   (0) 
-                , normalBufferId  (0) 
                 , renderMode      (RenderWireframe)
                 {}
 
@@ -32,10 +24,6 @@ Mesh :: ~Mesh () {
   OpenGL :: safeDeleteBuffer (this->vertexBufferId);
   OpenGL :: safeDeleteBuffer (this->indexBufferId);
   OpenGL :: safeDeleteBuffer (this->normalBufferId);
-  this->arrayObjectId  = 0;
-  this->vertexBufferId = 0;
-  this->indexBufferId  = 0;
-  this->normalBufferId = 0;
 }
 
 const Mesh& Mesh :: operator= (const Mesh& source) {
@@ -111,13 +99,13 @@ void Mesh :: clearNormals () {
 }
 
 void Mesh :: bufferData () {
-  if (this->arrayObjectId == 0)
+  if (glIsVertexArray (this->arrayObjectId) == GL_FALSE)
     glGenVertexArrays (1, &this->arrayObjectId);
-  if (this->vertexBufferId == 0)
+  if (glIsBuffer (this->vertexBufferId) == GL_FALSE)
     glGenBuffers      (1, &this->vertexBufferId);
-  if (this->indexBufferId == 0)
+  if (glIsBuffer (this->indexBufferId) == GL_FALSE)
     glGenBuffers      (1, &this->indexBufferId);
-  if (this->normalBufferId == 0 && this->hasNormals)
+  if (glIsBuffer (this->normalBufferId) == GL_FALSE && this->hasNormals)
     glGenBuffers      (1, &this->normalBufferId);
 
   glBindVertexArray          (this->arrayObjectId);
@@ -141,7 +129,7 @@ void Mesh :: bufferData () {
     glVertexAttribPointer      ( OpenGL :: NormalIndex
                                , 3, GL_FLOAT, GL_FALSE, 0, 0);
   }
-  glBindVertexArray          (0);
+  glBindVertexArray (0);
 }
 
 void Mesh :: renderBegin () {
@@ -151,7 +139,7 @@ void Mesh :: renderBegin () {
 }
 
 void Mesh :: render () {
-  if (this->renderMode == RenderSolid)
+  if (this->renderMode == RenderSolid || this->renderMode == RenderFlat)
     return this->renderSolid ();
   else if (this->renderMode == RenderWireframe)
     return this->renderWireframe ();
@@ -195,6 +183,10 @@ void Mesh :: toggleRenderMode () {
 
 void Mesh :: translate (const glm::vec3& v) {
   this->modelMatrix = glm::translate (this->modelMatrix, v);
+}
+
+void Mesh :: setPosition (const glm::vec3& v) {
+  this->modelMatrix = glm::translate (glm::mat4(1.0f), v);
 }
 
 // Static
