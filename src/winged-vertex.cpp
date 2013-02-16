@@ -16,44 +16,66 @@ glm::vec3 WingedVertex :: vertex (const WingedMesh& mesh) const {
   return mesh.vertex (this->_index);
 }
 
-std::set <WingedEdge*> WingedVertex :: adjacentEdges () const {
-  std::set <WingedEdge*> set;
-  WingedEdge* currentEdge = &this->_edge->data ();
+std::vector <WingedEdge*> WingedVertex :: adjacentEdges (WingedEdge& startEdge) const {
+  std::vector <WingedEdge*> v;
+  WingedEdge* currentEdge = &startEdge;
 
   while (true) {
-    if (set.find (currentEdge) != set.end ()) {
+    if (v.size () > 0 && v[0] == currentEdge) {
       break;
     }
     else {
-      set.insert (currentEdge);
+      v.push_back (currentEdge);
       if (currentEdge->isVertex1 (*this))
-        currentEdge = &currentEdge->rightSuccessor ()->data ();
+        currentEdge = &currentEdge->leftPredecessor ()->data ();
       else
-        currentEdge = &currentEdge->leftSuccessor ()->data ();
+        currentEdge = &currentEdge->rightPredecessor ()->data ();
     }
   }
-  return set;
+  return v;
 }
 
-std::set <WingedFace*> WingedVertex :: adjacentFaces () const {
-  std::set <WingedEdge*> edges = this->adjacentEdges ();
-  std::set <WingedFace*> set;
+std::vector <WingedEdge*> WingedVertex :: adjacentEdges () const {
+  return this->adjacentEdges (this->_edge->data ());
+}
 
-  for ( std::set <WingedEdge*>::iterator it = edges.begin ()
+std::vector <WingedFace*> WingedVertex :: adjacentFaces () const {
+  std::vector <WingedEdge*> edges = this->adjacentEdges ();
+  std::vector <WingedFace*> faces;
+
+  for ( std::vector <WingedEdge*>::iterator it = edges.begin ()
       ; it != edges.end (); it++) {
     if ((*it)->isVertex1 (*this))
-      set.insert (&(*it)->rightFace ()->data ()); 
+      faces.push_back (&(*it)->rightFace ()->data ()); 
     else
-      set.insert (&(*it)->leftFace ()->data ()); 
+      faces.push_back (&(*it)->leftFace ()->data ()); 
   }
-  return set;
+  return faces;
+}
+
+std::vector <WingedVertex*> WingedVertex :: adjacentVertices  (WingedEdge& start) const {
+  std::vector <WingedEdge*>   edges = this->adjacentEdges (start);
+  std::vector <WingedVertex*> vertices;
+
+  for ( std::vector <WingedEdge*>::iterator it = edges.begin ()
+      ; it != edges.end (); it++) {
+    if ((*it)->isVertex1 (*this))
+      vertices.push_back (&(*it)->vertex2 ()->data ()); 
+    else
+      vertices.push_back (&(*it)->vertex1 ()->data ()); 
+  }
+  return vertices;
+}
+
+std::vector <WingedVertex*> WingedVertex :: adjacentVertices  () const {
+  return this->adjacentVertices (this->_edge->data ());
 }
 
 glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
-  std::set <WingedFace*> faces  = this->adjacentFaces ();
-  glm::vec3              normal = glm::vec3 (0.0f,0.0f,0.0f);
+  std::vector <WingedFace*> faces  = this->adjacentFaces ();
+  glm::vec3                 normal = glm::vec3 (0.0f,0.0f,0.0f);
 
-  for (std::set<WingedFace*>::iterator it = faces.begin (); it != faces.end (); it++) {
+  for (std::vector<WingedFace*>::iterator it = faces.begin (); it != faces.end (); it++) {
     normal = normal + (*it)->normal (mesh);
   }
   return glm::normalize (normal);

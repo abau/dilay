@@ -73,10 +73,10 @@ void GLWidget :: mousePressEvent (QMouseEvent* e) {
     if (i.isDefined ()) {
       /*
       AdaptiveMesh :: splitFaceRegular (State :: global ().mesh (),i.data().face());
+      */
       State :: global ().mesh ().rebuildIndices ();
       State :: global ().mesh ().rebuildNormals ();
       State :: global ().mesh ().bufferData ();
-      */
       this->update ();
     }
   }

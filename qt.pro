@@ -21,6 +21,7 @@ SOURCES += src/axis.cpp \
            src/opengl.cpp \
            src/ray.cpp \
            src/state.cpp \
+           src/subdivision-butterfly.cpp \
            src/subdivision-util.cpp \
            src/triangle.cpp \
            src/util.cpp \
@@ -44,6 +45,7 @@ HEADERS += src/axis.hpp \
            src/ray.hpp \
            src/rendermode.hpp \
            src/state.hpp \
+           src/subdivision-butterfly.hpp \
            src/subdivision-util.hpp \
            src/triangle.hpp \
            src/util.hpp \

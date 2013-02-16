@@ -38,51 +38,33 @@ LinkedFace* splitFaceWith ( WingedMesh& mesh, LinkedFace& faceToSplit
   return newLeft;
 }
 
-void SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit
-                               , const glm::vec3& vNew) {
+NewFaces SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit
+                                    , const glm::vec3& vNew) {
   WingedEdge&   e         = edgeToSplit.data ();
   LinkedVertex* v1        = edgeToSplit.data ().vertex1 ();
   LinkedVertex* linkedNew = mesh.addVertex (vNew, &edgeToSplit);
 
   e.setVertex1 (linkedNew);
-  LinkedEdge* eNew   = mesh.addEdge (WingedEdge 
-                                        ( v1, linkedNew
-                                        , e.leftFace (), e.rightFace ()
-                                        , e.leftPredecessor (), 0, 0, 0));
+  LinkedEdge* eNew = mesh.addEdge (WingedEdge 
+                                    ( v1, linkedNew
+                                    , e.leftFace (), e.rightFace ()
+                                    , e.leftPredecessor (), 0, 0, 0));
   v1->data ().setEdge (eNew);
 
+  LinkedFace* f1New = 0;
+  LinkedFace* f2New = 0;
+
   if (e.leftFace () != 0) {
-    splitFaceWith (mesh, *e.leftFace (), *eNew              , *e.leftPredecessor ()
-                                       , *e.leftSuccessor (), edgeToSplit ); 
+    f1New = splitFaceWith (mesh, *e.leftFace (), *eNew, *e.leftPredecessor ()
+                                               , *e.leftSuccessor (), edgeToSplit); 
   }
   if (e.rightFace () != 0) {
-    splitFaceWith (mesh, *e.rightFace (), edgeToSplit         , *e.rightPredecessor ()
-                                        , *e.rightSuccessor (), *eNew ); 
+    f2New = splitFaceWith (mesh, *e.rightFace (), edgeToSplit, *e.rightPredecessor ()
+                                                , *e.rightSuccessor (), *eNew ); 
   }
+  return std::pair <LinkedFace*,LinkedFace*> (f1New,f2New);
 }
 
-void SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit) {
-  SubdivUtil :: splitEdge ( mesh, edgeToSplit, edgeToSplit.data ().middle (mesh));
-}
-
-void SubdivUtil :: splitFaceRegular (WingedMesh& mesh, LinkedFace& face) {
-  LinkedEdge& edge = face.data().longestEdge(mesh);
-  SubdivUtil :: equalizeFaces (mesh, face, edge);
-  SubdivUtil :: splitEdge     (mesh, edge);
-}
-
-void SubdivUtil :: equalizeFaces ( WingedMesh& mesh
-                                   , LinkedFace& linkedFace
-                                   , LinkedEdge& linkedEdge
-                                   ) {
-  WingedEdge& edge      = linkedEdge.data ();
-  WingedFace& face      = linkedFace.data ();
-
-  LinkedFace* otherLinkedFace = edge.otherFace (face);
-  LinkedEdge& otherLinkedEdge = otherLinkedFace->data ().longestEdge (mesh);
-
-  if (&linkedEdge == &otherLinkedEdge)
-    return;
-  splitFaceRegular (mesh, *otherLinkedFace);
-  equalizeFaces    (mesh, linkedFace, linkedEdge);
+NewFaces SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit) {
+  return SubdivUtil :: splitEdge (mesh, edgeToSplit, edgeToSplit.data ().middle (mesh));
 }
