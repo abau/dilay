@@ -1,25 +1,25 @@
+#ifndef WINGED_FACE
+#define WINGED_FACE
+
 #include "id.hpp"
 #include "util.hpp"
 #include "triangle.hpp"
-
-#ifndef WINGED_FACE
-#define WINGED_FACE
+#include "winged-edge-iterator.hpp"
 
 class WingedMesh;
 class WingedEdge;
 
 class WingedFace {
-  public:
-    WingedFace (LinkedEdge*);
+  public:              WingedFace    (LinkedEdge*);
 
-    IdType      id            () const { return this->_id.get (); }
-    LinkedEdge* edge          () const { return this->_edge; }
+    IdType             id            () const { return this->_id.get (); }
+    LinkedEdge*        edge          () const { return this->_edge; }
 
-    void        setEdge       (LinkedElement <WingedEdge>*);
-    void        addIndices    (WingedMesh&);
-    Triangle    triangle      (const WingedMesh&) const;
-    LinkedEdge& longestEdge   (const WingedMesh&) const;
-    glm::vec3   normal        (const WingedMesh&) const;
+    void               setEdge       (LinkedElement <WingedEdge>*);
+    void               addIndices    (WingedMesh&);
+    Triangle           triangle      (const WingedMesh&) const;
+    glm::vec3          normal        (const WingedMesh&) const;
+    WingedEdgeIterator edgeIterator  () const;
 
   private:
     const Id    _id;

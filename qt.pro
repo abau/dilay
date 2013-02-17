@@ -28,6 +28,7 @@ SOURCES += src/axis.cpp \
            src/view-gl-widget.cpp \
            src/view-mouse-movement.cpp \
            src/winged-edge.cpp \
+           src/winged-edge-iterator.cpp \
            src/winged-face.cpp \
            src/winged-mesh.cpp \
            src/winged-mesh-util.cpp \
@@ -53,6 +54,7 @@ HEADERS += src/axis.hpp \
            src/view-light.hpp \
            src/view-mouse-movement.hpp \
            src/winged-edge.hpp \
+           src/winged-edge-iterator.hpp \
            src/winged-face.hpp \
            src/winged-mesh.hpp \
            src/winged-mesh-util.hpp \
