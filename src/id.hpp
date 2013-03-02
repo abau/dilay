@@ -4,13 +4,15 @@
 typedef unsigned long IdType;
 
 class Id {
-  public:
-    Id ();
+  public:     Id        ();
+              Id        (const Id&);
+    const Id& operator= (const Id&);
 
-    IdType get () const { return this->_id; }
+    IdType    get       () const { return this->_id; }
 
   private:
-    static IdType nextId;
     const  IdType _id;
+
+    static IdType nextId ();
 };
 #endif

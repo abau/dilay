@@ -1,19 +1,20 @@
 #ifndef WINGED_EDGE_ITERATOR
 #define WINGED_EDGE_ITERATOR
 
-class WingedFace;
+#include "util.hpp"
 
 class WingedEdgeIterator {
   public:
                 WingedEdgeIterator (const WingedFace& f); 
 
-    LinkedEdge* edge               () const { return this->_edge; }
-    bool        hasEdge            () const;
+    LinkedEdge  edge               (); 
+    bool        hasEdge            () const { return this->_hasEdge; }
     void        next               ();     
 
   private:
-    const WingedFace&       _face;
-          LinkedEdge* const _start;
-          LinkedEdge*       _edge;
+    const WingedFace& _face;
+    const LinkedEdge  _start;
+          LinkedEdge  _edge;
+          bool        _hasEdge;
 };
 #endif

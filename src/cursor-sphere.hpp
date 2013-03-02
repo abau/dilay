@@ -6,16 +6,14 @@
 #define CURSOR_SPHERE
 
 class CursorSphere {
-  public:
-         CursorSphere () : _radius (0.1f) {}
+  public: CursorSphere () : _radius (0.1f) {}
+          CursorSphere (const CursorSphere&) = delete;
 
-    void initialize   ();
-    void setPosition  (const glm::vec3& v) { this->_mesh.setPosition (v); }
-    void render       ();
+    void  initialize   ();
+    void  setPosition  (const glm::vec3& v) { this->_mesh.setPosition (v); }
+    void  render       ();
 
   private:
-    PRIVATE_ASSIGNMENT_OP(CursorSphere)
-
     Mesh  _mesh;
     float _radius;
 };

@@ -6,24 +6,21 @@
 #include "triangle.hpp"
 #include "winged-edge-iterator.hpp"
 
-class WingedMesh;
-class WingedEdge;
-
 class WingedFace {
-  public:              WingedFace    (LinkedEdge*);
+  public:              WingedFace    (LinkedEdge);
 
     IdType             id            () const { return this->_id.get (); }
-    LinkedEdge*        edge          () const { return this->_edge; }
+    LinkedEdge         edge          () const { return this->_edge; }
 
-    void               setEdge       (LinkedElement <WingedEdge>*);
+    void               setEdge       (LinkedEdge);
     void               addIndices    (WingedMesh&);
     Triangle           triangle      (const WingedMesh&) const;
     glm::vec3          normal        (const WingedMesh&) const;
     WingedEdgeIterator edgeIterator  () const;
 
   private:
-    const Id    _id;
-    LinkedEdge* _edge;
+    const Id   _id;
+    LinkedEdge _edge;
 };
 
 #endif

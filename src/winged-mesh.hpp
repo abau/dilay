@@ -1,35 +1,50 @@
+#ifndef WINGED_MESH
+#define WINGED_MESH
+
 #include <glm/glm.hpp>
+#include <list>
 #include "mesh.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-vertex.hpp"
-#include "linked-list.hpp"
 #include "maybe.hpp"
 #include "ray.hpp"
 #include "intersection.hpp"
 
-#ifndef WINGED_MESH
-#define WINGED_MESH
+typedef std::list < WingedVertex > Vertices;
+typedef std::list < WingedEdge   > Edges;
+typedef std::list < WingedFace   > Faces;
 
-typedef LinkedList < WingedVertex > Vertices;
-typedef LinkedList < WingedEdge   > Edges;
-typedef LinkedList < WingedFace   > Faces;
+typedef Vertices::iterator VertexIterator;
+typedef Edges   ::iterator EdgeIterator;
+typedef Faces   ::iterator FaceIterator;
 
-typedef Vertices::Iterator VertexIterator;
-typedef Edges   ::Iterator EdgeIterator;
-typedef Faces   ::Iterator FaceIterator;
+typedef Vertices::const_iterator VertexConstIterator;
+typedef Edges   ::const_iterator EdgeConstIterator;
+typedef Faces   ::const_iterator FaceConstIterator;
 
-typedef Vertices::ConstIterator VertexConstIterator;
-typedef Edges   ::ConstIterator EdgeConstIterator;
-typedef Faces   ::ConstIterator FaceConstIterator;
+#define VERTEX_ITERATOR(it,mesh)  VertexIterator (it) = (mesh).vertexIterator (); (it) != (mesh).nullVertex (); ++(it)
+#define EDGE_ITERATOR(it,mesh)  EdgeIterator (it) = (mesh).edgeIterator (); (it) != (mesh).nullEdge (); ++(it)
+#define FACE_ITERATOR(it,mesh)  FaceIterator (it) = (mesh).faceIterator (); (it) != (mesh).nullFace (); ++(it)
+
+#define VERTEX_CONST_ITERATOR(it,mesh)  VertexConstIterator (it) = (mesh).vertexIterator (); (it) != (mesh).nullVertex (); ++(it)
+#define EDGE_CONST_ITERATOR(it,mesh)  EdgeConstIterator (it) = (mesh).edgeIterator (); (it) != (mesh).nullEdge (); ++(it)
+#define FACE_CONST_ITERATOR(it,mesh)  FaceConstIterator (it) = (mesh).faceIterator (); (it) != (mesh).nullFace (); ++(it)
 
 class WingedMesh {
-  public:                    WingedMesh        ()              { }
-                             WingedMesh        (const Mesh& m) { this->fromMesh (m); }
+  public:                    
+    WingedMesh&              operator=         (const WingedMesh&) = delete;
+    LinkedVertex             nullVertex        ()       { return this->vertices.end (); }
+    LinkedEdge               nullEdge          ()       { return this->edges.end    (); }
+    LinkedFace               nullFace          ()       { return this->faces.end    (); }
+    ConstLinkedVertex        nullVertex        () const { return this->vertices.end (); }
+    ConstLinkedEdge          nullEdge          () const { return this->edges.end    (); }
+    ConstLinkedFace          nullFace          () const { return this->faces.end    (); }
+
     void                     addIndex          (unsigned int);
-    LinkedVertex*            addVertex         (const glm::vec3&, LinkedEdge*);
-    LinkedEdge*              addEdge           (const WingedEdge&);
-    LinkedFace*              addFace           (const WingedFace&);
+    LinkedVertex             addVertex         (const glm::vec3&, LinkedEdge);
+    LinkedEdge               addEdge           (const WingedEdge&);
+    LinkedFace               addFace           (const WingedFace&);
 
     VertexIterator           vertexIterator    ();
     EdgeIterator             edgeIterator      ();
@@ -54,14 +69,9 @@ class WingedMesh {
     void                     renderEnd         () { this->mesh.renderEnd   (); }
     void                     reset             ();
     void                     toggleRenderMode  () { this->mesh.toggleRenderMode (); }
-    void                     fromMesh          (const Mesh&);
     
     Maybe <FaceIntersection> intersectRay      (const Ray&);
   private:
-    PRIVATE_ASSIGNMENT_OP(WingedMesh)
-
-    LinkedEdge*              findOrAddEdge     (unsigned int,unsigned int,LinkedFace*);
-
     Mesh                     mesh;
     Vertices                 vertices;
     Edges                    edges;

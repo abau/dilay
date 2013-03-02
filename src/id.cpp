@@ -1,8 +1,15 @@
 #include "id.hpp"
 
-IdType Id :: nextId = 0;
+Id :: Id ()            : _id (Id::nextId ()) {}
+Id :: Id (const Id& _) : _id (Id::nextId ()) {}
 
-Id :: Id () : _id (nextId) {
-  nextId = nextId + 1;
+const Id& Id :: operator= (const Id& _) {
+  return *this;
+}
+
+IdType Id :: nextId () {
+  static IdType nextId = -1;
+  nextId++;
+  return nextId;
 }
 

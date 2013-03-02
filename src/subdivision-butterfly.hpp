@@ -6,7 +6,8 @@
 #include "winged-edge.hpp"
 
 namespace SubdivButterfly {
-  NewFaces subdiv (WingedMesh&, LinkedEdge&);
+  void      subdiv (WingedMesh&);
+  glm::vec3 subdiv (WingedMesh&, LinkedEdge&);
 }
 
 #endif

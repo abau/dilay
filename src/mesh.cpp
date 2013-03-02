@@ -16,7 +16,7 @@ Mesh :: Mesh (const Mesh& source)
                 , indices         (source.indices)
                 , normals         (source.normals)
                 , hasNormals      (source.hasNormals)
-                , renderMode      (RenderWireframe)
+                , renderMode      (source.renderMode)
                 {}
 
 Mesh :: ~Mesh () {
@@ -29,16 +29,16 @@ Mesh :: ~Mesh () {
 const Mesh& Mesh :: operator= (const Mesh& source) {
   if (this == &source) return *this;
   Mesh tmp (source);
-  Util :: swap (this->modelMatrix   , tmp.modelMatrix);
-  Util :: swap (this->vertices      , tmp.vertices);
-  Util :: swap (this->indices       , tmp.indices);
-  Util :: swap (this->normals       , tmp.normals);
-  Util :: swap (this->hasNormals    , tmp.hasNormals);
-  Util :: swap (this->arrayObjectId , tmp.arrayObjectId);
-  Util :: swap (this->vertexBufferId, tmp.vertexBufferId);
-  Util :: swap (this->indexBufferId , tmp.indexBufferId);
-  Util :: swap (this->normalBufferId, tmp.normalBufferId);
-  Util :: swap (this->renderMode    , tmp.renderMode);
+  std::swap (this->modelMatrix   , tmp.modelMatrix);
+  std::swap (this->vertices      , tmp.vertices);
+  std::swap (this->indices       , tmp.indices);
+  std::swap (this->normals       , tmp.normals);
+  std::swap (this->hasNormals    , tmp.hasNormals);
+  std::swap (this->arrayObjectId , tmp.arrayObjectId);
+  std::swap (this->vertexBufferId, tmp.vertexBufferId);
+  std::swap (this->indexBufferId , tmp.indexBufferId);
+  std::swap (this->normalBufferId, tmp.normalBufferId);
+  std::swap (this->renderMode    , tmp.renderMode);
   return *this;
 }
 
@@ -143,6 +143,8 @@ void Mesh :: render () {
     return this->renderSolid ();
   else if (this->renderMode == RenderWireframe)
     return this->renderWireframe ();
+  else
+    assert (false);
 }
 
 void Mesh :: renderSolid () {

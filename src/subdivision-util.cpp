@@ -39,7 +39,7 @@ LinkedFace* splitFaceWith ( WingedMesh& mesh, LinkedFace& faceToSplit
 }
 
 NewFaces SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit
-                                    , const glm::vec3& vNew) {
+                                 , const glm::vec3& vNew) {
   WingedEdge&   e         = edgeToSplit.data ();
   LinkedVertex* v1        = edgeToSplit.data ().vertex1 ();
   LinkedVertex* linkedNew = mesh.addVertex (vNew, &edgeToSplit);
@@ -67,4 +67,19 @@ NewFaces SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit
 
 NewFaces SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge& edgeToSplit) {
   return SubdivUtil :: splitEdge (mesh, edgeToSplit, edgeToSplit.data ().middle (mesh));
+}
+
+LinkedEdge* SubdivUtil :: insertVertex ( WingedMesh& mesh, LinkedEdge& linkedEdge
+                                       , const glm::vec3& v) {
+  WingedEdge&   e    = linkedEdge.data ();
+  LinkedVertex* newV = mesh.addVertex (v, &linkedEdge);
+  LinkedEdge*   newE = mesh.addEdge (WingedEdge 
+                                      ( newV, e.vertex2 ()
+                                      , e.leftFace ()        , e.rightFace ()
+                                      , &linkedEdge          , e.leftSuccessor ()
+                                      , e.rightPredecessor (), &linkedEdge));
+
+  e.vertex2 ()->data ().setEdge (newE);
+  e.setVertex2 (newV);
+  return newE;
 }

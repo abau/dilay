@@ -5,3 +5,4 @@ test/
 dilay
 Makefile
 src/session.vim
+archive/

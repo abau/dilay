@@ -6,37 +6,40 @@ void WingedMesh :: addIndex (unsigned int index) {
   this->mesh.addIndex (index);
 }
 
-LinkedVertex* WingedMesh :: addVertex (const glm::vec3& v, LinkedEdge* e) {
+LinkedVertex WingedMesh :: addVertex (const glm::vec3& v, LinkedEdge e) {
   unsigned int index = this->mesh.addVertex (v);
-  return this->vertices.insertBack (WingedVertex (index, e));
+  this->vertices.push_back (WingedVertex (index, e));
+  return --this->vertices.end ();
 }
 
-LinkedEdge* WingedMesh :: addEdge (const WingedEdge& e) {
-  return this->edges.insertBack (e);
+LinkedEdge WingedMesh :: addEdge (const WingedEdge& e) {
+  this->edges.push_back (e);
+  return --this->edges.end ();
 }
 
-LinkedFace* WingedMesh :: addFace (const WingedFace& f) {
-  return this->faces.insertBack (f);
+LinkedFace WingedMesh :: addFace (const WingedFace& f) {
+  this->faces.push_back (f);
+  return --this->faces.end ();
 }
 
 VertexIterator WingedMesh :: vertexIterator () { 
-  return this->vertices.frontIterator ();
+  return this->vertices.begin ();
 }
 EdgeIterator WingedMesh :: edgeIterator () {
-  return this->edges.frontIterator ();
+  return this->edges.begin ();
 }
 FaceIterator WingedMesh :: faceIterator () {
-  return this->faces.frontIterator ();
+  return this->faces.begin ();
 }
 
 VertexConstIterator WingedMesh :: vertexIterator () const { 
-  return this->vertices.frontIterator ();
+  return this->vertices.cbegin ();
 }
 EdgeConstIterator WingedMesh :: edgeIterator () const {
-  return this->edges.frontIterator ();
+  return this->edges.cbegin ();
 }
 FaceConstIterator WingedMesh :: faceIterator () const {
-  return this->faces.frontIterator ();
+  return this->faces.cbegin ();
 }
 
 unsigned int WingedMesh :: numVertices () const { 
@@ -44,15 +47,15 @@ unsigned int WingedMesh :: numVertices () const {
 }
 
 unsigned int WingedMesh :: numWingedVertices () const { 
-  return this->vertices.numElements (); 
+  return this->vertices.size (); 
 }
 
 unsigned int WingedMesh :: numEdges () const { 
-  return this->edges.numElements (); 
+  return this->edges.size (); 
 }
 
 unsigned int WingedMesh :: numFaces () const { 
-  return this->faces.numElements (); 
+  return this->faces.size (); 
 }
 
 glm::vec3 WingedMesh :: vertex  (unsigned int index) const { 
@@ -61,97 +64,40 @@ glm::vec3 WingedMesh :: vertex  (unsigned int index) const {
 
 void WingedMesh :: rebuildIndices () {
   this->mesh.clearIndices ();
-  for ( FaceIterator it = this->faceIterator (); it.hasElement (); it.next ()) {
-    it.data ().addIndices (*this);
+  for (WingedFace& f : this->faces) {
+    f.addIndices (*this);
   }
 }
 
 void WingedMesh :: rebuildNormals () {
   this->mesh.clearNormals ();
-  for ( VertexIterator it = this->vertexIterator (); it.hasElement (); it.next ()) {
-    this->mesh.addNormal (it.data ().normal (*this));
+  for (WingedVertex& v : this->vertices) {
+    this->mesh.addNormal (v.normal (*this));
   }
 }
 
 void WingedMesh :: reset () {
   this->mesh    .reset ();
-  this->vertices.eraseAll ();
-  this->edges   .eraseAll ();
-  this->faces   .eraseAll ();
-}
-
-void WingedMesh :: fromMesh (const Mesh& m) {
-  this->reset ();
-  this->mesh = m;
-  // Vertices
-  for (unsigned int i = 0; i < m.numVertices (); i++) {
-    this->vertices.insertBack (WingedVertex (i, 0));
-  }
-  // Faces & Edges
-  for (unsigned int i = 0; i < m.numIndices (); i += 3) {
-    unsigned int index1 = m.index (i + 0);
-    unsigned int index2 = m.index (i + 1);
-    unsigned int index3 = m.index (i + 2);
-
-    LinkedFace*  f      = this->addFace (WingedFace (0));
-    LinkedEdge*  e1     = this->findOrAddEdge (index1, index2, f);
-    LinkedEdge*  e2     = this->findOrAddEdge (index2, index3, f);
-    LinkedEdge*  e3     = this->findOrAddEdge (index3, index1, f);
-
-    e1->data ().setPredecessor (f->data (),e3);
-    e1->data ().setSuccessor   (f->data (),e2);
-    e2->data ().setPredecessor (f->data (),e1);
-    e2->data ().setSuccessor   (f->data (),e3);
-    e3->data ().setPredecessor (f->data (),e2);
-    e3->data ().setSuccessor   (f->data (),e1);
-  }
-  // Normals
-  this->rebuildNormals ();
+  this->vertices.clear ();
+  this->edges   .clear ();
+  this->faces   .clear ();
 }
 
 Maybe <FaceIntersection> WingedMesh :: intersectRay (const Ray& ray) {
-  FaceIterator it                       = this->faceIterator ();
   Maybe <FaceIntersection> intersection = Maybe <FaceIntersection> :: nothing ();
   float                    minDistance  = std :: numeric_limits <float> :: max ();
 
-  while (it.hasElement ()) {
-    Maybe <glm::vec3> i = it.data ().triangle (*this).intersectRay (ray); 
+  for (FACE_ITERATOR(fIt,*this)) {
+    Maybe <glm::vec3> i = fIt->triangle (*this).intersectRay (ray); 
 
     if (i.isDefined ()) {
       float d = glm::distance (ray.origin (), i.data ());
 
       if (intersection.isNothing () || d < minDistance) {
-        intersection = FaceIntersection (i.data (), *it.linkedElement ());
+        intersection = FaceIntersection (i.data (), fIt);
         minDistance  = d;
       }
     }
-    it.next ();
   }
   return intersection;
-}
-
-LinkedEdge* WingedMesh :: findOrAddEdge  ( unsigned int index1
-                                         , unsigned int index2
-                                         , LinkedFace* face) {
-  LinkedEdge*  e     = 0;
-  MaybePtr <LinkedEdge> findEdge = WingedMeshUtil :: findEdge (*this, index2, index1);
-  if (findEdge.isDefined ()) {
-    e = findEdge.ptr ();
-    e->data ().setRightFace (face);
-  }
-  else {
-    MaybePtr <LinkedVertex> mV1 = WingedMeshUtil :: findVertex (*this, index1);
-    MaybePtr <LinkedVertex> mV2 = WingedMeshUtil :: findVertex (*this, index2);
-    assert (mV1.isDefined () && mV2.isDefined ());
-
-    LinkedVertex* v1 = mV1.ptr ();
-    LinkedVertex* v2 = mV2.ptr ();
-                  e  = this->addEdge (WingedEdge (v1, v2, face, 0, 0, 0, 0, 0 ));
-    v1->data ().setEdge     (e);
-    v2->data ().setEdge     (e);
-    e ->data ().setLeftFace (face);
-  }
-  if (face != 0)
-    face->data ().setEdge (e);
-  return e;
 }

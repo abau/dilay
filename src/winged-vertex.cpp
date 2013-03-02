@@ -3,10 +3,10 @@
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
 
-WingedVertex :: WingedVertex (unsigned int i, LinkedElement <WingedEdge>* e) 
-  : _index (i) { this->_edge  = e; }
+WingedVertex :: WingedVertex (unsigned int i, LinkedEdge e) 
+  : _index (i), _edge (e) {}
 
-void WingedVertex :: setEdge (LinkedElement <WingedEdge>* e) { this->_edge = e; }
+void WingedVertex :: setEdge (LinkedEdge e) { this->_edge = e; }
 
 void WingedVertex :: addIndex (WingedMesh& mesh) {
   mesh.addIndex (this->_index);
@@ -16,9 +16,9 @@ glm::vec3 WingedVertex :: vertex (const WingedMesh& mesh) const {
   return mesh.vertex (this->_index);
 }
 
-std::vector <WingedEdge*> WingedVertex :: adjacentEdges (WingedEdge& startEdge) const {
-  std::vector <WingedEdge*> v;
-  WingedEdge* currentEdge = &startEdge;
+std::vector <LinkedEdge> WingedVertex :: adjacentEdges (LinkedEdge startEdge) const {
+  std::vector <LinkedEdge> v;
+  LinkedEdge currentEdge = startEdge;
 
   while (true) {
     if (v.size () > 0 && v[0] == currentEdge) {
@@ -27,56 +27,54 @@ std::vector <WingedEdge*> WingedVertex :: adjacentEdges (WingedEdge& startEdge) 
     else {
       v.push_back (currentEdge);
       if (currentEdge->isVertex1 (*this))
-        currentEdge = &currentEdge->leftPredecessor ()->data ();
+        currentEdge = currentEdge->leftPredecessor ();
       else
-        currentEdge = &currentEdge->rightPredecessor ()->data ();
+        currentEdge = currentEdge->rightPredecessor ();
     }
   }
   return v;
 }
 
-std::vector <WingedEdge*> WingedVertex :: adjacentEdges () const {
-  return this->adjacentEdges (this->_edge->data ());
+std::vector <LinkedEdge> WingedVertex :: adjacentEdges () const {
+  return this->adjacentEdges (this->_edge);
 }
 
-std::vector <WingedFace*> WingedVertex :: adjacentFaces () const {
-  std::vector <WingedEdge*> edges = this->adjacentEdges ();
-  std::vector <WingedFace*> faces;
+std::vector <LinkedFace> WingedVertex :: adjacentFaces () const {
+  std::vector <LinkedEdge> edges = this->adjacentEdges ();
+  std::vector <LinkedFace> faces;
 
-  for ( std::vector <WingedEdge*>::iterator it = edges.begin ()
-      ; it != edges.end (); it++) {
-    if ((*it)->isVertex1 (*this))
-      faces.push_back (&(*it)->rightFace ()->data ()); 
+  for (LinkedEdge e : edges) {
+    if (e->isVertex1 (*this))
+      faces.push_back (e->rightFace ()); 
     else
-      faces.push_back (&(*it)->leftFace ()->data ()); 
+      faces.push_back (e->leftFace ()); 
   }
   return faces;
 }
 
-std::vector <WingedVertex*> WingedVertex :: adjacentVertices  (WingedEdge& start) const {
-  std::vector <WingedEdge*>   edges = this->adjacentEdges (start);
-  std::vector <WingedVertex*> vertices;
+std::vector <LinkedVertex> WingedVertex :: adjacentVertices  (LinkedEdge start) const {
+  std::vector <LinkedEdge>   edges = this->adjacentEdges (start);
+  std::vector <LinkedVertex> vertices;
 
-  for ( std::vector <WingedEdge*>::iterator it = edges.begin ()
-      ; it != edges.end (); it++) {
-    if ((*it)->isVertex1 (*this))
-      vertices.push_back (&(*it)->vertex2 ()->data ()); 
+  for (LinkedEdge e : edges) {
+    if (e->isVertex1 (*this))
+      vertices.push_back (e->vertex2 ()); 
     else
-      vertices.push_back (&(*it)->vertex1 ()->data ()); 
+      vertices.push_back (e->vertex1 ()); 
   }
   return vertices;
 }
 
-std::vector <WingedVertex*> WingedVertex :: adjacentVertices  () const {
-  return this->adjacentVertices (this->_edge->data ());
+std::vector <LinkedVertex> WingedVertex :: adjacentVertices  () const {
+  return this->adjacentVertices (this->_edge);
 }
 
 glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
-  std::vector <WingedFace*> faces  = this->adjacentFaces ();
-  glm::vec3                 normal = glm::vec3 (0.0f,0.0f,0.0f);
+  std::vector <LinkedFace> faces  = this->adjacentFaces ();
+  glm::vec3                normal = glm::vec3 (0.0f,0.0f,0.0f);
 
-  for (std::vector<WingedFace*>::iterator it = faces.begin (); it != faces.end (); it++) {
-    normal = normal + (*it)->normal (mesh);
+  for (LinkedFace f : faces) {
+    normal = normal + f->normal (mesh);
   }
   return glm::normalize (normal);
 }

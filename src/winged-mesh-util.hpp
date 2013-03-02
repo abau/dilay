@@ -1,14 +1,11 @@
-#include "winged-mesh.hpp"
-#include "winged-edge.hpp"
-#include "maybe.hpp"
-
 #ifndef WINGED_MESH_UTIL
 #define WINGED_MESH_UTIL
 
+#include "winged-mesh.hpp"
+
 namespace WingedMeshUtil {
-  void                    printStatistics (const WingedMesh&);
-  MaybePtr <LinkedEdge>   findEdge        (WingedMesh&, unsigned int, unsigned int);
-  MaybePtr <LinkedVertex> findVertex      (WingedMesh&, unsigned int);
+  void printStatistics (const WingedMesh&);
+  void fromMesh        (WingedMesh&, const Mesh&);
 }
 
 #endif

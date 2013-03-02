@@ -1,8 +1,8 @@
-#include <iostream>
-#include "util.hpp"
-
 #ifndef MAYBE
 #define MAYBE
+
+#include <iostream>
+#include "util.hpp"
 
 // Maybe ////////////////////
 template <class T>
@@ -17,7 +17,7 @@ class Maybe {
     const Maybe<T>& operator=(const Maybe<T>& d) {
       if (this == &d) return *this;
       Maybe <T> tmp (d);
-      Util :: swap (this->_data, tmp._data);
+      std::swap (this->_data, tmp._data);
       return *this;
     }
 

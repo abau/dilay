@@ -6,16 +6,16 @@
 #define AXIS
 
 class Axis {
-  public:
-         Axis       ();
-    void initialize ();
-    void render     ();
+  public: Axis       ();
+          Axis       (const Axis&) = delete;
+    Axis& operator=  (const Axis&) = delete;
+
+    void  initialize ();
+    void  render     ();
 
   private:
-    PRIVATE_ASSIGNMENT_OP(Axis)
-
-    Mesh  mesh;
-    float length;
+    Mesh   mesh;
+    float  length;
 };
 
 #endif

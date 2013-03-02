@@ -5,16 +5,16 @@ WingedEdgeIterator :: WingedEdgeIterator (const WingedFace& f)
   : _face  (f)
   , _start (f.edge ())
   , _edge  (f.edge ())
+  , _hasEdge (true)
   {}
 
-bool WingedEdgeIterator :: hasEdge () const { 
-  return this->_edge != 0; 
+LinkedEdge WingedEdgeIterator :: edge () {
+  assert (this->_hasEdge);
+  return this->_edge;
 }
 
 void WingedEdgeIterator :: next () {
-  LinkedEdge* succ = this->_edge->data ().successor (this->_face);
-  if (succ == this->_start)
-    this->_edge = 0;
-  else
-    this->_edge = succ;
+  this->_edge = this->_edge->successor (this->_face);
+  if (this->_edge == this->_start)
+    this->_hasEdge = false;
 }

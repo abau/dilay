@@ -7,6 +7,7 @@
 #include "intersection.hpp"
 #include "maybe.hpp"
 #include "winged-mesh-util.hpp"
+//#include "subdivision-butterfly.hpp"
 
 GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
@@ -71,9 +72,7 @@ void GLWidget :: mousePressEvent (QMouseEvent* e) {
     Ray ray = State :: global ().camera ().getRay (e->x (), reversedY);
     Maybe <FaceIntersection> i = State :: global ().mesh ().intersectRay (ray);
     if (i.isDefined ()) {
-      /*
-      AdaptiveMesh :: splitFaceRegular (State :: global ().mesh (),i.data().face());
-      */
+      //SubdivButterfly :: subdiv (State :: global ().mesh ());
       State :: global ().mesh ().rebuildIndices ();
       State :: global ().mesh ().rebuildNormals ();
       State :: global ().mesh ().bufferData ();
