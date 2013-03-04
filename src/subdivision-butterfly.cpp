@@ -2,57 +2,76 @@
 #include <cmath>
 #include "subdivision-butterfly.hpp"
 #include "winged-edge-iterator.hpp"
-#include "pair.hpp"
 
-typedef std::vector <WingedVertex*>   Adjacents;
+
+#include "winged-mesh-util.hpp"
+
+typedef std::vector <LinkedVertex>   Adjacents;
 
 void SubdivButterfly :: subdiv (WingedMesh& mesh) {
-  typedef Pair <LinkedEdge*, glm::vec3> NewVertex;
-  typedef LinkedList <NewVertex>        NewVertices;
+  typedef std::pair  <LinkedEdge, glm::vec3> NewVertex;
+  typedef std::list  <NewVertex>             NewVertices;
 
   NewVertices newVertices;
 
-  for (EdgeIterator eIt = mesh.edgeIterator (); eIt.hasElement (); eIt.next ()) {
-    glm::vec3 v = SubdivButterfly :: subdiv (mesh, *eIt.linkedElement ());
-    newVertices.append ( NewVertex (eIt.linkedElement (), v));
+  for (EDGE_ITERATOR(eIt,mesh)) {
+    glm::vec3 v = SubdivButterfly :: subdiv (mesh, eIt);
+    newVertices.push_back ( NewVertex (eIt, v) );
   }
 
-  for (NewVertices::Iterator nIt = newVertices.iterator (); nIt.hasElement (); nIt.next ()) {
-    SubdivUtil :: insertVertex (mesh, *nIt.data ().first (), nIt.data ().second ());
+  for (NewVertex& nV : newVertices) {
+    SubdivUtil :: insertVertex (mesh, nV.first, nV.second);
   }
   
-  for (FaceIterator fIt = mesh.faceIterator (); fIt.hasElement (); fIt.next ()) {
-    std :: cout << "-------face: ";
-    for ( WingedEdgeIterator eIt = fIt.data ().edgeIterator ()
-        ; eIt.hasEdge (); eIt.next ()) {
-      std :: cout << "x";
-    }
-    std :: cout << std::endl;
+  for (FACE_REVERSE_ITERATOR (fIt,mesh)) {
+    SubdivUtil :: triangulate6Gon (mesh,fIt);
   }
+
+  /*
+  for (FACE_ITERATOR(f,mesh)) {
+    if (f->id () == 33) {
+      for (WINGED_EDGE_ITERATOR(eIt,*f)) {
+        glm::vec3 v = SubdivButterfly :: subdiv (mesh,eIt.edge ());
+        newVertices.push_back ( NewVertex (eIt.edge (), v) );
+      }
+      break;
+    }
+  }
+
+  for (NewVertex& nV : newVertices) {
+    SubdivUtil :: insertVertex (mesh, nV.first, nV.second);
+  }
+  
+  for (FACE_REVERSE_ITERATOR (fIt,mesh)) {
+    if (fIt->id () == 33) {
+      SubdivUtil :: triangulate6Gon (mesh,fIt);
+      break;
+    }
+  }
+  */
 }
 
-glm::vec3 subdivK6            (WingedMesh&, const Adjacents&, const Adjacents&);
-glm::vec3 subdivK             (WingedMesh&, const glm::vec3&, const Adjacents&);
-glm::vec3 subdivExtraordinary (WingedMesh&, const Adjacents&, const Adjacents&);
+glm::vec3 subdivK6            (const WingedMesh&, const Adjacents&, const Adjacents&);
+glm::vec3 subdivK             (const WingedMesh&, const glm::vec3&, const Adjacents&);
+glm::vec3 subdivExtraordinary (const WingedMesh&, const Adjacents&, const Adjacents&);
 
-glm::vec3 SubdivButterfly :: subdiv (WingedMesh& mesh, LinkedEdge& linkedEdge) {
-  WingedEdge&   edge  = linkedEdge.data ();
-  WingedVertex& v1    = edge.vertex1 ()->data ();
-  WingedVertex& v2    = edge.vertex2 ()->data ();
-  Adjacents     a1    = v1.adjacentVertices (edge);
-  Adjacents     a2    = v2.adjacentVertices (edge);
+glm::vec3 SubdivButterfly :: subdiv (const WingedMesh& mesh, LinkedEdge edge) {
+  LinkedVertex  v1    = edge->vertex1 ();
+  LinkedVertex  v2    = edge->vertex2 ();
+  Adjacents     a1    = v1->adjacentVertices (edge);
+  Adjacents     a2    = v2->adjacentVertices (edge);
 
   if (a1.size () == 6 && a2.size () == 6)
     return subdivK6 (mesh,a1,a2);
   else if (a1.size () == 6 && a2.size () < 6)
-    return subdivK (mesh,v2.vertex (mesh), a2);
+    return subdivK (mesh,v2->vertex (mesh), a2);
   else if (a1.size () < 6 && a2.size () == 6)
-    return subdivK (mesh,v1.vertex (mesh), a1);
+    return subdivK (mesh,v1->vertex (mesh), a1);
   else 
     return subdivExtraordinary (mesh,a1,a2);
 }
 
-glm::vec3 subdivK6 (WingedMesh& mesh, const Adjacents& a1, const Adjacents& a2) {
+glm::vec3 subdivK6 (const WingedMesh& mesh, const Adjacents& a1, const Adjacents& a2) {
 
   return (0.5f    * a1[0]->vertex (mesh))
        + (0.5f    * a2[0]->vertex (mesh))
@@ -64,7 +83,7 @@ glm::vec3 subdivK6 (WingedMesh& mesh, const Adjacents& a1, const Adjacents& a2) 
        - (0.0625f * a2[4]->vertex (mesh));
 }
 
-glm::vec3 subdivK (WingedMesh& mesh, const glm::vec3& center, const Adjacents& a) {
+glm::vec3 subdivK (const WingedMesh& mesh, const glm::vec3& center, const Adjacents& a) {
   glm::vec3 v (0.0f,0.0f,0.0f);
 
   if (a.size () == 3) {
@@ -92,7 +111,7 @@ glm::vec3 subdivK (WingedMesh& mesh, const glm::vec3& center, const Adjacents& a
   return v + center;
 }
 
-glm::vec3 subdivExtraordinary ( WingedMesh& mesh
+glm::vec3 subdivExtraordinary ( const WingedMesh& mesh
                               , const Adjacents& a1, const Adjacents& a2) {
 
   return 0.5f * ( subdivK (mesh, a2[0]->vertex (mesh), a1) 

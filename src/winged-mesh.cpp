@@ -42,24 +42,24 @@ FaceConstIterator WingedMesh :: faceIterator () const {
   return this->faces.cbegin ();
 }
 
-unsigned int WingedMesh :: numVertices () const { 
-  return this->mesh.numVertices (); 
+VertexIterator WingedMesh :: vertexReverseIterator () { 
+  return --this->vertices.end ();
+}
+EdgeIterator WingedMesh :: edgeReverseIterator () {
+  return --this->edges.end ();
+}
+FaceIterator WingedMesh :: faceReverseIterator () {
+  return --this->faces.end ();
 }
 
-unsigned int WingedMesh :: numWingedVertices () const { 
-  return this->vertices.size (); 
+VertexConstIterator WingedMesh :: vertexReverseIterator () const { 
+  return --this->vertices.cend ();
 }
-
-unsigned int WingedMesh :: numEdges () const { 
-  return this->edges.size (); 
+EdgeConstIterator WingedMesh :: edgeReverseIterator () const {
+  return --this->edges.cend ();
 }
-
-unsigned int WingedMesh :: numFaces () const { 
-  return this->faces.size (); 
-}
-
-glm::vec3 WingedMesh :: vertex  (unsigned int index) const { 
-  return mesh.vertex (index);
+FaceConstIterator WingedMesh :: faceReverseIterator () const {
+  return --this->faces.cend ();
 }
 
 void WingedMesh :: rebuildIndices () {

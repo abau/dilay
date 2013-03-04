@@ -22,6 +22,8 @@ SOURCES += src/axis.cpp \
            src/opengl.cpp \
            src/ray.cpp \
            src/state.cpp \
+           src/subdivision-butterfly.cpp \
+           src/subdivision-util.cpp \
            src/triangle.cpp \
            src/util.cpp \
            src/view-gl-widget.cpp \
@@ -32,8 +34,6 @@ SOURCES += src/axis.cpp \
            src/winged-mesh.cpp \
            src/winged-mesh-util.cpp \
            src/winged-vertex.cpp
-       # src/subdivision-butterfly.cpp \
-       # src/subdivision-util.cpp \
 
 HEADERS += src/axis.hpp \
            src/camera.hpp \
@@ -46,6 +46,8 @@ HEADERS += src/axis.hpp \
            src/ray.hpp \
            src/rendermode.hpp \
            src/state.hpp \
+           src/subdivision-butterfly.hpp \
+           src/subdivision-util.hpp \
            src/triangle.hpp \
            src/util.hpp \
            src/view-gl-widget.hpp \
@@ -57,5 +59,3 @@ HEADERS += src/axis.hpp \
            src/winged-mesh.hpp \
            src/winged-mesh-util.hpp \
            src/winged-vertex.hpp
-       #src/subdivision-butterfly.hpp \
-       #src/subdivision-util.hpp \

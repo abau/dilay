@@ -35,3 +35,12 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
 WingedEdgeIterator WingedFace :: edgeIterator () const {
   return WingedEdgeIterator (*this);
 }
+
+unsigned int WingedFace :: numEdges () const {
+  unsigned int i = 0;
+
+  for (WINGED_EDGE_ITERATOR(_,*this)) {
+    i++;
+  }
+  return i;
+}

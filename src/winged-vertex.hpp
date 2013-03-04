@@ -31,6 +31,7 @@ class WingedVertex {
     std::vector <LinkedVertex>  adjacentVertices  (LinkedEdge) const;
     std::vector <LinkedVertex>  adjacentVertices  () const;
     glm::vec3                   normal            (const WingedMesh&) const;
+    unsigned int                valence           () const;
 
   private:
     const unsigned int          _index;

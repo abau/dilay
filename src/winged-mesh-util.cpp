@@ -2,7 +2,7 @@
 #include "util.hpp"
 #include "winged-mesh-util.hpp"
 
-void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
+void WingedMeshUtil :: printStatistics (const WingedMesh& mesh, bool onlyDirect) {
   auto vertexIndex = [&mesh] (ConstLinkedVertex v) {
     if (v != mesh.nullVertex ())
       return Util :: toString (v->index ());
@@ -28,11 +28,12 @@ void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
   std::cout << "Number of faces: "           << mesh.numFaces ()    << std::endl;
 
   for (VERTEX_CONST_ITERATOR(it,mesh)) {
-    std::cout << "Vertex "        << it->index  () 
-              << "\n\tposition: " << it->vertex (mesh)
-              << "\n\tedge: "     << edgeId     (it->edge ())
-              << "\n\tnormal: "   << it->normal (mesh)
-              << std::endl;
+    std::cout   << "Vertex "        << it->index  () 
+                << "\n\tposition: " << it->vertex (mesh)
+                << "\n\tedge: "     << edgeId     (it->edge ());
+    if (! onlyDirect)
+      std::cout << "\n\tnormal: "   << it->normal (mesh);
+    std::cout   << std::endl;
   }
 
   for (EDGE_CONST_ITERATOR(it,mesh)) {
@@ -49,10 +50,12 @@ void WingedMeshUtil :: printStatistics (const WingedMesh& mesh) {
   }
 
   for (FACE_CONST_ITERATOR(it,mesh)) {
-    std::cout << "Face "         << it->id () 
-              << "\n\tedge:\t\t" << edgeId (it->edge())
-              << "\n\tnormal: "  << it->normal (mesh)
-              << std::endl;
+    std::cout   << "Face "         << it->id () 
+                << "\n\tedge:\t\t" << edgeId (it->edge());
+
+    if (! onlyDirect)
+      std::cout << "\n\tnormal: "  << it->normal (mesh);
+    std::cout   << std::endl;
   }
 }
 

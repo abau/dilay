@@ -16,21 +16,12 @@ WingedEdge :: WingedEdge (WingedMesh& mesh) {
   this->_rightSuccessor    = mesh.nullEdge ();
 }
 
-WingedEdge :: WingedEdge ( LinkedVertex& v1, LinkedVertex& v2
-                         , LinkedFace& leftF, LinkedFace& rightF
-                         , LinkedEdge& leftPred, LinkedEdge& leftSucc
-                         , LinkedEdge& rightPred, LinkedEdge& rightSucc) {
-  this->_vertex1           = v1; 
-  this->_vertex2           = v2;
+WingedEdge :: WingedEdge ( LinkedVertex v1, LinkedVertex v2
+                         , LinkedFace left, LinkedFace right
+                         , LinkedEdge leftPred, LinkedEdge leftSucc
+                         , LinkedEdge rightPred, LinkedEdge rightSucc) {
 
-  this->_leftFace          = leftF;
-  this->_rightFace         = rightF;
-
-  this->_leftPredecessor   = leftPred;
-  this->_leftSuccessor     = leftSucc;
-
-  this->_rightPredecessor  = rightPred;
-  this->_rightSuccessor    = rightSucc;
+  this->set (v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc);
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
@@ -74,15 +65,43 @@ LinkedEdge WingedEdge :: successor (const WingedFace& face) const {
 LinkedFace WingedEdge :: otherFace (const WingedFace& face) const {
   return this->isLeftFace (face) ? this->rightFace () : this->leftFace  (); }
 
-void WingedEdge :: setVertex1   (LinkedVertex v) { this->_vertex1   = v; }
-void WingedEdge :: setVertex2   (LinkedVertex v) { this->_vertex2   = v; }
-void WingedEdge :: setLeftFace  (LinkedFace f)   { this->_leftFace  = f; }
-void WingedEdge :: setRightFace (LinkedFace f)   { this->_rightFace = f; }
+void WingedEdge :: set ( LinkedVertex v1, LinkedVertex v2
+                       , LinkedFace left, LinkedFace right
+                       , LinkedEdge leftPred , LinkedEdge leftSucc
+                       , LinkedEdge rightPred, LinkedEdge rightSucc) {
+  this->setVertex1          (v1);
+  this->setVertex2          (v2);
+  this->setLeftFace         (left);
+  this->setRightFace        (right);
+  this->setLeftPredecessor  (leftPred);
+  this->setLeftSuccessor    (leftSucc);
+  this->setRightPredecessor (rightPred);
+  this->setRightSuccessor   (rightSucc);
+}
 
-void WingedEdge :: setLeftPredecessor  (LinkedEdge e) { this->_leftPredecessor  = e; }
-void WingedEdge :: setLeftSuccessor    (LinkedEdge e) { this->_leftSuccessor    = e; }
-void WingedEdge :: setRightPredecessor (LinkedEdge e) { this->_rightPredecessor = e; }
-void WingedEdge :: setRightSuccessor   (LinkedEdge e) { this->_rightSuccessor   = e; }
+void WingedEdge :: setVertex1          (LinkedVertex v) { this->_vertex1          = v; }
+void WingedEdge :: setVertex2          (LinkedVertex v) { this->_vertex2          = v; }
+void WingedEdge :: setLeftFace         (LinkedFace f)   { this->_leftFace         = f; }
+void WingedEdge :: setRightFace        (LinkedFace f)   { this->_rightFace        = f; }
+void WingedEdge :: setLeftPredecessor  (LinkedEdge e)   { this->_leftPredecessor  = e; }
+void WingedEdge :: setLeftSuccessor    (LinkedEdge e)   { this->_leftSuccessor    = e; }
+void WingedEdge :: setRightPredecessor (LinkedEdge e)   { this->_rightPredecessor = e; }
+void WingedEdge :: setRightSuccessor   (LinkedEdge e)   { this->_rightSuccessor   = e; }
+
+void WingedEdge :: setFirstVertex (const WingedFace& face, LinkedVertex vertex) {
+  if (this->isLeftFace (face)) this->setVertex1 (vertex);
+  else                         this->setVertex2 (vertex);
+}
+
+void WingedEdge :: setSecondVertex (const WingedFace& face, LinkedVertex vertex) {
+  if (this->isLeftFace (face)) this->setVertex2 (vertex);
+  else                         this->setVertex1 (vertex);
+}
+
+void WingedEdge :: setFace (const WingedFace& face, LinkedFace newFace) {
+  if (this->isLeftFace (face)) this->setLeftFace  (newFace);
+  else                         this->setRightFace (newFace);
+}
 
 void WingedEdge :: setPredecessor (const WingedFace& face, LinkedEdge edge) {
   if (this->isLeftFace (face)) this->setLeftPredecessor  (edge);
@@ -94,11 +113,6 @@ void WingedEdge :: setSuccessor (const WingedFace& face, LinkedEdge edge) {
   else                         this->setRightSuccessor (edge);
 }
 
-void WingedEdge :: setFace (const WingedFace& face, LinkedFace newFace) {
-  if (this->isLeftFace (face)) this->setLeftFace  (newFace);
-  else                         this->setRightFace (newFace);
-}
-
 float WingedEdge :: lengthSqr (const WingedMesh& mesh) const {
   glm::vec3 a = this->_vertex1->vertex (mesh);
   glm::vec3 b = this->_vertex2->vertex (mesh);
@@ -108,6 +122,11 @@ float WingedEdge :: lengthSqr (const WingedMesh& mesh) const {
 LinkedEdge WingedEdge :: successor (const WingedFace& face, unsigned int index) const {
   if (index == 0) return this->successor (face);
   else            return this->successor (face)->successor (face,index-1);
+}
+
+LinkedEdge WingedEdge :: predecessor (const WingedFace& face, unsigned int index) const {
+  if (index == 0) return this->predecessor (face);
+  else            return this->predecessor (face)->predecessor (face,index-1);
 }
 
 LinkedVertex WingedEdge :: vertex (const WingedFace& face, unsigned int index) const {

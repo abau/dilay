@@ -7,7 +7,7 @@
 
 namespace SubdivButterfly {
   void      subdiv (WingedMesh&);
-  glm::vec3 subdiv (WingedMesh&, LinkedEdge&);
+  glm::vec3 subdiv (const WingedMesh&, LinkedEdge);
 }
 
 #endif

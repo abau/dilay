@@ -9,8 +9,8 @@
 class WingedEdge {
   public:
     WingedEdge ( WingedMesh& );
-    WingedEdge ( LinkedVertex&, LinkedVertex&, LinkedFace&, LinkedFace&
-               , LinkedEdge&, LinkedEdge&, LinkedEdge&, LinkedEdge&);
+    WingedEdge ( LinkedVertex, LinkedVertex, LinkedFace, LinkedFace
+               , LinkedEdge, LinkedEdge, LinkedEdge, LinkedEdge);
 
     IdType        id                  () const { return this->_id.get (); }
 
@@ -34,22 +34,27 @@ class WingedEdge {
     LinkedEdge    successor           (const WingedFace&) const;
     LinkedFace    otherFace           (const WingedFace&) const;
 
+    void          set                 ( LinkedVertex, LinkedVertex
+                                      , LinkedFace, LinkedFace
+                                      , LinkedEdge, LinkedEdge, LinkedEdge, LinkedEdge);
     void          setVertex1          (LinkedVertex);
     void          setVertex2          (LinkedVertex);
     void          setLeftFace         (LinkedFace);
     void          setRightFace        (LinkedFace);
-                                         
     void          setLeftPredecessor  (LinkedEdge);
     void          setLeftSuccessor    (LinkedEdge);
     void          setRightPredecessor (LinkedEdge);
     void          setRightSuccessor   (LinkedEdge);
 
+    void          setFirstVertex      (const WingedFace&, LinkedVertex);
+    void          setSecondVertex     (const WingedFace&, LinkedVertex);
+    void          setFace             (const WingedFace&, LinkedFace);
     void          setPredecessor      (const WingedFace&, LinkedEdge);
     void          setSuccessor        (const WingedFace&, LinkedEdge);
-    void          setFace             (const WingedFace&, LinkedFace);
 
     float         lengthSqr           (const WingedMesh&) const;
     LinkedEdge    successor           (const WingedFace&, unsigned int) const;
+    LinkedEdge    predecessor         (const WingedFace&, unsigned int) const;
     LinkedVertex  vertex              (const WingedFace&, unsigned int) const;
     glm::vec3     middle              (const WingedMesh&) const;
   private:

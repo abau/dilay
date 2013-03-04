@@ -10,8 +10,8 @@ State& State :: global () {
 }
 
 void State :: initialize () { 
-  //this->_mesh.fromMesh (Mesh :: sphere (1.0f,30,30));
-  this->setMesh (Mesh :: cube (1.0f));
+  this->setMesh (Mesh :: sphere (1.0f,10,20));
+  //this->setMesh (Mesh :: cube (1.0f));
   this->_mesh.bufferData ();
   this->_camera.initialize ();
   this->_cursor.initialize ();

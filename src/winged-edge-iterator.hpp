@@ -1,5 +1,5 @@
-#ifndef WINGED_EDGE_ITERATOR
-#define WINGED_EDGE_ITERATOR
+#ifndef DILAY_WINGED_EDGE_ITERATOR
+#define DILAY_WINGED_EDGE_ITERATOR
 
 #include "util.hpp"
 

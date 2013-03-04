@@ -78,3 +78,7 @@ glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
   }
   return glm::normalize (normal);
 }
+
+unsigned int WingedVertex :: valence () const {
+  return this->adjacentEdges ().size ();
+}
