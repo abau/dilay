@@ -1,7 +1,10 @@
 #include "axis.hpp"
 #include "opengl.hpp"
 
-Axis :: Axis () : length (1.0f) { }
+#include <glm/gtc/matrix_transform.hpp>
+#include "state.hpp"
+
+Axis :: Axis () : length (0.5f) { }
 
 void Axis :: initialize () {
   this->mesh.addVertex (glm::vec3 (0.0f        , 0.0f        , 0.0f        ));
@@ -21,6 +24,10 @@ void Axis :: initialize () {
 
 void Axis :: render () {
   this->mesh.renderBegin ();
+
+  State :: global ().camera ().updateProjection (0,0,200,200);
+  State :: global ().camera ().rotationProjection ();
+
   glDisable (GL_DEPTH_TEST);
 
   OpenGL :: setColor (1.0f,0.0f,0.0f);

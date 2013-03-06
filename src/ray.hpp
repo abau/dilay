@@ -1,8 +1,8 @@
-#include <sstream>
-#include <glm/glm.hpp>
-
 #ifndef RAY
 #define RAY
+
+#include <sstream>
+#include <glm/glm.hpp>
 
 class Ray {
   public:

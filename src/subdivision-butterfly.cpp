@@ -3,9 +3,6 @@
 #include "subdivision-butterfly.hpp"
 #include "winged-edge-iterator.hpp"
 
-
-#include "winged-mesh-util.hpp"
-
 typedef std::vector <LinkedVertex>   Adjacents;
 
 void SubdivButterfly :: subdiv (WingedMesh& mesh) {

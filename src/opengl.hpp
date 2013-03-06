@@ -1,9 +1,9 @@
+#ifndef OPENGL
+#define OPENGL
+
 #include <glm/glm.hpp>
 #include "rendermode.hpp"
 #include "view-light.hpp"
-
-#ifndef OPENGL
-#define OPENGL
 
 class OpenGL {
   public:

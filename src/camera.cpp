@@ -22,13 +22,19 @@ void Camera :: initialize () {
   this->updateProjection ();
 }
 
-void Camera :: updateView () {
-  this->_eyePoint = this->_gazePoint + this->_toEyePoint;
-  this->_view     = glm::lookAt ( this->_eyePoint, this->_gazePoint, this->_up );
+void Camera :: updateResolution (int width, int height) {
+  this->_resolutionWidth  = width;
+  this->_resolutionHeight = height;
+  this->updateProjection ();
 }
 
 void Camera :: modelViewProjection (const glm::mat4& model) const {
   glm::mat4 mvp = this->_projection * this->_view * model;
+  OpenGL :: setMvp (&mvp[0][0]);
+}
+
+void Camera :: rotationProjection () const {
+  glm::mat4 mvp = this->_projection * this->_viewRotation;
   OpenGL :: setMvp (&mvp[0][0]);
 }
 
@@ -58,27 +64,39 @@ void Camera :: horizontalRotation (int steps) {
   this->updateView ();
 }
 
-Ray Camera :: getRay (int x, int y) {
+Ray Camera :: getRay (unsigned int x, unsigned int y) const {
   glm::vec3 p = glm::unProject ( glm::vec3 (float (x), float (y), 0.0f)
                                , this->_view, this->_projection
                                , glm::vec4 ( 0, 0
                                            , this->_resolutionWidth
                                            , this->_resolutionHeight)
                                );
-  return Ray (this->_eyePoint, glm::normalize (p - this->_eyePoint));
+  glm::vec3 eye = this->eyePoint ();
+  return Ray (eye, glm::normalize (p - eye));
 }
 
-void Camera :: updateProjection () {
-  glViewport (0,0,this->_resolutionWidth,this->_resolutionHeight);
+void Camera :: updateProjection ( unsigned int x, unsigned int y
+                                , unsigned int w, unsigned int h) {
+  glViewport (x,y,w,h);
   this->_projection = glm::perspective ( 
       45.0f
-    , float (this->_resolutionWidth) / float (this->_resolutionHeight)
+    , float (w) / float (h)
     , this->_nearClipping, this->_farClipping);
 }
 
-void Camera :: updateResolution (int width, int height) {
-  this->_resolutionWidth  = width;
-  this->_resolutionHeight = height;
-  this->updateProjection ();
+void Camera :: updateProjection () {
+  Camera :: updateProjection (0,0,this->_resolutionWidth,this->_resolutionHeight);
+}
+
+void Camera :: updateView () {
+  this->_view = glm::lookAt ( this->eyePoint (), this->_gazePoint, this->_up );
+
+  this->_viewRotation = glm::lookAt ( glm::normalize (this->_toEyePoint)
+                                    , glm::vec3 (0.0f)
+                                    , this->_up );
+}
+
+glm::vec3 Camera :: eyePoint () const {
+  return this->_gazePoint + this->_toEyePoint;
 }
 
