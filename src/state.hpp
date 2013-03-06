@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include "winged-mesh.hpp"
 #include "camera.hpp"
-#include "cursor-sphere.hpp"
+#include "cursor.hpp"
 
 class State {
   public:             State        () {}
@@ -17,7 +17,7 @@ class State {
 
     WingedMesh&       mesh         ()             { return this->_mesh;  }
     Camera&           camera       ()             { return this->_camera; }       
-    CursorSphere&     cursor       ()             { return this->_cursor; }
+    Cursor&           cursor       ()             { return this->_cursor; }
 
     void              initialize   ();
     void              render       ();
@@ -25,6 +25,6 @@ class State {
   private:
     WingedMesh        _mesh;
     Camera            _camera;
-    CursorSphere      _cursor;
+    Cursor            _cursor;
 };
 #endif

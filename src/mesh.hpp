@@ -40,13 +40,16 @@ class Mesh {
 
     void         translate        (const glm::vec3&);
     void         setPosition      (const glm::vec3&);
+    void         setRotation      (const glm::mat4&);
 
     static Mesh  triangle         (const glm::vec3&,const glm::vec3&,const glm::vec3&);
     static Mesh  cube             (float);
     static Mesh  sphere           (float,int,int);
 
   private: // cf. copy-constructor, operator=
-    glm::mat4                     modelMatrix;
+    glm::mat4                     scalings;
+    glm::mat4                     rotations;
+    glm::mat4                     translations;
     std::vector<   GLfloat   >    vertices;
     std::vector< unsigned int>    indices;
     std::vector<   GLfloat   >    normals;

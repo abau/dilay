@@ -15,7 +15,7 @@ QMAKE_CXXFLAGS  += --std=c++11
 
 SOURCES += src/axis.cpp \
            src/camera.cpp \
-           src/cursor-sphere.cpp \
+           src/cursor.cpp \
            src/id.cpp \
            src/main.cpp \
            src/mesh.cpp \
@@ -37,7 +37,7 @@ SOURCES += src/axis.cpp \
 
 HEADERS += src/axis.hpp \
            src/camera.hpp \
-           src/cursor-sphere.hpp \
+           src/cursor.hpp \
            src/id.hpp \
            src/intersection.hpp \
            src/maybe.hpp \

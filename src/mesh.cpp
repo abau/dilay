@@ -5,13 +5,17 @@
 #include "state.hpp"
 #include "opengl.hpp"
 
-Mesh :: Mesh () : modelMatrix     (glm::mat4 (1.0f))
+Mesh :: Mesh () : scalings        (glm::mat4 (1.0f))
+                , rotations       (glm::mat4 (1.0f))
+                , translations    (glm::mat4 (1.0f))
                 , hasNormals      (false)
                 , renderMode      (RenderWireframe)
                 {}
 
 Mesh :: Mesh (const Mesh& source)
-                : modelMatrix     (source.modelMatrix)
+                : scalings        (source.scalings)
+                , rotations       (source.rotations)
+                , translations    (source.translations)
                 , vertices        (source.vertices)
                 , indices         (source.indices)
                 , normals         (source.normals)
@@ -29,16 +33,18 @@ Mesh :: ~Mesh () {
 const Mesh& Mesh :: operator= (const Mesh& source) {
   if (this == &source) return *this;
   Mesh tmp (source);
-  std::swap (this->modelMatrix   , tmp.modelMatrix);
-  std::swap (this->vertices      , tmp.vertices);
-  std::swap (this->indices       , tmp.indices);
-  std::swap (this->normals       , tmp.normals);
-  std::swap (this->hasNormals    , tmp.hasNormals);
-  std::swap (this->arrayObjectId , tmp.arrayObjectId);
-  std::swap (this->vertexBufferId, tmp.vertexBufferId);
-  std::swap (this->indexBufferId , tmp.indexBufferId);
-  std::swap (this->normalBufferId, tmp.normalBufferId);
-  std::swap (this->renderMode    , tmp.renderMode);
+  std::swap (this->scalings        , tmp.scalings);
+  std::swap (this->rotations       , tmp.rotations);
+  std::swap (this->translations    , tmp.translations);
+  std::swap (this->vertices        , tmp.vertices);
+  std::swap (this->indices         , tmp.indices);
+  std::swap (this->normals         , tmp.normals);
+  std::swap (this->hasNormals      , tmp.hasNormals);
+  std::swap (this->arrayObjectId   , tmp.arrayObjectId);
+  std::swap (this->vertexBufferId  , tmp.vertexBufferId);
+  std::swap (this->indexBufferId   , tmp.indexBufferId);
+  std::swap (this->normalBufferId  , tmp.normalBufferId);
+  std::swap (this->renderMode      , tmp.renderMode);
   return *this;
 }
 
@@ -134,7 +140,8 @@ void Mesh :: bufferData () {
 
 void Mesh :: renderBegin () {
   OpenGL :: setProgram (this->renderMode);
-  State :: global ().camera ().modelViewProjection (this->modelMatrix);
+  glm::mat4 modelMatrix = this->translations * this->rotations * this->scalings;
+  State :: global ().camera ().modelViewProjection (modelMatrix);
   glBindVertexArray (this->arrayObjectId);
 }
 
@@ -184,11 +191,15 @@ void Mesh :: toggleRenderMode () {
 }
 
 void Mesh :: translate (const glm::vec3& v) {
-  this->modelMatrix = glm::translate (this->modelMatrix, v);
+  this->translations = glm::translate (this->translations, v);
 }
 
 void Mesh :: setPosition (const glm::vec3& v) {
-  this->modelMatrix = glm::translate (glm::mat4(1.0f), v);
+  this->translations = glm::translate (glm::mat4(1.0f), v);
+}
+
+void Mesh :: setRotation (const glm::mat4& r) {
+  this->rotations = r;
 }
 
 // Static

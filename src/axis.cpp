@@ -41,4 +41,6 @@ void Axis :: render () {
 
   glEnable (GL_DEPTH_TEST);
   this->mesh.renderEnd ();
+
+  State :: global ().camera ().updateProjection ();
 }

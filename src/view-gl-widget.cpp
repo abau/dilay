@@ -21,7 +21,6 @@ void GLWidget :: initializeGL () {
 
 void GLWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  State :: global ().camera ().updateProjection ();
   State :: global ().render ();
   this->_axis.render ();
 }
@@ -50,12 +49,23 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
 
 void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: NoButton) {
-    int reversedY = State :: global ().camera ().resolutionHeight () - e->y ();
-    Ray ray = State :: global ().camera ().getRay (e->x (), reversedY);
-    Maybe <FaceIntersection> i = State :: global ().mesh ().intersectRay (ray);
+    WingedMesh& mesh = State :: global ().mesh ();
+    int reversedY    = State :: global ().camera ().resolutionHeight () - e->y ();
+    Ray ray          = State :: global ().camera ().getRay ( e->x () , reversedY);
+
+    Maybe <FaceIntersection> i = mesh.intersectRay (ray);
 
     if (i.isDefined ()) {
-      State :: global ().cursor ().setPosition (i.data ().position ());
+      glm::vec3 pos    = i.data ().position ();
+      glm::vec3 normal = i.data ().face ()->normal (mesh);
+
+      State :: global ().cursor ().enable      ();
+      State :: global ().cursor ().setPosition (pos);
+      State :: global ().cursor ().setNormal   (normal);
+      this->update ();
+    }
+    else if (State :: global ().cursor ().isEnabled ()) {
+      State :: global ().cursor ().disable ();
       this->update ();
     }
   }
@@ -82,7 +92,7 @@ void GLWidget :: mousePressEvent (QMouseEvent* e) {
   }
 }
 
-void GLWidget :: mouseReleaseEvent (QMouseEvent* _) {
+void GLWidget :: mouseReleaseEvent (QMouseEvent*) {
   this->_mouseMovement.invalidate ();
 }
 
