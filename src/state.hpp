@@ -7,6 +7,7 @@
 #include "winged-mesh.hpp"
 #include "camera.hpp"
 #include "cursor.hpp"
+#include "yaml.hpp"
 
 class State {
   public:             State        () {}
@@ -26,5 +27,6 @@ class State {
     WingedMesh        _mesh;
     Camera            _camera;
     Cursor            _cursor;
+    Yaml              _config;
 };
 #endif

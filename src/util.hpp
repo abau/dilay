@@ -30,6 +30,22 @@ namespace Util {
     return ss.str ();
   }
 
+  template <class T>
+  std::string toString (const std::initializer_list<T>& ts) {
+    std::stringstream ss;
+    bool isFirst = true;
+    ss << "{ ";
+    for (const T& t : ts) {
+      if (isFirst)
+        isFirst = ! isFirst;
+      else
+        ss << ", ";
+      ss << t;
+    }
+    ss << " }";
+    return ss.str ();
+  }
+
   glm::vec3 between (const glm::vec3&, const glm::vec3&);
 
   std::string readFile (const char*); 

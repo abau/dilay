@@ -7,7 +7,7 @@ TARGET          =  dilay
 DEPENDPATH      += src src/view
 INCLUDEPATH     += src src/view
 CONFIG          += warn_on debug
-LIBS            += -lGL -lGLEW
+LIBS            += -lGL -lGLEW -lyaml-cpp
 QT              += opengl
 MOC_DIR         =  moc
 OBJECTS_DIR     =  obj
@@ -40,6 +40,7 @@ HEADERS += src/axis.hpp \
            src/cursor.hpp \
            src/id.hpp \
            src/intersection.hpp \
+           src/yaml.hpp \
            src/maybe.hpp \
            src/mesh.hpp \
            src/opengl.hpp \
