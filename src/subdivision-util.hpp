@@ -1,15 +1,11 @@
-#include "winged-mesh.hpp"
 
-#ifndef SUBDIVISION_UTIL
-#define SUBDIVISION_UTIL
+#ifndef DILAY_SUBDIVISION_UTIL
+#define DILAY_SUBDIVISION_UTIL
 
-typedef std::pair <LinkedFace,LinkedFace> NewFaces;
+#include "fwd-glm.hpp"
+#include "fwd-winged.hpp"
 
 namespace SubdivUtil {
-  /*
-  NewFaces      splitEdge    (WingedMesh&, LinkedEdge);
-  NewFaces      splitEdge    (WingedMesh&, LinkedEdge, const glm::vec3&);
-  */
   LinkedEdge    insertVertex (WingedMesh&, LinkedEdge, const glm::vec3&);
 
   /** `triangluate6Gon(m,f)` triangulates the 6-gon `f`.

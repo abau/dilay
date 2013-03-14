@@ -28,8 +28,8 @@ SOURCES += \
            src/ray.cpp \
            src/rendermode.cpp \
            src/state.cpp \
-      #    src/subdivision-butterfly.cpp \
-      #    src/subdivision-util.cpp \
+           src/subdivision-butterfly.cpp \
+           src/subdivision-util.cpp \
            src/triangle.cpp \
            src/util.cpp \
            src/view-gl-widget.cpp \
@@ -61,8 +61,8 @@ HEADERS += \
            src/ray.hpp \
            src/rendermode.hpp \
            src/state.hpp \
-      #    src/subdivision-butterfly.hpp \
-      #    src/subdivision-util.hpp \
+           src/subdivision-butterfly.hpp \
+           src/subdivision-util.hpp \
            src/triangle.hpp \
            src/util.hpp \
            src/view-gl-widget.hpp \

@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <cassert>
 #include <glm/glm.hpp>
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"

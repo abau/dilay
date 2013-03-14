@@ -14,11 +14,7 @@
 #include "ray.hpp"
 #include "cursor.hpp"
 #include "winged-face.hpp"
-
-/*
-#include "maybe.hpp"
 #include "subdivision-butterfly.hpp"
-*/
 
 struct GLWidgetImpl {
   MouseMovement mouseMovement;
@@ -109,7 +105,7 @@ void GLWidget :: mousePressEvent (QMouseEvent* e) {
     FaceIntersection intersection;
 
     if (mesh.intersectRay (ray,intersection)) {
-      //SubdivButterfly :: subdiv (mesh);
+      SubdivButterfly :: subdiv (mesh);
       mesh.rebuildIndices ();
       mesh.rebuildNormals ();
       mesh.bufferData ();

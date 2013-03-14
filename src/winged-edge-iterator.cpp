@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <cassert>
 #include "winged-edge-iterator.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"

@@ -1,9 +1,8 @@
-#ifndef SUBDIVISION_BUTTERFLY
-#define SUBDIVISION_BUTTERFLY
+#ifndef DILAY_SUBDIVISION_BUTTERFLY
+#define DILAY_SUBDIVISION_BUTTERFLY
 
-#include "subdivision-util.hpp"
-#include "winged-mesh.hpp"
-#include "winged-edge.hpp"
+#include "fwd-glm.hpp"
+#include "fwd-winged.hpp"
 
 namespace SubdivButterfly {
   void      subdiv (WingedMesh&);
