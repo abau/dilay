@@ -1,7 +1,7 @@
 #ifndef DILAY_WINGED_EDGE_ITERATOR
 #define DILAY_WINGED_EDGE_ITERATOR
 
-#include "util.hpp"
+#include "fwd-winged.hpp"
 
 class WingedEdgeIterator {
   public:

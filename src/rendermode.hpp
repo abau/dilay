@@ -1,23 +1,16 @@
-#ifndef RENDERMODE
-#define RENDERMODE
+#ifndef DILAY_RENDERMODE
+#define DILAY_RENDERMODE
 
-enum RenderMode { RenderSolid     = 0 // c.f. numRenderModes
-                , RenderWireframe = 1
-                , RenderFlat      = 2
-                }; 
+enum RenderMode : short 
+  { RenderSmooth    = 0 // c.f. numRenderModes
+  , RenderWireframe = 1
+  , RenderFlat      = 2
+  }; 
 
-class RenderModeUtil {
-  public:
-    static const int numRenderModes = 3;
-
-    static RenderMode toggle (RenderMode renderMode) {
-      if (renderMode == RenderSolid)
-        return RenderWireframe;
-      else if (renderMode == RenderWireframe)
-        return RenderFlat;
-      else
-        return RenderSolid;
-    }
-};
+namespace RenderModeUtil {
+  const int numRenderModes = 3;
+ 
+  RenderMode toggle (RenderMode);
+}
 
 #endif

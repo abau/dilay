@@ -1,16 +1,18 @@
+#ifndef DILAY_VIEW_GL_WIDGET
+#define DILAY_VIEW_GL_WIDGET
+
 #include <GL/glew.h>
 #include <QGLWidget>
-#include <QMouseEvent>
-#include "view-mouse-movement.hpp"
-#include "axis.hpp"
 
-#ifndef VIEW_GL_WIDGET
-#define VIEW_GL_WIDGET
+class GLWidgetImpl;
 
 class GLWidget : public QGLWidget {
     Q_OBJECT
   public:
-    GLWidget(const QGLFormat&);
+    friend class GLWidgetImpl;
+
+     GLWidget (const QGLFormat&);
+    ~GLWidget ();
  
   protected:
     virtual void initializeGL       ();
@@ -25,8 +27,7 @@ class GLWidget : public QGLWidget {
     virtual void wheelEvent         (QWheelEvent*);
 
   private:
-    MouseMovement _mouseMovement;
-    Axis          _axis;
+    GLWidgetImpl* impl;
 };
 
 #endif

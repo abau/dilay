@@ -1,9 +1,9 @@
-#ifndef WINGED_VERTEX
-#define WINGED_VERTEX
+#ifndef DILAY_WINGED_VERTEX
+#define DILAY_WINGED_VERTEX
 
-#include <glm/glm.hpp>
 #include <vector>
-#include "util.hpp"
+#include "fwd-glm.hpp"
+#include "fwd-winged.hpp"
 
 class WingedVertex {
   public:                      

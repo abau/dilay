@@ -1,15 +1,9 @@
-#ifndef WINGED_MESH
-#define WINGED_MESH
+#ifndef DILAY_WINGED_MESH
+#define DILAY_WINGED_MESH
 
-#include <glm/glm.hpp>
 #include <list>
-#include "mesh.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
-#include "winged-vertex.hpp"
-#include "maybe.hpp"
-#include "ray.hpp"
-#include "intersection.hpp"
+#include "fwd-winged.hpp"
+#include "fwd-glm.hpp"
 
 typedef std::list < WingedVertex > Vertices;
 typedef std::list < WingedEdge   > Edges;
@@ -39,22 +33,31 @@ typedef Faces   ::const_iterator FaceConstIterator;
 #define EDGE_CONST_REVERSE_ITERATOR(it,mesh)  EdgeConstIterator (it) = (mesh).edgeReverseIterator (); (it) != (mesh).rNullEdge (); --(it)
 #define FACE_CONST_REVERSE_ITERATOR(it,mesh)  FaceConstIterator (it) = (mesh).faceReverseIterator (); (it) != (mesh).rNullFace (); --(it)
 
+class FaceIntersection;
+class Ray;
+
+class WingedMeshImpl;
+
 class WingedMesh {
   public:                    
-    WingedMesh&              operator=   (const WingedMesh&) = delete;
-    LinkedVertex             nullVertex  ()       { return this->vertices.end (); }
-    LinkedEdge               nullEdge    ()       { return this->edges.end    (); }
-    LinkedFace               nullFace    ()       { return this->faces.end    (); }
-    ConstLinkedVertex        nullVertex  () const { return this->vertices.end (); }
-    ConstLinkedEdge          nullEdge    () const { return this->edges.end    (); }
-    ConstLinkedFace          nullFace    () const { return this->faces.end    (); }
+     WingedMesh                                    ();
+     WingedMesh                                    (const WingedMesh&);
+     WingedMesh&             operator=             (const WingedMesh&);
+    ~WingedMesh                                    ();
 
-    LinkedVertex             rNullVertex ()       { return --this->vertices.begin (); }
-    LinkedEdge               rNullEdge   ()       { return --this->edges.begin    (); }
-    LinkedFace               rNullFace   ()       { return --this->faces.begin    (); }
-    ConstLinkedVertex        rNullVertex () const { return --this->vertices.begin (); }
-    ConstLinkedEdge          rNullEdge   () const { return --this->edges.begin    (); }
-    ConstLinkedFace          rNullFace   () const { return --this->faces.begin    (); }
+    LinkedVertex             nullVertex            ();
+    LinkedEdge               nullEdge              ();
+    LinkedFace               nullFace              ();
+    ConstLinkedVertex        nullVertex            () const;
+    ConstLinkedEdge          nullEdge              () const;
+    ConstLinkedFace          nullFace              () const;
+
+    LinkedVertex             rNullVertex           ();
+    LinkedEdge               rNullEdge             ();
+    LinkedFace               rNullFace             ();
+    ConstLinkedVertex        rNullVertex           () const;
+    ConstLinkedEdge          rNullEdge             () const;
+    ConstLinkedFace          rNullFace             () const;
 
     void                     addIndex              (unsigned int);
     LinkedVertex             addVertex             (const glm::vec3&, LinkedEdge);
@@ -77,28 +80,25 @@ class WingedMesh {
     EdgeConstIterator        edgeReverseIterator   () const;
     FaceConstIterator        faceReverseIterator   () const;
 
-    unsigned int numVertices       () const { return this->mesh.numVertices (); }
-    unsigned int numWingedVertices () const { return this->vertices.size    (); }
-    unsigned int numEdges          () const { return this->edges.size       (); }
-    unsigned int numFaces          () const { return this->faces.size       (); }
+    unsigned int             numVertices           () const;
+    unsigned int             numWingedVertices     () const;
+    unsigned int             numEdges              () const;
+    unsigned int             numFaces              () const;
 
-    glm::vec3 vertex (unsigned int i) const { return this->mesh.vertex (i);     }
+    glm::vec3                vertex                (unsigned int) const;
 
-    void rebuildIndices    ();
-    void rebuildNormals    ();
-    void bufferData        () { this->mesh.bufferData   (); }
-    void renderBegin       () { this->mesh.renderBegin  (); }
-    void render            () { this->mesh.render       (); }
-    void renderEnd         () { this->mesh.renderEnd    (); }
-    void reset             ();
-    void toggleRenderMode  () { this->mesh.toggleRenderMode (); }
+    void                     rebuildIndices        ();
+    void                     rebuildNormals        ();
+    void                     bufferData            ();
+    void                     renderBegin           ();
+    void                     render                ();
+    void                     renderEnd             ();
+    void                     reset                 ();
+    void                     toggleRenderMode      ();
     
-    Maybe <FaceIntersection> intersectRay (const Ray&);
+    bool                     intersectRay          (const Ray&, FaceIntersection&);
   private:
-    Mesh     mesh;
-    Vertices vertices;
-    Edges    edges;
-    Faces    faces;
+    WingedMeshImpl* impl;
 };
 
 #endif

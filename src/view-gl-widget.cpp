@@ -1,28 +1,51 @@
 #include <QApplication>
+#include <QKeyEvent>
+#include <glm/glm.hpp>
 #include "view-gl-widget.hpp"
-#include "opengl.hpp"
+#include "renderer.hpp"
+#include "view-mouse-movement.hpp"
+#include "axis.hpp"
 #include "state.hpp"
-
-#include "ray.hpp"
-#include "intersection.hpp"
-#include "maybe.hpp"
+#include "macro.hpp"
+#include "camera.hpp"
 #include "winged-mesh-util.hpp"
-#include "subdivision-butterfly.hpp"
+#include "winged-mesh.hpp"
+#include "intersection.hpp"
+#include "ray.hpp"
+#include "cursor.hpp"
+#include "winged-face.hpp"
 
-GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
+/*
+#include "maybe.hpp"
+#include "subdivision-butterfly.hpp"
+*/
+
+struct GLWidgetImpl {
+  MouseMovement mouseMovement;
+  Axis          axis;
+};
+
+GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) 
+                                               , impl (new GLWidgetImpl)
+                                               {}
+
+
+GLWidget :: ~GLWidget () {
+  delete this->impl;
+}
 
 void GLWidget :: initializeGL () {
-  this->setMouseTracking (true);
-  OpenGL :: initialize ();
+  Renderer :: global ().initialize ();
+  State    :: global ().initialize ();
 
-  this->_axis.initialize ();
-  State :: global ().initialize ();
+  this->impl->axis.initialize ();
+  this->setMouseTracking (true);
 }
 
 void GLWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   State :: global ().render ();
-  this->_axis.render ();
+  this->impl->axis.render ();
 }
 
 void GLWidget :: resizeGL (int w, int h) {
@@ -53,11 +76,11 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     int reversedY    = State :: global ().camera ().resolutionHeight () - e->y ();
     Ray ray          = State :: global ().camera ().getRay ( e->x () , reversedY);
 
-    Maybe <FaceIntersection> i = mesh.intersectRay (ray);
+    FaceIntersection intersection;
 
-    if (i.isDefined ()) {
-      glm::vec3 pos    = i.data ().position ();
-      glm::vec3 normal = i.data ().face ()->normal (mesh);
+    if (mesh.intersectRay (ray, intersection)) {
+      glm::vec3 pos    = intersection.position ();
+      glm::vec3 normal = intersection.face ()->normal (mesh);
 
       State :: global ().cursor ().enable      ();
       State :: global ().cursor ().setPosition (pos);
@@ -70,9 +93,9 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     }
   }
   if (e->buttons () == Qt :: MiddleButton) {
-    this->_mouseMovement.update (e->pos ());
-    State :: global ().camera ().verticalRotation   (this->_mouseMovement.dX ());
-    State :: global ().camera ().horizontalRotation (this->_mouseMovement.dY ());
+    this->impl->mouseMovement.update (e->pos ());
+    State :: global ().camera ().verticalRotation   (this->impl->mouseMovement.dX ());
+    State :: global ().camera ().horizontalRotation (this->impl->mouseMovement.dY ());
     this->update ();
   }
 }
@@ -80,20 +103,23 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
     int reversedY = State :: global ().camera ().resolutionHeight () - e->y ();
-    Ray ray = State :: global ().camera ().getRay (e->x (), reversedY);
-    Maybe <FaceIntersection> i = State :: global ().mesh ().intersectRay (ray);
-    if (i.isDefined ()) {
-      SubdivButterfly :: subdiv (State :: global ().mesh ());
-      State :: global ().mesh ().rebuildIndices ();
-      State :: global ().mesh ().rebuildNormals ();
-      State :: global ().mesh ().bufferData ();
+    Ray ray       = State :: global ().camera ().getRay (e->x (), reversedY);
+
+    WingedMesh&      mesh = State :: global ().mesh ();
+    FaceIntersection intersection;
+
+    if (mesh.intersectRay (ray,intersection)) {
+      //SubdivButterfly :: subdiv (mesh);
+      mesh.rebuildIndices ();
+      mesh.rebuildNormals ();
+      mesh.bufferData ();
       this->update ();
     }
   }
 }
 
 void GLWidget :: mouseReleaseEvent (QMouseEvent*) {
-  this->_mouseMovement.invalidate ();
+  this->impl->mouseMovement.invalidate ();
 }
 
 void GLWidget :: resizeEvent (QResizeEvent* e) {

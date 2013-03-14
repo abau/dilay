@@ -1,32 +1,29 @@
-#ifndef STATE
-#define STATE
+#ifndef DILAY_STATE
+#define DILAY_STATE
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <glm/glm.hpp>
-#include "winged-mesh.hpp"
-#include "camera.hpp"
-#include "cursor.hpp"
-#include "yaml.hpp"
+class StateImpl;
+class Mesh;
+class WingedMesh;
+class Camera;
+class Cursor;
 
 class State {
-  public:             State        () {}
-                      State        (const State&) = delete;
-    State&            operator=    (const State&) = delete;
-                      
+  public:                                   
     static State&     global       ();
 
-    WingedMesh&       mesh         ()             { return this->_mesh;  }
-    Camera&           camera       ()             { return this->_camera; }       
-    Cursor&           cursor       ()             { return this->_cursor; }
+    WingedMesh&       mesh         ();
+    Camera&           camera       ();
+    Cursor&           cursor       ();
 
     void              initialize   ();
     void              render       ();
     void              setMesh      (const Mesh&);
   private:
-    WingedMesh        _mesh;
-    Camera            _camera;
-    Cursor            _cursor;
-    Yaml              _config;
+     State            ();
+     State            (const State&) = delete;
+     State& operator= (const State&) = delete;
+    ~State            ();
+
+    StateImpl* impl;
 };
 #endif

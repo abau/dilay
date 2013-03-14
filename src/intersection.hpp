@@ -1,19 +1,27 @@
-#ifndef INTERSECTION
-#define INTERSECTION
+#ifndef DILAY_INTERSECTION
+#define DILAY_INTERSECTION
 
-#include "util.hpp"
+#include "fwd-glm.hpp"
+#include "fwd-winged.hpp"
+
+class FaceIntersectionImpl;
 
 class FaceIntersection {
   public:
-    FaceIntersection (const glm::vec3& p, LinkedFace f)
-      : _position (p), _face (f) {}
+     FaceIntersection            ();
+     FaceIntersection            (const glm::vec3&, LinkedFace);
+     FaceIntersection            (const FaceIntersection&);
+     FaceIntersection& operator= (const FaceIntersection&);
+    ~FaceIntersection            ();
 
-    const glm::vec3& position () const { return this->_position; }
-    LinkedFace       face     () const { return this->_face; }
+    const glm::vec3& position () const;
+    LinkedFace       face     () const;
+
+    void             position (const glm::vec3&);
+    void             face     (LinkedFace);
 
   private:
-    glm::vec3        _position;
-    LinkedFace       _face;
+    FaceIntersectionImpl* impl;
 };
 
 #endif

@@ -1,6 +1,12 @@
 #include <iostream>
-#include "util.hpp"
+#include <glm/glm.hpp>
+#include "winged-vertex.hpp"
+#include "winged-edge.hpp"
+#include "winged-face.hpp"
+#include "winged-mesh.hpp"
 #include "winged-mesh-util.hpp"
+#include "mesh.hpp"
+#include "util.hpp"
 
 void WingedMeshUtil :: printStatistics (const WingedMesh& mesh, bool onlyDirect) {
   auto vertexIndex = [&mesh] (ConstLinkedVertex v) {

@@ -1,5 +1,5 @@
-#ifndef IDD
-#define IDD
+#ifndef DILAY_IDD
+#define DILAY_IDD
 
 typedef unsigned long IdType;
 

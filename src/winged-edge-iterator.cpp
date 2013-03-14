@@ -1,5 +1,8 @@
-#include "winged-mesh.hpp"
+#include <assert.h>
 #include "winged-edge-iterator.hpp"
+#include "winged-edge.hpp"
+#include "winged-face.hpp"
+#include "winged-mesh.hpp"
 
 WingedEdgeIterator :: WingedEdgeIterator (const WingedFace& f) 
   : _face  (f)

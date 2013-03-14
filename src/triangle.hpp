@@ -1,29 +1,36 @@
-#include <glm/glm.hpp>
-#include "maybe.hpp"
-#include "ray.hpp"
+#ifndef DILAY_TRIANGLE
+#define DILAY_TRIANGLE
 
-#ifndef TRIANGLE
-#define TRIANGLE
+#include "fwd-glm.hpp"
+
+class TriangleImpl;
+class Ray;
+template <class T> class Maybe;
 
 class Triangle {
   public:
-    Triangle (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
-      : _vertex1 (v1), _vertex2 (v2), _vertex3 (v3) {}
+     Triangle            (const glm::vec3&, const glm::vec3&, const glm::vec3&);
+     Triangle            ();
+     Triangle            (const Triangle&);
+     Triangle& operator= (const Triangle&);
+    ~Triangle            ();
 
-    const glm::vec3&  vertex1 () const { return this->_vertex1; }
-    const glm::vec3&  vertex2 () const { return this->_vertex2; }
-    const glm::vec3&  vertex3 () const { return this->_vertex3; }
+    const glm::vec3&  vertex1 () const;
+    const glm::vec3&  vertex2 () const;
+    const glm::vec3&  vertex3 () const;
+
+    void              vertex1 (const glm::vec3&);
+    void              vertex2 (const glm::vec3&);
+    void              vertex3 (const glm::vec3&);
 
     glm::vec3         edge1   () const;
     glm::vec3         edge2   () const;
     glm::vec3         normal  () const;
 
-    Maybe <glm::vec3> intersectRay (const Ray&) const;
+    bool              intersectRay (const Ray&, glm::vec3&) const;
 
   private:
-    const glm::vec3 _vertex1;
-    const glm::vec3 _vertex2;
-    const glm::vec3 _vertex3;
+    TriangleImpl* impl;
 };
 
 #endif

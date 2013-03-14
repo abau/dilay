@@ -1,32 +1,65 @@
+#include <glm/glm.hpp>
 #include "triangle.hpp"
+#include "macro.hpp"
 #include "util.hpp"
+#include "ray.hpp"
 
-glm::vec3 Triangle :: edge1 () const { return this->_vertex2 - this->_vertex1; }
-glm::vec3 Triangle :: edge2 () const { return this->_vertex3 - this->_vertex1; }
+struct TriangleImpl {
+  glm::vec3 vertex1;
+  glm::vec3 vertex2;
+  glm::vec3 vertex3;
 
-glm::vec3 Triangle :: normal () const { 
-  return glm::cross (this->edge1 (), this->edge2 ());
-}
+  TriangleImpl () {}
 
-Maybe <glm::vec3> Triangle :: intersectRay (const Ray& ray) const {
-  glm::vec3 e1 = this->edge1 ();
-  glm::vec3 e2 = this->edge2 ();
+  TriangleImpl (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
+    : vertex1 (v1), vertex2 (v2), vertex3 (v3) {}
 
-  glm::vec3 s1  = glm::cross (ray.direction (), e2);
-  float divisor = glm::dot (s1, e1);
+  glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
+  glm::vec3 edge2 () const { return this->vertex3 - this->vertex1; }
 
-  if (divisor < Util :: epsilon) 
-    return Maybe <glm::vec3> :: nothing ();
+  glm::vec3 normal () const { 
+    return glm::cross (this->edge1 (), this->edge2 ());
+  }
 
-  float     invDivisor = 1.0f / divisor;
-  glm::vec3 d          = ray.origin () - this->vertex1 ();
-  glm::vec3 s2         = glm::cross (d,e1);
-  float     b1         = glm::dot (d,s1)                 * invDivisor;
-  float     b2         = glm::dot (ray.direction (), s2) * invDivisor;
-  float     t          = glm::dot (e2, s2)               * invDivisor;
+  bool intersectRay (const Ray& ray, glm::vec3& intersection) const {
+    glm::vec3 e1 = this->edge1 ();
+    glm::vec3 e2 = this->edge2 ();
 
-  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) 
-    return Maybe <glm::vec3> :: nothing ();
+    glm::vec3 s1  = glm::cross (ray.direction (), e2);
+    float divisor = glm::dot (s1, e1);
 
-  return Maybe <glm::vec3> (ray.pointAt (t));
-}
+    if (divisor < Util :: epsilon) 
+      return false;
+
+    float     invDivisor = 1.0f / divisor;
+    glm::vec3 d          = ray.origin () - this->vertex1;
+    glm::vec3 s2         = glm::cross (d,e1);
+    float     b1         = glm::dot (d,s1)                 * invDivisor;
+    float     b2         = glm::dot (ray.direction (), s2) * invDivisor;
+    float     t          = glm::dot (e2, s2)               * invDivisor;
+
+    if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) {
+      return false;
+    }
+    else {
+      intersection = ray.pointAt (t);
+      return true;
+    }
+  }
+};
+
+DELEGATE_BIG4          (Triangle)
+DELEGATE3_CONSTRUCTOR  (Triangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+
+GETTER          (const glm::vec3&  , Triangle, vertex1)
+GETTER          (const glm::vec3&  , Triangle, vertex2)
+GETTER          (const glm::vec3&  , Triangle, vertex3)
+
+SETTER          (const glm::vec3&  , Triangle, vertex1)
+SETTER          (const glm::vec3&  , Triangle, vertex2)
+SETTER          (const glm::vec3&  , Triangle, vertex3)
+
+DELEGATE_CONST  (glm::vec3         , Triangle, edge1)
+DELEGATE_CONST  (glm::vec3         , Triangle, edge2)
+DELEGATE_CONST  (glm::vec3         , Triangle, normal)
+DELEGATE2_CONST (bool              , Triangle, intersectRay, const Ray&, glm::vec3&)

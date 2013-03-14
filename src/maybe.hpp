@@ -1,8 +1,8 @@
-#ifndef MAYBE
-#define MAYBE
+#ifndef DILAY_MAYBE
+#define DILAY_MAYBE
 
-#include <iostream>
-#include "util.hpp"
+#include <iosfwd>
+#include <string>
 
 // Maybe ////////////////////
 template <class T>
@@ -17,13 +17,15 @@ class Maybe {
     const Maybe<T>& operator=(const Maybe<T>& d) {
       if (this == &d) return *this;
       Maybe <T> tmp (d);
-      std::swap (this->_data, tmp._data);
+      T* tmpData  = tmp._data;
+      tmp._data   = this->_data;
+      this->_data = tmpData;
       return *this;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Maybe<T>& d) {
-      if (d.isDefined ()) os << "Defined { " << d.data () << " }" ;
-      else                os << "Nothing";
+      if (d.isDefined ()) os << std::string ("Defined {) ") << d.data () << " }" ;
+      else                os << std::string ("Nothing");
       return os;
     }
 
@@ -64,8 +66,8 @@ class MaybePtr {
     ~MaybePtr () { this->undefine (); }
 
     friend std::ostream& operator<<(std::ostream& os, const Maybe<T>& d) {
-      if (d.isDefined ()) os << "DefinedPtr { " << *(d.ptr ()) << " }" ;
-      else                os << "NothingPtr";
+      if (d.isDefined ()) os << std::string("DefinedPtr { ") << *(d.ptr ()) << " }" ;
+      else                os << std::string("NothingPtr");
       return os;
     }
 

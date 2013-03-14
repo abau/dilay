@@ -1,19 +1,23 @@
-#include <QPoint>
-#include "maybe.hpp"
-
 #ifndef VIEW_MOUSE_MOVEMENT
 #define VIEW_MOUSE_MOVEMENT
 
+class MouseMovementImpl;
+class QPoint;
+
 class MouseMovement {
   public:
-    void  update      (const QPoint& p);
+     MouseMovement            ();
+     MouseMovement            (const MouseMovement&);
+     MouseMovement& operator= (const MouseMovement&);
+    ~MouseMovement            ();
+
+    void  update      (const QPoint&);
     void  invalidate  ();
     int   dX          () const;
     int   dY          () const;
 
   private:
-    Maybe <QPoint> _oldPos;
-    Maybe <QPoint> _newPos;
+    MouseMovementImpl* impl;
 };
 
 #endif

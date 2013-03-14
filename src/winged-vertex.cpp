@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 #include "winged-mesh.hpp"
 #include "winged-face.hpp"
 #include "winged-edge.hpp"

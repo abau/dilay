@@ -4,29 +4,36 @@
 
 TEMPLATE        =  app
 TARGET          =  dilay
-DEPENDPATH      += src src/view
-INCLUDEPATH     += src src/view
+DEPENDPATH      += src 
+INCLUDEPATH     += src 
 CONFIG          += warn_on debug
-LIBS            += -lGL -lGLEW -lyaml-cpp
+LIBS            += -lGL -lGLEW -lyaml-cpp -lglog
 QT              += opengl
 MOC_DIR         =  moc
 OBJECTS_DIR     =  obj
 QMAKE_CXXFLAGS  += --std=c++11
 
-SOURCES += src/axis.cpp \
+SOURCES += \
+           src/axis.cpp \
            src/camera.cpp \
+           src/config.cpp \
+           src/color.cpp \
            src/cursor.cpp \
            src/id.cpp \
+           src/intersection.cpp \
            src/main.cpp \
            src/mesh.cpp \
-           src/opengl.cpp \
+           src/opengl-util.cpp \
+           src/renderer.cpp \
            src/ray.cpp \
+           src/rendermode.cpp \
            src/state.cpp \
-           src/subdivision-butterfly.cpp \
-           src/subdivision-util.cpp \
+      #    src/subdivision-butterfly.cpp \
+      #    src/subdivision-util.cpp \
            src/triangle.cpp \
            src/util.cpp \
            src/view-gl-widget.cpp \
+           src/view-light.cpp \
            src/view-mouse-movement.cpp \
            src/winged-edge.cpp \
            src/winged-edge-iterator.cpp \
@@ -35,20 +42,27 @@ SOURCES += src/axis.cpp \
            src/winged-mesh-util.cpp \
            src/winged-vertex.cpp
 
-HEADERS += src/axis.hpp \
+HEADERS += \
+           src/axis.hpp \
            src/camera.hpp \
+           src/color.hpp \
+           src/config.hpp \
            src/cursor.hpp \
+           src/fwd-glm.hpp \
+           src/fwd-yaml.hpp \
+           src/fwd-winged.hpp \
            src/id.hpp \
            src/intersection.hpp \
-           src/yaml.hpp \
+           src/macro.hpp \
            src/maybe.hpp \
            src/mesh.hpp \
-           src/opengl.hpp \
+           src/opengl-util.hpp \
+           src/renderer.hpp \
            src/ray.hpp \
            src/rendermode.hpp \
            src/state.hpp \
-           src/subdivision-butterfly.hpp \
-           src/subdivision-util.hpp \
+      #    src/subdivision-butterfly.hpp \
+      #    src/subdivision-util.hpp \
            src/triangle.hpp \
            src/util.hpp \
            src/view-gl-widget.hpp \

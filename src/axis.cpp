@@ -1,46 +1,59 @@
+#include <glm/glm.hpp>
 #include "axis.hpp"
-#include "opengl.hpp"
-
-#include <glm/gtc/matrix_transform.hpp>
+#include "renderer.hpp"
+#include "mesh.hpp"
 #include "state.hpp"
+#include "macro.hpp"
+#include "camera.hpp"
+#include "color.hpp"
 
-Axis :: Axis () : length (0.5f) { }
+struct AxisImpl {
+  Mesh   mesh;
+  float  length;
 
-void Axis :: initialize () {
-  this->mesh.addVertex (glm::vec3 (0.0f        , 0.0f        , 0.0f        ));
-  this->mesh.addVertex (glm::vec3 (this->length, 0.0f        , 0.0f        ));
-  this->mesh.addVertex (glm::vec3 (0.0f        , this->length, 0.0f        ));
-  this->mesh.addVertex (glm::vec3 (0.0f        , 0.0f        , this->length));
+  AxisImpl () : length (0.5f) {}
 
-  this->mesh.addIndex (0);
-  this->mesh.addIndex (1);
-  this->mesh.addIndex (0);
-  this->mesh.addIndex (2);
-  this->mesh.addIndex (0);
-  this->mesh.addIndex (3);
+  void initialize () {
+    this->mesh.addVertex (glm::vec3 (0.0f        , 0.0f        , 0.0f        ));
+    this->mesh.addVertex (glm::vec3 (this->length, 0.0f        , 0.0f        ));
+    this->mesh.addVertex (glm::vec3 (0.0f        , this->length, 0.0f        ));
+    this->mesh.addVertex (glm::vec3 (0.0f        , 0.0f        , this->length));
 
-  this->mesh.bufferData ();
-}
+    this->mesh.addIndex (0);
+    this->mesh.addIndex (1);
+    this->mesh.addIndex (0);
+    this->mesh.addIndex (2);
+    this->mesh.addIndex (0);
+    this->mesh.addIndex (3);
 
-void Axis :: render () {
-  this->mesh.renderBegin ();
+    this->mesh.bufferData ();
+  }
 
-  State :: global ().camera ().updateProjection (0,0,200,200);
-  State :: global ().camera ().rotationProjection ();
+  void render () {
+    this->mesh.renderBegin ();
 
-  glDisable (GL_DEPTH_TEST);
+    State :: global ().camera ().updateProjection (0,0,200,200);
+    State :: global ().camera ().rotationProjection ();
 
-  OpenGL :: setColor (1.0f,0.0f,0.0f);
-  glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 0));
+    glDisable (GL_DEPTH_TEST);
 
-  OpenGL :: setColor (0.0f,1.0f,0.0f);
-  glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 2));
+    Renderer :: global ().setColor3 (Color (1.0f,0.0f,0.0f));
+    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 0));
 
-  OpenGL :: setColor (0.0f,0.0f,1.0f);
-  glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 4));
+    Renderer :: global ().setColor3 (Color (0.0f,1.0f,0.0f));
+    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 2));
 
-  glEnable (GL_DEPTH_TEST);
-  this->mesh.renderEnd ();
+    Renderer :: global ().setColor3 (Color (0.0f,0.0f,1.0f));
+    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 4));
 
-  State :: global ().camera ().updateProjection ();
-}
+    glEnable (GL_DEPTH_TEST);
+    this->mesh.renderEnd ();
+
+    State :: global ().camera ().updateProjection ();
+  }
+};
+
+DELEGATE_CONSTRUCTOR  (Axis)
+DELEGATE_DESTRUCTOR   (Axis)
+DELEGATE              (void,Axis,initialize)
+DELEGATE              (void,Axis,render)

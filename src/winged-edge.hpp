@@ -1,10 +1,11 @@
-#ifndef WINGED_EDGE
-#define WINGED_EDGE
+#ifndef DILAY_WINGED_EDGE
+#define DILAY_WINGED_EDGE
 
 #include "id.hpp"
-#include "util.hpp"
-#include "winged-vertex.hpp"
-#include "winged-face.hpp"
+#include "fwd-winged.hpp"
+#include "fwd-glm.hpp"
+
+class Id;
 
 class WingedEdge {
   public:

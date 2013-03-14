@@ -1,6 +1,10 @@
+#include <glm/glm.hpp>
+#include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
+#include "winged-edge-iterator.hpp"
+#include "triangle.hpp"
 
 WingedFace :: WingedFace (LinkedEdge e) : _edge (e) {}
 
@@ -14,14 +18,19 @@ void WingedFace :: addIndices (WingedMesh& mesh) {
   }
 }
 
-Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
+void WingedFace :: triangle (const WingedMesh& mesh, Triangle& triangle) const {
   WingedEdge& e1 = *this->_edge;
   WingedEdge& e2 = *e1.successor (*this);
-  
-  return Triangle ( e1.firstVertex  (*this)->vertex (mesh)
-                  , e1.secondVertex (*this)->vertex (mesh)
-                  , e2.secondVertex (*this)->vertex (mesh)
-      );
+
+  triangle.vertex1 (e1.firstVertex  (*this)->vertex (mesh));
+  triangle.vertex2 (e1.secondVertex (*this)->vertex (mesh));
+  triangle.vertex3 (e2.secondVertex (*this)->vertex (mesh));
+}
+
+Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
+  Triangle t (glm::vec3 (0.0f),glm::vec3 (0.0f),glm::vec3 (0.0f));
+  this->triangle (mesh,t);
+  return t;
 }
 
 glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {

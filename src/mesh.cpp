@@ -1,296 +1,338 @@
 #define  _USE_MATH_DEFINES
 #include <cmath>
+#include <vector>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "mesh.hpp"
+#include "macro.hpp"
+#include "opengl-util.hpp"
+#include "renderer.hpp"
+#include "rendermode.hpp"
+#include "color.hpp"
 #include "state.hpp"
-#include "opengl.hpp"
+#include "camera.hpp"
 
-Mesh :: Mesh () : scalings        (glm::mat4 (1.0f))
-                , rotations       (glm::mat4 (1.0f))
-                , translations    (glm::mat4 (1.0f))
-                , hasNormals      (false)
-                , renderMode      (RenderWireframe)
-                {}
+struct MeshImpl {
+  // cf. copy-constructor, operator=, reset
+  glm::mat4x4                 scalings;
+  glm::mat4x4                 rotations;
+  glm::mat4x4                 translations;
+  std::vector<   GLfloat   >  vertices;
+  std::vector< unsigned int>  indices;
+  std::vector<   GLfloat   >  normals;
+  bool                        hasNormals;
 
-Mesh :: Mesh (const Mesh& source)
-                : scalings        (source.scalings)
-                , rotations       (source.rotations)
-                , translations    (source.translations)
-                , vertices        (source.vertices)
-                , indices         (source.indices)
-                , normals         (source.normals)
-                , hasNormals      (source.hasNormals)
-                , renderMode      (source.renderMode)
-                {}
+  GLuint                      arrayObjectId; 
+  GLuint                      vertexBufferId;
+  GLuint                      indexBufferId;
+  GLuint                      normalBufferId;
 
-Mesh :: ~Mesh () {
-  OpenGL :: safeDeleteArray  (this->arrayObjectId);
-  OpenGL :: safeDeleteBuffer (this->vertexBufferId);
-  OpenGL :: safeDeleteBuffer (this->indexBufferId);
-  OpenGL :: safeDeleteBuffer (this->normalBufferId);
-}
+  RenderMode                  renderMode;
 
-const Mesh& Mesh :: operator= (const Mesh& source) {
-  if (this == &source) return *this;
-  Mesh tmp (source);
-  std::swap (this->scalings        , tmp.scalings);
-  std::swap (this->rotations       , tmp.rotations);
-  std::swap (this->translations    , tmp.translations);
-  std::swap (this->vertices        , tmp.vertices);
-  std::swap (this->indices         , tmp.indices);
-  std::swap (this->normals         , tmp.normals);
-  std::swap (this->hasNormals      , tmp.hasNormals);
-  std::swap (this->arrayObjectId   , tmp.arrayObjectId);
-  std::swap (this->vertexBufferId  , tmp.vertexBufferId);
-  std::swap (this->indexBufferId   , tmp.indexBufferId);
-  std::swap (this->normalBufferId  , tmp.normalBufferId);
-  std::swap (this->renderMode      , tmp.renderMode);
-  return *this;
-}
+  MeshImpl () { 
+    this->scalings      = glm::mat4x4 (1.0f);
+    this->rotations     = glm::mat4x4 (1.0f);
+    this->translations  = glm::mat4x4 (1.0f);
+    this->renderMode    = RenderWireframe;
+  }
 
-unsigned int Mesh :: numVertices () const { return this->vertices.size () / 3; }
-unsigned int Mesh :: numIndices  () const { return this->indices.size  (); }
-unsigned int Mesh :: numNormals  () const { return this->normals.size () / 3; }
+  MeshImpl (const MeshImpl& source)
+              : scalings     (source.scalings)
+              , rotations    (source.rotations)
+              , translations (source.translations)
+              , vertices     (source.vertices)
+              , indices      (source.indices)
+              , normals      (source.normals)
+              , hasNormals   (source.hasNormals)
+              , renderMode   (source.renderMode)
+              {}
 
-unsigned int Mesh :: sizeOfVertices () const { 
-  return this->vertices.size () * sizeof (GLfloat);
-}
+  ~MeshImpl () { this->reset (); }
 
-unsigned int Mesh :: sizeOfIndices () const { 
-  return this->indices.size () * sizeof (unsigned int);
-}
+  MeshImpl& operator= (const MeshImpl& source) {
+    if (this == &source) return *this;
+    MeshImpl tmp (source);
+    std::swap (this->scalings        , tmp.scalings);
+    std::swap (this->rotations       , tmp.rotations);
+    std::swap (this->translations    , tmp.translations);
+    std::swap (this->vertices        , tmp.vertices);
+    std::swap (this->indices         , tmp.indices);
+    std::swap (this->normals         , tmp.normals);
+    std::swap (this->hasNormals      , tmp.hasNormals);
+    std::swap (this->arrayObjectId   , tmp.arrayObjectId);
+    std::swap (this->vertexBufferId  , tmp.vertexBufferId);
+    std::swap (this->indexBufferId   , tmp.indexBufferId);
+    std::swap (this->normalBufferId  , tmp.normalBufferId);
+    std::swap (this->renderMode      , tmp.renderMode);
+    return *this;
+  }
 
-unsigned int Mesh :: sizeOfNormals () const { 
-  return this->normals.size () * sizeof (GLfloat);
-}
+  unsigned int numVertices () const { return this->vertices.size () / 3; }
+  unsigned int numIndices  () const { return this->indices.size  (); }
+  unsigned int numNormals  () const { return this->normals.size () / 3; }
 
-void Mesh :: addIndex (unsigned int i) { this->indices.push_back (i); }
+  unsigned int sizeOfVertices () const { 
+    return this->vertices.size () * sizeof (GLfloat);
+  }
 
-glm::vec3 Mesh :: vertex (unsigned int i) const {
-  return glm::vec3 ( this->vertices [(3 * i) + 0]
-                   , this->vertices [(3 * i) + 1]
-                   , this->vertices [(3 * i) + 2]
-      );
-}
+  unsigned int sizeOfIndices () const { 
+    return this->indices.size () * sizeof (unsigned int);
+  }
 
-unsigned int Mesh :: index (unsigned int i) const { return this->indices [i]; }
+  unsigned int sizeOfNormals () const { 
+    return this->normals.size () * sizeof (GLfloat);
+  }
 
-unsigned int Mesh :: addVertex (GLfloat x, GLfloat y, GLfloat z) {
-  this->vertices.push_back (x);
-  this->vertices.push_back (y);
-  this->vertices.push_back (z);
-  return this->numVertices () - 1;
-}
+  void addIndex (unsigned int i) { this->indices.push_back (i); }
 
-unsigned int Mesh :: addVertex (const glm::vec3& v) { 
-  return addVertex (v.x, v.y, v.z); 
-}
+  glm::vec3 vertex (unsigned int i) const {
+    return glm::vec3 ( this->vertices [(3 * i) + 0]
+                     , this->vertices [(3 * i) + 1]
+                     , this->vertices [(3 * i) + 2]
+        );
+  }
 
-unsigned int Mesh :: addNormal (GLfloat x, GLfloat y, GLfloat z) {
-  this->hasNormals = true;
-  this->normals.push_back (x);
-  this->normals.push_back (y);
-  this->normals.push_back (z);
-  return this->numNormals () - 1;
-}
+  unsigned int index (unsigned int i) const { return this->indices [i]; }
 
-unsigned int Mesh :: addNormal (const glm::vec3& v) { 
-  return addNormal (v.x, v.y, v.z); 
-}
+  unsigned int addVertex (const glm::vec3& v) { 
+    this->vertices.push_back (v.x);
+    this->vertices.push_back (v.y);
+    this->vertices.push_back (v.z);
+    return this->numVertices () - 1;
+  }
 
-void Mesh :: clearIndices () { this->indices.clear (); }
-void Mesh :: clearNormals () { 
-  this->normals.clear (); 
-  this->hasNormals = false;
-}
+  unsigned int addNormal (const glm::vec3& n) { 
+    this->hasNormals = true;
+    this->normals.push_back (n.x);
+    this->normals.push_back (n.y);
+    this->normals.push_back (n.z);
+    return this->numNormals () - 1;
+  }
 
-void Mesh :: bufferData () {
-  if (glIsVertexArray (this->arrayObjectId) == GL_FALSE)
-    glGenVertexArrays (1, &this->arrayObjectId);
-  if (glIsBuffer (this->vertexBufferId) == GL_FALSE)
-    glGenBuffers      (1, &this->vertexBufferId);
-  if (glIsBuffer (this->indexBufferId) == GL_FALSE)
-    glGenBuffers      (1, &this->indexBufferId);
-  if (glIsBuffer (this->normalBufferId) == GL_FALSE && this->hasNormals)
-    glGenBuffers      (1, &this->normalBufferId);
+  void clearIndices () { this->indices.clear (); }
+  void clearNormals () { 
+    this->normals.clear (); 
+    this->hasNormals = false;
+  }
 
-  glBindVertexArray          (this->arrayObjectId);
+  void bufferData () {
+    if (glIsVertexArray (this->arrayObjectId) == GL_FALSE)
+      glGenVertexArrays (1, &this->arrayObjectId);
+    if (glIsBuffer (this->vertexBufferId) == GL_FALSE)
+      glGenBuffers      (1, &this->vertexBufferId);
+    if (glIsBuffer (this->indexBufferId) == GL_FALSE)
+      glGenBuffers      (1, &this->indexBufferId);
+    if (glIsBuffer (this->normalBufferId) == GL_FALSE && this->hasNormals)
+      glGenBuffers      (1, &this->normalBufferId);
 
-  glBindBuffer               ( GL_ARRAY_BUFFER, this->vertexBufferId );
-  glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfVertices ()
-                             , &this->vertices[0], GL_STATIC_DRAW);
-  glEnableVertexAttribArray  ( OpenGL :: PositionIndex);
-  glVertexAttribPointer      ( OpenGL :: PositionIndex
-                             , 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindVertexArray          (this->arrayObjectId);
 
-  glBindBuffer               ( GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId );
-  glBufferData               ( GL_ELEMENT_ARRAY_BUFFER, this->sizeOfIndices ()
-                             , &this->indices[0], GL_STATIC_DRAW);
-
-  if (this->hasNormals) {
-    glBindBuffer               ( GL_ARRAY_BUFFER, this->normalBufferId );
-    glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfNormals ()
-                               , &this->normals[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray  ( OpenGL :: NormalIndex);
-    glVertexAttribPointer      ( OpenGL :: NormalIndex
+    glBindBuffer               ( GL_ARRAY_BUFFER, this->vertexBufferId );
+    glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfVertices ()
+                               , &this->vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray  ( OpenGLUtil :: PositionIndex);
+    glVertexAttribPointer      ( OpenGLUtil :: PositionIndex
                                , 3, GL_FLOAT, GL_FALSE, 0, 0);
-  }
-  glBindVertexArray (0);
-}
 
-void Mesh :: renderBegin () {
-  OpenGL :: setProgram (this->renderMode);
-  glm::mat4 modelMatrix = this->translations * this->rotations * this->scalings;
-  State :: global ().camera ().modelViewProjection (modelMatrix);
-  glBindVertexArray (this->arrayObjectId);
-}
+    glBindBuffer               ( GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId );
+    glBufferData               ( GL_ELEMENT_ARRAY_BUFFER, this->sizeOfIndices ()
+                               , &this->indices[0], GL_STATIC_DRAW);
 
-void Mesh :: render () {
-  if (this->renderMode == RenderSolid || this->renderMode == RenderFlat)
-    return this->renderSolid ();
-  else if (this->renderMode == RenderWireframe)
-    return this->renderWireframe ();
-  else
-    assert (false);
-}
-
-void Mesh :: renderSolid () {
-  this->renderBegin  ();
-  OpenGL :: setColor (0.2f, 0.2f, 0.6f);
-  glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-  this->renderEnd    ();
-}
-
-void Mesh :: renderWireframe () {
-  this->renderBegin  ();
-  OpenGL :: setColor (0.2f, 0.2f, 0.6f);
-  glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-
-  glClear(GL_DEPTH_BUFFER_BIT);
-
-  OpenGL :: setColor (1.0f, 1.0f, 1.0f);
-  glPolygonMode      (GL_FRONT, GL_LINE);
-  glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-
-  glPolygonMode      (GL_FRONT, GL_FILL);
-  this->renderEnd    ();
-}
-
-void Mesh :: renderEnd () {
-  glBindVertexArray (0);
-}
-
-void Mesh :: reset () {
-  this->vertices.clear ();
-  this->clearIndices ();
-  this->clearNormals ();
-}
-
-void Mesh :: toggleRenderMode () {
-  this->renderMode = RenderModeUtil :: toggle (this->renderMode);
-}
-
-void Mesh :: translate (const glm::vec3& v) {
-  this->translations = glm::translate (this->translations, v);
-}
-
-void Mesh :: setPosition (const glm::vec3& v) {
-  this->translations = glm::translate (glm::mat4(1.0f), v);
-}
-
-void Mesh :: setRotation (const glm::mat4& r) {
-  this->rotations = r;
-}
-
-// Static
-Mesh Mesh :: triangle (const glm::vec3& a, const glm::vec3& b, const glm::vec3& c) {
-  Mesh m;
-  m.addIndex  (0); m.addIndex  (1); m.addIndex  (2);
-  m.addVertex (a); m.addVertex (b); m.addVertex (c);
-  return m;
-}
-
-Mesh Mesh :: cube (float side) {
-  float d = side * 0.5f;
-  Mesh m;
-  m.addVertex ( glm::vec3 (-d, -d, -d) );
-  m.addVertex ( glm::vec3 (-d, -d, +d) );
-  m.addVertex ( glm::vec3 (-d, +d, -d) );
-  m.addVertex ( glm::vec3 (-d, +d, +d) );
-  m.addVertex ( glm::vec3 (+d, -d, -d) );
-  m.addVertex ( glm::vec3 (+d, -d, +d) );
-  m.addVertex ( glm::vec3 (+d, +d, -d) );
-  m.addVertex ( glm::vec3 (+d, +d, +d) );
-
-  m.addIndex (0); m.addIndex (1); m.addIndex (2);
-  m.addIndex (3); m.addIndex (2); m.addIndex (1);
-
-  m.addIndex (1); m.addIndex (5); m.addIndex (3);
-  m.addIndex (7); m.addIndex (3); m.addIndex (5);
-
-  m.addIndex (5); m.addIndex (4); m.addIndex (7);
-  m.addIndex (6); m.addIndex (7); m.addIndex (4);
-
-  m.addIndex (4); m.addIndex (0); m.addIndex (6);
-  m.addIndex (2); m.addIndex (6); m.addIndex (0);
-
-  m.addIndex (3); m.addIndex (7); m.addIndex (2);
-  m.addIndex (6); m.addIndex (2); m.addIndex (7);
-
-  m.addIndex (0); m.addIndex (4); m.addIndex (1);
-  m.addIndex (5); m.addIndex (1); m.addIndex (4);
-
-  return m;
-}
-
-Mesh Mesh :: sphere (float radius, int rings, int sectors) {
-  assert (rings > 1 && sectors > 2);
-  float ringStep   =        M_PI / float (rings);
-  float sectorStep = 2.0f * M_PI / float (sectors);
-  float phi        = ringStep;
-  float theta      = 0.0f;
-  Mesh  m;
-
-  // Inner rings vertices
-  for (int r = 0; r < rings - 1; r++) {
-    for (int s = 0; s < sectors; s++) {
-      float x = radius * sin (theta) * sin (phi);
-      float y = radius * cos (phi);
-      float z = radius * cos (theta) * sin (phi);
-
-      m.addVertex (glm::vec3 (x,y,z));
-
-      theta += sectorStep;
+    if (this->hasNormals) {
+      glBindBuffer               ( GL_ARRAY_BUFFER, this->normalBufferId );
+      glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfNormals ()
+                                 , &this->normals[0], GL_STATIC_DRAW);
+      glEnableVertexAttribArray  ( OpenGLUtil :: NormalIndex);
+      glVertexAttribPointer      ( OpenGLUtil :: NormalIndex
+                                 , 3, GL_FLOAT, GL_FALSE, 0, 0);
     }
-    phi += ringStep;
+    glBindVertexArray (0);
   }
 
-  // Caps vertices
-  unsigned int topCapIndex = m.addVertex (glm::vec3 (0.0f, radius, 0.0f));
-  unsigned int botCapIndex = m.addVertex (glm::vec3 (0.0f,-radius, 0.0f));
+  void renderBegin () {
+    Renderer :: global ().setProgram (this->renderMode);
+    glm::mat4x4 modelMatrix = this->translations * this->rotations * this->scalings;
+    State :: global ().camera ().modelViewProjection (modelMatrix);
+    glBindVertexArray (this->arrayObjectId);
+  }
 
-  // Inner rings indices
-  for (int r = 0; r < rings - 2; r++) {
-    for (int s = 0; s < sectors; s++) {
-      m.addIndex ((sectors * r) + s);
-      m.addIndex ((sectors * (r+1)) + s);
-      m.addIndex ((sectors * r) + ((s+1) % sectors));
+  void render () {
+    if (this->renderMode == RenderSmooth || this->renderMode == RenderFlat)
+      return this->renderSolid ();
+    else if (this->renderMode == RenderWireframe)
+      return this->renderWireframe ();
+    else
+      assert (false);
+  }
 
-      m.addIndex ((sectors * (r+1)) + ((s+1) % sectors));
-      m.addIndex ((sectors * r) + ((s+1) % sectors));
-      m.addIndex ((sectors * (r+1)) + s);
+  void renderSolid () {
+    this->renderBegin  ();
+    Renderer :: global ().setColor3 (Color (0.2f, 0.2f, 0.6f));
+    glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+    this->renderEnd    ();
+  }
+
+  void renderWireframe () {
+    this->renderBegin  ();
+    Renderer :: global ().setColor3 (Color (0.2f, 0.2f, 0.6f));
+    glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    Renderer :: global ().setColor3 (Color (1.0f, 1.0f, 1.0f));
+    glPolygonMode      (GL_FRONT, GL_LINE);
+    glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+
+    glPolygonMode      (GL_FRONT, GL_FILL);
+    this->renderEnd    ();
+  }
+
+  void renderEnd () { glBindVertexArray (0); }
+
+  void reset () {
+    this->scalings      = glm::mat4x4 (1.0f);
+    this->rotations     = glm::mat4x4 (1.0f);
+    this->translations  = glm::mat4x4 (1.0f);
+    this->vertices.clear ();
+    this->clearIndices ();
+    this->clearNormals ();
+    OpenGLUtil :: global ().safeDeleteArray  (this->arrayObjectId);
+    OpenGLUtil :: global ().safeDeleteBuffer (this->vertexBufferId);
+    OpenGLUtil :: global ().safeDeleteBuffer (this->indexBufferId);
+    OpenGLUtil :: global ().safeDeleteBuffer (this->normalBufferId);
+  }
+
+  void toggleRenderMode () {
+    this->renderMode = RenderModeUtil :: toggle (this->renderMode);
+  }
+
+  void translate (const glm::vec3& v) {
+    this->translations = glm::translate (this->translations, v);
+  }
+
+  void setPosition (const glm::vec3& v) {
+    this->translations = glm::translate (glm::mat4x4 (1.0f), v);
+  }
+
+  void setRotation (const glm::mat4x4& r) {
+    this->rotations = r;
+  }
+
+  static Mesh cube (float side) {
+    Mesh m;
+    float d = side * 0.5f;
+    m.addVertex ( glm::vec3 (-d, -d, -d) );
+    m.addVertex ( glm::vec3 (-d, -d, +d) );
+    m.addVertex ( glm::vec3 (-d, +d, -d) );
+    m.addVertex ( glm::vec3 (-d, +d, +d) );
+    m.addVertex ( glm::vec3 (+d, -d, -d) );
+    m.addVertex ( glm::vec3 (+d, -d, +d) );
+    m.addVertex ( glm::vec3 (+d, +d, -d) );
+    m.addVertex ( glm::vec3 (+d, +d, +d) );
+
+    m.addIndex (0); m.addIndex (1); m.addIndex (2);
+    m.addIndex (3); m.addIndex (2); m.addIndex (1);
+
+    m.addIndex (1); m.addIndex (5); m.addIndex (3);
+    m.addIndex (7); m.addIndex (3); m.addIndex (5);
+
+    m.addIndex (5); m.addIndex (4); m.addIndex (7);
+    m.addIndex (6); m.addIndex (7); m.addIndex (4);
+
+    m.addIndex (4); m.addIndex (0); m.addIndex (6);
+    m.addIndex (2); m.addIndex (6); m.addIndex (0);
+
+    m.addIndex (3); m.addIndex (7); m.addIndex (2);
+    m.addIndex (6); m.addIndex (2); m.addIndex (7);
+
+    m.addIndex (0); m.addIndex (4); m.addIndex (1);
+    m.addIndex (5); m.addIndex (1); m.addIndex (4);
+    return m;
+  }
+
+  static Mesh sphere (float radius, int rings, int sectors) {
+    assert (rings > 1 && sectors > 2);
+    Mesh m;
+
+    float ringStep   =        M_PI / float (rings);
+    float sectorStep = 2.0f * M_PI / float (sectors);
+    float phi        = ringStep;
+    float theta      = 0.0f;
+
+    // Inner rings vertices
+    for (int r = 0; r < rings - 1; r++) {
+      for (int s = 0; s < sectors; s++) {
+        float x = radius * sin (theta) * sin (phi);
+        float y = radius * cos (phi);
+        float z = radius * cos (theta) * sin (phi);
+
+        m.addVertex (glm::vec3 (x,y,z));
+
+        theta += sectorStep;
+      }
+      phi += ringStep;
     }
-  }
 
-  // Caps indices
-  for (int s = 0; s < sectors; s++) {
-    m.addIndex (topCapIndex);
-    m.addIndex (s);
-    m.addIndex ((s+1) % sectors);
+    // Caps vertices
+    unsigned int topCapIndex = m.addVertex (glm::vec3 (0.0f, radius, 0.0f));
+    unsigned int botCapIndex = m.addVertex (glm::vec3 (0.0f,-radius, 0.0f));
 
-    m.addIndex (botCapIndex);
-    m.addIndex ((sectors * (rings-2)) + ((s+1) % sectors));
-    m.addIndex ((sectors * (rings-2)) + s);
+    // Inner rings indices
+    for (int r = 0; r < rings - 2; r++) {
+      for (int s = 0; s < sectors; s++) {
+        m.addIndex ((sectors * r) + s);
+        m.addIndex ((sectors * (r+1)) + s);
+        m.addIndex ((sectors * r) + ((s+1) % sectors));
+
+        m.addIndex ((sectors * (r+1)) + ((s+1) % sectors));
+        m.addIndex ((sectors * r) + ((s+1) % sectors));
+        m.addIndex ((sectors * (r+1)) + s);
+      }
+    }
+
+    // Caps indices
+    for (int s = 0; s < sectors; s++) {
+      m.addIndex (topCapIndex);
+      m.addIndex (s);
+      m.addIndex ((s+1) % sectors);
+
+      m.addIndex (botCapIndex);
+      m.addIndex ((sectors * (rings-2)) + ((s+1) % sectors));
+      m.addIndex ((sectors * (rings-2)) + s);
+    }
+    return m;
   }
-  return m;
-}
+};
+
+DELEGATE_BIG4    (Mesh)
+
+DELEGATE_CONST   (unsigned int, Mesh, numVertices)
+DELEGATE_CONST   (unsigned int, Mesh, numIndices)
+DELEGATE_CONST   (unsigned int, Mesh, numNormals)
+DELEGATE_CONST   (unsigned int, Mesh, sizeOfVertices)
+DELEGATE_CONST   (unsigned int, Mesh, sizeOfIndices)
+DELEGATE_CONST   (unsigned int, Mesh, sizeOfNormals)
+DELEGATE1_CONST  (glm::vec3   , Mesh, vertex, unsigned int)
+DELEGATE1_CONST  (unsigned int, Mesh, index , unsigned int)
+
+DELEGATE1        (void        , Mesh, addIndex,  unsigned int)
+DELEGATE1        (unsigned int, Mesh, addVertex, const glm::vec3&)
+DELEGATE1        (unsigned int, Mesh, addNormal, const glm::vec3&)
+DELEGATE         (void        , Mesh, clearIndices)
+DELEGATE         (void        , Mesh, clearNormals)
+
+DELEGATE         (void        , Mesh, bufferData)
+DELEGATE         (void        , Mesh, renderBegin)
+DELEGATE         (void        , Mesh, render)
+DELEGATE         (void        , Mesh, renderSolid)
+DELEGATE         (void        , Mesh, renderWireframe)
+DELEGATE         (void        , Mesh, renderEnd)
+DELEGATE         (void        , Mesh, reset)
+DELEGATE         (void        , Mesh, toggleRenderMode)
+
+DELEGATE1        (void        , Mesh, translate  , const glm::vec3&)
+DELEGATE1        (void        , Mesh, setPosition, const glm::vec3&)
+DELEGATE1        (void        , Mesh, setRotation, const glm::mat4&)
+
+DELEGATE1_STATIC (Mesh, Mesh, cube   , float)
+DELEGATE3_STATIC (Mesh, Mesh, sphere , float, int, int)

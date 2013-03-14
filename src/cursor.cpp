@@ -1,51 +1,80 @@
 #define  _USE_MATH_DEFINES
-#include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "cursor.hpp"
-#include "opengl.hpp"
+#include "mesh.hpp"
+#include "renderer.hpp"
+#include "macro.hpp"
+#include "color.hpp"
 
-void Cursor :: initialize () {
-  assert (this->_sectors > 2);
-  float sectorStep = 2.0f * M_PI / float (this->_sectors);
-  float theta      = 0.0f;
+struct CursorImpl {
+  Mesh          mesh;
+  float         radius;
+  unsigned int  sectors;
+  bool          _isEnabled;
 
-  this->_mesh.reset ();
+  CursorImpl () : radius (0.2f), sectors (20), _isEnabled (false) {}
 
-  for (unsigned int s = 0; s < this->_sectors; s++) {
-    float x = this->_radius * sin (theta);
-    float z = this->_radius * cos (theta);
+  void initialize () {
+    assert (this->sectors > 2);
+    float sectorStep = 2.0f * M_PI / float (this->sectors);
+    float theta      = 0.0f;
 
-    this->_mesh.addVertex (glm::vec3 (x,0.0f,z));
-    if (s > 0) {
-      this->_mesh.addIndex  (s-1);
-      this->_mesh.addIndex  (s);
+    this->mesh.reset ();
+
+    for (unsigned int s = 0; s < this->sectors; s++) {
+      float x = this->radius * sin (theta);
+      float z = this->radius * cos (theta);
+
+      this->mesh.addVertex (glm::vec3 (x,0.0f,z));
+      if (s > 0) {
+        this->mesh.addIndex  (s-1);
+        this->mesh.addIndex  (s);
+      }
+      theta += sectorStep;
     }
-    theta += sectorStep;
+    this->mesh.addIndex   (0);
+    this->mesh.addIndex   (this->sectors-1);
+    this->mesh.bufferData ();
   }
-  this->_mesh.addIndex   (0);
-  this->_mesh.addIndex   (this->_sectors-1);
-  this->_mesh.bufferData ();
-}
 
-void Cursor :: setNormal (const glm::vec3& v) {
-  glm::vec3 axis  = glm::cross (glm::vec3 (0.0f,1.0f,0.0f),v);
-  float     angle = glm::degrees ( glm::acos ( 
-                                   glm::dot  (glm::vec3 (0.0f,1.0f,0.0f),v)));
+  void setPosition (const glm::vec3& v) { this->mesh.setPosition (v); }
 
-  this->_mesh.setRotation (glm::rotate (glm::mat4(1.0f), angle, axis));
-}
+  void setNormal (const glm::vec3& v) {
+    glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
+    float     angle = glm::degrees ( glm::acos ( 
+                                     glm::dot  (glm::vec3 (0.0f,1.0f,0.0f),v)));
 
-void Cursor :: render () {
-  if (this->_isEnabled) {
-    this->_mesh.renderBegin ();
-
-    glDisable (GL_DEPTH_TEST); 
-
-    OpenGL :: setColor (1.0f, 0.0f, 0.0f);
-    glDrawElements     (GL_LINES, this->_mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
-
-    glEnable (GL_DEPTH_TEST); 
-
-    this->_mesh.renderEnd ();
+    this->mesh.setRotation (glm::rotate (glm::mat4(1.0f), angle, axis));
   }
-}
+
+  void render () {
+    if (this->_isEnabled) {
+      this->mesh.renderBegin ();
+
+      glDisable (GL_DEPTH_TEST); 
+
+      Renderer :: global ().setColor3 (Color (1.0f, 0.0f, 0.0f));
+      glDrawElements     (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
+
+      glEnable (GL_DEPTH_TEST); 
+
+      this->mesh.renderEnd ();
+    }
+  }
+
+  void  enable    ()       { this->_isEnabled = true;  }
+  void  disable   ()       { this->_isEnabled = false; }
+  bool  isEnabled () const { return this->_isEnabled;  }
+};
+
+DELEGATE_BIG4 (Cursor)
+
+DELEGATE        (void, Cursor, initialize)
+DELEGATE1       (void, Cursor, setPosition, const glm::vec3&)
+DELEGATE1       (void, Cursor, setNormal, const glm::vec3&)
+DELEGATE        (void, Cursor, render)
+DELEGATE        (void, Cursor, enable)
+DELEGATE        (void, Cursor, disable)
+DELEGATE_CONST  (bool, Cursor, isEnabled)

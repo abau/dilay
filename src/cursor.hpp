@@ -1,27 +1,27 @@
-#ifndef CURSOR
-#define CURSOR
+#ifndef DILAY_CURSOR
+#define DILAY_CURSOR
 
-#include <glm/glm.hpp>
-#include "util.hpp"
-#include "mesh.hpp"
+#include "fwd-glm.hpp"
+
+class CursorImpl;
+class Mesh;
 
 class Cursor {
-  public: Cursor () : _radius (0.2f), _sectors (20), _isEnabled (false) {}
-          Cursor (const Cursor&) = delete;
+  public:  Cursor            ();
+           Cursor            (const Cursor&);
+           Cursor& operator= (const Cursor&);
+          ~Cursor            ();
 
     void  initialize   ();
-    void  setPosition  (const glm::vec3& v) { this->_mesh.setPosition (v); }
+    void  setPosition  (const glm::vec3&);
     void  setNormal    (const glm::vec3&);
     void  render       ();
-    void  enable       () { this->_isEnabled = true;  }
-    void  disable      () { this->_isEnabled = false; }
-    bool  isEnabled    () const { return this->_isEnabled; }
+    void  enable       ();
+    void  disable      ();
+    bool  isEnabled    () const;
 
   private:
-    Mesh          _mesh;
-    float         _radius;
-    unsigned int  _sectors;
-    bool          _isEnabled;
+    CursorImpl* impl;
 };
 
 #endif

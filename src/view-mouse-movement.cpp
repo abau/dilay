@@ -1,26 +1,48 @@
+#include <QPoint>
 #include "view-mouse-movement.hpp"
+#include "macro.hpp"
 
-void MouseMovement :: update  (const QPoint& p) {
-  if (this->_newPos.isDefined ()) 
-    this->_oldPos.define (this->_newPos.data ());
-  this->_newPos.define (p);
-}
+struct MouseMovementImpl {
+  enum State { UpdateNewPos, UpdateOldPos, UpdateBothPos };
 
-void MouseMovement :: invalidate () {
-  this->_oldPos.undefine ();
-  this->_newPos.undefine ();
-}
+  QPoint oldPos;
+  QPoint newPos;
+  State  state;
 
-int MouseMovement :: dX () const {
-  if (this->_oldPos.isDefined () && this->_newPos.isDefined ())
-    return this->_newPos.data ().x () - this->_oldPos.data ().x ();
-  else
-    return 0;
-}
+  MouseMovementImpl () : state (UpdateNewPos) {}
 
-int MouseMovement :: dY () const {
-  if (this->_oldPos.isDefined () && this->_newPos.isDefined ())
-    return this->_newPos.data ().y () - this->_oldPos.data ().y ();
-  else
-    return 0;
-}
+  void update  (const QPoint& p) {
+    if (this->state == UpdateBothPos || this->state == UpdateOldPos) {
+      this->oldPos = this->newPos;
+      this->state  = UpdateBothPos;
+    }
+    else if (this->state == UpdateNewPos) {
+      this->state  = UpdateOldPos;
+    }
+    this->newPos = p;
+  }
+
+  void invalidate () {
+    this->state = UpdateNewPos;
+  }
+
+  int dX () const {
+    if (this->state == UpdateBothPos)
+      return this->newPos.x () - this->oldPos.x ();
+    else
+      return 0;
+  }
+
+  int dY () const {
+    if (this->state == UpdateBothPos)
+      return this->newPos.y () - this->oldPos.y ();
+    else
+      return 0;
+  }
+};
+
+DELEGATE_BIG4  (MouseMovement)
+DELEGATE1      (void, MouseMovement, update, const QPoint&)
+DELEGATE       (void, MouseMovement, invalidate)
+DELEGATE_CONST (int , MouseMovement, dX)
+DELEGATE_CONST (int , MouseMovement, dY)

@@ -1,24 +1,25 @@
-#ifndef RAY
-#define RAY
+#ifndef DILAY_RAY
+#define DILAY_RAY
 
-#include <sstream>
-#include <glm/glm.hpp>
+#include <iosfwd>
+#include "fwd-glm.hpp"
+
+class RayImpl;
 
 class Ray {
   public:
-    Ray (const glm::vec3& o, const glm::vec3& d) : _origin    (o)
-                                                 , _direction (glm::normalize (d)) {}
+     Ray            (const glm::vec3&, const glm::vec3&);
+     Ray            (const Ray&);
+     Ray& operator= (const Ray&);
+    ~Ray            ();
 
-    const glm::vec3& origin    () const { return this->_origin; }
-    const glm::vec3& direction () const { return this->_direction; }
+    const glm::vec3& origin    () const;
+    const glm::vec3& direction () const;
 
-    glm::vec3 pointAt (float t) const {
-      return this->_origin + (this->_direction * glm::vec3 (t));
-    }
+    glm::vec3 pointAt (float) const;
 
   private:
-    const glm::vec3 _origin;
-    const glm::vec3 _direction;
+    RayImpl* impl;
 };
 
 std::ostream& operator<<(std::ostream&, const Ray&);

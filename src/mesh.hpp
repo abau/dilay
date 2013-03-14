@@ -1,17 +1,15 @@
-#include <vector>
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include "util.hpp"
-#include "rendermode.hpp"
+#ifndef DILAY_MESH
+#define DILAY_MESH
 
-#ifndef MESH
-#define MESH
+#include "fwd-glm.hpp"
+
+class MeshImpl;
 
 class Mesh {
   public:        Mesh             ();
                  Mesh             (const Mesh&);
                  ~Mesh            ();
-    const Mesh&  operator=        (const Mesh&);
+          Mesh&  operator=        (const Mesh&);
 
     unsigned int numVertices      () const;
     unsigned int numIndices       () const;
@@ -22,9 +20,7 @@ class Mesh {
     glm::vec3    vertex           (unsigned int) const;
     unsigned int index            (unsigned int) const;
     void         addIndex         (unsigned int);
-    unsigned int addVertex        (GLfloat, GLfloat, GLfloat);
     unsigned int addVertex        (const glm::vec3&);
-    unsigned int addNormal        (GLfloat, GLfloat, GLfloat);
     unsigned int addNormal        (const glm::vec3&);
     void         clearIndices     ();
     void         clearNormals     ();
@@ -40,27 +36,13 @@ class Mesh {
 
     void         translate        (const glm::vec3&);
     void         setPosition      (const glm::vec3&);
-    void         setRotation      (const glm::mat4&);
+    void         setRotation      (const glm::mat4x4&);
 
-    static Mesh  triangle         (const glm::vec3&,const glm::vec3&,const glm::vec3&);
     static Mesh  cube             (float);
     static Mesh  sphere           (float,int,int);
 
-  private: // cf. copy-constructor, operator=
-    glm::mat4                     scalings;
-    glm::mat4                     rotations;
-    glm::mat4                     translations;
-    std::vector<   GLfloat   >    vertices;
-    std::vector< unsigned int>    indices;
-    std::vector<   GLfloat   >    normals;
-    bool                          hasNormals;
-
-    GLuint                        arrayObjectId; 
-    GLuint                        vertexBufferId;
-    GLuint                        indexBufferId;
-    GLuint                        normalBufferId;
-
-    RenderMode                    renderMode;
+  private: 
+    MeshImpl* impl;
 };
 
 #endif 
