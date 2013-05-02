@@ -8,13 +8,13 @@
 #include "state.hpp"
 #include "macro.hpp"
 #include "camera.hpp"
-#include "winged-mesh-util.hpp"
+#include "winged-util.hpp"
 #include "winged-mesh.hpp"
 #include "intersection.hpp"
 #include "ray.hpp"
 #include "cursor.hpp"
 #include "winged-face.hpp"
-#include "subdivision-butterfly.hpp"
+#include "tool.hpp"
 
 struct GLWidgetImpl {
   MouseMovement mouseMovement;
@@ -59,7 +59,7 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
       this->update ();
       break;
     case Qt::Key_I:
-      WingedMeshUtil :: printStatistics (State :: global ().mesh ());
+      WingedUtil :: printStatistics (State :: global ().mesh ());
       break;
     default:
       QGLWidget::keyPressEvent (e);
@@ -99,18 +99,8 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
     int reversedY = State :: global ().camera ().resolutionHeight () - e->y ();
-    Ray ray       = State :: global ().camera ().getRay (e->x (), reversedY);
-
-    WingedMesh&      mesh = State :: global ().mesh ();
-    FaceIntersection intersection;
-
-    if (mesh.intersectRay (ray,intersection)) {
-      SubdivButterfly :: subdiv (mesh);
-      mesh.rebuildIndices ();
-      mesh.rebuildNormals ();
-      mesh.bufferData ();
+    if (Tool :: click (e->x (), reversedY))
       this->update ();
-    }
   }
 }
 

@@ -4,6 +4,8 @@
 #include "fwd-glm.hpp"
 #include "fwd-winged.hpp"
 
+class Sphere;
+
 class FaceIntersectionImpl;
 
 class FaceIntersection {
@@ -23,5 +25,11 @@ class FaceIntersection {
   private:
     FaceIntersectionImpl* impl;
 };
+
+namespace IntersectionUtil {
+  bool intersects (const Sphere&, const WingedMesh&, const WingedVertex&);
+  bool intersects (const Sphere&, const WingedMesh&, const WingedEdge&);
+  bool intersects (const Sphere&, const WingedMesh&, const WingedFace&);
+}
 
 #endif

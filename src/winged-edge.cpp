@@ -5,27 +5,22 @@
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
 #include "util.hpp"
+#include "maybe.hpp"
   
-WingedEdge :: WingedEdge (WingedMesh& mesh) {
-  this->_vertex1           = mesh.nullVertex (); 
-  this->_vertex2           = mesh.nullVertex ();
-
-  this->_leftFace          = mesh.nullFace ();
-  this->_rightFace         = mesh.nullFace ();
-
-  this->_leftPredecessor   = mesh.nullEdge ();
-  this->_leftSuccessor     = mesh.nullEdge ();
-
-  this->_rightPredecessor  = mesh.nullEdge ();
-  this->_rightSuccessor    = mesh.nullEdge ();
+WingedEdge :: WingedEdge () {
+  this->_isTEdge = false;
 }
 
 WingedEdge :: WingedEdge ( LinkedVertex v1, LinkedVertex v2
                          , LinkedFace left, LinkedFace right
                          , LinkedEdge leftPred, LinkedEdge leftSucc
-                         , LinkedEdge rightPred, LinkedEdge rightSucc) {
+                         , LinkedEdge rightPred, LinkedEdge rightSucc
+                         , const Maybe <LinkedEdge>& prevSib
+                         , const Maybe <LinkedEdge>& nextSib) {
 
-  this->set (v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc);
+  this->setGeometry ( v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc
+                    , prevSib, nextSib);
+  this->_isTEdge = false;
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
@@ -69,10 +64,15 @@ LinkedEdge WingedEdge :: successor (const WingedFace& face) const {
 LinkedFace WingedEdge :: otherFace (const WingedFace& face) const {
   return this->isLeftFace (face) ? this->rightFace () : this->leftFace  (); }
 
-void WingedEdge :: set ( LinkedVertex v1, LinkedVertex v2
-                       , LinkedFace left, LinkedFace right
-                       , LinkedEdge leftPred , LinkedEdge leftSucc
-                       , LinkedEdge rightPred, LinkedEdge rightSucc) {
+LinkedVertex WingedEdge :: otherVertex (const WingedVertex& vertex) const {
+  return this->isVertex1 (vertex) ? this->vertex2 () : this->vertex1 (); }
+
+void WingedEdge :: setGeometry ( LinkedVertex v1, LinkedVertex v2
+                               , LinkedFace left, LinkedFace right
+                               , LinkedEdge leftPred , LinkedEdge leftSucc
+                               , LinkedEdge rightPred, LinkedEdge rightSucc
+                               , const Maybe<LinkedEdge>& prevSib
+                               , const Maybe<LinkedEdge>& nextSib) {
   this->setVertex1          (v1);
   this->setVertex2          (v2);
   this->setLeftFace         (left);
@@ -81,6 +81,8 @@ void WingedEdge :: set ( LinkedVertex v1, LinkedVertex v2
   this->setLeftSuccessor    (leftSucc);
   this->setRightPredecessor (rightPred);
   this->setRightSuccessor   (rightSucc);
+  this->setPreviousSibling  (prevSib);
+  this->setNextSibling      (nextSib);
 }
 
 void WingedEdge :: setVertex1          (LinkedVertex v) { this->_vertex1          = v; }
@@ -91,6 +93,14 @@ void WingedEdge :: setLeftPredecessor  (LinkedEdge e)   { this->_leftPredecessor
 void WingedEdge :: setLeftSuccessor    (LinkedEdge e)   { this->_leftSuccessor    = e; }
 void WingedEdge :: setRightPredecessor (LinkedEdge e)   { this->_rightPredecessor = e; }
 void WingedEdge :: setRightSuccessor   (LinkedEdge e)   { this->_rightSuccessor   = e; }
+
+void WingedEdge :: setPreviousSibling  (const Maybe <LinkedEdge>& e) { 
+  this->_previousSibling = e; 
+}
+
+void WingedEdge :: setNextSibling (const Maybe <LinkedEdge>& e) { 
+  this->_nextSibling = e; 
+}
 
 void WingedEdge :: setFirstVertex (const WingedFace& face, LinkedVertex vertex) {
   if (this->isLeftFace (face)) this->setVertex1 (vertex);
@@ -117,10 +127,19 @@ void WingedEdge :: setSuccessor (const WingedFace& face, LinkedEdge edge) {
   else                         this->setRightSuccessor (edge);
 }
 
-float WingedEdge :: lengthSqr (const WingedMesh& mesh) const {
+glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
   glm::vec3 a = this->_vertex1->vertex (mesh);
   glm::vec3 b = this->_vertex2->vertex (mesh);
-  return glm::distance (a,b);
+  return b-a;
+}
+
+float WingedEdge :: length (const WingedMesh& mesh) const {
+  return glm::length (this->vector (mesh));
+}
+
+float WingedEdge :: lengthSqr (const WingedMesh& mesh) const {
+  glm::vec3 v = this->vector (mesh);
+  return glm::dot (v,v);
 }
 
 LinkedEdge WingedEdge :: successor (const WingedFace& face, unsigned int index) const {
@@ -141,4 +160,61 @@ LinkedVertex WingedEdge :: vertex (const WingedFace& face, unsigned int index) c
 glm::vec3 WingedEdge :: middle (const WingedMesh& mesh) const {
   return Util :: between ( this->vertex1 ()->vertex (mesh)
                          , this->vertex2 ()->vertex (mesh));
+}
+
+LinkedEdge WingedEdge :: adjacent (const WingedFace& face, const WingedVertex& vertex) const {
+  if (this->isLeftFace (face)) {
+    if (this->isVertex1 (vertex))
+      return this->leftPredecessor ();
+    else
+      return this->leftSuccessor ();
+  }
+  else {
+    if (this->isVertex1 (vertex))
+      return this->rightSuccessor ();
+    else
+      return this->rightPredecessor ();
+  }
+}
+
+float WingedEdge :: cosAngle ( const WingedMesh& mesh, const WingedFace& face
+                             , const WingedVertex& vertex) const {
+  LinkedEdge e2 = this->adjacent (face,vertex);
+
+  glm::vec3 v1 = glm::normalize (this->vector (mesh));
+  glm::vec3 v2 = glm::normalize (e2  ->vector (mesh));
+
+  if (this->isVertex2 (vertex))
+    v1 = -v1;
+  if (e2->isVertex2 (vertex))
+    v2 = -v2;
+
+  return glm::dot (v1,v2);
+}
+
+bool WingedEdge :: isAdjacent (const WingedVertex& vertex) const {
+  if ((&vertex == &*this->_vertex1) || (&vertex == &*this->_vertex2))
+    return true;
+  else 
+    return false;
+}
+bool WingedEdge :: isLeftOf (const WingedFace& face, const WingedVertex& vertex) const {
+  if (  (this->isLeftFace  (face) && this->isVertex1 (vertex))
+     || (this->isRightFace (face) && this->isVertex2 (vertex)))
+    return true;
+  else if (  (this->isLeftFace  (face) && this->isVertex2 (vertex))
+          || (this->isRightFace (face) && this->isVertex1 (vertex)))
+    return false;
+  assert (false);
+}
+
+bool WingedEdge :: isRightOf (const WingedFace& face, const WingedVertex& vertex) const {
+  return ! this->isLeftOf (face,vertex);
+}
+
+Maybe <LinkedEdge> WingedEdge :: adjacentSibling (const WingedVertex& vertex) const {
+  if (this->isVertex1 (vertex))
+    return this->previousSibling ();
+  else
+    return this->nextSibling ();
 }

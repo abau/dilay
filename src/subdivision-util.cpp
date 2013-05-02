@@ -1,18 +1,134 @@
 #include <cassert>
+#include <algorithm>
 #include "subdivision-util.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
+#include "winged-util.hpp"
+#include "adjacent-iterator.hpp"
+#include "maybe.hpp"
 
-LinkedFace splitFaceWith ( WingedMesh& mesh, LinkedFace faceToSplit
+LinkedEdge splitFaceWith ( WingedMesh&, LinkedFace, LinkedEdge, LinkedEdge
+                         , LinkedEdge, LinkedEdge);
+
+LinkedEdge SubdivUtil :: insertVertex ( WingedMesh& mesh, LinkedEdge e
+                                      , const glm::vec3& v) {
+  //   newE        e
+  // 1----->newV------->2
+  unsigned int level = 1 + std::max <unsigned int> ( e->vertex1 ()->level ()
+                                                   , e->vertex2 ()->level () );
+  LinkedVertex newV  = mesh.addVertex (v,level);
+  LinkedEdge   newE  = mesh.addEdge (WingedEdge 
+                                      ( e->vertex1 (), newV
+                                      , e->leftFace ()        , e->rightFace ()
+                                      , e->leftPredecessor () , e
+                                      , e                     , e->rightSuccessor ()
+                                      , e->previousSibling () , Maybe <LinkedEdge> (e)
+                                      ));
+  e->setVertex1         (newV);
+  e->setSuccessor       (*e->rightFace (), newE);
+  e->setPredecessor     (*e->leftFace (),  newE);
+  e->setPreviousSibling (newE);
+  newV->setEdge         (e);
+  newE->leftPredecessor ()->setSuccessor   (*newE->leftFace (), newE);
+  newE->rightSuccessor  ()->setPredecessor (*newE->rightFace (), newE);
+  newE->vertex1         ()->setEdge (newE);
+  newE->leftFace        ()->setEdge (newE);
+  if (newE->previousSibling ().isDefined ())
+    newE->previousSibling ().data ()->setNextSibling (newE);
+  return newE;
+}
+
+void SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
+  assert (f->numEdges () == 6);
+
+  /*     4
+   *    /c\
+   *   5---3
+   *  /a\f/b\
+   * 0---1---2
+   */
+  LinkedEdge e01  = f->edge ();
+  LinkedEdge e12  = f->edge ()->successor (*f,0);
+  LinkedEdge e23  = f->edge ()->successor (*f,1);
+  LinkedEdge e34  = f->edge ()->successor (*f,2);
+  LinkedEdge e45  = f->edge ()->successor (*f,3);
+  LinkedEdge e50  = f->edge ()->successor (*f,4);
+
+  LinkedVertex v1 = e12->firstVertex (*f);
+  LinkedVertex v3 = e34->firstVertex (*f);
+  LinkedVertex v5 = e50->firstVertex (*f);
+
+  LinkedFace a = mesh.addFace (WingedFace (e01));
+  LinkedFace b = mesh.addFace (WingedFace (e23));
+  LinkedFace c = mesh.addFace (WingedFace (e45));
+
+  LinkedEdge e13 = mesh.addEdge (WingedEdge ());
+  LinkedEdge e35 = mesh.addEdge (WingedEdge ());
+  LinkedEdge e51 = mesh.addEdge (WingedEdge ());
+
+  e13->setGeometry (v1,v3,f,b,e51,e35,e23,e12);
+  e35->setGeometry (v3,v5,f,c,e13,e51,e45,e34);
+  e51->setGeometry (v5,v1,f,a,e35,e13,e01,e50);
+
+  e01->setFace         (*f,a);
+  e01->setPredecessor  (*a,e50);
+  e01->setSuccessor    (*a,e51);
+
+  e12->setFace         (*f,b);
+  e12->setPredecessor  (*b,e13);
+  e12->setSuccessor    (*b,e23);
+
+  e23->setFace         (*f,b);
+  e23->setPredecessor  (*b,e12);
+  e23->setSuccessor    (*b,e13);
+
+  e34->setFace         (*f,c);
+  e34->setPredecessor  (*c,e35);
+  e34->setSuccessor    (*c,e45);
+
+  e45->setFace         (*f,c);
+  e45->setPredecessor  (*c,e34);
+  e45->setSuccessor    (*c,e35);
+
+  e50->setFace         (*f,a);
+  e50->setPredecessor  (*a,e51);
+  e50->setSuccessor    (*a,e01);
+
+  f->setEdge          (e13);
+}
+
+void SubdivUtil :: triangulateQuadAtHeighestVertex (WingedMesh& mesh, LinkedFace face) {
+  assert (face->numEdges () == 4);
+
+  LinkedVertex vertex      = face->highest ();
+  LinkedEdge   edge        = face->adjacent  (*vertex);
+  LinkedEdge   counterpart = edge->successor (*face,1);
+  LinkedEdge   newEdge;
+
+  if (edge->isLeftOf (*face, *vertex)) {
+    newEdge = splitFaceWith ( mesh, face
+                            , edge->predecessor (*face), counterpart
+                            , edge->successor   (*face), edge);
+  }
+  else {
+    newEdge = splitFaceWith ( mesh, face
+                            , edge       , edge->predecessor (*face)
+                            , counterpart, edge->successor   (*face));
+  }
+  newEdge->isTEdge (true);
+}
+
+// Internal /////////////
+
+LinkedEdge splitFaceWith ( WingedMesh& mesh, LinkedFace faceToSplit
                          , LinkedEdge leftPred,  LinkedEdge leftSucc
                          , LinkedEdge rightPred, LinkedEdge rightSucc) {
 
-  LinkedEdge splitAlong = mesh.addEdge (WingedEdge (mesh));
-  LinkedFace newLeft    = mesh.addFace (WingedFace (mesh.nullEdge ()));
+  LinkedEdge splitAlong = mesh.addEdge (WingedEdge ());
+  LinkedFace newLeft    = mesh.addFace (WingedFace (splitAlong));
 
-  newLeft->setEdge                (splitAlong);
   faceToSplit->setEdge            (splitAlong);
 
   splitAlong->setVertex1          (leftPred->secondVertex (*faceToSplit));
@@ -40,117 +156,6 @@ LinkedFace splitFaceWith ( WingedMesh& mesh, LinkedFace faceToSplit
   rightSucc->setPredecessor       (*faceToSplit, splitAlong);
   rightSucc->setSuccessor         (*faceToSplit, rightPred);
 
-  return newLeft;
+  return splitAlong;
 }
 
-/*
-NewFaces SubdivUtil :: splitEdge ( WingedMesh& mesh, LinkedEdge e
-                                 , const glm::vec3& vNew) {
-  LinkedVertex v1        = e->vertex1 ();
-  LinkedVertex linkedNew = mesh.addVertex (vNew, e);
-  LinkedEdge   nullE     = mesh.nullEdge ();
-
-  e->setVertex1 (linkedNew);
-  LinkedEdge eNew = mesh.addEdge (WingedEdge 
-                                   ( v1, linkedNew
-                                   , e->leftFace (), e->rightFace ()
-                                   , e->leftPredecessor (), nullE, nullE, nullE));
-  v1->setEdge (eNew);
-
-  LinkedFace f1New;
-  LinkedFace f2New;
-
-  if (e->leftFace () != mesh.nullFace ()) {
-    f1New = splitFaceWith (mesh, e->leftFace (), eNew, e->leftPredecessor ()
-                                               , e->leftSuccessor (), e); 
-  }
-  if (e->rightFace () != mesh.nullFace ()) {
-    f2New = splitFaceWith (mesh, e->rightFace (), e, e->rightPredecessor ()
-                                                , e->rightSuccessor (), eNew ); 
-  }
-  return NewFaces (f1New,f2New);
-}
-
-NewFaces SubdivUtil :: splitEdge (WingedMesh& mesh, LinkedEdge edge) {
-  return SubdivUtil :: splitEdge (mesh, edge, edge->middle (mesh));
-}
-*/
-
-LinkedEdge SubdivUtil :: insertVertex ( WingedMesh& mesh, LinkedEdge e
-                                      , const glm::vec3& v) {
-  //   newE        e
-  // 1----->newV------->2
-  LinkedVertex newV = mesh.addVertex (v, e);
-  LinkedEdge   newE = mesh.addEdge (WingedEdge 
-                                      ( e->vertex1 (), newV
-                                      , e->leftFace ()        , e->rightFace ()
-                                      , e->leftPredecessor () , e
-                                      , e                     , e->rightSuccessor ()));
-  e->setVertex1         (newV);
-  e->setSuccessor       (*e->rightFace (), newE);
-  e->setPredecessor     (*e->leftFace (),  newE);
-  newE->leftPredecessor ()->setSuccessor   (*newE->leftFace (), newE);
-  newE->rightSuccessor  ()->setPredecessor (*newE->rightFace (), newE);
-  newE->vertex1   ()->setEdge (newE);
-  newE->leftFace  ()->setEdge (newE);
-  return newE;
-}
-
-void SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
-  assert (f->numEdges () == 6);
-
-  /*     4
-   *    /c\
-   *   5---3
-   *  /a\f/b\
-   * 0---1---2
-   */
-  LinkedEdge e0   = f->edge ();
-  LinkedEdge e1   = f->edge ()->successor (*f,0);
-  LinkedEdge e2   = f->edge ()->successor (*f,1);
-  LinkedEdge e3   = f->edge ()->successor (*f,2);
-  LinkedEdge e4   = f->edge ()->successor (*f,3);
-  LinkedEdge e5   = f->edge ()->successor (*f,4);
-
-  LinkedVertex v1 = e1->firstVertex (*f);
-  LinkedVertex v3 = e3->firstVertex (*f);
-  LinkedVertex v5 = e5->firstVertex (*f);
-
-  LinkedFace a = mesh.addFace (WingedFace (e0));
-  LinkedFace b = mesh.addFace (WingedFace (e2));
-  LinkedFace c = mesh.addFace (WingedFace (e4));
-
-  LinkedEdge e13 = mesh.addEdge (WingedEdge (mesh));
-  LinkedEdge e35 = mesh.addEdge (WingedEdge (mesh));
-  LinkedEdge e51 = mesh.addEdge (WingedEdge (mesh));
-
-  e13->set (v1,v3,f,b,e51,e35,e2,e1);
-  e35->set (v3,v5,f,c,e13,e51,e4,e3);
-  e51->set (v5,v1,f,a,e35,e13,e0,e5);
-
-  e0->setFace         (*f,a);
-  e0->setPredecessor  (*a,e5);
-  e0->setSuccessor    (*a,e51);
-
-  e1->setFace         (*f,b);
-  e1->setPredecessor  (*b,e13);
-  e1->setSuccessor    (*b,e2);
-
-  e2->setFace         (*f,b);
-  e2->setPredecessor  (*b,e1);
-  e2->setSuccessor    (*b,e13);
-
-  e3->setFace         (*f,c);
-  e3->setPredecessor  (*c,e35);
-  e3->setSuccessor    (*c,e4);
-
-  e4->setFace         (*f,c);
-  e4->setPredecessor  (*c,e3);
-  e4->setSuccessor    (*c,e35);
-
-  e5->setFace         (*f,a);
-  e5->setPredecessor  (*a,e51);
-  e5->setSuccessor    (*a,e0);
-
-  f->setEdge (e13);
-}

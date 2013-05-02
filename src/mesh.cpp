@@ -20,7 +20,6 @@ struct MeshImpl {
   std::vector<   GLfloat   >  vertices;
   std::vector< unsigned int>  indices;
   std::vector<   GLfloat   >  normals;
-  bool                        hasNormals;
 
   GLuint                      arrayObjectId; 
   GLuint                      vertexBufferId;
@@ -43,7 +42,6 @@ struct MeshImpl {
               , vertices     (source.vertices)
               , indices      (source.indices)
               , normals      (source.normals)
-              , hasNormals   (source.hasNormals)
               , renderMode   (source.renderMode)
               {}
 
@@ -58,7 +56,6 @@ struct MeshImpl {
     std::swap (this->vertices        , tmp.vertices);
     std::swap (this->indices         , tmp.indices);
     std::swap (this->normals         , tmp.normals);
-    std::swap (this->hasNormals      , tmp.hasNormals);
     std::swap (this->arrayObjectId   , tmp.arrayObjectId);
     std::swap (this->vertexBufferId  , tmp.vertexBufferId);
     std::swap (this->indexBufferId   , tmp.indexBufferId);
@@ -83,6 +80,8 @@ struct MeshImpl {
     return this->normals.size () * sizeof (GLfloat);
   }
 
+  bool hasNormals () const { return this->sizeOfNormals () > 0; }
+
   void addIndex (unsigned int i) { this->indices.push_back (i); }
 
   glm::vec3 vertex (unsigned int i) const {
@@ -102,7 +101,6 @@ struct MeshImpl {
   }
 
   unsigned int addNormal (const glm::vec3& n) { 
-    this->hasNormals = true;
     this->normals.push_back (n.x);
     this->normals.push_back (n.y);
     this->normals.push_back (n.z);
@@ -112,7 +110,6 @@ struct MeshImpl {
   void clearIndices () { this->indices.clear (); }
   void clearNormals () { 
     this->normals.clear (); 
-    this->hasNormals = false;
   }
 
   void bufferData () {
@@ -122,7 +119,7 @@ struct MeshImpl {
       glGenBuffers      (1, &this->vertexBufferId);
     if (glIsBuffer (this->indexBufferId) == GL_FALSE)
       glGenBuffers      (1, &this->indexBufferId);
-    if (glIsBuffer (this->normalBufferId) == GL_FALSE && this->hasNormals)
+    if (glIsBuffer (this->normalBufferId) == GL_FALSE && this->hasNormals ())
       glGenBuffers      (1, &this->normalBufferId);
 
     glBindVertexArray          (this->arrayObjectId);
@@ -138,7 +135,7 @@ struct MeshImpl {
     glBufferData               ( GL_ELEMENT_ARRAY_BUFFER, this->sizeOfIndices ()
                                , &this->indices[0], GL_STATIC_DRAW);
 
-    if (this->hasNormals) {
+    if (this->hasNormals ()) {
       glBindBuffer               ( GL_ARRAY_BUFFER, this->normalBufferId );
       glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfNormals ()
                                  , &this->normals[0], GL_STATIC_DRAW);

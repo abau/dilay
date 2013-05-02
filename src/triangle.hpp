@@ -5,7 +5,6 @@
 
 class TriangleImpl;
 class Ray;
-template <class T> class Maybe;
 
 class Triangle {
   public:

@@ -3,118 +3,109 @@
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
-#include "winged-mesh-util.hpp"
+#include "winged-util.hpp"
 #include "mesh.hpp"
 #include "intersection.hpp"
 #include "triangle.hpp"
 #include "ray.hpp"
 #include "macro.hpp"
+#include "adjacent-iterator.hpp"
+#include "maybe.hpp"
 
 struct WingedMeshImpl {
-  WingedMesh* wingedMesh;
-  Mesh        mesh;
-  Vertices    vertices;
-  Edges       edges;
-  Faces       faces;
+  WingedMesh* _wingedMesh;
+  Mesh        _mesh;
+  Vertices    _vertices;
+  Edges       _edges;
+  Faces       _faces;
 
-  WingedMeshImpl (WingedMesh* p) : wingedMesh (p) {}
+  WingedMeshImpl (WingedMesh* p) : _wingedMesh (p) {}
 
-  LinkedVertex      nullVertex  ()       { return this->vertices.end (); }
-  LinkedEdge        nullEdge    ()       { return this->edges.end    (); }
-  LinkedFace        nullFace    ()       { return this->faces.end    (); }
-  ConstLinkedVertex nullVertex  () const { return this->vertices.end (); }
-  ConstLinkedEdge   nullEdge    () const { return this->edges.end    (); }
-  ConstLinkedFace   nullFace    () const { return this->faces.end    (); }
+  void addIndex (unsigned int index) { this->_mesh.addIndex (index); }
 
-  LinkedVertex      rNullVertex ()       { return --this->vertices.begin (); }
-  LinkedEdge        rNullEdge   ()       { return --this->edges.begin    (); }
-  LinkedFace        rNullFace   ()       { return --this->faces.begin    (); }
-  ConstLinkedVertex rNullVertex () const { return --this->vertices.begin (); }
-  ConstLinkedEdge   rNullEdge   () const { return --this->edges.begin    (); }
-  ConstLinkedFace   rNullFace   () const { return --this->faces.begin    (); }
-
-  void addIndex (unsigned int index)     { this->mesh.addIndex (index); }
-
-  LinkedVertex addVertex (const glm::vec3& v, LinkedEdge e) {
-    unsigned int index = this->mesh.addVertex (v);
-    this->vertices.push_back (WingedVertex (index, e));
-    return --this->vertices.end ();
+  LinkedVertex addVertex (const glm::vec3& v, unsigned int l) {
+    unsigned int index = this->_mesh.addVertex (v);
+    this->_vertices.push_back (WingedVertex (index, l));
+    return --this->_vertices.end ();
   }
 
   LinkedEdge addEdge (const WingedEdge& e) {
-    this->edges.push_back (e);
-    return --this->edges.end ();
+    this->_edges.push_back (e);
+    return --this->_edges.end ();
   }
 
   LinkedFace addFace (const WingedFace& f) {
-    this->faces.push_back (f);
-    return --this->faces.end ();
+    this->_faces.push_back (f);
+    return --this->_faces.end ();
   }
 
-  VertexIterator vertexIterator () { 
-    return this->vertices.begin ();
-  }
-  EdgeIterator edgeIterator () {
-    return this->edges.begin ();
-  }
-  FaceIterator faceIterator () {
-    return this->faces.begin ();
+  const Vertices& vertices () const { return this->_vertices; }
+  const Edges&    edges    () const { return this->_edges; }
+  const Faces&    faces    () const { return this->_faces; }
+
+  LinkedFace deleteEdge (LinkedEdge edge) {
+    LinkedFace faceToDelete  = edge->rightFace ();
+    LinkedFace remainingFace = edge->leftFace ();
+
+    for (LinkedEdge adjacent : faceToDelete->adjacentEdgeIterator ().collect ()) {
+      adjacent->setFace (*faceToDelete, remainingFace);
+    }
+
+    edge->leftPredecessor ()->setSuccessor   (*remainingFace, edge->rightSuccessor   ());
+    edge->leftSuccessor   ()->setPredecessor (*remainingFace, edge->rightPredecessor ());
+
+    edge->rightPredecessor ()->setSuccessor   (*remainingFace, edge->leftSuccessor   ());
+    edge->rightSuccessor   ()->setPredecessor (*remainingFace, edge->leftPredecessor ());
+
+    edge->vertex1 ()->setEdge (edge->leftPredecessor ());
+    edge->vertex2 ()->setEdge (edge->leftSuccessor   ());
+
+    if (edge->previousSibling ().isDefined ())
+      edge->previousSibling ().data ()->setNextSibling (edge->nextSibling ());
+    if (edge->nextSibling ().isDefined ())
+      edge->nextSibling ().data ()->setPreviousSibling (edge->previousSibling ());
+
+    remainingFace->setEdge (edge->leftSuccessor ());
+
+    this->_edges.erase (edge);
+    this->_faces.erase (faceToDelete);
+    return remainingFace;
   }
 
-  VertexConstIterator vertexIterator () const { 
-    return this->vertices.cbegin ();
-  }
-  EdgeConstIterator edgeIterator () const {
-    return this->edges.cbegin ();
-  }
-  FaceConstIterator faceIterator () const {
-    return this->faces.cbegin ();
-  }
+  unsigned int numVertices       () const { return this->_mesh.numVertices (); }
+  unsigned int numWingedVertices () const { return this->_vertices.size    (); }
+  unsigned int numEdges          () const { return this->_edges.size       (); }
+  unsigned int numFaces          () const { return this->_faces.size       (); }
 
-  VertexIterator vertexReverseIterator () { return --this->vertices.end (); }
-  EdgeIterator edgeReverseIterator ()     { return --this->edges.end (); }
-  FaceIterator faceReverseIterator ()     { return --this->faces.end (); }
-
-  VertexConstIterator vertexReverseIterator () const { 
-    return --this->vertices.cend ();
-  }
-  EdgeConstIterator edgeReverseIterator () const { return --this->edges.cend (); }
-  FaceConstIterator faceReverseIterator () const { return --this->faces.cend (); }
-
-  unsigned int numVertices       () const { return this->mesh.numVertices (); }
-  unsigned int numWingedVertices () const { return this->vertices.size    (); }
-  unsigned int numEdges          () const { return this->edges.size       (); }
-  unsigned int numFaces          () const { return this->faces.size       (); }
-
-  glm::vec3 vertex (unsigned int i) const { return this->mesh.vertex (i); }
+  glm::vec3 vertex (unsigned int i) const { return this->_mesh.vertex (i); }
 
   void rebuildIndices () {
-    this->mesh.clearIndices ();
-    for (WingedFace& f : this->faces) {
-      f.addIndices (*this->wingedMesh);
+    this->_mesh.clearIndices ();
+    for (WingedFace& f : this->_faces) {
+      f.addIndices (*this->_wingedMesh);
     }
   }
 
   void rebuildNormals () {
-    this->mesh.clearNormals ();
-    for (WingedVertex& v : this->vertices) {
-      this->mesh.addNormal (v.normal (*this->wingedMesh));
+    this->_mesh.clearNormals ();
+    for (WingedVertex& v : this->_vertices) {
+      this->_mesh.addNormal (v.normal (*this->_wingedMesh));
     }
   }
 
-  void bufferData  () { this->mesh.bufferData   (); }
-  void renderBegin () { this->mesh.renderBegin  (); }
-  void render      () { this->mesh.render       (); }
-  void renderEnd   () { this->mesh.renderEnd    (); }
+  void bufferData  () { this->_mesh.bufferData   (); }
+  void renderBegin () { this->_mesh.renderBegin  (); }
+  void render      () { this->_mesh.render       (); }
+  void renderEnd   () { this->_mesh.renderEnd    (); }
 
   void reset () {
-    this->mesh    .reset ();
-    this->vertices.clear ();
-    this->edges   .clear ();
-    this->faces   .clear ();
+    this->_mesh    .reset ();
+    this->_vertices.clear ();
+    this->_edges   .clear ();
+    this->_faces   .clear ();
   }
 
-  void toggleRenderMode () { this->mesh.toggleRenderMode (); }
+  void toggleRenderMode () { this->_mesh.toggleRenderMode (); }
 
   bool intersectRay (const Ray& ray, FaceIntersection& intersection) {
     bool      isIntersection = false;
@@ -122,8 +113,8 @@ struct WingedMeshImpl {
     Triangle  triangle;
     glm::vec3 p;
 
-    for (FACE_ITERATOR(fIt,*this)) {
-      fIt->triangle (*this->wingedMesh,triangle);
+    for (LinkedFace it = this->_faces.begin (); it != this->_faces.end (); ++it) {
+      it->triangle (*this->_wingedMesh,triangle);
       if (triangle.intersectRay (ray,p) == false) {
         continue;
       }
@@ -134,11 +125,27 @@ struct WingedMeshImpl {
           isIntersection        = true;
           minDistance           = d;
           intersection.position (p);
-          intersection.face     (fIt);
+          intersection.face     (it);
         }
       }
     }
     return isIntersection;
+  }
+
+  Maybe <LinkedEdge> edgeByVertexIndices ( unsigned int i1, unsigned int i2) {
+    for (LinkedEdge e = this->_edges.begin (); e != this->_edges.end (); ++e) {
+      if (e->vertex1 ()->index () == i1 && e->vertex2 ()->index () == i2)
+        return Maybe <LinkedEdge> (e);
+    }
+    return Maybe <LinkedEdge> ();
+  }
+
+  Maybe <LinkedVertex> vertexByIndex (unsigned int i) {
+    for (LinkedVertex v = this->_vertices.begin (); v != this->_vertices.end (); ++v) {
+      if (v->index () == i)
+        return Maybe <LinkedVertex> (v);
+    }
+    return Maybe <LinkedVertex> ();
   }
 };
 
@@ -148,40 +155,17 @@ DELEGATE_COPY_CONSTRUCTOR (WingedMesh)
 DELEGATE_ASSIGNMENT_OP    (WingedMesh)
 DELEGATE_DESTRUCTOR       (WingedMesh)
 
-DELEGATE        (LinkedVertex        , WingedMesh, nullVertex)
-DELEGATE        (LinkedEdge          , WingedMesh, nullEdge)
-DELEGATE        (LinkedFace          , WingedMesh, nullFace)
-DELEGATE_CONST  (ConstLinkedVertex   , WingedMesh, nullVertex)
-DELEGATE_CONST  (ConstLinkedEdge     , WingedMesh, nullEdge)
-DELEGATE_CONST  (ConstLinkedFace     , WingedMesh, nullFace)
-DELEGATE        (LinkedVertex        , WingedMesh, rNullVertex)
-DELEGATE        (LinkedEdge          , WingedMesh, rNullEdge)
-DELEGATE        (LinkedFace          , WingedMesh, rNullFace)
-DELEGATE_CONST  (ConstLinkedVertex   , WingedMesh, rNullVertex)
-DELEGATE_CONST  (ConstLinkedEdge     , WingedMesh, rNullEdge)
-DELEGATE_CONST  (ConstLinkedFace     , WingedMesh, rNullFace)
-
 DELEGATE1       (void           , WingedMesh, addIndex, unsigned int)
-DELEGATE2       (LinkedVertex   , WingedMesh, addVertex, const glm::vec3&, LinkedEdge)
+DELEGATE2       (LinkedVertex   , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (LinkedEdge     , WingedMesh, addEdge, const WingedEdge&)
 DELEGATE1       (LinkedFace     , WingedMesh, addFace, const WingedFace&)
+
+DELEGATE_CONST  (const Vertices&, WingedMesh, vertices)
+DELEGATE_CONST  (const Edges&   , WingedMesh, edges)
+DELEGATE_CONST  (const Faces&   , WingedMesh, faces)
+
+DELEGATE1       (LinkedFace     , WingedMesh, deleteEdge, LinkedEdge)
  
-DELEGATE        (VertexIterator , WingedMesh, vertexIterator)
-DELEGATE        (EdgeIterator   , WingedMesh, edgeIterator)
-DELEGATE        (FaceIterator   , WingedMesh, faceIterator)
-
-DELEGATE_CONST  (VertexConstIterator , WingedMesh, vertexIterator)
-DELEGATE_CONST  (EdgeConstIterator   , WingedMesh, edgeIterator)
-DELEGATE_CONST  (FaceConstIterator   , WingedMesh, faceIterator)
-
-DELEGATE        (VertexIterator      , WingedMesh, vertexReverseIterator)
-DELEGATE        (EdgeIterator        , WingedMesh, edgeReverseIterator)
-DELEGATE        (FaceIterator        , WingedMesh, faceReverseIterator)
-
-DELEGATE_CONST  (VertexConstIterator , WingedMesh, vertexReverseIterator)
-DELEGATE_CONST  (EdgeConstIterator   , WingedMesh, edgeReverseIterator)
-DELEGATE_CONST  (FaceConstIterator   , WingedMesh, faceReverseIterator)
-
 DELEGATE_CONST  (unsigned int   , WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numWingedVertices)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numEdges)
@@ -199,3 +183,6 @@ DELEGATE        (void           , WingedMesh, reset)
 DELEGATE        (void           , WingedMesh, toggleRenderMode)
 
 DELEGATE2       (bool           , WingedMesh, intersectRay, const Ray&, FaceIntersection&)
+
+DELEGATE2       (Maybe <LinkedEdge>  , WingedMesh, edgeByVertexIndices, unsigned int, unsigned int)
+DELEGATE1       (Maybe <LinkedVertex>, WingedMesh, vertexByIndex, unsigned int)

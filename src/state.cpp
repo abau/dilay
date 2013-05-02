@@ -1,7 +1,7 @@
 #include "state.hpp"
 #include "mesh.hpp"
 #include "winged-mesh.hpp"
-#include "winged-mesh-util.hpp"
+#include "winged-util.hpp"
 #include "camera.hpp"
 #include "cursor.hpp"
 #include "macro.hpp"
@@ -12,7 +12,8 @@ struct StateImpl {
   Cursor     cursor;
 
   void initialize () { 
-    WingedMeshUtil :: fromMesh (this->mesh, Mesh :: sphere (1.0f,10,20));
+    WingedUtil :: fromMesh (this->mesh, Mesh :: sphere (1.0f,10,20));
+    //WingedUtil :: fromMesh (this->mesh, Mesh :: cube (1.0f));
     this->mesh.bufferData ();
     this->camera.initialize ();
     this->cursor.initialize ();
@@ -24,7 +25,7 @@ struct StateImpl {
   }
 
   void setMesh (const Mesh& mesh) {
-    WingedMeshUtil :: fromMesh (this->mesh,mesh);
+    WingedUtil :: fromMesh (this->mesh,mesh);
   }
 };
 

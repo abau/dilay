@@ -1,40 +1,12 @@
 #ifndef DILAY_WINGED_MESH
 #define DILAY_WINGED_MESH
 
-#include <list>
 #include "fwd-winged.hpp"
 #include "fwd-glm.hpp"
 
-typedef std::list < WingedVertex > Vertices;
-typedef std::list < WingedEdge   > Edges;
-typedef std::list < WingedFace   > Faces;
-
-typedef Vertices::iterator VertexIterator;
-typedef Edges   ::iterator EdgeIterator;
-typedef Faces   ::iterator FaceIterator;
-
-typedef Vertices::const_iterator VertexConstIterator;
-typedef Edges   ::const_iterator EdgeConstIterator;
-typedef Faces   ::const_iterator FaceConstIterator;
-
-#define VERTEX_ITERATOR(it,mesh)  VertexIterator (it) = (mesh).vertexIterator (); (it) != (mesh).nullVertex (); ++(it)
-#define EDGE_ITERATOR(it,mesh)  EdgeIterator (it) = (mesh).edgeIterator (); (it) != (mesh).nullEdge (); ++(it)
-#define FACE_ITERATOR(it,mesh)  FaceIterator (it) = (mesh).faceIterator (); (it) != (mesh).nullFace (); ++(it)
-
-#define VERTEX_CONST_ITERATOR(it,mesh)  VertexConstIterator (it) = (mesh).vertexIterator (); (it) != (mesh).nullVertex (); ++(it)
-#define EDGE_CONST_ITERATOR(it,mesh)  EdgeConstIterator (it) = (mesh).edgeIterator (); (it) != (mesh).nullEdge (); ++(it)
-#define FACE_CONST_ITERATOR(it,mesh)  FaceConstIterator (it) = (mesh).faceIterator (); (it) != (mesh).nullFace (); ++(it)
-
-#define VERTEX_REVERSE_ITERATOR(it,mesh)  VertexIterator (it) = (mesh).vertexReverseIterator (); (it) != (mesh).rNullVertex (); --(it)
-#define EDGE_REVERSE_ITERATOR(it,mesh)  EdgeIterator (it) = (mesh).edgeReverseIterator (); (it) != (mesh).rNullEdge (); --(it)
-#define FACE_REVERSE_ITERATOR(it,mesh)  FaceIterator (it) = (mesh).faceReverseIterator (); (it) != (mesh).rNullFace (); --(it)
-
-#define VERTEX_CONST_REVERSE_ITERATOR(it,mesh)  VertexConstIterator (it) = (mesh).vertexReverseIterator (); (it) != (mesh).rNullVertex (); --(it)
-#define EDGE_CONST_REVERSE_ITERATOR(it,mesh)  EdgeConstIterator (it) = (mesh).edgeReverseIterator (); (it) != (mesh).rNullEdge (); --(it)
-#define FACE_CONST_REVERSE_ITERATOR(it,mesh)  FaceConstIterator (it) = (mesh).faceReverseIterator (); (it) != (mesh).rNullFace (); --(it)
-
 class FaceIntersection;
 class Ray;
+template <class T> class Maybe;
 
 class WingedMeshImpl;
 
@@ -45,40 +17,18 @@ class WingedMesh {
      WingedMesh&             operator=             (const WingedMesh&);
     ~WingedMesh                                    ();
 
-    LinkedVertex             nullVertex            ();
-    LinkedEdge               nullEdge              ();
-    LinkedFace               nullFace              ();
-    ConstLinkedVertex        nullVertex            () const;
-    ConstLinkedEdge          nullEdge              () const;
-    ConstLinkedFace          nullFace              () const;
-
-    LinkedVertex             rNullVertex           ();
-    LinkedEdge               rNullEdge             ();
-    LinkedFace               rNullFace             ();
-    ConstLinkedVertex        rNullVertex           () const;
-    ConstLinkedEdge          rNullEdge             () const;
-    ConstLinkedFace          rNullFace             () const;
-
     void                     addIndex              (unsigned int);
-    LinkedVertex             addVertex             (const glm::vec3&, LinkedEdge);
+    LinkedVertex             addVertex             (const glm::vec3&, unsigned int = 0);
     LinkedEdge               addEdge               (const WingedEdge&);
     LinkedFace               addFace               (const WingedFace&);
 
-    VertexIterator           vertexIterator        ();
-    EdgeIterator             edgeIterator          ();
-    FaceIterator             faceIterator          ();
+    const Vertices&          vertices              () const;
+    const Edges&             edges                 () const;
+    const Faces&             faces                 () const;
 
-    VertexConstIterator      vertexIterator        () const;
-    EdgeConstIterator        edgeIterator          () const;
-    FaceConstIterator        faceIterator          () const;
-
-    VertexIterator           vertexReverseIterator ();
-    EdgeIterator             edgeReverseIterator   ();
-    FaceIterator             faceReverseIterator   ();
-
-    VertexConstIterator      vertexReverseIterator () const;
-    EdgeConstIterator        edgeReverseIterator   () const;
-    FaceConstIterator        faceReverseIterator   () const;
+    /** Deletes an edge and its _right_ face. Note that other parts of the program
+     * depend on this behaviour. */
+    LinkedFace               deleteEdge            (LinkedEdge);
 
     unsigned int             numVertices           () const;
     unsigned int             numWingedVertices     () const;
@@ -97,6 +47,8 @@ class WingedMesh {
     void                     toggleRenderMode      ();
     
     bool                     intersectRay          (const Ray&, FaceIntersection&);
+    Maybe <LinkedEdge>       edgeByVertexIndices   (unsigned int, unsigned int);
+    Maybe <LinkedVertex>     vertexByIndex         (unsigned int);
   private:
     WingedMeshImpl* impl;
 };
