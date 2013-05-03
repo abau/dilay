@@ -10,7 +10,6 @@
 #include "ray.hpp"
 #include "macro.hpp"
 #include "adjacent-iterator.hpp"
-#include "maybe.hpp"
 
 struct WingedMeshImpl {
   WingedMesh* _wingedMesh;
@@ -131,22 +130,6 @@ struct WingedMeshImpl {
     }
     return isIntersection;
   }
-
-  Maybe <LinkedEdge> edgeByVertexIndices ( unsigned int i1, unsigned int i2) {
-    for (LinkedEdge e = this->_edges.begin (); e != this->_edges.end (); ++e) {
-      if (e->vertex1 ()->index () == i1 && e->vertex2 ()->index () == i2)
-        return Maybe <LinkedEdge> (e);
-    }
-    return Maybe <LinkedEdge> ();
-  }
-
-  Maybe <LinkedVertex> vertexByIndex (unsigned int i) {
-    for (LinkedVertex v = this->_vertices.begin (); v != this->_vertices.end (); ++v) {
-      if (v->index () == i)
-        return Maybe <LinkedVertex> (v);
-    }
-    return Maybe <LinkedVertex> ();
-  }
 };
 
 WingedMesh :: WingedMesh () : impl (new WingedMeshImpl (this)) {}
@@ -183,6 +166,3 @@ DELEGATE        (void           , WingedMesh, reset)
 DELEGATE        (void           , WingedMesh, toggleRenderMode)
 
 DELEGATE2       (bool           , WingedMesh, intersectRay, const Ray&, FaceIntersection&)
-
-DELEGATE2       (Maybe <LinkedEdge>  , WingedMesh, edgeByVertexIndices, unsigned int, unsigned int)
-DELEGATE1       (Maybe <LinkedVertex>, WingedMesh, vertexByIndex, unsigned int)

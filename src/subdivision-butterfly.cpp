@@ -189,7 +189,7 @@ void refineBorder (WingedMesh& mesh, FaceSet& border, unsigned int selectionLeve
   for (LinkedFace face : border) {
     assert (face->level () == selectionLevel);
     assert (face->tEdge ().isUndefined ());
-    SubdivUtil :: triangulateQuadAtHeighestVertex (mesh, face);
+    SubdivUtil :: triangulateQuadAtHeighestLevelVertex (mesh, face);
   }
 }
 

@@ -24,11 +24,7 @@ namespace WingedUtil {
   void printStatistics (const WingedMesh&, bool = true);
 
   /** `fromMesh (w,m)` loads mesh `m` as winged mesh `w` */
-  void    fromMesh             (WingedMesh&, const Mesh&);
-
-  /** Returns a set of edges from a set of faces, where each returned edge
-   * is adjacent to at least one of the passed faces. */
-  EdgeSet edgesFromFaces (const FaceSet&);
+  void fromMesh (WingedMesh&, const Mesh&);
 }
 
 #endif

@@ -119,7 +119,7 @@ unsigned int WingedFace :: level () const {
   return levelMin (0);
 }
 
-LinkedVertex WingedFace :: highest () const {
+LinkedVertex WingedFace :: highestLevelVertex () const {
   Maybe <LinkedVertex> v;
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
     if (v.isUndefined () || it.vertex ()->level () > v.data ()->level ()) {

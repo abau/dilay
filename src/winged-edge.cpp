@@ -177,39 +177,25 @@ LinkedEdge WingedEdge :: adjacent (const WingedFace& face, const WingedVertex& v
   }
 }
 
-float WingedEdge :: cosAngle ( const WingedMesh& mesh, const WingedFace& face
-                             , const WingedVertex& vertex) const {
-  LinkedEdge e2 = this->adjacent (face,vertex);
-
-  glm::vec3 v1 = glm::normalize (this->vector (mesh));
-  glm::vec3 v2 = glm::normalize (e2  ->vector (mesh));
-
-  if (this->isVertex2 (vertex))
-    v1 = -v1;
-  if (e2->isVertex2 (vertex))
-    v2 = -v2;
-
-  return glm::dot (v1,v2);
-}
-
 bool WingedEdge :: isAdjacent (const WingedVertex& vertex) const {
   if ((&vertex == &*this->_vertex1) || (&vertex == &*this->_vertex2))
     return true;
   else 
     return false;
 }
-bool WingedEdge :: isLeftOf (const WingedFace& face, const WingedVertex& vertex) const {
-  if (  (this->isLeftFace  (face) && this->isVertex1 (vertex))
-     || (this->isRightFace (face) && this->isVertex2 (vertex)))
-    return true;
-  else if (  (this->isLeftFace  (face) && this->isVertex2 (vertex))
-          || (this->isRightFace (face) && this->isVertex1 (vertex)))
-    return false;
-  assert (false);
+bool WingedEdge :: isFirstVertex ( const WingedFace& face
+                                 , const WingedVertex& vertex) const {
+  if (this->isLeftFace (face)) {
+    return this->isVertex1 (vertex);
+  }
+  else {
+    return this->isVertex2 (vertex);
+  }
 }
 
-bool WingedEdge :: isRightOf (const WingedFace& face, const WingedVertex& vertex) const {
-  return ! this->isLeftOf (face,vertex);
+bool WingedEdge :: isSecondVertex ( const WingedFace& face
+                                  , const WingedVertex& vertex) const {
+  return ! this->isFirstVertex (face,vertex);
 }
 
 Maybe <LinkedEdge> WingedEdge :: adjacentSibling (const WingedVertex& vertex) const {

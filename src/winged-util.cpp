@@ -145,13 +145,3 @@ void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
   // Normals
   w.rebuildNormals ();
 }
-
-EdgeSet WingedUtil :: edgesFromFaces (const FaceSet& faces) {
-  EdgeSet edges;
-  for (const LinkedFace& face : faces) {
-    for (ADJACENT_EDGE_ITERATOR (it, *face)) {
-      edges.insert (it.edge ());
-    }
-  }
-  return edges;
-}

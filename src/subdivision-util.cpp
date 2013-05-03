@@ -99,15 +99,16 @@ void SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
   f->setEdge          (e13);
 }
 
-void SubdivUtil :: triangulateQuadAtHeighestVertex (WingedMesh& mesh, LinkedFace face) {
+void SubdivUtil :: triangulateQuadAtHeighestLevelVertex ( WingedMesh& mesh
+                                                        , LinkedFace face) {
   assert (face->numEdges () == 4);
 
-  LinkedVertex vertex      = face->highest ();
-  LinkedEdge   edge        = face->adjacent  (*vertex);
-  LinkedEdge   counterpart = edge->successor (*face,1);
+  LinkedVertex vertex      = face->highestLevelVertex ();
+  LinkedEdge   edge        = face->adjacent           (*vertex);
+  LinkedEdge   counterpart = edge->successor          (*face,1);
   LinkedEdge   newEdge;
 
-  if (edge->isLeftOf (*face, *vertex)) {
+  if (edge->isFirstVertex (*face, *vertex)) {
     newEdge = splitFaceWith ( mesh, face
                             , edge->predecessor (*face), counterpart
                             , edge->successor   (*face), edge);

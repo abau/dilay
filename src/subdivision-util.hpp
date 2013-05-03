@@ -17,9 +17,9 @@ namespace SubdivUtil {
    */
   void triangulate6Gon (WingedMesh&, LinkedFace);
 
-  /** `triangulateQuadAtHeighestVertex (m,f)` triangulates the quad `f` by inserting an
-   * edge from the vertex of `f` with the heighest level. */
-  void triangulateQuadAtHeighestVertex (WingedMesh&, LinkedFace);
+  /** `triangulateQuadAtHeighestLevelVertex (m,f)` triangulates the quad `f` by 
+   * inserting an edge from the vertex of `f` with the heighest level. */
+  void triangulateQuadAtHeighestLevelVertex (WingedMesh&, LinkedFace);
 }
 
 #endif

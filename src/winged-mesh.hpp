@@ -6,7 +6,6 @@
 
 class FaceIntersection;
 class Ray;
-template <class T> class Maybe;
 
 class WingedMeshImpl;
 
@@ -47,8 +46,6 @@ class WingedMesh {
     void                     toggleRenderMode      ();
     
     bool                     intersectRay          (const Ray&, FaceIntersection&);
-    Maybe <LinkedEdge>       edgeByVertexIndices   (unsigned int, unsigned int);
-    Maybe <LinkedVertex>     vertexByIndex         (unsigned int);
   private:
     WingedMeshImpl* impl;
 };

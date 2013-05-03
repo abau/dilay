@@ -73,11 +73,9 @@ class WingedEdge {
     LinkedVertex  vertex              (const WingedFace&, unsigned int) const;
     glm::vec3     middle              (const WingedMesh&) const;
     LinkedEdge    adjacent            (const WingedFace&, const WingedVertex&) const;
-    float         cosAngle            (const WingedMesh&, const WingedFace&
-                                      ,const WingedVertex&) const;
     bool          isAdjacent          (const WingedVertex&) const;
-    bool          isLeftOf            (const WingedFace&, const WingedVertex&) const;
-    bool          isRightOf           (const WingedFace&, const WingedVertex&) const;
+    bool          isFirstVertex       (const WingedFace&, const WingedVertex&) const;
+    bool          isSecondVertex      (const WingedFace&, const WingedVertex&) const;
     Maybe <LinkedEdge> adjacentSibling (const WingedVertex&) const;
 
   private:

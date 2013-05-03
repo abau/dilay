@@ -35,8 +35,8 @@ class WingedFace {
     Maybe<LinkedVertex>      tVertex       () const;
     Maybe<LinkedEdge>        tEdge         () const;
     unsigned int             level         () const;
-    LinkedVertex             highest       () const;
 
+    LinkedVertex             highestLevelVertex     () const;
     AdjacentEdgeIterator     adjacentEdgeIterator   (bool = false) const;
     AdjacentVertexIterator   adjacentVertexIterator (bool = false) const;
     AdjacentFaceIterator     adjacentFaceIterator   (bool = false) const;
