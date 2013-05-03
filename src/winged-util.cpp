@@ -32,39 +32,41 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
   std::cout << "Number of edges: "           << mesh.numEdges ()    << std::endl;
   std::cout << "Number of faces: "           << mesh.numFaces ()    << std::endl;
 
-  for (const WingedVertex& v : mesh.vertices ()) {
-    std::cout   << "Vertex "               << v.index   () 
-                << "\n\tposition:\t"       << v.vertex  (mesh)
-                << "\n\tedge:\t\t"         << v.edge    ()->id ()
-                << "\n\tlevel:\t\t"        << v.level   ();
-    if (printDerived)
-      std::cout << "\n\tnormal:\t\t"       << v.normal  (mesh);
-    std::cout   << std::endl;
-  }
+  if (mesh.vertices ().size () < 10) {
+    for (const WingedVertex& v : mesh.vertices ()) {
+      std::cout   << "Vertex "               << v.index   () 
+                  << "\n\tposition:\t"       << v.vertex  (mesh)
+                  << "\n\tedge:\t\t"         << v.edge    ()->id ()
+                  << "\n\tlevel:\t\t"        << v.level   ();
+      if (printDerived)
+        std::cout << "\n\tnormal:\t\t"       << v.normal  (mesh);
+      std::cout   << std::endl;
+    }
 
-  for (const WingedEdge& e : mesh.edges ()) {
-    std::cout << "Edge " << e.id () 
-      << "\n\tvertex 1:\t\t"        << e.vertex1          ()->index ()  
-      <<   "\tvertex 2:\t\t"        << e.vertex2          ()->index () 
-      << "\n\tleft face:\t\t"       << e.leftFace         ()->id ()   
-      <<   "\tright face:\t\t"      << e.rightFace        ()->id ()
-      << "\n\tleft predecessor:\t"  << e.leftPredecessor  ()->id ()   
-      <<   "\tleft successor:\t\t"  << e.leftSuccessor    ()->id ()   
-      << "\n\tright predecessor:\t" << e.rightPredecessor ()->id ()   
-      <<   "\tright successor:\t"   << e.rightSuccessor   ()->id ()   
-      << "\n\tprivious sibling:\t"  << siblingId          (e.previousSibling ())   
-      <<   "\tnext sibling:\t\t"    << siblingId          (e.nextSibling     ())
-      << "\n\tis T-edge:\t\t"       << e.isTEdge ();
-    std::cout << std::endl;
-  }
+    for (const WingedEdge& e : mesh.edges ()) {
+      std::cout << "Edge " << e.id () 
+        << "\n\tvertex 1:\t\t"        << e.vertex1          ()->index ()  
+        <<   "\tvertex 2:\t\t"        << e.vertex2          ()->index () 
+        << "\n\tleft face:\t\t"       << e.leftFace         ()->id ()   
+        <<   "\tright face:\t\t"      << e.rightFace        ()->id ()
+        << "\n\tleft predecessor:\t"  << e.leftPredecessor  ()->id ()   
+        <<   "\tleft successor:\t\t"  << e.leftSuccessor    ()->id ()   
+        << "\n\tright predecessor:\t" << e.rightPredecessor ()->id ()   
+        <<   "\tright successor:\t"   << e.rightSuccessor   ()->id ()   
+        << "\n\tprivious sibling:\t"  << siblingId          (e.previousSibling ())   
+        <<   "\tnext sibling:\t\t"    << siblingId          (e.nextSibling     ())
+        << "\n\tis T-edge:\t\t"       << e.isTEdge ();
+      std::cout << std::endl;
+    }
 
-  for (const WingedFace& f : mesh.faces ()) {
-    std::cout   << "Face "          << f.id () 
-                << "\n\tedge:\t"    << f.edge()->id ()
-                << "\n\tlevel:\t"   << f.level ();
-    if (printDerived)
-      std::cout << "\n\tnormal: "   << f.normal (mesh);
-    std::cout   << std::endl;
+    for (const WingedFace& f : mesh.faces ()) {
+      std::cout   << "Face "          << f.id () 
+                  << "\n\tedge:\t"    << f.edge()->id ()
+                  << "\n\tlevel:\t"   << f.level ();
+      if (printDerived)
+        std::cout << "\n\tnormal: "   << f.normal (mesh);
+      std::cout   << std::endl;
+    }
   }
 }
 
