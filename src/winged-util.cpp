@@ -1,6 +1,9 @@
 #include <iostream>
 #include <limits>
 #include <glm/glm.hpp>
+#include <vector>
+#include <map>
+#include <utility>
 #include "winged-util.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
@@ -74,10 +77,51 @@ LinkedEdge findOrAddEdge (WingedMesh&,unsigned int,unsigned int,LinkedFace);
 
 void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
   w.reset ();
+
+  typedef std::pair  <unsigned int,unsigned int> uiPair;
+  std::vector        <LinkedVertex>              vecVertices (m.numVertices ());
+  std::map           <uiPair, LinkedEdge>        mapEdges;
+
+  /** `findOrAddEdge (i1,i2,f)` searches an edge with indices `(i2,i1)` (in that order).
+   * If such an edge exists, `f` becomes its new right face.
+   * Otherwise a new edge is added with `f` being its left face.
+   * The found (resp. created) edge is returned
+   */
+  std::function <LinkedEdge (unsigned int,unsigned int,LinkedFace)> findOrAddEdge =
+    [&w,&vecVertices,&mapEdges] 
+    (unsigned int index1, unsigned int index2, LinkedFace face) {
+
+      auto result = mapEdges.find (uiPair (index2, index1));
+      if (result == mapEdges.end ()) {
+        LinkedVertex v1    = vecVertices [index1];
+        LinkedVertex v2    = vecVertices [index2];
+        LinkedEdge newEdge = w.addEdge (WingedEdge ());
+
+        mapEdges.insert (std::pair <uiPair,LinkedEdge> ( uiPair (index1,index2)
+                                                       , newEdge ));
+        newEdge->setVertex1  (v1);
+        newEdge->setVertex2  (v2);
+        newEdge->setLeftFace (face);
+        v1->setEdge          (newEdge);
+        v2->setEdge          (newEdge);
+        face->setEdge        (newEdge);
+
+        return newEdge;
+      }
+      else {
+        LinkedEdge existingEdge = result->second;
+        existingEdge->setRightFace (face);
+        face->setEdge              (existingEdge);
+
+        return existingEdge;
+      }
+    };
+
   // Vertices
   for (unsigned int i = 0; i < m.numVertices (); i++) {
-    w.addVertex (m.vertex (i));
+    vecVertices [i] = w.addVertex (m.vertex (i));
   }
+
   // Faces & Edges
   for (unsigned int i = 0; i < m.numIndices (); i += 3) {
     unsigned int index1 = m.index (i + 0);
@@ -85,9 +129,9 @@ void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
     unsigned int index3 = m.index (i + 2);
 
     LinkedFace f  = w.addFace (WingedFace ());
-    LinkedEdge e1 = findOrAddEdge (w,index1, index2, f);
-    LinkedEdge e2 = findOrAddEdge (w,index2, index3, f);
-    LinkedEdge e3 = findOrAddEdge (w,index3, index1, f);
+    LinkedEdge e1 = findOrAddEdge (index1, index2, f);
+    LinkedEdge e2 = findOrAddEdge (index2, index3, f);
+    LinkedEdge e3 = findOrAddEdge (index3, index1, f);
 
     e1->setPredecessor (*f,e3);
     e1->setSuccessor   (*f,e2);
@@ -110,28 +154,4 @@ EdgeSet WingedUtil :: edgesFromFaces (const FaceSet& faces) {
     }
   }
   return edges;
-}
-
-// Internal /////////
-
-LinkedEdge findOrAddEdge  ( WingedMesh& mesh, unsigned int index1
-                          , unsigned int index2, LinkedFace face) {
-  Maybe <LinkedEdge> e = mesh.edgeByVertexIndices (index2, index1);
-  if (e.isDefined ()) {
-    e.data ()->setRightFace (face);
-  }
-  else {
-    Maybe <LinkedVertex> v1 = mesh.vertexByIndex (index1);
-    Maybe <LinkedVertex> v2 = mesh.vertexByIndex (index2);
-    assert (v1.isDefined () && v2.isDefined ());
-
-    e.data  (mesh.addEdge (WingedEdge ()));
-    e.data  ()->setVertex1  (v1.data ());
-    e.data  ()->setVertex2  (v2.data ());
-    e.data  ()->setLeftFace (face);
-    v1.data ()->setEdge     (e.data ());
-    v2.data ()->setEdge     (e.data ());
-  }
-  face->setEdge (e.data ());
-  return e.data ();
 }
