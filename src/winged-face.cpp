@@ -39,6 +39,15 @@ Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
   return t;
 }
 
+unsigned int WingedFace :: numEdges () const {
+  unsigned int i = 0;
+
+  for (ADJACENT_EDGE_ITERATOR(_,*this)) {
+    i++;
+  }
+  return i;
+}
+
 glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
   glm::vec3 v1 = this->_edge->vertex (*this,0)->vertex (mesh);
   glm::vec3 v2 = this->_edge->vertex (*this,1)->vertex (mesh);
@@ -47,13 +56,29 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
   return glm::normalize (glm::cross (v2-v1, v3-v2));
 }
 
-unsigned int WingedFace :: numEdges () const {
-  unsigned int i = 0;
+glm::vec3 WingedFace :: center (const WingedMesh& mesh) const {
+  glm::vec3    center (0.0f);
+  unsigned int count = 0;
 
-  for (ADJACENT_EDGE_ITERATOR(_,*this)) {
-    i++;
+  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+    count++;
+    center = center + it.vertex ()->vertex (mesh);
   }
-  return i;
+  return center / glm::vec3 (float (count));
+}
+
+float WingedFace :: maxExtent (const WingedMesh& mesh) const {
+  glm::vec3 max (std::numeric_limits <float>::min ());
+  glm::vec3 min (std::numeric_limits <float>::max ());
+
+  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+    max = glm::max (max, it.vertex ()->vertex (mesh));   
+    min = glm::min (min, it.vertex ()->vertex (mesh));   
+  }
+
+  glm::vec3 delta = max - min;
+  
+  return glm::max ( glm::max ( delta.x, delta.y), delta.z );
 }
 
 LinkedEdge WingedFace :: adjacent (const WingedVertex& vertex) const {
