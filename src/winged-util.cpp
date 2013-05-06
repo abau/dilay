@@ -73,8 +73,6 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
   }
 }
 
-LinkedEdge findOrAddEdge (WingedMesh&,unsigned int,unsigned int,LinkedFace);
-
 void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
   w.reset ();
 
