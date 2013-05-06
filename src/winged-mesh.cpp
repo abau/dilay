@@ -12,13 +12,13 @@
 #include "adjacent-iterator.hpp"
 
 struct WingedMeshImpl {
-  WingedMesh* _wingedMesh;
+  WingedMesh& _wingedMesh;
   Mesh        _mesh;
   Vertices    _vertices;
   Edges       _edges;
   Faces       _faces;
 
-  WingedMeshImpl (WingedMesh* p) : _wingedMesh (p) {}
+  WingedMeshImpl (WingedMesh& p) : _wingedMesh (p) {}
 
   void addIndex (unsigned int index) { this->_mesh.addIndex (index); }
 
@@ -81,14 +81,14 @@ struct WingedMeshImpl {
   void rebuildIndices () {
     this->_mesh.clearIndices ();
     for (WingedFace& f : this->_faces) {
-      f.addIndices (*this->_wingedMesh);
+      f.addIndices (this->_wingedMesh);
     }
   }
 
   void rebuildNormals () {
     this->_mesh.clearNormals ();
     for (WingedVertex& v : this->_vertices) {
-      this->_mesh.addNormal (v.normal (*this->_wingedMesh));
+      this->_mesh.addNormal (v.normal (this->_wingedMesh));
     }
   }
 
@@ -113,7 +113,7 @@ struct WingedMeshImpl {
     glm::vec3 p;
 
     for (LinkedFace it = this->_faces.begin (); it != this->_faces.end (); ++it) {
-      it->triangle (*this->_wingedMesh,triangle);
+      it->triangle (this->_wingedMesh,triangle);
       if (triangle.intersectRay (ray,p) == false) {
         continue;
       }
@@ -132,7 +132,7 @@ struct WingedMeshImpl {
   }
 };
 
-WingedMesh :: WingedMesh () : impl (new WingedMeshImpl (this)) {}
+WingedMesh :: WingedMesh () : impl (new WingedMeshImpl (*this)) {}
 
 DELEGATE_COPY_CONSTRUCTOR (WingedMesh)
 DELEGATE_ASSIGNMENT_OP    (WingedMesh)
