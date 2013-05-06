@@ -12,7 +12,7 @@ struct StateImpl {
   Cursor     cursor;
 
   void initialize () { 
-    WingedUtil :: fromMesh (this->mesh, Mesh :: sphere (1.0f,10,20));
+    WingedUtil :: fromMesh (this->mesh, Mesh :: sphere (1.0f,100,200));
     //WingedUtil :: fromMesh (this->mesh, Mesh :: cube (1.0f));
     this->mesh.bufferData ();
     this->camera.initialize ();

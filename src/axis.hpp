@@ -4,10 +4,10 @@
 class AxisImpl;
 
 class Axis {
-  public: Axis       ();
-          ~Axis      ();
-          Axis       (const Axis&) = delete;
-    Axis& operator=  (const Axis&) = delete;
+  public: Axis             ();
+          ~Axis            ();
+          Axis             (const Axis&) = delete;
+    const Axis& operator=  (const Axis&) = delete;
 
     void  initialize ();
     void  render     ();

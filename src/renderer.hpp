@@ -22,10 +22,10 @@ class Renderer {
     void setViewLight1 (const ViewLight&);
 
   private:
-     Renderer            ();
-     Renderer            (const Renderer&) = delete;
-     Renderer& operator= (const Renderer&) = delete;
-    ~Renderer            ();
+          Renderer            ();
+          Renderer            (const Renderer&) = delete;
+    const Renderer& operator= (const Renderer&) = delete;
+         ~Renderer            ();
 
     RendererImpl* impl;
 };

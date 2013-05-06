@@ -8,10 +8,10 @@ class Color;
 
 class ViewLight {
   public:
-     ViewLight            (const glm::vec3&, const Color&, float); 
-     ViewLight            (const ViewLight&);
-     ViewLight& operator= (const ViewLight&);
-    ~ViewLight            (); 
+          ViewLight             (const glm::vec3&, const Color&, float); 
+          ViewLight             (const ViewLight&);
+    const ViewLight& operator=  (const ViewLight&);
+         ~ViewLight             (); 
 
     const glm::vec3& position   () const;
     const Color&     color      () const;

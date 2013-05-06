@@ -8,10 +8,10 @@ class Ray;
 
 class Camera {
   public:
-     Camera            ();
-     Camera            (const Camera&);
-     Camera& operator= (const Camera&);
-    ~Camera            ();
+          Camera            ();
+          Camera            (const Camera&);
+    const Camera& operator= (const Camera&);
+         ~Camera            ();
 
     void         initialize            ();
 

@@ -19,10 +19,10 @@ class State {
     void              render       ();
     void              setMesh      (const Mesh&);
   private:
-     State            ();
-     State            (const State&) = delete;
-     State& operator= (const State&) = delete;
-    ~State            ();
+          State            ();
+          State            (const State&) = delete;
+    const State& operator= (const State&) = delete;
+         ~State            ();
 
     StateImpl* impl;
 };

@@ -6,10 +6,10 @@
 class CursorImpl;
 
 class Cursor {
-  public:  Cursor            ();
-           Cursor            (const Cursor&);
-           Cursor& operator= (const Cursor&);
-          ~Cursor            ();
+  public: Cursor             ();
+          Cursor             (const Cursor&);
+    const Cursor& operator=  (const Cursor&);
+         ~Cursor             ();
 
     void  initialize         ();
     void  setPosition        (const glm::vec3&);

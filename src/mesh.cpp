@@ -47,7 +47,7 @@ struct MeshImpl {
 
   ~MeshImpl () { this->reset (); }
 
-  MeshImpl& operator= (const MeshImpl& source) {
+  const MeshImpl& operator= (const MeshImpl& source) {
     if (this == &source) return *this;
     MeshImpl tmp (source);
     std::swap (this->scalings        , tmp.scalings);

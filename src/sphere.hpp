@@ -8,10 +8,10 @@ class SphereImpl;
 
 class Sphere {
   public:
-     Sphere            (const glm::vec3&, float);
-     Sphere            (const Sphere&);
-     Sphere& operator= (const Sphere&);
-    ~Sphere            ();
+          Sphere            (const glm::vec3&, float);
+          Sphere            (const Sphere&);
+    const Sphere& operator= (const Sphere&);
+         ~Sphere            ();
 
     const glm::vec3& origin () const;
     float            radius () const;

@@ -25,10 +25,10 @@ class OpenGLUtil {
     GLuint loadProgram       (const std::string&, const std::string&);
 
   private:
-     OpenGLUtil            ();
-     OpenGLUtil            (const OpenGLUtil&) = delete;
-     OpenGLUtil& operator= (const OpenGLUtil&) = delete;
-    ~OpenGLUtil            ();
+          OpenGLUtil            ();
+          OpenGLUtil            (const OpenGLUtil&) = delete;
+    const OpenGLUtil& operator= (const OpenGLUtil&) = delete;
+         ~OpenGLUtil            ();
 
     OpenGLUtilImpl* impl;
 };

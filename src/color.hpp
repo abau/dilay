@@ -8,13 +8,13 @@ class ColorImpl;
 
 class Color {
   public: 
-     Color            (float,float,float,float);
-     Color            (float,float,float);
-     Color            (const glm::vec3&);
-     Color            (const glm::vec4&);
-     Color            (const Color&);
-     Color& operator= (const Color&);
-    ~Color            ();
+          Color            (float,float,float,float);
+          Color            (float,float,float);
+          Color            (const glm::vec3&);
+          Color            (const glm::vec4&);
+          Color            (const Color&);
+    const Color& operator= (const Color&);
+         ~Color            ();
 
     float r       () const;
     float g       () const;

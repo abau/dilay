@@ -8,11 +8,11 @@ class Ray;
 
 class Triangle {
   public:
-     Triangle            (const glm::vec3&, const glm::vec3&, const glm::vec3&);
-     Triangle            ();
-     Triangle            (const Triangle&);
-     Triangle& operator= (const Triangle&);
-    ~Triangle            ();
+          Triangle            (const glm::vec3&, const glm::vec3&, const glm::vec3&);
+          Triangle            ();
+          Triangle            (const Triangle&);
+    const Triangle& operator= (const Triangle&);
+         ~Triangle            ();
 
     const glm::vec3&  vertex1 () const;
     const glm::vec3&  vertex2 () const;

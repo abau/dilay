@@ -8,7 +8,7 @@
   from :: from (const from & a1) { this->impl = new from ## Impl (*a1.impl); }
 
 #define DELEGATE_ASSIGNMENT_OP(from) \
-  from & from :: operator= (const from & source) { \
+  const from & from :: operator= (const from & source) { \
     if (this == &source) return *this; \
     from tmp (source); \
     from ## Impl * tmpImpl = tmp.impl; \

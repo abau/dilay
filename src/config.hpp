@@ -11,10 +11,10 @@ class Config {
     T get (const std::initializer_list <std::string>&) const;  
 
   private:
-     Config             ();
-     Config             (const Config&) = delete;
-     Config& operator=  (const Config&) = delete;
-    ~Config             ();
+          Config            ();
+          Config            (const Config&) = delete;
+    const Config& operator= (const Config&) = delete;
+         ~Config            ();
 
     ConfigImpl* impl;
 };

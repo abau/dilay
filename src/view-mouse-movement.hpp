@@ -6,10 +6,10 @@ class QPoint;
 
 class MouseMovement {
   public:
-     MouseMovement            ();
-     MouseMovement            (const MouseMovement&);
-     MouseMovement& operator= (const MouseMovement&);
-    ~MouseMovement            ();
+          MouseMovement            ();
+          MouseMovement            (const MouseMovement&);
+    const MouseMovement& operator= (const MouseMovement&);
+         ~MouseMovement            ();
 
     void  update      (const QPoint&);
     void  invalidate  ();

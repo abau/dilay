@@ -9,7 +9,7 @@ class Mesh {
   public:        Mesh             ();
                  Mesh             (const Mesh&);
                  ~Mesh            ();
-          Mesh&  operator=        (const Mesh&);
+    const Mesh&  operator=        (const Mesh&);
 
     unsigned int numVertices      () const;
     unsigned int numIndices       () const;

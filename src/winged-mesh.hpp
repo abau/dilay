@@ -11,10 +11,10 @@ class WingedMeshImpl;
 
 class WingedMesh {
   public:                    
-     WingedMesh                                    ();
-     WingedMesh                                    (const WingedMesh&);
-     WingedMesh&             operator=             (const WingedMesh&);
-    ~WingedMesh                                    ();
+          WingedMesh                               ();
+          WingedMesh                               (const WingedMesh&);
+    const WingedMesh&        operator=             (const WingedMesh&);
+         ~WingedMesh                               ();
 
     void                     addIndex              (unsigned int);
     LinkedVertex             addVertex             (const glm::vec3&, unsigned int = 0);
