@@ -15,19 +15,25 @@ struct OpenGLUtilImpl {
     glUniform4f (id, v.x, v.y, v.z, v.w);
   }
 
-  void safeDeleteArray (GLuint id) {
-    if (glIsVertexArray (id) == GL_TRUE) glDeleteVertexArrays (1,&id);
+  void safeDeleteArray (GLuint& id) {
+    if (glIsVertexArray (id) == GL_TRUE) 
+      glDeleteVertexArrays (1,&id);
+    id = 0;
   }
 
-  void safeDeleteBuffer (GLuint id) {
-    if (glIsBuffer (id) == GL_TRUE) glDeleteBuffers (1,&id);
+  void safeDeleteBuffer (GLuint& id) {
+    if (glIsBuffer (id) == GL_TRUE) 
+      glDeleteBuffers (1,&id);
+    id = 0;
   }
 
-  void safeDeleteShader (GLuint id) {
-    if (glIsShader (id) == GL_TRUE) glDeleteShader (id);
+  void safeDeleteShader (GLuint& id) {
+    if (glIsShader (id) == GL_TRUE) 
+      glDeleteShader (id);
+    id = 0;
   }
 
-  void safeDeleteProgram (GLuint id) {
+  void safeDeleteProgram (GLuint& id) {
     if (glIsProgram (id) == GL_TRUE) {
       GLsizei numShaders;
       GLuint  shaderIds[2];
@@ -39,6 +45,7 @@ struct OpenGLUtilImpl {
       }
       glDeleteProgram (id);
     }
+    id = 0;
   }
 
   GLuint loadProgram ( const std::string& vertexShader
@@ -106,8 +113,8 @@ DELEGATE_DESTRUCTOR   (OpenGLUtil)
 
 DELEGATE2 (void,OpenGLUtil,glUniformVec3,GLuint,const glm::vec3&)
 DELEGATE2 (void,OpenGLUtil,glUniformVec4,GLuint,const glm::vec4&)
-DELEGATE1 (void,OpenGLUtil,safeDeleteArray,GLuint)
-DELEGATE1 (void,OpenGLUtil,safeDeleteBuffer,GLuint)
-DELEGATE1 (void,OpenGLUtil,safeDeleteShader,GLuint)
-DELEGATE1 (void,OpenGLUtil,safeDeleteProgram,GLuint)
+DELEGATE1 (void,OpenGLUtil,safeDeleteArray,GLuint&)
+DELEGATE1 (void,OpenGLUtil,safeDeleteBuffer,GLuint&)
+DELEGATE1 (void,OpenGLUtil,safeDeleteShader,GLuint&)
+DELEGATE1 (void,OpenGLUtil,safeDeleteProgram,GLuint&)
 DELEGATE2 (GLuint,OpenGLUtil,loadProgram,const std::string&,const std::string&)

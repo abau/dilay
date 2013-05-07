@@ -17,6 +17,16 @@ struct RendererImpl {
   GLuint light1ColorId;
   GLuint light1IrradianceId;
 
+  RendererImpl () {
+    for (int i = 0; i < RenderModeUtil :: numRenderModes; i++)
+      this->programIds [i]   = 0;
+    this->mvpId              = 0;
+    this->colorId            = 0;
+    this->light1PositionId   = 0;
+    this->light1ColorId      = 0;
+    this->light1IrradianceId = 0;
+  }
+
   void initialize () {
     static bool isInitialized = false;
 
