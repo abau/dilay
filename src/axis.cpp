@@ -38,13 +38,13 @@ struct AxisImpl {
     glDisable (GL_DEPTH_TEST);
 
     Renderer :: global ().setColor3 (Color (1.0f,0.0f,0.0f));
-    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 0));
+    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * 0));
 
     Renderer :: global ().setColor3 (Color (0.0f,1.0f,0.0f));
-    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 2));
+    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * 2));
 
     Renderer :: global ().setColor3 (Color (0.0f,0.0f,1.0f));
-    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (void*)(GLvoid*)(sizeof(GLuint) * 4));
+    glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * 4));
 
     glEnable (GL_DEPTH_TEST);
     this->mesh.renderEnd ();
