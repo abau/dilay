@@ -26,8 +26,6 @@ class WingedFace {
     Triangle                 triangle      (const WingedMesh&) const;
     unsigned int             numEdges      () const;
     glm::vec3                normal        (const WingedMesh&) const;
-    glm::vec3                center        (const WingedMesh&) const;
-    float                    maxExtent     (const WingedMesh&) const;
 
     /** `adjacent (v)` returns an adjacent edge with `v` as start or end point.
      * It's crucial that `v` is acutally a vertex of `this` face

@@ -56,31 +56,6 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
   return glm::normalize (glm::cross (v2-v1, v3-v2));
 }
 
-glm::vec3 WingedFace :: center (const WingedMesh& mesh) const {
-  glm::vec3    center (0.0f);
-  unsigned int count = 0;
-
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    count++;
-    center = center + it.vertex ()->vertex (mesh);
-  }
-  return center / glm::vec3 (float (count));
-}
-
-float WingedFace :: maxExtent (const WingedMesh& mesh) const {
-  glm::vec3 max (std::numeric_limits <float>::min ());
-  glm::vec3 min (std::numeric_limits <float>::max ());
-
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    max = glm::max (max, it.vertex ()->vertex (mesh));   
-    min = glm::min (min, it.vertex ()->vertex (mesh));   
-  }
-
-  glm::vec3 delta = max - min;
-  
-  return glm::max ( glm::max ( delta.x, delta.y), delta.z );
-}
-
 LinkedEdge WingedFace :: adjacent (const WingedVertex& vertex) const {
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
     if (it.edge ()->isAdjacent (vertex))

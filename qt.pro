@@ -12,6 +12,7 @@ QT                     += opengl
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++11
+QMAKE_CXXFLAGS_DEBUG   += -DDILAY_RENDER_OCTREE
 
 SOURCES += \
            src/adjacent-iterator.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
            src/intersection.cpp \
            src/main.cpp \
            src/mesh.cpp \
+           src/octree.cpp \
            src/opengl-util.cpp \
            src/renderer.cpp \
            src/ray.cpp \
@@ -59,6 +61,7 @@ HEADERS += \
            src/macro.hpp \
            src/maybe.hpp \
            src/mesh.hpp \
+           src/octree.hpp \
            src/opengl-util.hpp \
            src/renderer.hpp \
            src/ray.hpp \

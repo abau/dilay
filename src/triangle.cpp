@@ -3,6 +3,7 @@
 #include "macro.hpp"
 #include "util.hpp"
 #include "ray.hpp"
+#include "winged-vertex.hpp"
 
 struct TriangleImpl {
   glm::vec3 vertex1;
@@ -14,11 +15,27 @@ struct TriangleImpl {
   TriangleImpl (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
     : vertex1 (v1), vertex2 (v2), vertex3 (v3) {}
 
+  TriangleImpl ( const WingedMesh& mesh, LinkedVertex v1
+               , LinkedVertex v2, LinkedVertex v3)
+    : TriangleImpl (v1->vertex (mesh), v2->vertex (mesh), v3->vertex (mesh)) {}
+
   glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
   glm::vec3 edge2 () const { return this->vertex3 - this->vertex1; }
 
   glm::vec3 normal () const { 
     return glm::cross (this->edge1 (), this->edge2 ());
+  }
+
+  glm::vec3 center () const {
+    return (this->vertex1 + this->vertex2 + this->vertex3) / glm::vec3 (3.0f);
+  }
+
+  float maxExtent () const {
+    glm::vec3 max = glm::max (glm::max (this->vertex1, this->vertex2), this->vertex3);
+    glm::vec3 min = glm::min (glm::min (this->vertex1, this->vertex2), this->vertex3);
+
+    glm::vec3 delta = max - min;
+    return glm::max (glm::max (delta.x, delta.y), delta.z);
   }
 
   bool intersectRay (const Ray& ray, glm::vec3& intersection) const {
@@ -50,6 +67,7 @@ struct TriangleImpl {
 
 DELEGATE_BIG4          (Triangle)
 DELEGATE3_CONSTRUCTOR  (Triangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+DELEGATE4_CONSTRUCTOR  (Triangle, const WingedMesh&, LinkedVertex, LinkedVertex, LinkedVertex)
 
 GETTER          (const glm::vec3&  , Triangle, vertex1)
 GETTER          (const glm::vec3&  , Triangle, vertex2)
@@ -62,4 +80,6 @@ SETTER          (const glm::vec3&  , Triangle, vertex3)
 DELEGATE_CONST  (glm::vec3         , Triangle, edge1)
 DELEGATE_CONST  (glm::vec3         , Triangle, edge2)
 DELEGATE_CONST  (glm::vec3         , Triangle, normal)
+DELEGATE_CONST  (glm::vec3         , Triangle, center)
+DELEGATE_CONST  (float             , Triangle, maxExtent)
 DELEGATE2_CONST (bool              , Triangle, intersectRay, const Ray&, glm::vec3&)

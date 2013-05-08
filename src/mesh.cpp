@@ -29,21 +29,30 @@ struct MeshImpl {
   RenderMode                  renderMode;
 
   MeshImpl () { 
-    this->scalings      = glm::mat4x4 (1.0f);
-    this->rotations     = glm::mat4x4 (1.0f);
-    this->translations  = glm::mat4x4 (1.0f);
-    this->renderMode    = RenderWireframe;
+    this->scalings       = glm::mat4x4 (1.0f);
+    this->rotations      = glm::mat4x4 (1.0f);
+    this->translations   = glm::mat4x4 (1.0f);
+    this->arrayObjectId  = 0;
+    this->vertexBufferId = 0;
+    this->indexBufferId  = 0;
+    this->normalBufferId = 0;
+    this->renderMode     = RenderWireframe;
   }
 
   MeshImpl (const MeshImpl& source)
-              : scalings     (source.scalings)
-              , rotations    (source.rotations)
-              , translations (source.translations)
-              , vertices     (source.vertices)
-              , indices      (source.indices)
-              , normals      (source.normals)
-              , renderMode   (source.renderMode)
-              {}
+              : scalings       (source.scalings)
+              , rotations      (source.rotations)
+              , translations   (source.translations)
+              , vertices       (source.vertices)
+              , indices        (source.indices)
+              , normals        (source.normals)
+              , renderMode     (source.renderMode) {
+              
+    this->arrayObjectId  = 0;
+    this->vertexBufferId = 0;
+    this->indexBufferId  = 0;
+    this->normalBufferId = 0;
+  }
 
   ~MeshImpl () { this->reset (); }
 
@@ -56,11 +65,12 @@ struct MeshImpl {
     std::swap (this->vertices        , tmp.vertices);
     std::swap (this->indices         , tmp.indices);
     std::swap (this->normals         , tmp.normals);
-    std::swap (this->arrayObjectId   , tmp.arrayObjectId);
-    std::swap (this->vertexBufferId  , tmp.vertexBufferId);
-    std::swap (this->indexBufferId   , tmp.indexBufferId);
-    std::swap (this->normalBufferId  , tmp.normalBufferId);
     std::swap (this->renderMode      , tmp.renderMode);
+
+    this->arrayObjectId  = 0;
+    this->vertexBufferId = 0;
+    this->indexBufferId  = 0;
+    this->normalBufferId = 0;
     return *this;
   }
 

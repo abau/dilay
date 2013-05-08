@@ -8,9 +8,7 @@
 #include "winged-util.hpp"
 #include "adjacent-iterator.hpp"
 #include "maybe.hpp"
-
-LinkedEdge splitFaceWith ( WingedMesh&, LinkedFace, LinkedEdge, LinkedEdge
-                         , LinkedEdge, LinkedEdge);
+#include "triangle.hpp"
 
 LinkedEdge SubdivUtil :: insertVertex ( WingedMesh& mesh, LinkedEdge e
                                       , const glm::vec3& v) {
@@ -56,13 +54,16 @@ void SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
   LinkedEdge e45  = f->edge ()->successor (*f,3);
   LinkedEdge e50  = f->edge ()->successor (*f,4);
 
+  LinkedVertex v0 = e01->firstVertex (*f);
   LinkedVertex v1 = e12->firstVertex (*f);
+  LinkedVertex v2 = e23->firstVertex (*f);
   LinkedVertex v3 = e34->firstVertex (*f);
+  LinkedVertex v4 = e45->firstVertex (*f);
   LinkedVertex v5 = e50->firstVertex (*f);
 
-  LinkedFace a = mesh.addFace (WingedFace (e01));
-  LinkedFace b = mesh.addFace (WingedFace (e23));
-  LinkedFace c = mesh.addFace (WingedFace (e45));
+  LinkedFace a = mesh.addFace (WingedFace (e01), Triangle (mesh,v0,v1,v5));
+  LinkedFace b = mesh.addFace (WingedFace (e23), Triangle (mesh,v1,v2,v3));
+  LinkedFace c = mesh.addFace (WingedFace (e45), Triangle (mesh,v3,v4,v5));
 
   LinkedEdge e13 = mesh.addEdge (WingedEdge ());
   LinkedEdge e35 = mesh.addEdge (WingedEdge ());
@@ -99,6 +100,9 @@ void SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
   f->setEdge          (e13);
 }
 
+LinkedEdge splitFaceWith ( WingedMesh&, LinkedFace, LinkedFace
+                         , LinkedEdge, LinkedEdge, LinkedEdge, LinkedEdge);
+
 void SubdivUtil :: triangulateQuadAtHeighestLevelVertex ( WingedMesh& mesh
                                                         , LinkedFace face) {
   assert (face->numEdges () == 4);
@@ -109,12 +113,24 @@ void SubdivUtil :: triangulateQuadAtHeighestLevelVertex ( WingedMesh& mesh
   LinkedEdge   newEdge;
 
   if (edge->isFirstVertex (*face, *vertex)) {
-    newEdge = splitFaceWith ( mesh, face
+    Triangle newLeftGeometry (mesh, edge->vertex (*face, 0)
+                                  , edge->vertex (*face, 2)
+                                  , edge->vertex (*face, 3));
+
+    LinkedFace newLeft = mesh.addFace (WingedFace (), newLeftGeometry);
+
+    newEdge = splitFaceWith ( mesh, newLeft, face
                             , edge->predecessor (*face), counterpart
                             , edge->successor   (*face), edge);
   }
   else {
-    newEdge = splitFaceWith ( mesh, face
+    Triangle newLeftGeometry (mesh, edge->vertex (*face, 0)
+                                  , edge->vertex (*face, 1)
+                                  , edge->vertex (*face, 3));
+
+    LinkedFace newLeft = mesh.addFace (WingedFace (), newLeftGeometry);
+
+    newEdge = splitFaceWith ( mesh, newLeft ,face
                             , edge       , edge->predecessor (*face)
                             , counterpart, edge->successor   (*face));
   }
@@ -123,13 +139,13 @@ void SubdivUtil :: triangulateQuadAtHeighestLevelVertex ( WingedMesh& mesh
 
 // Internal /////////////
 
-LinkedEdge splitFaceWith ( WingedMesh& mesh, LinkedFace faceToSplit
+LinkedEdge splitFaceWith ( WingedMesh& mesh, LinkedFace newLeft, LinkedFace faceToSplit
                          , LinkedEdge leftPred,  LinkedEdge leftSucc
                          , LinkedEdge rightPred, LinkedEdge rightSucc) {
 
   LinkedEdge splitAlong = mesh.addEdge (WingedEdge ());
-  LinkedFace newLeft    = mesh.addFace (WingedFace (splitAlong));
 
+  newLeft->setEdge                (splitAlong);
   faceToSplit->setEdge            (splitAlong);
 
   splitAlong->setVertex1          (leftPred->secondVertex (*faceToSplit));

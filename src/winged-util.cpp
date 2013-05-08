@@ -12,6 +12,7 @@
 #include "adjacent-iterator.hpp"
 #include "mesh.hpp"
 #include "util.hpp"
+#include "triangle.hpp"
 
 namespace std {
   size_t hash <LinkedEdge> :: operator() (const LinkedEdge& l) const { 
@@ -126,7 +127,11 @@ void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
     unsigned int index2 = m.index (i + 1);
     unsigned int index3 = m.index (i + 2);
 
-    LinkedFace f  = w.addFace (WingedFace ());
+    LinkedFace f  = w.addFace (WingedFace (), Triangle ( w
+                                                       , vecVertices [index1]
+                                                       , vecVertices [index2]
+                                                       , vecVertices [index3]
+                                                       ));
     LinkedEdge e1 = findOrAddEdge (index1, index2, f);
     LinkedEdge e2 = findOrAddEdge (index2, index3, f);
     LinkedEdge e3 = findOrAddEdge (index3, index1, f);

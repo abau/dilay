@@ -10,6 +10,7 @@
 #include "ray.hpp"
 #include "macro.hpp"
 #include "adjacent-iterator.hpp"
+#include "octree.hpp"
 
 struct WingedMeshImpl {
   WingedMesh& _wingedMesh;
@@ -17,6 +18,7 @@ struct WingedMeshImpl {
   Vertices    _vertices;
   Edges       _edges;
   Faces       _faces;
+  Octree      _octree;
 
   WingedMeshImpl (WingedMesh& p) : _wingedMesh (p) {}
 
@@ -33,8 +35,9 @@ struct WingedMeshImpl {
     return --this->_edges.end ();
   }
 
-  LinkedFace addFace (const WingedFace& f) {
+  LinkedFace addFace (const WingedFace& f, const Triangle& geometry) {
     this->_faces.push_back (f);
+    this->_octree.insertFace (f, geometry);
     return --this->_faces.end ();
   }
 
@@ -93,9 +96,12 @@ struct WingedMeshImpl {
   }
 
   void bufferData  () { this->_mesh.bufferData   (); }
-  void renderBegin () { this->_mesh.renderBegin  (); }
-  void render      () { this->_mesh.render       (); }
-  void renderEnd   () { this->_mesh.renderEnd    (); }
+  void render      () { 
+    this->_mesh.render   (); 
+#ifdef DILAY_RENDER_OCTREE
+    this->_octree.render ();
+#endif
+  }
 
   void reset () {
     this->_mesh    .reset ();
@@ -141,7 +147,7 @@ DELEGATE_DESTRUCTOR       (WingedMesh)
 DELEGATE1       (void           , WingedMesh, addIndex, unsigned int)
 DELEGATE2       (LinkedVertex   , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (LinkedEdge     , WingedMesh, addEdge, const WingedEdge&)
-DELEGATE1       (LinkedFace     , WingedMesh, addFace, const WingedFace&)
+DELEGATE2       (LinkedFace     , WingedMesh, addFace, const WingedFace&, const Triangle&)
 
 DELEGATE_CONST  (const Vertices&, WingedMesh, vertices)
 DELEGATE_CONST  (const Edges&   , WingedMesh, edges)
@@ -159,9 +165,7 @@ DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
 DELEGATE        (void           , WingedMesh, rebuildIndices)
 DELEGATE        (void           , WingedMesh, rebuildNormals)
 DELEGATE        (void           , WingedMesh, bufferData)
-DELEGATE        (void           , WingedMesh, renderBegin)
 DELEGATE        (void           , WingedMesh, render)
-DELEGATE        (void           , WingedMesh, renderEnd)
 DELEGATE        (void           , WingedMesh, reset)
 DELEGATE        (void           , WingedMesh, toggleRenderMode)
 
