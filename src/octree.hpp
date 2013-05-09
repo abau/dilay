@@ -5,8 +5,9 @@
 
 class Triangle;
 class OctreeImpl;
+class OctreeIteratorImpl;
 
-class Octree {
+class Octree { friend class OctreeIteratorImpl;
   public:
           Octree            ();
           Octree            (const Octree&);
@@ -19,4 +20,18 @@ class Octree {
   private:
     OctreeImpl* impl;
 };
+
+/** Iterates over all faces of an octree */
+class OctreeIterator {
+  public:        OctreeIterator (Octree&);
+
+    bool         hasFace        () const;
+    LinkedFace   face           () const;
+    void         next           ();
+    unsigned int depth          () const;
+
+  private:
+    OctreeIteratorImpl* impl;
+};
+
 #endif

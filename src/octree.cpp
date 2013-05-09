@@ -25,6 +25,7 @@ class FaceToInsert {
     const float       width;
 };
 
+/** Octree node implementation */
 struct OctreeNodeImpl {
   typedef std::vector <OctreeNodeImpl> Children;
 
@@ -166,7 +167,7 @@ struct OctreeNodeImpl {
   }
 };
 
-
+/** Octree implemenation */
 struct OctreeImpl {
   MaybePtr <OctreeNodeImpl> root;
 
@@ -242,3 +243,80 @@ struct OctreeImpl {
 DELEGATE_BIG4 (Octree)
 DELEGATE2     (LinkedFace, Octree, insertFace, const WingedFace&, const Triangle&)
 DELEGATE      (void, Octree, render)
+
+/** Iterates over all faces of an octree node */
+struct OctreeNodeIteratorImpl {
+  OctreeNodeImpl& octreeNode;
+  LinkedFace      _face;
+
+  OctreeNodeIteratorImpl (OctreeNodeImpl& n) 
+    : octreeNode (n) 
+    , _face      (n.faces.end ())
+  {}
+
+  bool hasFace () const { 
+    return this->_face != this->octreeNode.faces.end ();
+  }
+
+  LinkedFace face () const {
+    assert (this->hasFace ());
+    return this->_face;
+  }
+
+  void next () {
+    assert (this->hasFace ());
+    this->_face++;
+  }
+};
+
+/** Iterates over all faces of an octree */
+struct OctreeIteratorImpl {
+  typedef std::list <OctreeNodeIteratorImpl> NodeIterators;
+
+  NodeIterators nodeIterators;
+
+  OctreeIteratorImpl (Octree& octree) {
+    if (octree.impl->root.isDefined ()) {
+      this->nodeIterators.push_back (
+          OctreeNodeIteratorImpl (*octree.impl->root.data ())
+      );
+    }
+  }
+
+  bool hasFace () const { return this->nodeIterators.size () > 0; }
+
+  LinkedFace face () const {
+    assert (this->hasFace ());
+    return this->nodeIterators.begin ()->face ();
+  }
+
+  void next () { 
+    std::function <void ()>  check = [this,&check] () {
+      OctreeNodeIteratorImpl octreeNodeIterator = *this->nodeIterators.begin ();
+
+      if (! octreeNodeIterator.hasFace ()) {
+
+        for (OctreeNodeImpl& c : octreeNodeIterator.octreeNode.children) {
+          this->nodeIterators.push_back (OctreeNodeIteratorImpl (c));
+        }
+        this->nodeIterators.pop_front ();
+        check ();
+      }
+    };
+
+    assert (this->hasFace ());
+    this->nodeIterators.begin ()->next ();
+    check ();
+  }
+
+  unsigned int depth () {
+    assert (this->hasFace ());
+    return this->nodeIterators.begin ()->octreeNode.depth;
+  }
+};
+
+DELEGATE1_CONSTRUCTOR (OctreeIterator, Octree&)    
+DELEGATE_CONST        (bool          , OctreeIterator, hasFace)
+DELEGATE_CONST        (LinkedFace    , OctreeIterator, face)
+DELEGATE              (void          , OctreeIterator, next)
+DELEGATE_CONST        (unsigned int  , OctreeIterator, depth)
