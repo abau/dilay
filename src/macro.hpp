@@ -93,27 +93,34 @@
     return this->impl-> method (a1,a2,a3,a4,a5); }
 
 #define DELEGATE_CONST(r,from,method) \
-  r from :: method () const { return this->impl-> method (); }
+  r from :: method () const { \
+    const from ## Impl * constImpl = this->impl; \
+    return constImpl-> method (); }
 
 #define DELEGATE1_CONST(r,from,method,t1) \
   r from :: method (t1 a1) const { \
-    return this->impl-> method (a1); }
+    const from ## Impl * constImpl = this->impl; \
+    return constImpl-> method (a1); }
 
 #define DELEGATE2_CONST(r,from,method,t1,t2) \
   r from :: method (t1 a1,t2 a2) const { \
-    return this->impl-> method (a1,a2); }
+    const from ## Impl * constImpl = this->impl; \
+    return constImpl-> method (a1,a2); }
 
 #define DELEGATE3_CONST(r,from,method,t1,t2,t3) \
   r from :: method (t1 a1,t2 a2,t3 a3) const { \
-    return this->impl-> method (a1,a2,a3); }
+    const from ## Impl * constImpl = this->impl; \
+    return constImpl-> method (a1,a2,a3); }
 
 #define DELEGATE4_CONST(r,from,method,t1,t2,t3,t4) \
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4) const { \
-    return this->impl-> method (a1,a2,a3,a4); }
+    const from ## Impl * constImpl = this->impl; \
+    return constImpl-> method (a1,a2,a3,a4); }
 
 #define DELEGATE5_CONST(r,from,method,t1,t2,t3,t4,t5) \
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
-    return this->impl-> method (a1,a2,a3,a4,a5); }
+    const from ## Impl * constImpl = this->impl; \
+    return constImpl-> method (a1,a2,a3,a4,a5); }
 
 #define DELEGATE_STATIC(r,from,method) \
   r from :: method () { return from ## Impl :: method (); }
