@@ -29,6 +29,7 @@ class FaceToInsert {
 struct OctreeNodeImpl {
   typedef std::vector <OctreeNodeImpl> Children;
 
+  OctreeNode   node;
   glm::vec3    center;
   float        width;
   Children     children;
@@ -40,7 +41,7 @@ struct OctreeNodeImpl {
 #endif
 
   OctreeNodeImpl (const glm::vec3& c, float w, unsigned int d) 
-    : center (c), width  (w), depth (d) {
+    : node (OctreeNode (this)), center (c), width  (w), depth (d) {
 
 #ifdef DILAY_RENDER_OCTREE
       float q = w * 0.5;
@@ -79,18 +80,35 @@ struct OctreeNodeImpl {
   }
 
   OctreeNodeImpl (const OctreeNodeImpl& source) 
-    : center (source.center)
-    , width (source.width)
+    : node     (source.node)
+    , center   (source.center)
+    , width    (source.width)
     , children (source.children)
-    , faces (source.faces)
-    , depth (source.depth)
+    , faces    (source.faces)
+    , depth    (source.depth)
 #ifdef DILAY_RENDER_OCTREE
-    , mesh (source.mesh) {
+    , mesh     (source.mesh) {
     this->mesh.bufferData ();
   }
 #else
     {}
 #endif
+
+  const OctreeNodeImpl& operator= (const OctreeNodeImpl& source) {
+    if (this == &source) return *this;
+    OctreeNodeImpl tmp (source);
+    std::swap (this->node, tmp.node);
+    std::swap (this->center, tmp.center);
+    std::swap (this->width, tmp.width);
+    std::swap (this->children, tmp.children);
+    std::swap (this->faces, tmp.faces);
+    std::swap (this->depth, tmp.depth);
+#ifdef DILAY_RENDER_OCTREE
+    std::swap (this->mesh, tmp.mesh);
+#endif
+    this->mesh.bufferData ();
+    return *this;
+  }
 
   void render () {
 #ifdef DILAY_RENDER_OCTREE
@@ -126,7 +144,8 @@ struct OctreeNodeImpl {
     unsigned int childDepth = this->depth + 1;
 
     auto add = [this,childWidth,childDepth] (const glm::vec3& v) {
-      this->children.push_back (OctreeNodeImpl (v,childWidth,childDepth));
+      OctreeNodeImpl child (v,childWidth,childDepth);
+      this->children.push_back (child);
     };
     
     add (this->center + glm::vec3 (-q, -q, -q)); // order is crucial
@@ -165,9 +184,23 @@ struct OctreeNodeImpl {
       return --this->faces.end ();
     }
   }
+
+  void deleteFace (LinkedFace face) {
+    this->faces.erase (face);
+  }
 };
 
-/** Octree implemenation */
+OctreeNode :: OctreeNode (OctreeNodeImpl* i) : impl (i) { }
+
+OctreeNode :: OctreeNode (const OctreeNode& source) : impl (source.impl) {}
+
+const OctreeNode& OctreeNode :: operator= (const OctreeNode& source) {
+  this->impl = source.impl;
+  return *this;
+}
+OctreeNode :: ~OctreeNode () {}
+
+/** Octree main class */
 struct OctreeImpl {
   MaybePtr <OctreeNodeImpl> root;
 
@@ -177,7 +210,8 @@ struct OctreeImpl {
     FaceToInsert faceToInsert (face,geometry);
 
     if (this->root.isUndefined ()) {
-      this->root.data (OctreeNodeImpl (faceToInsert.center, faceToInsert.width, 0));
+      OctreeNodeImpl r (faceToInsert.center, faceToInsert.width, 0);
+      this->root.data (r);
     }
 
     if (this->root.data ()->contains (faceToInsert)) {
@@ -194,6 +228,7 @@ struct OctreeImpl {
 
     glm::vec3 parentCenter;
     glm::vec3 rootCenter    = this->root.data ()->center;
+    float     rootWidth     = this->root.data ()->width;
     float     halfRootWidth = this->root.data ()->width * 0.5f;
     int       index         = 0;
 
@@ -216,40 +251,54 @@ struct OctreeImpl {
       index         += 1;
     }
     
-    OctreeNodeImpl newRoot (parentCenter, this->root.data ()->width * 2.0f, 0);
+    OctreeNodeImpl newRoot (parentCenter, rootWidth * 2.0f, 0);
 
     newRoot.makeChildren ();
-
-    std::swap (newRoot.children [index].center  , this->root.data ()->center);
-    std::swap (newRoot.children [index].width   , this->root.data ()->width);
-    std::swap (newRoot.children [index].children, this->root.data ()->children);
-    std::swap (newRoot.children [index].faces   , this->root.data ()->faces);
-    std::swap (newRoot.children [index].depth   , this->root.data ()->depth);
-#ifdef DILAY_RENDER_OCTREE
-    std::swap (newRoot.children [index].mesh    , this->root.data ()->mesh);
-#endif
+    newRoot.children [index] = *this->root.data ();
     this->root.data (newRoot);
   }
 
   void render () { 
 #ifdef DILAY_RENDER_OCTREE
-    if (this->root.isDefined ()) this->root.data ()->render ();
+    if (this->root.isDefined ()) 
+      this->root.data ()->render ();
 #else
     assert (false && "compiled without rendering support for octrees");
 #endif
   }
+
+  OctreeFaceIterator faceIterator () { 
+    return OctreeFaceIterator (*this); 
+  }
+
+  ConstOctreeFaceIterator faceIterator () const { 
+    return ConstOctreeFaceIterator (*this); 
+  }
+
+  OctreeNodeIterator nodeIterator () { 
+    return OctreeNodeIterator (*this); 
+  }
+
+  ConstOctreeNodeIterator nodeIterator () const { 
+    return ConstOctreeNodeIterator (*this); 
+  }
 };
 
-DELEGATE_BIG4 (Octree)
-DELEGATE2     (LinkedFace, Octree, insertFace, const WingedFace&, const Triangle&)
-DELEGATE      (void, Octree, render)
+DELEGATE_BIG4  (Octree)
+DELEGATE2      (LinkedFace, Octree, insertFace, const WingedFace&, const Triangle&)
+DELEGATE       (void, Octree, render)
+DELEGATE       (OctreeFaceIterator, Octree, faceIterator)
+DELEGATE_CONST (ConstOctreeFaceIterator, Octree, faceIterator)
+DELEGATE       (OctreeNodeIterator, Octree, nodeIterator)
+DELEGATE_CONST (ConstOctreeNodeIterator, Octree, nodeIterator)
 
-/** Iterates over all faces of an octree node */
-struct OctreeNodeIteratorImpl {
-  OctreeNodeImpl& octreeNode;
-  LinkedFace      _face;
+/** Internal template for iterators over all nodes of an octree */
+template <class T_OctreeNodeImpl, class T_LinkedFace>
+struct OctreeNodeFaceIteratorTemplate {
+  T_OctreeNodeImpl& octreeNode;
+  T_LinkedFace      _face;
 
-  OctreeNodeIteratorImpl (OctreeNodeImpl& n) 
+  OctreeNodeFaceIteratorTemplate (T_OctreeNodeImpl& n) 
     : octreeNode (n) 
     , _face      (n.faces.end ())
   {}
@@ -258,7 +307,7 @@ struct OctreeNodeIteratorImpl {
     return this->_face != this->octreeNode.faces.end ();
   }
 
-  LinkedFace face () const {
+  T_LinkedFace face () const {
     assert (this->hasFace ());
     return this->_face;
   }
@@ -269,54 +318,109 @@ struct OctreeNodeIteratorImpl {
   }
 };
 
-/** Iterates over all faces of an octree */
-struct OctreeIteratorImpl {
-  typedef std::list <OctreeNodeIteratorImpl> NodeIterators;
+/** Internal template for iterators over all faces of an octree */
+template < class T_OctreeImpl
+         , class T_OctreeNodeImpl
+         , class T_OctreeNodeFaceIterator
+         , class T_LinkedFace
+         >
+struct OctreeFaceIteratorTemplate {
+  std::list <T_OctreeNodeFaceIterator> faceIterators;
 
-  NodeIterators nodeIterators;
-
-  OctreeIteratorImpl (Octree& octree) {
-    if (octree.impl->root.isDefined ()) {
-      this->nodeIterators.push_back (
-          OctreeNodeIteratorImpl (*octree.impl->root.data ())
+  OctreeFaceIteratorTemplate (T_OctreeImpl& octree) {
+    if (octree.root.isDefined ()) {
+      this->faceIterators.push_back (
+          T_OctreeNodeFaceIterator (*octree.root.data ())
       );
     }
   }
 
-  bool hasFace () const { return this->nodeIterators.size () > 0; }
+  bool hasFace () const { return this->faceIterators.size () > 0; }
 
-  LinkedFace face () const {
+  T_LinkedFace face () const {
     assert (this->hasFace ());
-    return this->nodeIterators.begin ()->face ();
+    return this->faceIterators.begin ()->face ();
   }
 
   void next () { 
     std::function <void ()>  check = [this,&check] () {
-      OctreeNodeIteratorImpl octreeNodeIterator = *this->nodeIterators.begin ();
+      T_OctreeNodeFaceIterator current = *this->faceIterators.begin ();
 
-      if (! octreeNodeIterator.hasFace ()) {
+      if (! current.hasFace ()) {
 
-        for (OctreeNodeImpl& c : octreeNodeIterator.octreeNode.children) {
-          this->nodeIterators.push_back (OctreeNodeIteratorImpl (c));
+        for (T_OctreeNodeImpl& c : current.octreeNode.children) {
+          this->faceIterators.push_back (T_OctreeNodeFaceIterator (c));
         }
-        this->nodeIterators.pop_front ();
+        this->faceIterators.pop_front ();
         check ();
       }
     };
 
     assert (this->hasFace ());
-    this->nodeIterators.begin ()->next ();
+    this->faceIterators.begin ()->next ();
     check ();
   }
 
-  unsigned int depth () {
+  unsigned int depth () const {
     assert (this->hasFace ());
-    return this->nodeIterators.begin ()->octreeNode.depth;
+    return this->faceIterators.begin ()->octreeNode.depth;
   }
 };
 
-DELEGATE1_CONSTRUCTOR (OctreeIterator, Octree&)    
-DELEGATE_CONST        (bool          , OctreeIterator, hasFace)
-DELEGATE_CONST        (LinkedFace    , OctreeIterator, face)
-DELEGATE              (void          , OctreeIterator, next)
-DELEGATE_CONST        (unsigned int  , OctreeIterator, depth)
+DELEGATE1_BIG4        (OctreeFaceIterator,OctreeImpl&)
+DELEGATE_CONST        (bool            , OctreeFaceIterator, hasFace)
+DELEGATE_CONST        (LinkedFace      , OctreeFaceIterator, face)
+DELEGATE              (void            , OctreeFaceIterator, next)
+DELEGATE_CONST        (unsigned int    , OctreeFaceIterator, depth)
+
+DELEGATE1_BIG4        (ConstOctreeFaceIterator,const OctreeImpl&)
+DELEGATE_CONST        (bool            , ConstOctreeFaceIterator, hasFace)
+DELEGATE_CONST        (ConstLinkedFace , ConstOctreeFaceIterator, face)
+DELEGATE              (void            , ConstOctreeFaceIterator, next)
+DELEGATE_CONST        (unsigned int    , ConstOctreeFaceIterator, depth)
+
+/** Internal template for iterators over all nodes of an octree */
+template < class T_OctreeImpl
+         , class T_OctreeNode
+         , class T_OctreeNodeImpl
+         >
+struct OctreeNodeIteratorTemplate {
+  std::list <T_OctreeNodeImpl*> nodes;
+
+  OctreeNodeIteratorTemplate (T_OctreeImpl& octree) {
+    if (octree.root.isDefined ()) {
+      this->nodes.push_back (octree.root.data ());
+    }
+  }
+
+  T_OctreeNode& node () const {
+    return (*this->nodes.begin ())->node;
+  }
+
+  bool hasNode () const { return this->nodes.size () > 0; }
+
+  void next () { 
+    assert (this->hasNode ());
+    for (T_OctreeNodeImpl& c : (*this->nodes.begin ())->children) {
+      this->nodes.push_back (&c);
+    }
+    this->nodes.pop_front ();
+  }
+
+  unsigned int depth () const {
+    assert (this->hasNode ());
+    return (*this->nodes.begin ())->depth;
+  }
+};
+
+DELEGATE1_BIG4 (OctreeNodeIterator, OctreeImpl&)    
+DELEGATE_CONST (bool              , OctreeNodeIterator, hasNode)
+DELEGATE_CONST (OctreeNode&       , OctreeNodeIterator, node)
+DELEGATE       (void              , OctreeNodeIterator, next)
+DELEGATE_CONST (unsigned int      , OctreeNodeIterator, depth)
+
+DELEGATE1_BIG4 (ConstOctreeNodeIterator, const OctreeImpl&)    
+DELEGATE_CONST (bool              , ConstOctreeNodeIterator, hasNode)
+DELEGATE_CONST (const OctreeNode& , ConstOctreeNodeIterator, node)
+DELEGATE       (void              , ConstOctreeNodeIterator, next)
+DELEGATE_CONST (unsigned int      , ConstOctreeNodeIterator, depth)
