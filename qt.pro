@@ -26,6 +26,7 @@ SOURCES += \
            src/main.cpp \
            src/mesh.cpp \
            src/octree.cpp \
+           src/octree-util.cpp \
            src/opengl-util.cpp \
            src/renderer.cpp \
            src/ray.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
            src/maybe.hpp \
            src/mesh.hpp \
            src/octree.hpp \
+           src/octree-util.hpp \
            src/opengl-util.hpp \
            src/renderer.hpp \
            src/ray.hpp \

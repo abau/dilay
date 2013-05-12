@@ -13,6 +13,7 @@
 #include "mesh.hpp"
 #include "util.hpp"
 #include "triangle.hpp"
+#include "octree-util.hpp"
 
 namespace std {
   size_t hash <LinkedEdge> :: operator() (const LinkedEdge& l) const { 
@@ -72,6 +73,8 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
       std::cout   << std::endl;
     }
   }
+
+  OctreeUtil :: printStatistics (mesh.octree ());
 }
 
 void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
