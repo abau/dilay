@@ -4,7 +4,8 @@
 class Octree;
 
 namespace OctreeUtil {
-  void printStatistics (const Octree&);
+  unsigned int numFaces        (const Octree&);
+  void         printStatistics (const Octree&);
 }
 
 #endif

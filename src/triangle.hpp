@@ -29,6 +29,8 @@ class Triangle {
     glm::vec3         edge2     () const;
     glm::vec3         normal    () const;
     glm::vec3         center    () const;
+    glm::vec3         minimum   () const;
+    glm::vec3         maximum   () const;
     float             maxExtent () const;
 
     bool              intersectRay (const Ray&, glm::vec3&) const;

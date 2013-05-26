@@ -12,7 +12,6 @@
 #include "subdivision-butterfly.hpp"
 #include "winged-util.hpp"
 
-
 void subdivisionStep (const FaceIntersection&);
 
 bool Tool :: click (unsigned int x, unsigned int y) {
@@ -20,7 +19,8 @@ bool Tool :: click (unsigned int x, unsigned int y) {
   Ray         ray  = State :: global ().camera ().getRay (x,y);
   FaceIntersection intersection;
 
-  if (State :: global ().mesh ().intersectRay (ray,intersection)) {
+  State :: global ().mesh ().intersectRay (ray,intersection);
+  if (intersection.isIntersection ()) {
     subdivisionStep (intersection);
     mesh.rebuildIndices ();
     mesh.rebuildNormals ();

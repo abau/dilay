@@ -9,21 +9,30 @@
 #include "adjacent-iterator.hpp"
 
 struct FaceIntersectionImpl {
+  bool       isIntersection;
+  float      distance;
   glm::vec3  position;
   LinkedFace face;
 
-  FaceIntersectionImpl () {}
-  FaceIntersectionImpl (const glm::vec3& p, LinkedFace f)
-    : position (p), face (f) {}
+  FaceIntersectionImpl () : isIntersection (false) {}
+
+  void update (float d, const glm::vec3& p, LinkedFace f) {
+    if (this->isIntersection == false || d < this->distance) {
+      this->isIntersection = true;
+      this->distance       = d;
+      this->position       = p;
+      this->face           = f;
+    }
+  }
 };
 
-DELEGATE_BIG4         (FaceIntersection)
-DELEGATE2_CONSTRUCTOR (FaceIntersection,const glm::vec3&, LinkedFace)
+DELEGATE_BIG4 (FaceIntersection)
+DELEGATE3     (void, FaceIntersection, update, float, const glm::vec3&, LinkedFace)
 
+GETTER (bool            , FaceIntersection, isIntersection)
+GETTER (float           , FaceIntersection, distance)
 GETTER (const glm::vec3&, FaceIntersection, position)
 GETTER (LinkedFace      , FaceIntersection, face)
-SETTER (const glm::vec3&, FaceIntersection, position)
-SETTER (LinkedFace      , FaceIntersection, face)
 
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
                                     , const WingedVertex& vertex) {

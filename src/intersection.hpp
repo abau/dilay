@@ -11,16 +11,15 @@ class FaceIntersectionImpl;
 class FaceIntersection {
   public:
           FaceIntersection            ();
-          FaceIntersection            (const glm::vec3&, LinkedFace);
           FaceIntersection            (const FaceIntersection&);
     const FaceIntersection& operator= (const FaceIntersection&);
          ~FaceIntersection            ();
 
-    const glm::vec3& position () const;
-    LinkedFace       face     () const;
-
-    void             position (const glm::vec3&);
-    void             face     (LinkedFace);
+    bool             isIntersection () const;
+    float            distance       () const;
+    const glm::vec3& position       () const;
+    LinkedFace       face           () const;
+    void             update         (float, const glm::vec3&, LinkedFace);
 
   private:
     FaceIntersectionImpl* impl;

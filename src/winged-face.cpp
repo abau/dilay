@@ -8,14 +8,19 @@
 #include "adjacent-iterator.hpp"
 #include "triangle.hpp"
 #include "maybe.hpp"
+#include "octree.hpp"
 
-WingedFace :: WingedFace () {}
+WingedFace :: WingedFace () : _octreeNode (nullptr) {}
 
 WingedFace :: WingedFace (LinkedEdge e) 
-  : _edge (e){}
+  : _edge (e), _octreeNode (nullptr) {}
 
 void WingedFace :: setEdge (LinkedEdge e) {
   this->_edge = e;
+}
+
+void WingedFace :: octreeNode (OctreeNode* node) {
+  this->_octreeNode = node;
 }
 
 void WingedFace :: addIndices (WingedMesh& mesh) {
@@ -24,19 +29,14 @@ void WingedFace :: addIndices (WingedMesh& mesh) {
   }
 }
 
-void WingedFace :: triangle (const WingedMesh& mesh, Triangle& triangle) const {
+Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
   WingedEdge& e1 = *this->_edge;
   WingedEdge& e2 = *e1.successor (*this);
 
-  triangle.vertex1 (e1.firstVertex  (*this)->vertex (mesh));
-  triangle.vertex2 (e1.secondVertex (*this)->vertex (mesh));
-  triangle.vertex3 (e2.secondVertex (*this)->vertex (mesh));
-}
-
-Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
-  Triangle t (glm::vec3 (0.0f),glm::vec3 (0.0f),glm::vec3 (0.0f));
-  this->triangle (mesh,t);
-  return t;
+  return Triangle ( e1.firstVertex  (*this)->vertex (mesh)
+                  , e1.secondVertex (*this)->vertex (mesh)
+                  , e2.secondVertex (*this)->vertex (mesh)
+  );
 }
 
 unsigned int WingedFace :: numEdges () const {

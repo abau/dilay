@@ -1,5 +1,3 @@
-#define  _USE_MATH_DEFINES
-#include <cmath>
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,7 +11,7 @@
 #include "camera.hpp"
 
 struct MeshImpl {
-  // cf. copy-constructor, operator=, reset
+  // cf. copy-constructor, reset
   glm::mat4x4                 scalings;
   glm::mat4x4                 rotations;
   glm::mat4x4                 translations;
@@ -55,24 +53,6 @@ struct MeshImpl {
   }
 
   ~MeshImpl () { this->reset (); }
-
-  const MeshImpl& operator= (const MeshImpl& source) {
-    if (this == &source) return *this;
-    MeshImpl tmp (source);
-    std::swap (this->scalings        , tmp.scalings);
-    std::swap (this->rotations       , tmp.rotations);
-    std::swap (this->translations    , tmp.translations);
-    std::swap (this->vertices        , tmp.vertices);
-    std::swap (this->indices         , tmp.indices);
-    std::swap (this->normals         , tmp.normals);
-    std::swap (this->renderMode      , tmp.renderMode);
-
-    this->arrayObjectId  = 0;
-    this->vertexBufferId = 0;
-    this->indexBufferId  = 0;
-    this->normalBufferId = 0;
-    return *this;
-  }
 
   unsigned int numVertices () const { return this->vertices.size () / 3; }
   unsigned int numIndices  () const { return this->indices.size  (); }
@@ -311,7 +291,9 @@ struct MeshImpl {
   }
 };
 
-DELEGATE_BIG4    (Mesh)
+DELEGATE_CONSTRUCTOR      (Mesh)
+DELEGATE_DESTRUCTOR       (Mesh)
+DELEGATE_COPY_CONSTRUCTOR (Mesh)
 
 DELEGATE_CONST   (unsigned int, Mesh, numVertices)
 DELEGATE_CONST   (unsigned int, Mesh, numIndices)

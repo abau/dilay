@@ -13,6 +13,7 @@
 #include "mesh.hpp"
 #include "util.hpp"
 #include "triangle.hpp"
+#include "octree.hpp"
 #include "octree-util.hpp"
 
 namespace std {
@@ -40,7 +41,7 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
     if (m.isDefined ())
       return Util :: toString (m.data ()->id ());
     else
-      return std::string ("no sibling");
+      return std::string ("NULL");
   };
 
   std::cout << "Edge " << e.id () 
@@ -74,15 +75,16 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
   std::cout << "Number of edges: "           << mesh.numEdges ()    << std::endl;
   std::cout << "Number of faces: "           << mesh.numFaces ()    << std::endl;
 
-  if (mesh.vertices ().size () < 10) {
+  if (mesh.vertices ().size () <= 10) {
     for (const WingedVertex& v : mesh.vertices ())
       WingedUtil :: printStatistics (mesh,v,printDerived);
 
     for (const WingedEdge& e : mesh.edges ())
       WingedUtil :: printStatistics (e);
 
-    for (const WingedFace& f : mesh.faces ())
-      WingedUtil :: printStatistics (mesh,f,printDerived);
+
+    for (auto it = mesh.octree ().faceIterator (); it.hasFace (); it.next ())
+      WingedUtil :: printStatistics (mesh,*it.face (),printDerived);
   }
   OctreeUtil :: printStatistics (mesh.octree ());
 }

@@ -8,7 +8,7 @@ const Id& Id :: operator= (const Id&) {
 }
 
 IdType Id :: nextId () {
-  static IdType nextId = -1;
+  static IdType nextId = 0;
   nextId++;
   return nextId;
 }

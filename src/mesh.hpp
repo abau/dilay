@@ -10,7 +10,7 @@ class Mesh {
     /** `bufferData` must be called on the new mesh after copying */
                  Mesh             (const Mesh&);
                  ~Mesh            ();
-    const Mesh&  operator=        (const Mesh&);
+    const Mesh&  operator=        (const Mesh&) = delete;
 
     unsigned int numVertices      () const;
     unsigned int numIndices       () const;

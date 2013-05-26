@@ -25,7 +25,6 @@ class WingedMesh {
 
     const Vertices&   vertices        () const;
     const Edges&      edges           () const;
-    const Faces&      faces           () const;
     const Octree&     octree          () const;
 
     /** Deletes an edge and its _right_ face. Note that other parts of the program
@@ -46,7 +45,7 @@ class WingedMesh {
     void            reset             ();
     void            toggleRenderMode  ();
     
-    bool            intersectRay      (const Ray&, FaceIntersection&);
+    void            intersectRay      (const Ray&, FaceIntersection&);
   private:
     WingedMeshImpl* impl;
 };

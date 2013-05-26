@@ -2,6 +2,7 @@
 #define DILAY_OCTREE
 
 #include "fwd-winged.hpp"
+#include "fwd-glm.hpp"
 
 class Triangle;
 class OctreeImpl;
@@ -11,6 +12,8 @@ class OctreeFaceIterator;
 class ConstOctreeFaceIterator;
 class OctreeNodeIterator;
 class ConstOctreeNodeIterator;
+class Ray;
+class FaceIntersection;
 
 /** Internal template for iterators over all faces of a node */
 template <class,class> struct OctreeNodeFaceIteratorTemplate;
@@ -18,7 +21,7 @@ template <class,class> struct OctreeNodeFaceIteratorTemplate;
 /** Internal template for iterators over all faces of an octree */
 template <class,class,class,class> struct OctreeFaceIteratorTemplate;
 
-// /** Internal template for iterators over all nodes of an octree */
+/** Internal template for iterators over all nodes of an octree */
 template <class,class,class> struct OctreeNodeIteratorTemplate;
 
 /** Specializations of non constant iterators */
@@ -47,11 +50,15 @@ using ConstOctreeNodeIteratorImpl = OctreeNodeIteratorTemplate
 /** Octree node interface */
 class OctreeNode {
   public: OctreeNode            (OctreeNodeImpl*);
-          OctreeNode            (const OctreeNode&);
-    const OctreeNode& operator= (const OctreeNode&);
-         ~OctreeNode            ();
+          OctreeNode            (const OctreeNode&) = delete;
+    const OctreeNode& operator= (const OctreeNode&) = delete;
 
-    void  deleteFace            (LinkedFace);
+    void         deleteFace     (LinkedFace);
+    void         intersectRay   (const WingedMesh&, const Ray&, FaceIntersection&);
+    unsigned int numFaces       () const;
+    int          depth          () const;
+    glm::vec3    center         () const;
+    float        width          () const;
 
   private:
     OctreeNodeImpl* impl;
@@ -60,12 +67,15 @@ class OctreeNode {
 /** Octree main class */
 class Octree { 
   public: Octree            ();
-          Octree            (const Octree&);
-    const Octree& operator= (const Octree&);
+          Octree            (const Octree&) = delete;
+    const Octree& operator= (const Octree&) = delete;
          ~Octree            ();
 
-    LinkedFace              insertFace   (const WingedFace&, const Triangle&);
-    void                    render       ();
+    LinkedFace  insertFace   (const WingedFace&, const Triangle&);
+    void        render       ();
+    void        intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
+    void        reset        ();
+
     OctreeFaceIterator      faceIterator ();
     ConstOctreeFaceIterator faceIterator () const;
     OctreeNodeIterator      nodeIterator ();
@@ -75,6 +85,7 @@ class Octree {
     OctreeImpl* impl;
 };
 
+/** Iterator over all faces of an octree */
 class OctreeFaceIterator {
   public: OctreeFaceIterator            (OctreeImpl&);
           OctreeFaceIterator            (const OctreeFaceIterator&);
@@ -84,12 +95,13 @@ class OctreeFaceIterator {
     bool         hasFace            () const;
     LinkedFace   face               () const;
     void         next               ();
-    unsigned int depth              () const;
+    int          depth              () const;
 
   private:
     OctreeFaceIteratorImpl* impl;
 };
 
+/** Constant iterator over all faces of an octree */
 class ConstOctreeFaceIterator {
   public: ConstOctreeFaceIterator            (const OctreeImpl&);
           ConstOctreeFaceIterator            (const ConstOctreeFaceIterator&);
@@ -99,12 +111,13 @@ class ConstOctreeFaceIterator {
     bool            hasFace            () const;
     ConstLinkedFace face               () const;
     void            next               ();
-    unsigned int    depth              () const;
+    int             depth              () const;
 
   private:
     ConstOctreeFaceIteratorImpl* impl;
 };
 
+/** Iterator over all nodes of an octree */
 class OctreeNodeIterator {
   public: OctreeNodeIterator            (OctreeImpl&);
           OctreeNodeIterator            (const OctreeNodeIterator&);
@@ -114,12 +127,12 @@ class OctreeNodeIterator {
     bool         hasNode () const;
     OctreeNode&  node    () const;
     void         next    ();
-    unsigned int depth   () const;
 
   private:
     OctreeNodeIteratorImpl* impl;
 };
 
+/** Constant iterator over all nodes of an octree */
 class ConstOctreeNodeIterator {
   public: ConstOctreeNodeIterator            (const OctreeImpl&);
           ConstOctreeNodeIterator            (const ConstOctreeNodeIterator&);
@@ -129,10 +142,8 @@ class ConstOctreeNodeIterator {
     bool              hasNode () const;
     const OctreeNode& node    () const;
     void              next    ();
-    unsigned int      depth   () const;
 
   private:
     ConstOctreeNodeIteratorImpl* impl;
 };
-
 #endif

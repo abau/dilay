@@ -73,8 +73,9 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     Ray ray          = State :: global ().camera ().getRay ( e->x () , reversedY);
 
     FaceIntersection intersection;
+    mesh.intersectRay (ray, intersection);
 
-    if (mesh.intersectRay (ray, intersection)) {
+    if (intersection.isIntersection ()) {
       glm::vec3 pos    = intersection.position ();
       glm::vec3 normal = intersection.face ()->normal (mesh);
 

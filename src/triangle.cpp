@@ -30,12 +30,17 @@ struct TriangleImpl {
     return (this->vertex1 + this->vertex2 + this->vertex3) / glm::vec3 (3.0f);
   }
 
-  float maxExtent () const {
-    glm::vec3 max = glm::max (glm::max (this->vertex1, this->vertex2), this->vertex3);
-    glm::vec3 min = glm::min (glm::min (this->vertex1, this->vertex2), this->vertex3);
+  glm::vec3 minimum () const {
+    return glm::min (glm::min (this->vertex1, this->vertex2), this->vertex3);
+  }
 
-    glm::vec3 delta = max - min;
-    return glm::max (glm::max (delta.x, delta.y), delta.z);
+  glm::vec3 maximum () const {
+    return glm::max (glm::max (this->vertex1, this->vertex2), this->vertex3);
+  }
+
+  float maxExtent () const {
+    glm::vec3 delta = this->maximum () - this->minimum ();
+    return glm::max ( glm::max (delta.x, delta.y), delta.z );
   }
 
   bool intersectRay (const Ray& ray, glm::vec3& intersection) const {
@@ -43,7 +48,7 @@ struct TriangleImpl {
     glm::vec3 e2 = this->edge2 ();
 
     glm::vec3 s1  = glm::cross (ray.direction (), e2);
-    float divisor = glm::dot (s1, e1);
+    float divisor = glm::dot   (s1, e1);
 
     if (divisor < Util :: epsilon) 
       return false;
@@ -81,5 +86,7 @@ DELEGATE_CONST  (glm::vec3         , Triangle, edge1)
 DELEGATE_CONST  (glm::vec3         , Triangle, edge2)
 DELEGATE_CONST  (glm::vec3         , Triangle, normal)
 DELEGATE_CONST  (glm::vec3         , Triangle, center)
+DELEGATE_CONST  (glm::vec3         , Triangle, minimum)
+DELEGATE_CONST  (glm::vec3         , Triangle, maximum)
 DELEGATE_CONST  (float             , Triangle, maxExtent)
 DELEGATE2_CONST (bool              , Triangle, intersectRay, const Ray&, glm::vec3&)
