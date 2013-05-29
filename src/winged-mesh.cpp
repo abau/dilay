@@ -109,6 +109,11 @@ struct WingedMeshImpl {
     this->octree  .reset ();
   }
 
+  void reset (const glm::vec3& center, float width) {
+    this->reset ();
+    this->octree.reset (center,width);
+  }
+
   void toggleRenderMode () { this->mesh.toggleRenderMode (); }
 
   void intersectRay (const Ray& ray, FaceIntersection& intersection) {
@@ -153,6 +158,7 @@ DELEGATE        (void           , WingedMesh, rebuildNormals)
 DELEGATE        (void           , WingedMesh, bufferData)
 DELEGATE        (void           , WingedMesh, render)
 DELEGATE        (void           , WingedMesh, reset)
+DELEGATE2       (void           , WingedMesh, reset, const glm::vec3&, float)
 DELEGATE        (void           , WingedMesh, toggleRenderMode)
 
 DELEGATE2       (void           , WingedMesh, intersectRay, const Ray&, FaceIntersection&)

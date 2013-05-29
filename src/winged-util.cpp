@@ -90,8 +90,6 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
 }
 
 void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
-  w.reset ();
-
   typedef std::pair  <unsigned int,unsigned int> uiPair;
   std::vector        <LinkedVertex>              vecVertices (m.numVertices ());
   std::map           <uiPair, LinkedEdge>        mapEdges;
@@ -130,6 +128,21 @@ void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
         return existingEdge;
       }
     };
+
+  glm::vec3 maxVertex (std::numeric_limits <float>::min ());
+  glm::vec3 minVertex (std::numeric_limits <float>::max ());
+
+  // Octree
+  for (unsigned int i = 0; i < m.numVertices (); i++) {
+    glm::vec3 v = m.vertex (i);
+    maxVertex = glm::max (maxVertex, v);
+    minVertex = glm::min (minVertex, v);
+  }
+  glm::vec3 center = (maxVertex + minVertex) * glm::vec3 (0.5f);
+  glm::vec3 delta  =  maxVertex - minVertex;
+  float     width  = glm::max (glm::max (delta.x, delta.y), delta.z);
+
+  w.reset (center,width);
 
   // Vertices
   for (unsigned int i = 0; i < m.numVertices (); i++) {

@@ -75,6 +75,7 @@ class Octree {
     void        render       ();
     void        intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
     void        reset        ();
+    void        reset        (const glm::vec3&, float);
 
     OctreeFaceIterator      faceIterator ();
     ConstOctreeFaceIterator faceIterator () const;

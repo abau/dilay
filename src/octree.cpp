@@ -306,6 +306,11 @@ struct OctreeImpl {
 
   void reset () { this->root.release (); }
 
+  void reset (const glm::vec3& center, float width) {
+    this->reset ();
+    this->root = Root (new OctreeNodeImpl (center, width, 0));
+  }
+
   OctreeFaceIterator      faceIterator ()       { return OctreeFaceIterator      (*this); }
   ConstOctreeFaceIterator faceIterator () const { return ConstOctreeFaceIterator (*this); }
   OctreeNodeIterator      nodeIterator ()       { return OctreeNodeIterator      (*this); }
@@ -318,6 +323,7 @@ DELEGATE2      (LinkedFace, Octree, insertFace, const WingedFace&, const Triangl
 DELEGATE       (void, Octree, render)
 DELEGATE3      (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE       (void, Octree, reset)
+DELEGATE2      (void, Octree, reset, const glm::vec3&, float)
 DELEGATE       (OctreeFaceIterator, Octree, faceIterator)
 DELEGATE_CONST (ConstOctreeFaceIterator, Octree, faceIterator)
 DELEGATE       (OctreeNodeIterator, Octree, nodeIterator)
