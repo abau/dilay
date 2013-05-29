@@ -49,16 +49,16 @@ using ConstOctreeNodeIteratorImpl = OctreeNodeIteratorTemplate
 
 /** Octree node interface */
 class OctreeNode {
-  public: OctreeNode            (OctreeNodeImpl*);
-          OctreeNode            (const OctreeNode&) = delete;
-    const OctreeNode& operator= (const OctreeNode&) = delete;
+  public: OctreeNode               (OctreeNodeImpl*);
+          OctreeNode               (const OctreeNode&) = delete;
+    const OctreeNode& operator=    (const OctreeNode&) = delete;
 
-    void         deleteFace     (LinkedFace);
-    void         intersectRay   (const WingedMesh&, const Ray&, FaceIntersection&);
-    unsigned int numFaces       () const;
-    int          depth          () const;
-    glm::vec3    center         () const;
-    float        width          () const;
+    void              deleteFace   (LinkedFace);
+    void              intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
+    unsigned int      numFaces     () const;
+    int               depth        () const;
+    const glm::vec3&  center       () const;
+    float             width        () const;
 
   private:
     OctreeNodeImpl* impl;

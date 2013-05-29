@@ -224,7 +224,7 @@ DELEGATE1      (void, OctreeNode, deleteFace, LinkedFace)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 GETTER         (int, OctreeNode, depth)
-GETTER         (glm::vec3, OctreeNode, center)
+GETTER         (const glm::vec3&, OctreeNode, center)
 GETTER         (float, OctreeNode, width)
 
 /** Octree main class */
