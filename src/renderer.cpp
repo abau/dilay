@@ -40,9 +40,9 @@ struct RendererImpl {
         throw (std::runtime_error (e1 + e2));
       }
 
-      glClearColor ( Config::global().get<float> ({"editor","background-color","red"})
-                   , Config::global().get<float> ({"editor","background-color","green"})
-                   , Config::global().get<float> ({"editor","background-color","blue"})
+      glClearColor ( Config::global().get<float> ("/editor/background-color/red")
+                   , Config::global().get<float> ("/editor/background-color/green")
+                   , Config::global().get<float> ("/editor/background-color/blue")
                    , 0.0f);
           
       glDepthFunc (GL_LEQUAL); 

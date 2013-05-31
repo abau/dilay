@@ -8,7 +8,7 @@ class Config {
     static Config& global (); 
 
     template <class T>
-    T get (const std::initializer_list <std::string>&) const;  
+    T get (const std::string&) const;  
 
   private:
           Config            ();
