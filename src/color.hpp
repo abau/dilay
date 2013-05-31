@@ -13,6 +13,7 @@ class Color {
           Color            (const glm::vec3&);
           Color            (const glm::vec4&);
           Color            (const Color&);
+          Color            ();
     const Color& operator= (const Color&);
          ~Color            ();
 

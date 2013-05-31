@@ -7,7 +7,7 @@ TARGET                 =  dilay
 DEPENDPATH             += src 
 INCLUDEPATH            += src 
 CONFIG                 += warn_on debug
-LIBS                   += -lGL -lGLEW -lyaml-cpp -lglog
+LIBS                   += -lGL -lGLEW -lyaml-cpp 
 QT                     += opengl
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
@@ -53,6 +53,7 @@ HEADERS += \
            src/camera.hpp \
            src/color.hpp \
            src/config.hpp \
+           src/config-conversion.hpp \
            src/cursor.hpp \
            src/fwd-glm.hpp \
            src/fwd-yaml.hpp \

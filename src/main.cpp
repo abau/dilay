@@ -2,13 +2,9 @@
 #include <GL/gl.h>
 #include <QApplication>
 #include <QGLFormat>
-#include <glog/logging.h>
 #include "view-gl-widget.hpp"
 
 int main(int argv, char **args) {
-  FLAGS_logtostderr = 1;
-  google::InitGoogleLogging ("");
-
   QApplication app(argv, args);
 
   QGLFormat glFormat;

@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "config.hpp"
 #include "macro.hpp"
+#include "config-conversion.hpp"
 
 typedef std::unordered_map <std::string, YAML::Node> ConfigMap;
 
@@ -20,20 +21,25 @@ struct ConfigImpl {
     }
   }
 
+  /** Builds a map from paths to yaml nodes where each path references a
+   * scalar value. Sequences are inserted per element (with the element's index 
+   * as last path segment) and as complete node.
+   */
   void loadConfigMap (const std::string& prefix, const YAML::Node& node) {
     if (node.IsMap ()) {
       for (YAML::const_iterator it = node.begin (); it != node.end (); ++it)
         this->loadConfigMap (prefix + "/" + it->first.as <std::string>(), it->second);
     }
     else if (node.IsSequence ()) {
+      this->configMap.insert (ConfigMap::value_type (prefix, node));
+
       unsigned int i = 0;
       for (YAML::const_iterator it = node.begin (); it != node.end (); ++it, ++i) {
         this->loadConfigMap (prefix + "/" + std::to_string (i), *it);
       }
     }
     else {
-      ConfigMap::value_type value (prefix, node);
-      this->configMap.insert (value);
+      this->configMap.insert (ConfigMap::value_type (prefix, node));
     }
   }
 
@@ -58,5 +64,6 @@ T Config :: get (const std::string& path) const {
   return this->impl->get<T> (path);
 }
 
-template float Config :: get<float> (const std::string&) const;
-template int   Config :: get<int>   (const std::string&) const;
+template float Config :: get<float>     (const std::string&) const;
+template int   Config :: get<int>       (const std::string&) const;
+template Color Config :: get<Color>     (const std::string&) const;

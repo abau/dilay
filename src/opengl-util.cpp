@@ -1,4 +1,4 @@
-#include <glog/logging.h>
+#include <iostream>
 #include <glm/glm.hpp>
 #include <stdexcept>
 #include "opengl-util.hpp"
@@ -51,9 +51,7 @@ struct OpenGLUtilImpl {
   GLuint loadProgram ( const std::string& vertexShader
                      , const std::string& fragmentShader) {
 
-    LOG (INFO) << "Compiling vertex shader '" << vertexShader << "'";
     GLuint vsId = this->compileShader (GL_VERTEX_SHADER,   vertexShader);
-    LOG (INFO) << "Compiling fragment shader '" << fragmentShader << "'";
     GLuint fsId = this->compileShader (GL_FRAGMENT_SHADER, fragmentShader);
 
     GLuint programId = glCreateProgram();
@@ -73,7 +71,6 @@ struct OpenGLUtilImpl {
       this->safeDeleteProgram   (programId);
       this->safeDeleteShader    (vsId);
       this->safeDeleteShader    (fsId);
-      LOG (ERROR) << "Can not link shader program";
       throw (std::runtime_error ("Can not link shader program: see info log"));
     }
     return programId;
@@ -85,7 +82,7 @@ struct OpenGLUtilImpl {
     GLsizei   logLength;
     glGetShaderInfoLog(id, maxLogLength, &logLength, logBuffer);
     if (logLength > 0)
-      LOG(INFO) << filePath << ": " << logBuffer;
+      std::cout << filePath << ": " << logBuffer << std::endl;
   }
 
   GLuint compileShader (GLenum shaderType, const std::string& filePath) {
@@ -99,7 +96,6 @@ struct OpenGLUtilImpl {
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
       this->showInfoLog (shaderId, filePath);
-      LOG(ERROR) << filePath << ": can not compile shader";
       throw (std::runtime_error ("Can not compile shader: see info log"));
     }
     return shaderId;

@@ -29,6 +29,7 @@ GETTER                (float,Color,opacity)
 DELEGATE_CONST        (glm::vec3,Color,vec3)
 DELEGATE_CONST        (glm::vec4,Color,vec4)
 
+Color :: Color ()                          : Color (0.0f,0.0f,0.0f,1.0f) {}
 Color :: Color (float r, float g, float b) : Color (r,g,b,1.0f) {}
 Color :: Color (const glm::vec3& v)        : Color (v.x, v.y, v.z) {}
 Color :: Color (const glm::vec4& v)        : Color (v.x, v.y, v.z, v.w) {}
@@ -40,4 +41,3 @@ std::ostream& operator<<(std::ostream& os, const Color& c) {
      << "}";
   return os;
 }
-

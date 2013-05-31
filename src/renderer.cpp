@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 #include <stdexcept>
 #include <glm/glm.hpp>
 #include "renderer.hpp"
@@ -31,18 +30,16 @@ struct RendererImpl {
     static bool isInitialized = false;
 
     if ( ! isInitialized ) {
-      LOG (INFO) << "Initializing renderer";
       GLenum err = glewInit ();
       if (err  != GLEW_OK ) {
         std::string e1 = std::string ("Error while initializing glew: ");
         std::string e2 = std::string ((const char*)glewGetErrorString (err));
-        LOG(ERROR) << (e1 + e2);
         throw (std::runtime_error (e1 + e2));
       }
 
-      glClearColor ( Config::global().get<float> ("/editor/background-color/red")
-                   , Config::global().get<float> ("/editor/background-color/green")
-                   , Config::global().get<float> ("/editor/background-color/blue")
+      glClearColor ( Config::global().get<float> ("/editor/background-color/0")
+                   , Config::global().get<float> ("/editor/background-color/1")
+                   , Config::global().get<float> ("/editor/background-color/2")
                    , 0.0f);
           
       glDepthFunc (GL_LEQUAL); 
