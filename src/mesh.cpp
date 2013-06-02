@@ -145,9 +145,9 @@ struct MeshImpl {
   }
 
   void renderBegin () {
-    Renderer :: global ().setProgram (this->renderMode);
+    Renderer :: setProgram (this->renderMode);
     glm::mat4x4 modelMatrix = this->translations * this->rotations * this->scalings;
-    State :: global ().camera ().modelViewProjection (modelMatrix);
+    State :: camera ().modelViewProjection (modelMatrix);
     glBindVertexArray (this->arrayObjectId);
   }
 
@@ -162,19 +162,19 @@ struct MeshImpl {
 
   void renderSolid () {
     this->renderBegin  ();
-    Renderer :: global ().setColor3 (this->color);
+    Renderer :: setColor3 (this->color);
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
     this->renderEnd    ();
   }
 
   void renderWireframe () {
     this->renderBegin  ();
-    Renderer :: global ().setColor3 (this->color);
+    Renderer :: setColor3 (this->color);
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    Renderer :: global ().setColor3 (this->wireframeColor);
+    Renderer :: setColor3 (this->wireframeColor);
     glPolygonMode      (GL_FRONT, GL_LINE);
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
@@ -191,10 +191,10 @@ struct MeshImpl {
     this->vertices.clear ();
     this->clearIndices ();
     this->clearNormals ();
-    OpenGLUtil :: global ().safeDeleteArray  (this->arrayObjectId);
-    OpenGLUtil :: global ().safeDeleteBuffer (this->vertexBufferId);
-    OpenGLUtil :: global ().safeDeleteBuffer (this->indexBufferId);
-    OpenGLUtil :: global ().safeDeleteBuffer (this->normalBufferId);
+    OpenGLUtil :: safeDeleteArray  (this->arrayObjectId);
+    OpenGLUtil :: safeDeleteBuffer (this->vertexBufferId);
+    OpenGLUtil :: safeDeleteBuffer (this->indexBufferId);
+    OpenGLUtil :: safeDeleteBuffer (this->normalBufferId);
   }
 
   void toggleRenderMode () {

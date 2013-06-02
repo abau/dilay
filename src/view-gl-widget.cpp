@@ -31,23 +31,23 @@ GLWidget :: ~GLWidget () {
 }
 
 void GLWidget :: initializeGL () {
-  Renderer :: global ().initialize ();
-  State    :: global ().initialize ();
+  Renderer :: initialize ();
+  State    :: initialize ();
 
   this->impl->axis.initialize ();
   this->setMouseTracking (true);
 
-  Renderer :: global ().updateLights (State :: global ().camera ());
+  Renderer :: updateLights (State :: camera ());
 }
 
 void GLWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  State :: global ().render ();
+  State :: render ();
   this->impl->axis.render ();
 }
 
 void GLWidget :: resizeGL (int w, int h) {
-  State :: global ().camera ().updateResolution (w,h);
+  State :: camera ().updateResolution (w,h);
   glViewport (0,0,w, h < 1 ? 1 : h );
 }
 
@@ -57,11 +57,11 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
       QCoreApplication::instance()->quit();
       break;
     case Qt::Key_W:
-      State :: global ().mesh ().toggleRenderMode ();
+      State :: mesh ().toggleRenderMode ();
       this->update ();
       break;
     case Qt::Key_I:
-      WingedUtil :: printStatistics (State :: global ().mesh ());
+      WingedUtil :: printStatistics (State :: mesh ());
       break;
     default:
       QGLWidget::keyPressEvent (e);
@@ -70,9 +70,9 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
 
 void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: NoButton) {
-    WingedMesh& mesh = State :: global ().mesh ();
-    int reversedY    = State :: global ().camera ().resolutionHeight () - e->y ();
-    Ray ray          = State :: global ().camera ().getRay ( e->x () , reversedY);
+    WingedMesh& mesh = State :: mesh ();
+    int reversedY    = State :: camera ().resolutionHeight () - e->y ();
+    Ray ray          = State :: camera ().getRay ( e->x () , reversedY);
 
     FaceIntersection intersection;
     mesh.intersectRay (ray, intersection);
@@ -81,21 +81,21 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
       glm::vec3 pos    = intersection.position ();
       glm::vec3 normal = intersection.face ()->normal (mesh);
 
-      State :: global ().cursor ().enable      ();
-      State :: global ().cursor ().setPosition (pos);
-      State :: global ().cursor ().setNormal   (normal);
+      State :: cursor ().enable      ();
+      State :: cursor ().setPosition (pos);
+      State :: cursor ().setNormal   (normal);
       this->update ();
     }
-    else if (State :: global ().cursor ().isEnabled ()) {
-      State :: global ().cursor ().disable ();
+    else if (State :: cursor ().isEnabled ()) {
+      State :: cursor ().disable ();
       this->update ();
     }
   }
   if (e->buttons () == Qt :: MiddleButton) {
     this->impl->mouseMovement.update (e->pos ());
-    State :: global ().camera ().verticalRotation   (this->impl->mouseMovement.dX ());
-    State :: global ().camera ().horizontalRotation (this->impl->mouseMovement.dY ());
-    Renderer :: global ().updateLights (State :: global ().camera ());
+    State    :: camera ().verticalRotation   (this->impl->mouseMovement.dX ());
+    State    :: camera ().horizontalRotation (this->impl->mouseMovement.dY ());
+    Renderer :: updateLights (State :: camera ());
 
     this->update ();
   }
@@ -103,7 +103,7 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
-    int reversedY = State :: global ().camera ().resolutionHeight () - e->y ();
+    int reversedY = State :: camera ().resolutionHeight () - e->y ();
     if (Tool :: click (e->x (), reversedY))
       this->update ();
   }
@@ -114,16 +114,16 @@ void GLWidget :: mouseReleaseEvent (QMouseEvent*) {
 }
 
 void GLWidget :: resizeEvent (QResizeEvent* e) {
-  State :: global ().camera ().updateResolution ( e->size ().width  ()
-                                                , e->size ().height ());
+  State :: camera ().updateResolution ( e->size ().width  ()
+                                      , e->size ().height ());
 }
 
 void GLWidget :: wheelEvent (QWheelEvent* e) {
   if (e->orientation () == Qt :: Vertical) {
     if (e->delta () > 0)
-      State :: global ().camera ().stepAlongGaze (true);
+      State :: camera ().stepAlongGaze (true);
     else if (e->delta () < 0)
-      State :: global ().camera ().stepAlongGaze (false);
+      State :: camera ().stepAlongGaze (false);
   }
   this->update ();
 }

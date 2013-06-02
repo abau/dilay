@@ -32,24 +32,24 @@ struct AxisImpl {
   void render () {
     this->mesh.renderBegin ();
 
-    State :: global ().camera ().updateProjection (0,0,200,200);
-    State :: global ().camera ().rotationProjection ();
+    State :: camera ().updateProjection (0,0,200,200);
+    State :: camera ().rotationProjection ();
 
     glDisable (GL_DEPTH_TEST);
 
-    Renderer :: global ().setColor3 (Color (1.0f,0.0f,0.0f));
+    Renderer :: setColor3 (Color (1.0f,0.0f,0.0f));
     glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * 0));
 
-    Renderer :: global ().setColor3 (Color (0.0f,1.0f,0.0f));
+    Renderer :: setColor3 (Color (0.0f,1.0f,0.0f));
     glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * 2));
 
-    Renderer :: global ().setColor3 (Color (0.0f,0.0f,1.0f));
+    Renderer :: setColor3 (Color (0.0f,0.0f,1.0f));
     glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * 4));
 
     glEnable (GL_DEPTH_TEST);
     this->mesh.renderEnd ();
 
-    State :: global ().camera ().updateProjection ();
+    State :: camera ().updateProjection ();
   }
 };
 

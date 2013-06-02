@@ -77,17 +77,17 @@ struct RendererImpl {
       glEnable  (GL_DEPTH_TEST); 
 
       this->shaderIds [static_cast <int> (RenderMode::Smooth)].programId =
-        OpenGLUtil :: global ().loadProgram ( "shader/smooth-vertex.shader"
-                                            , "shader/smooth-fragment.shader" 
-                                            );
+        OpenGLUtil :: loadProgram ( "shader/smooth-vertex.shader"
+                                  , "shader/smooth-fragment.shader" 
+                                  );
       this->shaderIds [static_cast <int> (RenderMode::Wireframe)].programId =
-        OpenGLUtil :: global ().loadProgram ( "shader/simple-vertex.shader"
-                                            , "shader/simple-fragment.shader" 
-                                            );
+        OpenGLUtil :: loadProgram ( "shader/simple-vertex.shader"
+                                  , "shader/simple-fragment.shader" 
+                                  );
       this->shaderIds [static_cast <int> (RenderMode::Flat)].programId =
-        OpenGLUtil :: global ().loadProgram ( "shader/flat-vertex.shader"
-                                            , "shader/flat-fragment.shader" 
-                                            );
+        OpenGLUtil :: loadProgram ( "shader/flat-vertex.shader"
+                                  , "shader/flat-fragment.shader" 
+                                  );
 
       for (unsigned int i = 0; i < RenderModeUtil :: numRenderModes; i++) {
         ShaderIds *s                = &this->shaderIds [i];
@@ -117,21 +117,21 @@ struct RendererImpl {
 
   void shutdown () {
     for (unsigned int rm = 0; rm < RenderModeUtil :: numRenderModes; rm++)
-      OpenGLUtil :: global ().safeDeleteProgram (this->shaderIds[rm].programId);
+      OpenGLUtil :: safeDeleteProgram (this->shaderIds[rm].programId);
   }
 
   void setProgram (const RenderMode& renderMode) {
     this->activeShaderIndex = &this->shaderIds[static_cast <int> (renderMode)];
     glUseProgram (this->activeShaderIndex->programId);
 
-    OpenGLUtil :: global ().glUniformVec3 
+    OpenGLUtil :: glUniformVec3 
       (this->activeShaderIndex->ambientId, this->globalUniforms.ambient.vec3 ());
 
     for (unsigned int i = 0; i < numLights; i++) {
-      OpenGLUtil :: global ().glUniformVec3 
+      OpenGLUtil :: glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].positionId
         , this->globalUniforms.lightUniforms[i].position);
-      OpenGLUtil :: global ().glUniformVec3 
+      OpenGLUtil :: glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].colorId
         , this->globalUniforms.lightUniforms[i].color.vec3 ());
       glUniform1f ( this->activeShaderIndex->lightIds[i].irradianceId
@@ -146,12 +146,12 @@ struct RendererImpl {
 
   void setColor3 (const Color& c) {
     assert (this->activeShaderIndex);
-    OpenGLUtil :: global ().glUniformVec3 (this->activeShaderIndex->colorId, c.vec3 ());
+    OpenGLUtil :: glUniformVec3 (this->activeShaderIndex->colorId, c.vec3 ());
   }
 
   void setColor4 (const Color& c) {
     assert (this->activeShaderIndex);
-    OpenGLUtil :: global ().glUniformVec4 (this->activeShaderIndex->colorId, c.vec4 ());
+    OpenGLUtil :: glUniformVec4 (this->activeShaderIndex->colorId, c.vec4 ());
   }
 
   void setAmbient (const Color& c) {
@@ -187,14 +187,14 @@ GLOBAL                (Renderer)
 DELEGATE_CONSTRUCTOR  (Renderer)
 DELEGATE_DESTRUCTOR   (Renderer)
 
-DELEGATE  (void,Renderer,initialize)
-DELEGATE  (void,Renderer,shutdown)
-DELEGATE1 (void,Renderer,setProgram        ,const RenderMode&)
-DELEGATE1 (void,Renderer,setMvp            ,const GLfloat*)
-DELEGATE1 (void,Renderer,setColor3         ,const Color&)
-DELEGATE1 (void,Renderer,setColor4         ,const Color&)
-DELEGATE1 (void,Renderer,setAmbient        ,const Color&)
-DELEGATE2 (void,Renderer,setLightPosition  ,unsigned int, const glm::vec3&)
-DELEGATE2 (void,Renderer,setLightColor     ,unsigned int, const Color&)
-DELEGATE2 (void,Renderer,setLightIrradiance,unsigned int, float)
-DELEGATE1 (void,Renderer,updateLights      ,const Camera&)
+DELEGATE_GLOBAL  (void,Renderer,initialize)
+DELEGATE_GLOBAL  (void,Renderer,shutdown)
+DELEGATE1_GLOBAL (void,Renderer,setProgram        ,const RenderMode&)
+DELEGATE1_GLOBAL (void,Renderer,setMvp            ,const GLfloat*)
+DELEGATE1_GLOBAL (void,Renderer,setColor3         ,const Color&)
+DELEGATE1_GLOBAL (void,Renderer,setColor4         ,const Color&)
+DELEGATE1_GLOBAL (void,Renderer,setAmbient        ,const Color&)
+DELEGATE2_GLOBAL (void,Renderer,setLightPosition  ,unsigned int, const glm::vec3&)
+DELEGATE2_GLOBAL (void,Renderer,setLightColor     ,unsigned int, const Color&)
+DELEGATE2_GLOBAL (void,Renderer,setLightIrradiance,unsigned int, float)
+DELEGATE1_GLOBAL (void,Renderer,updateLights      ,const Camera&)

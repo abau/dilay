@@ -13,17 +13,17 @@ class Renderer {
   public:
     static Renderer& global ();
 
-    void initialize         ();
-    void shutdown           ();
-    void setProgram         (const RenderMode&);
-    void setMvp             (const GLfloat*);
-    void setColor3          (const Color&);
-    void setColor4          (const Color&);
-    void setAmbient         (const Color&);
-    void setLightPosition   (unsigned int, const glm::vec3&);
-    void setLightColor      (unsigned int, const Color&);
-    void setLightIrradiance (unsigned int, float);
-    void updateLights       (const Camera&);
+    static void initialize         ();
+    static void shutdown           ();
+    static void setProgram         (const RenderMode&);
+    static void setMvp             (const GLfloat*);
+    static void setColor3          (const Color&);
+    static void setColor4          (const Color&);
+    static void setAmbient         (const Color&);
+    static void setLightPosition   (unsigned int, const glm::vec3&);
+    static void setLightColor      (unsigned int, const Color&);
+    static void setLightIrradiance (unsigned int, float);
+    static void updateLights       (const Camera&);
 
   private:
           Renderer            ();

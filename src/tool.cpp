@@ -15,11 +15,11 @@
 void subdivisionStep (const FaceIntersection&);
 
 bool Tool :: click (unsigned int x, unsigned int y) {
-  WingedMesh& mesh = State :: global ().mesh ();
-  Ray         ray  = State :: global ().camera ().getRay (x,y);
+  WingedMesh& mesh = State :: mesh ();
+  Ray         ray  = State :: camera ().getRay (x,y);
   FaceIntersection intersection;
 
-  State :: global ().mesh ().intersectRay (ray,intersection);
+  State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
     subdivisionStep (intersection);
     mesh.rebuildIndices ();
@@ -33,7 +33,7 @@ bool Tool :: click (unsigned int x, unsigned int y) {
 //FaceSet collectFaces (const FaceIntersection&);
 
 void subdivisionStep (const FaceIntersection& intersection) {
-  WingedMesh& mesh  = State :: global ().mesh ();
+  WingedMesh& mesh  = State :: mesh ();
   /*FaceSet     faces = collectFaces (intersection);
 
   while (! faces.empty ()) {
@@ -48,8 +48,8 @@ void subdivisionStep (const FaceIntersection& intersection) {
 
 /*
 FaceSet collectFaces (const FaceIntersection& intersection) {
-  Sphere sphere (intersection.position (), State :: global ().cursor ().radius ());
-  WingedMesh& mesh = State :: global ().mesh ();
+  Sphere sphere (intersection.position (), State :: cursor ().radius ());
+  WingedMesh& mesh = State :: mesh ();
   FaceSet     faces;
 
   for (FACE_ITERATOR (it,mesh)) {

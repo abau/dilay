@@ -69,12 +69,12 @@ struct CameraImpl {
 
   void modelViewProjection (const glm::mat4x4& model) const {
     glm::mat4x4 mvp = this->projection * this->view * model;
-    Renderer :: global ().setMvp (&mvp[0][0]);
+    Renderer :: setMvp (&mvp[0][0]);
   }
 
   void rotationProjection () const {
     glm::mat4x4 mvp = this->projection * this->viewRotation;
-    Renderer :: global ().setMvp (&mvp[0][0]);
+    Renderer :: setMvp (&mvp[0][0]);
   }
 
   void stepAlongGaze (bool forward) {

@@ -9,15 +9,15 @@ class Cursor;
 
 class State {
   public:                                   
-    static State&     global       ();
+    static State&      global      ();
 
-    WingedMesh&       mesh         ();
-    Camera&           camera       ();
-    Cursor&           cursor       ();
+    static WingedMesh& mesh        ();
+    static Camera&     camera      ();
+    static Cursor&     cursor      ();
 
-    void              initialize   ();
-    void              render       ();
-    void              setMesh      (const Mesh&);
+    static void        initialize  ();
+    static void        render      ();
+    static void        setMesh     (const Mesh&);
   private:
           State            ();
           State            (const State&) = delete;

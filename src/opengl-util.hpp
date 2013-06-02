@@ -16,13 +16,13 @@ class OpenGLUtil {
                              , NormalIndex   = 1
                              };
 
-    void   glUniformVec3     (GLuint, const glm::vec3&);
-    void   glUniformVec4     (GLuint, const glm::vec4&);
-    void   safeDeleteArray   (GLuint&);
-    void   safeDeleteBuffer  (GLuint&);
-    void   safeDeleteShader  (GLuint&);
-    void   safeDeleteProgram (GLuint&);
-    GLuint loadProgram       (const std::string&, const std::string&);
+    static void   glUniformVec3     (GLuint, const glm::vec3&);
+    static void   glUniformVec4     (GLuint, const glm::vec4&);
+    static void   safeDeleteArray   (GLuint&);
+    static void   safeDeleteBuffer  (GLuint&);
+    static void   safeDeleteShader  (GLuint&);
+    static void   safeDeleteProgram (GLuint&);
+    static GLuint loadProgram       (const std::string&, const std::string&);
 
   private:
           OpenGLUtil            ();
