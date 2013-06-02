@@ -3,8 +3,6 @@
 
 #include "fwd-glm.hpp"
 
-class CursorImpl;
-
 class Cursor {
   public: Cursor             ();
           Cursor             (const Cursor&);
@@ -21,7 +19,8 @@ class Cursor {
     float radius             () const;
 
   private:
-    CursorImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

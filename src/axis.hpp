@@ -1,8 +1,6 @@
 #ifndef DILAY_AXIS
 #define DILAY_AXIS
 
-class AxisImpl;
-
 class Axis {
   public: Axis             ();
           ~Axis            ();
@@ -13,7 +11,8 @@ class Axis {
     void  render     ();
 
   private:
-    AxisImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

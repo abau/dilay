@@ -13,14 +13,14 @@
 #include "octree.hpp"
 #include "octree-util.hpp"
 
-struct WingedMeshImpl {
+struct WingedMesh::Impl {
   WingedMesh& wingedMesh;
   Mesh        mesh;
   Vertices    vertices;
   Edges       edges;
   Octree      octree;
 
-  WingedMeshImpl (WingedMesh& p) : wingedMesh (p) {}
+  Impl (WingedMesh& p) : wingedMesh (p) {}
 
   void addIndex (unsigned int index) { this->mesh.addIndex (index); }
 
@@ -121,10 +121,10 @@ struct WingedMeshImpl {
   }
 };
 
-WingedMesh :: WingedMesh () : impl (new WingedMeshImpl (*this)) {}
+WingedMesh :: WingedMesh () : impl (new WingedMesh::Impl (*this)) {}
 
 WingedMesh :: WingedMesh (const WingedMesh& source) 
-  : impl (new WingedMeshImpl (*this)) {
+  : impl (new WingedMesh::Impl (*this)) {
     WingedUtil :: fromMesh (*this, source.impl->mesh);
 }
 

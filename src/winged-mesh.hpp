@@ -9,8 +9,6 @@ class Ray;
 class Triangle;
 class Octree;
 
-class WingedMeshImpl;
-
 class WingedMesh {
   public:                    
           WingedMesh                  ();
@@ -48,7 +46,8 @@ class WingedMesh {
     
     void            intersectRay      (const Ray&, FaceIntersection&);
   private:
-    WingedMeshImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

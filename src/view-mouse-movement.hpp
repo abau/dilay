@@ -1,7 +1,6 @@
 #ifndef VIEW_MOUSE_MOVEMENT
 #define VIEW_MOUSE_MOVEMENT
 
-class MouseMovementImpl;
 class QPoint;
 
 class MouseMovement {
@@ -17,7 +16,8 @@ class MouseMovement {
     int   dY          () const;
 
   private:
-    MouseMovementImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

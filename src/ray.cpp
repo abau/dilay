@@ -4,11 +4,11 @@
 #include "macro.hpp"
 #include "util.hpp"
 
-struct RayImpl {
+struct Ray::Impl {
   glm::vec3 origin;
   glm::vec3 direction;
 
-  RayImpl (const glm::vec3& o, const glm::vec3& d) 
+  Impl (const glm::vec3& o, const glm::vec3& d) 
     : origin    (o)
     , direction (glm::normalize (d)) 
       {}

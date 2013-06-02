@@ -3,13 +3,13 @@
 #include "macro.hpp"
 #include "color.hpp"
 
-struct ColorImpl {
+struct Color::Impl {
   float r;
   float g;
   float b;
   float opacity;
 
-  ColorImpl (float _r, float _g, float _b, float _o) 
+  Impl (float _r, float _g, float _b, float _o) 
     : r(_r), g(_g), b(_b), opacity(_o) {}
 
   glm::vec3 vec3 () const {

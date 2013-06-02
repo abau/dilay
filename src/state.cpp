@@ -6,7 +6,7 @@
 #include "cursor.hpp"
 #include "macro.hpp"
 
-struct StateImpl {
+struct State::Impl {
   WingedMesh mesh;
   Camera     camera;
   Cursor     cursor;

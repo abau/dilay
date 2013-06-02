@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-class RendererImpl;
 class Color;
 enum  class RenderMode;
 class Camera;
@@ -31,7 +30,8 @@ class Renderer {
     const Renderer& operator= (const Renderer&) = delete;
          ~Renderer            ();
 
-    RendererImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

@@ -8,13 +8,13 @@
 #include "sphere.hpp"
 #include "adjacent-iterator.hpp"
 
-struct FaceIntersectionImpl {
+struct FaceIntersection::Impl {
   bool       isIntersection;
   float      distance;
   glm::vec3  position;
   LinkedFace face;
 
-  FaceIntersectionImpl () : isIntersection (false) {}
+  Impl () : isIntersection (false) {}
 
   void update (float d, const glm::vec3& p, LinkedFace f) {
     if (this->isIntersection == false || d < this->distance) {

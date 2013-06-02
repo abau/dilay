@@ -4,7 +4,6 @@
 #include "fwd-glm.hpp"
 #include "fwd-winged.hpp"
 
-class TriangleImpl;
 class Ray;
 
 class Triangle {
@@ -36,7 +35,8 @@ class Triangle {
     bool              intersectRay (const Ray&, glm::vec3&) const;
 
   private:
-    TriangleImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

@@ -7,11 +7,11 @@
 
 typedef std::unordered_map <std::string, YAML::Node> ConfigMap;
 
-struct ConfigImpl {
+struct Config::Impl {
   YAML::Node document;
   ConfigMap  configMap;
 
-  ConfigImpl (const std::string& fileName) {
+  Impl (const std::string& fileName) {
     try {
       this->document = YAML::LoadFile (fileName);
       this->loadConfigMap ("",this->document);
@@ -55,7 +55,7 @@ struct ConfigImpl {
   }
 };
 
-Config :: Config () : impl (new ConfigImpl ("dilay.config")) {}
+Config :: Config () : impl (new Impl ("dilay.config")) {}
 
 DELEGATE_DESTRUCTOR (Config)
 GLOBAL              (Config);

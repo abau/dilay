@@ -3,12 +3,12 @@
 #include "macro.hpp"
 #include "color.hpp"
 
-struct ViewLightImpl {
+struct ViewLight::Impl {
   glm::vec3 position;
   Color     color;
   float     irradiance;
 
-  ViewLightImpl (const glm::vec3& p, const Color& c, float i) 
+  Impl (const glm::vec3& p, const Color& c, float i) 
     : position   (p)
     , color      (c)
     , irradiance (i)

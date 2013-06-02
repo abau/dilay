@@ -5,7 +5,7 @@
 #include "util.hpp"
 #include "macro.hpp"
 
-struct OpenGLUtilImpl {
+struct OpenGLUtil::Impl {
 
   void glUniformVec3 (GLuint id, const glm::vec3& v) {
     glUniform3f (id, v.x, v.y, v.z);

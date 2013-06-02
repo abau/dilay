@@ -6,8 +6,6 @@
 #include <string>
 #include "fwd-glm.hpp"
 
-class OpenGLUtilImpl;
-
 class OpenGLUtil {
   public:
     static OpenGLUtil& global ();
@@ -30,7 +28,8 @@ class OpenGLUtil {
     const OpenGLUtil& operator= (const OpenGLUtil&) = delete;
          ~OpenGLUtil            ();
 
-    OpenGLUtilImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

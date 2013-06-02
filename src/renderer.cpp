@@ -48,12 +48,12 @@ struct GlobalUniforms {
   Color               ambient;
 };
 
-struct RendererImpl {
+struct Renderer::Impl {
   ShaderIds      shaderIds [RenderModeUtil :: numRenderModes];
   ShaderIds*     activeShaderIndex;
   GlobalUniforms globalUniforms;
 
-  RendererImpl () : activeShaderIndex (nullptr) {}
+  Impl () : activeShaderIndex (nullptr) {}
 
   void initialize () {
     static bool isInitialized = false;

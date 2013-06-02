@@ -8,7 +8,7 @@
 #include "renderer.hpp"
 #include "macro.hpp"
 
-struct CameraImpl {
+struct Camera::Impl {
   float        gazeStepSize;
   float        verticalRotationAngle;
   float        horizontalRotationAngle;
@@ -25,13 +25,13 @@ struct CameraImpl {
   float        nearClipping;
   float        farClipping;
 
-  CameraImpl () : gazeStepSize            (1.0f)
-                , verticalRotationAngle   (0.5f)
-                , horizontalRotationAngle (0.5f)
-                , resolutionWidth         (1024)
-                , resolutionHeight        (800)
-                , nearClipping            (0.1f)
-                , farClipping             (1000.0f) {
+  Impl () : gazeStepSize            (1.0f)
+          , verticalRotationAngle   (0.5f)
+          , horizontalRotationAngle (0.5f)
+          , resolutionWidth         (1024)
+          , resolutionHeight        (800)
+          , nearClipping            (0.1f)
+          , farClipping             (1000.0f) {
 
 
     this->gazePoint  = glm::vec3 (0.0f,0.0f,0.0f);

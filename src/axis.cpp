@@ -7,11 +7,11 @@
 #include "camera.hpp"
 #include "color.hpp"
 
-struct AxisImpl {
+struct Axis::Impl {
   Mesh   mesh;
   float  length;
 
-  AxisImpl () : length (0.5f) {}
+  Impl () : length (0.5f) {}
 
   void initialize () {
     this->mesh.addVertex (glm::vec3 (0.0f        , 0.0f        , 0.0f        ));
@@ -53,7 +53,7 @@ struct AxisImpl {
   }
 };
 
-DELEGATE_CONSTRUCTOR  (Axis)
-DELEGATE_DESTRUCTOR   (Axis)
-DELEGATE              (void,Axis,initialize)
-DELEGATE              (void,Axis,render)
+Axis :: Axis () { this->impl = new Impl (); }
+Axis :: ~Axis () { delete this->impl; }
+void Axis :: initialize () { return this->impl->initialize ();}
+void Axis :: render () { return this->impl->render ();}

@@ -3,7 +3,6 @@
 
 #include "fwd-glm.hpp"
 
-class CameraImpl;
 class Ray;
 
 class Camera {
@@ -38,7 +37,8 @@ class Camera {
     void updateProjection      ();
 
   private:
-    CameraImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

@@ -2,14 +2,14 @@
 #include "view-mouse-movement.hpp"
 #include "macro.hpp"
 
-struct MouseMovementImpl {
+struct MouseMovement::Impl {
   enum State { UpdateNewPos, UpdateOldPos, UpdateBothPos };
 
   QPoint oldPos;
   QPoint newPos;
   State  state;
 
-  MouseMovementImpl () : state (UpdateNewPos) {}
+  Impl () : state (UpdateNewPos) {}
 
   void update  (const QPoint& p) {
     if (this->state == UpdateBothPos || this->state == UpdateOldPos) {

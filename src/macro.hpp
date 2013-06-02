@@ -2,34 +2,34 @@
 #define DILAY_MACRO
 
 #define DELEGATE_CONSTRUCTOR(from) \
-  from :: from () { this->impl = new from ## Impl (); }
+  from :: from () { this->impl = new Impl (); }
 
 #define DELEGATE_COPY_CONSTRUCTOR(from) \
-  from :: from (const from & a1) { this->impl = new from ## Impl (*a1.impl); }
+  from :: from (const from & a1) { this->impl = new Impl (*a1.impl); }
 
 #define DELEGATE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (const from & source) { \
     if (this == &source) return *this; \
     from tmp (source); \
-    from ## Impl * tmpImpl = tmp.impl; \
-    tmp.impl               = this->impl; \
-    this->impl             = tmpImpl; \
+    Impl * tmpImpl = tmp.impl; \
+    tmp.impl       = this->impl; \
+    this->impl     = tmpImpl; \
     return *this; }
 
 #define DELEGATE1_CONSTRUCTOR(from,t1) \
-  from :: from (t1 a1) { this->impl = new from ## Impl (a1); }
+  from :: from (t1 a1) { this->impl = new Impl (a1); }
 
 #define DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  from :: from (t1 a1,t2 a2) { this->impl = new from ## Impl (a1,a2); }
+  from :: from (t1 a1,t2 a2) { this->impl = new Impl (a1,a2); }
 
 #define DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  from :: from (t1 a1,t2 a2,t3 a3) { this->impl = new from ## Impl (a1,a2,a3); }
+  from :: from (t1 a1,t2 a2,t3 a3) { this->impl = new Impl (a1,a2,a3); }
 
 #define DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { this->impl = new from ## Impl (a1,a2,a3,a4); }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { this->impl = new Impl (a1,a2,a3,a4); }
 
 #define DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { this->impl = new from ## Impl (a1,a2,a3,a4,a5); }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { this->impl = new Impl (a1,a2,a3,a4,a5); }
 
 #define DELEGATE_DESTRUCTOR(from) from :: ~ from () { delete this->impl; }
 
@@ -94,56 +94,56 @@
 
 #define DELEGATE_CONST(r,from,method) \
   r from :: method () const { \
-    const from ## Impl * constImpl = this->impl; \
+    const Impl * constImpl = this->impl; \
     return constImpl-> method (); }
 
 #define DELEGATE1_CONST(r,from,method,t1) \
   r from :: method (t1 a1) const { \
-    const from ## Impl * constImpl = this->impl; \
+    const Impl * constImpl = this->impl; \
     return constImpl-> method (a1); }
 
 #define DELEGATE2_CONST(r,from,method,t1,t2) \
   r from :: method (t1 a1,t2 a2) const { \
-    const from ## Impl * constImpl = this->impl; \
+    const Impl * constImpl = this->impl; \
     return constImpl-> method (a1,a2); }
 
 #define DELEGATE3_CONST(r,from,method,t1,t2,t3) \
   r from :: method (t1 a1,t2 a2,t3 a3) const { \
-    const from ## Impl * constImpl = this->impl; \
+    const Impl * constImpl = this->impl; \
     return constImpl-> method (a1,a2,a3); }
 
 #define DELEGATE4_CONST(r,from,method,t1,t2,t3,t4) \
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4) const { \
-    const from ## Impl * constImpl = this->impl; \
+    const Impl * constImpl = this->impl; \
     return constImpl-> method (a1,a2,a3,a4); }
 
 #define DELEGATE5_CONST(r,from,method,t1,t2,t3,t4,t5) \
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
-    const from ## Impl * constImpl = this->impl; \
+    const Impl * constImpl = this->impl; \
     return constImpl-> method (a1,a2,a3,a4,a5); }
 
 #define DELEGATE_STATIC(r,from,method) \
-  r from :: method () { return from ## Impl :: method (); }
+  r from :: method () { return Impl :: method (); }
 
 #define DELEGATE1_STATIC(r,from,method,t1) \
   r from :: method (t1 a1) { \
-    return from ## Impl :: method (a1); }
+    return Impl :: method (a1); }
 
 #define DELEGATE2_STATIC(r,from,method,t1,t2) \
   r from :: method (t1 a1,t2 a2) { \
-    return from ## Impl :: method (a1,a2); }
+    return Impl :: method (a1,a2); }
 
 #define DELEGATE3_STATIC(r,from,method,t1,t2,t3) \
   r from :: method (t1 a1,t2 a2,t3 a3) { \
-    return from ## Impl :: method (a1,a2,a3); }
+    return Impl :: method (a1,a2,a3); }
 
 #define DELEGATE4_STATIC(r,from,method,t1,t2,t3,t4) \
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4) { \
-    return from ## Impl :: method (a1,a2,a3,a4); }
+    return Impl :: method (a1,a2,a3,a4); }
 
 #define DELEGATE5_STATIC(r,from,method,t1,t2,t3,t4,t5) \
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
-    return from ## Impl :: method (a1,a2,a3,a4,a5); }
+    return Impl :: method (a1,a2,a3,a4,a5); }
 
 #define GETTER(r,from,member) \
   r from :: member () const { return this->impl-> member ; }

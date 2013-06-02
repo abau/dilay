@@ -4,8 +4,6 @@
 #include <iosfwd>
 #include "fwd-glm.hpp"
 
-class RayImpl;
-
 class Ray {
   public:
           Ray            (const glm::vec3&, const glm::vec3&);
@@ -19,7 +17,8 @@ class Ray {
           glm::vec3  pointAt   (float) const;
 
   private:
-    RayImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 std::ostream& operator<<(std::ostream&, const Ray&);

@@ -1,8 +1,6 @@
 #ifndef DILAY_CONFIG
 #define DILAY_CONFIG
 
-class ConfigImpl;
-
 class Config {
   public:   
     static Config& global (); 
@@ -15,7 +13,8 @@ class Config {
     const Config& operator= (const Config&) = delete;
          ~Config            ();
 
-    ConfigImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

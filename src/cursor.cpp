@@ -9,13 +9,13 @@
 #include "color.hpp"
 #include "util.hpp"
 
-struct CursorImpl {
+struct Cursor::Impl {
   Mesh          mesh;
   float         radius;
   unsigned int  sectors;
   bool          _isEnabled;
 
-  CursorImpl () : radius (0.2f), sectors (20), _isEnabled (false) {}
+  Impl () : radius (0.2f), sectors (20), _isEnabled (false) {}
 
   void initialize () {
     assert (this->sectors > 2);

@@ -4,11 +4,11 @@
 #include "macro.hpp"
 #include "util.hpp"
 
-struct SphereImpl {
+struct Sphere::Impl {
   glm::vec3 origin;
   float     radius;
 
-  SphereImpl (const glm::vec3& o, float r) : origin (o), radius (r) {}
+  Impl (const glm::vec3& o, float r) : origin (o), radius (r) {}
 };
 
 DELEGATE2_BIG4 (Sphere,const glm::vec3&, float)

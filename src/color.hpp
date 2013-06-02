@@ -4,8 +4,6 @@
 #include <iosfwd>
 #include "fwd-glm.hpp"
 
-class ColorImpl;
-
 class Color {
   public: 
           Color            (float,float,float,float);
@@ -26,7 +24,8 @@ class Color {
     glm::vec4 vec4 () const;
 
   private:
-    ColorImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 std::ostream& operator<<(std::ostream&, const Color&);

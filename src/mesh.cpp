@@ -11,7 +11,7 @@
 #include "camera.hpp"
 #include "config.hpp"
 
-struct MeshImpl {
+struct Mesh::Impl {
   // cf. copy-constructor, reset
   glm::mat4x4                 scalings;
   glm::mat4x4                 rotations;
@@ -29,7 +29,7 @@ struct MeshImpl {
 
   RenderMode                  renderMode;
 
-  MeshImpl () { 
+  Impl () { 
     this->scalings       = glm::mat4x4 (1.0f);
     this->rotations      = glm::mat4x4 (1.0f);
     this->translations   = glm::mat4x4 (1.0f);
@@ -43,7 +43,7 @@ struct MeshImpl {
     this->wireframeColor = Config::get <Color> ("/editor/initial-mesh-wireframe-color");
   }
 
-  MeshImpl (const MeshImpl& source)
+  Impl (const Impl& source)
               : scalings       (source.scalings)
               , rotations      (source.rotations)
               , translations   (source.translations)
@@ -60,7 +60,7 @@ struct MeshImpl {
     this->normalBufferId = 0;
   }
 
-  ~MeshImpl () { this->reset (); }
+  ~Impl () { this->reset (); }
 
   unsigned int numVertices () const { return this->vertices.size () / 3; }
   unsigned int numIndices  () const { return this->indices.size  (); }

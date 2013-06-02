@@ -4,8 +4,6 @@
 #include <iosfwd>
 #include "fwd-glm.hpp"
 
-class SphereImpl;
-
 class Sphere {
   public:
           Sphere            (const glm::vec3&, float);
@@ -16,7 +14,8 @@ class Sphere {
     const glm::vec3& origin () const;
     float            radius () const;
   private:
-    SphereImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 std::ostream& operator<<(std::ostream&, const Sphere&);

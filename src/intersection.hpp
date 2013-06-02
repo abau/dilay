@@ -6,8 +6,6 @@
 
 class Sphere;
 
-class FaceIntersectionImpl;
-
 class FaceIntersection {
   public:
           FaceIntersection            ();
@@ -22,7 +20,8 @@ class FaceIntersection {
     void             update         (float, const glm::vec3&, LinkedFace);
 
   private:
-    FaceIntersectionImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 namespace IntersectionUtil {

@@ -3,7 +3,6 @@
 
 #include "fwd-glm.hpp"
 
-class ViewLightImpl;
 class Color;
 
 class ViewLight {
@@ -21,7 +20,8 @@ class ViewLight {
     void color      (const Color&);
     void irradiance (float);
   private:
-    ViewLightImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif

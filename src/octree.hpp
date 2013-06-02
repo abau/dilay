@@ -5,9 +5,7 @@
 #include "fwd-glm.hpp"
 
 class Triangle;
-class OctreeImpl;
 class OctreeNode;
-class OctreeNodeImpl;
 class OctreeFaceIterator;
 class ConstOctreeFaceIterator;
 class OctreeNodeIterator;
@@ -15,41 +13,21 @@ class ConstOctreeNodeIterator;
 class Ray;
 class FaceIntersection;
 
-/** Internal template for iterators over all faces of a node */
-template <class,class> struct OctreeNodeFaceIteratorTemplate;
-
 /** Internal template for iterators over all faces of an octree */
 template <class,class,class,class> struct OctreeFaceIteratorTemplate;
 
 /** Internal template for iterators over all nodes of an octree */
 template <class,class,class> struct OctreeNodeIteratorTemplate;
 
-/** Specializations of non constant iterators */
-using OctreeNodeFaceIteratorImpl = OctreeNodeFaceIteratorTemplate 
-                                   <OctreeNodeImpl, LinkedFace>;
-
-using OctreeFaceIteratorImpl = OctreeFaceIteratorTemplate 
-                               < OctreeImpl, OctreeNodeImpl
-                               , OctreeNodeFaceIteratorImpl, LinkedFace>;
-
-using OctreeNodeIteratorImpl = OctreeNodeIteratorTemplate
-                             < OctreeImpl, OctreeNode, OctreeNodeImpl >;
-
-/** Specializations of constant iterators */
-using ConstOctreeNodeFaceIteratorImpl = OctreeNodeFaceIteratorTemplate 
-                                        <const OctreeNodeImpl, ConstLinkedFace>;
-
-using ConstOctreeFaceIteratorImpl = OctreeFaceIteratorTemplate 
-                                  < const OctreeImpl, const OctreeNodeImpl
-                                  , ConstOctreeNodeFaceIteratorImpl, ConstLinkedFace>;
-
-using ConstOctreeNodeIteratorImpl = OctreeNodeIteratorTemplate
-                                  < const OctreeImpl, const OctreeNode
-                                  , const OctreeNodeImpl >;
+/** Internal template for iterators over all faces of a node */
+template <class,class> struct OctreeNodeFaceIteratorTemplate;
 
 /** Octree node interface */
 class OctreeNode {
-  public: OctreeNode               (OctreeNodeImpl*);
+  public: 
+    class Impl;
+
+          OctreeNode               (Impl*);
           OctreeNode               (const OctreeNode&) = delete;
     const OctreeNode& operator=    (const OctreeNode&) = delete;
 
@@ -61,12 +39,15 @@ class OctreeNode {
     float             width        () const;
 
   private:
-    OctreeNodeImpl* impl;
+    Impl* impl;
 };
 
 /** Octree main class */
 class Octree { 
-  public: Octree            ();
+  public: 
+    class Impl; 
+    
+          Octree            ();
           Octree            (const Octree&) = delete;
     const Octree& operator= (const Octree&) = delete;
          ~Octree            ();
@@ -83,12 +64,19 @@ class Octree {
     ConstOctreeNodeIterator nodeIterator () const;
 
   private:
-    OctreeImpl* impl;
+    Impl* impl;
 };
+
+/** Internal classes for iterators over all faces of a node */
+using OctreeNodeFaceIterator = OctreeNodeFaceIteratorTemplate 
+                               <OctreeNode::Impl, LinkedFace>;
+
+using ConstOctreeNodeFaceIterator = OctreeNodeFaceIteratorTemplate 
+                                    <const OctreeNode::Impl, ConstLinkedFace>;
 
 /** Iterator over all faces of an octree */
 class OctreeFaceIterator {
-  public: OctreeFaceIterator            (OctreeImpl&);
+  public: OctreeFaceIterator            (Octree::Impl&);
           OctreeFaceIterator            (const OctreeFaceIterator&);
     const OctreeFaceIterator& operator= (const OctreeFaceIterator&);
          ~OctreeFaceIterator            ();
@@ -99,12 +87,14 @@ class OctreeFaceIterator {
     int          depth              () const;
 
   private:
-    OctreeFaceIteratorImpl* impl;
+    using Impl = OctreeFaceIteratorTemplate < Octree::Impl, OctreeNode::Impl
+                                            , OctreeNodeFaceIterator, LinkedFace>;
+    Impl* impl;
 };
 
 /** Constant iterator over all faces of an octree */
 class ConstOctreeFaceIterator {
-  public: ConstOctreeFaceIterator            (const OctreeImpl&);
+  public: ConstOctreeFaceIterator            (const Octree::Impl&);
           ConstOctreeFaceIterator            (const ConstOctreeFaceIterator&);
     const ConstOctreeFaceIterator& operator= (const ConstOctreeFaceIterator&);
          ~ConstOctreeFaceIterator            ();
@@ -115,12 +105,15 @@ class ConstOctreeFaceIterator {
     int             depth              () const;
 
   private:
-    ConstOctreeFaceIteratorImpl* impl;
+    using Impl = OctreeFaceIteratorTemplate < const Octree::Impl, const OctreeNode::Impl
+                                            , ConstOctreeNodeFaceIterator
+                                            , ConstLinkedFace>;
+    Impl* impl;
 };
 
 /** Iterator over all nodes of an octree */
 class OctreeNodeIterator {
-  public: OctreeNodeIterator            (OctreeImpl&);
+  public: OctreeNodeIterator            (Octree::Impl&);
           OctreeNodeIterator            (const OctreeNodeIterator&);
     const OctreeNodeIterator& operator= (const OctreeNodeIterator&);
          ~OctreeNodeIterator            ();
@@ -130,12 +123,14 @@ class OctreeNodeIterator {
     void         next    ();
 
   private:
-    OctreeNodeIteratorImpl* impl;
+    using Impl = OctreeNodeIteratorTemplate < Octree::Impl, OctreeNode
+                                            , OctreeNode::Impl >;
+    Impl* impl;
 };
 
 /** Constant iterator over all nodes of an octree */
 class ConstOctreeNodeIterator {
-  public: ConstOctreeNodeIterator            (const OctreeImpl&);
+  public: ConstOctreeNodeIterator            (const Octree::Impl&);
           ConstOctreeNodeIterator            (const ConstOctreeNodeIterator&);
     const ConstOctreeNodeIterator& operator= (const ConstOctreeNodeIterator&);
          ~ConstOctreeNodeIterator            ();
@@ -145,6 +140,9 @@ class ConstOctreeNodeIterator {
     void              next    ();
 
   private:
-    ConstOctreeNodeIteratorImpl* impl;
+    using Impl = OctreeNodeIteratorTemplate < const Octree::Impl, const OctreeNode
+                                            , const OctreeNode::Impl >;
+    Impl* impl;
 };
+
 #endif

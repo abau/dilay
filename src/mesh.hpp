@@ -3,8 +3,6 @@
 
 #include "fwd-glm.hpp"
 
-class MeshImpl;
-
 class Mesh {
   public:        Mesh             ();
     /** `bufferData` must be called on the new mesh after copying */
@@ -43,7 +41,8 @@ class Mesh {
     static Mesh  sphere           (float,int,int);
 
   private: 
-    MeshImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 #endif 

@@ -5,19 +5,19 @@
 #include "ray.hpp"
 #include "winged-vertex.hpp"
 
-struct TriangleImpl {
+struct Triangle::Impl {
   glm::vec3 vertex1;
   glm::vec3 vertex2;
   glm::vec3 vertex3;
 
-  TriangleImpl () {}
+  Impl () {}
 
-  TriangleImpl (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
+  Impl (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
     : vertex1 (v1), vertex2 (v2), vertex3 (v3) {}
 
-  TriangleImpl ( const WingedMesh& mesh, LinkedVertex v1
+  Impl ( const WingedMesh& mesh, LinkedVertex v1
                , LinkedVertex v2, LinkedVertex v3)
-    : TriangleImpl (v1->vertex (mesh), v2->vertex (mesh), v3->vertex (mesh)) {}
+    : Impl (v1->vertex (mesh), v2->vertex (mesh), v3->vertex (mesh)) {}
 
   glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
   glm::vec3 edge2 () const { return this->vertex3 - this->vertex1; }

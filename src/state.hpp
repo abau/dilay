@@ -1,7 +1,6 @@
 #ifndef DILAY_STATE
 #define DILAY_STATE
 
-class StateImpl;
 class Mesh;
 class WingedMesh;
 class Camera;
@@ -24,6 +23,7 @@ class State {
     const State& operator= (const State&) = delete;
          ~State            ();
 
-    StateImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 #endif
