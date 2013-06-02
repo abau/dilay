@@ -36,6 +36,8 @@ void GLWidget :: initializeGL () {
 
   this->impl->axis.initialize ();
   this->setMouseTracking (true);
+
+  Renderer :: global ().updateLights (State :: global ().camera ());
 }
 
 void GLWidget :: paintGL () {
@@ -93,6 +95,8 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     this->impl->mouseMovement.update (e->pos ());
     State :: global ().camera ().verticalRotation   (this->impl->mouseMovement.dX ());
     State :: global ().camera ().horizontalRotation (this->impl->mouseMovement.dY ());
+    Renderer :: global ().updateLights (State :: global ().camera ());
+
     this->update ();
   }
 }

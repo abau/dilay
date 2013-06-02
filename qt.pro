@@ -12,7 +12,7 @@ QT                     += opengl
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++11
-QMAKE_CXXFLAGS_DEBUG   += -DDILAY_RENDER_OCTREE
+QMAKE_CXXFLAGS_DEBUG   += #-DDILAY_RENDER_OCTREE
 
 SOURCES += \
            src/adjacent-iterator.cpp \

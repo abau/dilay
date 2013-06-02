@@ -1,10 +1,10 @@
 #include "rendermode.hpp"
 
 RenderMode RenderModeUtil :: toggle (RenderMode renderMode) {
-  if (renderMode == RenderSmooth)
-    return RenderWireframe;
-  else if (renderMode == RenderWireframe)
-    return RenderFlat;
+  if (renderMode == RenderMode::Smooth)
+    return RenderMode::Wireframe;
+  else if (renderMode == RenderMode::Wireframe)
+    return RenderMode::Flat;
   else
-    return RenderSmooth;
+    return RenderMode::Smooth;
 }

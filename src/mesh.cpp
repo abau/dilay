@@ -9,6 +9,7 @@
 #include "color.hpp"
 #include "state.hpp"
 #include "camera.hpp"
+#include "config.hpp"
 
 struct MeshImpl {
   // cf. copy-constructor, reset
@@ -18,6 +19,8 @@ struct MeshImpl {
   std::vector<   GLfloat   >  vertices;
   std::vector< unsigned int>  indices;
   std::vector<   GLfloat   >  normals;
+  Color                       color;
+  Color                       wireframeColor;
 
   GLuint                      arrayObjectId; 
   GLuint                      vertexBufferId;
@@ -34,7 +37,10 @@ struct MeshImpl {
     this->vertexBufferId = 0;
     this->indexBufferId  = 0;
     this->normalBufferId = 0;
-    this->renderMode     = RenderWireframe;
+    this->renderMode     = RenderMode::Wireframe;
+
+    this->color          = Config::get <Color> ("/editor/initial-mesh-color");
+    this->wireframeColor = Config::get <Color> ("/editor/initial-mesh-wireframe-color");
   }
 
   MeshImpl (const MeshImpl& source)
@@ -44,6 +50,8 @@ struct MeshImpl {
               , vertices       (source.vertices)
               , indices        (source.indices)
               , normals        (source.normals)
+              , color          (source.color)
+              , wireframeColor (source.wireframeColor)
               , renderMode     (source.renderMode) {
               
     this->arrayObjectId  = 0;
@@ -144,9 +152,9 @@ struct MeshImpl {
   }
 
   void render () {
-    if (this->renderMode == RenderSmooth || this->renderMode == RenderFlat)
+    if (this->renderMode == RenderMode::Smooth || this->renderMode == RenderMode::Flat)
       return this->renderSolid ();
-    else if (this->renderMode == RenderWireframe)
+    else if (this->renderMode == RenderMode::Wireframe)
       return this->renderWireframe ();
     else
       assert (false);
@@ -154,19 +162,19 @@ struct MeshImpl {
 
   void renderSolid () {
     this->renderBegin  ();
-    Renderer :: global ().setColor3 (Color (0.2f, 0.2f, 0.6f));
+    Renderer :: global ().setColor3 (this->color);
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
     this->renderEnd    ();
   }
 
   void renderWireframe () {
     this->renderBegin  ();
-    Renderer :: global ().setColor3 (Color (0.2f, 0.2f, 0.6f));
+    Renderer :: global ().setColor3 (this->color);
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    Renderer :: global ().setColor3 (Color (1.0f, 1.0f, 1.0f));
+    Renderer :: global ().setColor3 (this->wireframeColor);
     glPolygonMode      (GL_FRONT, GL_LINE);
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 

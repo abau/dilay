@@ -6,6 +6,7 @@
 #include "fwd-glm.hpp"
 
 std::ostream& operator<<(std::ostream&, const glm::vec3&);
+std::ostream& operator<<(std::ostream&, const glm::vec4&);
 
 namespace Util {
   const float epsilon = 0.000001f;

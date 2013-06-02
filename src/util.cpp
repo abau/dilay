@@ -8,6 +8,11 @@ std::ostream& operator<<(std::ostream& os, const glm::vec3& v) {
   return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const glm::vec4& v) {
+  os << "(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
+  return os;
+}
+
 template <class T>
 std::string Util :: toString (const T& t) {
   std::stringstream ss;

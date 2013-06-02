@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_major_storage.hpp>
 #include "camera.hpp"
 #include "opengl-util.hpp"
 #include "ray.hpp"
@@ -27,15 +28,33 @@ struct CameraImpl {
   CameraImpl () : gazeStepSize            (1.0f)
                 , verticalRotationAngle   (0.5f)
                 , horizontalRotationAngle (0.5f)
-                , gazePoint               (glm::vec3 (0.0f,0.0f,0.0f))
-                , toEyePoint              (glm::vec3 (3.0f,3.0f,3.0f))
-                , up                      (glm::vec3 (0.0f,1.0f,0.0f))
-                , right                   (glm::vec3 (1.0f,0.0f,0.0f))
                 , resolutionWidth         (1024)
                 , resolutionHeight        (800)
                 , nearClipping            (0.1f)
-                , farClipping             (1000.0f)
-                  {}
+                , farClipping             (1000.0f) {
+
+
+    this->gazePoint  = glm::vec3 (0.0f,0.0f,0.0f);
+    this->up         = glm::vec3 (0.0f,1.0f,0.0f);
+    this->toEyePoint = glm::vec3 (3.0f,3.0f,3.0f);
+
+    this->right      = glm::normalize ( glm::cross (this->up, this->toEyePoint) );
+                  
+  }
+
+  glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
+
+  glm::mat4x4 world () const {
+    glm::vec3   x = this->right;
+    glm::vec3   z = glm::normalize (this->toEyePoint);
+    glm::vec3   y = glm::cross (z,x);
+    glm::vec3   p = this->position ();
+
+    return glm::colMajor4 ( glm::vec4 (x,0.0f)
+                          , glm::vec4 (y,0.0f)
+                          , glm::vec4 (z,0.0f)
+                          , glm::vec4 (p,1.0f));
+  }
 
   void initialize () {
     this->updateView ();
@@ -123,15 +142,23 @@ struct CameraImpl {
 
 DELEGATE_BIG4 (Camera)
 
-DELEGATE        (void        , Camera, initialize)
-GETTER          (unsigned int, Camera, resolutionWidth)
-GETTER          (unsigned int, Camera, resolutionHeight)
-DELEGATE2       (void        , Camera, updateResolution, unsigned int, unsigned int) 
-DELEGATE1_CONST (void        , Camera, modelViewProjection, const glm::mat4x4&) 
-DELEGATE_CONST  (void        , Camera, rotationProjection) 
-DELEGATE1       (void        , Camera, stepAlongGaze, bool) 
-DELEGATE1       (void        , Camera, verticalRotation, int) 
-DELEGATE1       (void        , Camera, horizontalRotation, int) 
-DELEGATE2_CONST (Ray         , Camera, getRay, unsigned int, unsigned int) 
-DELEGATE4       (void        , Camera, updateProjection, unsigned int, unsigned int, unsigned int, unsigned int) 
-DELEGATE        (void        , Camera, updateProjection)
+DELEGATE        (void              , Camera, initialize)
+GETTER          (unsigned int      , Camera, resolutionWidth)
+GETTER          (unsigned int      , Camera, resolutionHeight)
+GETTER          (const glm::vec3&  , Camera, toEyePoint)
+GETTER          (const glm::vec3&  , Camera, up)
+GETTER          (const glm::vec3&  , Camera, right)
+GETTER          (const glm::mat4x4&, Camera, view)
+GETTER          (const glm::mat4x4&, Camera, viewRotation)
+DELEGATE_CONST  (glm::vec3         , Camera, position)
+DELEGATE_CONST  (glm::mat4x4        , Camera, world)
+
+DELEGATE2       (void , Camera, updateResolution, unsigned int, unsigned int) 
+DELEGATE1_CONST (void , Camera, modelViewProjection, const glm::mat4x4&) 
+DELEGATE_CONST  (void , Camera, rotationProjection) 
+DELEGATE1       (void , Camera, stepAlongGaze, bool) 
+DELEGATE1       (void , Camera, verticalRotation, int) 
+DELEGATE1       (void , Camera, horizontalRotation, int) 
+DELEGATE2_CONST (Ray  , Camera, getRay, unsigned int, unsigned int) 
+DELEGATE4       (void , Camera, updateProjection, unsigned int, unsigned int, unsigned int, unsigned int) 
+DELEGATE        (void , Camera, updateProjection)

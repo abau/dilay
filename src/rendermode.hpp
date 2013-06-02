@@ -1,14 +1,14 @@
 #ifndef DILAY_RENDERMODE
 #define DILAY_RENDERMODE
 
-enum RenderMode : short 
-  { RenderSmooth    = 0 // c.f. numRenderModes
-  , RenderWireframe = 1
-  , RenderFlat      = 2
+enum class RenderMode 
+  { Smooth    = 0 // c.f. numRenderModes
+  , Wireframe = 1
+  , Flat      = 2
   }; 
 
 namespace RenderModeUtil {
-  const int numRenderModes = 3;
+  const unsigned int numRenderModes = 3;
  
   RenderMode toggle (RenderMode);
 }

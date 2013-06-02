@@ -1,4 +1,5 @@
 #include <yaml-cpp/yaml.h>
+#include <glm/glm.hpp>
 #include <unordered_map>
 #include "config.hpp"
 #include "macro.hpp"
@@ -60,10 +61,11 @@ DELEGATE_DESTRUCTOR (Config)
 GLOBAL              (Config);
 
 template <class T>
-T Config :: get (const std::string& path) const {
-  return this->impl->get<T> (path);
+T Config :: get (const std::string& path) {
+  return Config::global ().impl->get<T> (path);
 }
 
-template float Config :: get<float>     (const std::string&) const;
-template int   Config :: get<int>       (const std::string&) const;
-template Color Config :: get<Color>     (const std::string&) const;
+template float     Config :: get<float>     (const std::string&);
+template int       Config :: get<int>       (const std::string&);
+template Color     Config :: get<Color>     (const std::string&);
+template glm::vec3 Config :: get<glm::vec3> (const std::string&);

@@ -6,20 +6,24 @@
 
 class RendererImpl;
 class Color;
-class ViewLight;
-enum  RenderMode : short;
+enum  class RenderMode;
+class Camera;
 
 class Renderer {
   public:
     static Renderer& global ();
 
-    void initialize    ();
-    void shutdown      ();
-    void setColor3     (const Color&);
-    void setColor4     (const Color&);
-    void setMvp        (const GLfloat*);
-    void setProgram    (const RenderMode&);
-    void setViewLight1 (const ViewLight&);
+    void initialize         ();
+    void shutdown           ();
+    void setProgram         (const RenderMode&);
+    void setMvp             (const GLfloat*);
+    void setColor3          (const Color&);
+    void setColor4          (const Color&);
+    void setAmbient         (const Color&);
+    void setLightPosition   (unsigned int, const glm::vec3&);
+    void setLightColor      (unsigned int, const Color&);
+    void setLightIrradiance (unsigned int, float);
+    void updateLights       (const Camera&);
 
   private:
           Renderer            ();

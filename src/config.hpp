@@ -7,8 +7,7 @@ class Config {
   public:   
     static Config& global (); 
 
-    template <class T>
-    T get (const std::string&) const;  
+    template <class T> static T get (const std::string&);  
 
   private:
           Config            ();
