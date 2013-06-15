@@ -21,6 +21,7 @@ SOURCES += \
            src/config.cpp \
            src/color.cpp \
            src/cursor.cpp \
+           src/history.cpp \
            src/id.cpp \
            src/intersection.cpp \
            src/main.cpp \
@@ -48,6 +49,7 @@ SOURCES += \
            src/winged-vertex.cpp
 
 HEADERS += \
+           src/action.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/camera.hpp \
@@ -58,6 +60,7 @@ HEADERS += \
            src/fwd-glm.hpp \
            src/fwd-yaml.hpp \
            src/fwd-winged.hpp \
+           src/history.hpp \
            src/id.hpp \
            src/intersection.hpp \
            src/macro.hpp \

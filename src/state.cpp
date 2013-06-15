@@ -1,3 +1,4 @@
+#include <list>
 #include "state.hpp"
 #include "mesh.hpp"
 #include "winged-mesh.hpp"
@@ -5,11 +6,13 @@
 #include "camera.hpp"
 #include "cursor.hpp"
 #include "macro.hpp"
+#include "history.hpp"
 
 struct State::Impl {
   WingedMesh mesh;
   Camera     camera;
   Cursor     cursor;
+  History    history;
 
   void initialize () { 
     //WingedUtil :: fromMesh (this->mesh, Mesh :: sphere (1.0f,100,200));
