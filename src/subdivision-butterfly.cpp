@@ -14,10 +14,8 @@
 
 void subdivide (WingedMesh&, unsigned int, LinkedFace);
 
-void SubdivButterfly :: subdivide (WingedMesh& mesh, FaceSet& faces) {
-  for (LinkedFace face : faces) {
-    subdivide (mesh,face->level (),face);
-  }
+void SubdivButterfly :: subdivide (WingedMesh& mesh, LinkedFace face) {
+  subdivide (mesh,face->level (),face);
 }
 
 bool       oneRingNeighbourhood (WingedMesh&, LinkedFace, FaceSet&);

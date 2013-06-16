@@ -21,7 +21,7 @@ bool Tool :: click (unsigned int x, unsigned int y) {
 
   State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
-    subdivisionStep (intersection);
+    SubdivButterfly :: subdivide (mesh, intersection.face ());
     mesh.rebuildIndices ();
     mesh.rebuildNormals ();
     mesh.bufferData ();
@@ -29,35 +29,3 @@ bool Tool :: click (unsigned int x, unsigned int y) {
   }
   return false;
 }
-
-//FaceSet collectFaces (const FaceIntersection&);
-
-void subdivisionStep (const FaceIntersection& intersection) {
-  WingedMesh& mesh  = State :: mesh ();
-  /*FaceSet     faces = collectFaces (intersection);
-
-  while (! faces.empty ()) {
-    SubdivButterfly :: subdivide ( mesh , faces );
-    faces = collectFaces (intersection);
-  }
-  SubdivButterfly :: subdiv ( mesh , { intersection.face () } );
-  */
-  FaceSet foo = FaceSet ({intersection.face ()});
-  SubdivButterfly :: subdivide ( mesh , foo );
-}
-
-/*
-FaceSet collectFaces (const FaceIntersection& intersection) {
-  Sphere sphere (intersection.position (), State :: cursor ().radius ());
-  WingedMesh& mesh = State :: mesh ();
-  FaceSet     faces;
-
-  for (FACE_ITERATOR (it,mesh)) {
-    if (   ( it->longestEdge (mesh)->length (mesh) > 0.1f)
-        && ( IntersectionUtil :: intersects (sphere,mesh,*it))) {
-      faces.insert (it);
-    }
-  }
-  return faces;
-}
-*/
