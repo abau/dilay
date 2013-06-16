@@ -3,6 +3,7 @@
 
 #include "fwd-winged.hpp"
 #include "fwd-glm.hpp"
+#include "id.hpp"
 
 class Triangle;
 class OctreeNode;
@@ -31,6 +32,7 @@ class OctreeNode {
           OctreeNode               (const OctreeNode&) = delete;
     const OctreeNode& operator=    (const OctreeNode&) = delete;
 
+    IdType            id           () const;
     void              deleteFace   (LinkedFace);
     void              intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
     unsigned int      numFaces     () const;

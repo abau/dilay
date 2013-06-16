@@ -183,4 +183,7 @@
 #define ACCESS_GLOBAL(r,from,member) \
   r from :: member () { return from :: global ().impl-> member ; }
 
+#define ID(from) \
+  IdType from :: id () const { return this->impl->id.get () ; }
+
 #endif

@@ -30,6 +30,7 @@ class FaceToInsert {
 struct OctreeNode::Impl {
   typedef std::vector <Impl> Children;
 
+  Id           id;
   OctreeNode   node;
   glm::vec3    center;
   float        width;
@@ -226,6 +227,7 @@ DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 GETTER         (int, OctreeNode, depth)
 GETTER         (const glm::vec3&, OctreeNode, center)
 GETTER         (float, OctreeNode, width)
+ID             (OctreeNode)
 
 /** Octree main class */
 struct Octree::Impl {
