@@ -29,6 +29,10 @@ class WingedMesh {
      * depend on this behaviour. */
     LinkedFace      deleteEdge        (LinkedEdge);
 
+    /** Realigns a face in a mesh's octree. The passed `LinkedFace` becomes invalid
+     * and must not be dereferenced: use the returned `LinkedFace` instead. */
+    LinkedFace      realignInOctree   (LinkedFace);
+
     unsigned int    numVertices       () const;
     unsigned int    numWingedVertices () const;
     unsigned int    numEdges          () const;

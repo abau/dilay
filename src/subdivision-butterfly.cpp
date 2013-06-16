@@ -171,14 +171,17 @@ void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLev
       }
     }
   }
-  FaceList newFaces;
+  FaceSet newFaces;
   for (LinkedFace face : faces) {
-    SubdivUtil :: triangulate6Gon (mesh,face);
-    for (ADJACENT_FACE_ITERATOR (it,*face)) {
-      newFaces.push_back (it.face ());
+    LinkedFace realignedFace = SubdivUtil :: triangulate6Gon (mesh,face);
+
+    newFaces.insert (realignedFace);
+
+    for (ADJACENT_FACE_ITERATOR (it,*realignedFace)) {
+      newFaces.insert (it.face ());
     }
   }
-  faces.insert (newFaces.begin (), newFaces.end ());
+  faces = std::move (newFaces);
 }
 
 void refineBorder (WingedMesh& mesh, FaceSet& border, unsigned int selectionLevel) {

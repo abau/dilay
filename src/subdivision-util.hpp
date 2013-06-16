@@ -10,12 +10,13 @@ namespace SubdivUtil {
    */
   LinkedEdge insertVertex (WingedMesh&, LinkedEdge, const glm::vec3&);
 
-  /** `triangulate6Gon(m,f)` triangulates the 6-gon `f`.
+  /** `f' = triangulate6Gon(m,f)` triangulates the 6-gon `f`.
    * Note thate `f->edge ()->firstVertex (*f)` must be an even vertex, i.e.
    * it must not be generated during the current subdivision step.
    * The new faces are adjacent to `f`.
+   * `f` becomes invalid: use `f'` instead.
    */
-  void triangulate6Gon (WingedMesh&, LinkedFace);
+  LinkedFace triangulate6Gon (WingedMesh&, LinkedFace);
 
   /** `triangulateQuadAtHeighestLevelVertex (m,f)` triangulates the quad `f` by 
    * inserting an edge from the vertex of `f` with the heighest level. */

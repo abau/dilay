@@ -168,7 +168,7 @@ struct OctreeNode::Impl {
       return insertIntoChild (f);
     }
     else {
-      this->faces.push_back (std::move (f.face));
+      this->faces.push_back (f.face);
       this->faces.back ().octreeNode (&this->node);
       return --this->faces.end ();
     }

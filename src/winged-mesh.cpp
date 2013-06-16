@@ -70,6 +70,20 @@ struct WingedMesh::Impl {
     return remainingFace;
   }
 
+  LinkedFace realignInOctree (LinkedFace f) {
+    OctreeNode* node = f->octreeNode ();
+    if (node) {
+      LinkedFace newFace = this->octree.insertFace (*f,f->triangle (this->wingedMesh));
+
+      for (LinkedEdge e : f->adjacentEdgeIterator ().collect ())
+        e->setFace (*f, newFace);
+
+      node->deleteFace (f);
+      return newFace;
+    }
+    return f;
+  }
+
   unsigned int numVertices       () const { return this->mesh.numVertices (); }
   unsigned int numWingedVertices () const { return this->vertices.size    (); }
   unsigned int numEdges          () const { return this->edges.size       (); }
@@ -145,6 +159,7 @@ GETTER          (const Edges&   , WingedMesh, edges)
 GETTER          (const Octree&  , WingedMesh, octree)
 
 DELEGATE1       (LinkedFace     , WingedMesh, deleteEdge, LinkedEdge)
+DELEGATE1       (LinkedFace     , WingedMesh, realignInOctree, LinkedFace)
  
 DELEGATE_CONST  (unsigned int   , WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numWingedVertices)

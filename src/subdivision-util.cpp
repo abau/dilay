@@ -38,7 +38,7 @@ LinkedEdge SubdivUtil :: insertVertex ( WingedMesh& mesh, LinkedEdge e
   return newE;
 }
 
-void SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
+LinkedFace SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
   assert (f->numEdges () == 6);
 
   /*     4
@@ -97,7 +97,8 @@ void SubdivUtil :: triangulate6Gon (WingedMesh& mesh, LinkedFace f) {
   e50->setPredecessor  (*a,e51);
   e50->setSuccessor    (*a,e01);
 
-  f->setEdge          (e13);
+  f->setEdge           (e13);
+  return mesh.realignInOctree (f);
 }
 
 LinkedEdge splitFaceWith ( WingedMesh&, LinkedFace, LinkedFace
