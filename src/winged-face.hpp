@@ -16,8 +16,8 @@ class OctreeNode;
 template <class T> class Maybe;
 
 class WingedFace {
-  public:                    WingedFace      ();
-                             WingedFace      (LinkedEdge);
+  public:                    WingedFace      (IdType = Id::invalidId ());
+                             WingedFace      (LinkedEdge, IdType = Id::invalidId ());
 
     IdType                   id              () const { return this->_id.get (); }
     LinkedEdge               edge            () const { return this->_edge; }

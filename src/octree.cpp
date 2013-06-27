@@ -169,7 +169,7 @@ struct OctreeNode::Impl {
       return insertIntoChild (f);
     }
     else {
-      this->faces.push_back (f.face);
+      this->faces.emplace_back (f.face.edge (), f.face.id ());
       this->faces.back ().octreeNode (&this->node);
       return --this->faces.end ();
     }

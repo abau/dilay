@@ -10,10 +10,10 @@
 #include "maybe.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace () : _octreeNode (nullptr) {}
+WingedFace :: WingedFace (IdType id) : _id (id), _octreeNode (nullptr) {}
 
-WingedFace :: WingedFace (LinkedEdge e) 
-  : _edge (e), _octreeNode (nullptr) {}
+WingedFace :: WingedFace (LinkedEdge e, IdType id) 
+  : _id (id), _edge (e), _octreeNode (nullptr) {}
 
 void WingedFace :: setEdge (LinkedEdge e) {
   this->_edge = e;
