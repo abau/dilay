@@ -1,6 +1,6 @@
 #include "id.hpp"
 
-Id :: Id ()          : _id (Id::nextId ()) {}
+Id :: Id (IdType id) : _id (id == Id::invalidId () ? Id::nextId () : id) {}
 Id :: Id (const Id&) : _id (Id::nextId ()) {}
 
 const Id& Id :: operator= (const Id&) {
@@ -8,7 +8,7 @@ const Id& Id :: operator= (const Id&) {
 }
 
 IdType Id :: nextId () {
-  static IdType nextId = 0;
+  static IdType nextId = Id::invalidId ();
   nextId++;
   return nextId;
 }
