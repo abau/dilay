@@ -24,6 +24,19 @@ template <class,class,class> struct OctreeNodeIteratorTemplate;
 /** Internal template for iterators over all faces of a node */
 template <class,class> struct OctreeNodeFaceIteratorTemplate;
 
+/** Reference to a face by its id and the enclosing node's id */
+class OctreeNodeFaceReference {
+  public:
+    OctreeNodeFaceReference (IdType n, IdType f) : _nodeId (n), _faceId (f) {}
+
+    IdType nodeId () const { return this->_nodeId; }
+    IdType faceId () const { return this->_faceId; }
+
+  private:
+    const IdType _nodeId;
+    const IdType _faceId;
+};
+
 /** Octree node interface */
 class OctreeNode {
   public: 
@@ -40,6 +53,7 @@ class OctreeNode {
     int               depth        () const;
     const glm::vec3&  center       () const;
     float             width        () const;
+    LinkedFace        getFace      (const OctreeNodeFaceReference&);
 
   private:
     Impl* impl;
@@ -56,6 +70,7 @@ class Octree {
          ~Octree            ();
 
     LinkedFace  insertFace   (const WingedFace&, const Triangle&);
+    LinkedFace  getFace      (const OctreeNodeFaceReference&);
     void        render       ();
     void        intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
     void        reset        ();

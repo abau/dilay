@@ -217,6 +217,16 @@ struct OctreeNode::Impl {
   }
 
   unsigned int numFaces () const { return this->faces.size (); }
+
+  LinkedFace getFace (const OctreeNodeFaceReference& reference) {
+    assert (this->id.get () == reference.nodeId ());
+
+    for (auto it = this->faces.begin (); it != this->faces.end(); ++it) {
+      if (it->id () == reference.faceId ())
+        return it;
+    }
+    assert (false);
+  }
 };
 
 OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
@@ -224,6 +234,7 @@ OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
 DELEGATE1      (void, OctreeNode, deleteFace, LinkedFace)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
+DELEGATE1      (LinkedFace, OctreeNode, getFace, const OctreeNodeFaceReference&)
 GETTER         (int, OctreeNode, depth)
 GETTER         (const glm::vec3&, OctreeNode, center)
 GETTER         (float, OctreeNode, width)
@@ -250,6 +261,16 @@ struct Octree::Impl {
       this->makeParent (faceToInsert);
       return this->insertFace (face,geometry);
     }
+  }
+
+  LinkedFace getFace (const OctreeNodeFaceReference& reference) {
+    OctreeNode* pNode = nullptr;
+    for (auto it = this->nodeIterator (); it.isValid (); it.next ()) {
+      if (it.element ().id () == reference.nodeId ())
+        pNode = &it.element ();
+    }
+    assert (pNode);
+    return pNode->getFace (reference);
   }
 
   void makeParent (const FaceToInsert& f) {
@@ -322,6 +343,7 @@ struct Octree::Impl {
 DELEGATE_CONSTRUCTOR (Octree)
 DELEGATE_DESTRUCTOR  (Octree)
 DELEGATE2      (LinkedFace, Octree, insertFace, const WingedFace&, const Triangle&)
+DELEGATE1      (LinkedFace, Octree, getFace, const OctreeNodeFaceReference&)
 DELEGATE       (void, Octree, render)
 DELEGATE3      (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE       (void, Octree, reset)
