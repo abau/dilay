@@ -26,7 +26,7 @@ glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
   glm::vec3 normal = glm::vec3 (0.0f,0.0f,0.0f);
 
   for (ADJACENT_FACE_ITERATOR (it,*this)) {
-    normal = normal + it.face ()->normal (mesh);
+    normal = normal + it.element ()->normal (mesh);
   }
   return glm::normalize (normal);
 }
@@ -40,8 +40,8 @@ unsigned int WingedVertex :: valence () const {
 
 Maybe <LinkedEdge> WingedVertex :: tEdge () const {
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    if (it.edge ()->isTEdge ())
-      return Maybe <LinkedEdge> (it.edge ());
+    if (it.element ()->isTEdge ())
+      return Maybe <LinkedEdge> (it.element ());
   }
   return Maybe <LinkedEdge> ();
 }

@@ -25,7 +25,7 @@ void WingedFace :: octreeNode (OctreeNode* node) {
 
 void WingedFace :: addIndices (WingedMesh& mesh) {
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    it.vertex ()->addIndex (mesh);
+    it.element ()->addIndex (mesh);
   }
 }
 
@@ -58,8 +58,8 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
 
 LinkedEdge WingedFace :: adjacent (const WingedVertex& vertex) const {
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    if (it.edge ()->isAdjacent (vertex))
-      return it.edge ();
+    if (it.element ()->isAdjacent (vertex))
+      return it.element ();
   }
   assert (false);
 }
@@ -69,10 +69,10 @@ LinkedEdge WingedFace :: longestEdge (const WingedMesh& mesh) const {
   float      maxLength = 0.0f;
 
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    float length = it.edge ()->length (mesh);
+    float length = it.element ()->length (mesh);
     if (length > maxLength) {
       maxLength = length;
-      longest   = it.edge ();
+      longest   = it.element ();
     }
   }
   return longest;
@@ -80,16 +80,16 @@ LinkedEdge WingedFace :: longestEdge (const WingedMesh& mesh) const {
 
 Maybe<LinkedVertex> WingedFace :: tVertex () const {
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    if (it.vertex ()->tEdge ().isDefined ())
-      return Maybe<LinkedVertex> (it.vertex ());
+    if (it.element ()->tEdge ().isDefined ())
+      return Maybe<LinkedVertex> (it.element ());
   }
   return Maybe<LinkedVertex> ();
 }
 
 Maybe<LinkedEdge> WingedFace :: tEdge () const {
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    if (it.edge ()->isTEdge ())
-      return Maybe<LinkedEdge> (it.edge ());
+    if (it.element ()->isTEdge ())
+      return Maybe<LinkedEdge> (it.element ());
   }
   return Maybe<LinkedEdge> ();
 }
@@ -99,16 +99,16 @@ unsigned int WingedFace :: level () const {
   levelMin = [&levelMin,this] (unsigned int min) {
     unsigned int l = std::numeric_limits <unsigned int>::max ();
     for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-      if (it.edge ()->isTEdge ())
-        return it.edge ()->vertex1 ()->level () - 1;
-      if (it.edge ()->vertex1 ()->level () >= min)
-        l = std::min <unsigned int> (l, it.edge ()->vertex1 ()->level ());
-      if (it.edge ()->vertex2 ()->level () >= min)
-        l = std::min <unsigned int> (l, it.edge ()->vertex2 ()->level ());
+      if (it.element ()->isTEdge ())
+        return it.element ()->vertex1 ()->level () - 1;
+      if (it.element ()->vertex1 ()->level () >= min)
+        l = std::min <unsigned int> (l, it.element ()->vertex1 ()->level ());
+      if (it.element ()->vertex2 ()->level () >= min)
+        l = std::min <unsigned int> (l, it.element ()->vertex2 ()->level ());
     }
     unsigned int count = 0;
     for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-      if (it.vertex ()->level () == l)
+      if (it.element ()->level () == l)
         count++;
     }
     if (count == 1)
@@ -122,8 +122,8 @@ unsigned int WingedFace :: level () const {
 LinkedVertex WingedFace :: highestLevelVertex () const {
   Maybe <LinkedVertex> v;
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    if (v.isUndefined () || it.vertex ()->level () > v.data ()->level ()) {
-      v.data (it.vertex ());
+    if (v.isUndefined () || it.element ()->level () > v.data ()->level ()) {
+      v.data (it.element ());
     }
   }
   return v.data ();

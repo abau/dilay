@@ -67,11 +67,11 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
                                     , const WingedFace& face) {
   for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-    if (IntersectionUtil :: intersects (sphere, mesh, *it.vertex ()))
+    if (IntersectionUtil :: intersects (sphere, mesh, *it.element ()))
       return true;
   }
   for (ADJACENT_EDGE_ITERATOR (it,face)) {
-    if (IntersectionUtil :: intersects (sphere, mesh, *it.edge ()))
+    if (IntersectionUtil :: intersects (sphere, mesh, *it.element ()))
       return true;
   }
 
@@ -91,11 +91,11 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
     return false;
 
   for (ADJACENT_EDGE_ITERATOR (it,face)) {
-    glm::vec3 other = it.edge ()->successor (face)->secondVertex (face)->vertex (mesh);
-    assert (other != it.edge ()->vertex1 ()->vertex (mesh));
-    assert (other != it.edge ()->vertex2 ()->vertex (mesh));
-    if (! sameSide (other, onPlane, it.edge ()->vertex1 ()->vertex (mesh)
-                                  , it.edge ()->vertex2 ()->vertex (mesh)))
+    glm::vec3 other = it.element ()->successor (face)->secondVertex (face)->vertex (mesh);
+    assert (other != it.element ()->vertex1 ()->vertex (mesh));
+    assert (other != it.element ()->vertex2 ()->vertex (mesh));
+    if (! sameSide (other, onPlane, it.element ()->vertex1 ()->vertex (mesh)
+                                  , it.element ()->vertex2 ()->vertex (mesh)))
       return false;
   }
   return true;

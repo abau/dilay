@@ -49,10 +49,10 @@ bool oneRingNeighbourhood ( WingedMesh& mesh, LinkedFace selection
   neighbourhood.insert (selection);
   unsigned int selectionLevel = selection->level ();
 
-  for (auto vIt = selection->adjacentVertexIterator (true); vIt.hasVertex ()
+  for (auto vIt = selection->adjacentVertexIterator (true); vIt.isValid ()
                                                           ; vIt.next ()) {
-    for (ADJACENT_FACE_ITERATOR (fIt, *vIt.vertex ())) {
-      LinkedFace face = fIt.face ();
+    for (ADJACENT_FACE_ITERATOR (fIt, *vIt.element ())) {
+      LinkedFace face = fIt.element ();
       unsigned int faceLevel = face->level ();
       if (faceLevel < selectionLevel) {
         subdivide (mesh, faceLevel, face);
@@ -82,7 +82,7 @@ bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
       unsigned int numNeighbours = 0;
 
       for (ADJACENT_FACE_ITERATOR (it, *face)) {
-        if (isNeighbour (it.face ())) {
+        if (isNeighbour (it.element ())) {
           numNeighbours++;
         }
       }
@@ -122,8 +122,8 @@ bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
   };
 
   checkNeighbour = [ & ] (LinkedFace neighbour) {
-    for (auto it = neighbour->adjacentFaceIterator (true); it.hasFace (); it.next ()) {
-      if (! checkBorder (it.face ()))
+    for (auto it = neighbour->adjacentFaceIterator (true); it.isValid (); it.next ()) {
+      if (! checkBorder (it.element ()))
         return false;
     }
     return true;
@@ -176,7 +176,7 @@ void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLev
     newFaces.insert (realignedFace);
 
     for (ADJACENT_FACE_ITERATOR (it,*realignedFace)) {
-      newFaces.insert (it.face ());
+      newFaces.insert (it.element ());
     }
   }
   faces = std::move (newFaces);
@@ -235,9 +235,9 @@ Maybe <LinkedVertex> compatibleLevelAdjacent ( const WingedMesh&, unsigned int
 Adjacents adjacents ( const WingedMesh& mesh, LinkedVertex v
                     , unsigned int selectionLevel, LinkedEdge e) {
   Adjacents adjacents;
-  for (auto it = v->adjacentEdgeIterator (e); it.hasEdge (); it.next ()) {
-    if (! it.edge ()->isTEdge ()) {
-      Maybe <LinkedVertex> a = compatibleLevelAdjacent (mesh,selectionLevel,it.edge (),v);
+  for (auto it = v->adjacentEdgeIterator (e); it.isValid (); it.next ()) {
+    if (! it.element ()->isTEdge ()) {
+      Maybe <LinkedVertex> a = compatibleLevelAdjacent (mesh,selectionLevel,it.element (),v);
       if (a.isDefined ())
         adjacents.push_back (a.data ());
     }

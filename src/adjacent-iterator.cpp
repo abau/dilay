@@ -17,10 +17,10 @@ AdjacentEdgeIterator :: AdjacentEdgeIterator ( const WingedFace& f, LinkedEdge e
   , _hasEdge     (true)
   , _skipTEdges  (skipT) {
 
-    if (this->_skipTEdges && this->edge ()->isTEdge ()) {
+    if (this->_skipTEdges && this->element ()->isTEdge ()) {
       this->next ();
-      assert (! (this->_skipTEdges && this->edge ()->isTEdge ()));
-      this->_start = this->edge ();
+      assert (! (this->_skipTEdges && this->element ()->isTEdge ()));
+      this->_start = this->element ();
     }
   }
 
@@ -36,12 +36,12 @@ AdjacentEdgeIterator :: AdjacentEdgeIterator ( const WingedVertex& v, LinkedEdge
   , _hasEdge     (true)
   , _skipTEdges  (skipT) {
   
-    while (this->_skipTEdges && this->hasEdge () && this->edge ()->isTEdge ()) {
+    while (this->_skipTEdges && this->isValid () && this->element ()->isTEdge ()) {
       this->next ();
     }
   }
 
-LinkedEdge AdjacentEdgeIterator :: edge () const {
+LinkedEdge AdjacentEdgeIterator :: element () const {
   assert (this->_hasEdge);
   return this->_edge;
 }
@@ -68,8 +68,8 @@ void AdjacentEdgeIterator :: next () {
 
 EdgeList AdjacentEdgeIterator :: collect () {
   EdgeList l;
-  while (this->hasEdge ()) {
-    l.push_back (this->edge ());
+  while (this->isValid ()) {
+    l.push_back (this->element ());
     this->next ();
   }
   return l;
@@ -86,8 +86,8 @@ AdjacentVertexIterator :: AdjacentVertexIterator ( const WingedVertex& v, Linked
                                                  , bool skipT)
   : _edgeIterator (v,e,skipT) {}
 
-LinkedVertex AdjacentVertexIterator :: vertex () const {
-  LinkedEdge edge = this->_edgeIterator.edge ();
+LinkedVertex AdjacentVertexIterator :: element () const {
+  LinkedEdge edge = this->_edgeIterator.element ();
   if (this->_edgeIterator.face ())
     return edge->firstVertex (*this->_edgeIterator.face ());
   else
@@ -96,8 +96,8 @@ LinkedVertex AdjacentVertexIterator :: vertex () const {
 
 VertexList AdjacentVertexIterator :: collect () {
   VertexList l;
-  while (this->hasVertex ()) {
-    l.push_back (this->vertex ());
+  while (this->isValid ()) {
+    l.push_back (this->element ());
     this->next ();
   }
   return l;
@@ -114,8 +114,8 @@ AdjacentFaceIterator :: AdjacentFaceIterator (const WingedVertex& v)
 AdjacentFaceIterator :: AdjacentFaceIterator (const WingedVertex& v, LinkedEdge e)
   : _edgeIterator (v,e) {}
 
-LinkedFace AdjacentFaceIterator :: face () const {
-  LinkedEdge edge = this->_edgeIterator.edge ();
+LinkedFace AdjacentFaceIterator :: element () const {
+  LinkedEdge edge = this->_edgeIterator.element ();
   if (this->_edgeIterator.face ()) {
     return edge->otherFace (*this->_edgeIterator.face ());
   }
@@ -129,8 +129,8 @@ LinkedFace AdjacentFaceIterator :: face () const {
 
 FaceList AdjacentFaceIterator :: collect () {
   FaceList l;
-  while (this->hasFace ()) {
-    l.push_back (this->face ());
+  while (this->isValid ()) {
+    l.push_back (this->element ());
     this->next ();
   }
   return l;

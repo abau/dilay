@@ -63,6 +63,7 @@ HEADERS += \
            src/history.hpp \
            src/id.hpp \
            src/intersection.hpp \
+           src/iterator.hpp \
            src/macro.hpp \
            src/maybe.hpp \
            src/mesh.hpp \

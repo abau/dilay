@@ -2,13 +2,14 @@
 #define DILAY_ADJACENT_ITERATOR
 
 #include "fwd-winged.hpp"
+#include "iterator.hpp"
 
-#define ADJACENT_EDGE_ITERATOR(it,x)   AdjacentEdgeIterator   it = (x).adjacentEdgeIterator ()   ; it.hasEdge ()  ; it.next ()
-#define ADJACENT_VERTEX_ITERATOR(it,x) AdjacentVertexIterator it = (x).adjacentVertexIterator () ; it.hasVertex (); it.next ()
-#define ADJACENT_FACE_ITERATOR(it,x)   AdjacentFaceIterator   it = (x).adjacentFaceIterator ()   ; it.hasFace ()  ; it.next ()
+#define ADJACENT_EDGE_ITERATOR(it,x)   AdjacentEdgeIterator   it = (x).adjacentEdgeIterator ()   ; it.isValid (); it.next ()
+#define ADJACENT_VERTEX_ITERATOR(it,x) AdjacentVertexIterator it = (x).adjacentVertexIterator () ; it.isValid (); it.next ()
+#define ADJACENT_FACE_ITERATOR(it,x)   AdjacentFaceIterator   it = (x).adjacentFaceIterator ()   ; it.isValid (); it.next ()
 
 /** Iterates over adjacent edges of a face or vertex in counterclockwise order */
-class AdjacentEdgeIterator {
+class AdjacentEdgeIterator : public Iterator <LinkedEdge> {
   public: AdjacentEdgeIterator  (const WingedFace&, bool = false); 
           /** It's crucial that the edge is adjacent to the face */
           AdjacentEdgeIterator  (const WingedFace&, LinkedEdge, bool = false); 
@@ -16,10 +17,10 @@ class AdjacentEdgeIterator {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentEdgeIterator  (const WingedVertex&, LinkedEdge, bool = false);
 
-    LinkedEdge          edge    () const; 
+    LinkedEdge          element () const; 
     const WingedFace*   face    () const { return this->_face; }
     const WingedVertex* vertex  () const { return this->_vertex; }
-    bool                hasEdge () const { return this->_hasEdge; }
+    bool                isValid () const { return this->_hasEdge; }
     void                next    ();     
     EdgeList            collect ();
 
@@ -33,7 +34,7 @@ class AdjacentEdgeIterator {
 };
 
 /** Iterates over adjacent vertices of a face or vertex in counterclockwise order */
-class AdjacentVertexIterator {
+class AdjacentVertexIterator : public Iterator <LinkedVertex> {
   public: AdjacentVertexIterator (const WingedFace&, bool = false); 
           /** It's crucial that the edge is adjacent to the face */
           AdjacentVertexIterator (const WingedFace&, LinkedEdge, bool = false); 
@@ -41,17 +42,17 @@ class AdjacentVertexIterator {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentVertexIterator (const WingedVertex&, LinkedEdge, bool = false); 
 
-    LinkedVertex vertex          () const;
-    bool         hasVertex       () const { return this->_edgeIterator.hasEdge (); }
-    void         next            ()       { this->_edgeIterator.next (); }
-    VertexList   collect         ();
+    LinkedVertex element () const;
+    bool         isValid () const { return this->_edgeIterator.isValid (); }
+    void         next    ()       { this->_edgeIterator.next (); }
+    VertexList   collect ();
 
   private:
     AdjacentEdgeIterator _edgeIterator;
 };
 
 /** Iterates over adjacent faces of a face or vertex in counterclockwise order */
-class AdjacentFaceIterator {
+class AdjacentFaceIterator : public Iterator <LinkedFace> {
   public: AdjacentFaceIterator (const WingedFace&, bool = false); 
           /** It's crucial that the edge is adjacent to the face */
           AdjacentFaceIterator (const WingedFace&, LinkedEdge, bool = false); 
@@ -59,10 +60,10 @@ class AdjacentFaceIterator {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentFaceIterator (const WingedVertex&, LinkedEdge); 
 
-    LinkedFace   face            () const;
-    bool         hasFace         () const { return this->_edgeIterator.hasEdge (); }
-    void         next            ()       { this->_edgeIterator.next (); }
-    FaceList     collect         ();
+    LinkedFace   element () const;
+    bool         isValid () const { return this->_edgeIterator.isValid (); }
+    void         next    ()       { this->_edgeIterator.next (); }
+    FaceList     collect ();
 
   private:
     AdjacentEdgeIterator _edgeIterator;
