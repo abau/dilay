@@ -84,8 +84,8 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
       WingedUtil :: printStatistics (e);
 
 
-    for (auto it = mesh.octree ().faceIterator (); it.hasFace (); it.next ())
-      WingedUtil :: printStatistics (mesh,*it.face (),printDerived);
+    for (auto it = mesh.octree ().faceIterator (); it.isValid (); it.next ())
+      WingedUtil :: printStatistics (mesh,*it.element (),printDerived);
   }
   OctreeUtil :: printStatistics (mesh.octree ());
 }

@@ -96,8 +96,8 @@ struct WingedMesh::Impl {
   void rebuildIndices () {
     this->mesh.clearIndices ();
 
-    for (OctreeFaceIterator it = this->octree.faceIterator (); it.hasFace (); it.next ()) {
-      it.face ()->addIndices (this->wingedMesh);
+    for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
+      it.element ()->addIndices (this->wingedMesh);
     }
   }
 

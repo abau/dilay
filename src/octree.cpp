@@ -301,8 +301,8 @@ struct Octree::Impl {
 
   void intersectRay ( const WingedMesh& mesh, const Ray& ray
                     , FaceIntersection& intersection) {
-    for (auto it = this->nodeIterator (); it.hasNode (); it.next ()) {
-      it.node ().intersectRay (mesh,ray,intersection);
+    for (auto it = this->nodeIterator (); it.isValid (); it.next ()) {
+      it.element ().intersectRay (mesh,ray,intersection);
     }
   }
 
@@ -342,17 +342,17 @@ struct OctreeNodeFaceIteratorTemplate {
     , _face      (n.faces.begin ())
   {}
 
-  bool hasFace () const { 
+  bool isValid () const { 
     return this->_face != this->octreeNode.faces.end ();
   }
 
-  T_LinkedFace face () const {
-    assert (this->hasFace ());
+  T_LinkedFace element () const {
+    assert (this->isValid ());
     return this->_face;
   }
 
   void next () {
-    assert (this->hasFace ());
+    assert (this->isValid ());
     this->_face++;
   }
 };
@@ -377,7 +377,7 @@ struct OctreeFaceIteratorTemplate {
   void skipEmptyNodes () {
     if (this->faceIterators.size () > 0) {
       T_OctreeNodeFaceIterator current = *this->faceIterators.begin ();
-      if (! current.hasFace ()) {
+      if (! current.isValid ()) {
         this->faceIterators.pop_front ();
 
         for (T_OctreeNodeImpl& c : current.octreeNode.children) {
@@ -388,36 +388,36 @@ struct OctreeFaceIteratorTemplate {
     }
   }
 
-  bool hasFace () const { return this->faceIterators.size () > 0; }
+  bool isValid () const { return this->faceIterators.size () > 0; }
 
-  T_LinkedFace face () const {
-    assert (this->hasFace ());
-    return this->faceIterators.begin ()->face ();
+  T_LinkedFace element () const {
+    assert (this->isValid ());
+    return this->faceIterators.begin ()->element ();
   }
 
   void next () { 
-    assert (this->hasFace ());
+    assert (this->isValid ());
     this->faceIterators.begin ()->next ();
     this->skipEmptyNodes ();
   }
 
   int depth () const {
-    assert (this->hasFace ());
+    assert (this->isValid ());
     return this->faceIterators.begin ()->octreeNode.depth;
   }
 };
 
-DELEGATE1_BIG4        (OctreeFaceIterator,Octree::Impl&)
-DELEGATE_CONST        (bool            , OctreeFaceIterator, hasFace)
-DELEGATE_CONST        (LinkedFace      , OctreeFaceIterator, face)
-DELEGATE              (void            , OctreeFaceIterator, next)
-DELEGATE_CONST        (int    , OctreeFaceIterator, depth)
+DELEGATE1_BIG4 (OctreeFaceIterator,Octree::Impl&)
+DELEGATE_CONST (bool       , OctreeFaceIterator, isValid)
+DELEGATE_CONST (LinkedFace , OctreeFaceIterator, element)
+DELEGATE       (void       , OctreeFaceIterator, next)
+DELEGATE_CONST (int        , OctreeFaceIterator, depth)
 
-DELEGATE1_BIG4        (ConstOctreeFaceIterator,const Octree::Impl&)
-DELEGATE_CONST        (bool            , ConstOctreeFaceIterator, hasFace)
-DELEGATE_CONST        (ConstLinkedFace , ConstOctreeFaceIterator, face)
-DELEGATE              (void            , ConstOctreeFaceIterator, next)
-DELEGATE_CONST        (int    , ConstOctreeFaceIterator, depth)
+DELEGATE1_BIG4 (ConstOctreeFaceIterator,const Octree::Impl&)
+DELEGATE_CONST (bool            , ConstOctreeFaceIterator, isValid)
+DELEGATE_CONST (ConstLinkedFace , ConstOctreeFaceIterator, element)
+DELEGATE       (void            , ConstOctreeFaceIterator, next)
+DELEGATE_CONST (int             , ConstOctreeFaceIterator, depth)
 
 /** Internal template for iterators over all nodes of an octree */
 template < class T_OctreeImpl
@@ -433,15 +433,15 @@ struct OctreeNodeIteratorTemplate {
     }
   }
 
-  T_OctreeNode& node () const {
-    assert (this->hasNode ());
+  T_OctreeNode& element () const {
+    assert (this->isValid ());
     return (*this->nodes.begin ())->node;
   }
 
-  bool hasNode () const { return this->nodes.size () > 0; }
+  bool isValid () const { return this->nodes.size () > 0; }
 
   void next () { 
-    assert (this->hasNode ());
+    assert (this->isValid ());
     for (T_OctreeNodeImpl& c : (*this->nodes.begin ())->children) {
       this->nodes.push_back (&c);
     }
@@ -450,11 +450,11 @@ struct OctreeNodeIteratorTemplate {
 };
 
 DELEGATE1_BIG4 (OctreeNodeIterator, Octree::Impl&)    
-DELEGATE_CONST (bool              , OctreeNodeIterator, hasNode)
-DELEGATE_CONST (OctreeNode&       , OctreeNodeIterator, node)
+DELEGATE_CONST (bool              , OctreeNodeIterator, isValid)
+DELEGATE       (OctreeNode&       , OctreeNodeIterator, element)
 DELEGATE       (void              , OctreeNodeIterator, next)
 
 DELEGATE1_BIG4 (ConstOctreeNodeIterator, const Octree::Impl&)    
-DELEGATE_CONST (bool              , ConstOctreeNodeIterator, hasNode)
-DELEGATE_CONST (const OctreeNode& , ConstOctreeNodeIterator, node)
+DELEGATE_CONST (bool              , ConstOctreeNodeIterator, isValid)
+DELEGATE_CONST (const OctreeNode& , ConstOctreeNodeIterator, element)
 DELEGATE       (void              , ConstOctreeNodeIterator, next)

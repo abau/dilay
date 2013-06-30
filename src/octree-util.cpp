@@ -8,8 +8,8 @@
 
 unsigned int OctreeUtil :: numFaces (const Octree& octree) {
   unsigned int i = 0;
-  for (auto it = octree.nodeIterator (); it.hasNode (); it.next ()) {
-    i = i + it.node ().numFaces ();
+  for (auto it = octree.nodeIterator (); it.isValid (); it.next ()) {
+    i = i + it.element ().numFaces ();
   }
   return i;
 }
@@ -25,26 +25,27 @@ void OctreeUtil :: printStatistics (const Octree& octree) {
   DepthMap depthFacesMap;
   DepthMap depthNodesMap;
 
-  for (auto it = octree.nodeIterator (); it.hasNode (); it.next ()) {
+  for (auto it = octree.nodeIterator (); it.isValid (); it.next ()) {
     numNodes++;
-    maxFaces = std::max <unsigned int> (maxFaces, it.node ().numFaces ());
-    minDepth = std::min <int> (minDepth, it.node ().depth ());
-    maxDepth = std::max <int> (maxDepth, it.node ().depth ());
+    const OctreeNode& node = it.element ();
+    maxFaces = std::max <unsigned int> (maxFaces, node.numFaces ());
+    minDepth = std::min <int> (minDepth, node.depth ());
+    maxDepth = std::max <int> (maxDepth, node.depth ());
 
-    DepthMap::iterator e = depthFacesMap.find (it.node ().depth ());
+    DepthMap::iterator e = depthFacesMap.find (node.depth ());
     if (e == depthFacesMap.end ())
-      depthFacesMap.emplace (it.node ().depth (), it.node ().numFaces ());
+      depthFacesMap.emplace (node.depth (), node.numFaces ());
     else
-      e->second += it.node ().numFaces ();
+      e->second += node.numFaces ();
 
-    e = depthNodesMap.find (it.node ().depth ());
+    e = depthNodesMap.find (node.depth ());
     if (e == depthNodesMap.end ())
-      depthNodesMap.emplace (it.node ().depth (), 1);
+      depthNodesMap.emplace (node.depth (), 1);
     else
       e->second ++;
   }
 
-  for (auto it = octree.faceIterator (); it.hasFace (); it.next ()) {
+  for (auto it = octree.faceIterator (); it.isValid (); it.next ()) {
     numFacesCheck++;
   }
 
@@ -58,12 +59,13 @@ void OctreeUtil :: printStatistics (const Octree& octree) {
             << std::endl;
 
   if (numNodes <= 20) {
-    for (auto it = octree.nodeIterator (); it.hasNode (); it.next ()) {
+    for (auto it = octree.nodeIterator (); it.isValid (); it.next ()) {
+      const OctreeNode& node = it.element ();
       std::cout << "\tOctree node:"
-                << "\n\t\tcenter:\t\t"     << it.node ().center ()
-                << "\n\t\twidth:\t\t"      << it.node ().width ()
-                << "\n\t\tdepth:\t\t"      << it.node ().depth ()
-                << "\n\t\tnum faces:\t"    << it.node ().numFaces ()
+                << "\n\t\tcenter:\t\t"     << node.center ()
+                << "\n\t\twidth:\t\t"      << node.width ()
+                << "\n\t\tdepth:\t\t"      << node.depth ()
+                << "\n\t\tnum faces:\t"    << node.numFaces ()
                 << std::endl;
     }
   }
