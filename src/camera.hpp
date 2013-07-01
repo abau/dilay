@@ -14,8 +14,8 @@ class Camera {
 
     void               initialize            ();
 
-    unsigned int       resolutionWidth       () const;
-    unsigned int       resolutionHeight      () const;
+    const glm::uvec2&  resolution            () const;
+    const glm::vec3&   gazePoint             () const;
     const glm::vec3&   toEyePoint            () const;
     const glm::vec3&   up                    () const;
     const glm::vec3&   right                 () const;
@@ -24,17 +24,18 @@ class Camera {
           glm::vec3    position              () const;
           glm::mat4x4  world                 () const;
 
-    void updateResolution      (unsigned int, unsigned int);
-    void modelViewProjection   (const glm::mat4x4&) const;
-    void rotationProjection    () const;
+    void      updateResolution    (const glm::uvec2&);
+    void      modelViewProjection (const glm::mat4x4&) const;
+    void      rotationProjection  () const;
 
-    void stepAlongGaze         (bool);
-    void verticalRotation      (int);
-    void horizontalRotation    (int);
-    Ray  getRay                (unsigned int,unsigned int) const;
-    void updateProjection      (unsigned int,unsigned int
-                               ,unsigned int,unsigned int);
-    void updateProjection      ();
+    void      stepAlongGaze       (bool);
+    void      verticalRotation    (float);
+    void      horizontalRotation  (float);
+    glm::vec3 toWorld             (const glm::uvec2&) const;
+    Ray       getRay              (const glm::uvec2&) const;
+    Ray       getRayInvY          (const glm::uvec2&) const;
+    void      updateProjection    (const glm::uvec2&, const glm::uvec2&);
+    void      updateProjection    ();
 
   private:
     class Impl;

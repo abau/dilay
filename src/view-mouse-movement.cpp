@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 #include <QPoint>
 #include "view-mouse-movement.hpp"
 #include "macro.hpp"
@@ -5,44 +6,44 @@
 struct MouseMovement::Impl {
   enum State { UpdateNewPos, UpdateOldPos, UpdateBothPos };
 
-  QPoint oldPos;
-  QPoint newPos;
-  State  state;
+  glm::uvec2 old;
+  glm::uvec2 position;
+  State      state;
 
   Impl () : state (UpdateNewPos) {}
 
-  void update  (const QPoint& p) {
+  void update (const QPoint& p) {
+    return this->update (glm::uvec2 (p.x (), p.y ()));
+  }
+
+  void update (const glm::uvec2& p) {
     if (this->state == UpdateBothPos || this->state == UpdateOldPos) {
-      this->oldPos = this->newPos;
-      this->state  = UpdateBothPos;
+      this->old   = this->position;
+      this->state = UpdateBothPos;
     }
     else if (this->state == UpdateNewPos) {
       this->state  = UpdateOldPos;
     }
-    this->newPos = p;
+    this->position = p;
   }
 
   void invalidate () {
     this->state = UpdateNewPos;
   }
 
-  int dX () const {
-    if (this->state == UpdateBothPos)
-      return this->newPos.x () - this->oldPos.x ();
+  glm::ivec2 delta () const {
+    if (this->state == UpdateBothPos) {
+      return glm::ivec2 ( this->position.x - this->old.x
+                        , this->position.y - this->old.y);
+    }
     else
-      return 0;
-  }
-
-  int dY () const {
-    if (this->state == UpdateBothPos)
-      return this->newPos.y () - this->oldPos.y ();
-    else
-      return 0;
+      return glm::ivec2 (0);
   }
 };
 
 DELEGATE_BIG4  (MouseMovement)
-DELEGATE1      (void, MouseMovement, update, const QPoint&)
-DELEGATE       (void, MouseMovement, invalidate)
-DELEGATE_CONST (int , MouseMovement, dX)
-DELEGATE_CONST (int , MouseMovement, dY)
+DELEGATE1      (void             , MouseMovement, update, const QPoint&)
+DELEGATE       (void             , MouseMovement, invalidate)
+DELEGATE_CONST (glm::ivec2       , MouseMovement, delta)
+GETTER         (const glm::uvec2&, MouseMovement, old)
+GETTER         (const glm::uvec2&, MouseMovement, position)

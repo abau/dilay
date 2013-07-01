@@ -5,6 +5,8 @@
 #include <initializer_list>
 #include "fwd-glm.hpp"
 
+std::ostream& operator<<(std::ostream&, const glm::ivec2&);
+std::ostream& operator<<(std::ostream&, const glm::uvec2&);
 std::ostream& operator<<(std::ostream&, const glm::vec3&);
 std::ostream& operator<<(std::ostream&, const glm::vec4&);
 

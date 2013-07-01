@@ -3,7 +3,7 @@
 
 namespace Tool {
 
-  bool click (unsigned int, unsigned int);
+  bool click ();
 
 }
 #endif

@@ -37,6 +37,7 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/subdivision-util.cpp \
            src/tool.cpp \
+           src/tool-rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
            src/view-gl-widget.cpp \
@@ -78,6 +79,7 @@ HEADERS += \
            src/subdivision-butterfly.hpp \
            src/subdivision-util.hpp \
            src/tool.hpp \
+           src/tool-rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \
            src/view-gl-widget.hpp \

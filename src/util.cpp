@@ -3,6 +3,16 @@
 #include <glm/glm.hpp>
 #include "util.hpp"
 
+std::ostream& operator<<(std::ostream& os, const glm::ivec2& v) {
+  os << "(" << v.x << "," << v.y << ")";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const glm::uvec2& v) {
+  os << "(" << v.x << "," << v.y << ")";
+  return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const glm::vec3& v) {
   os << "(" << v.x << "," << v.y << "," << v.z << ")";
   return os;

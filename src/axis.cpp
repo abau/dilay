@@ -32,7 +32,7 @@ struct Axis::Impl {
   void render () {
     this->mesh.renderBegin ();
 
-    State :: camera ().updateProjection (0,0,200,200);
+    State :: camera ().updateProjection (glm::uvec2(0),glm::uvec2(200,200));
     State :: camera ().rotationProjection ();
 
     glDisable (GL_DEPTH_TEST);

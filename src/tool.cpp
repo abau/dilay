@@ -11,12 +11,14 @@
 #include "camera.hpp"
 #include "subdivision-butterfly.hpp"
 #include "winged-util.hpp"
+#include "view-mouse-movement.hpp"
 
 void subdivisionStep (const FaceIntersection&);
 
-bool Tool :: click (unsigned int x, unsigned int y) {
+bool Tool :: click () {
   WingedMesh& mesh = State :: mesh ();
-  Ray         ray  = State :: camera ().getRay (x,y);
+  Ray         ray  = State :: camera ().getRayInvY (State :: mouseMovement ()
+                                                           . position ());
   FaceIntersection intersection;
 
   State :: mesh ().intersectRay (ray,intersection);

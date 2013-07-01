@@ -15,6 +15,7 @@
 #include "cursor.hpp"
 #include "winged-face.hpp"
 #include "tool.hpp"
+#include "tool-rotate.hpp"
 
 struct GLWidgetImpl {
   Axis          axis;
@@ -45,7 +46,7 @@ void GLWidget :: paintGL () {
 }
 
 void GLWidget :: resizeGL (int w, int h) {
-  State :: camera ().updateResolution (w,h);
+  State :: camera ().updateResolution (glm::uvec2 (w,h));
   glViewport (0,0,w, h < 1 ? 1 : h );
 }
 
@@ -70,8 +71,7 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
   State :: mouseMovement ().update (e->pos ());
   if (e->buttons () == Qt :: NoButton) {
     WingedMesh& mesh = State :: mesh ();
-    int reversedY    = State :: camera ().resolutionHeight () - e->y ();
-    Ray ray          = State :: camera ().getRay ( e->x () , reversedY);
+    Ray ray          = State :: camera ().getRayInvY (glm::uvec2 (e->x (), e->y ()));
 
     FaceIntersection intersection;
     mesh.intersectRay (ray, intersection);
@@ -91,18 +91,14 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     }
   }
   if (e->buttons () == Qt :: MiddleButton) {
-    State    :: camera ().verticalRotation   (State :: mouseMovement ().dX ());
-    State    :: camera ().horizontalRotation (State :: mouseMovement ().dY ());
-    Renderer :: updateLights (State :: camera ());
-
+    ToolRotate :: run ();
     this->update ();
   }
 }
 
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
-    int reversedY = State :: camera ().resolutionHeight () - e->y ();
-    if (Tool :: click (e->x (), reversedY))
+    if (Tool :: click ())
       this->update ();
   }
 }
@@ -112,8 +108,8 @@ void GLWidget :: mouseReleaseEvent (QMouseEvent*) {
 }
 
 void GLWidget :: resizeEvent (QResizeEvent* e) {
-  State :: camera ().updateResolution ( e->size ().width  ()
-                                      , e->size ().height ());
+  State :: camera ().updateResolution (glm::uvec2 ( e->size ().width  ()
+                                                  , e->size ().height ()));
 }
 
 void GLWidget :: wheelEvent (QWheelEvent* e) {
