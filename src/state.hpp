@@ -5,18 +5,20 @@ class Mesh;
 class WingedMesh;
 class Camera;
 class Cursor;
+class MouseMovement;
 
 class State {
   public:                                   
-    static State&      global      ();
+    static State&          global        ();
 
-    static WingedMesh& mesh        ();
-    static Camera&     camera      ();
-    static Cursor&     cursor      ();
+    static WingedMesh&     mesh          ();
+    static Camera&         camera        ();
+    static Cursor&         cursor        ();
+    static MouseMovement&  mouseMovement ();
 
-    static void        initialize  ();
-    static void        render      ();
-    static void        setMesh     (const Mesh&);
+    static void            initialize    ();
+    static void            render        ();
+    static void            setMesh       (const Mesh&);
   private:
           State            ();
           State            (const State&) = delete;

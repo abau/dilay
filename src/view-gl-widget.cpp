@@ -17,14 +17,12 @@
 #include "tool.hpp"
 
 struct GLWidgetImpl {
-  MouseMovement mouseMovement;
   Axis          axis;
 };
 
 GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) 
                                                , impl (new GLWidgetImpl)
                                                {}
-
 
 GLWidget :: ~GLWidget () {
   delete this->impl;
@@ -69,6 +67,7 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
 }
 
 void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
+  State :: mouseMovement ().update (e->pos ());
   if (e->buttons () == Qt :: NoButton) {
     WingedMesh& mesh = State :: mesh ();
     int reversedY    = State :: camera ().resolutionHeight () - e->y ();
@@ -92,9 +91,8 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     }
   }
   if (e->buttons () == Qt :: MiddleButton) {
-    this->impl->mouseMovement.update (e->pos ());
-    State    :: camera ().verticalRotation   (this->impl->mouseMovement.dX ());
-    State    :: camera ().horizontalRotation (this->impl->mouseMovement.dY ());
+    State    :: camera ().verticalRotation   (State :: mouseMovement ().dX ());
+    State    :: camera ().horizontalRotation (State :: mouseMovement ().dY ());
     Renderer :: updateLights (State :: camera ());
 
     this->update ();
@@ -110,7 +108,7 @@ void GLWidget :: mousePressEvent (QMouseEvent* e) {
 }
 
 void GLWidget :: mouseReleaseEvent (QMouseEvent*) {
-  this->impl->mouseMovement.invalidate ();
+  State :: mouseMovement ().invalidate ();
 }
 
 void GLWidget :: resizeEvent (QResizeEvent* e) {

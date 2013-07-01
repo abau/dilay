@@ -7,12 +7,14 @@
 #include "cursor.hpp"
 #include "macro.hpp"
 #include "history.hpp"
+#include "view-mouse-movement.hpp"
 
 struct State::Impl {
-  WingedMesh mesh;
-  Camera     camera;
-  Cursor     cursor;
-  History    history;
+  WingedMesh    mesh;
+  Camera        camera;
+  Cursor        cursor;
+  History       history;
+  MouseMovement mouseMovement;
 
   void initialize () { 
     //WingedUtil :: fromMesh (this->mesh, Mesh :: sphere (1.0f,100,200));
@@ -37,9 +39,10 @@ GLOBAL               (State)
 DELEGATE_CONSTRUCTOR (State)
 DELEGATE_DESTRUCTOR  (State)
 
-ACCESS_GLOBAL (WingedMesh&, State, mesh)
-ACCESS_GLOBAL (Camera&    , State, camera)
-ACCESS_GLOBAL (Cursor&    , State, cursor)
+ACCESS_GLOBAL (WingedMesh&   , State, mesh)
+ACCESS_GLOBAL (Camera&       , State, camera)
+ACCESS_GLOBAL (Cursor&       , State, cursor)
+ACCESS_GLOBAL (MouseMovement&, State, mouseMovement)
 
 DELEGATE_GLOBAL  (void, State, initialize)
 DELEGATE_GLOBAL  (void, State, render)
