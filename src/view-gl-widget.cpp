@@ -71,7 +71,7 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
   State :: mouseMovement ().update (e->pos ());
   if (e->buttons () == Qt :: NoButton) {
     WingedMesh& mesh = State :: mesh ();
-    Ray ray          = State :: camera ().getRayInvY (glm::uvec2 (e->x (), e->y ()));
+    Ray ray          = State :: camera ().getRay (glm::uvec2 (e->x (), e->y ()));
 
     FaceIntersection intersection;
     mesh.intersectRay (ray, intersection);

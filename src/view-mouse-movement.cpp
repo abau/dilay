@@ -39,11 +39,16 @@ struct MouseMovement::Impl {
     else
       return glm::ivec2 (0);
   }
+
+  bool hasPosition () const { return this->state != UpdateNewPos; }
+  bool hasOld      () const { return this->state == UpdateBothPos; }
 };
 
 DELEGATE_BIG4  (MouseMovement)
 DELEGATE1      (void             , MouseMovement, update, const QPoint&)
 DELEGATE       (void             , MouseMovement, invalidate)
 DELEGATE_CONST (glm::ivec2       , MouseMovement, delta)
+DELEGATE_CONST (bool             , MouseMovement, hasPosition)
+DELEGATE_CONST (bool             , MouseMovement, hasOld)
 GETTER         (const glm::uvec2&, MouseMovement, old)
 GETTER         (const glm::uvec2&, MouseMovement, position)

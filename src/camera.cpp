@@ -91,8 +91,10 @@ struct Camera::Impl {
     this->updateView ();
   }
 
-  glm::vec3 toWorld (const glm::uvec2& p) const {
-    return glm::unProject ( glm::vec3 (float (p.x), float (p.y), 0.0f)
+  glm::vec3 toWorld (const glm::uvec2& p, float z = 0.0f) const {
+    float invY  = this->resolution.y - p.y;
+    float normZ = z / this->farClipping;
+    return glm::unProject ( glm::vec3 (float (p.x), float (invY), normZ)
                           , this->view, this->projection
                           , glm::vec4 ( 0, 0
                                       , this->resolution.x
@@ -104,10 +106,6 @@ struct Camera::Impl {
     glm::vec3 w   = this->toWorld  (p);
     glm::vec3 eye = this->eyePoint ();
     return Ray (eye, glm::normalize (w - eye));
-  }
-
-  Ray getRayInvY (const glm::uvec2& p) const {
-    return this->getRay (glm::uvec2 (p.x, this->resolution.y - p.y));
   }
 
   void updateProjection (const glm::uvec2& p, const glm::uvec2& dim) {
@@ -154,8 +152,7 @@ DELEGATE_CONST  (void     , Camera, rotationProjection)
 DELEGATE1       (void     , Camera, stepAlongGaze, bool) 
 DELEGATE1       (void     , Camera, verticalRotation, float) 
 DELEGATE1       (void     , Camera, horizontalRotation, float) 
-DELEGATE1_CONST (glm::vec3, Camera, toWorld, const glm::uvec2&)
+DELEGATE2_CONST (glm::vec3, Camera, toWorld, const glm::uvec2&, float)
 DELEGATE1_CONST (Ray      , Camera, getRay, const glm::uvec2&)
-DELEGATE1_CONST (Ray      , Camera, getRayInvY, const glm::uvec2&)
 DELEGATE2       (void     , Camera, updateProjection, const glm::uvec2&, const glm::uvec2&)
 DELEGATE        (void     , Camera, updateProjection)
