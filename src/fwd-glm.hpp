@@ -8,6 +8,7 @@ namespace glm {
     template <typename T> struct tvec4;
     template <typename T> struct tmat4x4;
     template <typename T> struct tmat3x3;
+    template <typename T> struct tquat;
   };
   typedef signed int                     mediump_int_t;
   typedef unsigned int                   mediump_uint_t;
@@ -28,6 +29,8 @@ namespace glm {
   typedef detail::tmat3x3<mediump_float> mediump_mat3x3;
   typedef mediump_mat4x4                 mat4x4;
   typedef mediump_mat3x3                 mat3x3;
+
+  typedef detail::tquat<float>   	       quat;
 };
 
 #endif
