@@ -6,11 +6,19 @@
 #include "view-mouse-movement.hpp"
 
 void ToolRotate :: run () {
+  MouseMovement& mm = State :: mouseMovement ();
 
-  float verticalAngle   = float (State :: mouseMovement ().delta ().x) * -0.5f;
-  float horizontalAngle = float (State :: mouseMovement ().delta ().y) * -0.5f;
+  if (mm.hasOld ()) {
+    Camera&        cam  = State :: camera ();
 
-  State    :: camera ().verticalRotation   (verticalAngle);
-  State    :: camera ().horizontalRotation (horizontalAngle);
-  Renderer :: updateLights (State :: camera ());
+    const glm::uvec2& resolution = cam.resolution ();
+
+    if (mm.delta ().x != 0) {
+      cam.verticalRotation (360.0f * float (-mm.delta ().x) / float (resolution.x));
+    }
+
+    if (mm.delta ().y != 0) {
+      cam.horizontalRotation (180.0f * float (-mm.delta ().y) / float (resolution.y));
+    }
+  }
 }

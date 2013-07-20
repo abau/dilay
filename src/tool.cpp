@@ -17,8 +17,7 @@ void subdivisionStep (const FaceIntersection&);
 
 bool Tool :: click () {
   WingedMesh& mesh = State :: mesh ();
-  Ray         ray  = State :: camera ().getRayInvY (State :: mouseMovement ()
-                                                           . position ());
+  Ray         ray  = State :: camera ().getRay (State :: mouseMovement (). position ());
   FaceIntersection intersection;
 
   State :: mesh ().intersectRay (ray,intersection);
