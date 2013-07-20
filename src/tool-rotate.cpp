@@ -18,7 +18,7 @@ void ToolRotate :: run () {
     }
 
     if (mm.delta ().y != 0) {
-      cam.horizontalRotation (180.0f * float (-mm.delta ().y) / float (resolution.y));
+      cam.horizontalRotation (360.0f * float (-mm.delta ().y) / float (resolution.y));
     }
   }
 }
