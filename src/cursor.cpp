@@ -42,7 +42,7 @@ struct Cursor::Impl {
 
   void setNormal (const glm::vec3& v) {
     float d = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
-    if (d >= 1.0f - Util :: epsilon) {
+    if (d >= 1.0f - Util :: epsilon || d <= -1.0f + Util :: epsilon) {
       this->mesh.setRotation (glm::mat4(1.0f));
     }
     else {
