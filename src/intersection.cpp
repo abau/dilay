@@ -7,6 +7,8 @@
 #include "macro.hpp"
 #include "sphere.hpp"
 #include "adjacent-iterator.hpp"
+#include "ray.hpp"
+#include "util.hpp"
 
 struct FaceIntersection::Impl {
   bool       isIntersection;
@@ -24,10 +26,15 @@ struct FaceIntersection::Impl {
       this->face           = f;
     }
   }
+
+  void reset () {
+    this->isIntersection = false;
+  }
 };
 
 DELEGATE_BIG4 (FaceIntersection)
 DELEGATE3     (void, FaceIntersection, update, float, const glm::vec3&, LinkedFace)
+DELEGATE      (void, FaceIntersection, reset)
 
 GETTER (bool            , FaceIntersection, isIntersection)
 GETTER (float           , FaceIntersection, distance)
@@ -37,7 +44,7 @@ GETTER (LinkedFace      , FaceIntersection, face)
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
                                     , const WingedVertex& vertex) {
   glm::vec3 v = vertex.vertex (mesh);
-  return glm::distance (v,sphere.origin ()) <= sphere.radius ();
+  return glm::distance (v,sphere.center ()) <= sphere.radius ();
 }
 
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
@@ -47,7 +54,7 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
   glm::vec3 l        = v2 - v1;
   float     lsqr     = glm::dot (l,l);
   float     rsqr     = sphere.radius () * sphere.radius ();
-  glm::vec3 v1o      = v1 - sphere.origin ();
+  glm::vec3 v1o      = v1 - sphere.center ();
   float     lv1o     = glm::dot (l, v1o);
   float     radicand = (lv1o * lv1o) - (lsqr * (glm::dot (v1o,v1o) - rsqr));
 
@@ -83,9 +90,9 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
   };
 
   glm::vec3 normal   = face.normal (mesh);
-  glm::vec3 toOrigin = sphere.origin () - face.edge ()->vertex1 ()->vertex (mesh);
+  glm::vec3 toOrigin = sphere.center () - face.edge ()->vertex1 ()->vertex (mesh);
   float     d        = glm::dot (normal, toOrigin);
-  glm::vec3 onPlane  = sphere.origin () - (d * normal);
+  glm::vec3 onPlane  = sphere.center () - (d * normal);
 
   if (d < 0.0f || d > sphere.radius ())
     return false;
@@ -99,4 +106,26 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
       return false;
   }
   return true;
+}
+
+bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float& t) {
+  float s1,s2;
+  const glm::vec3& d  = ray.direction ();
+  const glm::vec3& v  = ray.origin () - sphere.center ();
+  float            r2 = sphere.radius () * sphere.radius ();
+
+  unsigned int n = Util :: solveQuadraticEq ( glm::dot (d,d)
+                                            , 2.0f * glm::dot (d,v)
+                                            , glm::dot (v, v) - r2
+                                            , s1, s2);
+  if (n == 0)
+    return false;
+  else if (n == 1) {
+    t = s1;
+    return true;
+  }
+  else {
+    t = glm::min (s1,s2);
+    return true;
+  }
 }

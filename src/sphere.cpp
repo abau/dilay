@@ -5,18 +5,18 @@
 #include "util.hpp"
 
 struct Sphere::Impl {
-  glm::vec3 origin;
+  glm::vec3 center;
   float     radius;
 
-  Impl (const glm::vec3& o, float r) : origin (o), radius (r) {}
+  Impl (const glm::vec3& o, float r) : center (o), radius (r) {}
 };
 
 DELEGATE2_BIG4 (Sphere,const glm::vec3&, float)
-GETTER         (const glm::vec3&,Sphere,origin)
+GETTER         (const glm::vec3&,Sphere,center)
 GETTER         (float           ,Sphere,radius)
 
 std::ostream& operator<<(std::ostream& os, const Sphere& sphere) {
-  os << "Sphere { origin = " << (sphere.origin ()) 
+  os << "Sphere { center = " << (sphere.center ()) 
             << ", radius = " << (sphere.radius ()) << " }";
   return os;
 }

@@ -38,3 +38,28 @@ std::string Util :: readFile (const std::string& filePath) {
   }
   return content;
 }
+
+unsigned int Util :: solveQuadraticEq ( float a, float b, float c
+                                      , float& s1, float& s2) {
+  float radicand = (b*b) - (4.0f * a * c);
+
+  if (radicand < 0.0f)
+    return 0;
+
+  float root = glm::sqrt (radicand);
+
+  if (b < 0.0f) {
+    s1 = (-b + root) / (2.0f * a);
+    s2 = (2.0f * c)  / (-b + root);
+    return 2;
+  }
+  else if (b > 0.0f) {
+    s1 = (-b - root) / (2.0f * a);
+    s2 = (2.0f * c)  / (-b - root);
+    return 2;
+  }
+  else {
+    s1 = root / (2.0f * a);
+    return 1;
+  }
+}

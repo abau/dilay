@@ -11,7 +11,7 @@ class Sphere {
     const Sphere& operator= (const Sphere&);
          ~Sphere            ();
 
-    const glm::vec3& origin () const;
+    const glm::vec3& center () const;
     float            radius () const;
   private:
     class Impl;

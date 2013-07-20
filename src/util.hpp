@@ -20,6 +20,8 @@ namespace Util {
   glm::vec3 between (const glm::vec3&, const glm::vec3&);
 
   std::string readFile (const std::string&); 
+
+  unsigned int solveQuadraticEq (float, float, float, float&, float&);
 }
 
 #endif
