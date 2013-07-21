@@ -8,6 +8,8 @@
 
 class Triangle;
 class OctreeNode;
+class OctreeNodeFaceIterator;
+class ConstOctreeNodeFaceIterator;
 class OctreeFaceIterator;
 class ConstOctreeFaceIterator;
 class OctreeNodeIterator;
@@ -47,13 +49,16 @@ class OctreeNode {
     const OctreeNode& operator=    (const OctreeNode&) = delete;
 
     IdType            id           () const;
-    void              deleteFace   (LinkedFace);
-    void              intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
-    unsigned int      numFaces     () const;
     int               depth        () const;
     const glm::vec3&  center       () const;
     float             width        () const;
+    void              deleteFace   (LinkedFace);
+    void              intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
+    unsigned int      numFaces     () const;
     LinkedFace        getFace      (const OctreeNodeFaceReference&);
+
+    OctreeNodeFaceIterator      faceIterator ();
+    ConstOctreeNodeFaceIterator faceIterator () const;
 
   private:
     Impl* impl;
@@ -85,12 +90,40 @@ class Octree {
     Impl* impl;
 };
 
-/** Internal classes for iterators over all faces of a node */
-using OctreeNodeFaceIterator = OctreeNodeFaceIteratorTemplate 
-                               <OctreeNode::Impl, LinkedFace>;
+/** Iterator over all faces of a node */
+class OctreeNodeFaceIterator : public Iterator <LinkedFace> {
+  public: OctreeNodeFaceIterator            (OctreeNode::Impl&);
+          OctreeNodeFaceIterator            (const OctreeNodeFaceIterator&);
+    const OctreeNodeFaceIterator& operator= (const OctreeNodeFaceIterator&);
+         ~OctreeNodeFaceIterator            ();
 
-using ConstOctreeNodeFaceIterator = OctreeNodeFaceIteratorTemplate 
-                                    <const OctreeNode::Impl, ConstLinkedFace>;
+    bool         isValid () const;
+    LinkedFace   element () const;
+    void         next    ();
+    int          depth   () const;
+
+    using Impl = OctreeNodeFaceIteratorTemplate <OctreeNode::Impl, LinkedFace>;
+  private:
+    Impl* impl;
+};
+
+/** Constant iterator over all faces of a node */
+class ConstOctreeNodeFaceIterator : public Iterator <ConstLinkedFace> {
+  public: ConstOctreeNodeFaceIterator            (const OctreeNode::Impl&);
+          ConstOctreeNodeFaceIterator            (const ConstOctreeNodeFaceIterator&);
+    const ConstOctreeNodeFaceIterator& operator= (const ConstOctreeNodeFaceIterator&);
+         ~ConstOctreeNodeFaceIterator            ();
+
+    bool            isValid () const;
+    ConstLinkedFace element () const;
+    void            next    ();
+    int             depth   () const;
+
+    using Impl = OctreeNodeFaceIteratorTemplate < const OctreeNode::Impl
+                                                , ConstLinkedFace>;
+  private:
+    Impl* impl;
+};
 
 /** Iterator over all faces of an octree */
 class OctreeFaceIterator : public Iterator <LinkedFace> {
@@ -106,7 +139,7 @@ class OctreeFaceIterator : public Iterator <LinkedFace> {
 
   private:
     using Impl = OctreeFaceIteratorTemplate < Octree::Impl, OctreeNode::Impl
-                                            , OctreeNodeFaceIterator, LinkedFace>;
+                                            , OctreeNodeFaceIterator::Impl, LinkedFace>;
     Impl* impl;
 };
 
@@ -124,7 +157,7 @@ class ConstOctreeFaceIterator : public Iterator <ConstLinkedFace> {
 
   private:
     using Impl = OctreeFaceIteratorTemplate < const Octree::Impl, const OctreeNode::Impl
-                                            , ConstOctreeNodeFaceIterator
+                                            , ConstOctreeNodeFaceIterator::Impl
                                             , ConstLinkedFace>;
     Impl* impl;
 };
