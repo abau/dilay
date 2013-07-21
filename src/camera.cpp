@@ -79,15 +79,19 @@ struct Camera::Impl {
   }
 
   void verticalRotation (float angle) {
-    glm::fquat q      = glm::angleAxis (angle,this->up);
+    glm::quat q      = glm::angleAxis (angle,this->up);
     this->right       = glm::rotate (q, this->right);
     this->toEyePoint  = glm::rotate (q, this->toEyePoint);
     this->updateView ();
   }
 
   void horizontalRotation (float angle) {
-    glm::fquat q      = glm::angleAxis (angle,this->right);
+    glm::quat q      = glm::angleAxis (angle,this->right);
     this->toEyePoint = glm::rotate (q, this->toEyePoint);
+
+    if (glm::dot ( glm::cross (this->up, this->toEyePoint), this->right ) < 0) {
+      this->up = -this->up;
+    }
     this->updateView ();
   }
 
