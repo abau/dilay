@@ -22,7 +22,7 @@ class AdjacentEdgeIterator : public Iterator <LinkedEdge> {
     const WingedVertex* vertex  () const { return this->_vertex; }
     bool                isValid () const { return this->_hasEdge; }
     void                next    ();     
-    EdgeList            collect ();
+    LinkedEdges         collect ();
 
   private:
     const WingedFace*   _face;
@@ -42,10 +42,10 @@ class AdjacentVertexIterator : public Iterator <LinkedVertex> {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentVertexIterator (const WingedVertex&, LinkedEdge, bool = false); 
 
-    LinkedVertex element () const;
-    bool         isValid () const { return this->_edgeIterator.isValid (); }
-    void         next    ()       { this->_edgeIterator.next (); }
-    VertexList   collect ();
+    LinkedVertex   element () const;
+    bool           isValid () const { return this->_edgeIterator.isValid (); }
+    void           next    ()       { this->_edgeIterator.next (); }
+    LinkedVertices collect ();
 
   private:
     AdjacentEdgeIterator _edgeIterator;
@@ -63,7 +63,7 @@ class AdjacentFaceIterator : public Iterator <LinkedFace> {
     LinkedFace   element () const;
     bool         isValid () const { return this->_edgeIterator.isValid (); }
     void         next    ()       { this->_edgeIterator.next (); }
-    FaceList     collect ();
+    LinkedFaces  collect ();
 
   private:
     AdjacentEdgeIterator _edgeIterator;

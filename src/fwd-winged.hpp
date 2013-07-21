@@ -22,9 +22,9 @@ typedef Vertices::const_iterator                 ConstLinkedVertex;
 typedef Edges   ::const_iterator                 ConstLinkedEdge;
 typedef Faces   ::const_iterator                 ConstLinkedFace;
 
-typedef std::list <LinkedVertex>                 VertexList;
-typedef std::list <LinkedEdge>                   EdgeList;
-typedef std::list <LinkedFace>                   FaceList;
+typedef std::list <LinkedVertex>                 LinkedVertices;
+typedef std::list <LinkedEdge>                   LinkedEdges;
+typedef std::list <LinkedFace>                   LinkedFaces;
 
 typedef std::unordered_set <LinkedVertex>        VertexSet;
 typedef std::unordered_set <LinkedEdge>          EdgeSet;
