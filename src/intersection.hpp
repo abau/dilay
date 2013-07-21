@@ -6,6 +6,7 @@
 
 class Sphere;
 class Ray;
+class OctreeNode;
 
 class FaceIntersection {
   public:
@@ -27,9 +28,11 @@ class FaceIntersection {
 };
 
 namespace IntersectionUtil {
+  bool intersects (const Sphere&, const glm::vec3&);
   bool intersects (const Sphere&, const WingedMesh&, const WingedVertex&);
   bool intersects (const Sphere&, const WingedMesh&, const WingedEdge&);
   bool intersects (const Sphere&, const WingedMesh&, const WingedFace&);
+  bool intersects (const Sphere&, const OctreeNode&);
   bool intersects (const Ray&, const Sphere&, float&); 
 }
 

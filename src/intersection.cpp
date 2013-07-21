@@ -9,6 +9,7 @@
 #include "adjacent-iterator.hpp"
 #include "ray.hpp"
 #include "util.hpp"
+#include "octree.hpp"
 
 struct FaceIntersection::Impl {
   bool       isIntersection;
@@ -41,10 +42,13 @@ GETTER (float           , FaceIntersection, distance)
 GETTER (const glm::vec3&, FaceIntersection, position)
 GETTER (LinkedFace      , FaceIntersection, face)
 
+bool IntersectionUtil :: intersects (const Sphere& sphere, const glm::vec3& vec) {
+  return glm::distance (vec,sphere.center ()) <= sphere.radius ();
+}
+
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
                                     , const WingedVertex& vertex) {
-  glm::vec3 v = vertex.vertex (mesh);
-  return glm::distance (v,sphere.center ()) <= sphere.radius ();
+  return IntersectionUtil :: intersects (sphere, vertex.vertex (mesh));
 }
 
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
@@ -106,6 +110,20 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
       return false;
   }
   return true;
+}
+
+bool IntersectionUtil :: intersects (const Sphere& sphere, const OctreeNode& node) {
+  float     w = node.width () * 0.5f;
+  glm::vec3 c = node.center ();
+
+  return IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,+w,+w))
+      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,+w,-w))
+      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,-w,+w))
+      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,-w,-w))
+      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,+w,+w))
+      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,+w,-w))
+      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,-w,+w))
+      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,-w,-w));
 }
 
 bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float& t) {
