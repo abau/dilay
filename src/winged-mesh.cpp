@@ -133,6 +133,19 @@ struct WingedMesh::Impl {
   void intersectRay (const Ray& ray, FaceIntersection& intersection) {
     this->octree.intersectRay (this->wingedMesh,ray,intersection);
   }
+
+  OctreeFaceIterator octreeFaceIterator () {
+    return this->octree.faceIterator ();
+  }
+  ConstOctreeFaceIterator octreeFaceIterator () const {
+    return this->octree.faceIterator ();
+  }
+  OctreeNodeIterator octreeNodeIterator () {
+    return this->octree.nodeIterator ();
+  }
+  ConstOctreeNodeIterator octreeNodeIterator () const {
+    return this->octree.nodeIterator ();
+  }
 };
 
 WingedMesh :: WingedMesh () : impl (new WingedMesh::Impl (*this)) {}
@@ -157,6 +170,11 @@ DELEGATE2       (LinkedFace     , WingedMesh, addFace, const WingedFace&, const 
 GETTER          (const Vertices&, WingedMesh, vertices)
 GETTER          (const Edges&   , WingedMesh, edges)
 GETTER          (const Octree&  , WingedMesh, octree)
+
+DELEGATE        (OctreeFaceIterator     , WingedMesh, octreeFaceIterator)
+DELEGATE_CONST  (ConstOctreeFaceIterator, WingedMesh, octreeFaceIterator)
+DELEGATE        (OctreeNodeIterator     , WingedMesh, octreeNodeIterator)
+DELEGATE_CONST  (ConstOctreeNodeIterator, WingedMesh, octreeNodeIterator)
 
 DELEGATE1       (LinkedFace     , WingedMesh, deleteEdge, LinkedEdge)
 DELEGATE1       (LinkedFace     , WingedMesh, realignInOctree, LinkedFace)

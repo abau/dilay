@@ -8,6 +8,10 @@ class FaceIntersection;
 class Ray;
 class Triangle;
 class Octree;
+class OctreeFaceIterator;
+class ConstOctreeFaceIterator;
+class OctreeNodeIterator;
+class ConstOctreeNodeIterator;
 
 class WingedMesh {
   public:                    
@@ -24,6 +28,11 @@ class WingedMesh {
     const Vertices&   vertices        () const;
     const Edges&      edges           () const;
     const Octree&     octree          () const;
+
+    OctreeFaceIterator      octreeFaceIterator ();
+    ConstOctreeFaceIterator octreeFaceIterator () const;
+    OctreeNodeIterator      octreeNodeIterator ();
+    ConstOctreeNodeIterator octreeNodeIterator () const;
 
     /** Deletes an edge and its _right_ face. Note that other parts of the program
      * depend on this behaviour. */
