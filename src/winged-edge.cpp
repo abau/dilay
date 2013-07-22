@@ -24,9 +24,9 @@ WingedEdge :: WingedEdge ( LinkedVertex v1, LinkedVertex v2
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
-  if (&face == &*this->_leftFace)
+  if (face.id () == this->_leftFace->id ())
     return true;
-  else if (&face == &*this->_rightFace)
+  else if (face.id () == this->_rightFace->id ())
     return false;
   else
     assert (false);
@@ -37,9 +37,9 @@ bool WingedEdge :: isRightFace (const WingedFace& face) const {
 }
 
 bool WingedEdge :: isVertex1 (const WingedVertex& vertex) const {
-  if (&vertex == &*this->_vertex1)
+  if (vertex.index () == this->_vertex1->index ())
     return true;
-  else if (&vertex == &*this->_vertex2)
+  else if (vertex.index () == this->_vertex2->index ())
     return false;
   else
     assert (false);
@@ -178,7 +178,8 @@ LinkedEdge WingedEdge :: adjacent (const WingedFace& face, const WingedVertex& v
 }
 
 bool WingedEdge :: isAdjacent (const WingedVertex& vertex) const {
-  if ((&vertex == &*this->_vertex1) || (&vertex == &*this->_vertex2))
+  if (   (vertex.index () == this->_vertex1->index ()) 
+      || (vertex.index () == this->_vertex2->index ()))
     return true;
   else 
     return false;
