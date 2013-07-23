@@ -1,4 +1,3 @@
-#include <cassert>
 #include "adjacent-iterator.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
@@ -66,15 +65,6 @@ void AdjacentEdgeIterator :: next () {
     this->_hasEdge = false;
 }
 
-LinkedEdges AdjacentEdgeIterator :: collect () {
-  LinkedEdges l;
-  while (this->isValid ()) {
-    l.push_back (this->element ());
-    this->next ();
-  }
-  return l;
-}
-
 AdjacentVertexIterator :: AdjacentVertexIterator (const WingedFace& f, bool skipT)
   : _edgeIterator (f,skipT) {}
 AdjacentVertexIterator :: AdjacentVertexIterator ( const WingedFace& f, LinkedEdge e
@@ -93,16 +83,6 @@ LinkedVertex AdjacentVertexIterator :: element () const {
   else
     return edge->otherVertex (*this->_edgeIterator.vertex ());
 }
-
-LinkedVertices AdjacentVertexIterator :: collect () {
-  LinkedVertices l;
-  while (this->isValid ()) {
-    l.push_back (this->element ());
-    this->next ();
-  }
-  return l;
-}
-
 
 AdjacentFaceIterator :: AdjacentFaceIterator (const WingedFace& f, bool skipT)
   : _edgeIterator (f,skipT) {}
@@ -126,13 +106,3 @@ LinkedFace AdjacentFaceIterator :: element () const {
     return edge->leftFace ();
   }
 }
-
-LinkedFaces AdjacentFaceIterator :: collect () {
-  LinkedFaces l;
-  while (this->isValid ()) {
-    l.push_back (this->element ());
-    this->next ();
-  }
-  return l;
-}
-

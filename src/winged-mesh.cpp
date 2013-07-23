@@ -45,7 +45,9 @@ struct WingedMesh::Impl {
 
     assert (faceToDelete->octreeNode ());
 
-    for (LinkedEdge adjacent : faceToDelete->adjacentEdgeIterator ().collect ()) {
+    for (auto it = faceToDelete->adjacentEdgeIterator (); it.isValid (); ) {
+      LinkedEdge adjacent = it.element ();
+      it.next ();
       adjacent->setFace (*faceToDelete, remainingFace);
     }
 
@@ -75,8 +77,11 @@ struct WingedMesh::Impl {
     if (node) {
       LinkedFace newFace = this->octree.insertFace (*f,f->triangle (this->wingedMesh));
 
-      for (LinkedEdge e : f->adjacentEdgeIterator ().collect ())
-        e->setFace (*f, newFace);
+      for (auto it = f->adjacentEdgeIterator (); it.isValid (); ) {
+        LinkedEdge adjacent = it.element ();
+        it.next ();
+        adjacent->setFace (*f, newFace);
+      }
 
       node->deleteFace (f);
       return newFace;

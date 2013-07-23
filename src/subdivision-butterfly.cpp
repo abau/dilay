@@ -157,8 +157,10 @@ void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLev
   deleteTEdges (mesh,faces);
 
   for (LinkedFace face : faces) {
-    for (LinkedEdge edge : face->adjacentEdgeIterator ().collect ()) {
+    for (auto it = face->adjacentEdgeIterator (); it.isValid (); ) {
+      LinkedEdge edge = it.element ();
       assert (! edge->isTEdge ());
+      it.next ();
 
       if (   edge->vertex1 ()->level () <= selectionLevel
           && edge->vertex2 ()->level () <= selectionLevel) {
