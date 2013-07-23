@@ -68,7 +68,7 @@ struct WingedMesh::Impl {
     remainingFace->setEdge (edge->leftSuccessor ());
 
     this->edges.erase (edge);
-    faceToDelete->octreeNode ()->deleteFace (faceToDelete);
+    this->octree.deleteFace (faceToDelete);
     return remainingFace;
   }
 
@@ -83,7 +83,7 @@ struct WingedMesh::Impl {
         adjacent->setFace (*f, newFace);
       }
 
-      node->deleteFace (f);
+      this->octree.deleteFace (f);
       return newFace;
     }
     return f;
