@@ -1,5 +1,4 @@
 #include "tool.hpp"
-#include "fwd-winged.hpp"
 #include "ray.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"

@@ -1,6 +1,10 @@
 #ifndef DILAY_MACRO
 #define DILAY_MACRO
 
+#include <cassert>
+
+// Delegators
+
 #define DELEGATE_CONSTRUCTOR(from) \
   from :: from () { this->impl = new Impl (); }
 
@@ -185,5 +189,43 @@
 
 #define ID(from) \
   IdType from :: id () const { return this->impl->id.get () ; }
+
+// Utilities
+
+#define SAFE_REF(r,method) \
+  r & method ## Ref () const { \
+    r * ptr = this-> method (); \
+    assert (ptr); \
+    return *ptr; }
+
+#define SAFE_REF1(r,method,t1) \
+  r & method ## Ref (t1 a1) const { \
+    r * ptr = this-> method (a1); \
+    assert (ptr); \
+    return *ptr; }
+
+#define SAFE_REF2(r,method,t1,t2) \
+  r & method ## Ref (t1 a1,t2 a2) const { \
+    r * ptr = this-> method (a1,a2); \
+    assert (ptr); \
+    return *ptr; }
+
+#define SAFE_REF3(r,method,t1,t2,t3) \
+  r & method ## Ref (t1 a1,t2 a2,t3 a3) const { \
+    r * ptr = this-> method (a1,a2,a3); \
+    assert (ptr); \
+    return *ptr; }
+
+#define SAFE_REF4(r,method,t1,t2,t3,t4) \
+  r & method ## Ref (t1 a1,t2 a2,t3 a3,t4 a4) const { \
+    r * ptr = this-> method (a1,a2,a3,a4); \
+    assert (ptr); \
+    return *ptr; }
+
+#define SAFE_REF5(r,method,t1,t2,t3,t4,t5) \
+  r & method ## Ref (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) const { \
+    r * ptr = this-> method (a1,a2,a3,a4,a5); \
+    assert (ptr); \
+    return *ptr; }
 
 #endif

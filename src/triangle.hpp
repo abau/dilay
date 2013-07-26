@@ -2,15 +2,16 @@
 #define DILAY_TRIANGLE
 
 #include "fwd-glm.hpp"
-#include "fwd-winged.hpp"
 
 class Ray;
+class WingedMesh;
+class WingedVertex;
 
 class Triangle {
   public:
           Triangle              (const glm::vec3&, const glm::vec3&, const glm::vec3&);
-          Triangle              ( const WingedMesh&, LinkedVertex
-                                , LinkedVertex, LinkedVertex);
+          Triangle              ( const WingedMesh&, const WingedVertex&
+                                , const WingedVertex&, const WingedVertex&);
           Triangle              ();
           Triangle              (const Triangle&);
     const Triangle& operator=   (const Triangle&);

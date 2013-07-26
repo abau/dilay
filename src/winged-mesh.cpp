@@ -12,81 +12,77 @@
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "octree-util.hpp"
+#include "util.hpp"
 
 struct WingedMesh::Impl {
-  WingedMesh& wingedMesh;
-  Mesh        mesh;
-  Vertices    vertices;
-  Edges       edges;
-  Octree      octree;
+  WingedMesh&              wingedMesh;
+  Mesh                     mesh;
+  std::list <WingedVertex> vertices;
+  std::list <WingedEdge>   edges;
+  Octree                   octree;
 
   Impl (WingedMesh& p) : wingedMesh (p) {}
 
   void addIndex (unsigned int index) { this->mesh.addIndex (index); }
 
-  LinkedVertex addVertex (const glm::vec3& v, unsigned int l) {
+  WingedVertex& addVertex (const glm::vec3& v, unsigned int l) {
     unsigned int index = this->mesh.addVertex (v);
-    this->vertices.push_back (WingedVertex (index, l));
-    return --this->vertices.end ();
+    this->vertices.push_back (WingedVertex (index, nullptr, l));
+    return this->vertices.back ();
   }
 
-  LinkedEdge addEdge (const WingedEdge& e) {
+  WingedEdge& addEdge (const WingedEdge& e) {
     this->edges.push_back (e);
-    return --this->edges.end ();
+    return this->edges.back ();
   }
 
-  LinkedFace addFace (const WingedFace& f, const Triangle& geometry) {
-    return this->octree.insertFace (f, geometry);
+  WingedFace& addFace (const WingedFace& f, const Triangle& geometry) {
+    return this->octree.insertNewFace (f, geometry);
   }
 
-  LinkedFace deleteEdge (LinkedEdge edge) {
-    LinkedFace faceToDelete  = edge->rightFace ();
-    LinkedFace remainingFace = edge->leftFace ();
+  WingedFace& deleteEdge (WingedEdge& edge) {
+    WingedFace* faceToDelete  = edge.rightFace ();
+    WingedFace* remainingFace = edge.leftFace ();
 
     assert (faceToDelete->octreeNode ());
 
     for (auto it = faceToDelete->adjacentEdgeIterator (); it.isValid (); ) {
-      LinkedEdge adjacent = it.element ();
+      WingedEdge& adjacent = it.element ();
       it.next ();
-      adjacent->setFace (*faceToDelete, remainingFace);
+      adjacent.face (*faceToDelete, remainingFace);
     }
 
-    edge->leftPredecessor  ()->setSuccessor   (*remainingFace, edge->rightSuccessor   ());
-    edge->leftSuccessor    ()->setPredecessor (*remainingFace, edge->rightPredecessor ());
+    edge.leftPredecessorRef  ().successor   (*remainingFace, edge.rightSuccessor   ());
+    edge.leftSuccessorRef    ().predecessor (*remainingFace, edge.rightPredecessor ());
 
-    edge->rightPredecessor ()->setSuccessor   (*remainingFace, edge->leftSuccessor   ());
-    edge->rightSuccessor   ()->setPredecessor (*remainingFace, edge->leftPredecessor ());
+    edge.rightPredecessorRef ().successor   (*remainingFace, edge.leftSuccessor   ());
+    edge.rightSuccessorRef   ().predecessor (*remainingFace, edge.leftPredecessor ());
 
-    edge->vertex1 ()->setEdge (edge->leftPredecessor ());
-    edge->vertex2 ()->setEdge (edge->leftSuccessor   ());
+    edge.vertex1Ref ().edge (edge.leftPredecessor ());
+    edge.vertex2Ref ().edge (edge.leftSuccessor   ());
 
-    if (edge->previousSibling ().isDefined ())
-      edge->previousSibling ().data ()->setNextSibling (edge->nextSibling ());
-    if (edge->nextSibling ().isDefined ())
-      edge->nextSibling ().data ()->setPreviousSibling (edge->previousSibling ());
+    if (edge.previousSibling ())
+      edge.previousSiblingRef ().nextSibling (edge.nextSibling ());
+    if (edge.nextSibling ())
+      edge.nextSiblingRef ().previousSibling (edge.previousSibling ());
 
-    remainingFace->setEdge (edge->leftSuccessor ());
+    remainingFace->edge (edge.leftSuccessor ());
 
-    this->edges.erase (edge);
-    this->octree.deleteFace (faceToDelete);
-    return remainingFace;
+    Util :: eraseByAddress <WingedEdge> (this->edges, &edge);
+    this->octree.deleteFace (*faceToDelete); 
+    return *remainingFace;
   }
 
-  LinkedFace realignInOctree (LinkedFace f) {
-    OctreeNode* node = f->octreeNode ();
-    if (node) {
-      LinkedFace newFace = this->octree.insertFace (*f,f->triangle (this->wingedMesh));
+  WingedFace& realignInOctree (WingedFace& f) {
+    WingedFace& newFace = this->octree.reInsertFace (f,f.triangle (this->wingedMesh));
 
-      for (auto it = f->adjacentEdgeIterator (); it.isValid (); ) {
-        LinkedEdge adjacent = it.element ();
-        it.next ();
-        adjacent->setFace (*f, newFace);
-      }
-
-      this->octree.deleteFace (f);
-      return newFace;
+    for (auto it = f.adjacentEdgeIterator (); it.isValid (); ) {
+      WingedEdge& adjacent = it.element ();
+      it.next ();
+      adjacent.face (f,&newFace);
     }
-    return f;
+    //this->octree.deleteFace (f);
+    return newFace;
   }
 
   unsigned int numVertices       () const { return this->mesh.numVertices (); }
@@ -102,7 +98,7 @@ struct WingedMesh::Impl {
     this->mesh.clearIndices ();
 
     for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
-      it.element ()->addIndices (this->wingedMesh);
+      it.element ().addIndices (this->wingedMesh);
     }
   }
 
@@ -168,21 +164,21 @@ const WingedMesh& WingedMesh :: operator= (const WingedMesh& source) {
 DELEGATE_DESTRUCTOR (WingedMesh)
 
 DELEGATE1       (void           , WingedMesh, addIndex, unsigned int)
-DELEGATE2       (LinkedVertex   , WingedMesh, addVertex, const glm::vec3&, unsigned int)
-DELEGATE1       (LinkedEdge     , WingedMesh, addEdge, const WingedEdge&)
-DELEGATE2       (LinkedFace     , WingedMesh, addFace, const WingedFace&, const Triangle&)
+DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
+DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
+DELEGATE2       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const Triangle&)
 
-GETTER          (const Vertices&, WingedMesh, vertices)
-GETTER          (const Edges&   , WingedMesh, edges)
-GETTER          (const Octree&  , WingedMesh, octree)
+GETTER          (const std::list <WingedVertex>&, WingedMesh, vertices)
+GETTER          (const std::list <WingedEdge>&  , WingedMesh, edges)
+GETTER          (const Octree&                  , WingedMesh, octree)
 
 DELEGATE        (OctreeFaceIterator     , WingedMesh, octreeFaceIterator)
 DELEGATE_CONST  (ConstOctreeFaceIterator, WingedMesh, octreeFaceIterator)
 DELEGATE        (OctreeNodeIterator     , WingedMesh, octreeNodeIterator)
 DELEGATE_CONST  (ConstOctreeNodeIterator, WingedMesh, octreeNodeIterator)
 
-DELEGATE1       (LinkedFace     , WingedMesh, deleteEdge, LinkedEdge)
-DELEGATE1       (LinkedFace     , WingedMesh, realignInOctree, LinkedFace)
+DELEGATE1       (WingedFace&    , WingedMesh, deleteEdge, WingedEdge&)
+DELEGATE1       (WingedFace&    , WingedMesh, realignInOctree, WingedFace&)
  
 DELEGATE_CONST  (unsigned int   , WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numWingedVertices)

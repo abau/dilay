@@ -37,6 +37,7 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/subdivision-util.cpp \
            src/tool.cpp \
+       #   src/tool-carve.cpp \
            src/tool-rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
@@ -60,13 +61,11 @@ HEADERS += \
            src/cursor.hpp \
            src/fwd-glm.hpp \
            src/fwd-yaml.hpp \
-           src/fwd-winged.hpp \
            src/history.hpp \
            src/id.hpp \
            src/intersection.hpp \
            src/iterator.hpp \
            src/macro.hpp \
-           src/maybe.hpp \
            src/mesh.hpp \
            src/octree.hpp \
            src/octree-util.hpp \
@@ -79,6 +78,7 @@ HEADERS += \
            src/subdivision-butterfly.hpp \
            src/subdivision-util.hpp \
            src/tool.hpp \
+      #    src/tool-carve.hpp \
            src/tool-rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \

@@ -1,7 +1,7 @@
 #ifndef DILAY_WINGED_MESH
 #define DILAY_WINGED_MESH
 
-#include "fwd-winged.hpp"
+#include <list>
 #include "fwd-glm.hpp"
 
 class FaceIntersection;
@@ -12,22 +12,24 @@ class OctreeFaceIterator;
 class ConstOctreeFaceIterator;
 class OctreeNodeIterator;
 class ConstOctreeNodeIterator;
+class WingedVertex;
+class WingedFace;
+class WingedEdge;
 
 class WingedMesh {
-  public:                    
-          WingedMesh                  ();
+  public: WingedMesh                  ();
           WingedMesh                  (const WingedMesh&);
     const WingedMesh& operator=       (const WingedMesh&);
          ~WingedMesh                  ();
 
     void              addIndex        (unsigned int);
-    LinkedVertex      addVertex       (const glm::vec3&, unsigned int = 0);
-    LinkedEdge        addEdge         (const WingedEdge&);
-    LinkedFace        addFace         (const WingedFace&, const Triangle&);
+    WingedVertex&     addVertex       (const glm::vec3&, unsigned int = 0);
+    WingedEdge&       addEdge         (const WingedEdge&);
+    WingedFace&       addFace         (const WingedFace&, const Triangle&);
 
-    const Vertices&   vertices        () const;
-    const Edges&      edges           () const;
-    const Octree&     octree          () const;
+    const std::list <WingedVertex>&   vertices () const;
+    const std::list <WingedEdge>&     edges    () const;
+    const Octree&                     octree   () const;
 
     OctreeFaceIterator      octreeFaceIterator ();
     ConstOctreeFaceIterator octreeFaceIterator () const;
@@ -36,11 +38,11 @@ class WingedMesh {
 
     /** Deletes an edge and its _right_ face. Note that other parts of the program
      * depend on this behaviour. */
-    LinkedFace      deleteEdge        (LinkedEdge);
+    WingedFace&     deleteEdge        (WingedEdge&);
 
-    /** Realigns a face in a mesh's octree. The passed `LinkedFace` becomes invalid
-     * and must not be dereferenced: use the returned `LinkedFace` instead. */
-    LinkedFace      realignInOctree   (LinkedFace);
+    /** Realigns a face in a mesh's octree. The passed face becomes invalid
+     * and must not be used: use the returned face instead. */
+    WingedFace&     realignInOctree   (WingedFace&);
 
     unsigned int    numVertices       () const;
     unsigned int    numWingedVertices () const;

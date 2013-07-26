@@ -12,35 +12,39 @@
 #include "octree.hpp"
 
 struct FaceIntersection::Impl {
-  bool       isIntersection;
-  float      distance;
-  glm::vec3  position;
-  LinkedFace face;
+  bool        isIntersection;
+  float       distance;
+  glm::vec3   position;
+  WingedFace* _face;
 
   Impl () : isIntersection (false) {}
 
-  void update (float d, const glm::vec3& p, LinkedFace f) {
+  void update (float d, const glm::vec3& p, WingedFace& f) {
     if (this->isIntersection == false || d < this->distance) {
       this->isIntersection = true;
       this->distance       = d;
       this->position       = p;
-      this->face           = f;
+      this->_face          = &f;
     }
   }
 
   void reset () {
     this->isIntersection = false;
   }
+
+  WingedFace& face () const {
+    assert (this->isIntersection);
+    return *this->_face;
+  }
 };
 
-DELEGATE_BIG4 (FaceIntersection)
-DELEGATE3     (void, FaceIntersection, update, float, const glm::vec3&, LinkedFace)
-DELEGATE      (void, FaceIntersection, reset)
-
-GETTER (bool            , FaceIntersection, isIntersection)
-GETTER (float           , FaceIntersection, distance)
-GETTER (const glm::vec3&, FaceIntersection, position)
-GETTER (LinkedFace      , FaceIntersection, face)
+DELEGATE_BIG4  (FaceIntersection)
+DELEGATE3      (void            , FaceIntersection, update, float, const glm::vec3&, WingedFace&)
+DELEGATE       (void            , FaceIntersection, reset)
+DELEGATE_CONST (WingedFace&     , FaceIntersection, face)
+GETTER         (bool            , FaceIntersection, isIntersection)
+GETTER         (float           , FaceIntersection, distance)
+GETTER         (const glm::vec3&, FaceIntersection, position)
 
 bool IntersectionUtil :: intersects (const Sphere& sphere, const glm::vec3& vec) {
   return glm::distance (vec,sphere.center ()) <= sphere.radius ();
@@ -78,11 +82,11 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
                                     , const WingedFace& face) {
   for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-    if (IntersectionUtil :: intersects (sphere, mesh, *it.element ()))
+    if (IntersectionUtil :: intersects (sphere, mesh, it.element ()))
       return true;
   }
   for (ADJACENT_EDGE_ITERATOR (it,face)) {
-    if (IntersectionUtil :: intersects (sphere, mesh, *it.element ()))
+    if (IntersectionUtil :: intersects (sphere, mesh, it.element ()))
       return true;
   }
 
@@ -102,11 +106,13 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
     return false;
 
   for (ADJACENT_EDGE_ITERATOR (it,face)) {
-    glm::vec3 other = it.element ()->successor (face)->secondVertex (face)->vertex (mesh);
-    assert (other != it.element ()->vertex1 ()->vertex (mesh));
-    assert (other != it.element ()->vertex2 ()->vertex (mesh));
-    if (! sameSide (other, onPlane, it.element ()->vertex1 ()->vertex (mesh)
-                                  , it.element ()->vertex2 ()->vertex (mesh)))
+    glm::vec3 other = it.element ().successorRef (face)
+                                   .secondVertexRef (face)
+                                   .vertex (mesh);
+    assert (other != it.element ().vertex1Ref ().vertex (mesh));
+    assert (other != it.element ().vertex2Ref ().vertex (mesh));
+    if (! sameSide (other, onPlane, it.element ().vertex1Ref ().vertex (mesh)
+                                  , it.element ().vertex2Ref ().vertex (mesh)))
       return false;
   }
   return true;

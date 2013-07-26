@@ -4,15 +4,11 @@
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
 #include "adjacent-iterator.hpp"
-#include "maybe.hpp"
 
-WingedVertex :: WingedVertex (unsigned int i, unsigned int l) 
-  : _index (i), _level (l) {}
-
-WingedVertex :: WingedVertex (unsigned int i, LinkedEdge e, unsigned int l) 
+WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e, unsigned int l) 
   : _index (i), _edge (e), _level (l) {}
 
-void WingedVertex :: setEdge (LinkedEdge e) { this->_edge = e; }
+void WingedVertex :: edge (WingedEdge* e) { this->_edge = e; }
 
 void WingedVertex :: addIndex (WingedMesh& mesh) {
   mesh.addIndex (this->_index);
@@ -26,7 +22,7 @@ glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
   glm::vec3 normal = glm::vec3 (0.0f,0.0f,0.0f);
 
   for (ADJACENT_FACE_ITERATOR (it,*this)) {
-    normal = normal + it.element ()->normal (mesh);
+    normal = normal + it.element ().normal (mesh);
   }
   return glm::normalize (normal);
 }
@@ -38,12 +34,12 @@ unsigned int WingedVertex :: valence () const {
   return i;
 }
 
-Maybe <LinkedEdge> WingedVertex :: tEdge () const {
+WingedEdge* WingedVertex :: tEdge () const {
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    if (it.element ()->isTEdge ())
-      return Maybe <LinkedEdge> (it.element ());
+    if (it.element ().isTEdge ())
+      return &it.element ();
   }
-  return Maybe <LinkedEdge> ();
+  return nullptr;
 }
 
 AdjacentEdgeIterator WingedVertex :: adjacentEdgeIterator (bool skipT) const {
@@ -55,14 +51,14 @@ AdjacentVertexIterator WingedVertex :: adjacentVertexIterator (bool skipT) const
 AdjacentFaceIterator WingedVertex :: adjacentFaceIterator () const {
   return AdjacentFaceIterator (*this);
 }
-AdjacentEdgeIterator WingedVertex :: adjacentEdgeIterator ( LinkedEdge e
+AdjacentEdgeIterator WingedVertex :: adjacentEdgeIterator ( WingedEdge& e
                                                           , bool skipT) const {
   return AdjacentEdgeIterator (*this,e,skipT);
 }
-AdjacentVertexIterator WingedVertex :: adjacentVertexIterator ( LinkedEdge e
+AdjacentVertexIterator WingedVertex :: adjacentVertexIterator ( WingedEdge& e
                                                               , bool skipT ) const {
   return AdjacentVertexIterator (*this,e,skipT);
 }
-AdjacentFaceIterator WingedVertex :: adjacentFaceIterator (LinkedEdge e) const {
+AdjacentFaceIterator WingedVertex :: adjacentFaceIterator (WingedEdge& e) const {
   return AdjacentFaceIterator (*this,e);
 }

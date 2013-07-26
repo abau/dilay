@@ -2,11 +2,14 @@
 #define DILAY_INTERSECTION
 
 #include "fwd-glm.hpp"
-#include "fwd-winged.hpp"
 
 class Sphere;
 class Ray;
 class OctreeNode;
+class WingedVertex;
+class WingedEdge;
+class WingedFace;
+class WingedMesh;
 
 class FaceIntersection {
   public:
@@ -18,8 +21,8 @@ class FaceIntersection {
     bool             isIntersection () const;
     float            distance       () const;
     const glm::vec3& position       () const;
-    LinkedFace       face           () const;
-    void             update         (float, const glm::vec3&, LinkedFace);
+    WingedFace&      face           () const;
+    void             update         (float, const glm::vec3&, WingedFace&);
     void             reset          ();
 
   private:

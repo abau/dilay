@@ -1,10 +1,14 @@
 #ifndef DILAY_SUBDIVISION_BUTTERFLY
 #define DILAY_SUBDIVISION_BUTTERFLY
 
-#include "fwd-winged.hpp"
+#include <list>
+
+class WingedMesh;
+class WingedFace;
 
 namespace SubdivButterfly {
-  void subdivide (WingedMesh&, LinkedFace);
+  void subdivide (WingedMesh&, WingedFace&);
+//  void subdivide (WingedMesh&, std::list<WingedFace*>&);
 }
 
 #endif

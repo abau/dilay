@@ -15,9 +15,9 @@ struct Triangle::Impl {
   Impl (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
     : vertex1 (v1), vertex2 (v2), vertex3 (v3) {}
 
-  Impl ( const WingedMesh& mesh, LinkedVertex v1
-               , LinkedVertex v2, LinkedVertex v3)
-    : Impl (v1->vertex (mesh), v2->vertex (mesh), v3->vertex (mesh)) {}
+  Impl ( const WingedMesh& mesh, const WingedVertex& v1
+               , const WingedVertex& v2, const WingedVertex& v3)
+    : Impl (v1.vertex (mesh), v2.vertex (mesh), v3.vertex (mesh)) {}
 
   glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
   glm::vec3 edge2 () const { return this->vertex3 - this->vertex1; }
@@ -72,7 +72,7 @@ struct Triangle::Impl {
 
 DELEGATE_BIG4          (Triangle)
 DELEGATE3_CONSTRUCTOR  (Triangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
-DELEGATE4_CONSTRUCTOR  (Triangle, const WingedMesh&, LinkedVertex, LinkedVertex, LinkedVertex)
+DELEGATE4_CONSTRUCTOR  (Triangle, const WingedMesh&, const WingedVertex&, const WingedVertex&, const WingedVertex&)
 
 GETTER          (const glm::vec3&  , Triangle, vertex1)
 GETTER          (const glm::vec3&  , Triangle, vertex2)

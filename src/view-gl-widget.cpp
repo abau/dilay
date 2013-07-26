@@ -16,6 +16,7 @@
 #include "winged-face.hpp"
 #include "tool.hpp"
 #include "tool-rotate.hpp"
+//#include "tool-carve.hpp"
 
 struct GLWidgetImpl {
   Axis          axis;
@@ -78,7 +79,7 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 
     if (intersection.isIntersection ()) {
       glm::vec3 pos    = intersection.position ();
-      glm::vec3 normal = intersection.face ()->normal (mesh);
+      glm::vec3 normal = intersection.face ().normal (mesh);
 
       State :: cursor ().enable      ();
       State :: cursor ().setPosition (pos);
@@ -99,6 +100,7 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
     if (Tool :: click ())
+//    if (ToolCarve :: run ())
       this->update ();
   }
 }

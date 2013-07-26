@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <initializer_list>
+#include <list>
 #include "fwd-glm.hpp"
 
 std::ostream& operator<<(std::ostream&, const glm::ivec2&);
@@ -22,6 +23,17 @@ namespace Util {
   std::string readFile (const std::string&); 
 
   unsigned int solveQuadraticEq (float, float, float, float&, float&);
+
+  template <class T> 
+  void eraseByAddress (std::list <T>& list, const T* element) {
+    for (typename std::list<T>::iterator it = list.begin (); it != list.end (); ++it) {
+      if (&*it == element) {
+        list.erase (it);
+        return;
+      }
+    }
+    assert (false);
+  }
 }
 
 #endif

@@ -1,20 +1,11 @@
 #ifndef DILAY_WINGED_UTIL
 #define DILAY_WINGED_UTIL
 
-#include <unordered_set>
-#include <functional>
-#include "fwd-winged.hpp"
-
-namespace std {
-  template <> struct hash <LinkedEdge> {
-    size_t operator() (const LinkedEdge&) const;
-  };
-  template <> struct hash <LinkedFace> {
-    size_t operator() (const LinkedFace&) const;
-  };
-}
-
 class Mesh;
+class WingedMesh;
+class WingedFace;
+class WingedEdge;
+class WingedVertex;
 
 namespace WingedUtil {
   /** `printStatistics (w,b)` prints some statistics about `w`.

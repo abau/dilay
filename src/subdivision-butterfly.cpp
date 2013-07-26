@@ -1,7 +1,9 @@
 #include <vector>
 #include <list>
 #include <unordered_map>
+#include <functional>
 #include <glm/glm.hpp>
+#include <limits>
 #include "subdivision-butterfly.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
@@ -10,21 +12,73 @@
 #include "winged-util.hpp"
 #include "adjacent-iterator.hpp"
 #include "subdivision-util.hpp"
-#include "maybe.hpp"
 
-void subdivide (WingedMesh&, unsigned int, LinkedFace);
+#include <iostream> // delete this
 
-void SubdivButterfly :: subdivide (WingedMesh& mesh, LinkedFace face) {
-  subdivide (mesh,face->level (),face);
+typedef std::unordered_set <WingedFace*> FaceSet;
+
+void subdivide (WingedMesh&, unsigned int, WingedFace&);
+
+void SubdivButterfly :: subdivide (WingedMesh& mesh, WingedFace& face) {
+  subdivide (mesh,face.level (),face);
 }
 
-bool       oneRingNeighbourhood (WingedMesh&, LinkedFace, FaceSet&);
+/*
+void SubdivButterfly :: subdivide ( WingedMesh& mesh
+                                  , std::list <WingedFace*>& faces) {
+  if (faces.empty ()) return;
+
+  unsigned int minLevel = std::numeric_limits <unsigned int>::max ();
+
+  // search minimal level
+  for (WingedFace* face : faces) {
+    unsigned int level = face->level ();
+    minLevel = level < minLevel ? level : minLevel;
+  }
+
+  // don't subdivide faces of higher levels
+  std::cout << "######################################\n";
+  for (auto it = faces.begin (); it != faces.end (); ) {
+    LinkedFace         face  = *it;
+    unsigned int       level = face->level ();
+    Maybe <LinkedEdge> tEdge = face->tEdge ();
+    if (level == minLevel && (  tEdge.isUndefined () 
+                             || tEdge.data ()->isLeftFace (*face))) {
+      std::cout << "subdividing " << face->id () << std::endl;
+      ++it;
+    }
+    else {
+      faces.erase (it++);
+    }
+  }
+  std::cout << "######################################\n";
+
+  std::cout << "--------------------------------------\n";
+  std::cout << "subdividing " << faces.size () << " faces of level " << minLevel << std::endl;
+
+  for (auto it = faces.begin (); it != faces.end (); ++it) {
+    LinkedFace f = *it;
+    std::cout << "subdividing face " << f->id () << std::endl;
+    subdivide (mesh,minLevel,f);
+
+    for (auto it2 = it; it2 != faces.end (); ++it2) {
+      LinkedFace f2 = *it2;
+      std::cout << "remaining face " << f2->id () 
+                << " of level "<< f2->level () 
+                << std::endl;
+    }
+  }
+  std::cout << "--------------------------------------\n";
+}
+*/
+
+bool       oneRingNeighbourhood (WingedMesh&, WingedFace&, FaceSet&);
 bool       oneRingBorder        (WingedMesh&, unsigned int, FaceSet&, FaceSet&);
 void       subdivideFaces       (WingedMesh&, FaceSet&, unsigned int);
 void       refineBorder         (WingedMesh&, FaceSet&, unsigned int);
 
-void subdivide (WingedMesh& mesh, unsigned int selectionLevel, LinkedFace selection) {
-  if (selection->level () > selectionLevel)
+void subdivide (WingedMesh& mesh, unsigned int selectionLevel, WingedFace& selection) {
+  if (selection.level () > selectionLevel)
     return;
 
   FaceSet neighbourhood, border;
@@ -41,19 +95,19 @@ void subdivide (WingedMesh& mesh, unsigned int selectionLevel, LinkedFace select
   refineBorder   (mesh,border,selectionLevel);
 }
 
-void insertNeighbour (FaceSet&, LinkedFace);
+void insertNeighbour (FaceSet&, WingedFace&);
 
-bool oneRingNeighbourhood ( WingedMesh& mesh, LinkedFace selection
+bool oneRingNeighbourhood ( WingedMesh& mesh, WingedFace& selection
                           , FaceSet& neighbourhood) {
-  neighbourhood.clear ();
-  neighbourhood.insert (selection);
-  unsigned int selectionLevel = selection->level ();
+  neighbourhood.clear  ();
+  neighbourhood.insert (&selection);
+  unsigned int selectionLevel = selection.level ();
 
-  for (auto vIt = selection->adjacentVertexIterator (true); vIt.isValid ()
-                                                          ; vIt.next ()) {
-    for (ADJACENT_FACE_ITERATOR (fIt, *vIt.element ())) {
-      LinkedFace face = fIt.element ();
-      unsigned int faceLevel = face->level ();
+  for (auto vIt = selection.adjacentVertexIterator (true); vIt.isValid ()
+                                                         ; vIt.next ()) {
+    for (ADJACENT_FACE_ITERATOR (fIt, vIt.element ())) {
+      WingedFace& face = fIt.element ();
+      unsigned int faceLevel = face.level ();
       if (faceLevel < selectionLevel) {
         subdivide (mesh, faceLevel, face);
         return false;
@@ -70,18 +124,18 @@ bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
                    , FaceSet& neighbourhood, FaceSet& border) {
   FaceSet extendedNeighbourhood;
 
-  std::function < bool (LinkedFace) > isNeighbour =
-    [&neighbourhood,&extendedNeighbourhood] (LinkedFace face) {
+  std::function < bool (WingedFace&) > isNeighbour =
+    [&neighbourhood,&extendedNeighbourhood] (WingedFace& face) {
 
-      return (neighbourhood.count (face) > 0) 
-          || (extendedNeighbourhood.count (face) > 0);
+      return (neighbourhood        .count (&face) > 0) 
+          || (extendedNeighbourhood.count (&face) > 0);
     };
 
-  std::function < bool (LinkedFace) > hasAtLeast2AdjacentNeighbours =
-    [&isNeighbour] (LinkedFace face) {
+  std::function < bool (WingedFace&) > hasAtLeast2AdjacentNeighbours =
+    [&isNeighbour] (WingedFace& face) {
       unsigned int numNeighbours = 0;
 
-      for (ADJACENT_FACE_ITERATOR (it, *face)) {
+      for (ADJACENT_FACE_ITERATOR (it, face)) {
         if (isNeighbour (it.element ())) {
           numNeighbours++;
         }
@@ -89,30 +143,30 @@ bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
       return numNeighbours >= 2;
     };
 
-  std::function < bool (LinkedFace) > checkNeighbour;
+  std::function < bool (WingedFace&) > checkNeighbour;
 
-  std::function < bool (LinkedFace) > checkBorder = [ & ] (LinkedFace face) {
+  std::function < bool (WingedFace&) > checkBorder = [ & ] (WingedFace& face) {
     if (! isNeighbour (face)) {
-      unsigned int faceLevel = face->level ();
+      unsigned int faceLevel = face.level ();
 
       if (faceLevel <  selectionLevel) {
         subdivide (mesh,faceLevel,face);
         return false;
       }
       else if (faceLevel == selectionLevel) {
-        if (face->tEdge ().isDefined ()) {
+        if (face.tEdge ()) {
           insertNeighbour (extendedNeighbourhood,face);
-          border.erase    (face);
+          border.erase    (&face);
           return checkNeighbour (face);
         }
         else {
           if (hasAtLeast2AdjacentNeighbours (face)) {
             insertNeighbour (extendedNeighbourhood,face);
-            border.erase    (face);
+            border.erase    (&face);
             return checkNeighbour (face);
           }
           else {
-            border.insert (face);
+            border.insert (&face);
             return true;
           }
         }
@@ -121,8 +175,8 @@ bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
     return true;
   };
 
-  checkNeighbour = [ & ] (LinkedFace neighbour) {
-    for (auto it = neighbour->adjacentFaceIterator (true); it.isValid (); it.next ()) {
+  checkNeighbour = [ & ] (WingedFace& neighbour) {
+    for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
       if (! checkBorder (it.element ()))
         return false;
     }
@@ -131,8 +185,8 @@ bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
 
   border.clear ();
 
-  for (LinkedFace neighbour : neighbourhood) {
-    if (! checkNeighbour (neighbour)) {
+  for (WingedFace* neighbour : neighbourhood) {
+    if (! checkNeighbour (*neighbour)) {
       return false;
     }
   }
@@ -141,29 +195,29 @@ bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
   return true;
 }
 
-void insertNeighbour (FaceSet& neighbourhood, LinkedFace neighbour) {
-  neighbourhood.insert (neighbour);
+void insertNeighbour (FaceSet& neighbourhood, WingedFace& neighbour) {
+  neighbourhood.insert (&neighbour);
 
-  Maybe <LinkedEdge> tEdge = neighbour->tEdge ();
-  if (tEdge.isDefined ()) {
-    neighbourhood.insert (tEdge.data ()->otherFace (*neighbour));
+  WingedEdge* tEdge = neighbour.tEdge ();
+  if (tEdge) {
+    neighbourhood.insert (tEdge->otherFace (neighbour));
   }
 }
 
-glm::vec3  subdivideEdge (const WingedMesh&, unsigned int, LinkedEdge);
+glm::vec3  subdivideEdge (const WingedMesh&, unsigned int, WingedEdge&);
 void       deleteTEdges  (WingedMesh&, FaceSet&);
 
 void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLevel) {
   deleteTEdges (mesh,faces);
 
-  for (LinkedFace face : faces) {
+  for (WingedFace* face : faces) {
     for (auto it = face->adjacentEdgeIterator (); it.isValid (); ) {
-      LinkedEdge edge = it.element ();
-      assert (! edge->isTEdge ());
+      WingedEdge& edge = it.element ();
+      assert (! edge.isTEdge ());
       it.next ();
 
-      if (   edge->vertex1 ()->level () <= selectionLevel
-          && edge->vertex2 ()->level () <= selectionLevel) {
+      if (   edge.vertex1Ref ().level () <= selectionLevel
+          && edge.vertex2Ref ().level () <= selectionLevel) {
 
         SubdivUtil :: insertVertex ( mesh, edge
                                    , subdivideEdge (mesh, selectionLevel, edge)
@@ -172,13 +226,13 @@ void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLev
     }
   }
   FaceSet newFaces;
-  for (LinkedFace face : faces) {
-    LinkedFace realignedFace = SubdivUtil :: triangulate6Gon (mesh,face);
+  for (WingedFace* face : faces) {
+    WingedFace& realignedFace = SubdivUtil :: triangulate6Gon (mesh,*face);
 
-    newFaces.insert (realignedFace);
+    newFaces.insert (&realignedFace);
 
-    for (ADJACENT_FACE_ITERATOR (it,*realignedFace)) {
-      newFaces.insert (it.element ());
+    for (ADJACENT_FACE_ITERATOR (it,realignedFace)) {
+      newFaces.insert (&it.element ());
     }
   }
   faces = std::move (newFaces);
@@ -187,79 +241,80 @@ void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLev
 void refineBorder (WingedMesh& mesh, FaceSet& border, unsigned int selectionLevel) {
   deleteTEdges (mesh, border);
 
-  for (LinkedFace face : border) {
+  for (WingedFace* face : border) {
     assert (face->level () == selectionLevel);
-    assert (face->tEdge ().isUndefined ());
-    SubdivUtil :: triangulateQuadAtHeighestLevelVertex (mesh, face);
+    assert (face->tEdge () == nullptr);
+    SubdivUtil :: triangulateQuadAtHeighestLevelVertex (mesh,*face);
   }
 }
 
 void deleteTEdges (WingedMesh& mesh, FaceSet& faces) {
   for (auto it = faces.begin (); it != faces.end (); ) {
-    LinkedFace face = *it;
+    auto        faceIt = it;
+    WingedFace* face   = *it;
     ++it;
 
-    Maybe <LinkedEdge> tEdge = face->tEdge ();
-    if (tEdge.isDefined () && tEdge.data ()->isRightFace (*face)) {
-      LinkedFace f = mesh.deleteEdge (tEdge.data ());
-      faces.erase     (face);
-      assert (f->tEdge ().isUndefined ());
+    WingedEdge* tEdge = face->tEdge ();
+    if (tEdge && tEdge->isRightFace (*face)) {
+      WingedFace& f = mesh.deleteEdge (*tEdge);
+      faces.erase (faceIt);
+      assert (f.tEdge () == nullptr);
     }
   }
 }
 
-typedef std::vector <LinkedVertex> Adjacents;
-Adjacents adjacents           (const WingedMesh&, LinkedVertex, unsigned int, LinkedEdge);
+typedef std::vector <WingedVertex*> Adjacents;
+Adjacents adjacents           (const WingedMesh&, WingedVertex&, unsigned int, WingedEdge&);
 glm::vec3 subdivK6            (const WingedMesh&, const Adjacents&, const Adjacents&);
 glm::vec3 subdivK             (const WingedMesh&, const glm::vec3&, const Adjacents&);
 glm::vec3 subdivExtraordinary (const WingedMesh&, const Adjacents&, const Adjacents&);
 
 glm::vec3 subdivideEdge ( const WingedMesh& mesh, unsigned int selectionLevel
-                        , LinkedEdge edge) {
-  LinkedVertex  v1    = edge->vertex1 ();
-  LinkedVertex  v2    = edge->vertex2 ();
+                        , WingedEdge& edge) {
+  WingedVertex& v1    = edge.vertex1Ref ();
+  WingedVertex& v2    = edge.vertex2Ref ();
   Adjacents     a1    = adjacents     (mesh,v1,selectionLevel,edge);
   Adjacents     a2    = adjacents     (mesh,v2,selectionLevel,edge);
 
   if (a1.size () == 6 && a2.size () == 6)
     return subdivK6 (mesh,a1,a2);
   else if (a1.size () == 6 && a2.size () < 6)
-    return subdivK (mesh,v2->vertex (mesh), a2);
+    return subdivK (mesh,v2.vertex (mesh), a2);
   else if (a1.size () < 6 && a2.size () == 6)
-    return subdivK (mesh,v1->vertex (mesh), a1);
+    return subdivK (mesh,v1.vertex (mesh), a1);
   else 
     return subdivExtraordinary (mesh,a1,a2);
 }
 
-Maybe <LinkedVertex> compatibleLevelAdjacent ( const WingedMesh&, unsigned int
-                                             , LinkedEdge, LinkedVertex);
+WingedVertex* compatibleLevelAdjacent ( const WingedMesh&, unsigned int
+                                      , WingedEdge&, WingedVertex&);
 
-Adjacents adjacents ( const WingedMesh& mesh, LinkedVertex v
-                    , unsigned int selectionLevel, LinkedEdge e) {
+Adjacents adjacents ( const WingedMesh& mesh, WingedVertex& v
+                    , unsigned int selectionLevel, WingedEdge& e) {
   Adjacents adjacents;
-  for (auto it = v->adjacentEdgeIterator (e); it.isValid (); it.next ()) {
-    if (! it.element ()->isTEdge ()) {
-      Maybe <LinkedVertex> a = compatibleLevelAdjacent (mesh,selectionLevel,it.element (),v);
-      if (a.isDefined ())
-        adjacents.push_back (a.data ());
+  for (auto it = v.adjacentEdgeIterator (e); it.isValid (); it.next ()) {
+    if (! it.element ().isTEdge ()) {
+      WingedVertex* a = compatibleLevelAdjacent (mesh,selectionLevel,it.element (),v);
+      if (a)
+        adjacents.push_back (a);
     }
   }
   return adjacents;
 }
 
-Maybe <LinkedVertex> compatibleLevelAdjacent ( const WingedMesh& mesh
+WingedVertex* compatibleLevelAdjacent ( const WingedMesh& mesh
                                              , unsigned int level
-                                             , LinkedEdge e, LinkedVertex v) {
-  LinkedVertex other = e->otherVertex (*v);
-  if (other->level () <= level) 
-    return Maybe <LinkedVertex> (other);
+                                             , WingedEdge& e, WingedVertex& v) {
+  WingedVertex& other = e.otherVertexRef (v);
+  if (other.level () <= level) 
+    return &other;
   else {
-    Maybe <LinkedEdge> sibling = e->adjacentSibling (*other);
-    if (sibling.isUndefined ()) {
-      return Maybe <LinkedVertex> ();
+    WingedEdge* sibling = e.adjacentSibling (other);
+    if (sibling) {
+      return compatibleLevelAdjacent (mesh, level, *sibling, other);
     }
     else {
-      return compatibleLevelAdjacent (mesh, level, sibling.data (), other);
+      return nullptr;
     }
   }
 }

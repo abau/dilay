@@ -7,25 +7,14 @@
 #include "winged-mesh.hpp"
 #include "adjacent-iterator.hpp"
 #include "triangle.hpp"
-#include "maybe.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace (IdType id) : _id (id), _octreeNode (nullptr) {}
-
-WingedFace :: WingedFace (LinkedEdge e, IdType id) 
+WingedFace :: WingedFace (WingedEdge* e, IdType id) 
   : _id (id), _edge (e), _octreeNode (nullptr) {}
-
-void WingedFace :: setEdge (LinkedEdge e) {
-  this->_edge = e;
-}
-
-void WingedFace :: octreeNode (OctreeNode* node) {
-  this->_octreeNode = node;
-}
 
 void WingedFace :: addIndices (WingedMesh& mesh) {
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    it.element ()->addIndex (mesh);
+    it.element ().addIndex (mesh);
   }
 }
 
@@ -56,42 +45,42 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
   return glm::normalize (glm::cross (v2-v1, v3-v2));
 }
 
-LinkedEdge WingedFace :: adjacent (const WingedVertex& vertex) const {
+WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex) const {
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    if (it.element ()->isAdjacent (vertex))
-      return it.element ();
+    if (it.element ().isAdjacent (vertex))
+      return &it.element ();
   }
   assert (false);
 }
 
-LinkedEdge WingedFace :: longestEdge (const WingedMesh& mesh) const {
-  LinkedEdge longest   = this->edge ();
-  float      maxLength = 0.0f;
+WingedEdge* WingedFace :: longestEdge (const WingedMesh& mesh) const {
+  WingedEdge* longest   = this->edge ();
+  float       maxLength = 0.0f;
 
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    float length = it.element ()->length (mesh);
+    float length = it.element ().length (mesh);
     if (length > maxLength) {
       maxLength = length;
-      longest   = it.element ();
+      longest   = &it.element ();
     }
   }
   return longest;
 }
 
-Maybe<LinkedVertex> WingedFace :: tVertex () const {
+WingedVertex* WingedFace :: tVertex () const {
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    if (it.element ()->tEdge ().isDefined ())
-      return Maybe<LinkedVertex> (it.element ());
+    if (it.element ().tEdge ())
+      return &it.element ();
   }
-  return Maybe<LinkedVertex> ();
+  return nullptr;
 }
 
-Maybe<LinkedEdge> WingedFace :: tEdge () const {
+WingedEdge* WingedFace :: tEdge () const {
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    if (it.element ()->isTEdge ())
-      return Maybe<LinkedEdge> (it.element ());
+    if (it.element ().isTEdge ())
+      return &it.element ();
   }
-  return Maybe<LinkedEdge> ();
+  return nullptr;
 }
 
 unsigned int WingedFace :: level () const {
@@ -99,16 +88,16 @@ unsigned int WingedFace :: level () const {
   levelMin = [&levelMin,this] (unsigned int min) {
     unsigned int l = std::numeric_limits <unsigned int>::max ();
     for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-      if (it.element ()->isTEdge ())
-        return it.element ()->vertex1 ()->level () - 1;
-      if (it.element ()->vertex1 ()->level () >= min)
-        l = std::min <unsigned int> (l, it.element ()->vertex1 ()->level ());
-      if (it.element ()->vertex2 ()->level () >= min)
-        l = std::min <unsigned int> (l, it.element ()->vertex2 ()->level ());
+      if (it.element ().isTEdge ())
+        return it.element ().vertex1Ref ().level () - 1;
+      if (it.element ().vertex1Ref ().level () >= min)
+        l = std::min <unsigned int> (l, it.element ().vertex1Ref ().level ());
+      if (it.element ().vertex2Ref ().level () >= min)
+        l = std::min <unsigned int> (l, it.element ().vertex2Ref ().level ());
     }
     unsigned int count = 0;
     for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-      if (it.element ()->level () == l)
+      if (it.element ().level () == l)
         count++;
     }
     if (count == 1)
@@ -119,14 +108,14 @@ unsigned int WingedFace :: level () const {
   return levelMin (0);
 }
 
-LinkedVertex WingedFace :: highestLevelVertex () const {
-  Maybe <LinkedVertex> v;
+WingedVertex* WingedFace :: highestLevelVertex () const {
+  WingedVertex* v = nullptr;
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    if (v.isUndefined () || it.element ()->level () > v.data ()->level ()) {
-      v.data (it.element ());
+    if (v == nullptr || it.element ().level () > v->level ()) {
+      v = &it.element ();
     }
   }
-  return v.data ();
+  return v;
 }
 
 AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator (bool skipT) const {
@@ -138,15 +127,15 @@ AdjacentVertexIterator WingedFace :: adjacentVertexIterator (bool skipT) const {
 AdjacentFaceIterator WingedFace :: adjacentFaceIterator (bool skipT) const {
   return AdjacentFaceIterator (*this,skipT);
 }
-AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator ( LinkedEdge e
+AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator ( WingedEdge& e
                                                         , bool skipT) const {
   return AdjacentEdgeIterator (*this,e,skipT);
 }
-AdjacentVertexIterator WingedFace :: adjacentVertexIterator ( LinkedEdge e
+AdjacentVertexIterator WingedFace :: adjacentVertexIterator ( WingedEdge& e
                                                             , bool skipT) const {
   return AdjacentVertexIterator (*this,e,skipT);
 }
-AdjacentFaceIterator WingedFace :: adjacentFaceIterator ( LinkedEdge e
+AdjacentFaceIterator WingedFace :: adjacentFaceIterator ( WingedEdge& e
                                                         , bool skipT) const {
   return AdjacentFaceIterator (*this,e,skipT);
 }
