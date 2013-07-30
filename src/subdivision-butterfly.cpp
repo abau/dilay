@@ -12,8 +12,8 @@
 #include "winged-util.hpp"
 #include "adjacent-iterator.hpp"
 #include "subdivision-util.hpp"
-
-#include <iostream> // delete this
+#include "id.hpp"
+#include "octree.hpp"
 
 typedef std::unordered_set <WingedFace*> FaceSet;
 
@@ -23,54 +23,36 @@ void SubdivButterfly :: subdivide (WingedMesh& mesh, WingedFace& face) {
   subdivide (mesh,face.level (),face);
 }
 
-/*
-void SubdivButterfly :: subdivide ( WingedMesh& mesh
-                                  , std::list <WingedFace*>& faces) {
-  if (faces.empty ()) return;
+void SubdivButterfly :: subdivide ( WingedMesh& mesh, std::list <Id>& ids) {
+  if (ids.empty ()) return;
 
   unsigned int minLevel = std::numeric_limits <unsigned int>::max ();
 
   // search minimal level
-  for (WingedFace* face : faces) {
-    unsigned int level = face->level ();
+  for (auto& id : ids) {
+    unsigned int level = mesh.octree ().faceRef (id).level ();
     minLevel = level < minLevel ? level : minLevel;
   }
 
   // don't subdivide faces of higher levels
-  std::cout << "######################################\n";
-  for (auto it = faces.begin (); it != faces.end (); ) {
-    LinkedFace         face  = *it;
-    unsigned int       level = face->level ();
-    Maybe <LinkedEdge> tEdge = face->tEdge ();
-    if (level == minLevel && (  tEdge.isUndefined () 
-                             || tEdge.data ()->isLeftFace (*face))) {
-      std::cout << "subdividing " << face->id () << std::endl;
+  for (auto it = ids.begin (); it != ids.end (); ) {
+    WingedFace&  face  = mesh.octree ().faceRef (*it);
+    unsigned int level = face.level ();
+    WingedEdge*  tEdge = face.tEdge ();
+    if (level == minLevel && (tEdge == nullptr || tEdge->isLeftFace (face))) {
       ++it;
     }
     else {
-      faces.erase (it++);
+      ids.erase (it++);
     }
   }
-  std::cout << "######################################\n";
 
-  std::cout << "--------------------------------------\n";
-  std::cout << "subdividing " << faces.size () << " faces of level " << minLevel << std::endl;
-
-  for (auto it = faces.begin (); it != faces.end (); ++it) {
-    LinkedFace f = *it;
-    std::cout << "subdividing face " << f->id () << std::endl;
-    subdivide (mesh,minLevel,f);
-
-    for (auto it2 = it; it2 != faces.end (); ++it2) {
-      LinkedFace f2 = *it2;
-      std::cout << "remaining face " << f2->id () 
-                << " of level "<< f2->level () 
-                << std::endl;
-    }
+  for (auto it = ids.begin (); it != ids.end (); ++it) {
+    WingedFace* face = mesh.octree ().face (*it);
+    if (face)
+      subdivide (mesh,minLevel,*face);
   }
-  std::cout << "--------------------------------------\n";
 }
-*/
 
 bool       oneRingNeighbourhood (WingedMesh&, WingedFace&, FaceSet&);
 bool       oneRingBorder        (WingedMesh&, unsigned int, FaceSet&, FaceSet&);

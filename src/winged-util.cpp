@@ -31,7 +31,7 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedVertex&
 void WingedUtil :: printStatistics (const WingedEdge& e) {
   auto siblingId = [] (WingedEdge* sibling) {
     if (sibling)
-      return std::to_string (sibling->id ());
+      return std::to_string (sibling->id ().get ());
     else
       return std::string ("NULL");
   };

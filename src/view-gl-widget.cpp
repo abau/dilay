@@ -16,7 +16,7 @@
 #include "winged-face.hpp"
 #include "tool.hpp"
 #include "tool-rotate.hpp"
-//#include "tool-carve.hpp"
+#include "tool-carve.hpp"
 
 struct GLWidgetImpl {
   Axis          axis;
@@ -99,8 +99,8 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
-    if (Tool :: click ())
-//    if (ToolCarve :: run ())
+//    if (Tool :: click ())
+    if (ToolCarve :: run ())
       this->update ();
   }
 }

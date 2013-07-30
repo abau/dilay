@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <unordered_set>
-#include "id.hpp"
 #include "fwd-glm.hpp"
 #include "macro.hpp"
+#include "id.hpp"
 
 class AdjacentEdgeIterator;
 class AdjacentVertexIterator;
@@ -17,9 +17,9 @@ class WingedVertex;
 
 class WingedFace {
   public:                    WingedFace      ( WingedEdge* = nullptr
-                                             , IdType = Id::invalidId ());
+                                             , const Id& = Id ());
 
-    IdType                   id              () const { return this->_id.get (); }
+    Id                       id              () const { return this->_id.id (); }
     WingedEdge*              edge            () const { return this->_edge; }
     OctreeNode*              octreeNode      () const { return this->_octreeNode; }
 
@@ -56,9 +56,9 @@ class WingedFace {
     SAFE_REF  (WingedEdge, tEdge)
     SAFE_REF  (WingedVertex, highestLevelVertex)
   private:
-    const Id    _id;
-    WingedEdge* _edge;
-    OctreeNode* _octreeNode;
+    const IdObject _id;
+    WingedEdge*    _edge;
+    OctreeNode*    _octreeNode;
 };
 
 #endif

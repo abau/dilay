@@ -15,6 +15,7 @@ class ConstOctreeNodeIterator;
 class WingedVertex;
 class WingedFace;
 class WingedEdge;
+class Id;
 
 class WingedMesh {
   public: WingedMesh                  ();

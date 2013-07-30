@@ -9,7 +9,7 @@
 #include "triangle.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace (WingedEdge* e, IdType id) 
+WingedFace :: WingedFace (WingedEdge* e, const Id& id) 
   : _id (id), _edge (e), _octreeNode (nullptr) {}
 
 void WingedFace :: addIndices (WingedMesh& mesh) {

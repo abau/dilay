@@ -4,6 +4,7 @@
 #include "fwd-glm.hpp"
 #include "id.hpp"
 #include "iterator.hpp"
+#include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
@@ -36,9 +37,10 @@ class OctreeNode {
           OctreeNode               (const OctreeNode&) = delete;
     const OctreeNode& operator=    (const OctreeNode&) = delete;
 
-    IdType            id           () const;
+    Id                id           () const;
     int               depth        () const;
     const glm::vec3&  center       () const;
+    float             looseWidth   () const;
     float             width        () const;
     void              deleteFace   (const WingedFace&);
     void              intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
@@ -65,8 +67,8 @@ class Octree {
     WingedFace& insertNewFace (const WingedFace&, const Triangle&);
     WingedFace& reInsertFace  (const WingedFace&, const Triangle&);
     void        deleteFace    (const WingedFace&);
-    bool        hasFace       (IdType);
-    WingedFace& getFace       (IdType);
+    bool        hasFace       (const Id&) const;
+    WingedFace* face          (const Id&) const;
     void        render        ();
     void        intersectRay  (const WingedMesh&, const Ray&, FaceIntersection&);
     void        reset         ();
@@ -76,6 +78,8 @@ class Octree {
     ConstOctreeFaceIterator faceIterator () const;
     OctreeNodeIterator      nodeIterator ();
     ConstOctreeNodeIterator nodeIterator () const;
+
+    SAFE_REF1 (WingedFace,face,const Id&)
 
   private:
     Impl* impl;

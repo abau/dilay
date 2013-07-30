@@ -13,6 +13,7 @@
 #include "octree.hpp"
 #include "octree-util.hpp"
 #include "util.hpp"
+#include "id.hpp"
 
 struct WingedMesh::Impl {
   WingedMesh&              wingedMesh;

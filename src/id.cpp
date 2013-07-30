@@ -1,14 +1,18 @@
+#include <fstream>
 #include "id.hpp"
 
-Id :: Id (IdType id) : _id (id == Id::invalidId () ? Id::nextId () : id) {}
-Id :: Id (const Id&) : _id (Id::nextId ()) {}
-
-const Id& Id :: operator= (const Id&) {
-  return *this;
+std::ostream& operator<<(std::ostream& os, const Id& id) {
+  os << id.get ();
+  return os;
 }
 
-IdType Id :: nextId () {
-  static IdType nextId = Id::invalidId ();
+IdObject :: IdObject (const Id& id) 
+  : _id (id == IdObject::invalidId () ? IdObject::nextId () : id.get ()) {}
+
+IdObject :: IdObject (const IdObject&) : _id (IdObject::nextId ()) {}
+
+IdPrimitive IdObject :: nextId () {
+  static IdPrimitive nextId = IdObject::invalidId ().get ();
   nextId++;
   return nextId;
 }

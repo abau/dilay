@@ -1,11 +1,10 @@
 #ifndef DILAY_WINGED_EDGE
 #define DILAY_WINGED_EDGE
 
-#include "id.hpp"
 #include "fwd-glm.hpp"
 #include "macro.hpp"
+#include "id.hpp"
 
-class Id;
 class WingedVertex;
 class WingedFace;
 class WingedMesh;
@@ -17,8 +16,7 @@ class WingedEdge {
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*
                , WingedEdge*, WingedEdge*);
 
-    IdType        id               () const { return this->_id.get (); }
-
+    Id            id               () const { return this->_id.id (); }
     WingedVertex* vertex1          () const { return this->_vertex1; }
     WingedVertex* vertex2          () const { return this->_vertex2; }
     WingedFace*   leftFace         () const { return this->_leftFace; }
@@ -106,24 +104,24 @@ class WingedEdge {
     SAFE_REF1 (WingedEdge  , adjacentSibling, const WingedVertex&)
 
   private:
-    const Id      _id;
+    const IdObject _id;
 
-    WingedVertex* _vertex1;
-    WingedVertex* _vertex2;
+    WingedVertex*  _vertex1;
+    WingedVertex*  _vertex2;
 
-    WingedFace*   _leftFace;
-    WingedFace*   _rightFace;
+    WingedFace*    _leftFace;
+    WingedFace*    _rightFace;
 
-    WingedEdge*   _leftPredecessor;
-    WingedEdge*   _leftSuccessor;
+    WingedEdge*    _leftPredecessor;
+    WingedEdge*    _leftSuccessor;
 
-    WingedEdge*   _rightPredecessor;
-    WingedEdge*   _rightSuccessor;
+    WingedEdge*    _rightPredecessor;
+    WingedEdge*    _rightSuccessor;
 
-    WingedEdge*   _previousSibling;
-    WingedEdge*   _nextSibling;
+    WingedEdge*    _previousSibling;
+    WingedEdge*    _nextSibling;
 
-    bool          _isTEdge;
+    bool           _isTEdge;
 };
 
 #endif

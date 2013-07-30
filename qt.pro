@@ -12,7 +12,7 @@ QT                     += opengl
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++11
-QMAKE_CXXFLAGS_DEBUG   += #-DDILAY_RENDER_OCTREE
+QMAKE_CXXFLAGS_DEBUG   += # -DDILAY_RENDER_OCTREE
 
 SOURCES += \
            src/adjacent-iterator.cpp \
@@ -37,7 +37,7 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/subdivision-util.cpp \
            src/tool.cpp \
-       #   src/tool-carve.cpp \
+           src/tool-carve.cpp \
            src/tool-rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
@@ -78,7 +78,7 @@ HEADERS += \
            src/subdivision-butterfly.hpp \
            src/subdivision-util.hpp \
            src/tool.hpp \
-      #    src/tool-carve.hpp \
+           src/tool-carve.hpp \
            src/tool-rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \

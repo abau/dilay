@@ -119,17 +119,22 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
 }
 
 bool IntersectionUtil :: intersects (const Sphere& sphere, const OctreeNode& node) {
-  float     w = node.width () * 0.5f;
-  glm::vec3 c = node.center ();
+  const float     w = node.looseWidth () * 0.5f;
+  const glm::vec3 b = node.center ();
+  const glm::vec3 c = sphere.center ();
+  float         s,d = 0.0f;
 
-  return IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,+w,+w))
-      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,+w,-w))
-      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,-w,+w))
-      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (+w,-w,-w))
-      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,+w,+w))
-      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,+w,-w))
-      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,-w,+w))
-      || IntersectionUtil :: intersects (sphere, c + glm::vec3 (-w,-w,-w));
+  for (unsigned int i = 0; i < 3; i++) {
+    if (c[i] < b[i] - w) {
+      s  = c[i] - b[i] + w;
+      d += s * s;
+    }
+    else if (c[i] > b[i] + w) {
+      s  = c[i] - b[i] - w;
+      d += s * s;
+    }
+  }
+  return d <= sphere.radius () * sphere.radius ();
 }
 
 bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float& t) {

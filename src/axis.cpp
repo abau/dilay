@@ -53,7 +53,7 @@ struct Axis::Impl {
   }
 };
 
-Axis :: Axis () { this->impl = new Impl (); }
-Axis :: ~Axis () { delete this->impl; }
-void Axis :: initialize () { return this->impl->initialize ();}
-void Axis :: render () { return this->impl->render ();}
+DELEGATE_CONSTRUCTOR (Axis)
+DELEGATE_DESTRUCTOR  (Axis)
+DELEGATE             (void, Axis, initialize)
+DELEGATE             (void, Axis, render)

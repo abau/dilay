@@ -34,12 +34,12 @@ class FaceToInsert {
 
 /** Octree node implementation */
 struct OctreeNode::Impl {
-  Id                     id;
+  IdObject               id;
   OctreeNode             node;
-  glm::vec3              center;
-  float                  width;
+  const glm::vec3        center;
+  const float            width;
   std::vector <Child>    children;
-  int                    depth;
+  const int              depth;
   std::list <WingedFace> faces;
   // cf. Octree.newParent
 
@@ -120,6 +120,8 @@ struct OctreeNode::Impl {
     assert (false);
 #endif
   }
+
+  float looseWidth () const { return this->width * 2.0f; }
 
   bool contains (const glm::vec3& v) {
     const glm::vec3 min = this->center - glm::vec3 (this->width * 0.5f);
@@ -237,6 +239,7 @@ OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
 ID             (OctreeNode)
 GETTER         (int, OctreeNode, depth)
 GETTER         (const glm::vec3&, OctreeNode, center)
+DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER         (float, OctreeNode, width)
 DELEGATE1      (void, OctreeNode, deleteFace, const WingedFace&)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
@@ -246,7 +249,7 @@ DELEGATE_CONST (ConstOctreeNodeFaceIterator, OctreeNode, faceIterator)
 
 /** Octree class */
 struct Octree::Impl {
-  typedef std::unordered_map <IdType,WingedFace*> IdMap;
+  typedef std::unordered_map <IdPrimitive,WingedFace*> IdMap;
 
   Child root;
   IdMap idMap;
@@ -278,24 +281,26 @@ struct Octree::Impl {
       this->makeParent (faceToInsert);
       wingedFace = &this->insertFace (face,geometry);
     }
-    this->idMap.insert ({{face.id (), wingedFace}});
+    this->idMap.insert ({{face.id ().get (), wingedFace}});
     return *wingedFace;
   }
 
   void deleteFace (const WingedFace& face) {
     assert (face.octreeNode ());
     assert (this->hasFace (face.id ())); 
-    this->idMap.erase (face.id ());
+    this->idMap.erase (face.id ().get ());
     face.octreeNodeRef ().impl->deleteFace (face);
   }
 
-  bool hasFace (IdType id) { return this->idMap.count (id) == 1; }
+  bool hasFace (const Id& id) const { return this->idMap.count (id.get ()) == 1; }
 
-  WingedFace& getFace (IdType id) {
-    IdMap::iterator result = this->idMap.find (id);
+  WingedFace* face (const Id& id) const {
+    IdMap::const_iterator result = this->idMap.find (id.get ());
 
-    assert (result != this->idMap.end ());
-    return *result->second;
+    if (result == this->idMap.end ())
+      return nullptr;
+    else
+      return result->second;
   }
 
   void makeParent (const FaceToInsert& f) {
@@ -365,19 +370,19 @@ struct Octree::Impl {
 
 DELEGATE_CONSTRUCTOR (Octree)
 DELEGATE_DESTRUCTOR  (Octree)
-DELEGATE2      (WingedFace& , Octree, insertNewFace, const WingedFace&, const Triangle&)
-DELEGATE2      (WingedFace& , Octree, reInsertFace, const WingedFace&, const Triangle&)
-DELEGATE1      (void        , Octree, deleteFace, const WingedFace&)
-DELEGATE1      (bool        , Octree, hasFace, IdType)
-DELEGATE1      (WingedFace& , Octree, getFace, IdType)
-DELEGATE       (void, Octree, render)
-DELEGATE3      (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
-DELEGATE       (void, Octree, reset)
-DELEGATE2      (void, Octree, reset, const glm::vec3&, float)
-DELEGATE       (OctreeFaceIterator, Octree, faceIterator)
-DELEGATE_CONST (ConstOctreeFaceIterator, Octree, faceIterator)
-DELEGATE       (OctreeNodeIterator, Octree, nodeIterator)
-DELEGATE_CONST (ConstOctreeNodeIterator, Octree, nodeIterator)
+DELEGATE2       (WingedFace& , Octree, insertNewFace, const WingedFace&, const Triangle&)
+DELEGATE2       (WingedFace& , Octree, reInsertFace, const WingedFace&, const Triangle&)
+DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
+DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
+DELEGATE1_CONST (WingedFace* , Octree, face, const Id&)
+DELEGATE        (void, Octree, render)
+DELEGATE3       (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
+DELEGATE        (void, Octree, reset)
+DELEGATE2       (void, Octree, reset, const glm::vec3&, float)
+DELEGATE        (OctreeFaceIterator, Octree, faceIterator)
+DELEGATE_CONST  (ConstOctreeFaceIterator, Octree, faceIterator)
+DELEGATE        (OctreeNodeIterator, Octree, nodeIterator)
+DELEGATE_CONST  (ConstOctreeNodeIterator, Octree, nodeIterator)
 
 /** Internal template for iterators over all faces of a node */
 template <bool isConstant>
