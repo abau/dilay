@@ -56,6 +56,7 @@ void OctreeUtil :: printStatistics (const Octree& octree) {
             << "\n\tmax faces per node:\t" << maxFaces
             << "\n\tmin depth:\t\t" << minDepth
             << "\n\tmax depth:\t\t" << maxDepth
+            << "\n\tfaces per node:\t\t" << float (numFacesCheck) / float (numNodes) 
             << std::endl;
 
   if (numNodes <= 20) {

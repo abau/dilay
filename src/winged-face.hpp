@@ -1,8 +1,7 @@
 #ifndef DILAY_WINGED_FACE
 #define DILAY_WINGED_FACE
 
-#include <vector>
-#include <unordered_set>
+#include "fwd-winged.hpp"
 #include "fwd-glm.hpp"
 #include "macro.hpp"
 #include "id.hpp"
@@ -22,9 +21,12 @@ class WingedFace {
     Id                       id              () const { return this->_id.id (); }
     WingedEdge*              edge            () const { return this->_edge; }
     OctreeNode*              octreeNode      () const { return this->_octreeNode; }
+    Faces::iterator          iterator        () const { return this->_iterator; }
 
     void                     edge            (WingedEdge* e) { this->_edge       = e; }
     void                     octreeNode      (OctreeNode* n) { this->_octreeNode = n; }
+    void                     iterator        (const Faces::iterator& i) 
+                                                             { this->_iterator = i; }
     void                     addIndices      (WingedMesh&);
     Triangle                 triangle        (const WingedMesh&) const;
     unsigned int             numEdges        () const;
@@ -56,9 +58,10 @@ class WingedFace {
     SAFE_REF  (WingedEdge, tEdge)
     SAFE_REF  (WingedVertex, highestLevelVertex)
   private:
-    const IdObject _id;
-    WingedEdge*    _edge;
-    OctreeNode*    _octreeNode;
+    const IdObject  _id;
+    WingedEdge*     _edge;
+    OctreeNode*     _octreeNode;
+    Faces::iterator _iterator;
 };
 
 #endif

@@ -42,7 +42,6 @@ class OctreeNode {
     const glm::vec3&  center       () const;
     float             looseWidth   () const;
     float             width        () const;
-    void              deleteFace   (const WingedFace&);
     void              intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
     unsigned int      numFaces     () const;
 

@@ -12,7 +12,8 @@ QT                     += opengl
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++11
-QMAKE_CXXFLAGS_DEBUG   += # -DDILAY_RENDER_OCTREE
+QMAKE_CXXFLAGS_DEBUG   += # -pg # -DDILAY_RENDER_OCTREE
+QMAKE_LFLAGS_DEBUG     += # -pg 
 
 SOURCES += \
            src/adjacent-iterator.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
            src/config-conversion.hpp \
            src/cursor.hpp \
            src/fwd-glm.hpp \
+           src/fwd-winged.hpp \
            src/fwd-yaml.hpp \
            src/history.hpp \
            src/id.hpp \

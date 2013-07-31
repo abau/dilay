@@ -3,6 +3,7 @@
 
 #include <list>
 #include "fwd-glm.hpp"
+#include "fwd-winged.hpp"
 
 class FaceIntersection;
 class Ray;
@@ -28,9 +29,9 @@ class WingedMesh {
     WingedEdge&       addEdge         (const WingedEdge&);
     WingedFace&       addFace         (const WingedFace&, const Triangle&);
 
-    const std::list <WingedVertex>&   vertices () const;
-    const std::list <WingedEdge>&     edges    () const;
-    const Octree&                     octree   () const;
+    const Vertices&   vertices () const;
+    const Edges&      edges    () const;
+    const Octree&     octree   () const;
 
     OctreeFaceIterator      octreeFaceIterator ();
     ConstOctreeFaceIterator octreeFaceIterator () const;

@@ -12,7 +12,6 @@
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "octree-util.hpp"
-#include "util.hpp"
 #include "id.hpp"
 
 struct WingedMesh::Impl {
@@ -34,6 +33,7 @@ struct WingedMesh::Impl {
 
   WingedEdge& addEdge (const WingedEdge& e) {
     this->edges.push_back (e);
+    this->edges.back ().iterator (--this->edges.end ());
     return this->edges.back ();
   }
 
@@ -69,7 +69,7 @@ struct WingedMesh::Impl {
 
     remainingFace->edge (edge.leftSuccessor ());
 
-    Util :: eraseByAddress <WingedEdge> (this->edges, &edge);
+    this->edges.erase (edge.iterator ());
     this->octree.deleteFace (*faceToDelete); 
     return *remainingFace;
   }
@@ -169,9 +169,9 @@ DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsig
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
 DELEGATE2       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const Triangle&)
 
-GETTER          (const std::list <WingedVertex>&, WingedMesh, vertices)
-GETTER          (const std::list <WingedEdge>&  , WingedMesh, edges)
-GETTER          (const Octree&                  , WingedMesh, octree)
+GETTER          (const Vertices&, WingedMesh, vertices)
+GETTER          (const Edges&   , WingedMesh, edges)
+GETTER          (const Octree&  , WingedMesh, octree)
 
 DELEGATE        (OctreeFaceIterator     , WingedMesh, octreeFaceIterator)
 DELEGATE_CONST  (ConstOctreeFaceIterator, WingedMesh, octreeFaceIterator)

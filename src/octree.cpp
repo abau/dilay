@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <list>
+#include <vector>
 #include <memory>
 #include <type_traits>
 #include <unordered_map>
@@ -9,7 +10,7 @@
 #include "triangle.hpp"
 #include "ray.hpp"
 #include "intersection.hpp"
-#include "util.hpp"
+#include "fwd-winged.hpp"
 
 #ifdef DILAY_RENDER_OCTREE
 #include "mesh.hpp"
@@ -34,16 +35,16 @@ class FaceToInsert {
 
 /** Octree node implementation */
 struct OctreeNode::Impl {
-  IdObject               id;
-  OctreeNode             node;
-  const glm::vec3        center;
-  const float            width;
-  std::vector <Child>    children;
-  const int              depth;
-  std::list <WingedFace> faces;
+  IdObject            id;
+  OctreeNode          node;
+  const glm::vec3     center;
+  const float         width;
+  std::vector <Child> children;
+  const int           depth;
+  Faces               faces;
   // cf. Octree.newParent
 
-  static constexpr float relativeMinFaceSize = 0.05f;
+  static constexpr float relativeMinFaceSize = 0.01f;
 
 #ifdef DILAY_RENDER_OCTREE
   Mesh mesh;
@@ -178,12 +179,13 @@ struct OctreeNode::Impl {
     else {
       this->faces.emplace_back (f.face.edge (), f.face.id ());
       this->faces.back ().octreeNode (&this->node);
+      this->faces.back ().iterator   (--this->faces.end ());
       return this->faces.back ();
     }
   }
 
   void deleteFace (const WingedFace& face) {
-    Util :: eraseByAddress <WingedFace> (this->faces, &face);
+    this->faces.erase (face.iterator ());
   }
 
   bool bboxIntersectRay (const Ray& ray) const {
@@ -241,7 +243,6 @@ GETTER         (int, OctreeNode, depth)
 GETTER         (const glm::vec3&, OctreeNode, center)
 DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER         (float, OctreeNode, width)
-DELEGATE1      (void, OctreeNode, deleteFace, const WingedFace&)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 DELEGATE       (OctreeNodeFaceIterator, OctreeNode, faceIterator)
@@ -249,8 +250,7 @@ DELEGATE_CONST (ConstOctreeNodeFaceIterator, OctreeNode, faceIterator)
 
 /** Octree class */
 struct Octree::Impl {
-  typedef std::unordered_map <IdPrimitive,WingedFace*> IdMap;
-
+  typedef std::unordered_map <IdPrimitive, WingedFace*> IdMap;
   Child root;
   IdMap idMap;
 
@@ -273,16 +273,15 @@ struct Octree::Impl {
       this->root = Child (new OctreeNode::Impl (rootCenter, faceToInsert.width, 0));
     }
 
-    WingedFace* wingedFace;
     if (this->root->contains (faceToInsert)) {
-      wingedFace = &this->root->insertFace (faceToInsert);
+      WingedFace& wingedFace = this->root->insertFace (faceToInsert);
+      this->idMap.insert ({{face.id ().get (), &wingedFace}});
+      return wingedFace;
     }
     else {
       this->makeParent (faceToInsert);
-      wingedFace = &this->insertFace (face,geometry);
+      return this->insertFace (face,geometry);
     }
-    this->idMap.insert ({{face.id ().get (), wingedFace}});
-    return *wingedFace;
   }
 
   void deleteFace (const WingedFace& face) {
@@ -300,7 +299,7 @@ struct Octree::Impl {
     if (result == this->idMap.end ())
       return nullptr;
     else
-      return result->second;
+      return &*result->second;
   }
 
   void makeParent (const FaceToInsert& f) {
