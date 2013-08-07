@@ -24,10 +24,13 @@ class WingedMesh {
     const WingedMesh& operator=       (const WingedMesh&);
          ~WingedMesh                  ();
 
-    void              addIndex        (unsigned int);
+    unsigned int      addIndex        (unsigned int);
     WingedVertex&     addVertex       (const glm::vec3&, unsigned int = 0);
     WingedEdge&       addEdge         (const WingedEdge&);
     WingedFace&       addFace         (const WingedFace&, const Triangle&);
+    void              setIndex        (unsigned int, unsigned int);
+    void              setVertex       (unsigned int, const glm::vec3&);
+    void              setNormal       (unsigned int, const glm::vec3&);
 
     const Vertices&   vertices () const;
     const Edges&      edges    () const;
@@ -38,6 +41,7 @@ class WingedMesh {
     OctreeNodeIterator      octreeNodeIterator ();
     ConstOctreeNodeIterator octreeNodeIterator () const;
 
+    void            releaseFirstIndexNumber (WingedFace&);
     /** Deletes an edge and its _right_ face. Note that other parts of the program
      * depend on this behaviour. */
     WingedFace&     deleteEdge        (WingedEdge&);
@@ -50,11 +54,11 @@ class WingedMesh {
     unsigned int    numWingedVertices () const;
     unsigned int    numEdges          () const;
     unsigned int    numFaces          () const;
+    unsigned int    numIndices        () const;
 
     glm::vec3       vertex            (unsigned int) const;
 
-    void            rebuildIndices    ();
-    void            rebuildNormals    ();
+    void            write             (); 
     void            bufferData        ();
     void            render            ();
     void            reset             ();
@@ -62,6 +66,9 @@ class WingedMesh {
     void            toggleRenderMode  ();
     
     void            intersectRay      (const Ray&, FaceIntersection&);
+
+    bool            hasFreeFirstIndexNumber  () const;
+    unsigned int    nextFreeFirstIndexNumber ();
   private:
     class Impl;
     Impl* impl;

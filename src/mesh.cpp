@@ -78,10 +78,6 @@ struct Mesh::Impl {
     return this->normals.size () * sizeof (GLfloat);
   }
 
-  bool hasNormals () const { return this->sizeOfNormals () > 0; }
-
-  void addIndex (unsigned int i) { this->indices.push_back (i); }
-
   glm::vec3 vertex (unsigned int i) const {
     return glm::vec3 ( this->vertices [(3 * i) + 0]
                      , this->vertices [(3 * i) + 1]
@@ -91,23 +87,40 @@ struct Mesh::Impl {
 
   unsigned int index (unsigned int i) const { return this->indices [i]; }
 
+  unsigned int addIndex (unsigned int i) { 
+    this->indices.push_back (i); 
+    return this->indices.size () - 1; 
+  }
+
   unsigned int addVertex (const glm::vec3& v) { 
     this->vertices.push_back (v.x);
     this->vertices.push_back (v.y);
     this->vertices.push_back (v.z);
+
+    this->normals.push_back (0.0f);
+    this->normals.push_back (0.0f);
+    this->normals.push_back (0.0f);
+
     return this->numVertices () - 1;
   }
 
-  unsigned int addNormal (const glm::vec3& n) { 
-    this->normals.push_back (n.x);
-    this->normals.push_back (n.y);
-    this->normals.push_back (n.z);
-    return this->numNormals () - 1;
+  void setIndex (unsigned int indexNumber, unsigned int index) {
+    assert (indexNumber < this->indices.size ());
+    this->indices[indexNumber] = index;
   }
 
-  void clearIndices () { this->indices.clear (); }
-  void clearNormals () { 
-    this->normals.clear (); 
+  void setVertex (unsigned int i, const glm::vec3& v) {
+    assert (i < this->numVertices ());
+    this->vertices [(3*i) + 0] = v.x;
+    this->vertices [(3*i) + 1] = v.y;
+    this->vertices [(3*i) + 2] = v.z;
+  }
+
+  void setNormal (unsigned int i, const glm::vec3& n) {
+    assert (i < this->numNormals ());
+    this->normals [(3*i) + 0] = n.x;
+    this->normals [(3*i) + 1] = n.y;
+    this->normals [(3*i) + 2] = n.z;
   }
 
   void bufferData () {
@@ -117,7 +130,7 @@ struct Mesh::Impl {
       glGenBuffers      (1, &this->vertexBufferId);
     if (glIsBuffer (this->indexBufferId) == GL_FALSE)
       glGenBuffers      (1, &this->indexBufferId);
-    if (glIsBuffer (this->normalBufferId) == GL_FALSE && this->hasNormals ())
+    if (glIsBuffer (this->normalBufferId) == GL_FALSE)
       glGenBuffers      (1, &this->normalBufferId);
 
     glBindVertexArray          (this->arrayObjectId);
@@ -133,14 +146,12 @@ struct Mesh::Impl {
     glBufferData               ( GL_ELEMENT_ARRAY_BUFFER, this->sizeOfIndices ()
                                , &this->indices[0], GL_STATIC_DRAW);
 
-    if (this->hasNormals ()) {
-      glBindBuffer               ( GL_ARRAY_BUFFER, this->normalBufferId );
-      glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfNormals ()
-                                 , &this->normals[0], GL_STATIC_DRAW);
-      glEnableVertexAttribArray  ( OpenGLUtil :: NormalIndex);
-      glVertexAttribPointer      ( OpenGLUtil :: NormalIndex
-                                 , 3, GL_FLOAT, GL_FALSE, 0, 0);
-    }
+    glBindBuffer               ( GL_ARRAY_BUFFER, this->normalBufferId );
+    glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfNormals ()
+                               , &this->normals[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray  ( OpenGLUtil :: NormalIndex);
+    glVertexAttribPointer      ( OpenGLUtil :: NormalIndex
+                               , 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray (0);
   }
 
@@ -189,8 +200,8 @@ struct Mesh::Impl {
     this->rotations     = glm::mat4x4 (1.0f);
     this->translations  = glm::mat4x4 (1.0f);
     this->vertices.clear ();
-    this->clearIndices ();
-    this->clearNormals ();
+    this->indices.clear  ();
+    this->normals.clear  ();
     OpenGLUtil :: safeDeleteArray  (this->arrayObjectId);
     OpenGLUtil :: safeDeleteBuffer (this->vertexBufferId);
     OpenGLUtil :: safeDeleteBuffer (this->indexBufferId);
@@ -310,13 +321,13 @@ DELEGATE_CONST   (unsigned int, Mesh, sizeOfVertices)
 DELEGATE_CONST   (unsigned int, Mesh, sizeOfIndices)
 DELEGATE_CONST   (unsigned int, Mesh, sizeOfNormals)
 DELEGATE1_CONST  (glm::vec3   , Mesh, vertex, unsigned int)
-DELEGATE1_CONST  (unsigned int, Mesh, index , unsigned int)
+DELEGATE1_CONST  (unsigned int, Mesh, index, unsigned int)
 
-DELEGATE1        (void        , Mesh, addIndex,  unsigned int)
+DELEGATE1        (unsigned int, Mesh, addIndex, unsigned int)
 DELEGATE1        (unsigned int, Mesh, addVertex, const glm::vec3&)
-DELEGATE1        (unsigned int, Mesh, addNormal, const glm::vec3&)
-DELEGATE         (void        , Mesh, clearIndices)
-DELEGATE         (void        , Mesh, clearNormals)
+DELEGATE2        (void        , Mesh, setIndex, unsigned int, unsigned int)
+DELEGATE2        (void        , Mesh, setVertex, unsigned int, const glm::vec3&)
+DELEGATE2        (void        , Mesh, setNormal, unsigned int, const glm::vec3&)
 
 DELEGATE         (void        , Mesh, bufferData)
 DELEGATE         (void        , Mesh, renderBegin)

@@ -97,6 +97,12 @@ WingedFace& SubdivUtil :: triangulate6Gon (WingedMesh& mesh, WingedFace& f) {
   e50.successor    (a,&e01);
 
   f.edge           (&e13);
+
+  f.write          (mesh);
+  a.write          (mesh);
+  b.write          (mesh);
+  c.write          (mesh);
+
   return mesh.realignInOctree (f);
 }
 
@@ -110,6 +116,7 @@ void SubdivUtil :: triangulateQuadAtHeighestLevelVertex ( WingedMesh& mesh
   WingedVertex& vertex     = face.highestLevelVertexRef ();
   WingedEdge&  edge        = face.adjacentRef        (vertex);
   WingedEdge&  counterpart = edge.successorRef       (face,1);
+  WingedFace*  newFace;
   WingedEdge*  newEdge;
 
   if (edge.isFirstVertex (face, vertex)) {
@@ -117,9 +124,8 @@ void SubdivUtil :: triangulateQuadAtHeighestLevelVertex ( WingedMesh& mesh
                                   , edge.vertexRef (face, 2)
                                   , edge.vertexRef (face, 3));
 
-    WingedFace& newLeft = mesh.addFace (WingedFace (), newLeftGeometry);
-
-    newEdge = &splitFaceWith ( mesh, newLeft, face
+    newFace = &mesh.addFace (WingedFace (), newLeftGeometry);
+    newEdge = &splitFaceWith ( mesh, *newFace, face
                              , edge.predecessorRef (face), counterpart
                              , edge.successorRef (face), edge);
   }
@@ -128,13 +134,14 @@ void SubdivUtil :: triangulateQuadAtHeighestLevelVertex ( WingedMesh& mesh
                                   , edge.vertexRef (face, 1)
                                   , edge.vertexRef (face, 3));
 
-    WingedFace& newLeft = mesh.addFace (WingedFace (), newLeftGeometry);
-
-    newEdge = &splitFaceWith ( mesh, newLeft ,face
+    newFace = &mesh.addFace (WingedFace (), newLeftGeometry);
+    newEdge = &splitFaceWith ( mesh, *newFace ,face
                              , edge       , edge.predecessorRef (face)
                              , counterpart, edge.successorRef   (face));
   }
   newEdge->isTEdge (true);
+  newFace->write   (mesh);
+  face.write       (mesh);
 }
 
 // Internal /////////////

@@ -24,13 +24,22 @@ typedef std::unique_ptr <OctreeNode::Impl> Child;
 class FaceToInsert {
   public:
     FaceToInsert (const WingedFace& f, const Triangle& t)
-      : face     (f)
-      , center   (t.center    ())
-      , width    (t.maxExtent ()) {}
+      : id               (f.id               ())
+      , edge             (f.edge             ())
+      , firstIndexNumber (f.firstIndexNumber ())
+      , center           (t.center           ())
+      , width            (t.maxExtent        ())
+      , maximum          (t.maximum          ())
+      , minimum          (t.minimum          ())
+      {}
 
-    const WingedFace& face;
-    const glm::vec3   center;
-    const float       width;
+    Id                           id;
+    WingedEdge*                  edge;
+    WingedFace::FirstIndexNumber firstIndexNumber;
+    glm::vec3                    center;
+    float                        width;
+    glm::vec3                    maximum;
+    glm::vec3                    minimum;
 };
 
 /** Octree node implementation */
@@ -177,9 +186,11 @@ struct OctreeNode::Impl {
       return insertIntoChild (f);
     }
     else {
-      this->faces.emplace_back (f.face.edge (), f.face.id ());
-      this->faces.back ().octreeNode (&this->node);
-      this->faces.back ().iterator   (--this->faces.end ());
+      this->faces.emplace_back ( f.edge 
+                               , f.id 
+                               , &this->node
+                               , f.firstIndexNumber);
+      this->faces.back ().iterator (--this->faces.end ());
       return this->faces.back ();
     }
   }
@@ -256,31 +267,31 @@ struct Octree::Impl {
 
   WingedFace& insertNewFace (const WingedFace& face, const Triangle& geometry) {
     assert (! this->hasFace (face.id ())); 
-    return this->insertFace (face,geometry);
+    FaceToInsert faceToInsert (face,geometry);
+    return this->insertFace (faceToInsert);
   }
   WingedFace& reInsertFace (const WingedFace& face, const Triangle& geometry) {
     assert (this->hasFace (face.id ())); 
+    FaceToInsert faceToInsert (face,geometry);
     this->deleteFace (face);
-    return this->insertFace (face,geometry);
+    return this->insertFace (faceToInsert);
   }
 
-  WingedFace& insertFace (const WingedFace& face, const Triangle& geometry) {
-    FaceToInsert faceToInsert (face,geometry);
-
+  WingedFace& insertFace (FaceToInsert& faceToInsert) {
     if (! this->root) {
-      glm::vec3 rootCenter = (geometry.maximum () + geometry.minimum ()) 
+      glm::vec3 rootCenter = (faceToInsert.maximum + faceToInsert.minimum) 
                            * glm::vec3 (0.5f);
       this->root = Child (new OctreeNode::Impl (rootCenter, faceToInsert.width, 0));
     }
 
     if (this->root->contains (faceToInsert)) {
       WingedFace& wingedFace = this->root->insertFace (faceToInsert);
-      this->idMap.insert ({{face.id ().get (), &wingedFace}});
+      this->idMap.insert ({{faceToInsert.id.get (), &wingedFace}});
       return wingedFace;
     }
     else {
       this->makeParent (faceToInsert);
-      return this->insertFace (face,geometry);
+      return this->insertFace (faceToInsert);
     }
   }
 

@@ -20,10 +20,13 @@ struct WingedMesh::Impl {
   std::list <WingedVertex> vertices;
   std::list <WingedEdge>   edges;
   Octree                   octree;
+  std::list <unsigned int> freeFirstIndexNumbers;
 
   Impl (WingedMesh& p) : wingedMesh (p) {}
 
-  void addIndex (unsigned int index) { this->mesh.addIndex (index); }
+  unsigned int addIndex (unsigned int index) { 
+    return this->mesh.addIndex (index); 
+  }
 
   WingedVertex& addVertex (const glm::vec3& v, unsigned int l) {
     unsigned int index = this->mesh.addVertex (v);
@@ -39,6 +42,25 @@ struct WingedMesh::Impl {
 
   WingedFace& addFace (const WingedFace& f, const Triangle& geometry) {
     return this->octree.insertNewFace (f, geometry);
+  }
+
+  void setIndex (unsigned int indexNumber, unsigned int index) { 
+    return this->mesh.setIndex (indexNumber, index); 
+  }
+
+  void setVertex (unsigned int index, const glm::vec3& v) {
+    return this->mesh.setVertex (index,v);
+  }
+
+  void setNormal (unsigned int index, const glm::vec3& n) {
+    return this->mesh.setNormal (index,n);
+  }
+
+  void releaseFirstIndexNumber (WingedFace& face) {
+    if (face.firstIndexNumber ().isDefined ()) {
+      this->freeFirstIndexNumbers.push_back (face.firstIndexNumber ().data ());
+      face.resetFirstIndexNumber ();
+    }
   }
 
   WingedFace& deleteEdge (WingedEdge& edge) {
@@ -69,8 +91,10 @@ struct WingedMesh::Impl {
 
     remainingFace->edge (edge.leftSuccessor ());
 
-    this->edges.erase (edge.iterator ());
-    this->octree.deleteFace (*faceToDelete); 
+    this->releaseFirstIndexNumber (*faceToDelete);
+    this->releaseFirstIndexNumber (*remainingFace);
+    this->edges.erase             (edge.iterator ());
+    this->octree.deleteFace       (*faceToDelete); 
     return *remainingFace;
   }
 
@@ -82,7 +106,6 @@ struct WingedMesh::Impl {
       it.next ();
       adjacent.face (f,&newFace);
     }
-    //this->octree.deleteFace (f);
     return newFace;
   }
 
@@ -92,25 +115,26 @@ struct WingedMesh::Impl {
   unsigned int numFaces          () const { 
     return OctreeUtil :: numFaces (this->octree); 
   }
+  unsigned int numIndices        () const { return this->mesh.numIndices  (); }
 
   glm::vec3 vertex (unsigned int i) const { return this->mesh.vertex (i); }
 
-  void rebuildIndices () {
-    this->mesh.clearIndices ();
-
+  void write () {
+    // Indices
     for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
-      it.element ().addIndices (this->wingedMesh);
+      it.element ().writeIndices          (this->wingedMesh);
     }
-  }
-
-  void rebuildNormals () {
-    this->mesh.clearNormals ();
+    // Normals
     for (WingedVertex& v : this->vertices) {
-      this->mesh.addNormal (v.normal (this->wingedMesh));
+      v.writeNormal (this->wingedMesh);
     }
   }
 
-  void bufferData  () { this->mesh.bufferData   (); }
+  void bufferData  () { 
+    assert (this->freeFirstIndexNumbers.size () == 0);
+    this->mesh.bufferData   (); 
+  }
+
   void render      () { 
     this->mesh.render   (); 
 #ifdef DILAY_RENDER_OCTREE
@@ -148,6 +172,16 @@ struct WingedMesh::Impl {
   ConstOctreeNodeIterator octreeNodeIterator () const {
     return this->octree.nodeIterator ();
   }
+
+  bool hasFreeFirstIndexNumber () const { 
+    return this->freeFirstIndexNumbers.size () > 0;
+  }
+  
+  unsigned int nextFreeFirstIndexNumber () {
+    unsigned int indexNumber = this->freeFirstIndexNumbers.front ();
+    this->freeFirstIndexNumbers.pop_front ();
+    return indexNumber;
+  }
 };
 
 WingedMesh :: WingedMesh () : impl (new WingedMesh::Impl (*this)) {}
@@ -164,10 +198,13 @@ const WingedMesh& WingedMesh :: operator= (const WingedMesh& source) {
 }
 DELEGATE_DESTRUCTOR (WingedMesh)
 
-DELEGATE1       (void           , WingedMesh, addIndex, unsigned int)
+DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
 DELEGATE2       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const Triangle&)
+DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
+DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
+DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
 
 GETTER          (const Vertices&, WingedMesh, vertices)
 GETTER          (const Edges&   , WingedMesh, edges)
@@ -178,6 +215,8 @@ DELEGATE_CONST  (ConstOctreeFaceIterator, WingedMesh, octreeFaceIterator)
 DELEGATE        (OctreeNodeIterator     , WingedMesh, octreeNodeIterator)
 DELEGATE_CONST  (ConstOctreeNodeIterator, WingedMesh, octreeNodeIterator)
 
+
+DELEGATE1       (void           , WingedMesh, releaseFirstIndexNumber, WingedFace&)
 DELEGATE1       (WingedFace&    , WingedMesh, deleteEdge, WingedEdge&)
 DELEGATE1       (WingedFace&    , WingedMesh, realignInOctree, WingedFace&)
  
@@ -185,15 +224,18 @@ DELEGATE_CONST  (unsigned int   , WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numWingedVertices)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numFaces)
+DELEGATE_CONST  (unsigned int   , WingedMesh, numIndices)
 
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
 
-DELEGATE        (void           , WingedMesh, rebuildIndices)
-DELEGATE        (void           , WingedMesh, rebuildNormals)
-DELEGATE        (void           , WingedMesh, bufferData)
-DELEGATE        (void           , WingedMesh, render)
-DELEGATE        (void           , WingedMesh, reset)
-DELEGATE2       (void           , WingedMesh, reset, const glm::vec3&, float)
-DELEGATE        (void           , WingedMesh, toggleRenderMode)
+DELEGATE        (void , WingedMesh, write)
+DELEGATE        (void , WingedMesh, bufferData)
+DELEGATE        (void , WingedMesh, render)
+DELEGATE        (void , WingedMesh, reset)
+DELEGATE2       (void , WingedMesh, reset, const glm::vec3&, float)
+DELEGATE        (void , WingedMesh, toggleRenderMode)
 
-DELEGATE2       (void           , WingedMesh, intersectRay, const Ray&, FaceIntersection&)
+DELEGATE2       (void , WingedMesh, intersectRay, const Ray&, FaceIntersection&)
+
+DELEGATE_CONST  (bool         , WingedMesh, hasFreeFirstIndexNumber)
+DELEGATE        (unsigned int , WingedMesh, nextFreeFirstIndexNumber)

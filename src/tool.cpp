@@ -22,8 +22,8 @@ bool Tool :: click () {
   State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
     SubdivButterfly :: subdivide (mesh, intersection.face ());
-    mesh.rebuildIndices ();
-    mesh.rebuildNormals ();
+    //mesh.rebuildIndices ();
+    //mesh.rebuildNormals ();
     mesh.bufferData ();
     return true;
   }

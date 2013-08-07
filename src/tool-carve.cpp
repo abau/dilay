@@ -30,8 +30,6 @@ bool ToolCarve :: run () {
     collectFaces (mesh, Sphere (intersection.position (), cursor.radius ()), ids);
 
     SubdivButterfly :: subdivide (mesh, ids);
-    mesh.rebuildIndices ();
-    mesh.rebuildNormals ();
     mesh.bufferData ();
     return true;
   }

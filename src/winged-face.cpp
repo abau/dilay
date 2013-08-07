@@ -9,16 +9,59 @@
 #include "triangle.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace (WingedEdge* e, const Id& id) 
-  : _id (id), _edge (e), _octreeNode (nullptr) {}
+WingedFace :: WingedFace ( WingedEdge* e, const Id& id, OctreeNode* n
+                         , const FirstIndexNumber& fin) 
+  : _id               (id)
+  , _edge             (e)
+  , _octreeNode       (n) 
+  , _firstIndexNumber (fin)
+  {}
 
-void WingedFace :: addIndices (WingedMesh& mesh) {
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    it.element ().addIndex (mesh);
+void WingedFace :: writeIndices (WingedMesh& mesh) {
+  assert (this->isTriangle ());
+  if (this->_firstIndexNumber.isDefined ()) {
+    unsigned int indexNumber = this->_firstIndexNumber.data ();
+    for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+      it.element ().writeIndex (mesh,indexNumber);
+      indexNumber++;
+    }
+  }
+  else if (mesh.hasFreeFirstIndexNumber ()) {
+    unsigned int indexNumber = mesh.nextFreeFirstIndexNumber ();
+    this->_firstIndexNumber.data (indexNumber);
+    for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+      it.element ().writeIndex (mesh,indexNumber);
+      indexNumber++;
+    }
+  }
+  else {
+    bool first = true;
+    for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+      if (first) {
+        unsigned int indexNumber = it.element ().writeIndex (mesh);
+        this->_firstIndexNumber.data (indexNumber);
+        first = false;
+      }
+      else
+        it.element ().writeIndex (mesh);
+    }
   }
 }
 
+void WingedFace :: writeNormals (WingedMesh& mesh) {
+  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+    it.element ().writeNormal (mesh);
+  }
+}
+
+void WingedFace :: write (WingedMesh& mesh) {
+  this->writeIndices (mesh);
+  this->writeNormals (mesh);
+}
+
 Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
+  assert (this->isTriangle ());
+
   WingedEdge& e1 = *this->_edge;
   WingedEdge& e2 = *e1.successor (*this);
 
@@ -108,6 +151,8 @@ unsigned int WingedFace :: level () const {
   return levelMin (0);
 }
 
+bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
+
 WingedVertex* WingedFace :: highestLevelVertex () const {
   WingedVertex* v = nullptr;
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
@@ -116,6 +161,10 @@ WingedVertex* WingedFace :: highestLevelVertex () const {
     }
   }
   return v;
+}
+
+void WingedFace :: resetFirstIndexNumber () {
+  this->_firstIndexNumber.reset ();
 }
 
 AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator (bool skipT) const {
