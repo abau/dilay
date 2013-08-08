@@ -53,7 +53,7 @@ struct OctreeNode::Impl {
   Faces               faces;
   // cf. Octree.newParent
 
-  static constexpr float relativeMinFaceSize = 0.05f;
+  static constexpr float relativeMinFaceSize = 0.1f;
 
 #ifdef DILAY_RENDER_OCTREE
   Mesh mesh;
