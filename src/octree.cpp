@@ -117,15 +117,14 @@ struct OctreeNode::Impl {
 
   void render () {
 #ifdef DILAY_RENDER_OCTREE
-    if (this->faces.size () == 0) return;
-
-    this->mesh.renderBegin ();
-    glDisable (GL_DEPTH_TEST);
-    Renderer :: setColor3 (Color (1.0f, 1.0f, 0.0f));
-    glDrawElements (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
-    glEnable (GL_DEPTH_TEST);
-    this->mesh.renderEnd ();
-
+    if (this->faces.size () > 0) {
+      this->mesh.renderBegin ();
+      glDisable (GL_DEPTH_TEST);
+      Renderer :: setColor3 (Color (1.0f, 1.0f, 0.0f));
+      glDrawElements (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
+      glEnable (GL_DEPTH_TEST);
+      this->mesh.renderEnd ();
+    }
     for (Child& c : this->children) 
       c->render ();
 #else
@@ -235,6 +234,8 @@ struct OctreeNode::Impl {
                     , FaceIntersection& intersection) {
     if (this->bboxIntersectRay (ray)) {
       this->facesIntersectRay (mesh,ray,intersection);
+      for (Child& c : this->children) 
+        c->intersectRay (mesh,ray,intersection);
     }
   }
 
@@ -362,8 +363,8 @@ struct Octree::Impl {
 
   void intersectRay ( const WingedMesh& mesh, const Ray& ray
                     , FaceIntersection& intersection) {
-    for (auto it = this->nodeIterator (); it.isValid (); it.next ()) {
-      it.element ().intersectRay (mesh,ray,intersection);
+    if (this->root) {
+      this->root->intersectRay (mesh,ray,intersection);
     }
   }
 
