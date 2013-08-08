@@ -117,6 +117,8 @@ struct OctreeNode::Impl {
 
   void render () {
 #ifdef DILAY_RENDER_OCTREE
+    if (this->faces.size () == 0) return;
+
     this->mesh.renderBegin ();
     glDisable (GL_DEPTH_TEST);
     Renderer :: setColor3 (Color (1.0f, 1.0f, 0.0f));
@@ -201,8 +203,8 @@ struct OctreeNode::Impl {
 
   bool bboxIntersectRay (const Ray& ray) const {
     glm::vec3 invDir  = glm::vec3 (1.0f) / ray.direction ();
-    glm::vec3 lower   = this->center - glm::vec3 (this->width * 0.5f);
-    glm::vec3 upper   = this->center + glm::vec3 (this->width * 0.5f);
+    glm::vec3 lower   = this->center - glm::vec3 (this->looseWidth () * 0.5f);
+    glm::vec3 upper   = this->center + glm::vec3 (this->looseWidth () * 0.5f);
     glm::vec3 lowerTs = (lower - ray.origin ()) * invDir;
     glm::vec3 upperTs = (upper - ray.origin ()) * invDir;
     glm::vec3 min     = glm::min (lowerTs, upperTs);
