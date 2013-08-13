@@ -24,6 +24,10 @@ struct WingedMesh::Impl {
 
   Impl (WingedMesh& p) : wingedMesh (p) {}
 
+  glm::vec3 vertex (unsigned int i) const { return this->mesh.vertex (i); }
+
+  WingedFace& face (const Id& id) const { return this->octree.faceRef (id); }
+
   unsigned int addIndex (unsigned int index) { 
     return this->mesh.addIndex (index); 
   }
@@ -117,8 +121,6 @@ struct WingedMesh::Impl {
   }
   unsigned int numIndices        () const { return this->mesh.numIndices  (); }
 
-  glm::vec3 vertex (unsigned int i) const { return this->mesh.vertex (i); }
-
   void write () {
     // Indices
     for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
@@ -164,6 +166,10 @@ struct WingedMesh::Impl {
     this->octree.intersectSphere (this->wingedMesh,sphere,ids);
   }
 
+  void intersectSphere (const Sphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
+    this->octree.intersectSphere (this->wingedMesh,sphere,vertices);
+  }
+
   OctreeFaceIterator octreeFaceIterator () {
     return this->octree.faceIterator ();
   }
@@ -202,6 +208,9 @@ const WingedMesh& WingedMesh :: operator= (const WingedMesh& source) {
 }
 DELEGATE_DESTRUCTOR (WingedMesh)
 
+DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
+DELEGATE1_CONST (WingedFace&    , WingedMesh, face, const Id&)
+
 DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
@@ -230,8 +239,6 @@ DELEGATE_CONST  (unsigned int   , WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int   , WingedMesh, numIndices)
 
-DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
-
 DELEGATE        (void , WingedMesh, write)
 DELEGATE        (void , WingedMesh, bufferData)
 DELEGATE        (void , WingedMesh, render)
@@ -241,6 +248,7 @@ DELEGATE        (void , WingedMesh, toggleRenderMode)
 
 DELEGATE2       (void , WingedMesh, intersectRay, const Ray&, FaceIntersection&)
 DELEGATE2       (void , WingedMesh, intersectSphere, const Sphere&, std::list<Id>&)
+DELEGATE2       (void , WingedMesh, intersectSphere, const Sphere&, std::unordered_set<WingedVertex*>&)
 
 DELEGATE_CONST  (bool         , WingedMesh, hasFreeFirstIndexNumber)
 DELEGATE        (unsigned int , WingedMesh, nextFreeFirstIndexNumber)

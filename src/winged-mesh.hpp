@@ -2,6 +2,7 @@
 #define DILAY_WINGED_MESH
 
 #include <list>
+#include <unordered_set>
 #include "fwd-glm.hpp"
 #include "fwd-winged.hpp"
 
@@ -25,6 +26,8 @@ class WingedMesh {
     const WingedMesh& operator=       (const WingedMesh&);
          ~WingedMesh                  ();
 
+    glm::vec3         vertex          (unsigned int) const;
+    WingedFace&       face            (const Id&) const;
     unsigned int      addIndex        (unsigned int);
     WingedVertex&     addVertex       (const glm::vec3&, unsigned int = 0);
     WingedEdge&       addEdge         (const WingedEdge&);
@@ -57,8 +60,6 @@ class WingedMesh {
     unsigned int    numFaces          () const;
     unsigned int    numIndices        () const;
 
-    glm::vec3       vertex            (unsigned int) const;
-
     void            write             (); 
     void            bufferData        ();
     void            render            ();
@@ -68,6 +69,7 @@ class WingedMesh {
     
     void            intersectRay      (const Ray&, FaceIntersection&);
     void            intersectSphere   (const Sphere&, std::list <Id>&);
+    void            intersectSphere   (const Sphere&, std::unordered_set <WingedVertex*>&);
 
     bool            hasFreeFirstIndexNumber  () const;
     unsigned int    nextFreeFirstIndexNumber ();
