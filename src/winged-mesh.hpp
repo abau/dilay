@@ -17,6 +17,7 @@ class WingedVertex;
 class WingedFace;
 class WingedEdge;
 class Id;
+class Sphere;
 
 class WingedMesh {
   public: WingedMesh                  ();
@@ -66,6 +67,7 @@ class WingedMesh {
     void            toggleRenderMode  ();
     
     void            intersectRay      (const Ray&, FaceIntersection&);
+    void            intersectSphere   (const Sphere&, std::list <Id>&);
 
     bool            hasFreeFirstIndexNumber  () const;
     unsigned int    nextFreeFirstIndexNumber ();

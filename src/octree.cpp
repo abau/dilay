@@ -239,6 +239,21 @@ struct OctreeNode::Impl {
     }
   }
 
+  void intersectSphere ( const WingedMesh& mesh, const Sphere& sphere
+                       , std::list<Id>& ids) {
+    if (IntersectionUtil :: intersects (sphere, this->node)) {
+      for (auto fIt = this->faceIterator (); fIt.isValid (); fIt.next ()) {
+        WingedFace& face = fIt.element ();
+        if (IntersectionUtil :: intersects (sphere, mesh, face)) {
+          ids.push_back (face.id ());
+        }
+      }
+      for (Child& c : this->children) {
+        c->intersectSphere (mesh, sphere, ids);
+      }
+    }
+  }
+
   unsigned int numFaces () const { return this->faces.size (); }
 
   OctreeNodeFaceIterator faceIterator () { 
@@ -258,6 +273,7 @@ GETTER         (const glm::vec3&, OctreeNode, center)
 DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER         (float, OctreeNode, width)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
+DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 DELEGATE       (OctreeNodeFaceIterator, OctreeNode, faceIterator)
 DELEGATE_CONST (ConstOctreeNodeFaceIterator, OctreeNode, faceIterator)
@@ -368,6 +384,13 @@ struct Octree::Impl {
     }
   }
 
+  void intersectSphere ( const WingedMesh& mesh, const Sphere& sphere
+                       , std::list<Id>& ids) {
+    if (this->root) {
+      this->root->intersectSphere (mesh,sphere,ids);
+    }
+  }
+
   void reset () { this->root.release (); }
 
   void reset (const glm::vec3& center, float width) {
@@ -390,6 +413,7 @@ DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1_CONST (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
+DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, reset, const glm::vec3&, float)
 DELEGATE        (OctreeFaceIterator, Octree, faceIterator)

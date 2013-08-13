@@ -10,7 +10,6 @@
 #include "intersection.hpp"
 #include "camera.hpp"
 #include "sphere.hpp"
-#include "octree.hpp"
 #include "subdivision-butterfly.hpp"
 #include "id.hpp"
 
@@ -26,26 +25,12 @@ bool ToolCarve :: run () {
   State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
     std::list <Id> ids;
+    Sphere         sphere (intersection.position (), cursor.radius ());
 
-    collectFaces (mesh, Sphere (intersection.position (), cursor.radius ()), ids);
-
+    mesh.intersectSphere (sphere, ids);
     SubdivButterfly :: subdivide (mesh, ids);
     mesh.bufferData ();
     return true;
   }
   return false;
-}
-
-void collectFaces (WingedMesh& mesh, const Sphere& sphere, std::list <Id>& ids) {
-  for (OctreeNodeIterator nIt = mesh.octreeNodeIterator (); nIt.isValid (); nIt.next ()) {
-    OctreeNode& node = nIt.element ();
-    if (IntersectionUtil :: intersects (sphere, node)) {
-      for (auto fIt = node.faceIterator (); fIt.isValid (); fIt.next ()) {
-        WingedFace& face = fIt.element ();
-        if (IntersectionUtil :: intersects (sphere, mesh, face)) {
-          ids.push_back (face.id ());
-        }
-      }
-    }
-  }
 }

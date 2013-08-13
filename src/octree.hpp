@@ -1,6 +1,7 @@
 #ifndef DILAY_OCTREE
 #define DILAY_OCTREE
 
+#include <list>
 #include "fwd-glm.hpp"
 #include "id.hpp"
 #include "iterator.hpp"
@@ -18,6 +19,7 @@ class OctreeNodeIterator;
 class ConstOctreeNodeIterator;
 class Ray;
 class FaceIntersection;
+class Sphere;
 
 /** Internal template for iterators over all faces of a node */
 template <bool> struct OctreeNodeFaceIteratorTemplate;
@@ -33,17 +35,18 @@ class OctreeNode {
   public: 
     class Impl;
 
-          OctreeNode               (Impl*);
-          OctreeNode               (const OctreeNode&) = delete;
-    const OctreeNode& operator=    (const OctreeNode&) = delete;
+          OctreeNode                  (Impl*);
+          OctreeNode                  (const OctreeNode&) = delete;
+    const OctreeNode& operator=       (const OctreeNode&) = delete;
 
-    Id                id           () const;
-    int               depth        () const;
-    const glm::vec3&  center       () const;
-    float             looseWidth   () const;
-    float             width        () const;
-    void              intersectRay (const WingedMesh&, const Ray&, FaceIntersection&);
-    unsigned int      numFaces     () const;
+    Id                id              () const;
+    int               depth           () const;
+    const glm::vec3&  center          () const;
+    float             looseWidth      () const;
+    float             width           () const;
+    void              intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
+    void              intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
+    unsigned int      numFaces        () const;
 
     OctreeNodeFaceIterator      faceIterator ();
     ConstOctreeNodeFaceIterator faceIterator () const;
@@ -58,20 +61,21 @@ class Octree {
   public: 
     class Impl; 
     
-          Octree            ();
-          Octree            (const Octree&) = delete;
-    const Octree& operator= (const Octree&) = delete;
-         ~Octree            ();
+          Octree                ();
+          Octree                (const Octree&) = delete;
+    const Octree& operator=     (const Octree&) = delete;
+         ~Octree                ();
 
-    WingedFace& insertNewFace (const WingedFace&, const Triangle&);
-    WingedFace& reInsertFace  (const WingedFace&, const Triangle&);
-    void        deleteFace    (const WingedFace&);
-    bool        hasFace       (const Id&) const;
-    WingedFace* face          (const Id&) const;
-    void        render        ();
-    void        intersectRay  (const WingedMesh&, const Ray&, FaceIntersection&);
-    void        reset         ();
-    void        reset         (const glm::vec3&, float);
+    WingedFace& insertNewFace   (const WingedFace&, const Triangle&);
+    WingedFace& reInsertFace    (const WingedFace&, const Triangle&);
+    void        deleteFace      (const WingedFace&);
+    bool        hasFace         (const Id&) const;
+    WingedFace* face            (const Id&) const;
+    void        render          ();
+    void        intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
+    void        intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
+    void        reset           ();
+    void        reset           (const glm::vec3&, float);
 
     OctreeFaceIterator      faceIterator ();
     ConstOctreeFaceIterator faceIterator () const;

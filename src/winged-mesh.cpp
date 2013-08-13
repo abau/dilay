@@ -160,6 +160,10 @@ struct WingedMesh::Impl {
     this->octree.intersectRay (this->wingedMesh,ray,intersection);
   }
 
+  void intersectSphere (const Sphere& sphere, std::list <Id>& ids) {
+    this->octree.intersectSphere (this->wingedMesh,sphere,ids);
+  }
+
   OctreeFaceIterator octreeFaceIterator () {
     return this->octree.faceIterator ();
   }
@@ -236,6 +240,7 @@ DELEGATE2       (void , WingedMesh, reset, const glm::vec3&, float)
 DELEGATE        (void , WingedMesh, toggleRenderMode)
 
 DELEGATE2       (void , WingedMesh, intersectRay, const Ray&, FaceIntersection&)
+DELEGATE2       (void , WingedMesh, intersectSphere, const Sphere&, std::list<Id>&)
 
 DELEGATE_CONST  (bool         , WingedMesh, hasFreeFirstIndexNumber)
 DELEGATE        (unsigned int , WingedMesh, nextFreeFirstIndexNumber)
