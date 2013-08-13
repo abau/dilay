@@ -23,7 +23,12 @@ void SubdivButterfly :: subdivide (WingedMesh& mesh, WingedFace& face) {
   subdivide (mesh,face.level (),face);
 }
 
-void SubdivButterfly :: subdivide ( WingedMesh& mesh, std::list <Id>& ids) {
+void SubdivButterfly :: subdivideCopy (WingedMesh& mesh, const std::list <Id>& ids) {
+  std::list <Id> copy (ids);
+  SubdivButterfly :: subdivide (mesh,copy);
+}
+
+void SubdivButterfly :: subdivide (WingedMesh& mesh, std::list <Id>& ids) {
   if (ids.empty ()) return;
 
   unsigned int minLevel = std::numeric_limits <unsigned int>::max ();
