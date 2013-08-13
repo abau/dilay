@@ -7,10 +7,12 @@
 #include "octree.hpp"
 #include "macro.hpp"
 #include "winged-face.hpp"
+#include "winged-vertex.hpp"
 #include "triangle.hpp"
 #include "ray.hpp"
 #include "intersection.hpp"
 #include "fwd-winged.hpp"
+#include "adjacent-iterator.hpp"
 
 #ifdef DILAY_RENDER_OCTREE
 #include "mesh.hpp"
@@ -254,6 +256,24 @@ struct OctreeNode::Impl {
     }
   }
 
+  void intersectSphere ( const WingedMesh& mesh, const Sphere& sphere
+                       , std::unordered_set<WingedVertex*>& vertices) {
+    if (IntersectionUtil :: intersects (sphere, this->node)) {
+      for (auto fIt = this->faceIterator (); fIt.isValid (); fIt.next ()) {
+        WingedFace& face = fIt.element ();
+        for (ADJACENT_VERTEX_ITERATOR (vIt,face)) {
+          WingedVertex& vertex = vIt.element ();
+          if (IntersectionUtil :: intersects (sphere, mesh, vertex)) {
+            vertices.insert (&vertex);
+          }
+        }
+      }
+      for (Child& c : this->children) {
+        c->intersectSphere (mesh, sphere, vertices);
+      }
+    }
+  }
+
   unsigned int numFaces () const { return this->faces.size (); }
 
   OctreeNodeFaceIterator faceIterator () { 
@@ -274,6 +294,7 @@ DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER         (float, OctreeNode, width)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
+DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 DELEGATE       (OctreeNodeFaceIterator, OctreeNode, faceIterator)
 DELEGATE_CONST (ConstOctreeNodeFaceIterator, OctreeNode, faceIterator)
@@ -379,16 +400,20 @@ struct Octree::Impl {
 
   void intersectRay ( const WingedMesh& mesh, const Ray& ray
                     , FaceIntersection& intersection) {
-    if (this->root) {
+    if (this->root) 
       this->root->intersectRay (mesh,ray,intersection);
-    }
   }
 
   void intersectSphere ( const WingedMesh& mesh, const Sphere& sphere
                        , std::list<Id>& ids) {
-    if (this->root) {
+    if (this->root)
       this->root->intersectSphere (mesh,sphere,ids);
-    }
+  }
+
+  void intersectSphere ( const WingedMesh& mesh, const Sphere& sphere
+                       , std::unordered_set<WingedVertex*>& vertices) {
+    if (this->root)
+      this->root->intersectSphere (mesh,sphere,vertices);
   }
 
   void reset () { this->root.release (); }
@@ -414,6 +439,7 @@ DELEGATE1_CONST (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
+DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, reset, const glm::vec3&, float)
 DELEGATE        (OctreeFaceIterator, Octree, faceIterator)

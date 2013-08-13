@@ -2,12 +2,14 @@
 #define DILAY_OCTREE
 
 #include <list>
+#include <unordered_set>
 #include "fwd-glm.hpp"
 #include "id.hpp"
 #include "iterator.hpp"
 #include "macro.hpp"
 
 class WingedFace;
+class WingedVertex;
 class WingedMesh;
 class Triangle;
 class OctreeNode;
@@ -46,6 +48,8 @@ class OctreeNode {
     float             width           () const;
     void              intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
     void              intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
+    void              intersectSphere ( const WingedMesh&, const Sphere&
+                                      , std::unordered_set<WingedVertex*>&);
     unsigned int      numFaces        () const;
 
     OctreeNodeFaceIterator      faceIterator ();
@@ -74,6 +78,8 @@ class Octree {
     void        render          ();
     void        intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
     void        intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
+    void        intersectSphere ( const WingedMesh&, const Sphere&
+                                , std::unordered_set<WingedVertex*>&);
     void        reset           ();
     void        reset           (const glm::vec3&, float);
 
