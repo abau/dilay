@@ -27,8 +27,9 @@ bool ToolCarve :: run () {
     std::list <Id> ids;
     Sphere         sphere (intersection.position (), cursor.radius ());
 
-    mesh.intersectSphere (sphere, ids);
-    SubdivButterfly :: subdivide (mesh, ids);
+    //mesh.intersectSphere (sphere, ids);
+    //SubdivButterfly :: subdivide (mesh, ids);
+    SubdivButterfly :: subdivide (mesh, intersection.face ());
     mesh.bufferData ();
     return true;
   }
