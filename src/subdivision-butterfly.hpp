@@ -9,7 +9,7 @@ class WingedFace;
 class WingedEdge;
 
 namespace SubdivButterfly {
-  void subdivide     (WingedMesh&, WingedEdge&, float = -1.0f);
+  void subdivide     (WingedMesh&, WingedEdge&, float = 0.0f);
   void subdivide     (WingedMesh&, WingedFace&);
   void subdivide     (WingedMesh&, std::list<Id>&);
 }
