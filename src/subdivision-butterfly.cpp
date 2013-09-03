@@ -19,6 +19,15 @@ typedef std::unordered_set <WingedFace*> FaceSet;
 
 void subdivide (WingedMesh&, unsigned int, WingedFace&);
 
+void SubdivButterfly :: subdivide (WingedMesh& mesh, WingedEdge& edge, float maxLength) {
+  if (edge.lengthSqr (mesh) >= maxLength) {
+    unsigned int leftLevel  = edge.leftFace  ()->level ();
+    unsigned int rightLevel = edge.rightFace ()->level ();
+    subdivide (mesh, leftLevel,  *edge.leftFace ());
+    subdivide (mesh, rightLevel, *edge.rightFace ());
+  }
+}
+
 void SubdivButterfly :: subdivide (WingedMesh& mesh, WingedFace& face) {
   subdivide (mesh,face.level (),face);
 }
@@ -207,17 +216,6 @@ void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLev
       }
     }
   }
-  FaceSet newFaces;
-  for (WingedFace* face : faces) {
-    WingedFace& realignedFace = SubdivUtil :: triangulate6Gon (mesh,*face);
-
-    newFaces.insert (&realignedFace);
-
-    for (ADJACENT_FACE_ITERATOR (it,realignedFace)) {
-      newFaces.insert (&it.element ());
-    }
-  }
-  faces = std::move (newFaces);
 }
 
 void refineBorder (WingedMesh& mesh, FaceSet& border, unsigned int selectionLevel) {
