@@ -265,8 +265,10 @@ glm::vec3 subdivideEdge ( const WingedMesh& mesh, unsigned int selectionLevel
     return subdivK (mesh,v2.vertex (mesh), a2);
   else if (a1.size () < 6 && a2.size () == 6)
     return subdivK (mesh,v1.vertex (mesh), a1);
-  else 
+  else if (a1.size () > 6 && a2.size () > 6)
     return subdivExtraordinary (mesh,a1,a2);
+  else 
+    assert (false); // das sollte eigentlich nicht passieren !!!!
 }
 
 WingedVertex* compatibleLevelAdjacent ( const WingedMesh&, unsigned int

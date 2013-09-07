@@ -33,7 +33,8 @@ bool ToolCarve :: run () {
     Sphere sphere (intersection.position (), cursor.radius ());
     std::unordered_set <WingedVertex*> vertices;
 
-    refine (sphere,size,vertices);
+    SubdivButterfly :: subdivide (mesh,intersection.face ());
+    //refine (sphere,size,vertices);
     mesh.bufferData ();
     return true;
   }
