@@ -5,20 +5,20 @@ class Action;
 
 class History {
   public: History            ();
-          History            (const History&);
-    const History& operator= (const History&);
+          History            (const History&) = delete;
+    const History& operator= (const History&) = delete;
          ~History            ();
 
     template <class T>
-    void add  (const T& action) {
-      this->addAction (new T (action));
+    void addAction  (const T& action) {
+      this->addActionPtr (new T (action));
     }
 
     void undo      ();
     void redo      ();
 
   private:
-    void addAction (Action*);
+    void addActionPtr (Action*);
 
     class Impl;
     Impl* impl;

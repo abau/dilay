@@ -16,6 +16,7 @@ QMAKE_CXXFLAGS_DEBUG   += # -pg # -DDILAY_RENDER_OCTREE
 QMAKE_LFLAGS_DEBUG     += # -pg 
 
 SOURCES += \
+           src/action-unit.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
            src/camera.cpp \
@@ -54,6 +55,7 @@ SOURCES += \
 
 HEADERS += \
            src/action.hpp \
+           src/action-unit.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/camera.hpp \
