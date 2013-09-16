@@ -26,6 +26,7 @@ class WingedMesh {
     const WingedMesh& operator=       (const WingedMesh&);
          ~WingedMesh                  ();
 
+    Id                id              () const;
     glm::vec3         vertex          (unsigned int) const;
     WingedFace&       face            (const Id&) const;
     unsigned int      addIndex        (unsigned int);

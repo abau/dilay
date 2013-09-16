@@ -6,12 +6,14 @@ class WingedMesh;
 class Camera;
 class Cursor;
 class MouseMovement;
+class Id;
 
 class State {
   public:                                   
     static State&          global        ();
 
     static WingedMesh&     mesh          ();
+    static WingedMesh&     mesh          (const Id&);
     static Camera&         camera        ();
     static Cursor&         cursor        ();
     static MouseMovement&  mouseMovement ();

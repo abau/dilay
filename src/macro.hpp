@@ -155,9 +155,6 @@
 #define SETTER(t,from,member) \
   void from :: member (t a) { this->impl-> member = a; }
 
-#define ACCESS(r,from,member) \
-  r from :: member () { return this->impl-> member ; }
-
 #define GLOBAL(from) \
   from & from :: global () { static from g; return g; }
 
@@ -183,9 +180,6 @@
 #define DELEGATE5_GLOBAL(r,from,method,t1,t2,t3,t4,t5) \
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
     return from :: global ().impl-> method (a1,a2,a3,a4,a5); }
-
-#define ACCESS_GLOBAL(r,from,member) \
-  r from :: member () { return from :: global ().impl-> member ; }
 
 #define ID(from) \
   Id from :: id () const { return this->impl->id.id () ; }

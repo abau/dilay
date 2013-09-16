@@ -15,6 +15,7 @@
 #include "id.hpp"
 
 struct WingedMesh::Impl {
+  const IdObject           id;
   WingedMesh&              wingedMesh;
   Mesh                     mesh;
   std::list <WingedVertex> vertices;
@@ -207,6 +208,7 @@ const WingedMesh& WingedMesh :: operator= (const WingedMesh& source) {
   return *this;
 }
 DELEGATE_DESTRUCTOR (WingedMesh)
+ID                  (WingedMesh)
 
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
 DELEGATE1_CONST (WingedFace&    , WingedMesh, face, const Id&)
