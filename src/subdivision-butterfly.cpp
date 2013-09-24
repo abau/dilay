@@ -217,7 +217,7 @@ void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLev
     }
   }
   for (WingedFace* face : faces) {
-    WingedFace& realignedFace = SubdivUtil :: triangulate6Gon (mesh,*face);
+    SubdivUtil :: triangulate6Gon (mesh,*face);
   }
 }
 
