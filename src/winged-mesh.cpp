@@ -84,7 +84,7 @@ struct WingedMesh::Impl {
     }
   }
 
-  WingedFace& deleteEdge (WingedEdge& edge) {
+  void deleteEdge (WingedEdge& edge) {
     WingedFace* faceToDelete  = edge.rightFace ();
     WingedFace* remainingFace = edge.leftFace ();
 
@@ -116,7 +116,6 @@ struct WingedMesh::Impl {
     this->releaseFirstIndexNumber (*remainingFace);
     this->edges.erase             (edge.iterator ());
     this->octree.deleteFace       (*faceToDelete); 
-    return *remainingFace;
   }
 
   WingedFace& realignInOctree (WingedFace& f) {
@@ -250,7 +249,7 @@ DELEGATE_CONST  (ConstOctreeNodeIterator, WingedMesh, octreeNodeIterator)
 
 
 DELEGATE1       (void           , WingedMesh, releaseFirstIndexNumber, WingedFace&)
-DELEGATE1       (WingedFace&    , WingedMesh, deleteEdge, WingedEdge&)
+DELEGATE1       (void           , WingedMesh, deleteEdge, WingedEdge&)
 DELEGATE1       (WingedFace&    , WingedMesh, realignInOctree, WingedFace&)
  
 DELEGATE_CONST  (unsigned int   , WingedMesh, numVertices)

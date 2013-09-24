@@ -51,7 +51,7 @@ class WingedMesh {
     void            releaseFirstIndexNumber (WingedFace&);
     /** Deletes an edge and its _right_ face. Note that other parts of the program
      * depend on this behaviour. */
-    WingedFace&     deleteEdge        (WingedEdge&);
+    void            deleteEdge        (WingedEdge&);
 
     /** Realigns a face in a mesh's octree. The passed face becomes invalid
      * and must not be used: use the returned face instead. */

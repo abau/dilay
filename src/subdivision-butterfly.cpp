@@ -239,9 +239,10 @@ void deleteTEdges (WingedMesh& mesh, FaceSet& faces) {
 
     WingedEdge* tEdge = face->tEdge ();
     if (tEdge && tEdge->isRightFace (*face)) {
-      WingedFace& f = mesh.deleteEdge (*tEdge);
+      WingedFace& leftFace = tEdge->leftFaceRef ();
+      mesh.deleteEdge (*tEdge);
       faces.erase (faceIt);
-      assert (f.tEdge () == nullptr);
+      assert (leftFace.tEdge () == nullptr);
     }
   }
 }
