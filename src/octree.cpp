@@ -13,6 +13,7 @@
 #include "intersection.hpp"
 #include "fwd-winged.hpp"
 #include "adjacent-iterator.hpp"
+#include "id-map.hpp"
 
 #ifdef DILAY_RENDER_OCTREE
 #include "mesh.hpp"
@@ -301,9 +302,8 @@ DELEGATE_CONST (ConstOctreeNodeFaceIterator, OctreeNode, faceIterator)
 
 /** Octree class */
 struct Octree::Impl {
-  typedef std::unordered_map <IdPrimitive, WingedFace*> IdMap;
   Child root;
-  IdMap idMap;
+  IdMap <WingedFace> idMap;
 
   WingedFace& insertNewFace (const WingedFace& face, const Triangle& geometry) {
     assert (! this->hasFace (face.id ())); 
@@ -326,7 +326,7 @@ struct Octree::Impl {
 
     if (this->root->contains (faceToInsert)) {
       WingedFace& wingedFace = this->root->insertFace (faceToInsert);
-      this->idMap.insert ({{faceToInsert.id.get (), &wingedFace}});
+      this->idMap.insert (faceToInsert.id, wingedFace);
       return wingedFace;
     }
     else {
@@ -338,19 +338,14 @@ struct Octree::Impl {
   void deleteFace (const WingedFace& face) {
     assert (face.octreeNode ());
     assert (this->hasFace (face.id ())); 
-    this->idMap.erase (face.id ().get ());
+    this->idMap.erase (face.id ());
     face.octreeNodeRef ().impl->deleteFace (face);
   }
 
-  bool hasFace (const Id& id) const { return this->idMap.count (id.get ()) == 1; }
+  bool hasFace (const Id& id) const { return this->idMap.hasElement (id); }
 
   WingedFace* face (const Id& id) const {
-    IdMap::const_iterator result = this->idMap.find (id.get ());
-
-    if (result == this->idMap.end ())
-      return nullptr;
-    else
-      return &*result->second;
+    return this->idMap.element (id);
   }
 
   void makeParent (const FaceToInsert& f) {
