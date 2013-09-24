@@ -28,7 +28,9 @@ class WingedMesh {
 
     Id                id              () const;
     glm::vec3         vertex          (unsigned int) const;
-    WingedFace&       face            (const Id&) const;
+    WingedVertex&     vertexSLOW      (unsigned int);
+    WingedEdge&       edgeSLOW        (const Id&);
+    WingedFace&       face            (const Id&);
     unsigned int      addIndex        (unsigned int);
     WingedVertex&     addVertex       (const glm::vec3&, unsigned int = 0);
     WingedEdge&       addEdge         (const WingedEdge&);

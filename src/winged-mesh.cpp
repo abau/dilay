@@ -27,7 +27,23 @@ struct WingedMesh::Impl {
 
   glm::vec3 vertex (unsigned int i) const { return this->mesh.vertex (i); }
 
-  WingedFace& face (const Id& id) const { return this->octree.faceRef (id); }
+  WingedVertex& vertexSLOW (unsigned int i) {
+    for (WingedVertex& v : this->vertices) {
+      if (v.index () == i)
+        return v;
+    }
+    assert (false);
+  }
+
+  WingedEdge& edgeSLOW (const Id& id) {
+    for (WingedEdge& e : this->edges) {
+      if (e.id () == id)
+        return e;
+    }
+    assert (false);
+  }
+
+  WingedFace& face (const Id& id) { return this->octree.faceRef (id); }
 
   unsigned int addIndex (unsigned int index) { 
     return this->mesh.addIndex (index); 
@@ -211,7 +227,9 @@ DELEGATE_DESTRUCTOR (WingedMesh)
 ID                  (WingedMesh)
 
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
-DELEGATE1_CONST (WingedFace&    , WingedMesh, face, const Id&)
+DELEGATE1       (WingedVertex&  , WingedMesh, vertexSLOW, unsigned int)
+DELEGATE1       (WingedEdge&    , WingedMesh, edgeSLOW, const Id&)
+DELEGATE1       (WingedFace&    , WingedMesh, face, const Id&)
 
 DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
