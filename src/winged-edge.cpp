@@ -13,11 +13,12 @@ WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
                          , WingedFace* left, WingedFace* right
                          , WingedEdge* leftPred, WingedEdge* leftSucc
                          , WingedEdge* rightPred, WingedEdge* rightSucc
-                         , WingedEdge* prevSib, WingedEdge* nextSib) {
+                         , WingedEdge* prevSib, WingedEdge* nextSib
+                         , const Id& id, bool isTEdge) : _id (id) {
 
   this->setGeometry ( v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc
                     , prevSib, nextSib);
-  this->_isTEdge = false;
+  this->_isTEdge = isTEdge;
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {

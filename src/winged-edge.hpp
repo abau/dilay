@@ -15,7 +15,7 @@ class WingedEdge {
     WingedEdge ();
     WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*
-               , WingedEdge*, WingedEdge*);
+               , WingedEdge*, WingedEdge*, const Id& = Id (), bool = false);
 
     Id              id               () const { return this->_id.id (); }
     WingedVertex*   vertex1          () const { return this->_vertex1; }
