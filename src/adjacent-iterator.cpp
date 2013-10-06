@@ -67,6 +67,15 @@ void AdjacentEdgeIterator :: next () {
     this->_isValid = false;
 }
 
+std::list <WingedEdge*> AdjacentEdgeIterator :: collect () {
+  std::list <WingedEdge*> l;
+  while (this->isValid ()) {
+    l.push_back (&this->element ());
+    this->next ();
+  }
+  return l;
+}
+
 AdjacentVertexIterator :: AdjacentVertexIterator (const WingedFace& f, bool skipT)
   : _edgeIterator (f,skipT) {}
 AdjacentVertexIterator :: AdjacentVertexIterator ( const WingedFace& f, WingedEdge& e
@@ -84,6 +93,15 @@ WingedVertex& AdjacentVertexIterator :: element () const {
     return edge.firstVertexRef (*this->_edgeIterator.face ());
   else
     return edge.otherVertexRef (*this->_edgeIterator.vertex ());
+}
+
+std::list <WingedVertex*> AdjacentVertexIterator :: collect () {
+  std::list <WingedVertex*> l;
+  while (this->isValid ()) {
+    l.push_back (&this->element ());
+    this->next ();
+  }
+  return l;
 }
 
 AdjacentFaceIterator :: AdjacentFaceIterator (const WingedFace& f, bool skipT)
@@ -107,4 +125,13 @@ WingedFace& AdjacentFaceIterator :: element () const {
   else {
     return edge.leftFaceRef ();
   }
+}
+
+std::list <WingedFace*> AdjacentFaceIterator :: collect () {
+  std::list <WingedFace*> l;
+  while (this->isValid ()) {
+    l.push_back (&this->element ());
+    this->next ();
+  }
+  return l;
 }

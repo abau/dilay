@@ -1,6 +1,7 @@
 #ifndef DILAY_ADJACENT_ITERATOR
 #define DILAY_ADJACENT_ITERATOR
 
+#include <list>
 #include "iterator.hpp"
 
 #define ADJACENT_EDGE_ITERATOR(it,x)   AdjacentEdgeIterator   it = (x).adjacentEdgeIterator ()   ; it.isValid (); it.next ()
@@ -20,11 +21,12 @@ class AdjacentEdgeIterator : public Iterator <WingedEdge> {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentEdgeIterator  (const WingedVertex&, WingedEdge&, bool = false);
 
-    WingedEdge&         element () const; 
-    const WingedFace*   face    () const { return this->_face; }
-    const WingedVertex* vertex  () const { return this->_vertex; }
-    bool                isValid () const { return this->_isValid; }
-    void                next    ();     
+    WingedEdge&             element () const; 
+    const WingedFace*       face    () const { return this->_face; }
+    const WingedVertex*     vertex  () const { return this->_vertex; }
+    bool                    isValid () const { return this->_isValid; }
+    void                    next    ();     
+    std::list <WingedEdge*> collect ();
 
   private:
           bool          _isValid;
@@ -44,9 +46,10 @@ class AdjacentVertexIterator : public Iterator <WingedVertex> {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentVertexIterator (const WingedVertex&, WingedEdge&, bool = false); 
 
-    WingedVertex&  element () const;
-    bool           isValid () const { return this->_edgeIterator.isValid (); }
-    void           next    ()       { this->_edgeIterator.next (); }
+    WingedVertex&             element () const;
+    bool                      isValid () const { return this->_edgeIterator.isValid (); }
+    void                      next    ()       { this->_edgeIterator.next (); }
+    std::list <WingedVertex*> collect ();
 
   private:
     AdjacentEdgeIterator _edgeIterator;
@@ -61,9 +64,10 @@ class AdjacentFaceIterator : public Iterator <WingedFace> {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentFaceIterator (const WingedVertex&, WingedEdge&); 
 
-    WingedFace&  element () const;
-    bool         isValid () const { return this->_edgeIterator.isValid (); }
-    void         next    ()       { this->_edgeIterator.next (); }
+    WingedFace&             element () const;
+    bool                    isValid () const { return this->_edgeIterator.isValid (); }
+    void                    next    ()       { this->_edgeIterator.next (); }
+    std::list <WingedFace*> collect ();
 
   private:
     AdjacentEdgeIterator _edgeIterator;
