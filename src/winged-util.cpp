@@ -29,25 +29,31 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedVertex&
 }
 
 void WingedUtil :: printStatistics (const WingedEdge& e) {
-  auto siblingId = [] (WingedEdge* sibling) {
-    if (sibling)
-      return std::to_string (sibling->id ().get ());
-    else
-      return std::string ("NULL");
+  auto maybeEdgeId = [] (WingedEdge* edge) {
+    if (edge) return std::to_string (edge->id ().get ());
+    else      return std::string ("NULL");
+  };
+  auto maybeFaceId = [] (WingedFace* face) {
+    if (face) return std::to_string (face->id ().get ());
+    else      return std::string ("NULL");
+  };
+  auto maybeIndex = [] (WingedVertex* vertex) {
+    if (vertex) return std::to_string (vertex->index ());
+    else        return std::string ("NULL");
   };
 
   std::cout << "Edge " << e.id () 
-    << "\n\tvertex 1:\t\t"        << e.vertex1Ref          ().index ()  
-    <<   "\tvertex 2:\t\t"        << e.vertex2Ref          ().index () 
-    << "\n\tleft face:\t\t"       << e.leftFaceRef         ().id ()   
-    <<   "\tright face:\t\t"      << e.rightFaceRef        ().id ()
-    << "\n\tleft predecessor:\t"  << e.leftPredecessorRef  ().id ()   
-    <<   "\tleft successor:\t\t"  << e.leftSuccessorRef    ().id ()   
-    << "\n\tright predecessor:\t" << e.rightPredecessorRef ().id ()   
-    <<   "\tright successor:\t"   << e.rightSuccessorRef   ().id ()   
-    << "\n\tprivious sibling:\t"  << siblingId             (e.previousSibling ())   
-    <<   "\tnext sibling:\t\t"    << siblingId             (e.nextSibling     ())
-    << "\n\tis T-edge:\t\t"       << e.isTEdge             ();
+    << "\n\tvertex 1:\t\t"        << maybeIndex  (e.vertex1          ())
+    <<   "\tvertex 2:\t\t"        << maybeIndex  (e.vertex2          ())
+    << "\n\tleft face:\t\t"       << maybeFaceId (e.leftFace         ())
+    <<   "\tright face:\t\t"      << maybeFaceId (e.rightFace        ())
+    << "\n\tleft predecessor:\t"  << maybeEdgeId (e.leftPredecessor  ())
+    <<   "\tleft successor:\t\t"  << maybeEdgeId (e.leftSuccessor    ())
+    << "\n\tright predecessor:\t" << maybeEdgeId (e.rightPredecessor ())
+    <<   "\tright successor:\t"   << maybeEdgeId (e.rightSuccessor   ())
+    << "\n\tprivious sibling:\t"  << maybeEdgeId (e.previousSibling  ())   
+    <<   "\tnext sibling:\t\t"    << maybeEdgeId (e.nextSibling      ())
+    << "\n\tis T-edge:\t\t"       << e.isTEdge   ();
   std::cout << std::endl;
 }
 
