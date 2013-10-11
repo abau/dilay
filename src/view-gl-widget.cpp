@@ -18,6 +18,11 @@
 #include "tool-rotate.hpp"
 #include "history.hpp"
 
+#include <iostream> // delete this
+#include "adjacent-iterator.hpp" // delete this
+#include "winged-edge.hpp" // delete this
+#include "action/test.hpp" // delete this
+
 struct GLWidgetImpl {
   Axis          axis;
 };
@@ -83,6 +88,15 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
       else
         QGLWidget::keyPressEvent (e);
       break;
+    case Qt::Key_X: {
+        ActionTest a;
+        a.run (State :: mesh (), State::mesh ().edgeSLOW (Id (138)));
+        //a.run (State :: mesh (), State::mesh ().edgeSLOW (Id (924)));
+        State::writeAllData ();
+        State::bufferAllData ();
+        this->update ();
+        break;
+      }
     default:
       QGLWidget::keyPressEvent (e);
   }
@@ -98,6 +112,14 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     mesh.intersectRay (ray, intersection);
 
     if (intersection.isIntersection ()) {
+      /*
+      std::cout << intersection.face ().id () << " ";
+      for (ADJACENT_EDGE_ITERATOR (it,intersection.face ())) {
+        std::cout << it.element ().id () << " ";
+      }
+      std::cout << std::endl;
+      */
+
       glm::vec3 pos    = intersection.position ();
       glm::vec3 normal = intersection.face ().normal (mesh);
 

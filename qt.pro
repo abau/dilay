@@ -18,6 +18,7 @@ QMAKE_LFLAGS_DEBUG     += # -pg
 SOURCES += \
            src/action/realign-face.cpp \
            src/action/subdivide.cpp \
+           src/action/test.cpp \
            src/action/unit.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
            src/action.hpp \
            src/action/realign-face.hpp \
            src/action/subdivide.hpp \
+           src/action/test.hpp \
            src/action/unit.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
