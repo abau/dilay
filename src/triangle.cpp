@@ -74,9 +74,9 @@ DELEGATE_BIG4          (Triangle)
 DELEGATE3_CONSTRUCTOR  (Triangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE4_CONSTRUCTOR  (Triangle, const WingedMesh&, const WingedVertex&, const WingedVertex&, const WingedVertex&)
 
-GETTER          (const glm::vec3&  , Triangle, vertex1)
-GETTER          (const glm::vec3&  , Triangle, vertex2)
-GETTER          (const glm::vec3&  , Triangle, vertex3)
+GETTER_CONST    (const glm::vec3&  , Triangle, vertex1)
+GETTER_CONST    (const glm::vec3&  , Triangle, vertex2)
+GETTER_CONST    (const glm::vec3&  , Triangle, vertex3)
 
 SETTER          (const glm::vec3&  , Triangle, vertex1)
 SETTER          (const glm::vec3&  , Triangle, vertex2)

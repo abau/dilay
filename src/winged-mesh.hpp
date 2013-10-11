@@ -10,10 +10,7 @@ class FaceIntersection;
 class Ray;
 class Triangle;
 class Octree;
-class OctreeFaceIterator;
-class ConstOctreeFaceIterator;
-class OctreeNodeIterator;
-class ConstOctreeNodeIterator;
+class OctreeNode;
 class WingedVertex;
 class WingedFace;
 class WingedEdge;
@@ -26,36 +23,32 @@ class WingedMesh {
     const WingedMesh& operator=       (const WingedMesh&);
          ~WingedMesh                  ();
 
-    Id                id              () const;
-    glm::vec3         vertex          (unsigned int) const;
-    WingedVertex&     vertexSLOW      (unsigned int);
-    WingedEdge&       edgeSLOW        (const Id&);
-    WingedFace&       face            (const Id&);
-    unsigned int      addIndex        (unsigned int);
-    WingedVertex&     addVertex       (const glm::vec3&, unsigned int = 0);
-    WingedEdge&       addEdge         (const WingedEdge&);
-    WingedFace&       addFace         (const WingedFace&, const Triangle&);
-    void              setIndex        (unsigned int, unsigned int);
-    void              setVertex       (unsigned int, const glm::vec3&);
-    void              setNormal       (unsigned int, const glm::vec3&);
+    Id              id                () const;
+    glm::vec3       vertex            (unsigned int) const;
+    unsigned int    index             (unsigned int) const;
+    glm::vec3       normal            (unsigned int) const;
+    WingedVertex&   vertexSLOW        (unsigned int);
+    WingedVertex&   lastVertex        ();
+    WingedEdge&     edgeSLOW          (const Id&);
+    WingedFace&     face              (const Id&);
+    unsigned int    addIndex          (unsigned int);
+    WingedVertex&   addVertex         (const glm::vec3&, unsigned int = 0);
+    WingedEdge&     addEdge           (const WingedEdge&);
+    WingedFace&     addFace           (const WingedFace&, const Triangle&);
+    void            setIndex          (unsigned int, unsigned int);
+    void            setVertex         (unsigned int, const glm::vec3&);
+    void            setNormal         (unsigned int, const glm::vec3&);
 
-    const Vertices&   vertices () const;
-    const Edges&      edges    () const;
-    const Octree&     octree   () const;
+    const Vertices& vertices          () const;
+    const Edges&    edges             () const;
+    const Octree&   octree            () const;
+    OctreeNode&     octreeNodeSLOW    (const Id&);
 
-    OctreeFaceIterator      octreeFaceIterator ();
-    ConstOctreeFaceIterator octreeFaceIterator () const;
-    OctreeNodeIterator      octreeNodeIterator ();
-    ConstOctreeNodeIterator octreeNodeIterator () const;
+    void            deleteEdge        (const WingedEdge&);
+    void            deleteFace        (const WingedFace&);
+    void            popVertex         ();
 
-    void            releaseFirstIndexNumber (WingedFace&);
-    /** Deletes an edge and its _right_ face. Note that other parts of the program
-     * depend on this behaviour. */
-    void            deleteEdge        (WingedEdge&);
-
-    /** Realigns a face in a mesh's octree. The passed face becomes invalid
-     * and must not be used: use the returned face instead. */
-    WingedFace&     realignInOctree   (WingedFace&);
+    WingedFace&     realignFace       (const WingedFace&, const Triangle&);
 
     unsigned int    numVertices       () const;
     unsigned int    numWingedVertices () const;
@@ -73,9 +66,6 @@ class WingedMesh {
     void            intersectRay      (const Ray&, FaceIntersection&);
     void            intersectSphere   (const Sphere&, std::list <Id>&);
     void            intersectSphere   (const Sphere&, std::unordered_set <WingedVertex*>&);
-
-    bool            hasFreeFirstIndexNumber  () const;
-    unsigned int    nextFreeFirstIndexNumber ();
   private:
     class Impl;
     Impl* impl;

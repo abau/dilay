@@ -21,13 +21,13 @@ struct Color::Impl {
   }
 };
 
-DELEGATE4_BIG4        (Color,float,float,float,float)
-GETTER                (float,Color,r)
-GETTER                (float,Color,g)
-GETTER                (float,Color,b)
-GETTER                (float,Color,opacity)
-DELEGATE_CONST        (glm::vec3,Color,vec3)
-DELEGATE_CONST        (glm::vec4,Color,vec4)
+DELEGATE4_BIG4 (Color,float,float,float,float)
+GETTER_CONST   (float,Color,r)
+GETTER_CONST   (float,Color,g)
+GETTER_CONST   (float,Color,b)
+GETTER_CONST   (float,Color,opacity)
+DELEGATE_CONST (glm::vec3,Color,vec3)
+DELEGATE_CONST (glm::vec4,Color,vec4)
 
 Color :: Color ()                          : Color (0.0f,0.0f,0.0f,1.0f) {}
 Color :: Color (float r, float g, float b) : Color (r,g,b,1.0f) {}

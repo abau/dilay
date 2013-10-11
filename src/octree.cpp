@@ -37,12 +37,12 @@ class FaceToInsert {
       {}
 
     Id                           id;
-    WingedEdge*                  edge;
-    WingedFace::FirstIndexNumber firstIndexNumber;
-    glm::vec3                    center;
-    float                        width;
-    glm::vec3                    maximum;
-    glm::vec3                    minimum;
+    WingedEdge*  edge;
+    unsigned int firstIndexNumber;
+    glm::vec3    center;
+    float        width;
+    glm::vec3    maximum;
+    glm::vec3    minimum;
 };
 
 /** Octree node implementation */
@@ -277,6 +277,18 @@ struct OctreeNode::Impl {
 
   unsigned int numFaces () const { return this->faces.size (); }
 
+  OctreeNode* nodeSLOW (const Id& otherId) {
+    if (otherId == this->id.id ())
+      return &this->node;
+    else {
+      for (Child& c : this->children) {
+        OctreeNode* r = c->nodeSLOW (otherId);
+        if (r) return r;
+      }
+    }
+    return nullptr;
+  }
+
   OctreeNodeFaceIterator faceIterator () { 
     return OctreeNodeFaceIterator (*this);
   }
@@ -289,14 +301,15 @@ struct OctreeNode::Impl {
 OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
 
 ID             (OctreeNode)
-GETTER         (int, OctreeNode, depth)
-GETTER         (const glm::vec3&, OctreeNode, center)
+GETTER_CONST   (int, OctreeNode, depth)
+GETTER_CONST   (const glm::vec3&, OctreeNode, center)
 DELEGATE_CONST (float, OctreeNode, looseWidth)
-GETTER         (float, OctreeNode, width)
+GETTER_CONST   (float, OctreeNode, width)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
 DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
+DELEGATE1      (OctreeNode* , OctreeNode, nodeSLOW, const Id&)
 DELEGATE       (OctreeNodeFaceIterator, OctreeNode, faceIterator)
 DELEGATE_CONST (ConstOctreeNodeFaceIterator, OctreeNode, faceIterator)
 
@@ -305,12 +318,13 @@ struct Octree::Impl {
   Child root;
   IdMap <WingedFace> idMap;
 
-  WingedFace& insertNewFace (const WingedFace& face, const Triangle& geometry) {
+  WingedFace& insertFace (const WingedFace& face, const Triangle& geometry) {
     assert (! this->hasFace (face.id ())); 
     FaceToInsert faceToInsert (face,geometry);
     return this->insertFace (faceToInsert);
   }
-  WingedFace& reInsertFace (const WingedFace& face, const Triangle& geometry) {
+
+  WingedFace& realignFace (const WingedFace& face, const Triangle& geometry) {
     assert (this->hasFace (face.id ())); 
     FaceToInsert faceToInsert (face,geometry);
     this->deleteFace (face);
@@ -418,6 +432,17 @@ struct Octree::Impl {
     this->root = Child (new OctreeNode::Impl (center, width, 0));
   }
 
+  OctreeNode& nodeSLOW (const Id& id) {
+    if (this->root) {
+      OctreeNode* result = this->root->nodeSLOW (id);
+      if (result) 
+        return *result;
+      else 
+        assert (false);
+    }
+    assert (false);
+  }
+
   OctreeFaceIterator      faceIterator ()       { return OctreeFaceIterator      (*this); }
   ConstOctreeFaceIterator faceIterator () const { return ConstOctreeFaceIterator (*this); }
   OctreeNodeIterator      nodeIterator ()       { return OctreeNodeIterator      (*this); }
@@ -426,8 +451,8 @@ struct Octree::Impl {
 
 DELEGATE_CONSTRUCTOR (Octree)
 DELEGATE_DESTRUCTOR  (Octree)
-DELEGATE2       (WingedFace& , Octree, insertNewFace, const WingedFace&, const Triangle&)
-DELEGATE2       (WingedFace& , Octree, reInsertFace, const WingedFace&, const Triangle&)
+DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const Triangle&)
+DELEGATE2       (WingedFace& , Octree, realignFace, const WingedFace&, const Triangle&)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
 DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1_CONST (WingedFace* , Octree, face, const Id&)
@@ -437,6 +462,7 @@ DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&
 DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, reset, const glm::vec3&, float)
+DELEGATE1       (OctreeNode&, Octree, nodeSLOW, const Id&)
 DELEGATE        (OctreeFaceIterator, Octree, faceIterator)
 DELEGATE_CONST  (ConstOctreeFaceIterator, Octree, faceIterator)
 DELEGATE        (OctreeNodeIterator, Octree, nodeIterator)

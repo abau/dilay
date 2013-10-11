@@ -1,0 +1,138 @@
+#include "partial-action/delete-edge-face.hpp"
+#include "macro.hpp"
+#include "winged-vertex.hpp"
+#include "winged-edge.hpp"
+#include "winged-face.hpp"
+#include "winged-mesh.hpp"
+#include "action/unit.hpp"
+#include "adjacent-iterator.hpp"
+#include "partial-action/modify-edge.hpp"
+#include "partial-action/modify-mesh.hpp"
+#include "partial-action/modify-face.hpp"
+#include "partial-action/modify-vertex.hpp"
+#include "triangle.hpp"
+
+struct PADeleteEdgeFace :: Impl {
+  ActionUnit actions;
+
+  void run (WingedMesh& mesh, WingedEdge& edge) {
+    this->actions.reset ();
+
+    WingedFace& faceToDelete  = *edge.rightFace ();
+    WingedFace& remainingFace = *edge.leftFace ();
+    Triangle    triangle      = faceToDelete.triangle (mesh);
+
+    assert (faceToDelete.octreeNode ());
+
+    for (auto it = faceToDelete.adjacentEdgeIterator (); it.isValid (); ) {
+      WingedEdge& adjacent = it.element ();
+      it.next ();
+      actions.add <PAModifyEdge> ()->face (mesh, adjacent, faceToDelete, &remainingFace);
+    }
+
+    actions.add <PAModifyEdge> ()->successor 
+      (mesh, edge.leftPredecessorRef (), remainingFace, edge.rightSuccessor ());
+    actions.add <PAModifyEdge> ()->predecessor 
+      (mesh, edge.leftSuccessorRef (), remainingFace, edge.rightPredecessor ());
+
+    actions.add <PAModifyEdge> ()->successor
+      (mesh, edge.rightPredecessorRef (), remainingFace, edge.leftSuccessor ());
+    actions.add <PAModifyEdge> ()->predecessor 
+      (mesh, edge.rightSuccessorRef (), remainingFace, edge.leftPredecessor ());
+
+    actions.add <PAModifyVertex> ()->edge (mesh, edge.vertex1Ref (), edge.leftPredecessor ());
+    actions.add <PAModifyVertex> ()->edge (mesh, edge.vertex2Ref (), edge.leftSuccessor   ());
+
+    if (edge.previousSibling ())
+      actions.add <PAModifyEdge> ()->nextSibling (mesh, edge.previousSiblingRef (), nullptr);
+    if (edge.nextSibling ())
+      actions.add <PAModifyEdge> ()->previousSibling (mesh, edge.nextSiblingRef (), nullptr);
+
+    // if (edge.previousSibling ())
+    //   edge.previousSiblingRef ().nextSibling (edge.nextSibling ());
+    // if (edge.nextSibling ())
+    //   edge.nextSiblingRef ().previousSibling (edge.previousSibling ());
+
+    actions.add <PAModifyFace> ()->edge (mesh, remainingFace, edge.leftSuccessor ());
+
+    actions.add <PAModifyFace> ()->edge       (mesh, faceToDelete, nullptr);
+    actions.add <PAModifyEdge> ()->rightFace  (mesh, edge, nullptr);
+
+    actions.add <PAModifyMesh> ()->deleteEdge (mesh,edge);
+    actions.add <PAModifyMesh> ()->deleteFace (mesh,faceToDelete,triangle); 
+  }
+
+
+  /*
+  void run (WingedMesh& mesh, WingedEdge& edge) {
+    this->meshId.reset      (new Id (mesh.id ()));
+    this->edgeId.reset      (new Id (edge.id ()));
+    this->leftFaceId.reset  (new Id (edge.leftFaceRef         ().id ()));
+    this->rightFaceId.reset (new Id (edge.rightFaceRef        ().id ()));
+    this->leftPredId.reset  (new Id (edge.leftPredecessorRef  ().id ()));
+    this->rightPredId.reset (new Id (edge.rightPredecessorRef ().id ()));
+    this->leftSuccId.reset  (new Id (edge.leftSuccessorRef    ().id ()));
+    this->rightSuccId.reset (new Id (edge.rightSuccessorRef   ().id ()));
+    if (edge.previousSibling ())
+      this->prevSibId.reset (new Id (edge.previousSiblingRef  ().id ()));
+    else
+      this->prevSibId.reset (nullptr);
+    if (edge.nextSibling ())
+      this->nextSibId.reset (new Id (edge.nextSiblingRef      ().id ()));
+    else
+      this->nextSibId.reset (nullptr);
+
+    this->vertex1Index      = edge.vertex1Ref   ().index    ();
+    this->vertex2Index      = edge.vertex2Ref   ().index    ();
+    this->rightFaceGeometry = edge.rightFaceRef ().triangle (mesh);
+
+    WingedFace* faceToDelete  = edge.rightFace ();
+    WingedFace* remainingFace = edge.leftFace ();
+
+    assert (faceToDelete->octreeNode ());
+
+    for (auto it = faceToDelete->adjacentEdgeIterator (); it.isValid (); ) {
+      WingedEdge& adjacent = it.element ();
+      it.next ();
+      adjacent.face (*faceToDelete, remainingFace);
+    }
+
+    edge.leftPredecessorRef  ().successor   (*remainingFace, edge.rightSuccessor   ());
+    edge.leftSuccessorRef    ().predecessor (*remainingFace, edge.rightPredecessor ());
+
+    edge.rightPredecessorRef ().successor   (*remainingFace, edge.leftSuccessor   ());
+    edge.rightSuccessorRef   ().predecessor (*remainingFace, edge.leftPredecessor ());
+
+    edge.vertex1Ref ().edge (edge.leftPredecessor ());
+    edge.vertex2Ref ().edge (edge.leftSuccessor   ());
+
+    if (edge.previousSibling ())
+      edge.previousSiblingRef ().nextSibling (nullptr);
+    if (edge.nextSibling ())
+      edge.nextSiblingRef ().previousSibling (nullptr);
+
+    // if (edge.previousSibling ())
+    //   edge.previousSiblingRef ().nextSibling (edge.nextSibling ());
+    // if (edge.nextSibling ())
+    //   edge.nextSiblingRef ().previousSibling (edge.previousSibling ());
+
+    remainingFace->edge (edge.leftSuccessor ());
+
+    mesh.releaseFirstIndexNumber (*remainingFace);
+    mesh.releaseFirstIndexNumber (*faceToDelete);
+    mesh.deleteEdge              (edge);
+    mesh.deleteFace              (*faceToDelete); 
+  }
+  */
+
+  void undo () { this->actions.undo (); }
+  void redo () { this->actions.redo (); }
+};
+
+DELEGATE_CONSTRUCTOR (PADeleteEdgeFace)
+DELEGATE_DESTRUCTOR  (PADeleteEdgeFace)
+
+DELEGATE2 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&)
+DELEGATE  (void,PADeleteEdgeFace,undo)
+DELEGATE  (void,PADeleteEdgeFace,redo)
+

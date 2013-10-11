@@ -1,17 +1,13 @@
 #ifndef DILAY_SUBDIVISION_BUTTERFLY
 #define DILAY_SUBDIVISION_BUTTERFLY
 
-#include <list>
+#include <fwd-glm.hpp>
 
-class Id;
 class WingedMesh;
-class WingedFace;
 class WingedEdge;
 
-namespace SubdivButterfly {
-  void subdivide     (WingedMesh&, WingedEdge&, float = 0.0f);
-  void subdivide     (WingedMesh&, WingedFace&);
-  void subdivide     (WingedMesh&, std::list<Id>&);
+namespace SubdivisionButterfly {
+  glm::vec3 subdivideEdge (const WingedMesh&, unsigned int, WingedEdge&);
 }
 
 #endif

@@ -6,9 +6,9 @@ TEMPLATE               =  app
 TARGET                 =  dilay
 DEPENDPATH             += src 
 INCLUDEPATH            += src 
-CONFIG                 += warn_on debug
+CONFIG                 += warn_on debug object_parallel_to_source
 LIBS                   += -lGL -lGLEW -lyaml-cpp 
-QT                     += opengl
+QT                     += opengl 
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++11
@@ -16,8 +16,9 @@ QMAKE_CXXFLAGS_DEBUG   += # -pg # -DDILAY_RENDER_OCTREE
 QMAKE_LFLAGS_DEBUG     += # -pg 
 
 SOURCES += \
-           src/action-insert-vertex.cpp \
-           src/action-unit.cpp \
+           src/action/realign-face.cpp \
+           src/action/subdivide.cpp \
+           src/action/unit.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
            src/camera.cpp \
@@ -32,16 +33,26 @@ SOURCES += \
            src/octree.cpp \
            src/octree-util.cpp \
            src/opengl-util.cpp \
+           src/partial-action/delete-edge-face.cpp \
+           src/partial-action/delete-t-edges.cpp \
+           src/partial-action/ids.cpp \
+           src/partial-action/insert-edge-vertex.cpp \
+           src/partial-action/modify-edge.cpp \
+           src/partial-action/modify-face.cpp \
+           src/partial-action/modify-mesh.cpp \
+           src/partial-action/modify-vertex.cpp \
+           src/partial-action/triangulate-6-gon.cpp \
+           src/partial-action/triangulate-quad.cpp \
            src/renderer.cpp \
            src/ray.cpp \
            src/rendermode.cpp \
            src/sphere.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
-           src/subdivision-util.cpp \
+        #  src/subdivision-util.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
-           src/tool-carve.cpp \
+        #  src/tool-carve.cpp \
            src/tool-rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
@@ -56,8 +67,9 @@ SOURCES += \
 
 HEADERS += \
            src/action.hpp \
-           src/action-insert-vertex.hpp \
-           src/action-unit.hpp \
+           src/action/realign-face.hpp \
+           src/action/subdivide.hpp \
+           src/action/unit.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/camera.hpp \
@@ -79,16 +91,26 @@ HEADERS += \
            src/octree.hpp \
            src/octree-util.hpp \
            src/opengl-util.hpp \
+           src/partial-action/delete-edge-face.hpp \
+           src/partial-action/delete-t-edges.hpp \
+           src/partial-action/ids.hpp \
+           src/partial-action/insert-edge-vertex.hpp \
+           src/partial-action/modify-edge.hpp \
+           src/partial-action/modify-face.hpp \
+           src/partial-action/modify-mesh.hpp \
+           src/partial-action/modify-vertex.hpp \
+           src/partial-action/triangulate-6-gon.hpp \
+           src/partial-action/triangulate-quad.hpp \
            src/renderer.hpp \
            src/ray.hpp \
            src/rendermode.hpp \
            src/sphere.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
-           src/subdivision-util.hpp \
+        #  src/subdivision-util.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
-           src/tool-carve.hpp \
+        #  src/tool-carve.hpp \
            src/tool-rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \

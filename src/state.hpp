@@ -7,6 +7,7 @@ class Camera;
 class Cursor;
 class MouseMovement;
 class Id;
+class History;
 
 class State {
   public:                                   
@@ -16,11 +17,14 @@ class State {
     static WingedMesh&     mesh          (const Id&);
     static Camera&         camera        ();
     static Cursor&         cursor        ();
+    static History&        history       ();
     static MouseMovement&  mouseMovement ();
 
     static void            initialize    ();
     static void            render        ();
     static void            setMesh       (const Mesh&);
+    static void            writeAllData  ();
+    static void            bufferAllData ();
   private:
           State            ();
           State            (const State&) = delete;

@@ -103,7 +103,8 @@ WingedFace& SubdivUtil :: triangulate6Gon (WingedMesh& mesh, WingedFace& f) {
   b.write          (mesh);
   c.write          (mesh);
 
-  return mesh.realignInOctree (f);
+  assert (false && "realign Face ist falsch");
+  // return mesh.realignInOctree (f);
 }
 
 WingedEdge& splitFaceWith ( WingedMesh&, WingedFace&, WingedFace&

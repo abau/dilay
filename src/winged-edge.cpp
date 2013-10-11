@@ -5,9 +5,10 @@
 #include "winged-mesh.hpp"
 #include "util.hpp"
   
-WingedEdge :: WingedEdge () : WingedEdge (nullptr,nullptr,nullptr,nullptr
-                                         ,nullptr,nullptr,nullptr,nullptr
-                                         ,nullptr,nullptr) {}
+WingedEdge :: WingedEdge (const Id& id) 
+  : WingedEdge (nullptr,nullptr,nullptr,nullptr
+               ,nullptr,nullptr,nullptr,nullptr
+               ,nullptr,nullptr,id) {}
 
 WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
                          , WingedFace* left, WingedFace* right

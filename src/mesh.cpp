@@ -87,9 +87,16 @@ struct Mesh::Impl {
 
   unsigned int index (unsigned int i) const { return this->indices [i]; }
 
+  glm::vec3 normal (unsigned int i) const {
+    return glm::vec3 ( this->normals [(3 * i) + 0]
+                     , this->normals [(3 * i) + 1]
+                     , this->normals [(3 * i) + 2]
+        );
+  }
+
   unsigned int addIndex (unsigned int i) { 
     this->indices.push_back (i); 
-    return this->indices.size () - 1; 
+    return this->indices.size () - 1;
   }
 
   unsigned int addVertex (const glm::vec3& v) { 
@@ -121,6 +128,27 @@ struct Mesh::Impl {
     this->normals [(3*i) + 0] = n.x;
     this->normals [(3*i) + 1] = n.y;
     this->normals [(3*i) + 2] = n.z;
+  }
+
+  void popVertex () {
+    this->vertices.pop_back ();
+    this->vertices.pop_back ();
+    this->vertices.pop_back ();
+    this->normals .pop_back ();
+    this->normals .pop_back ();
+    this->normals .pop_back ();
+  }
+
+  void popIndices (unsigned int i) {
+    this->resizeIndices (this->indices.size () - i);
+  }
+
+  void allocateIndices (unsigned int i) { 
+    this->resizeIndices (this->indices.size () + i);
+  }
+
+  void resizeIndices (unsigned int i) {
+    this->indices.resize (i);
   }
 
   void bufferData () {
@@ -322,12 +350,17 @@ DELEGATE_CONST   (unsigned int, Mesh, sizeOfIndices)
 DELEGATE_CONST   (unsigned int, Mesh, sizeOfNormals)
 DELEGATE1_CONST  (glm::vec3   , Mesh, vertex, unsigned int)
 DELEGATE1_CONST  (unsigned int, Mesh, index, unsigned int)
+DELEGATE1_CONST  (glm::vec3   , Mesh, normal, unsigned int)
 
 DELEGATE1        (unsigned int, Mesh, addIndex, unsigned int)
 DELEGATE1        (unsigned int, Mesh, addVertex, const glm::vec3&)
 DELEGATE2        (void        , Mesh, setIndex, unsigned int, unsigned int)
 DELEGATE2        (void        , Mesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2        (void        , Mesh, setNormal, unsigned int, const glm::vec3&)
+DELEGATE         (void        , Mesh, popVertex)
+DELEGATE1        (void        , Mesh, popIndices, unsigned int)
+DELEGATE1        (void        , Mesh, allocateIndices, unsigned int)
+DELEGATE1        (void        , Mesh, resizeIndices, unsigned int)
 
 DELEGATE         (void        , Mesh, bufferData)
 DELEGATE         (void        , Mesh, renderBegin)

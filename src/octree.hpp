@@ -51,6 +51,7 @@ class OctreeNode {
     void              intersectSphere ( const WingedMesh&, const Sphere&
                                       , std::unordered_set<WingedVertex*>&);
     unsigned int      numFaces        () const;
+    OctreeNode*       nodeSLOW        (const Id&);
 
     OctreeNodeFaceIterator      faceIterator ();
     ConstOctreeNodeFaceIterator faceIterator () const;
@@ -70,8 +71,8 @@ class Octree {
     const Octree& operator=     (const Octree&) = delete;
          ~Octree                ();
 
-    WingedFace& insertNewFace   (const WingedFace&, const Triangle&);
-    WingedFace& reInsertFace    (const WingedFace&, const Triangle&);
+    WingedFace& insertFace      (const WingedFace&, const Triangle&);
+    WingedFace& realignFace     (const WingedFace&, const Triangle&);
     void        deleteFace      (const WingedFace&);
     bool        hasFace         (const Id&) const;
     WingedFace* face            (const Id&) const;
@@ -82,6 +83,7 @@ class Octree {
                                 , std::unordered_set<WingedVertex*>&);
     void        reset           ();
     void        reset           (const glm::vec3&, float);
+    OctreeNode& nodeSLOW        (const Id&);
 
     OctreeFaceIterator      faceIterator ();
     ConstOctreeFaceIterator faceIterator () const;

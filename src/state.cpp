@@ -44,6 +44,13 @@ struct State::Impl {
     WingedUtil :: fromMesh (this->_mesh,mesh);
   }
 
+  void writeAllData () {
+    this->_mesh.write ();
+  }
+
+  void bufferAllData () {
+    this->_mesh.bufferData ();
+  }
 };
 
 GLOBAL               (State)
@@ -54,8 +61,11 @@ DELEGATE_GLOBAL  (WingedMesh&   , State, mesh)
 DELEGATE1_GLOBAL (WingedMesh&   , State, mesh, const Id&)
 DELEGATE_GLOBAL  (Camera&       , State, camera)
 DELEGATE_GLOBAL  (Cursor&       , State, cursor)
+DELEGATE_GLOBAL  (History&      , State, history)
 DELEGATE_GLOBAL  (MouseMovement&, State, mouseMovement)
 
 DELEGATE_GLOBAL  (void, State, initialize)
 DELEGATE_GLOBAL  (void, State, render)
 DELEGATE1_GLOBAL (void, State, setMesh, const Mesh&)
+DELEGATE_GLOBAL  (void, State, writeAllData)
+DELEGATE_GLOBAL  (void, State, bufferAllData)

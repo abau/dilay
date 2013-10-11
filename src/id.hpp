@@ -17,8 +17,8 @@ class Id {
     bool isInvalid  ()             const { return this->_id == 0; }
     bool isValid    ()             const { return ! this->isInvalid (); }
 
+    Id (IdPrimitive idp) : _id (idp) {} // make this private again
   private:
-    Id (IdPrimitive idp) : _id (idp) {}
     const IdPrimitive _id;
 };
 

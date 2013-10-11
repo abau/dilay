@@ -1,20 +1,13 @@
 #include <vector>
-#include <list>
-#include <unordered_set>
-#include <functional>
 #include <glm/glm.hpp>
-#include <limits>
 #include "subdivision-butterfly.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
-#include "winged-util.hpp"
 #include "adjacent-iterator.hpp"
-#include "subdivision-util.hpp"
-#include "id.hpp"
-#include "octree.hpp"
 
+/*
 typedef std::unordered_set <WingedFace*> FaceSet;
 
 void subdivide (WingedMesh&, unsigned int, WingedFace&);
@@ -246,6 +239,7 @@ void deleteTEdges (WingedMesh& mesh, FaceSet& faces) {
     }
   }
 }
+*/
 
 typedef std::vector <WingedVertex*> Adjacents;
 Adjacents adjacents           (const WingedMesh&, WingedVertex&, unsigned int, WingedEdge&);
@@ -253,8 +247,8 @@ glm::vec3 subdivK6            (const WingedMesh&, const Adjacents&, const Adjace
 glm::vec3 subdivK             (const WingedMesh&, const glm::vec3&, const Adjacents&);
 glm::vec3 subdivExtraordinary (const WingedMesh&, const Adjacents&, const Adjacents&);
 
-glm::vec3 subdivideEdge ( const WingedMesh& mesh, unsigned int selectionLevel
-                        , WingedEdge& edge) {
+glm::vec3 SubdivisionButterfly::subdivideEdge 
+    (const WingedMesh& mesh, unsigned int selectionLevel, WingedEdge& edge) {
   WingedVertex& v1    = edge.vertex1Ref ();
   WingedVertex& v2    = edge.vertex2Ref ();
   Adjacents     a1    = adjacents     (mesh,v1,selectionLevel,edge);

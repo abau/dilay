@@ -9,42 +9,22 @@
 #include "triangle.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace ( WingedEdge* e, const Id& id, OctreeNode* n
-                         , const FirstIndexNumber& fin) 
+WingedFace :: WingedFace ( WingedEdge* e, const Id& id, OctreeNode* n, unsigned int fin)
   : _id               (id)
   , _edge             (e)
   , _octreeNode       (n) 
   , _firstIndexNumber (fin)
   {}
 
-void WingedFace :: writeIndices (WingedMesh& mesh) {
+void WingedFace :: writeIndices (WingedMesh& mesh, const unsigned int *newFIN) {
   assert (this->isTriangle ());
-  if (this->_firstIndexNumber.isDefined ()) {
-    unsigned int indexNumber = this->_firstIndexNumber.data ();
-    for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-      it.element ().writeIndex (mesh,indexNumber);
-      indexNumber++;
-    }
+  if (newFIN) {
+    this->_firstIndexNumber = *newFIN;
   }
-  else if (mesh.hasFreeFirstIndexNumber ()) {
-    unsigned int indexNumber = mesh.nextFreeFirstIndexNumber ();
-    this->_firstIndexNumber.data (indexNumber);
-    for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-      it.element ().writeIndex (mesh,indexNumber);
-      indexNumber++;
-    }
-  }
-  else {
-    bool first = true;
-    for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-      if (first) {
-        unsigned int indexNumber = it.element ().writeIndex (mesh);
-        this->_firstIndexNumber.data (indexNumber);
-        first = false;
-      }
-      else
-        it.element ().writeIndex (mesh);
-    }
+  unsigned int indexNumber = this->_firstIndexNumber;
+  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+    it.element ().writeIndex (mesh,indexNumber);
+    indexNumber++;
   }
 }
 
@@ -54,8 +34,8 @@ void WingedFace :: writeNormals (WingedMesh& mesh) {
   }
 }
 
-void WingedFace :: write (WingedMesh& mesh) {
-  this->writeIndices (mesh);
+void WingedFace :: write (WingedMesh& mesh, const unsigned int *newFIN) {
+  this->writeIndices (mesh, newFIN);
   this->writeNormals (mesh);
 }
 
@@ -161,10 +141,6 @@ WingedVertex* WingedFace :: highestLevelVertex () const {
     }
   }
   return v;
-}
-
-void WingedFace :: resetFirstIndexNumber () {
-  this->_firstIndexNumber.reset ();
 }
 
 AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator (bool skipT) const {

@@ -8,11 +8,10 @@
 #include "state.hpp"
 #include "cursor.hpp"
 #include "camera.hpp"
-#include "subdivision-butterfly.hpp"
 #include "winged-util.hpp"
 #include "view-mouse-movement.hpp"
-
-void subdivisionStep (const FaceIntersection&);
+#include "history.hpp"
+#include "action/subdivide.hpp"
 
 bool Tool :: click () {
   WingedMesh& mesh = State :: mesh ();
@@ -21,7 +20,7 @@ bool Tool :: click () {
 
   State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
-    SubdivButterfly :: subdivide (mesh, intersection.face ());
+    State :: history ().add <ActionSubdivide> ()->run (mesh, intersection.face ());
     //mesh.rebuildIndices ();
     //mesh.rebuildNormals ();
     mesh.bufferData ();

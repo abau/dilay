@@ -12,7 +12,7 @@ class WingedMesh;
 
 class WingedEdge {
   public:
-    WingedEdge ();
+    WingedEdge (const Id& = Id ());
     WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*
                , WingedEdge*, WingedEdge*, const Id& = Id (), bool = false);

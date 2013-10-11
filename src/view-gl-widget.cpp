@@ -16,7 +16,7 @@
 #include "winged-face.hpp"
 #include "tool.hpp"
 #include "tool-rotate.hpp"
-#include "tool-carve.hpp"
+#include "history.hpp"
 
 struct GLWidgetImpl {
   Axis          axis;
@@ -63,6 +63,26 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
     case Qt::Key_I:
       WingedUtil :: printStatistics (State :: mesh ());
       break;
+    case Qt::Key_Z:
+      if (e->modifiers () == Qt::ControlModifier) {
+        State :: history ().undo ();
+        State :: writeAllData  ();
+        State :: bufferAllData ();
+        this->update ();
+      }
+      else
+        QGLWidget::keyPressEvent (e);
+      break;
+    case Qt::Key_Y:
+      if (e->modifiers () == Qt::ControlModifier) {
+        State :: history ().redo ();
+        State :: writeAllData  ();
+        State :: bufferAllData ();
+        this->update ();
+      }
+      else
+        QGLWidget::keyPressEvent (e);
+      break;
     default:
       QGLWidget::keyPressEvent (e);
   }
@@ -99,8 +119,8 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
-//    if (Tool :: click ())
-    if (ToolCarve :: run ())
+    if (Tool :: click ())
+//    if (ToolCarve :: run ())
       this->update ();
   }
 }

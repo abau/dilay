@@ -11,7 +11,7 @@ struct History::Impl {
   Timeline past;
   Timeline future;
 
-  void addActionPtr (Action* action) {
+  void addAction (Action* action) {
     this->future.clear ();
     this->past.push_front (ActionPtr (action));
   }
@@ -35,6 +35,6 @@ struct History::Impl {
 
 DELEGATE_CONSTRUCTOR (History)
 DELEGATE_DESTRUCTOR  (History)
-DELEGATE1     (void, History, addActionPtr, Action*)
+DELEGATE1     (void, History, addAction, Action*)
 DELEGATE      (void, History, undo)
 DELEGATE      (void, History, redo)

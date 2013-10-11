@@ -5,7 +5,6 @@
 #include "fwd-glm.hpp"
 #include "macro.hpp"
 #include "id.hpp"
-#include "maybe.hpp"
 
 class AdjacentEdgeIterator;
 class AdjacentVertexIterator;
@@ -17,26 +16,24 @@ class WingedVertex;
 
 class WingedFace {
   public:                      
-    typedef Maybe <unsigned int> FirstIndexNumber;
-    
     WingedFace ( WingedEdge* = nullptr 
                , const Id& = Id ()
                , OctreeNode* = nullptr
-               , const FirstIndexNumber& = FirstIndexNumber ()
+               , unsigned int = 0
                );
-    Id                         id               () const { return this->_id.id (); }
-    WingedEdge*                edge             () const { return this->_edge; }
-    OctreeNode*                octreeNode       () const { return this->_octreeNode; }
-    Faces::iterator            iterator         () const { return this->_iterator; }
-    const Maybe<unsigned int>& firstIndexNumber () const { return this->_firstIndexNumber; }
+    Id                     id               () const { return this->_id.id (); }
+    WingedEdge*            edge             () const { return this->_edge; }
+    OctreeNode*            octreeNode       () const { return this->_octreeNode; }
+    Faces::iterator        iterator         () const { return this->_iterator; }
+    unsigned int           firstIndexNumber () const { return this->_firstIndexNumber; }
 
     void                   edge            (WingedEdge* e) { this->_edge       = e; }
     void                   octreeNode      (OctreeNode* n) { this->_octreeNode = n; }
     void                   iterator        (const Faces::iterator& i) 
                                                            { this->_iterator = i; }
-    void                   writeIndices    (WingedMesh&);
+    void                   writeIndices    (WingedMesh&, const unsigned int* = nullptr);
     void                   writeNormals    (WingedMesh&);
-    void                   write           (WingedMesh&);
+    void                   write           (WingedMesh&, const unsigned int* = nullptr);
     Triangle               triangle        (const WingedMesh&) const;
     unsigned int           numEdges        () const;
     glm::vec3              normal          (const WingedMesh&) const;
@@ -52,7 +49,6 @@ class WingedFace {
     bool                   isTriangle      () const;
 
     WingedVertex*          highestLevelVertex     () const;
-    void                   resetFirstIndexNumber  ();
 
     AdjacentEdgeIterator   adjacentEdgeIterator   (bool = false) const;
     AdjacentVertexIterator adjacentVertexIterator (bool = false) const;
@@ -69,11 +65,11 @@ class WingedFace {
     SAFE_REF  (WingedEdge, tEdge)
     SAFE_REF  (WingedVertex, highestLevelVertex)
   private:
-    const IdObject   _id;
-    WingedEdge*      _edge;
-    OctreeNode*      _octreeNode;
-    Faces::iterator  _iterator;
-    FirstIndexNumber _firstIndexNumber;
+    const IdObject  _id;
+    WingedEdge*     _edge;
+    OctreeNode*     _octreeNode;
+    Faces::iterator _iterator;
+    unsigned int    _firstIndexNumber;
 };
 
 #endif

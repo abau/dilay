@@ -10,16 +10,17 @@ class History {
          ~History            ();
 
     template <class T>
-    void addAction  (const T& action) {
-      this->addActionPtr (new T (action));
+    T* add () { 
+      T* action = new T ();
+      this->addAction (action); 
+      return action; 
     }
 
+    void addAction (Action*);
+    void reset     ();
     void undo      ();
     void redo      ();
-
   private:
-    void addActionPtr (Action*);
-
     class Impl;
     Impl* impl;
 };

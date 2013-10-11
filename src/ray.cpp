@@ -20,8 +20,8 @@ struct Ray::Impl {
 
 DELEGATE2_BIG4 (Ray,const glm::vec3&,const glm::vec3&)
 
-GETTER          (const glm::vec3&, Ray, origin)
-GETTER          (const glm::vec3&, Ray, direction)
+GETTER_CONST    (const glm::vec3&, Ray, origin)
+GETTER_CONST    (const glm::vec3&, Ray, direction)
 DELEGATE1_CONST (glm::vec3       , Ray, pointAt, float)
 
 std::ostream& operator<<(std::ostream& os, const Ray& ray) {

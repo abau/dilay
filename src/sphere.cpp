@@ -12,8 +12,8 @@ struct Sphere::Impl {
 };
 
 DELEGATE2_BIG4 (Sphere,const glm::vec3&, float)
-GETTER         (const glm::vec3&,Sphere,center)
-GETTER         (float           ,Sphere,radius)
+GETTER_CONST   (const glm::vec3&,Sphere,center)
+GETTER_CONST   (float           ,Sphere,radius)
 
 std::ostream& operator<<(std::ostream& os, const Sphere& sphere) {
   os << "Sphere { center = " << (sphere.center ()) 

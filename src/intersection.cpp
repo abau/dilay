@@ -42,9 +42,9 @@ DELEGATE_BIG4  (FaceIntersection)
 DELEGATE3      (void            , FaceIntersection, update, float, const glm::vec3&, WingedFace&)
 DELEGATE       (void            , FaceIntersection, reset)
 DELEGATE_CONST (WingedFace&     , FaceIntersection, face)
-GETTER         (bool            , FaceIntersection, isIntersection)
-GETTER         (float           , FaceIntersection, distance)
-GETTER         (const glm::vec3&, FaceIntersection, position)
+GETTER_CONST   (bool            , FaceIntersection, isIntersection)
+GETTER_CONST   (float           , FaceIntersection, distance)
+GETTER_CONST   (const glm::vec3&, FaceIntersection, position)
 
 bool IntersectionUtil :: intersects (const Sphere& sphere, const glm::vec3& vec) {
   return glm::distance (vec,sphere.center ()) <= sphere.radius ();
