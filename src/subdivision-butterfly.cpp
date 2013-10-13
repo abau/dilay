@@ -241,29 +241,29 @@ void deleteTEdges (WingedMesh& mesh, FaceSet& faces) {
 }
 */
 
-typedef std::vector <WingedVertex*> Adjacents;
+typedef std::vector <glm::vec3> Adjacents;
 Adjacents adjacents           (const WingedMesh&, WingedVertex&, unsigned int, WingedEdge&);
-glm::vec3 subdivK6            (const WingedMesh&, const Adjacents&, const Adjacents&);
-glm::vec3 subdivK             (const WingedMesh&, const glm::vec3&, const Adjacents&);
-glm::vec3 subdivExtraordinary (const WingedMesh&, const Adjacents&, const Adjacents&);
+glm::vec3 subdivK6            (const Adjacents&, const Adjacents&);
+glm::vec3 subdivK             (const glm::vec3&, const Adjacents&);
+glm::vec3 subdivExtraordinary (const Adjacents&, const Adjacents&);
 
 glm::vec3 SubdivisionButterfly::subdivideEdge 
     (const WingedMesh& mesh, unsigned int selectionLevel, WingedEdge& edge) {
   WingedVertex& v1    = edge.vertex1Ref ();
   WingedVertex& v2    = edge.vertex2Ref ();
-  Adjacents     a1    = adjacents     (mesh,v1,selectionLevel,edge);
-  Adjacents     a2    = adjacents     (mesh,v2,selectionLevel,edge);
+  Adjacents     a1    = adjacents (mesh,v1,selectionLevel,edge);
+  Adjacents     a2    = adjacents (mesh,v2,selectionLevel,edge);
 
   if (a1.size () == 6 && a2.size () == 6)
-    return subdivK6 (mesh,a1,a2);
+    return subdivK6 (a1,a2);
   else if (a1.size () == 6 && a2.size () != 6)
-    return subdivK (mesh,v2.vertex (mesh), a2);
+    return subdivK (v2.vertex (mesh), a2);
   else if (a1.size () != 6 && a2.size () == 6)
-    return subdivK (mesh,v1.vertex (mesh), a1);
+    return subdivK (v1.vertex (mesh), a1);
   else {
     assert (v1.level () == 0);
     assert (v2.level () == 0);
-    return subdivExtraordinary (mesh,a1,a2);
+    return subdivExtraordinary (a1,a2);
   }
 }
 
@@ -277,7 +277,7 @@ Adjacents adjacents ( const WingedMesh& mesh, WingedVertex& v
     if (! it.element ().isTEdge ()) {
       WingedVertex* a = compatibleLevelAdjacent (mesh,selectionLevel,it.element (),v);
       if (a)
-        adjacents.push_back (a);
+        adjacents.push_back (a->vertex (mesh));
     }
   }
   return adjacents;
@@ -300,32 +300,28 @@ WingedVertex* compatibleLevelAdjacent ( const WingedMesh& mesh
   }
 }
 
-glm::vec3 subdivK6 (const WingedMesh& mesh, const Adjacents& a1, const Adjacents& a2) {
+glm::vec3 subdivK6 (const Adjacents& a1, const Adjacents& a2) {
 
-  return (0.5f    * a1[0]->vertex (mesh))
-       + (0.5f    * a2[0]->vertex (mesh))
-       + (0.125f  * a1[1]->vertex (mesh))
-       + (0.125f  * a2[1]->vertex (mesh))
-       - (0.0625f * a1[2]->vertex (mesh))
-       - (0.0625f * a2[2]->vertex (mesh))
-       - (0.0625f * a1[4]->vertex (mesh))
-       - (0.0625f * a2[4]->vertex (mesh));
+  return (0.5f    * a1[0]) + (0.5f    * a2[0])
+       + (0.125f  * a1[1]) + (0.125f  * a2[1])
+       - (0.0625f * a1[2]) - (0.0625f * a2[2])
+       - (0.0625f * a1[4]) - (0.0625f * a2[4]);
 }
 
-glm::vec3 subdivK (const WingedMesh& mesh, const glm::vec3& center, const Adjacents& a) {
+glm::vec3 subdivK (const glm::vec3& center, const Adjacents& a) {
   glm::vec3 v (0.0f,0.0f,0.0f);
 
   if (a.size () == 3) {
-    v = (float (5/12) * (a[0]->vertex (mesh) - center))
-      - (float (1/12) * (a[1]->vertex (mesh) - center))
-      - (float (1/12) * (a[2]->vertex (mesh) - center));
+    v = (float (5/12) * (a[0] - center))
+      - (float (1/12) * (a[1] - center))
+      - (float (1/12) * (a[2] - center));
   }
   else if (a.size () == 4) {
-    v = (0.375f * (a[0]->vertex (mesh) - center))
-      - (0.125f * (a[2]->vertex (mesh) - center));
+    v = (0.375f * (a[0] - center))
+      - (0.125f * (a[2] - center));
   }
   else {
-    float     K = float (a.size ());
+    float K = float (a.size ());
 
     for (unsigned int i = 0; i < a.size (); i++) {
       float j   = float (i);
@@ -334,16 +330,13 @@ glm::vec3 subdivK (const WingedMesh& mesh, const glm::vec3& center, const Adjace
                   + (0.5f * cos ( 4.0f * M_PI * j / K ))
                   ) / K;
 
-      v = v + (s_j * (a[i]->vertex (mesh) - center));
+      v = v + (s_j * (a[i] - center));
     }
   }
   return v + center;
 }
 
-glm::vec3 subdivExtraordinary ( const WingedMesh& mesh
-                              , const Adjacents& a1, const Adjacents& a2) {
+glm::vec3 subdivExtraordinary (const Adjacents& a1, const Adjacents& a2) {
 
-  return 0.5f * ( subdivK (mesh, a2[0]->vertex (mesh), a1) 
-                + subdivK (mesh, a1[0]->vertex (mesh), a2)
-                );
+  return 0.5f * (subdivK (a2[0], a1) + subdivK (a1[0], a2));
 }
