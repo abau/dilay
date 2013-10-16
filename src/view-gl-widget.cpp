@@ -18,11 +18,6 @@
 #include "tool-rotate.hpp"
 #include "history.hpp"
 
-#include <iostream> // delete this
-#include "adjacent-iterator.hpp" // delete this
-#include "winged-edge.hpp" // delete this
-#include "action/test.hpp" // delete this
-
 struct GLWidgetImpl {
   Axis          axis;
 };
@@ -88,15 +83,6 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
       else
         QGLWidget::keyPressEvent (e);
       break;
-    case Qt::Key_X: {
-        ActionTest a;
-        a.run (State :: mesh (), State::mesh ().edgeSLOW (Id (138)));
-        //a.run (State :: mesh (), State::mesh ().edgeSLOW (Id (924)));
-        State::writeAllData ();
-        State::bufferAllData ();
-        this->update ();
-        break;
-      }
     default:
       QGLWidget::keyPressEvent (e);
   }
