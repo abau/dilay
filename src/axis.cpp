@@ -11,7 +11,7 @@ struct Axis::Impl {
   Mesh   mesh;
   float  length;
 
-  Impl () : length (0.5f) {}
+  Impl () : length (0.3f) {}
 
   void initialize () {
     this->mesh.addVertex (glm::vec3 (0.0f        , 0.0f        , 0.0f        ));
@@ -47,9 +47,10 @@ struct Axis::Impl {
     glDrawElements (GL_LINES, 2, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * 4));
 
     glEnable (GL_DEPTH_TEST);
-    this->mesh.renderEnd ();
 
     State :: camera ().updateProjection ();
+
+    this->mesh.renderEnd ();
   }
 };
 
