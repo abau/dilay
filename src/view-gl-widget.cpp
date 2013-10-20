@@ -98,14 +98,6 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     mesh.intersectRay (ray, intersection);
 
     if (intersection.isIntersection ()) {
-      /*
-      std::cout << intersection.face ().id () << " ";
-      for (ADJACENT_EDGE_ITERATOR (it,intersection.face ())) {
-        std::cout << it.element ().id () << " ";
-      }
-      std::cout << std::endl;
-      */
-
       glm::vec3 pos    = intersection.position ();
       glm::vec3 normal = intersection.face ().normal (mesh);
 

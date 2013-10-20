@@ -7,7 +7,7 @@ class WingedMesh;
 class WingedEdge;
 
 namespace SubdivisionButterfly {
-  glm::vec3 subdivideEdge (const WingedMesh&, unsigned int, WingedEdge&);
+  glm::vec3 subdivideEdge (const WingedMesh&, WingedEdge&);
 }
 
 #endif

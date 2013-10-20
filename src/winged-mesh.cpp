@@ -15,8 +15,6 @@
 #include "octree-util.hpp"
 #include "id.hpp"
 
-#include <iostream> // delete this
-
 struct WingedMesh::Impl {
   const IdObject           id;
   WingedMesh&              wingedMesh;

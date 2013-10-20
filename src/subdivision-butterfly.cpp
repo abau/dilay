@@ -1,4 +1,5 @@
 #include <vector>
+#include <functional>
 #include <glm/glm.hpp>
 #include "subdivision-butterfly.hpp"
 #include "winged-vertex.hpp"
@@ -242,31 +243,63 @@ void deleteTEdges (WingedMesh& mesh, FaceSet& faces) {
 */
 
 typedef std::vector <glm::vec3> Adjacents;
-Adjacents adjacents           (const WingedMesh&, WingedVertex&, unsigned int, WingedEdge&);
+glm::vec3 subdivide (const glm::vec3&, const Adjacents&, const glm::vec3&, const Adjacents&);
+Adjacents adjacents (unsigned int, const WingedMesh&, WingedEdge&, const WingedVertex&);
+
+glm::vec3 SubdivisionButterfly::subdivideEdge (const WingedMesh& mesh, WingedEdge& edge) {
+  WingedVertex& v1            = edge.vertex1Ref ();
+  WingedVertex& v2            = edge.vertex2Ref ();
+  unsigned int  maxLevel      = glm::max <unsigned int> (v1.level (), v2.level ());
+  Adjacents     a1            = adjacents (maxLevel, mesh, edge, v1);
+  Adjacents     a2            = adjacents (maxLevel, mesh, edge, v2);
+
+  return subdivide (v1.vertex (mesh), a1, v2.vertex (mesh), a2);
+}
+
 glm::vec3 subdivK6            (const Adjacents&, const Adjacents&);
 glm::vec3 subdivK             (const glm::vec3&, const Adjacents&);
 glm::vec3 subdivExtraordinary (const Adjacents&, const Adjacents&);
 
-glm::vec3 SubdivisionButterfly::subdivideEdge 
-    (const WingedMesh& mesh, unsigned int selectionLevel, WingedEdge& edge) {
-  WingedVertex& v1    = edge.vertex1Ref ();
-  WingedVertex& v2    = edge.vertex2Ref ();
-  Adjacents     a1    = adjacents (mesh,v1,selectionLevel,edge);
-  Adjacents     a2    = adjacents (mesh,v2,selectionLevel,edge);
-
+glm::vec3 subdivide ( const glm::vec3& v1, const Adjacents& a1
+                    , const glm::vec3& v2, const Adjacents& a2) {
   if (a1.size () == 6 && a2.size () == 6)
     return subdivK6 (a1,a2);
   else if (a1.size () == 6 && a2.size () != 6)
-    return subdivK (v2.vertex (mesh), a2);
+    return subdivK (v2, a2);
   else if (a1.size () != 6 && a2.size () == 6)
-    return subdivK (v1.vertex (mesh), a1);
+    return subdivK (v1, a1);
   else {
-    assert (v1.level () == 0);
-    assert (v2.level () == 0);
     return subdivExtraordinary (a1,a2);
   }
 }
 
+Adjacents adjacents ( unsigned int maxLevel, const WingedMesh& mesh
+                    , WingedEdge& edge, const WingedVertex& vertex) {
+  // traverses edge's siblings until it finds a vertex with level <= `maxLevel`
+  std::function < glm::vec3 (const WingedEdge&, const WingedVertex&) > traverse =
+    [maxLevel, &mesh, &traverse] (const WingedEdge& e, const WingedVertex& o) {
+
+      if (o.level () <= maxLevel) {
+        return o.vertex (mesh);
+      }
+      else {
+        WingedEdge* sibling = e.adjacentSibling (o);
+        assert (sibling);
+
+        return traverse (*sibling, sibling->otherVertexRef (o));
+      }
+  };
+
+  Adjacents adjacents;
+  for (auto it = vertex.adjacentEdgeIterator (edge,true); it.isValid (); it.next ()) {
+    WingedEdge&   e = it.element ();
+    WingedVertex& a = e.otherVertexRef (vertex);
+    adjacents.push_back (traverse (e,a));
+  }
+  return adjacents;
+}
+
+/*
 WingedVertex* compatibleLevelAdjacent ( const WingedMesh&, unsigned int
                                       , WingedEdge&, WingedVertex&);
 
@@ -299,6 +332,7 @@ WingedVertex* compatibleLevelAdjacent ( const WingedMesh& mesh
     }
   }
 }
+*/
 
 glm::vec3 subdivK6 (const Adjacents& a1, const Adjacents& a2) {
 

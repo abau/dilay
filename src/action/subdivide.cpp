@@ -34,6 +34,10 @@ struct ActionSubdivide::Impl {
       if (! this->oneRingNeighbourhood (mesh, selection, selectionLevel, neighbourhood)) {
         return this->subdivide (mesh, selectionLevel, selection);
       }
+
+      if (! this->extendNeighbourhood (mesh, selectionLevel, neighbourhood)) {
+        return this->subdivide (mesh, selectionLevel, selection);
+      }
       
       if (! this->oneRingBorder (mesh, selectionLevel, neighbourhood, border)) {
         return this->subdivide (mesh, selectionLevel, selection);
@@ -65,8 +69,8 @@ struct ActionSubdivide::Impl {
     return true;
   }
 
-  bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
-                     , FaceSet& neighbourhood, FaceSet& border) {
+  bool extendNeighbourhood ( WingedMesh& mesh, unsigned int selectionLevel
+                           , FaceSet& neighbourhood) {
     FaceSet extendedNeighbourhood;
 
     // checks whether a face is already a neighbour
@@ -90,57 +94,74 @@ struct ActionSubdivide::Impl {
         return numNeighbours >= 2;
       };
 
-    std::function < bool (WingedFace&) > makeBorder;
+    // adds adjacent faces of a neighbour to the neighbourhood if they have
+    // a t-edge or are adjacent to (at least) to neighbours
+    std::function < bool (WingedFace&) > checkAdjacents =
+      [ & ] (WingedFace& neighbour) {
+        for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
+          WingedFace& face = it.element ();
+          if (! isNeighbour (face)) {
+            unsigned int faceLevel = face.level ();
 
-    // checks whether a neighbourhood-adjacent face needs to be subdivided OR whether it is 
-    // actually a neighbour-face itself OR whether it is a border-face
-    std::function < bool (WingedFace&) > checkAdjacent = [ & ] (WingedFace& face) {
-      if (! isNeighbour (face)) {
-        unsigned int faceLevel = face.level ();
-
-        if (faceLevel < selectionLevel) {
-          this->subdivide (mesh,faceLevel,face);
-          return false;
-        }
-        else if (faceLevel == selectionLevel) {
-          if (face.tEdge ()) {
-            this->insertNeighbour (extendedNeighbourhood,face);
-            border.erase      (&face);
-            return makeBorder (face);
-          }
-          else {
-            if (hasAtLeast2Neighbours (face)) {
-              this->insertNeighbour (extendedNeighbourhood,face);
-              border.erase      (&face);
-              return makeBorder (face);
-            }
-            else {
-              border.insert (&face);
-              return true;
+            if (face.tEdge () || hasAtLeast2Neighbours (face)) {
+              if (faceLevel < selectionLevel) {
+                this->subdivide (mesh,faceLevel,face);
+                return false;
+              }
+              else if (faceLevel == selectionLevel) {
+                this->insertNeighbour (extendedNeighbourhood,face);
+                return checkAdjacents (face);
+              }
             }
           }
         }
-      }
-      return true;
-    };
-
-    // builds the border by traversing a neighbour's adjacent faces
-    makeBorder = [ & ] (WingedFace& neighbour) {
-      for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
-        if (! checkAdjacent (it.element ()))
-          return false;
-      }
-      return true;
-    };
-
-    border.clear ();
+        return true;
+      };
 
     for (WingedFace* neighbour : neighbourhood) {
-      if (! makeBorder (*neighbour)) {
+      if (! checkAdjacents (*neighbour)) {
         return false;
       }
     }
     neighbourhood.insert (extendedNeighbourhood.begin (), extendedNeighbourhood.end ());
+    return true;
+  }
+
+  bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
+                     , const FaceSet& neighbourhood, FaceSet& border) {
+    // check levels in one-ring evironment
+    for (WingedFace* n : neighbourhood) {
+      for (auto vIt = n->adjacentVertexIterator (true); vIt.isValid (); vIt.next ()) {
+        for (ADJACENT_FACE_ITERATOR (fIt, vIt.element ())) {
+          WingedFace& face = fIt.element ();
+          if (neighbourhood.count (&face) == 0) {
+            unsigned int faceLevel = face.level ();
+
+            if (faceLevel < selectionLevel) {
+              this->subdivide (mesh,faceLevel,face);
+              return false;
+            }
+          }
+        }
+      }
+    }
+
+    // build border
+    border.clear ();
+    for (WingedFace* n : neighbourhood) {
+      for (auto it = n->adjacentFaceIterator (true); it.isValid (); it.next ()) {
+        WingedFace& face = it.element ();
+
+        if (neighbourhood.count (&face) == 0) {
+          unsigned int faceLevel = face.level ();
+          assert (face.tEdge () == nullptr);
+          assert (faceLevel >= selectionLevel);
+
+          if (faceLevel == selectionLevel)
+            border.insert (&face);
+        }
+      }
+    }
     return true;
   }
 
@@ -152,7 +173,6 @@ struct ActionSubdivide::Impl {
       neighbourhood.insert (tEdge->otherFace (neighbour));
     }
   }
-
 
   void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLevel) {
     this->actions.add <PADeleteTEdges> ()->run (mesh,faces);
@@ -167,7 +187,7 @@ struct ActionSubdivide::Impl {
             && edge.vertex2Ref ().level () <= selectionLevel) {
 
           this->actions.add <PAInsertEdgeVertex> ()->run 
-            (mesh, edge, SubdivisionButterfly::subdivideEdge (mesh, selectionLevel, edge));
+            (mesh, edge, SubdivisionButterfly::subdivideEdge (mesh, edge));
         }
       }
     }
