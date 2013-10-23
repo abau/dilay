@@ -29,7 +29,8 @@ struct State::Impl {
 
   void initialize () { 
     //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (1.0f,100,200));
-    WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (1.0f,10,20));
+    //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (1.0f,10,20));
+    WingedUtil :: fromMesh (this->_mesh, Mesh :: icosphere (1.0f,2));
     //WingedUtil :: fromMesh (this->_mesh, Mesh :: cube (1.0f));
     this->_camera.initialize ();
     this->_cursor.initialize ();

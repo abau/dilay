@@ -1,4 +1,6 @@
 #include <vector>
+#include <unordered_map>
+#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "mesh.hpp"
@@ -10,6 +12,7 @@
 #include "state.hpp"
 #include "camera.hpp"
 #include "config.hpp"
+#include "util.hpp"
 
 struct Mesh::Impl {
   // cf. copy-constructor, reset
@@ -336,6 +339,107 @@ struct Mesh::Impl {
     }
     return m;
   }
+
+  static Mesh icosphere (float radius, unsigned int subdivisionSteps) {
+    Mesh m;
+    typedef unsigned long                          Key;
+    typedef std::unordered_map <Key, unsigned int> VertexCache;
+
+    VertexCache vertexCache;
+
+    // adds new vertex to ico-sphere
+    std::function <unsigned int (const glm::vec3&)> addIcoVertex =
+      [&m,radius] (const glm::vec3& v) {
+        return m.addVertex (glm::normalize (v) * glm::vec3 (radius));
+      };
+
+    // computes key for vertex cache
+    std::function <Key (unsigned int, unsigned int)> getKey =
+      [] (unsigned int i1, unsigned i2) {
+        return (Key (i1) << 8 * sizeof (int)) + Key (i2);
+      };
+
+    // looks up vertex in cache or computes a new one
+    std::function <unsigned int (unsigned int, unsigned int)> lookupVertex =
+      [&vertexCache,&addIcoVertex,&getKey,&m] (unsigned int i1, unsigned int i2) {
+        unsigned int lowerI = i1 < i2 ? i1 : i2;
+        unsigned int upperI = i1 < i2 ? i2 : i1;
+        Key          key    = getKey (lowerI, upperI);
+
+        VertexCache::iterator it = vertexCache.find (key);
+        if (it == vertexCache.end ()) {
+          unsigned int n = addIcoVertex (Util::between ( m.vertex (lowerI)
+                                                       , m.vertex (upperI)));
+          vertexCache.emplace (key, n);
+          return n;
+        }
+        else {
+          return it->second;
+        }
+      };
+
+    // subdivides a face of the ico-sphere
+    std::function <void (unsigned int,unsigned int,unsigned int,unsigned int)> subdivide =
+      [&m,&subdivide,&lookupVertex] 
+      (unsigned int s,unsigned int i1, unsigned int i2, unsigned int i3) {
+        if (s == 0) {
+          m.addIndex (i1); m.addIndex (i2); m.addIndex (i3); 
+        }
+        else {
+          unsigned int i12 = lookupVertex (i1,i2);
+          unsigned int i23 = lookupVertex (i2,i3);
+          unsigned int i31 = lookupVertex (i3,i1);
+
+          subdivide (s-1, i1 , i12, i31);
+          subdivide (s-1, i2 , i23, i12);
+          subdivide (s-1, i3 , i31, i23);
+          subdivide (s-1, i12, i23, i31);
+        }
+      };
+
+    float t = (1.0f + glm::sqrt <float> (5.0f)) * 0.5f;
+
+    addIcoVertex (glm::vec3 (-1.0f, +t   ,  0.0f));
+    addIcoVertex (glm::vec3 (+1.0f, +t   ,  0.0f));
+    addIcoVertex (glm::vec3 (-1.0f, -t   ,  0.0f));
+    addIcoVertex (glm::vec3 (+1.0f, -t   ,  0.0f));
+
+    addIcoVertex (glm::vec3 ( 0.0f, -1.0f, +t   ));
+    addIcoVertex (glm::vec3 ( 0.0f, +1.0f, +t   ));
+    addIcoVertex (glm::vec3 ( 0.0f, -1.0f, -t   ));
+    addIcoVertex (glm::vec3 ( 0.0f, +1.0f, -t   ));
+
+    addIcoVertex (glm::vec3 (+t   ,  0.0f, -1.0f));
+    addIcoVertex (glm::vec3 (+t   ,  0.0f, +1.0f));
+    addIcoVertex (glm::vec3 (-t   ,  0.0f, -1.0f));
+    addIcoVertex (glm::vec3 (-t   ,  0.0f, +1.0f));
+
+    subdivide (subdivisionSteps, 0 ,11,5 ); 
+    subdivide (subdivisionSteps, 0 ,5 ,1 ); 
+    subdivide (subdivisionSteps, 0 ,1 ,7 ); 
+    subdivide (subdivisionSteps, 0 ,7 ,10); 
+    subdivide (subdivisionSteps, 0 ,10,11); 
+
+    subdivide (subdivisionSteps, 1 ,5 ,9 ); 
+    subdivide (subdivisionSteps, 5 ,11,4 ); 
+    subdivide (subdivisionSteps, 11,10,2 ); 
+    subdivide (subdivisionSteps, 10,7 ,6 ); 
+    subdivide (subdivisionSteps, 7 ,1 ,8 ); 
+
+    subdivide (subdivisionSteps, 3 ,9 ,4 ); 
+    subdivide (subdivisionSteps, 3 ,4 ,2 ); 
+    subdivide (subdivisionSteps, 3 ,2 ,6 ); 
+    subdivide (subdivisionSteps, 3 ,6 ,8 ); 
+    subdivide (subdivisionSteps, 3 ,8 ,9 ); 
+
+    subdivide (subdivisionSteps, 4 ,9 ,5 ); 
+    subdivide (subdivisionSteps, 2 ,4 ,11); 
+    subdivide (subdivisionSteps, 6 ,2 ,10); 
+    subdivide (subdivisionSteps, 8 ,6 ,7 ); 
+    subdivide (subdivisionSteps, 9 ,8 ,1 ); 
+
+    return m;
+  }
 };
 
 DELEGATE_CONSTRUCTOR      (Mesh)
@@ -377,3 +481,4 @@ DELEGATE1        (void        , Mesh, setRotation, const glm::mat4&)
 
 DELEGATE1_STATIC (Mesh, Mesh, cube   , float)
 DELEGATE3_STATIC (Mesh, Mesh, sphere , float, int, int)
+DELEGATE2_STATIC (Mesh, Mesh, icosphere , float, unsigned int)

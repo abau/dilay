@@ -43,7 +43,8 @@ class Mesh {
     void         setRotation      (const glm::mat4x4&);
 
     static Mesh  cube             (float);
-    static Mesh  sphere           (float,int,int);
+    static Mesh  sphere           (float, int, int);
+    static Mesh  icosphere        (float, unsigned int);
 
   private: 
     class Impl;
