@@ -42,13 +42,22 @@ void WingedFace :: write (WingedMesh& mesh, const unsigned int *newFIN) {
 Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
 
-  WingedEdge& e1 = *this->_edge;
-  WingedEdge& e2 = *e1.successor (*this);
+  return Triangle ( this->firstVertex  ().vertex (mesh)
+                  , this->secondVertex ().vertex (mesh)
+                  , this->thirdVertex  ().vertex (mesh)
+                  );
+}
 
-  return Triangle ( e1.firstVertex  (*this)->vertex (mesh)
-                  , e1.secondVertex (*this)->vertex (mesh)
-                  , e2.secondVertex (*this)->vertex (mesh)
-  );
+WingedVertex& WingedFace :: firstVertex () const { 
+  return this->_edge->firstVertexRef (*this);
+}
+
+WingedVertex& WingedFace :: secondVertex () const { 
+  return this->_edge->secondVertexRef (*this);
+}
+
+WingedVertex& WingedFace :: thirdVertex () const { 
+  return this->_edge->successor (*this)->secondVertexRef (*this);
 }
 
 unsigned int WingedFace :: numEdges () const {
@@ -141,6 +150,20 @@ WingedVertex* WingedFace :: highestLevelVertex () const {
     }
   }
   return v;
+}
+
+float WingedFace :: incircleRadius  (const WingedMesh& mesh) const {
+  assert (this->isTriangle ());
+  glm::vec3 v1 = this->firstVertex  ().vertex (mesh);
+  glm::vec3 v2 = this->secondVertex ().vertex (mesh);
+  glm::vec3 v3 = this->thirdVertex  ().vertex (mesh);
+
+  const float a = glm::length (v1 - v2);
+  const float b = glm::length (v2 - v3);
+  const float c = glm::length (v3 - v1);
+  const float s = (a + b + c) * 0.5f;
+
+  return glm::sqrt ((s-a) * (s-b) * (s-c) / s);
 }
 
 AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator (bool skipT) const {

@@ -35,6 +35,9 @@ class WingedFace {
     void                   writeNormals    (WingedMesh&);
     void                   write           (WingedMesh&, const unsigned int* = nullptr);
     Triangle               triangle        (const WingedMesh&) const;
+    WingedVertex&          firstVertex     () const;
+    WingedVertex&          secondVertex    () const;
+    WingedVertex&          thirdVertex     () const;
     unsigned int           numEdges        () const;
     glm::vec3              normal          (const WingedMesh&) const;
 
@@ -47,6 +50,7 @@ class WingedFace {
     WingedEdge*            tEdge           () const;
     unsigned int           level           () const;
     bool                   isTriangle      () const;
+    float                  incircleRadius  (const WingedMesh&) const;
 
     WingedVertex*          highestLevelVertex     () const;
 
