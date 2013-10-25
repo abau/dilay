@@ -64,7 +64,7 @@ class WingedMesh {
     void            toggleRenderMode  ();
     
     void            intersectRay      (const Ray&, FaceIntersection&);
-    void            intersectSphere   (const Sphere&, std::list <Id>&);
+    void            intersectSphere   (const Sphere&, std::list <WingedFace*>&);
     void            intersectSphere   (const Sphere&, std::unordered_set <WingedVertex*>&);
   private:
     class Impl;
