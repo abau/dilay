@@ -8,19 +8,19 @@
 #include "state.hpp"
 #include "partial-action/ids.hpp"
 
-enum class Operation { Edge, WriteIndex, WriteNormal };
+enum class Operation { Edge, WriteIndex, WriteNormal, Move };
 
 struct PAModifyVertex :: Impl {
   Operation                   operation;
   PAIds                       operands;
-  std::unique_ptr <glm::vec3> normal;
+  std::unique_ptr <glm::vec3> vec3;
 
   void edge (WingedMesh& mesh, WingedVertex& vertex, WingedEdge* e) {
     this->operation = Operation::Edge;
     this->operands.setMesh   (0, &mesh);
     this->operands.setVertex (0, &vertex);
     this->operands.setEdge   (1, vertex.edge ());
-    vertex.edge (e);
+    vertex.edge              (e);
   }
 
   void writeIndex (WingedMesh& mesh, WingedVertex& vertex, unsigned int indexNumber) {
@@ -29,15 +29,23 @@ struct PAModifyVertex :: Impl {
     this->operands.setVertex (0, &vertex);
     this->operands.setIndex  (1, indexNumber);
     this->operands.setIndex  (2, mesh.index (indexNumber));
-    vertex.writeIndex (mesh, indexNumber);
+    vertex.writeIndex        (mesh, indexNumber);
   }
 
   void writeNormal (WingedMesh& mesh, WingedVertex& vertex) {
     this->operation = Operation::WriteNormal;
     this->operands.setMesh   (0, &mesh);
     this->operands.setVertex (0, &vertex);
-    this->normal.reset       (new glm::vec3 (mesh.normal (vertex.index ())));
-    vertex.writeNormal (mesh);
+    this->vec3.reset         (new glm::vec3 (mesh.normal (vertex.index ())));
+    vertex.writeNormal       (mesh);
+  }
+
+  void move (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& pos) {
+    this->operation = Operation::Move;
+    this->operands.setMesh   (0, &mesh);
+    this->operands.setVertex (0, &vertex);
+    this->vec3.reset         (new glm::vec3 (vertex.vertex (mesh)));
+    mesh.setVertex           (vertex.index (), pos);
   }
 
   void toggle () { 
@@ -60,8 +68,14 @@ struct PAModifyVertex :: Impl {
       }
       case Operation::WriteNormal: {
         glm::vec3 normal = mesh.normal (vertex.index ());
-        vertex.writeNormal (mesh);
-        this->normal.reset (new glm::vec3 (normal));
+        mesh.setNormal   (vertex.index (), *this->vec3);
+        this->vec3.reset (new glm::vec3 (normal));
+        break;
+      }
+      case Operation::Move: {
+        glm::vec3 pos = mesh.vertex (vertex.index ());
+        mesh.setVertex   (vertex.index (), *this->vec3);
+        this->vec3.reset (new glm::vec3 (pos));
         break;
       }
       default: assert (false);
@@ -78,5 +92,6 @@ DELEGATE_DESTRUCTOR  (PAModifyVertex)
 DELEGATE3 (void,PAModifyVertex,edge       ,WingedMesh&,WingedVertex&,WingedEdge*)
 DELEGATE3 (void,PAModifyVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)
 DELEGATE2 (void,PAModifyVertex,writeNormal,WingedMesh&,WingedVertex&)
+DELEGATE3 (void,PAModifyVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
 DELEGATE  (void,PAModifyVertex,undo)
 DELEGATE  (void,PAModifyVertex,redo)
