@@ -47,8 +47,7 @@ class OctreeNode {
     float             looseWidth      () const;
     float             width           () const;
     void              intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
-    void              intersectSphere ( const WingedMesh&, const Sphere&
-                                      , std::list<WingedFace*>&);
+    void              intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
     void              intersectSphere ( const WingedMesh&, const Sphere&
                                       , std::unordered_set<WingedVertex*>&);
     unsigned int      numFaces        () const;
@@ -79,8 +78,7 @@ class Octree {
     WingedFace* face            (const Id&) const;
     void        render          ();
     void        intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
-    void        intersectSphere ( const WingedMesh&, const Sphere&
-                                , std::list<WingedFace*>&);
+    void        intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
     void        intersectSphere ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<WingedVertex*>&);
     void        reset           ();

@@ -181,8 +181,8 @@ struct WingedMesh::Impl {
     this->octree.intersectRay (this->wingedMesh,ray,intersection);
   }
 
-  void intersectSphere (const Sphere& sphere, std::list <WingedFace*>& faces) {
-    this->octree.intersectSphere (this->wingedMesh,sphere,faces);
+  void intersectSphere (const Sphere& sphere, std::list <Id>& ids) {
+    this->octree.intersectSphere (this->wingedMesh,sphere,ids);
   }
 
   void intersectSphere (const Sphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
@@ -256,5 +256,5 @@ DELEGATE2       (void, WingedMesh, reset, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
 
 DELEGATE2       (void, WingedMesh, intersectRay, const Ray&, FaceIntersection&)
-DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::list<WingedFace*>&)
+DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::list<Id>&)
 DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::unordered_set<WingedVertex*>&)
