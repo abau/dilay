@@ -30,25 +30,28 @@ struct WingedMesh::Impl {
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
   glm::vec3    normal (unsigned int i) const { return this->mesh.normal (i); }
 
-  WingedVertex& vertexSLOW (unsigned int i) {
+  WingedVertex* vertexSLOW (unsigned int i) {
     for (WingedVertex& v : this->vertices) {
       if (v.index () == i)
-        return v;
+        return &v;
     }
-    assert (false);
+    return nullptr;
   }
 
-  WingedVertex& lastVertex () { return this->vertices.back (); }
+  WingedVertex& lastVertex () { 
+    assert (! this->vertices.empty ());
+    return this->vertices.back (); 
+  }
 
-  WingedEdge& edgeSLOW (const Id& id) {
+  WingedEdge* edgeSLOW (const Id& id) {
     for (WingedEdge& e : this->edges) {
       if (e.id () == id)
-        return e;
+        return &e;
     }
-    assert (false);
+    return nullptr;
   }
 
-  WingedFace& face (const Id& id) { return this->octree.faceRef (id); }
+  WingedFace* face (const Id& id) { return this->octree.face (id); }
 
   unsigned int addIndex (unsigned int index) { 
     return this->mesh.addIndex (index); 
@@ -219,10 +222,10 @@ ID                  (WingedMesh)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
 DELEGATE1_CONST (unsigned int   , WingedMesh, index, unsigned int)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, normal, unsigned int)
-DELEGATE1       (WingedVertex&  , WingedMesh, vertexSLOW, unsigned int)
+DELEGATE1       (WingedVertex*  , WingedMesh, vertexSLOW, unsigned int)
 DELEGATE        (WingedVertex&  , WingedMesh, lastVertex)
-DELEGATE1       (WingedEdge&    , WingedMesh, edgeSLOW, const Id&)
-DELEGATE1       (WingedFace&    , WingedMesh, face, const Id&)
+DELEGATE1       (WingedEdge*    , WingedMesh, edgeSLOW, const Id&)
+DELEGATE1       (WingedFace*    , WingedMesh, face, const Id&)
 
 DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)

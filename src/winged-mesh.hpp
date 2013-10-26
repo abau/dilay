@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include "fwd-glm.hpp"
 #include "fwd-winged.hpp"
+#include "macro.hpp"
 
 class FaceIntersection;
 class Ray;
@@ -27,10 +28,10 @@ class WingedMesh {
     glm::vec3       vertex            (unsigned int) const;
     unsigned int    index             (unsigned int) const;
     glm::vec3       normal            (unsigned int) const;
-    WingedVertex&   vertexSLOW        (unsigned int);
+    WingedVertex*   vertexSLOW        (unsigned int);
     WingedVertex&   lastVertex        ();
-    WingedEdge&     edgeSLOW          (const Id&);
-    WingedFace&     face              (const Id&);
+    WingedEdge*     edgeSLOW          (const Id&);
+    WingedFace*     face              (const Id&);
     unsigned int    addIndex          (unsigned int);
     WingedVertex&   addVertex         (const glm::vec3&, unsigned int = 0);
     WingedEdge&     addEdge           (const WingedEdge&);
@@ -66,6 +67,10 @@ class WingedMesh {
     void            intersectRay      (const Ray&, FaceIntersection&);
     void            intersectSphere   (const Sphere&, std::list <Id>&);
     void            intersectSphere   (const Sphere&, std::unordered_set <WingedVertex*>&);
+    
+    SAFE_REF1 (WingedVertex, vertexSLOW, unsigned int)
+    SAFE_REF1 (WingedEdge  , edgeSLOW  , const Id&)
+    SAFE_REF1 (WingedFace  , face      , const Id&)
   private:
     class Impl;
     Impl* impl;

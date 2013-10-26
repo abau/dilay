@@ -61,13 +61,13 @@ class WingedFace {
     AdjacentVertexIterator adjacentVertexIterator (WingedEdge&, bool = false) const;
     AdjacentFaceIterator   adjacentFaceIterator   (WingedEdge&, bool = false) const;
 
-    SAFE_REF  (WingedEdge, edge)
-    SAFE_REF  (OctreeNode, octreeNode)
-    SAFE_REF1 (WingedEdge, adjacent, const WingedVertex&)
-    SAFE_REF1 (WingedEdge, longestEdge, const WingedMesh&)
-    SAFE_REF  (WingedVertex, tVertex)
-    SAFE_REF  (WingedEdge, tEdge)
-    SAFE_REF  (WingedVertex, highestLevelVertex)
+    SAFE_REF_CONST  (WingedEdge, edge)
+    SAFE_REF_CONST  (OctreeNode, octreeNode)
+    SAFE_REF1_CONST (WingedEdge, adjacent, const WingedVertex&)
+    SAFE_REF1_CONST (WingedEdge, longestEdge, const WingedMesh&)
+    SAFE_REF_CONST  (WingedVertex, tVertex)
+    SAFE_REF_CONST  (WingedEdge, tEdge)
+    SAFE_REF_CONST  (WingedVertex, highestLevelVertex)
   private:
     const IdObject  _id;
     WingedEdge*     _edge;

@@ -75,7 +75,7 @@ class Octree {
     WingedFace& realignFace     (const WingedFace&, const Triangle&);
     void        deleteFace      (const WingedFace&);
     bool        hasFace         (const Id&) const;
-    WingedFace* face            (const Id&) const;
+    WingedFace* face            (const Id&);
     void        render          ();
     void        intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
     void        intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);

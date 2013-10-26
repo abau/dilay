@@ -74,15 +74,15 @@ struct PAIds :: Impl {
   }
 
   WingedFace* getFace (WingedMesh& mesh, unsigned int i) {
-    return this->ids [i] ? &mesh.face (*this->ids [i]) : nullptr;
+    return this->ids [i] ? mesh.face (*this->ids [i]) : nullptr;
   }
 
   WingedEdge* getEdge (WingedMesh& mesh, unsigned int i) {
-    return this->ids [i] ? &mesh.edgeSLOW (*this->ids [i]) : nullptr;
+    return this->ids [i] ? mesh.edgeSLOW (*this->ids [i]) : nullptr;
   }
 
   WingedVertex* getVertex (WingedMesh& mesh, unsigned int i) {
-    return this->indices [i] ? &mesh.vertexSLOW (*this->indices [i]) : nullptr;
+    return this->indices [i] ? mesh.vertexSLOW (*this->indices [i]) : nullptr;
   }
 
   void setMesh (unsigned int i, const WingedMesh* mesh) {

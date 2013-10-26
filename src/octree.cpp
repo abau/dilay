@@ -358,7 +358,7 @@ struct Octree::Impl {
 
   bool hasFace (const Id& id) const { return this->idMap.hasElement (id); }
 
-  WingedFace* face (const Id& id) const {
+  WingedFace* face (const Id& id) {
     return this->idMap.element (id);
   }
 
@@ -455,7 +455,7 @@ DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const Tria
 DELEGATE2       (WingedFace& , Octree, realignFace, const WingedFace&, const Triangle&)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
 DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
-DELEGATE1_CONST (WingedFace* , Octree, face, const Id&)
+DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
 DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
