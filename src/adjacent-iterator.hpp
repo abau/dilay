@@ -11,6 +11,7 @@
 class WingedVertex;
 class WingedEdge;
 class WingedFace;
+class Id;
 
 /** Iterates over adjacent edges of a face or vertex in counterclockwise order */
 class AdjacentEdgeIterator : public Iterator <WingedEdge> {
@@ -64,10 +65,11 @@ class AdjacentFaceIterator : public Iterator <WingedFace> {
           /** It's crucial that the edge is adjacent to the vertex */
           AdjacentFaceIterator (const WingedVertex&, WingedEdge&); 
 
-    WingedFace&             element () const;
-    bool                    isValid () const { return this->_edgeIterator.isValid (); }
-    void                    next    ()       { this->_edgeIterator.next (); }
-    std::list <WingedFace*> collect ();
+    WingedFace&             element    () const;
+    bool                    isValid    () const { return this->_edgeIterator.isValid (); }
+    void                    next       ()       { this->_edgeIterator.next (); }
+    std::list <WingedFace*> collect    ();
+    std::list <Id>          collectIds ();
 
   private:
     AdjacentEdgeIterator _edgeIterator;

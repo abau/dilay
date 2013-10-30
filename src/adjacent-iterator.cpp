@@ -4,6 +4,7 @@
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
+#include "id.hpp"
 
 AdjacentEdgeIterator :: AdjacentEdgeIterator (const WingedFace& f, bool skipT) 
   : AdjacentEdgeIterator (f, f.edgeRef (), skipT) {} 
@@ -131,6 +132,15 @@ std::list <WingedFace*> AdjacentFaceIterator :: collect () {
   std::list <WingedFace*> l;
   while (this->isValid ()) {
     l.push_back (&this->element ());
+    this->next ();
+  }
+  return l;
+}
+
+std::list <Id> AdjacentFaceIterator :: collectIds () {
+  std::list <Id> l;
+  while (this->isValid ()) {
+    l.push_back (this->element ().id ());
     this->next ();
   }
   return l;
