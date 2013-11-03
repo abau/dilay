@@ -136,11 +136,11 @@ struct WingedMesh::Impl {
     // Indices
     if (this->freeFirstIndexNumbers.size () > 0) {
       unsigned int fin = 0;
+      this->mesh.resizeIndices (this->numFaces () * 3);
       for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
         it.element ().writeIndices (this->wingedMesh, &fin);
         fin = fin + 3;
       }
-      this->mesh.resizeIndices (this->numFaces () * 3);
       this->freeFirstIndexNumbers.clear ();
     }
     else {
@@ -184,7 +184,7 @@ struct WingedMesh::Impl {
     this->octree.intersectRay (this->wingedMesh,ray,intersection);
   }
 
-  void intersectSphere (const Sphere& sphere, std::list <Id>& ids) {
+  void intersectSphere (const Sphere& sphere, std::unordered_set <Id>& ids) {
     this->octree.intersectSphere (this->wingedMesh,sphere,ids);
   }
 
@@ -259,5 +259,5 @@ DELEGATE2       (void, WingedMesh, reset, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
 
 DELEGATE2       (void, WingedMesh, intersectRay, const Ray&, FaceIntersection&)
-DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::list<Id>&)
+DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::unordered_set<Id>&)
 DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::unordered_set<WingedVertex*>&)

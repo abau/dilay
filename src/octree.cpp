@@ -1,5 +1,4 @@
 #include <glm/glm.hpp>
-#include <list>
 #include <vector>
 #include <memory>
 #include <type_traits>
@@ -243,12 +242,12 @@ struct OctreeNode::Impl {
   }
 
   void intersectSphere ( const WingedMesh& mesh, const Sphere& sphere
-                       , std::list<Id>& ids) {
+                       , std::unordered_set<Id>& ids) {
     if (IntersectionUtil :: intersects (sphere, this->node)) {
       for (auto fIt = this->faceIterator (); fIt.isValid (); fIt.next ()) {
         WingedFace& face = fIt.element ();
         if (IntersectionUtil :: intersects (sphere, mesh, face)) {
-          ids.push_back (face.id ());
+          ids.insert (face.id ());
         }
       }
       for (Child& c : this->children) {
@@ -306,7 +305,7 @@ GETTER_CONST   (const glm::vec3&, OctreeNode, center)
 DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER_CONST   (float, OctreeNode, width)
 DELEGATE3      (void, OctreeNode, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
-DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
+DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
 DELEGATE3      (void, OctreeNode, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 DELEGATE1      (OctreeNode* , OctreeNode, nodeSLOW, const Id&)
@@ -414,7 +413,7 @@ struct Octree::Impl {
   }
 
   void intersectSphere ( const WingedMesh& mesh, const Sphere& sphere
-                       , std::list<Id>& ids) {
+                       , std::unordered_set<Id>& ids) {
     if (this->root)
       this->root->intersectSphere (mesh,sphere,ids);
   }
@@ -458,7 +457,7 @@ DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (void, Octree, intersectRay, const WingedMesh&, const Ray&, FaceIntersection&)
-DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::list<Id>&)
+DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
 DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, reset, const glm::vec3&, float)

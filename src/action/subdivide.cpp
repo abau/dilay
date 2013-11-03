@@ -16,52 +16,78 @@
 
 typedef std::unordered_set <WingedFace*> FaceSet;
 
+struct SubdivideData {
+  WingedMesh&     mesh;
+  WingedFace&     selection;
+  unsigned int    selectionLevel;
+  std::list <Id>* affectedFaces;
+
+  SubdivideData (WingedMesh& m, WingedFace& f, std::list <Id>* n) 
+    : mesh           (m)
+    , selection      (refineSelection (f))
+    , selectionLevel (f.level ())
+    , affectedFaces  (n)
+  {}
+
+  static WingedFace& refineSelection (WingedFace& selection) {
+    WingedEdge* tEdge = selection.tEdge ();
+    if (tEdge && tEdge->isRightFace (selection))
+      return tEdge->leftFaceRef ();
+    else 
+      return selection;
+  }
+};
+
 struct ActionSubdivide::Impl {
   ActionUnit actions;
 
   void undo () { this->actions.undo (); }
   void redo () { this->actions.redo (); }
 
-  void run (WingedMesh& mesh, WingedFace& face) { 
+  WingedFace& run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) { 
     this->actions.reset ();
-    this->subdivide (mesh, face.level (), face); 
+    return this->subdivide (SubdivideData (mesh, face, affectedFaces)); 
   }
 
-  void subdivide (WingedMesh& mesh, unsigned int selectionLevel, WingedFace& selection) {
-    if (selection.level () <= selectionLevel) {
+  WingedFace& subdivide (const SubdivideData& data, WingedFace& face) {
+    return this->subdivide (SubdivideData (data.mesh, face, data.affectedFaces));
+  }
+
+  WingedFace& subdivide (const SubdivideData& data) {
+    if (data.selection.level () <= data.selectionLevel) {
       FaceSet neighbourhood, border;
 
-      if (! this->oneRingNeighbourhood (mesh, selection, selectionLevel, neighbourhood)) {
-        return this->subdivide (mesh, selectionLevel, selection);
+      if (! this->oneRingNeighbourhood (data, neighbourhood)) {
+        return this->subdivide (data);
       }
 
-      if (! this->extendNeighbourhood (mesh, selectionLevel, neighbourhood)) {
-        return this->subdivide (mesh, selectionLevel, selection);
+      if (! this->extendNeighbourhood (data, neighbourhood)) {
+        return this->subdivide (data);
       }
       
-      if (! this->oneRingBorder (mesh, selectionLevel, neighbourhood, border)) {
-        return this->subdivide (mesh, selectionLevel, selection);
+      if (! this->oneRingBorder (data, neighbourhood, border)) {
+        return this->subdivide (data);
       }
 
-      this->subdivideFaces (mesh, neighbourhood, selectionLevel);
-      this->refineBorder   (mesh, border, selectionLevel);
+      this->subdivideFaces (data, neighbourhood);
+      this->refineBorder   (data, border);
     }
+    return data.selection;
   }
 
-  bool oneRingNeighbourhood ( WingedMesh& mesh, WingedFace& selection
-                            , unsigned int selectionLevel, FaceSet& neighbourhood) {
-    neighbourhood.clear  ();
-    neighbourhood.insert (&selection);
+  bool oneRingNeighbourhood (const SubdivideData& data, FaceSet& neighbourhood) {
+    neighbourhood.clear   ();
+    this->insertNeighbour (neighbourhood, data.selection);
 
-    for (auto vIt = selection.adjacentVertexIterator (true); vIt.isValid (); vIt.next ()) {
+    for (auto vIt = data.selection.adjacentVertexIterator (true); vIt.isValid (); vIt.next ()) {
       for (ADJACENT_FACE_ITERATOR (fIt, vIt.element ())) {
         WingedFace& face = fIt.element ();
         unsigned int faceLevel = face.level ();
-        if (faceLevel < selectionLevel) {
-          this->subdivide (mesh, faceLevel, face);
+        if (faceLevel < data.selectionLevel) {
+          this->subdivide (data, face);
           return false;
         }
-        else if (faceLevel == selectionLevel) { 
+        else if (faceLevel == data.selectionLevel) { 
           this->insertNeighbour (neighbourhood, face);
         }
       }
@@ -69,8 +95,7 @@ struct ActionSubdivide::Impl {
     return true;
   }
 
-  bool extendNeighbourhood ( WingedMesh& mesh, unsigned int selectionLevel
-                           , FaceSet& neighbourhood) {
+  bool extendNeighbourhood ( const SubdivideData& data, FaceSet& neighbourhood) {
     FaceSet extendedNeighbourhood;
 
     // checks whether a face is already a neighbour
@@ -104,11 +129,11 @@ struct ActionSubdivide::Impl {
             unsigned int faceLevel = face.level ();
 
             if (face.tEdge () || hasAtLeast2Neighbours (face)) {
-              if (faceLevel < selectionLevel) {
-                this->subdivide (mesh,faceLevel,face);
+              if (faceLevel < data.selectionLevel) {
+                this->subdivide (data,face);
                 return false;
               }
-              else if (faceLevel == selectionLevel) {
+              else if (faceLevel == data.selectionLevel) {
                 this->insertNeighbour (extendedNeighbourhood,face);
                 return checkAdjacents (face);
               }
@@ -127,7 +152,7 @@ struct ActionSubdivide::Impl {
     return true;
   }
 
-  bool oneRingBorder ( WingedMesh& mesh, unsigned int selectionLevel
+  bool oneRingBorder ( const SubdivideData& data
                      , const FaceSet& neighbourhood, FaceSet& border) {
     // check levels in one-ring evironment
     for (WingedFace* n : neighbourhood) {
@@ -135,10 +160,8 @@ struct ActionSubdivide::Impl {
         for (ADJACENT_FACE_ITERATOR (fIt, vIt.element ())) {
           WingedFace& face = fIt.element ();
           if (neighbourhood.count (&face) == 0) {
-            unsigned int faceLevel = face.level ();
-
-            if (faceLevel < selectionLevel) {
-              this->subdivide (mesh,faceLevel,face);
+            if (face.level () < data.selectionLevel) {
+              this->subdivide (data,face);
               return false;
             }
           }
@@ -155,9 +178,9 @@ struct ActionSubdivide::Impl {
         if (neighbourhood.count (&face) == 0) {
           unsigned int faceLevel = face.level ();
           assert (face.tEdge () == nullptr);
-          assert (faceLevel >= selectionLevel);
+          assert (faceLevel >= data.selectionLevel);
 
-          if (faceLevel == selectionLevel)
+          if (faceLevel == data.selectionLevel)
             border.insert (&face);
         }
       }
@@ -174,8 +197,8 @@ struct ActionSubdivide::Impl {
     }
   }
 
-  void subdivideFaces (WingedMesh& mesh, FaceSet& faces, unsigned int selectionLevel) {
-    this->actions.add <PADeleteTEdges> ()->run (mesh,faces);
+  void subdivideFaces (const SubdivideData& data, FaceSet& faces) {
+    this->actions.add <PADeleteTEdges> ()->run (data.mesh,faces);
 
     for (WingedFace* face : faces) {
       for (auto it = face->adjacentEdgeIterator (); it.isValid (); ) {
@@ -183,32 +206,32 @@ struct ActionSubdivide::Impl {
         assert (! edge.isTEdge ());
         it.next ();
 
-        if (   edge.vertex1Ref ().level () <= selectionLevel
-            && edge.vertex2Ref ().level () <= selectionLevel) {
+        if (   edge.vertex1Ref ().level () <= data.selectionLevel
+            && edge.vertex2Ref ().level () <= data.selectionLevel) {
 
           this->actions.add <PAInsertEdgeVertex> ()->run 
-            (mesh, edge, SubdivisionButterfly::subdivideEdge (mesh, edge));
+            (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
         }
       }
     }
     for (WingedFace* face : faces) {
-      this->actions.add <PATriangulate6Gon> ()->run (mesh,*face);
+      this->actions.add <PATriangulate6Gon> ()->run (data.mesh, *face, data.affectedFaces);
     }
   }
 
-  void refineBorder (WingedMesh& mesh, FaceSet& border, unsigned int selectionLevel) {
-    this->actions.add <PADeleteTEdges> ()->run (mesh, border);
+  void refineBorder (const SubdivideData& data, FaceSet& border) {
+    this->actions.add <PADeleteTEdges> ()->run (data.mesh, border);
 
     for (WingedFace* face : border) {
-      assert (face->level () == selectionLevel);
+      assert (face->level () == data.selectionLevel);
       assert (face->tEdge () == nullptr);
-      this->actions.add <PATriangulateQuad> ()->run (mesh, *face);
+      this->actions.add <PATriangulateQuad> ()->run (data.mesh, *face, data.affectedFaces);
     }
   }
 };
 
 DELEGATE_CONSTRUCTOR (ActionSubdivide)
 DELEGATE_DESTRUCTOR  (ActionSubdivide)
-DELEGATE2            (void, ActionSubdivide, run, WingedMesh&, WingedFace&)
+DELEGATE3            (WingedFace&, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
 DELEGATE             (void, ActionSubdivide, undo)
 DELEGATE             (void, ActionSubdivide, redo)

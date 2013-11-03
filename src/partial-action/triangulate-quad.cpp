@@ -12,7 +12,7 @@
 struct PATriangulateQuad :: Impl {
   ActionUnit actions;
 
-  void run (WingedMesh& mesh, WingedFace& face) {
+  void run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) {
     assert (face.numEdges () == 4);
     this->actions.reset ();
 
@@ -45,6 +45,11 @@ struct PATriangulateQuad :: Impl {
     this->actions.add <PAModifyEdge> ()->isTEdge (mesh, *newEdge, true);
     this->actions.add <PAModifyFace> ()->write   (mesh, *newFace);
     this->actions.add <PAModifyFace> ()->write   (mesh, face);
+
+    if (affectedFaces) {
+      affectedFaces->push_back (face.    id ());
+      affectedFaces->push_back (newFace->id ());
+    }
   }
 
   WingedEdge& splitFaceWith ( WingedMesh& mesh
@@ -96,7 +101,7 @@ struct PATriangulateQuad :: Impl {
 DELEGATE_CONSTRUCTOR (PATriangulateQuad)
 DELEGATE_DESTRUCTOR  (PATriangulateQuad)
 
-DELEGATE2 (void,PATriangulateQuad,run,WingedMesh&,WingedFace&)
+DELEGATE3 (void,PATriangulateQuad,run,WingedMesh&,WingedFace&,std::list <Id>*)
 DELEGATE  (void,PATriangulateQuad,undo)
 DELEGATE  (void,PATriangulateQuad,redo)
 

@@ -1,7 +1,6 @@
 #ifndef DILAY_WINGED_MESH
 #define DILAY_WINGED_MESH
 
-#include <list>
 #include <unordered_set>
 #include "fwd-glm.hpp"
 #include "fwd-winged.hpp"
@@ -65,7 +64,7 @@ class WingedMesh {
     void            toggleRenderMode  ();
     
     void            intersectRay      (const Ray&, FaceIntersection&);
-    void            intersectSphere   (const Sphere&, std::list <Id>&);
+    void            intersectSphere   (const Sphere&, std::unordered_set <Id>&);
     void            intersectSphere   (const Sphere&, std::unordered_set <WingedVertex*>&);
     
     SAFE_REF1 (WingedVertex, vertexSLOW, unsigned int)

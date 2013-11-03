@@ -14,7 +14,7 @@
 struct PATriangulate6Gon :: Impl {
   ActionUnit actions;
 
-  WingedFace& run (WingedMesh& mesh, WingedFace& f) {
+  WingedFace& run (WingedMesh& mesh, WingedFace& f, std::list <Id>* affectedFaces) {
     assert (f.numEdges () == 6);
 
     this->actions.reset ();
@@ -85,7 +85,14 @@ struct PATriangulate6Gon :: Impl {
     this->actions.add <PAModifyFace> ()->write (mesh,b);
     this->actions.add <PAModifyFace> ()->write (mesh,c);
 
-    return this->actions.add <ActionRealignFace> ()->run (mesh,f);
+    WingedFace& realigned = this->actions.add <ActionRealignFace> ()->run (mesh,f);
+    if (affectedFaces) {
+      affectedFaces->push_back (realigned.id ());
+      affectedFaces->push_back (a.id ());
+      affectedFaces->push_back (b.id ());
+      affectedFaces->push_back (c.id ());
+    }
+    return realigned;
   }
 
   void undo () { this->actions.undo (); }
@@ -95,7 +102,7 @@ struct PATriangulate6Gon :: Impl {
 DELEGATE_CONSTRUCTOR (PATriangulate6Gon)
 DELEGATE_DESTRUCTOR  (PATriangulate6Gon)
 
-DELEGATE2 (WingedFace&,PATriangulate6Gon,run,WingedMesh&,WingedFace&)
+DELEGATE3 (WingedFace&,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::list<Id>*)
 DELEGATE  (void,PATriangulate6Gon,undo)
 DELEGATE  (void,PATriangulate6Gon,redo)
 

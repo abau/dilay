@@ -16,12 +16,14 @@ QMAKE_CXXFLAGS_DEBUG   += # -pg # -DDILAY_RENDER_OCTREE
 QMAKE_LFLAGS_DEBUG     += # -pg 
 
 SOURCES += \
+           src/action/carve.cpp \
            src/action/realign-face.cpp \
            src/action/subdivide.cpp \
            src/action/unit.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
            src/camera.cpp \
+           src/carve-brush.cpp \
            src/config.cpp \
            src/color.cpp \
            src/cursor.cpp \
@@ -67,12 +69,14 @@ SOURCES += \
 
 HEADERS += \
            src/action.hpp \
+           src/action/carve.hpp \
            src/action/realign-face.hpp \
            src/action/subdivide.hpp \
            src/action/unit.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/camera.hpp \
+           src/carve-brush.hpp \
            src/color.hpp \
            src/config.hpp \
            src/config-conversion.hpp \

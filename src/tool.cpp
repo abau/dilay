@@ -11,18 +11,20 @@
 #include "winged-util.hpp"
 #include "view-mouse-movement.hpp"
 #include "history.hpp"
-#include "action/subdivide.hpp"
+#include "action/carve.hpp"
+
+#include "action/subdivide.hpp" // delete this
 
 bool Tool :: click () {
-  WingedMesh& mesh = State :: mesh ();
-  Ray         ray  = State :: camera ().getRay (State :: mouseMovement (). position ());
+  WingedMesh& mesh   = State :: mesh ();
+  Ray         ray    = State :: camera ().getRay (State :: mouseMovement (). position ());
+  Cursor&     cursor = State :: cursor ();
   FaceIntersection intersection;
 
   State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
-    State :: history ().add <ActionSubdivide> ()->run (mesh, intersection.face ());
-    //mesh.rebuildIndices ();
-    //mesh.rebuildNormals ();
+    State :: history ().add <ActionCarve> ()->run (mesh, intersection.position (), cursor.radius ());
+    //State :: history ().add <ActionSubdivide> ()->run (mesh, intersection.face ());
     mesh.bufferData ();
     return true;
   }

@@ -1,10 +1,8 @@
 #ifndef DILAY_OCTREE
 #define DILAY_OCTREE
 
-#include <list>
 #include <unordered_set>
 #include "fwd-glm.hpp"
-#include "id.hpp"
 #include "iterator.hpp"
 #include "macro.hpp"
 
@@ -22,6 +20,7 @@ class ConstOctreeNodeIterator;
 class Ray;
 class FaceIntersection;
 class Sphere;
+class Id;
 
 /** Internal template for iterators over all faces of a node */
 template <bool> struct OctreeNodeFaceIteratorTemplate;
@@ -47,7 +46,8 @@ class OctreeNode {
     float             looseWidth      () const;
     float             width           () const;
     void              intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
-    void              intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
+    void              intersectSphere ( const WingedMesh&, const Sphere&
+                                      , std::unordered_set<Id>&);
     void              intersectSphere ( const WingedMesh&, const Sphere&
                                       , std::unordered_set<WingedVertex*>&);
     unsigned int      numFaces        () const;
@@ -78,7 +78,8 @@ class Octree {
     WingedFace* face            (const Id&);
     void        render          ();
     void        intersectRay    (const WingedMesh&, const Ray&, FaceIntersection&);
-    void        intersectSphere (const WingedMesh&, const Sphere&, std::list<Id>&);
+    void        intersectSphere ( const WingedMesh&, const Sphere&
+                                , std::unordered_set<Id>&);
     void        intersectSphere ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<WingedVertex*>&);
     void        reset           ();

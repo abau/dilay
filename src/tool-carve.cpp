@@ -31,7 +31,6 @@ bool ToolCarve :: run () {
   State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
     Sphere sphere (intersection.position (), cursor.radius ());
-    std::unordered_set <WingedVertex*> vertices;
 
     SubdivButterfly :: subdivide (mesh,intersection.face ());
     //refine (sphere,size,vertices);
