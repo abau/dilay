@@ -37,8 +37,6 @@ class WingedVertex {
     const unsigned int          _index;
     WingedEdge*                 _edge;
     const unsigned int          _level;
-    bool                        _isTVertex;
-    bool                        _isOVertex;
 };
 
 #endif
