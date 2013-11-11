@@ -135,7 +135,8 @@ struct ActionSubdivide::Impl {
               }
               else if (faceLevel == data.selectionLevel) {
                 this->insertNeighbour (extendedNeighbourhood,face);
-                return checkAdjacents (face);
+                if (checkAdjacents (face) == false)
+                  return false;
               }
             }
           }
