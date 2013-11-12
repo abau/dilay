@@ -57,6 +57,8 @@ struct ActionSubdivide::Impl {
     if (data.selection.level () <= data.selectionLevel) {
       FaceSet neighbourhood, border;
 
+      this->insertNeighbour (neighbourhood, data.selection);
+
       if (! this->extendNeighbourhood (data, neighbourhood)) {
         return this->subdivide (data);
       }
@@ -71,7 +73,17 @@ struct ActionSubdivide::Impl {
     return data.selection;
   }
 
-  bool extendNeighbourhood (const SubdivideData& data, FaceSet& neighbourhood) {
+  bool extendNeighbourhood ( const SubdivideData& data, FaceSet& neighbourhood) {
+    FaceSet extendedNeighbourhood;
+
+    // checks whether a face is already a neighbour
+    std::function < bool (WingedFace&) > isNeighbour =
+      [&neighbourhood,&extendedNeighbourhood] (WingedFace& face) {
+
+        return (neighbourhood        .count (&face) > 0) 
+            || (extendedNeighbourhood.count (&face) > 0);
+      };
+
     // checks whether a face has two adjacent faces that are neighbours
     std::function < bool (WingedFace&) > hasAtLeast2Neighbours =
       [&neighbourhood] (WingedFace& face) {
