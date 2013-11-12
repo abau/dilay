@@ -57,14 +57,10 @@ struct ActionSubdivide::Impl {
     if (data.selection.level () <= data.selectionLevel) {
       FaceSet neighbourhood, border;
 
-      if (! this->oneRingNeighbourhood (data, neighbourhood)) {
-        return this->subdivide (data);
-      }
-
       if (! this->extendNeighbourhood (data, neighbourhood)) {
         return this->subdivide (data);
       }
-      
+
       if (! this->oneRingBorder (data, neighbourhood, border)) {
         return this->subdivide (data);
       }
@@ -75,44 +71,14 @@ struct ActionSubdivide::Impl {
     return data.selection;
   }
 
-  bool oneRingNeighbourhood (const SubdivideData& data, FaceSet& neighbourhood) {
-    neighbourhood.clear   ();
-    this->insertNeighbour (neighbourhood, data.selection);
-
-    for (auto vIt = data.selection.adjacentVertexIterator (true); vIt.isValid (); vIt.next ()) {
-      for (ADJACENT_FACE_ITERATOR (fIt, vIt.element ())) {
-        WingedFace& face = fIt.element ();
-        unsigned int faceLevel = face.level ();
-        if (faceLevel < data.selectionLevel) {
-          this->subdivide (data, face);
-          return false;
-        }
-        else if (faceLevel == data.selectionLevel) { 
-          this->insertNeighbour (neighbourhood, face);
-        }
-      }
-    }
-    return true;
-  }
-
-  bool extendNeighbourhood ( const SubdivideData& data, FaceSet& neighbourhood) {
-    FaceSet extendedNeighbourhood;
-
-    // checks whether a face is already a neighbour
-    std::function < bool (WingedFace&) > isNeighbour =
-      [&neighbourhood,&extendedNeighbourhood] (WingedFace& face) {
-
-        return (neighbourhood        .count (&face) > 0) 
-            || (extendedNeighbourhood.count (&face) > 0);
-      };
-
+  bool extendNeighbourhood (const SubdivideData& data, FaceSet& neighbourhood) {
     // checks whether a face has two adjacent faces that are neighbours
     std::function < bool (WingedFace&) > hasAtLeast2Neighbours =
-      [&isNeighbour] (WingedFace& face) {
+      [&neighbourhood] (WingedFace& face) {
         unsigned int numNeighbours = 0;
 
         for (ADJACENT_FACE_ITERATOR (it, face)) {
-          if (isNeighbour (it.element ())) {
+          if (neighbourhood.count (&it.element ()) > 0) {
             numNeighbours++;
           }
         }
@@ -122,19 +88,18 @@ struct ActionSubdivide::Impl {
     // adds adjacent faces of a neighbour to the neighbourhood if they have
     // a t-edge or are adjacent to (at least) to neighbours
     std::function < bool (WingedFace&) > checkAdjacents =
-      [ & ] (WingedFace& neighbour) {
+      [&] (WingedFace& neighbour) {
         for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
           WingedFace& face = it.element ();
-          if (! isNeighbour (face)) {
-            unsigned int faceLevel = face.level ();
-
+          if (neighbourhood.count (&face) == 0) {
             if (face.tEdge () || hasAtLeast2Neighbours (face)) {
+              unsigned int faceLevel = face.level ();
               if (faceLevel < data.selectionLevel) {
                 this->subdivide (data,face);
                 return false;
               }
               else if (faceLevel == data.selectionLevel) {
-                this->insertNeighbour (extendedNeighbourhood,face);
+                this->insertNeighbour (neighbourhood,face);
                 if (checkAdjacents (face) == false)
                   return false;
               }
@@ -144,18 +109,18 @@ struct ActionSubdivide::Impl {
         return true;
       };
 
-    for (WingedFace* neighbour : neighbourhood) {
-      if (! checkAdjacents (*neighbour)) {
-        return false;
-      }
+    neighbourhood.clear   ();
+    this->insertNeighbour (neighbourhood, data.selection);
+
+    if (! checkAdjacents (data.selection)) {
+      return false;
     }
-    neighbourhood.insert (extendedNeighbourhood.begin (), extendedNeighbourhood.end ());
     return true;
   }
 
   bool oneRingBorder ( const SubdivideData& data
                      , const FaceSet& neighbourhood, FaceSet& border) {
-    // check levels in one-ring evironment
+    // check levels in one-ring environment
     for (WingedFace* n : neighbourhood) {
       for (auto vIt = n->adjacentVertexIterator (true); vIt.isValid (); vIt.next ()) {
         for (ADJACENT_FACE_ITERATOR (fIt, vIt.element ())) {
@@ -169,7 +134,6 @@ struct ActionSubdivide::Impl {
         }
       }
     }
-
     // build border
     border.clear ();
     for (WingedFace* n : neighbourhood) {
@@ -178,6 +142,7 @@ struct ActionSubdivide::Impl {
 
         if (neighbourhood.count (&face) == 0) {
           unsigned int faceLevel = face.level ();
+          
           assert (face.tEdge () == nullptr);
           assert (faceLevel >= data.selectionLevel);
 
