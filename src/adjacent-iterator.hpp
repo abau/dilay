@@ -26,6 +26,7 @@ class AdjacentEdgeIterator : public Iterator <WingedEdge> {
     const WingedFace*       face    () const { return this->_face; }
     const WingedVertex*     vertex  () const { return this->_vertex; }
     bool                    isValid () const { return this->_isValid; }
+    WingedEdge*             edge    () const { return this->_edge; }
     void                    next    ();     
     std::list <WingedEdge*> collect ();
 
@@ -49,6 +50,7 @@ class AdjacentVertexIterator : public Iterator <WingedVertex> {
 
     WingedVertex&             element () const;
     bool                      isValid () const { return this->_edgeIterator.isValid (); }
+    WingedEdge*               edge    () const { return this->_edgeIterator.edge    (); }
     void                      next    ()       { this->_edgeIterator.next (); }
     std::list <WingedVertex*> collect ();
 
@@ -67,6 +69,7 @@ class AdjacentFaceIterator : public Iterator <WingedFace> {
 
     WingedFace&             element    () const;
     bool                    isValid    () const { return this->_edgeIterator.isValid (); }
+    WingedEdge*             edge       () const { return this->_edgeIterator.edge    (); }
     void                    next       ()       { this->_edgeIterator.next (); }
     std::list <WingedFace*> collect    ();
     std::list <Id>          collectIds ();
