@@ -5,10 +5,8 @@
 #include "winged-vertex.hpp"
 #include "adjacent-iterator.hpp"
 
-WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e, unsigned int l) 
-  : _index (i), _edge (e), _level (l) {}
-
-void WingedVertex :: edge (WingedEdge* e) { this->_edge = e; }
+WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e, unsigned int l, bool b) 
+  : _index (i), _edge (e), _level (l), _isTVertex (b) {}
 
 unsigned int WingedVertex :: writeIndex (WingedMesh& mesh) {
   return mesh.addIndex (this->_index);

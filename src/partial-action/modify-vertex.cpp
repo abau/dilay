@@ -8,12 +8,13 @@
 #include "state.hpp"
 #include "partial-action/ids.hpp"
 
-enum class Operation { Edge, WriteIndex, WriteNormal, Move };
+enum class Operation { Edge, WriteIndex, WriteNormal, Move, IsTVertex };
 
 struct PAModifyVertex :: Impl {
   Operation                   operation;
   PAIds                       operands;
   std::unique_ptr <glm::vec3> vec3;
+  std::unique_ptr <bool>      flag;
 
   void edge (WingedMesh& mesh, WingedVertex& vertex, WingedEdge* e) {
     this->operation = Operation::Edge;
@@ -48,6 +49,14 @@ struct PAModifyVertex :: Impl {
     mesh.setVertex           (vertex.index (), pos);
   }
 
+  void isTVertex (WingedMesh& mesh, WingedVertex& vertex, bool isTVertex) {
+    this->operation = Operation::IsTVertex;
+    this->operands.setMesh   (0, &mesh);
+    this->operands.setVertex (0, &vertex);
+    this->flag.reset         (new bool (vertex.isTVertex ()));
+    vertex.isTVertex         (isTVertex);
+  }
+
   void toggle () { 
     WingedMesh&   mesh   =  this->operands.getMesh (0);
     WingedVertex& vertex = *this->operands.getVertex (mesh,0);
@@ -78,6 +87,12 @@ struct PAModifyVertex :: Impl {
         this->vec3.reset (new glm::vec3 (pos));
         break;
       }
+      case Operation::IsTVertex: {
+        bool isTVertex = vertex.isTVertex ();
+        vertex.isTVertex (*this->flag);
+        this->flag.reset (new bool (isTVertex));
+        break;
+      }
       default: assert (false);
     }
   }
@@ -93,5 +108,6 @@ DELEGATE3 (void,PAModifyVertex,edge       ,WingedMesh&,WingedVertex&,WingedEdge*
 DELEGATE3 (void,PAModifyVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)
 DELEGATE2 (void,PAModifyVertex,writeNormal,WingedMesh&,WingedVertex&)
 DELEGATE3 (void,PAModifyVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
+DELEGATE3 (void,PAModifyVertex,isTVertex,WingedMesh&,WingedVertex&,bool)
 DELEGATE  (void,PAModifyVertex,undo)
 DELEGATE  (void,PAModifyVertex,redo)

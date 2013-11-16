@@ -19,12 +19,13 @@
 
 void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedVertex& v
                                    , bool printDerived) {
-  std::cout   << "Vertex "               << v.index   () 
-              << "\n\tposition:\t"       << v.vertex  (mesh)
-              << "\n\tedge:\t\t"         << v.edge    ()->id ()
-              << "\n\tlevel:\t\t"        << v.level   ();
+  std::cout   << "Vertex "               << v.index     () 
+              << "\n\tposition:\t"       << v.vertex    (mesh)
+              << "\n\tedge:\t\t"         << v.edge      ()->id ()
+              << "\n\tlevel:\t\t"        << v.level     ()
+              << "\n\tt-vertex:\t"       << v.isTVertex ();
   if (printDerived)
-    std::cout << "\n\tnormal:\t\t"       << v.normal  (mesh);
+    std::cout << "\n\tnormal:\t\t"       << v.normal    (mesh);
   std::cout   << std::endl;
 }
 

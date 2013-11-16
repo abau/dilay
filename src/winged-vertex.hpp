@@ -11,13 +11,16 @@ class WingedEdge;
 class WingedMesh;
 
 class WingedVertex {
-  public: WingedVertex       (unsigned int, WingedEdge*, unsigned int);
+  public: WingedVertex       (unsigned int, WingedEdge*, unsigned int, bool = false);
 
     unsigned int index       () const { return this->_index; }
     WingedEdge*  edge        () const { return this->_edge;  }
     unsigned int level       () const { return this->_level; }
+    bool         isTVertex   () const { return this->_isTVertex; }
 
-    void         edge        (WingedEdge*);
+    void         edge        (WingedEdge* e) { this->_edge      = e; }
+    void         isTVertex   (bool        b) { this->_isTVertex = b; }
+
     unsigned int writeIndex  (WingedMesh&);
     void         writeIndex  (WingedMesh&, unsigned int);
     glm::vec3    vertex      (const WingedMesh&) const;
@@ -37,6 +40,7 @@ class WingedVertex {
     const unsigned int          _index;
     WingedEdge*                 _edge;
     const unsigned int          _level;
+    bool                        _isTVertex;
 };
 
 #endif
