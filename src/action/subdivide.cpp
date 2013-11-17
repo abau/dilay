@@ -125,10 +125,7 @@ struct ActionSubdivide::Impl {
     neighbourhood.clear   ();
     this->insertNeighbour (neighbourhood, data.selection);
 
-    if (! checkAdjacents (data.selection)) {
-      return false;
-    }
-    return true;
+    return checkAdjacents (data.selection);
   }
 
   bool oneRingBorder ( const SubdivideData& data
