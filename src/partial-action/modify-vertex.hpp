@@ -18,6 +18,7 @@ class PAModifyVertex : public Action {
     void writeNormal (WingedMesh&, WingedVertex&);
     void move        (WingedMesh&, WingedVertex&, const glm::vec3&);
     void isTVertex   (WingedMesh&, WingedVertex&, bool);
+    void isOVertex   (WingedMesh&, WingedVertex&, bool);
 
     void undo ();
     void redo ();

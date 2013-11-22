@@ -1,6 +1,7 @@
 #ifndef DILAY_WINGED_VERTEX
 #define DILAY_WINGED_VERTEX
 
+#include <bitset>
 #include "fwd-glm.hpp"
 
 template <class T> class Maybe;
@@ -11,15 +12,17 @@ class WingedEdge;
 class WingedMesh;
 
 class WingedVertex {
-  public: WingedVertex       (unsigned int, WingedEdge*, unsigned int, bool = false);
+  public: WingedVertex       (unsigned int, WingedEdge*, unsigned int);
 
     unsigned int index       () const { return this->_index; }
     WingedEdge*  edge        () const { return this->_edge;  }
     unsigned int level       () const { return this->_level; }
-    bool         isTVertex   () const { return this->_isTVertex; }
+    bool         isTVertex   () const { return this->_flags.test (0); }
+    bool         isOVertex   () const { return this->_flags.test (1); }
 
     void         edge        (WingedEdge* e) { this->_edge      = e; }
-    void         isTVertex   (bool        b) { this->_isTVertex = b; }
+    void         isTVertex   (bool        b) { this->_flags[0]  = b; }
+    void         isOVertex   (bool        b) { this->_flags[1]  = b; }
 
     unsigned int writeIndex  (WingedMesh&);
     void         writeIndex  (WingedMesh&, unsigned int);
@@ -40,7 +43,7 @@ class WingedVertex {
     const unsigned int          _index;
     WingedEdge*                 _edge;
     const unsigned int          _level;
-    bool                        _isTVertex;
+    std::bitset <2>             _flags;
 };
 
 #endif

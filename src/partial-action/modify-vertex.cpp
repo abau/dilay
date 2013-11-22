@@ -8,7 +8,7 @@
 #include "state.hpp"
 #include "partial-action/ids.hpp"
 
-enum class Operation { Edge, WriteIndex, WriteNormal, Move, IsTVertex };
+enum class Operation { Edge, WriteIndex, WriteNormal, Move, IsTVertex, IsOVertex };
 
 struct PAModifyVertex :: Impl {
   Operation                   operation;
@@ -57,6 +57,14 @@ struct PAModifyVertex :: Impl {
     vertex.isTVertex         (isTVertex);
   }
 
+  void isOVertex (WingedMesh& mesh, WingedVertex& vertex, bool isOVertex) {
+    this->operation = Operation::IsOVertex;
+    this->operands.setMesh   (0, &mesh);
+    this->operands.setVertex (0, &vertex);
+    this->flag.reset         (new bool (vertex.isOVertex ()));
+    vertex.isOVertex         (isOVertex);
+  }
+
   void toggle () { 
     WingedMesh&   mesh   =  this->operands.getMesh (0);
     WingedVertex& vertex = *this->operands.getVertex (mesh,0);
@@ -93,6 +101,12 @@ struct PAModifyVertex :: Impl {
         this->flag.reset (new bool (isTVertex));
         break;
       }
+      case Operation::IsOVertex: {
+        bool isOVertex = vertex.isOVertex ();
+        vertex.isOVertex (*this->flag);
+        this->flag.reset (new bool (isOVertex));
+        break;
+      }
       default: assert (false);
     }
   }
@@ -109,5 +123,6 @@ DELEGATE3 (void,PAModifyVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned in
 DELEGATE2 (void,PAModifyVertex,writeNormal,WingedMesh&,WingedVertex&)
 DELEGATE3 (void,PAModifyVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
 DELEGATE3 (void,PAModifyVertex,isTVertex,WingedMesh&,WingedVertex&,bool)
+DELEGATE3 (void,PAModifyVertex,isOVertex,WingedMesh&,WingedVertex&,bool)
 DELEGATE  (void,PAModifyVertex,undo)
 DELEGATE  (void,PAModifyVertex,redo)

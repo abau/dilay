@@ -28,9 +28,9 @@ class WingedEdge {
     WingedEdge*     rightSuccessor   () const { return this->_rightSuccessor; }
     WingedEdge*     previousSibling  () const { return this->_previousSibling; }
     WingedEdge*     nextSibling      () const { return this->_nextSibling; }
-    bool            isTEdge          () const { return this->_isTEdge; }
     Edges::iterator iterator         () const { return this->_iterator; }
 
+    bool            isTEdge          ()                    const;
     bool            isLeftFace       (const WingedFace&)   const;
     bool            isRightFace      (const WingedFace&)   const;
     bool            isVertex1        (const WingedVertex&) const;

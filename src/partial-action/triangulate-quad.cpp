@@ -17,13 +17,13 @@ struct PATriangulateQuad :: Impl {
     assert (face.numEdges () == 4);
     this->actions.reset ();
 
-    WingedVertex& vertex      = face.highestLevelVertexRef ();
-    WingedEdge&   edge        = face.adjacentRef  (vertex);
+    WingedVertex& tVertex     = face.highestLevelVertexRef ();
+    WingedEdge&   edge        = face.adjacentRef  (tVertex);
     WingedEdge&   counterpart = edge.successorRef (face,1);
     WingedFace*   newFace;
     WingedEdge*   newEdge;
 
-    if (edge.isFirstVertex (face, vertex)) {
+    if (edge.isFirstVertex (face, tVertex)) {
       Triangle newLeftGeometry (mesh, edge.vertexRef (face, 0)
                                     , edge.vertexRef (face, 2)
                                     , edge.vertexRef (face, 3));
@@ -43,8 +43,11 @@ struct PATriangulateQuad :: Impl {
                                , edge       , edge.predecessorRef (face)
                                , counterpart, edge.successorRef   (face));
     }
+    WingedVertex& oVertex = newEdge->otherVertexRef (tVertex);
+
     this->actions.add <PAModifyEdge>   ()->isTEdge   (mesh, *newEdge, true);
-    this->actions.add <PAModifyVertex> ()->isTVertex (mesh, vertex, true);
+    this->actions.add <PAModifyVertex> ()->isTVertex (mesh, tVertex, true);
+    this->actions.add <PAModifyVertex> ()->isOVertex (mesh, oVertex, true);
     this->actions.add <PAModifyFace>   ()->write     (mesh, *newFace);
     this->actions.add <PAModifyFace>   ()->write     (mesh, face);
 
