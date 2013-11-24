@@ -7,7 +7,6 @@
 #include "partial-action/modify-mesh.hpp"
 #include "partial-action/modify-edge.hpp"
 #include "partial-action/modify-face.hpp"
-#include "partial-action/modify-vertex.hpp"
 #include "triangle.hpp"
 
 struct PATriangulateQuad :: Impl {
@@ -43,10 +42,9 @@ struct PATriangulateQuad :: Impl {
                                , edge       , edge.predecessorRef (face)
                                , counterpart, edge.successorRef   (face));
     }
-    this->actions.add <PAModifyEdge>   ()->isTEdge   (mesh, *newEdge, true);
-    this->actions.add <PAModifyVertex> ()->isTVertex (mesh, vertex, true);
-    this->actions.add <PAModifyFace>   ()->write     (mesh, *newFace);
-    this->actions.add <PAModifyFace>   ()->write     (mesh, face);
+    this->actions.add <PAModifyEdge> ()->isTEdge (mesh, *newEdge, true);
+    this->actions.add <PAModifyFace> ()->write   (mesh, *newFace);
+    this->actions.add <PAModifyFace> ()->write   (mesh, face);
 
     if (affectedFaces) {
       affectedFaces->push_back (face.    id ());

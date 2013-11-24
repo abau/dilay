@@ -11,7 +11,6 @@
 #include "partial-action/triangulate-quad.hpp"
 #include "partial-action/delete-t-edges.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
-#include "partial-action/modify-vertex.hpp"
 #include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
 
@@ -181,9 +180,6 @@ struct ActionSubdivide::Impl {
         WingedEdge& edge = it.element ();
         assert (! edge.isTEdge ());
         it.next ();
-
-        this->actions.add <PAModifyVertex> ()->isTVertex (data.mesh, edge.vertex1Ref (), false);
-        this->actions.add <PAModifyVertex> ()->isTVertex (data.mesh, edge.vertex2Ref (), false);
 
         if (   edge.vertex1Ref ().level () <= data.selectionLevel
             && edge.vertex2Ref ().level () <= data.selectionLevel) {
