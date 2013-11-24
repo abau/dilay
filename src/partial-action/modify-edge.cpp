@@ -1,3 +1,4 @@
+#include <memory>
 #include "partial-action/modify-edge.hpp"
 #include "macro.hpp"
 #include "winged-vertex.hpp"
@@ -17,8 +18,9 @@ enum class Operation
   };
 
 struct PAModifyEdge :: Impl {
-  Operation operation;
-  PAIds     operands; 
+  Operation              operation;
+  PAIds                  operands; 
+  std::unique_ptr <bool> flag;   
 
   void vertex1 (WingedMesh& mesh, WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
@@ -151,6 +153,7 @@ struct PAModifyEdge :: Impl {
   void isTEdge (WingedMesh& mesh, WingedEdge& edge, bool value) {
     this->operation = Operation::IsTEdge;
     this->operands.setIds ({mesh.id (), edge.id ()});
+    this->flag.reset      (new bool (edge.isTEdge ()));
     edge.isTEdge (value);
   }
 
@@ -279,7 +282,9 @@ struct PAModifyEdge :: Impl {
         break;
       }
       case Operation::IsTEdge: {
-        edge.isTEdge (! edge.isTEdge ());
+        bool isTEdge = edge.isTEdge ();
+        edge.isTEdge (*this->flag);
+        this->flag.reset (new bool (isTEdge));
         break;
       }
       default: assert (false);
