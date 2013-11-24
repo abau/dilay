@@ -23,8 +23,8 @@ bool Tool :: click () {
 
   State :: mesh ().intersectRay (ray,intersection);
   if (intersection.isIntersection ()) {
-    //State :: history ().add <ActionCarve> ()->run (mesh, intersection.position (), cursor.radius ());
-    State :: history ().add <ActionSubdivide> ()->run (mesh, intersection.face ());
+    State :: history ().add <ActionCarve> ()->run (mesh, intersection.position (), cursor.radius ());
+    //State :: history ().add <ActionSubdivide> ()->run (mesh, intersection.face ());
     mesh.bufferData ();
     return true;
   }

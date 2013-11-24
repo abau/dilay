@@ -4,7 +4,7 @@
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
 #include "util.hpp"
-
+  
 WingedEdge :: WingedEdge (const Id& id) 
   : WingedEdge (nullptr,nullptr,nullptr,nullptr
                ,nullptr,nullptr,nullptr,nullptr
@@ -20,18 +20,6 @@ WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
   this->setGeometry ( v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc
                     , prevSib, nextSib);
   this->_isTEdge = isTEdge;
-}
-
-bool WingedEdge :: isTEdge () const { 
-  assert (Util :: implies 
-      (this->_isTEdge
-      ,  this->_vertex1 
-      && this->_vertex2
-      && (  (this->_vertex1->isTVertex () && this->_vertex2->isOVertex ())
-         || (this->_vertex1->isOVertex () && this->_vertex2->isTVertex ())
-         )
-      ));
-  return this->_isTEdge; 
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {

@@ -15,8 +15,6 @@
 #include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
 
-#include <iostream> // delete this
-
 typedef std::unordered_set <WingedFace*> FaceSet;
 
 struct SubdivideData {
@@ -107,38 +105,7 @@ struct ActionSubdivide::Impl {
         for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
           WingedFace& face = it.element ();
           if (neighbourhood.count (&face) == 0) {
-            if (face.tEdge ()) {
-              unsigned int faceLevel = face.level ();
-              if (  it.edge ()->vertex1Ref ().isTVertex () 
-                 || it.edge ()->vertex2Ref ().isTVertex ()) {
-                if (faceLevel >= data.selectionLevel) {
-                  std::cout << faceLevel << " " << data.selectionLevel << std::endl;
-                }
-
-                WingedEdge* t = face.tEdge ();
-                assert (   t->vertex1 () == it.edge ()->vertex1 () 
-                        || t->vertex1 () == it.edge ()->vertex2 ()
-                        || t->vertex2 () == it.edge ()->vertex1 ()
-                        || t->vertex2 () == it.edge ()->vertex2 ());
-                /*
-                assert (! (  it.edge ()->vertex1Ref ().isTVertex () 
-                          && it.edge ()->vertex2Ref ().isTVertex ()));
-                assert (! (  t->vertex1Ref ().isTVertex () 
-                          && t->vertex2Ref ().isTVertex ()));
-                          */
-
-                assert (faceLevel < data.selectionLevel);
-                this->subdivide (data,face);
-                return false;
-              }
-              else {
-                assert (faceLevel == data.selectionLevel);
-                this->insertNeighbour (neighbourhood,face);
-                if (checkAdjacents (face) == false)
-                  return false;
-              }
-            }
-            else if (hasAtLeast2Neighbours (face)) {
+            if (face.tEdge () || hasAtLeast2Neighbours (face)) {
               unsigned int faceLevel = face.level ();
               if (faceLevel < data.selectionLevel) {
                 this->subdivide (data,face);

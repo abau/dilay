@@ -63,9 +63,3 @@ unsigned int Util :: solveQuadraticEq ( float a, float b, float c
     return 1;
   }
 }
-
-bool Util :: implies (bool p, bool c) {
-  if (p && !c)
-    return false;
-  return true;
-}

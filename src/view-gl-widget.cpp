@@ -18,8 +18,6 @@
 #include "tool-rotate.hpp"
 #include "history.hpp"
 
-#include <iostream> // delete this
-
 struct GLWidgetImpl {
   Axis          axis;
 };
@@ -100,7 +98,6 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
     mesh.intersectRay (ray, intersection);
 
     if (intersection.isIntersection ()) {
-      std::cout << intersection.face ().id () << " " << intersection.face ().level () << std::endl;
       glm::vec3 pos    = intersection.position ();
       glm::vec3 normal = intersection.face ().normal (mesh);
 

@@ -22,8 +22,6 @@ namespace Util {
   std::string readFile (const std::string&); 
 
   unsigned int solveQuadraticEq (float, float, float, float&, float&);
-
-  bool implies (bool, bool);
 }
 
 #endif
