@@ -10,12 +10,15 @@ class WingedVertex;
 class WingedFace;
 class WingedMesh;
 
+enum class WEGradient : char { None, Left, Right };
+
 class WingedEdge {
   public:
     WingedEdge (const Id& = Id ());
     WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*
-               , WingedEdge*, WingedEdge*, const Id& = Id (), bool = false);
+               , WingedEdge*, WingedEdge*, const Id& = Id ()
+               , bool = false, WEGradient = WEGradient::None);
 
     Id              id               () const { return this->_id.id (); }
     WingedVertex*   vertex1          () const { return this->_vertex1; }
@@ -30,6 +33,7 @@ class WingedEdge {
     WingedEdge*     nextSibling      () const { return this->_nextSibling; }
     bool            isTEdge          () const { return this->_isTEdge; }
     Edges::iterator iterator         () const { return this->_iterator; }
+    WEGradient      gradient         () const { return this->_gradient; }
 
     bool            isLeftFace       (const WingedFace&)   const;
     bool            isRightFace      (const WingedFace&)   const;
@@ -63,6 +67,7 @@ class WingedEdge {
     void            isTEdge          (bool b)          { this->_isTEdge          = b; }
     void            iterator         (const Edges::iterator& i)          
                                                        { this->_iterator         = i; }
+    void            gradient         (WEGradient g)    { this->_gradient         = g; }
 
     void            firstVertex      (const WingedFace&, WingedVertex*);
     void            secondVertex     (const WingedFace&, WingedVertex*);
@@ -126,6 +131,7 @@ class WingedEdge {
     WingedEdge*     _nextSibling;
 
     bool            _isTEdge;
+    WEGradient      _gradient;
 
     Edges::iterator _iterator;
 };

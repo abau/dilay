@@ -14,13 +14,14 @@ enum class Operation
   , PreviousSibling, NextSibling
   , FirstVertex, SecondVertex
   , Predecessor, Successor
-  , SetGeometry, IsTEdge
+  , SetGeometry, IsTEdge, Gradient
   };
 
 struct PAModifyEdge :: Impl {
-  Operation              operation;
-  PAIds                  operands; 
-  std::unique_ptr <bool> flag;   
+  Operation                    operation;
+  PAIds                        operands; 
+  std::unique_ptr <bool>       flag;
+  std::unique_ptr <WEGradient> weGradient;
 
   void vertex1 (WingedMesh& mesh, WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
@@ -157,6 +158,36 @@ struct PAModifyEdge :: Impl {
     edge.isTEdge (value);
   }
 
+  void gradient (WingedMesh& mesh, WingedEdge& edge, WEGradient g) {
+    this->operation = Operation::IsTEdge;
+    this->operands.setIds  ({mesh.id (), edge.id ()});
+    this->weGradient.reset (new WEGradient (edge.gradient ())); 
+    edge.gradient (g);
+  }
+
+  void gradient (WingedMesh& mesh, WingedEdge& edge, const WingedFace& face) {
+    if (edge.isLeftFace (face)) {
+      switch (edge.gradient ()) {
+        case WEGradient::Left:
+          assert (false);
+        case WEGradient::None:
+          return this->gradient (mesh, edge, WEGradient::Left);
+        case WEGradient::Right:
+          return this->gradient (mesh, edge, WEGradient::None);
+      };
+    }
+    else {
+      switch (edge.gradient ()) {
+        case WEGradient::Left:
+          return this->gradient (mesh, edge, WEGradient::None);
+        case WEGradient::None:
+          return this->gradient (mesh, edge, WEGradient::Right);
+        case WEGradient::Right:
+          assert (false);
+      };
+    }
+  }
+
   void toggle () { 
     WingedMesh& mesh =  this->operands.getMesh (0);
     WingedEdge& edge = *this->operands.getEdge (mesh,1);
@@ -283,8 +314,14 @@ struct PAModifyEdge :: Impl {
       }
       case Operation::IsTEdge: {
         bool isTEdge = edge.isTEdge ();
-        edge.isTEdge (*this->flag);
+        edge.isTEdge     (*this->flag);
         this->flag.reset (new bool (isTEdge));
+        break;
+      }
+      case Operation::Gradient: {
+        WEGradient gradient = edge.gradient ();
+        edge.gradient          (*this->weGradient);
+        this->weGradient.reset (new WEGradient (gradient));
         break;
       }
       default: assert (false);
@@ -314,6 +351,8 @@ DELEGATE4 (void,PAModifyEdge,face            ,WingedMesh&,WingedEdge&,const Wing
 DELEGATE4 (void,PAModifyEdge,predecessor     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
 DELEGATE4 (void,PAModifyEdge,successor       ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
 DELEGATE3 (void,PAModifyEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
+DELEGATE3 (void,PAModifyEdge,gradient        ,WingedMesh&,WingedEdge&,WEGradient)
+DELEGATE3 (void,PAModifyEdge,gradient        ,WingedMesh&,WingedEdge&,const WingedFace&)
 DELEGATE  (void,PAModifyEdge,undo)
 DELEGATE  (void,PAModifyEdge,redo)
 

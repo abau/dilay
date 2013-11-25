@@ -15,11 +15,12 @@ WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
                          , WingedEdge* leftPred, WingedEdge* leftSucc
                          , WingedEdge* rightPred, WingedEdge* rightSucc
                          , WingedEdge* prevSib, WingedEdge* nextSib
-                         , const Id& id, bool isTEdge) : _id (id) {
+                         , const Id& id, bool isT, WEGradient g) : _id (id) {
 
   this->setGeometry ( v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc
                     , prevSib, nextSib);
-  this->_isTEdge = isTEdge;
+  this->_isTEdge  = isT;
+  this->_gradient = g;
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {

@@ -41,6 +41,14 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
     if (vertex) return std::to_string (vertex->index ());
     else        return std::string ("NULL");
   };
+  auto gradient = [] (WEGradient g) {
+    switch (g) {
+      case WEGradient::None:  return std::string ("None");
+      case WEGradient::Left:  return std::string ("Left");
+      case WEGradient::Right: return std::string ("Right");
+      default: assert (false);
+    };
+  };
 
   std::cout << "Edge " << e.id () 
     << "\n\tvertex 1:\t\t"        << maybeIndex  (e.vertex1          ())
@@ -53,7 +61,8 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
     <<   "\tright successor:\t"   << maybeEdgeId (e.rightSuccessor   ())
     << "\n\tprivious sibling:\t"  << maybeEdgeId (e.previousSibling  ())   
     <<   "\tnext sibling:\t\t"    << maybeEdgeId (e.nextSibling      ())
-    << "\n\tis T-edge:\t\t"       << e.isTEdge   ();
+    << "\n\tis T-edge:\t\t"       << e.isTEdge   ()
+    << "\n\tgradient:\t\t"        << gradient (e.gradient  ());
   std::cout << std::endl;
 }
 
