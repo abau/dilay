@@ -111,9 +111,8 @@ void WingedUtil :: fromMesh (WingedMesh& w, const Mesh& m) {
    * Otherwise a new edge is added with `f` being its left face.
    * The found (resp. created) edge is returned
    */
-  std::function <WingedEdge* (unsigned int,unsigned int,WingedFace&)> findOrAddEdge =
-    [&w,&vecVertices,&mapEdges] 
-    (unsigned int index1, unsigned int index2, WingedFace& face) {
+  auto findOrAddEdge = [&w,&vecVertices,&mapEdges] 
+    (unsigned int index1, unsigned int index2, WingedFace& face) -> WingedEdge* {
       auto result = mapEdges.find (uiPair (index2, index1));
       if (result == mapEdges.end ()) {
         WingedVertex* v1    = vecVertices [index1];

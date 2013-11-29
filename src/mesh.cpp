@@ -348,20 +348,18 @@ struct Mesh::Impl {
     VertexCache vertexCache;
 
     // adds new vertex to ico-sphere
-    std::function <unsigned int (const glm::vec3&)> addIcoVertex =
-      [&m,radius] (const glm::vec3& v) {
-        return m.addVertex (glm::normalize (v) * glm::vec3 (radius));
-      };
+    auto addIcoVertex = [&m,radius] (const glm::vec3& v) -> unsigned int {
+      return m.addVertex (glm::normalize (v) * glm::vec3 (radius));
+    };
 
     // computes key for vertex cache
-    std::function <Key (unsigned int, unsigned int)> getKey =
-      [] (unsigned int i1, unsigned i2) {
-        return (Key (i1) << 8 * sizeof (int)) + Key (i2);
-      };
+    auto getKey = [] (unsigned int i1, unsigned i2) -> Key {
+      return (Key (i1) << 8 * sizeof (int)) + Key (i2);
+    };
 
     // looks up vertex in cache or computes a new one
-    std::function <unsigned int (unsigned int, unsigned int)> lookupVertex =
-      [&vertexCache,&addIcoVertex,&getKey,&m] (unsigned int i1, unsigned int i2) {
+    auto lookupVertex = [&vertexCache,&addIcoVertex,&getKey,&m] 
+      (unsigned int i1, unsigned int i2) -> unsigned int {
         unsigned int lowerI = i1 < i2 ? i1 : i2;
         unsigned int upperI = i1 < i2 ? i2 : i1;
         Key          key    = getKey (lowerI, upperI);
@@ -381,7 +379,7 @@ struct Mesh::Impl {
     // subdivides a face of the ico-sphere
     std::function <void (unsigned int,unsigned int,unsigned int,unsigned int)> subdivide =
       [&m,&subdivide,&lookupVertex] 
-      (unsigned int s,unsigned int i1, unsigned int i2, unsigned int i3) {
+      (unsigned int s,unsigned int i1, unsigned int i2, unsigned int i3) -> void {
         if (s == 0) {
           m.addIndex (i1); m.addIndex (i2); m.addIndex (i3); 
         }

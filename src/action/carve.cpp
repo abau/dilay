@@ -37,15 +37,14 @@ struct ActionCarve::Impl {
     std::unordered_set <Id> thisIteration = ids;
     std::unordered_set <Id> nextIteration;
 
-    std::function <void (const WingedFace&)> checkNextIteration =
-      [&mesh,&nextIteration,maxIncircleRadius,&sphere] 
-      (const WingedFace& face) {
-        if (   nextIteration.count (face.id ()) == 0
-            && face.incircleRadius (mesh) > maxIncircleRadius
-            && IntersectionUtil::intersects (sphere,mesh,face)) {
-          nextIteration.insert (face.id ());
-        }
-      };
+    auto checkNextIteration = [&mesh,&nextIteration,maxIncircleRadius,&sphere] 
+      (const WingedFace& face) -> void {
+      if (   nextIteration.count (face.id ()) == 0
+          && face.incircleRadius (mesh) > maxIncircleRadius
+          && IntersectionUtil::intersects (sphere,mesh,face)) {
+        nextIteration.insert (face.id ());
+      }
+    };
 
     while (thisIteration.size () > 0) {
       for (const Id& id : thisIteration) {
@@ -71,12 +70,11 @@ struct ActionCarve::Impl {
   void carveFaces ( const Sphere& sphere, const CarveBrush& brush
                   , WingedMesh& mesh, const std::unordered_set <Id>& ids) {
 
-    std::function <glm::vec3 (const WingedVertex&)> carveVertex =
-      [&sphere, &brush, &mesh] (const WingedVertex& vertex) {
-        glm::vec3 n    = vertex.normal (mesh);
-        glm::vec3 vOld = vertex.vertex (mesh);
-        return vOld + (n * brush.y (glm::distance <float> (vOld, sphere.center ())));
-      };
+    auto carveVertex = [&sphere, &brush, &mesh] (const WingedVertex& vertex) -> glm::vec3 {
+      glm::vec3 n    = vertex.normal (mesh);
+      glm::vec3 vOld = vertex.vertex (mesh);
+      return vOld + (n * brush.y (glm::distance <float> (vOld, sphere.center ())));
+    };
 
     // compute set of vertices
     std::set <WingedVertex*> vertices;

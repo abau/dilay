@@ -85,22 +85,21 @@ struct ActionSubdivide::Impl {
       };
 
     // checks whether a face has two adjacent faces that are neighbours
-    std::function < bool (WingedFace&) > hasAtLeast2Neighbours =
-      [&neighbourhood] (WingedFace& face) {
-        unsigned int numNeighbours = 0;
+    auto hasAtLeast2Neighbours = [&neighbourhood] (WingedFace& face) -> bool {
+      unsigned int numNeighbours = 0;
 
-        for (ADJACENT_FACE_ITERATOR (it, face)) {
-          if (neighbourhood.count (&it.element ()) > 0) {
-            numNeighbours++;
-          }
+      for (ADJACENT_FACE_ITERATOR (it, face)) {
+        if (neighbourhood.count (&it.element ()) > 0) {
+          numNeighbours++;
         }
-        return numNeighbours >= 2;
-      };
+      }
+      return numNeighbours >= 2;
+    };
 
     // adds adjacent faces of a neighbour to the neighbourhood if they have
     // a t-edge or are adjacent to (at least) to neighbours
     std::function < bool (WingedFace&) > checkAdjacents =
-      [&] (WingedFace& neighbour) {
+      [&] (WingedFace& neighbour) -> bool {
         for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
           WingedFace& face = it.element ();
           if (neighbourhood.count (&face) == 0) {

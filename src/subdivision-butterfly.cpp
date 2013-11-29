@@ -43,7 +43,7 @@ Adjacents adjacents ( unsigned int maxLevel, const WingedMesh& mesh
                     , WingedEdge& edge, const WingedVertex& vertex) {
   // traverses edge's siblings until it finds a vertex with level <= `maxLevel`
   std::function < glm::vec3 (const WingedEdge&, const WingedVertex&) > traverse =
-    [maxLevel, &mesh, &traverse] (const WingedEdge& e, const WingedVertex& o) {
+    [maxLevel, &mesh, &traverse] (const WingedEdge& e, const WingedVertex& o) -> glm::vec3 {
 
       if (o.level () <= maxLevel) {
         return o.vertex (mesh);

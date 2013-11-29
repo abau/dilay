@@ -116,27 +116,27 @@ WingedEdge* WingedFace :: tEdge () const {
 }
 
 unsigned int WingedFace :: level () const {
-  std::function <unsigned int (unsigned int)> levelMin;
-  levelMin = [&levelMin,this] (unsigned int min) {
-    unsigned int l = std::numeric_limits <unsigned int>::max ();
-    for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-      if (it.element ().isTEdge ())
-        return it.element ().vertex1Ref ().level () - 1;
-      if (it.element ().vertex1Ref ().level () >= min)
-        l = std::min <unsigned int> (l, it.element ().vertex1Ref ().level ());
-      if (it.element ().vertex2Ref ().level () >= min)
-        l = std::min <unsigned int> (l, it.element ().vertex2Ref ().level ());
-    }
-    unsigned int count = 0;
-    for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-      if (it.element ().level () == l)
-        count++;
-    }
-    if (count == 1)
-      return levelMin (l+1);
-    else
-      return l;
-  };
+  std::function <unsigned int (unsigned int)> levelMin =
+    [&levelMin,this] (unsigned int min) -> unsigned int {
+      unsigned int l = std::numeric_limits <unsigned int>::max ();
+      for (ADJACENT_EDGE_ITERATOR (it,*this)) {
+        if (it.element ().isTEdge ())
+          return it.element ().vertex1Ref ().level () - 1;
+        if (it.element ().vertex1Ref ().level () >= min)
+          l = std::min <unsigned int> (l, it.element ().vertex1Ref ().level ());
+        if (it.element ().vertex2Ref ().level () >= min)
+          l = std::min <unsigned int> (l, it.element ().vertex2Ref ().level ());
+      }
+      unsigned int count = 0;
+      for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+        if (it.element ().level () == l)
+          count++;
+      }
+      if (count == 1)
+        return levelMin (l+1);
+      else
+        return l;
+    };
   return levelMin (0);
 }
 
