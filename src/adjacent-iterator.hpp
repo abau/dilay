@@ -49,6 +49,8 @@ class AdjacentVertexIterator : public Iterator <WingedVertex> {
           AdjacentVertexIterator (const WingedVertex&, WingedEdge&, bool = false); 
 
     WingedVertex&             element () const;
+    const WingedFace*         face    () const { return this->_edgeIterator.face    (); }
+    const WingedVertex*       vertex  () const { return this->_edgeIterator.vertex  (); }
     bool                      isValid () const { return this->_edgeIterator.isValid (); }
     WingedEdge*               edge    () const { return this->_edgeIterator.edge    (); }
     void                      next    ()       { this->_edgeIterator.next (); }
@@ -68,6 +70,8 @@ class AdjacentFaceIterator : public Iterator <WingedFace> {
           AdjacentFaceIterator (const WingedVertex&, WingedEdge&); 
 
     WingedFace&             element    () const;
+    const WingedFace*       face       () const { return this->_edgeIterator.face    (); }
+    const WingedVertex*     vertex     () const { return this->_edgeIterator.vertex  (); }
     bool                    isValid    () const { return this->_edgeIterator.isValid (); }
     WingedEdge*             edge       () const { return this->_edgeIterator.edge    (); }
     void                    next       ()       { this->_edgeIterator.next (); }
