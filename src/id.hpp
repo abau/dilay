@@ -14,6 +14,7 @@ class Id {
     friend class IdObject;
 
     bool operator== (const Id& id) const { return this->_id == id.get (); }
+    bool operator!= (const Id& id) const { return this->_id != id.get (); }
     IdPrimitive get ()             const { return this->_id; }
     bool isInvalid  ()             const { return this->_id == 0; }
     bool isValid    ()             const { return ! this->isInvalid (); }
