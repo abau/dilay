@@ -36,7 +36,7 @@ class AdjacentEdgeIterator : public Iterator <WingedEdge> {
     const WingedVertex* _vertex;
           WingedEdge*   _start;
           WingedEdge*   _edge;
-          bool          _skipTEdges;
+    const bool          _skipTEdges;
 };
 
 /** Iterates over adjacent vertices of a face or vertex in counterclockwise order */

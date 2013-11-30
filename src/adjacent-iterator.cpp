@@ -49,6 +49,7 @@ WingedEdge& AdjacentEdgeIterator :: element () const {
 
 void AdjacentEdgeIterator :: next () {
   assert (this->isValid ());
+
   if (this->_face) {
     this->_edge = this->_edge->successor (*this->_face);
 
@@ -58,12 +59,17 @@ void AdjacentEdgeIterator :: next () {
     }
   }
   else {
-    do {
+    this->_edge = this->_edge->isVertex1        (*this->_vertex) 
+                ? this->_edge->leftPredecessor  ()
+                : this->_edge->rightPredecessor ();
+
+    if (this->_skipTEdges && this->_edge->isTEdge ()) {
       this->_edge = this->_edge->isVertex1        (*this->_vertex) 
                   ? this->_edge->leftPredecessor  ()
                   : this->_edge->rightPredecessor ();
-    } while (this->_skipTEdges && this->_edge->isTEdge ());
+    }
   }
+  assert (! (this->_skipTEdges && this->_edge->isTEdge ()));
   if (this->_edge == this->_start)
     this->_isValid = false;
 }
