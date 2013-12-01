@@ -41,10 +41,11 @@ class WingedFace {
     unsigned int           numEdges        () const;
     glm::vec3              normal          (const WingedMesh&) const;
 
-    /** `adjacent (v)` returns an adjacent edge with `v` as start or end point.
-     * It's crucial that `v` is acutally a vertex of `this` face
+    /** `adjacent (v,b)` returns an adjacent edge with `v` as start or end point.
+     * It's crucial that `v` is acutally a vertex of `this` face.
+     * If `b` holds, then t-edges are skiped.
      */
-    WingedEdge*            adjacent        (const WingedVertex&) const;
+    WingedEdge*            adjacent        (const WingedVertex&, bool = false) const;
     WingedEdge*            longestEdge     (const WingedMesh&) const;
     WingedVertex*          tVertex         () const;
     WingedEdge*            tEdge           () const;
@@ -64,6 +65,7 @@ class WingedFace {
     SAFE_REF_CONST  (WingedEdge, edge)
     SAFE_REF_CONST  (OctreeNode, octreeNode)
     SAFE_REF1_CONST (WingedEdge, adjacent, const WingedVertex&)
+    SAFE_REF2_CONST (WingedEdge, adjacent, const WingedVertex&, bool)
     SAFE_REF1_CONST (WingedEdge, longestEdge, const WingedMesh&)
     SAFE_REF_CONST  (WingedVertex, tVertex)
     SAFE_REF_CONST  (WingedEdge, tEdge)

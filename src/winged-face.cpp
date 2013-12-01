@@ -77,8 +77,8 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
   return glm::normalize (glm::cross (v2-v1, v3-v2));
 }
 
-WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex) const {
-  for (ADJACENT_EDGE_ITERATOR (it,*this)) {
+WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex, bool skipTEdges) const {
+  for (auto it = this->adjacentEdgeIterator (skipTEdges); it.isValid (); it.next ()) {
     if (it.element ().isAdjacent (vertex))
       return &it.element ();
   }
