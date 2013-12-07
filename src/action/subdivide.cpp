@@ -90,8 +90,7 @@ struct ActionSubdivide::Impl {
       return numNeighbours >= 2;
     };
 
-    // adds adjacent faces of a neighbour to the neighbourhood if they have
-    // a t-edge or are adjacent to (at least) to neighbours
+    // checks adjacent faces of a neighbour
     std::function < bool (WingedFace&) > checkAdjacents =
       [&] (WingedFace& neighbour) -> bool {
         for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
