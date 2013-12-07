@@ -16,7 +16,7 @@ struct PATriangulateQuad :: Impl {
     assert (face.numEdges () == 4);
     this->actions.reset ();
 
-    WingedVertex& vertex      = face.highestLevelVertexRef ();
+    WingedVertex& vertex      = face.designatedTVertexRef ();
     WingedEdge&   edge        = face.adjacentRef  (vertex);
     WingedEdge&   counterpart = edge.successorRef (face,1);
     WingedFace*   newFace;

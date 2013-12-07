@@ -53,8 +53,7 @@ class WingedFace {
     bool                   isTriangle      () const;
     float                  incircleRadius  (const WingedMesh&) const;
 
-    WingedVertex*          highestLevelVertex     () const;
-
+    WingedVertex*          designatedTVertex      () const;
     AdjacentEdgeIterator   adjacentEdgeIterator   (bool = false) const;
     AdjacentVertexIterator adjacentVertexIterator (bool = false) const;
     AdjacentFaceIterator   adjacentFaceIterator   (bool = false) const;
@@ -69,7 +68,7 @@ class WingedFace {
     SAFE_REF1_CONST (WingedEdge, longestEdge, const WingedMesh&)
     SAFE_REF_CONST  (WingedVertex, tVertex)
     SAFE_REF_CONST  (WingedEdge, tEdge)
-    SAFE_REF_CONST  (WingedVertex, highestLevelVertex)
+    SAFE_REF_CONST  (WingedVertex, designatedTVertex)
   private:
     const IdObject  _id;
     WingedEdge*     _edge;

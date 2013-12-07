@@ -142,16 +142,6 @@ unsigned int WingedFace :: level () const {
 
 bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
 
-WingedVertex* WingedFace :: highestLevelVertex () const {
-  WingedVertex* v = nullptr;
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    if (v == nullptr || it.element ().level () > v->level ()) {
-      v = &it.element ();
-    }
-  }
-  return v;
-}
-
 float WingedFace :: incircleRadius  (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
   glm::vec3 v1 = this->firstVertex  ().vertex (mesh);
@@ -164,6 +154,21 @@ float WingedFace :: incircleRadius  (const WingedMesh& mesh) const {
   const float s = (a + b + c) * 0.5f;
 
   return glm::sqrt ((s-a) * (s-b) * (s-c) / s);
+}
+
+WingedVertex* WingedFace :: designatedTVertex () const {
+  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
+    WingedVertex& v  = it.element ();
+    WingedEdge&   e1 = *it.edge ();
+    WingedEdge&   e2 = e1.adjacentRef (*this,v);
+    WingedFace&   o1 = e1.otherFaceRef (*this);
+    WingedFace&   o2 = e2.otherFaceRef (*this);
+
+    if (e1.gradientAlong (o1) && e2.gradientAlong (o2)) {
+      return &v;
+    }
+  }
+  assert (false);
 }
 
 AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator (bool skipT) const {

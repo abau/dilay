@@ -210,31 +210,6 @@ struct ActionSubdivide::Impl {
     }
   }
 
-  /*
-  void subdivideFaces (const SubdivideData& data, FaceSet& faces) {
-    this->actions.add <PADeleteTEdges> ()->run (data.mesh,faces);
-
-    for (WingedFace* face : faces) {
-      for (auto it = face->adjacentEdgeIterator (); it.isValid (); ) {
-        WingedEdge& edge = it.element ();
-        assert (! edge.isTEdge ());
-        it.next ();
-
-        if (   edge.vertex1Ref ().level () <= data.selectionLevel
-            && edge.vertex2Ref ().level () <= data.selectionLevel) {
-
-          assert (! edge.gradientAlong (*face));
-
-          this->actions.add <PAInsertEdgeVertex> ()->run 
-            (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
-        }
-      }
-    }
-    for (WingedFace* face : faces) {
-      this->actions.add <PATriangulate6Gon> ()->run (data.mesh, *face, data.affectedFaces);
-    }
-  }
-  */
   void subdivideFaces (const SubdivideData& data, FaceSet& faces) {
     this->actions.add <PADeleteTEdges> ()->run (data.mesh,faces);
 
@@ -248,7 +223,7 @@ struct ActionSubdivide::Impl {
 
         if (subdividedEdges.count (edge.id ()) == 0 && edge.gradient () == WEGradient::None) {
           assert (   edge.vertex1Ref ().level () <= data.selectionLevel
-            && edge.vertex2Ref ().level () <= data.selectionLevel);
+                  && edge.vertex2Ref ().level () <= data.selectionLevel);
 
           WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ()->run 
             (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
