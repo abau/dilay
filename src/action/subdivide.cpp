@@ -19,13 +19,11 @@ typedef std::unordered_set <WingedFace*> FaceSet;
 struct SubdivideData {
   WingedMesh&     mesh;
   WingedFace&     selection;
-  unsigned int    selectionLevel;
   std::list <Id>* affectedFaces;
 
   SubdivideData (WingedMesh& m, WingedFace& f, std::list <Id>* n) 
     : mesh           (m)
     , selection      (refineSelection (f))
-    , selectionLevel (f.level ())
     , affectedFaces  (n)
   {}
 
@@ -54,24 +52,18 @@ struct ActionSubdivide::Impl {
   }
 
   WingedFace& subdivide (const SubdivideData& data) {
-    if (data.selection.level () <= data.selectionLevel) {
-      FaceSet neighbourhood, border;
+    FaceSet neighbourhood, border;
 
-      this->insertNeighbour (neighbourhood, data.selection);
-
-      if (! this->extendNeighbourhood (data, neighbourhood)) {
-        return this->subdivide (data);
-      }
-
-      if (! this->oneRingBorder (data, neighbourhood, border)) {
-        return this->subdivide (data);
-      }
-
-      this->subdivideFaces (data, neighbourhood);
-      this->refineBorder   (data, border);
+    if (! this->extendNeighbourhood (data, neighbourhood)) {
+      return this->subdivide (data);
     }
-    else
-      assert (false);
+
+    if (! this->oneRingBorder (data, neighbourhood, border)) {
+      return this->subdivide (data);
+    }
+
+    this->subdivideFaces (data, neighbourhood);
+    this->refineBorder   (data, border);
     return data.selection;
   }
 
@@ -106,14 +98,11 @@ struct ActionSubdivide::Impl {
           WingedFace& face = it.element ();
           if (neighbourhood.count (&face) == 0) {
             if (face.tEdge () || hasAtLeast2Neighbours (face)) {
-              unsigned int faceLevel = face.level ();
               if (it.edge ()->gradientAlong (*it.face ())) {
-                assert (faceLevel < data.selectionLevel);
                 this->subdivide (data,face);
                 return false;
               }
               else if (it.edge ()->gradient () == WEGradient::None) {
-                assert (faceLevel == data.selectionLevel);
                 this->insertNeighbour (neighbourhood,face);
                 if (checkAdjacents (face) == false)
                   return false;
@@ -186,13 +175,8 @@ struct ActionSubdivide::Impl {
         WingedFace& face = it.element ();
 
         if (neighbourhood.count (&face) == 0) {
-          unsigned int faceLevel = face.level ();
-          
           assert (face.tEdge () == nullptr);
-          assert (faceLevel >= data.selectionLevel);
-
           if (it.edge ()->gradient () == WEGradient::None) {
-            assert (faceLevel == data.selectionLevel);
             border.insert (&face);
           }
         }
@@ -222,9 +206,6 @@ struct ActionSubdivide::Impl {
         it.next ();
 
         if (subdividedEdges.count (edge.id ()) == 0 && edge.gradient () == WEGradient::None) {
-          assert (   edge.vertex1Ref ().level () <= data.selectionLevel
-                  && edge.vertex2Ref ().level () <= data.selectionLevel);
-
           WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ()->run 
             (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
 
@@ -240,7 +221,6 @@ struct ActionSubdivide::Impl {
     this->actions.add <PADeleteTEdges> ()->run (data.mesh, border);
 
     for (WingedFace* face : border) {
-      assert (face->level () == data.selectionLevel);
       assert (face->tEdge () == nullptr);
       this->actions.add <PATriangulateQuad> ()->run (data.mesh, *face, data.affectedFaces);
     }
