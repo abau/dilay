@@ -10,7 +10,7 @@ class WingedVertex;
 class WingedFace;
 class WingedMesh;
 
-enum class WEGradient : char { None, Left, Right };
+enum class Gradient : char { None, Left, Right };
 
 class WingedEdge {
   public:
@@ -18,7 +18,7 @@ class WingedEdge {
     WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*
                , WingedEdge*, WingedEdge*, const Id& = Id ()
-               , bool = false, WEGradient = WEGradient::None);
+               , bool = false, Gradient = Gradient::None);
 
     Id              id               () const { return this->_id.id (); }
     WingedVertex*   vertex1          () const { return this->_vertex1; }
@@ -33,7 +33,7 @@ class WingedEdge {
     WingedEdge*     nextSibling      () const { return this->_nextSibling; }
     bool            isTEdge          () const { return this->_isTEdge; }
     Edges::iterator iterator         () const { return this->_iterator; }
-    WEGradient      gradient         () const { return this->_gradient; }
+    Gradient        faceGradient     () const { return this->_faceGradient; }
 
     bool            isLeftFace       (const WingedFace&)   const;
     bool            isRightFace      (const WingedFace&)   const;
@@ -67,7 +67,7 @@ class WingedEdge {
     void            isTEdge          (bool b)          { this->_isTEdge          = b; }
     void            iterator         (const Edges::iterator& i)          
                                                        { this->_iterator         = i; }
-    void            gradient         (WEGradient g)    { this->_gradient         = g; }
+    void            faceGradient     (Gradient g)      { this->_faceGradient     = g; }
 
     void            firstVertex      (const WingedFace&, WingedVertex*);
     void            secondVertex     (const WingedFace&, WingedVertex*);
@@ -132,7 +132,7 @@ class WingedEdge {
     WingedEdge*     _nextSibling;
 
     bool            _isTEdge;
-    WEGradient      _gradient;
+    Gradient        _faceGradient;
 
     Edges::iterator _iterator;
 };

@@ -41,28 +41,28 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
     if (vertex) return std::to_string (vertex->index ());
     else        return std::string ("NULL");
   };
-  auto gradient = [] (WEGradient g) {
+  auto gradient = [] (Gradient g) {
     switch (g) {
-      case WEGradient::None:  return std::string ("None");
-      case WEGradient::Left:  return std::string ("Left");
-      case WEGradient::Right: return std::string ("Right");
+      case Gradient::None:  return std::string ("None");
+      case Gradient::Left:  return std::string ("Left");
+      case Gradient::Right: return std::string ("Right");
       default: assert (false);
     };
   };
 
   std::cout << "Edge " << e.id () 
-    << "\n\tvertex 1:\t\t"        << maybeIndex  (e.vertex1          ())
-    <<   "\tvertex 2:\t\t"        << maybeIndex  (e.vertex2          ())
-    << "\n\tleft face:\t\t"       << maybeFaceId (e.leftFace         ())
-    <<   "\tright face:\t\t"      << maybeFaceId (e.rightFace        ())
-    << "\n\tleft predecessor:\t"  << maybeEdgeId (e.leftPredecessor  ())
-    <<   "\tleft successor:\t\t"  << maybeEdgeId (e.leftSuccessor    ())
-    << "\n\tright predecessor:\t" << maybeEdgeId (e.rightPredecessor ())
-    <<   "\tright successor:\t"   << maybeEdgeId (e.rightSuccessor   ())
-    << "\n\tprivious sibling:\t"  << maybeEdgeId (e.previousSibling  ())   
-    <<   "\tnext sibling:\t\t"    << maybeEdgeId (e.nextSibling      ())
-    << "\n\tis T-edge:\t\t"       << e.isTEdge   ()
-    << "\n\tgradient:\t\t"        << gradient (e.gradient  ());
+    << "\n\tvertex 1:\t\t"        << maybeIndex     (e.vertex1          ())
+    <<   "\tvertex 2:\t\t"        << maybeIndex     (e.vertex2          ())
+    << "\n\tleft face:\t\t"       << maybeFaceId    (e.leftFace         ())
+    <<   "\tright face:\t\t"      << maybeFaceId    (e.rightFace        ())
+    << "\n\tleft predecessor:\t"  << maybeEdgeId    (e.leftPredecessor  ())
+    <<   "\tleft successor:\t\t"  << maybeEdgeId    (e.leftSuccessor    ())
+    << "\n\tright predecessor:\t" << maybeEdgeId    (e.rightPredecessor ())
+    <<   "\tright successor:\t"   << maybeEdgeId    (e.rightSuccessor   ())
+    << "\n\tprivious sibling:\t"  << maybeEdgeId    (e.previousSibling  ())   
+    <<   "\tnext sibling:\t\t"    << maybeEdgeId    (e.nextSibling      ())
+    << "\n\tis T-edge:\t\t"       << e.isTEdge      ()
+    << "\n\tface gradient:\t\t"   << gradient       (e.faceGradient     ());
   std::cout << std::endl;
 }
 

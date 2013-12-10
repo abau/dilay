@@ -15,12 +15,12 @@ WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
                          , WingedEdge* leftPred, WingedEdge* leftSucc
                          , WingedEdge* rightPred, WingedEdge* rightSucc
                          , WingedEdge* prevSib, WingedEdge* nextSib
-                         , const Id& id, bool isT, WEGradient g) : _id (id) {
+                         , const Id& id, bool isT, Gradient g) : _id (id) {
 
   this->setGeometry ( v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc
                     , prevSib, nextSib);
-  this->_isTEdge  = isT;
-  this->_gradient = g;
+  this->_isTEdge      = isT;
+  this->_faceGradient = g;
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
@@ -191,12 +191,12 @@ WingedEdge* WingedEdge :: adjacentSibling (const WingedVertex& vertex) const {
 
 bool WingedEdge :: gradientAlong (const WingedFace& face) const {
   if (this->isLeftFace (face)) {
-    if (this->gradient () == WEGradient::Left)
+    if (this->faceGradient () == Gradient::Left)
       return true;
     return false;
   }
   else {
-    if (this->gradient () == WEGradient::Right)
+    if (this->faceGradient () == Gradient::Right)
       return true;
     return false;
   }

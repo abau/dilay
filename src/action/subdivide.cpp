@@ -101,7 +101,7 @@ struct ActionSubdivide::Impl {
                 this->subdivide (data,face);
                 return false;
               }
-              else if (it.edge ()->gradient () == WEGradient::None) {
+              else if (it.edge ()->faceGradient () == Gradient::None) {
                 this->insertNeighbour (neighbourhood,face);
                 if (checkAdjacents (face) == false)
                   return false;
@@ -128,20 +128,20 @@ struct ActionSubdivide::Impl {
         return edge.rightFaceRef ();
     };
 
-    auto deltaGradient = [] (WEGradient gradient) -> int {
+    auto deltaGradient = [] (Gradient gradient) -> int {
       switch (gradient) {
-        case WEGradient::Left:  return  1;
-        case WEGradient::None:  return  0;
-        case WEGradient::Right: return -1;
+        case Gradient::Left:  return  1;
+        case Gradient::None:  return  0;
+        case Gradient::Right: return -1;
         default: assert (false);
       }
     };
 
     auto accountGradient = [&deltaGradient] (WingedVertex& center, WingedEdge& edge) -> int {
       if (edge.isVertex1 (center))
-        return deltaGradient (edge.gradient ());
+        return deltaGradient (edge.faceGradient ());
       else 
-        return - deltaGradient (edge.gradient ());
+        return - deltaGradient (edge.faceGradient ());
     };
 
     // check levels in one-ring environment
@@ -175,7 +175,7 @@ struct ActionSubdivide::Impl {
 
         if (neighbourhood.count (&face) == 0) {
           assert (face.tEdge () == nullptr);
-          if (it.edge ()->gradient () == WEGradient::None) {
+          if (it.edge ()->faceGradient () == Gradient::None) {
             border.insert (&face);
           }
         }
@@ -204,7 +204,7 @@ struct ActionSubdivide::Impl {
         assert (! edge.isTEdge ());
         it.next ();
 
-        if (subdividedEdges.count (edge.id ()) == 0 && edge.gradient () == WEGradient::None) {
+        if (subdividedEdges.count (edge.id ()) == 0 && edge.faceGradient () == Gradient::None) {
           WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ()->run 
             (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
 
