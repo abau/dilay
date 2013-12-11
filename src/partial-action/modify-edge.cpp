@@ -14,14 +14,15 @@ enum class Operation
   , PreviousSibling, NextSibling
   , FirstVertex, SecondVertex
   , Predecessor, Successor
-  , SetGeometry, IsTEdge, FaceGradient
+  , SetGeometry, IsTEdge, FaceGradient, VertexGradient
   };
 
 struct PAModifyEdge :: Impl {
-  Operation                      operation;
-  PAIds                          operands; 
-  std::unique_ptr <bool>         flag;
-  std::unique_ptr <FaceGradient> fGradient;
+  Operation                        operation;
+  PAIds                            operands; 
+  std::unique_ptr <bool>           flag;
+  std::unique_ptr <FaceGradient>   fGradient;
+  std::unique_ptr <VertexGradient> vGradient;
 
   void vertex1 (WingedMesh& mesh, WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
@@ -188,6 +189,13 @@ struct PAModifyEdge :: Impl {
     }
   }
 
+  void vertexGradient (WingedMesh& mesh, WingedEdge& edge, VertexGradient g) {
+    this->operation = Operation::VertexGradient;
+    this->operands.setIds  ({mesh.id (), edge.id ()});
+    this->vGradient.reset  (new VertexGradient (edge.vertexGradient ())); 
+    edge.vertexGradient (g);
+  }
+
   void toggle () { 
     WingedMesh& mesh =  this->operands.getMesh (0);
     WingedEdge& edge = *this->operands.getEdge (mesh,1);
@@ -322,6 +330,11 @@ struct PAModifyEdge :: Impl {
         FaceGradient gradient = edge.faceGradient ();
         edge.faceGradient     (*this->fGradient);
         this->fGradient.reset (new FaceGradient (gradient));
+      }
+      case Operation::VertexGradient: {
+        VertexGradient gradient = edge.vertexGradient ();
+        edge.vertexGradient   (*this->vGradient);
+        this->vGradient.reset (new VertexGradient (gradient));
         break;
       }
       default: assert (false);
@@ -353,6 +366,7 @@ DELEGATE4 (void,PAModifyEdge,successor       ,WingedMesh&,WingedEdge&,const Wing
 DELEGATE3 (void,PAModifyEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
 DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,FaceGradient)
 DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,const WingedFace&)
+DELEGATE3 (void,PAModifyEdge,vertexGradient  ,WingedMesh&,WingedEdge&,VertexGradient)
 DELEGATE  (void,PAModifyEdge,undo)
 DELEGATE  (void,PAModifyEdge,redo)
 

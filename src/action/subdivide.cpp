@@ -206,7 +206,8 @@ struct ActionSubdivide::Impl {
 
         if (subdividedEdges.count (edge.id ()) == 0 && edge.faceGradient () == FaceGradient::None) {
           WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ()->run 
-            (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
+            ( data.mesh, edge
+            , SubdivisionButterfly::subdivideEdge (data.mesh, edge), true);
 
           subdividedEdges.insert (edge   .id ());
           subdividedEdges.insert (newEdge.id ());

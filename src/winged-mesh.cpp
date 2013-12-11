@@ -69,7 +69,8 @@ struct WingedMesh::Impl {
                              , e.leftPredecessor  (), e.leftSuccessor  ()
                              , e.rightPredecessor (), e.rightSuccessor ()
                              , e.previousSibling  (), e.nextSibling    ()
-                             , e.id (), e.isTEdge (), e.faceGradient   ());
+                             , e.id (), e.isTEdge (), e.faceGradient   ()
+                             , e.vertexGradient   ());
     this->edges.back ().iterator (--this->edges.end ());
     return this->edges.back ();
   }

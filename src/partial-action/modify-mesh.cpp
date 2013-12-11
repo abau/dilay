@@ -16,14 +16,15 @@ enum class Operation {
 };
 
 struct PAModifyMesh :: Impl {
-  Operation                      operation;
-  PAIds                          operands;
-  std::unique_ptr <bool>         isTEdge;
-  std::unique_ptr <Triangle>     triangle;
-  std::unique_ptr <glm::vec3>    vector;
-  std::unique_ptr <unsigned int> level;
-  std::unique_ptr <unsigned int> firstIndexNumber;
-  std::unique_ptr <FaceGradient> faceGradient;
+  Operation                        operation;
+  PAIds                            operands;
+  std::unique_ptr <bool>           isTEdge;
+  std::unique_ptr <Triangle>       triangle;
+  std::unique_ptr <glm::vec3>      vector;
+  std::unique_ptr <unsigned int>   level;
+  std::unique_ptr <unsigned int>   firstIndexNumber;
+  std::unique_ptr <FaceGradient>   faceGradient;
+  std::unique_ptr <VertexGradient> vertexGradient;
 
   void saveEdgeOperand (const WingedMesh& mesh, const WingedEdge& edge) {
     this->operands.setMesh (0, &mesh);
@@ -37,11 +38,12 @@ struct PAModifyMesh :: Impl {
     this->operands.setEdge (8, edge.previousSibling ());
     this->operands.setEdge (9, edge.nextSibling ());
 
-    this->operands.setVertex (0, edge.vertex1 ());
-    this->operands.setVertex (1, edge.vertex2 ());
+    this->operands.setVertex   (0, edge.vertex1 ());
+    this->operands.setVertex   (1, edge.vertex2 ());
 
-    this->isTEdge.reset      (new bool (edge.isTEdge ()));
-    this->faceGradient.reset (new FaceGradient (edge.faceGradient ()));
+    this->isTEdge.reset        (new bool (edge.isTEdge ()));
+    this->faceGradient.reset   (new FaceGradient (edge.faceGradient ()));
+    this->vertexGradient.reset (new VertexGradient (edge.vertexGradient ()));
   }
 
   WingedEdge& addSavedEdge (WingedMesh& mesh) {
@@ -52,7 +54,7 @@ struct PAModifyMesh :: Impl {
                  , this->operands.getEdge   (mesh,6), this->operands.getEdge   (mesh,7)
                  , this->operands.getEdge   (mesh,8), this->operands.getEdge   (mesh,9)
                  ,*this->operands.getId     (1)     ,*this->isTEdge
-                 ,*this->faceGradient));
+                 ,*this->faceGradient, *this->vertexGradient));
   }
 
   void saveFaceOperand (const WingedMesh& mesh, const WingedFace& face, const Triangle& triangle) {

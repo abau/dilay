@@ -14,7 +14,7 @@
 struct PAInsertEdgeVertex :: Impl {
   ActionUnit actions;
 
-  WingedEdge& run (WingedMesh& mesh, WingedEdge& e, const glm::vec3& v) {
+  WingedEdge& run (WingedMesh& mesh, WingedEdge& e, const glm::vec3& v, bool setGradient) {
     this->actions.reset ();
     //   newE        e
     // 1----->newV------->2
@@ -28,6 +28,7 @@ struct PAInsertEdgeVertex :: Impl {
                         , &e                   , e.rightSuccessor ()
                         , e.previousSibling () , &e
                         , Id (), e.isTEdge (), e.faceGradient ()
+                        , setGradient ? VertexGradient::Vertex2 : VertexGradient::None
                         ));
 
     this->actions.add <PAModifyEdge> ()->vertex1         (mesh, e, &newV);
@@ -47,45 +48,14 @@ struct PAInsertEdgeVertex :: Impl {
     this->actions.add <PAModifyFace> ()->edge (mesh, newE.leftFaceRef (), &newE);
 
     if (newE.previousSibling ()) {
-      this->actions.add <PAModifyEdge> ()->nextSibling 
-        (mesh, newE.previousSiblingRef (), &newE);
+      this->actions.add <PAModifyEdge> ()->nextSibling (mesh, newE.previousSiblingRef (), &newE);
+    }
+
+    if (setGradient) {
+      this->actions.add <PAModifyEdge> ()->vertexGradient (mesh, e, VertexGradient::Vertex1);
     }
     return newE;
   }
-
-  /*
-  WingedEdge& run (WingedMesh& mesh, WingedEdge& e, const glm::vec3& v) {
-    this->operands.setIds ({mesh.id (), e.id (), IdObject::staticId ()});
-    this->vertex = v;
-
-    //   newE        e
-    // 1----->newV------->2
-    unsigned int level = 1 + std::max <unsigned int> ( e.vertex1Ref ().level ()
-                                                     , e.vertex2Ref ().level () );
-    WingedVertex& newV  = mesh.addVertex (v,level);
-    WingedEdge&   newE  = mesh.addEdge (WingedEdge 
-                                        ( e.vertex1 ()         , &newV
-                                        , e.leftFace ()        , e.rightFace ()
-                                        , e.leftPredecessor () , &e
-                                        , &e                   , e.rightSuccessor ()
-                                        , e.previousSibling () , &e
-                                        , this->newEdgeId.id ()
-                                        ));
-
-    e.vertex1               (&newV);
-    e.successor             (e.rightFaceRef (), &newE);
-    e.predecessor           (e.leftFaceRef (),  &newE);
-    e.previousSibling       (&newE);
-    newV.edge               (&e);
-    newE.leftPredecessorRef ().successor   (newE.leftFaceRef  (), &newE);
-    newE.rightSuccessorRef  ().predecessor (newE.rightFaceRef (), &newE);
-    newE.vertex1Ref         ().edge (&newE);
-    newE.leftFaceRef        ().edge (&newE);
-    if (newE.previousSibling ())
-      newE.previousSiblingRef ().nextSibling (&newE);
-    return newE;
-  }
-  */
 
   void undo () { this->actions.undo (); }
   void redo () { this->actions.redo (); }
@@ -94,7 +64,7 @@ struct PAInsertEdgeVertex :: Impl {
 DELEGATE_CONSTRUCTOR (PAInsertEdgeVertex)
 DELEGATE_DESTRUCTOR  (PAInsertEdgeVertex)
 
-DELEGATE3 (WingedEdge&,PAInsertEdgeVertex,run,WingedMesh&,WingedEdge&,const glm::vec3&)
+DELEGATE4 (WingedEdge&,PAInsertEdgeVertex,run,WingedMesh&,WingedEdge&,const glm::vec3&,bool)
 DELEGATE  (void,PAInsertEdgeVertex,undo)
 DELEGATE  (void,PAInsertEdgeVertex,redo)
 
