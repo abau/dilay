@@ -14,11 +14,11 @@ enum class FaceGradient : char { None, Left, Right };
 
 class WingedEdge {
   public:
-    WingedEdge (const Id& = Id ());
-    WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*
-               , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*
-               , WingedEdge*, WingedEdge*, const Id& = Id ()
-               , bool = false, FaceGradient = FaceGradient::None);
+    WingedEdge ();
+    WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*  
+               , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*  
+               , WingedEdge*, WingedEdge*, const Id&, bool
+               , FaceGradient);
 
     Id              id               () const { return this->_id.id (); }
     WingedVertex*   vertex1          () const { return this->_vertex1; }

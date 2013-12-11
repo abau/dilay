@@ -64,12 +64,12 @@ struct WingedMesh::Impl {
   }
 
   WingedEdge& addEdge (const WingedEdge& e) {
-    this->edges.emplace_back ( e.vertex1 (), e.vertex2 ()
-                             , e.leftFace (), e.rightFace ()
-                             , e.leftPredecessor (), e.leftSuccessor ()
+    this->edges.emplace_back ( e.vertex1          (), e.vertex2        ()
+                             , e.leftFace         (), e.rightFace      ()
+                             , e.leftPredecessor  (), e.leftSuccessor  ()
                              , e.rightPredecessor (), e.rightSuccessor ()
-                             , e.previousSibling (), e.nextSibling ()
-                             , e.id (), e.isTEdge ());
+                             , e.previousSibling  (), e.nextSibling    ()
+                             , e.id (), e.isTEdge (), e.faceGradient   ());
     this->edges.back ().iterator (--this->edges.end ());
     return this->edges.back ();
   }
