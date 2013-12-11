@@ -166,7 +166,7 @@ struct PAModifyEdge :: Impl {
     edge.faceGradient (g);
   }
 
-  void faceGradient (WingedMesh& mesh, WingedEdge& edge, const WingedFace& face) {
+  void increaseFaceGradient (WingedMesh& mesh, WingedEdge& edge, const WingedFace& face) {
     if (edge.isLeftFace (face)) {
       switch (edge.faceGradient ()) {
         case FaceGradient::Left:
@@ -365,7 +365,7 @@ DELEGATE4 (void,PAModifyEdge,predecessor     ,WingedMesh&,WingedEdge&,const Wing
 DELEGATE4 (void,PAModifyEdge,successor       ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
 DELEGATE3 (void,PAModifyEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
 DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,FaceGradient)
-DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,const WingedFace&)
+DELEGATE3 (void,PAModifyEdge,increaseFaceGradient,WingedMesh&,WingedEdge&,const WingedFace&)
 DELEGATE3 (void,PAModifyEdge,vertexGradient  ,WingedMesh&,WingedEdge&,VertexGradient)
 DELEGATE  (void,PAModifyEdge,undo)
 DELEGATE  (void,PAModifyEdge,redo)

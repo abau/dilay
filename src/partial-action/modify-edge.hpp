@@ -17,29 +17,29 @@ class PAModifyEdge : public Action {
     const PAModifyEdge& operator= (const PAModifyEdge&) = delete;
          ~PAModifyEdge            ();
 
-    void vertex1          (WingedMesh&, WingedEdge&, WingedVertex*);
-    void vertex2          (WingedMesh&, WingedEdge&, WingedVertex*);
-    void leftFace         (WingedMesh&, WingedEdge&, WingedFace*);
-    void rightFace        (WingedMesh&, WingedEdge&, WingedFace*);
-    void leftPredecessor  (WingedMesh&, WingedEdge&, WingedEdge*);
-    void leftSuccessor    (WingedMesh&, WingedEdge&, WingedEdge*);
-    void rightPredecessor (WingedMesh&, WingedEdge&, WingedEdge*);
-    void rightSuccessor   (WingedMesh&, WingedEdge&, WingedEdge*);
-    void previousSibling  (WingedMesh&, WingedEdge&, WingedEdge*);
-    void nextSibling      (WingedMesh&, WingedEdge&, WingedEdge*);
-    void firstVertex      (WingedMesh&, WingedEdge&, const WingedFace&, WingedVertex*);
-    void secondVertex     (WingedMesh&, WingedEdge&, const WingedFace&, WingedVertex*);
-    void face             (WingedMesh&, WingedEdge&, const WingedFace&, WingedFace*);
-    void predecessor      (WingedMesh&, WingedEdge&, const WingedFace&, WingedEdge*);
-    void successor        (WingedMesh&, WingedEdge&, const WingedFace&, WingedEdge*);
-    void setGeometry      ( WingedMesh&, WingedEdge&, WingedVertex*, WingedVertex*
-                          , WingedFace*, WingedFace*, WingedEdge*, WingedEdge*
-                          , WingedEdge*, WingedEdge*
-                          , WingedEdge* = nullptr, WingedEdge* = nullptr);
-    void isTEdge          (WingedMesh&, WingedEdge&, bool);
-    void faceGradient     (WingedMesh&, WingedEdge&, FaceGradient);
-    void faceGradient     (WingedMesh&, WingedEdge&, const WingedFace&);
-    void vertexGradient   (WingedMesh&, WingedEdge&, VertexGradient);
+    void vertex1              (WingedMesh&, WingedEdge&, WingedVertex*);
+    void vertex2              (WingedMesh&, WingedEdge&, WingedVertex*);
+    void leftFace             (WingedMesh&, WingedEdge&, WingedFace*);
+    void rightFace            (WingedMesh&, WingedEdge&, WingedFace*);
+    void leftPredecessor      (WingedMesh&, WingedEdge&, WingedEdge*);
+    void leftSuccessor        (WingedMesh&, WingedEdge&, WingedEdge*);
+    void rightPredecessor     (WingedMesh&, WingedEdge&, WingedEdge*);
+    void rightSuccessor       (WingedMesh&, WingedEdge&, WingedEdge*);
+    void previousSibling      (WingedMesh&, WingedEdge&, WingedEdge*);
+    void nextSibling          (WingedMesh&, WingedEdge&, WingedEdge*);
+    void firstVertex          (WingedMesh&, WingedEdge&, const WingedFace&, WingedVertex*);
+    void secondVertex         (WingedMesh&, WingedEdge&, const WingedFace&, WingedVertex*);
+    void face                 (WingedMesh&, WingedEdge&, const WingedFace&, WingedFace*);
+    void predecessor          (WingedMesh&, WingedEdge&, const WingedFace&, WingedEdge*);
+    void successor            (WingedMesh&, WingedEdge&, const WingedFace&, WingedEdge*);
+    void setGeometry          ( WingedMesh&, WingedEdge&, WingedVertex*, WingedVertex*
+                              , WingedFace*, WingedFace*, WingedEdge*, WingedEdge*
+                              , WingedEdge*, WingedEdge*
+                              , WingedEdge* = nullptr, WingedEdge* = nullptr);
+    void isTEdge              (WingedMesh&, WingedEdge&, bool);
+    void faceGradient         (WingedMesh&, WingedEdge&, FaceGradient);
+    void increaseFaceGradient (WingedMesh&, WingedEdge&, const WingedFace&);
+    void vertexGradient       (WingedMesh&, WingedEdge&, VertexGradient);
 
     void undo ();
     void redo ();
