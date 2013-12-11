@@ -9,7 +9,9 @@
 #include "triangle.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace ( WingedEdge* e, const Id& id, OctreeNode* n, unsigned int fin)
+WingedFace :: WingedFace () : WingedFace (nullptr, Id (), nullptr, 0) {}
+
+WingedFace :: WingedFace (WingedEdge* e, const Id& id, OctreeNode* n, unsigned int fin)
   : _id               (id)
   , _edge             (e)
   , _octreeNode       (n) 

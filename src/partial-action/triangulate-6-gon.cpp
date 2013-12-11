@@ -47,11 +47,11 @@ struct PATriangulate6Gon :: Impl {
     WingedVertex& v5 = e50.firstVertexRef (f);
 
     WingedFace& a = this->actions.add <PAModifyMesh> ()->addFace
-      (mesh, WingedFace (&e01), Triangle (mesh,v0,v1,v5));
+      (mesh, WingedFace (&e01, Id ()), Triangle (mesh,v0,v1,v5));
     WingedFace& b = this->actions.add <PAModifyMesh> ()->addFace 
-      (mesh, WingedFace (&e23), Triangle (mesh,v1,v2,v3));
+      (mesh, WingedFace (&e23, Id ()), Triangle (mesh,v1,v2,v3));
     WingedFace& c = this->actions.add <PAModifyMesh> ()->addFace
-      (mesh, WingedFace (&e45), Triangle (mesh,v3,v4,v5));
+      (mesh, WingedFace (&e45, Id ()), Triangle (mesh,v3,v4,v5));
 
     WingedEdge& e13 = this->actions.add <PAModifyMesh> ()->addEdge (mesh, WingedEdge ());
     WingedEdge& e35 = this->actions.add <PAModifyMesh> ()->addEdge (mesh, WingedEdge ());

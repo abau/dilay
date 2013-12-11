@@ -16,11 +16,9 @@ class WingedVertex;
 
 class WingedFace {
   public:                      
-    WingedFace ( WingedEdge* = nullptr 
-               , const Id& = Id ()
-               , OctreeNode* = nullptr
-               , unsigned int = 0
-               );
+    WingedFace ();
+    WingedFace (WingedEdge*, const Id&, OctreeNode* = nullptr, unsigned int = 0);
+
     Id                     id               () const { return this->_id.id (); }
     WingedEdge*            edge             () const { return this->_edge; }
     OctreeNode*            octreeNode       () const { return this->_octreeNode; }
