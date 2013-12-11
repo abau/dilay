@@ -159,7 +159,7 @@ struct PAModifyEdge :: Impl {
   }
 
   void faceGradient (WingedMesh& mesh, WingedEdge& edge, Gradient g) {
-    this->operation = Operation::IsTEdge;
+    this->operation = Operation::FaceGradient;
     this->operands.setIds ({mesh.id (), edge.id ()});
     this->fGradient.reset (new Gradient (edge.faceGradient ())); 
     edge.faceGradient (g);
