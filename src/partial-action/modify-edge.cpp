@@ -18,10 +18,10 @@ enum class Operation
   };
 
 struct PAModifyEdge :: Impl {
-  Operation                  operation;
-  PAIds                      operands; 
-  std::unique_ptr <bool>     flag;
-  std::unique_ptr <Gradient> fGradient;
+  Operation                      operation;
+  PAIds                          operands; 
+  std::unique_ptr <bool>         flag;
+  std::unique_ptr <FaceGradient> fGradient;
 
   void vertex1 (WingedMesh& mesh, WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
@@ -158,31 +158,31 @@ struct PAModifyEdge :: Impl {
     edge.isTEdge (value);
   }
 
-  void faceGradient (WingedMesh& mesh, WingedEdge& edge, Gradient g) {
+  void faceGradient (WingedMesh& mesh, WingedEdge& edge, FaceGradient g) {
     this->operation = Operation::FaceGradient;
     this->operands.setIds ({mesh.id (), edge.id ()});
-    this->fGradient.reset (new Gradient (edge.faceGradient ())); 
+    this->fGradient.reset (new FaceGradient (edge.faceGradient ())); 
     edge.faceGradient (g);
   }
 
   void faceGradient (WingedMesh& mesh, WingedEdge& edge, const WingedFace& face) {
     if (edge.isLeftFace (face)) {
       switch (edge.faceGradient ()) {
-        case Gradient::Left:
+        case FaceGradient::Left:
           assert (false);
-        case Gradient::None:
-          return this->faceGradient (mesh, edge, Gradient::Left);
-        case Gradient::Right:
-          return this->faceGradient (mesh, edge, Gradient::None);
+        case FaceGradient::None:
+          return this->faceGradient (mesh, edge, FaceGradient::Left);
+        case FaceGradient::Right:
+          return this->faceGradient (mesh, edge, FaceGradient::None);
       };
     }
     else {
       switch (edge.faceGradient ()) {
-        case Gradient::Left:
-          return this->faceGradient (mesh, edge, Gradient::None);
-        case Gradient::None:
-          return this->faceGradient (mesh, edge, Gradient::Right);
-        case Gradient::Right:
+        case FaceGradient::Left:
+          return this->faceGradient (mesh, edge, FaceGradient::None);
+        case FaceGradient::None:
+          return this->faceGradient (mesh, edge, FaceGradient::Right);
+        case FaceGradient::Right:
           assert (false);
       };
     }
@@ -319,9 +319,9 @@ struct PAModifyEdge :: Impl {
         break;
       }
       case Operation::FaceGradient: {
-        Gradient gradient = edge.faceGradient ();
+        FaceGradient gradient = edge.faceGradient ();
         edge.faceGradient     (*this->fGradient);
-        this->fGradient.reset (new Gradient (gradient));
+        this->fGradient.reset (new FaceGradient (gradient));
         break;
       }
       default: assert (false);
@@ -351,7 +351,7 @@ DELEGATE4 (void,PAModifyEdge,face            ,WingedMesh&,WingedEdge&,const Wing
 DELEGATE4 (void,PAModifyEdge,predecessor     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
 DELEGATE4 (void,PAModifyEdge,successor       ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
 DELEGATE3 (void,PAModifyEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
-DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,Gradient)
+DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,FaceGradient)
 DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,const WingedFace&)
 DELEGATE  (void,PAModifyEdge,undo)
 DELEGATE  (void,PAModifyEdge,redo)

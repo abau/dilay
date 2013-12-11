@@ -101,7 +101,7 @@ struct ActionSubdivide::Impl {
                 this->subdivide (data,face);
                 return false;
               }
-              else if (it.edge ()->faceGradient () == Gradient::None) {
+              else if (it.edge ()->faceGradient () == FaceGradient::None) {
                 this->insertNeighbour (neighbourhood,face);
                 if (checkAdjacents (face) == false)
                   return false;
@@ -128,11 +128,11 @@ struct ActionSubdivide::Impl {
         return edge.rightFaceRef ();
     };
 
-    auto deltaGradient = [] (Gradient gradient) -> int {
+    auto deltaGradient = [] (FaceGradient gradient) -> int {
       switch (gradient) {
-        case Gradient::Left:  return  1;
-        case Gradient::None:  return  0;
-        case Gradient::Right: return -1;
+        case FaceGradient::Left:  return  1;
+        case FaceGradient::None:  return  0;
+        case FaceGradient::Right: return -1;
         default: assert (false);
       }
     };
@@ -175,7 +175,7 @@ struct ActionSubdivide::Impl {
 
         if (neighbourhood.count (&face) == 0) {
           assert (face.tEdge () == nullptr);
-          if (it.edge ()->faceGradient () == Gradient::None) {
+          if (it.edge ()->faceGradient () == FaceGradient::None) {
             border.insert (&face);
           }
         }
@@ -204,7 +204,7 @@ struct ActionSubdivide::Impl {
         assert (! edge.isTEdge ());
         it.next ();
 
-        if (subdividedEdges.count (edge.id ()) == 0 && edge.faceGradient () == Gradient::None) {
+        if (subdividedEdges.count (edge.id ()) == 0 && edge.faceGradient () == FaceGradient::None) {
           WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ()->run 
             (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
 

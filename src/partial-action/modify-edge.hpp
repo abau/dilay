@@ -6,7 +6,7 @@
 
 class WingedMesh;
 class WingedEdge;
-enum class Gradient : char;
+enum class FaceGradient : char;
 class WingedFace;
 class WingedVertex;
 
@@ -36,7 +36,7 @@ class PAModifyEdge : public Action {
                           , WingedEdge*, WingedEdge*
                           , WingedEdge* = nullptr, WingedEdge* = nullptr);
     void isTEdge          (WingedMesh&, WingedEdge&, bool);
-    void faceGradient     (WingedMesh&, WingedEdge&, Gradient);
+    void faceGradient     (WingedMesh&, WingedEdge&, FaceGradient);
     void faceGradient     (WingedMesh&, WingedEdge&, const WingedFace&);
 
     void undo ();
