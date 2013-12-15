@@ -24,7 +24,7 @@ struct PAModifyMesh :: Impl {
   std::unique_ptr <unsigned int>   level;
   std::unique_ptr <unsigned int>   firstIndexNumber;
   std::unique_ptr <FaceGradient>   faceGradient;
-  std::unique_ptr <VertexGradient> vertexGradient;
+  std::unique_ptr <int>            vertexGradient;
 
   void saveEdgeOperand (const WingedMesh& mesh, const WingedEdge& edge) {
     this->operands.setMesh (0, &mesh);
@@ -43,7 +43,7 @@ struct PAModifyMesh :: Impl {
 
     this->isTEdge.reset        (new bool (edge.isTEdge ()));
     this->faceGradient.reset   (new FaceGradient (edge.faceGradient ()));
-    this->vertexGradient.reset (new VertexGradient (edge.vertexGradient ()));
+    this->vertexGradient.reset (new int (edge.vertexGradient ()));
   }
 
   WingedEdge& addSavedEdge (WingedMesh& mesh) {

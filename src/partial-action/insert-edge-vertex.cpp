@@ -20,6 +20,10 @@ struct PAInsertEdgeVertex :: Impl {
     // 1----->newV------->2
     unsigned int level = 1 + std::max <unsigned int> ( e.vertex1Ref ().level ()
                                                      , e.vertex2Ref ().level () );
+
+    int eGradient          = e.vertexGradient ();
+    int newEVertexGradient = eGradient < 0 ? 1 : eGradient + 1;
+
     WingedVertex& newV  = this->actions.add <PAModifyMesh> ()->addVertex (mesh,v,level);
     WingedEdge&   newE  = this->actions.add <PAModifyMesh> ()->addEdge 
       (mesh, WingedEdge ( e.vertex1 ()         , &newV
@@ -28,7 +32,7 @@ struct PAInsertEdgeVertex :: Impl {
                         , &e                   , e.rightSuccessor ()
                         , e.previousSibling () , &e
                         , Id (), e.isTEdge (), e.faceGradient ()
-                        , setGradient ? VertexGradient::Vertex2 : VertexGradient::None
+                        , setGradient ? newEVertexGradient : 0
                         ));
 
     this->actions.add <PAModifyEdge> ()->vertex1         (mesh, e, &newV);
@@ -52,7 +56,10 @@ struct PAInsertEdgeVertex :: Impl {
     }
 
     if (setGradient) {
-      this->actions.add <PAModifyEdge> ()->vertexGradient (mesh, e, VertexGradient::Vertex1);
+      if (eGradient < 0)
+        this->actions.add <PAModifyEdge> ()->vertexGradient (mesh, e, eGradient - 1);
+      else
+        this->actions.add <PAModifyEdge> ()->vertexGradient (mesh, e, - 1);
     }
     return newE;
   }

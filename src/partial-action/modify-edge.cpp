@@ -22,7 +22,7 @@ struct PAModifyEdge :: Impl {
   PAIds                            operands; 
   std::unique_ptr <bool>           flag;
   std::unique_ptr <FaceGradient>   fGradient;
-  std::unique_ptr <VertexGradient> vGradient;
+  std::unique_ptr <int>            vGradient;
 
   void vertex1 (WingedMesh& mesh, WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
@@ -189,10 +189,10 @@ struct PAModifyEdge :: Impl {
     }
   }
 
-  void vertexGradient (WingedMesh& mesh, WingedEdge& edge, VertexGradient g) {
+  void vertexGradient (WingedMesh& mesh, WingedEdge& edge, int g) {
     this->operation = Operation::VertexGradient;
     this->operands.setIds  ({mesh.id (), edge.id ()});
-    this->vGradient.reset  (new VertexGradient (edge.vertexGradient ())); 
+    this->vGradient.reset  (new int (edge.vertexGradient ())); 
     edge.vertexGradient (g);
   }
 
@@ -332,9 +332,9 @@ struct PAModifyEdge :: Impl {
         this->fGradient.reset (new FaceGradient (gradient));
       }
       case Operation::VertexGradient: {
-        VertexGradient gradient = edge.vertexGradient ();
+        int gradient = edge.vertexGradient ();
         edge.vertexGradient   (*this->vGradient);
-        this->vGradient.reset (new VertexGradient (gradient));
+        this->vGradient.reset (new int (gradient));
         break;
       }
       default: assert (false);
@@ -366,7 +366,7 @@ DELEGATE4 (void,PAModifyEdge,successor       ,WingedMesh&,WingedEdge&,const Wing
 DELEGATE3 (void,PAModifyEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
 DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,FaceGradient)
 DELEGATE3 (void,PAModifyEdge,increaseFaceGradient,WingedMesh&,WingedEdge&,const WingedFace&)
-DELEGATE3 (void,PAModifyEdge,vertexGradient  ,WingedMesh&,WingedEdge&,VertexGradient)
+DELEGATE3 (void,PAModifyEdge,vertexGradient  ,WingedMesh&,WingedEdge&,int)
 DELEGATE  (void,PAModifyEdge,undo)
 DELEGATE  (void,PAModifyEdge,redo)
 
