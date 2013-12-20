@@ -203,3 +203,10 @@ bool WingedEdge :: gradientAlong (const WingedFace& face) const {
     return false;
   }
 }
+
+int WingedEdge :: gradientAlong (const WingedVertex& vertex) const {
+  if (this->isVertex1 (vertex))
+    return this->_vertexGradient;
+  else
+    return -this->_vertexGradient;
+}

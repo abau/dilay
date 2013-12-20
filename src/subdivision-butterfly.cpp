@@ -42,17 +42,20 @@ glm::vec3 subdivide ( const glm::vec3& v1, const Adjacents& a1
 Adjacents adjacents ( unsigned int maxLevel, const WingedMesh& mesh
                     , WingedEdge& edge, const WingedVertex& vertex) {
   // traverses edge's siblings until it finds a vertex with level <= `maxLevel`
-  std::function < glm::vec3 (const WingedEdge&, const WingedVertex&) > traverse =
-    [maxLevel, &mesh, &traverse] (const WingedEdge& e, const WingedVertex& o) -> glm::vec3 {
+  std::function < glm::vec3 (const WingedEdge&, const WingedVertex&, int) > traverse =
+    [maxLevel, &mesh, &traverse] 
+    (const WingedEdge& e, const WingedVertex& o, int vertexGradient) -> glm::vec3 {
 
       if (o.level () <= maxLevel) {
+        assert (vertexGradient <= 0);
         return o.vertex (mesh);
       }
       else {
         WingedEdge* sibling = e.adjacentSibling (o);
         assert (sibling);
 
-        return traverse (*sibling, sibling->otherVertexRef (o));
+        return traverse (*sibling, sibling->otherVertexRef (o)
+                        , vertexGradient + sibling->gradientAlong (o));
       }
   };
 
@@ -60,7 +63,10 @@ Adjacents adjacents ( unsigned int maxLevel, const WingedMesh& mesh
   for (auto it = vertex.adjacentEdgeIterator (edge,true); it.isValid (); it.next ()) {
     WingedEdge&   e = it.element ();
     WingedVertex& a = e.otherVertexRef (vertex);
-    adjacents.push_back (traverse (e,a));
+    const int start = edge.gradientAlong (vertex) > 0 ? -edge.gradientAlong (vertex) : 0;
+    const int first = e.gradientAlong (vertex);
+
+    adjacents.push_back (traverse (e, a, start + first));
   }
   return adjacents;
 }
