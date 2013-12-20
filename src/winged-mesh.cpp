@@ -57,9 +57,9 @@ struct WingedMesh::Impl {
     return this->mesh.addIndex (index); 
   }
 
-  WingedVertex& addVertex (const glm::vec3& v, unsigned int l) {
+  WingedVertex& addVertex (const glm::vec3& v) {
     unsigned int index = this->mesh.addVertex (v);
-    this->vertices.emplace_back (index, nullptr, l);
+    this->vertices.emplace_back (index, nullptr);
     return this->vertices.back ();
   }
 
@@ -229,7 +229,7 @@ DELEGATE1       (WingedEdge*    , WingedMesh, edgeSLOW, const Id&)
 DELEGATE1       (WingedFace*    , WingedMesh, face, const Id&)
 
 DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
-DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
+DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
 DELEGATE2       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const Triangle&)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)

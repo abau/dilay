@@ -21,7 +21,6 @@ struct PAModifyMesh :: Impl {
   std::unique_ptr <bool>           isTEdge;
   std::unique_ptr <Triangle>       triangle;
   std::unique_ptr <glm::vec3>      vector;
-  std::unique_ptr <unsigned int>   level;
   std::unique_ptr <unsigned int>   firstIndexNumber;
   std::unique_ptr <FaceGradient>   faceGradient;
   std::unique_ptr <int>            vertexGradient;
@@ -74,11 +73,10 @@ struct PAModifyMesh :: Impl {
   void saveVertexOperand (const WingedMesh& mesh, const WingedVertex& vertex) {
     this->operands.setMesh (0, &mesh);
     this->vector.reset     (new glm::vec3 (vertex.vertex (mesh)));
-    this->level.reset      (new unsigned int (vertex.level ()));
   }
 
   WingedVertex& addSavedVertex (WingedMesh& mesh) {
-    return mesh.addVertex (*this->vector, *this->level);
+    return mesh.addVertex (*this->vector);
   }
 
   void deleteEdge (WingedMesh& mesh, const WingedEdge& edge) {
@@ -123,12 +121,11 @@ struct PAModifyMesh :: Impl {
     return mesh.addFace (face, t);
   }
 
-  WingedVertex& addVertex (WingedMesh& mesh, const glm::vec3& vector, unsigned int level) {
+  WingedVertex& addVertex (WingedMesh& mesh, const glm::vec3& vector) {
     this->operation = Operation::AddVertex;
     this->operands.setMesh (0, &mesh);
     this->vector.reset     (new glm::vec3 (vector));
-    this->level.reset      (new unsigned int (level));
-    return mesh.addVertex (vector, level);
+    return mesh.addVertex (vector);
   }
 
   WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face, const Triangle& triangle) {
@@ -224,7 +221,7 @@ DELEGATE2 (WingedEdge&  ,PAModifyMesh,addEdge     ,WingedMesh&,const WingedEdge&
 DELEGATE2 (WingedFace&  ,PAModifyMesh,addFace     ,WingedMesh&,const WingedFace&)
 DELEGATE2 (WingedFace&  ,PAModifyMesh,addFace     ,WingedMesh&,const Triangle&)
 DELEGATE3 (WingedFace&  ,PAModifyMesh,addFace     ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE3 (WingedVertex&,PAModifyMesh,addVertex   ,WingedMesh&,const glm::vec3&,unsigned int)
+DELEGATE2 (WingedVertex&,PAModifyMesh,addVertex   ,WingedMesh&,const glm::vec3&)
 DELEGATE3 (WingedFace&  ,PAModifyMesh,realignFace ,WingedMesh&,const WingedFace&,const Triangle&)
 DELEGATE  (void         ,PAModifyMesh,undo)
 DELEGATE  (void         ,PAModifyMesh,redo)

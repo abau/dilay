@@ -47,7 +47,6 @@ class WingedFace {
     WingedEdge*            longestEdge     (const WingedMesh&) const;
     WingedVertex*          tVertex         () const;
     WingedEdge*            tEdge           () const;
-    unsigned int           level           () const;
     bool                   isTriangle      () const;
     float                  incircleRadius  (const WingedMesh&) const;
 

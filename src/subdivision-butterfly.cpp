@@ -10,14 +10,13 @@
 
 typedef std::vector <glm::vec3> Adjacents;
 glm::vec3 subdivide (const glm::vec3&, const Adjacents&, const glm::vec3&, const Adjacents&);
-Adjacents adjacents (unsigned int, const WingedMesh&, WingedEdge&, const WingedVertex&);
+Adjacents adjacents (const WingedMesh&, WingedEdge&, const WingedVertex&);
 
 glm::vec3 SubdivisionButterfly::subdivideEdge (const WingedMesh& mesh, WingedEdge& edge) {
   WingedVertex& v1            = edge.vertex1Ref ();
   WingedVertex& v2            = edge.vertex2Ref ();
-  unsigned int  maxLevel      = glm::max <unsigned int> (v1.level (), v2.level ());
-  Adjacents     a1            = adjacents (maxLevel, mesh, edge, v1);
-  Adjacents     a2            = adjacents (maxLevel, mesh, edge, v2);
+  Adjacents     a1            = adjacents (mesh, edge, v1);
+  Adjacents     a2            = adjacents (mesh, edge, v2);
 
   return subdivide (v1.vertex (mesh), a1, v2.vertex (mesh), a2);
 }
@@ -39,15 +38,13 @@ glm::vec3 subdivide ( const glm::vec3& v1, const Adjacents& a1
   }
 }
 
-Adjacents adjacents ( unsigned int maxLevel, const WingedMesh& mesh
-                    , WingedEdge& edge, const WingedVertex& vertex) {
-  // traverses edge's siblings until it finds a vertex with level <= `maxLevel`
+Adjacents adjacents (const WingedMesh& mesh, WingedEdge& edge, const WingedVertex& vertex) {
+  // traverses edge's siblings until it finds a vertex with of a lower-or-equal level
   std::function < glm::vec3 (const WingedEdge&, const WingedVertex&, int) > traverse =
-    [maxLevel, &mesh, &traverse] 
+    [&mesh, &traverse] 
     (const WingedEdge& e, const WingedVertex& o, int vertexGradient) -> glm::vec3 {
 
-      if (o.level () <= maxLevel) {
-        assert (vertexGradient <= 0);
+      if (vertexGradient <= 0) {
         return o.vertex (mesh);
       }
       else {

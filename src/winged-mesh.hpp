@@ -32,7 +32,7 @@ class WingedMesh {
     WingedEdge*     edgeSLOW          (const Id&);
     WingedFace*     face              (const Id&);
     unsigned int    addIndex          (unsigned int);
-    WingedVertex&   addVertex         (const glm::vec3&, unsigned int = 0);
+    WingedVertex&   addVertex         (const glm::vec3&);
     WingedEdge&     addEdge           (const WingedEdge&);
     WingedFace&     addFace           (const WingedFace&, const Triangle&);
     void            setIndex          (unsigned int, unsigned int);

@@ -18,13 +18,10 @@ struct PAInsertEdgeVertex :: Impl {
     this->actions.reset ();
     //   newE        e
     // 1----->newV------->2
-    unsigned int level = 1 + std::max <unsigned int> ( e.vertex1Ref ().level ()
-                                                     , e.vertex2Ref ().level () );
-
     int eGradient          = e.vertexGradient ();
     int newEVertexGradient = eGradient < 0 ? 1 : eGradient + 1;
 
-    WingedVertex& newV  = this->actions.add <PAModifyMesh> ()->addVertex (mesh,v,level);
+    WingedVertex& newV  = this->actions.add <PAModifyMesh> ()->addVertex (mesh,v);
     WingedEdge&   newE  = this->actions.add <PAModifyMesh> ()->addEdge 
       (mesh, WingedEdge ( e.vertex1 ()         , &newV
                         , e.leftFace ()        , e.rightFace ()

@@ -11,11 +11,10 @@ class WingedEdge;
 class WingedMesh;
 
 class WingedVertex {
-  public: WingedVertex       (unsigned int, WingedEdge*, unsigned int);
+  public: WingedVertex       (unsigned int, WingedEdge*);
 
     unsigned int index       () const { return this->_index; }
     WingedEdge*  edge        () const { return this->_edge;  }
-    unsigned int level       () const { return this->_level; }
 
     void         edge        (WingedEdge*);
     unsigned int writeIndex  (WingedMesh&);
@@ -36,7 +35,6 @@ class WingedVertex {
   private:
     const unsigned int          _index;
     WingedEdge*                 _edge;
-    const unsigned int          _level;
 };
 
 #endif

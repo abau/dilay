@@ -24,7 +24,7 @@ class PAModifyMesh : public Action {
     WingedFace&   addFace     (WingedMesh&, const WingedFace&);
     WingedFace&   addFace     (WingedMesh&, const Triangle&);
     WingedFace&   addFace     (WingedMesh&, const WingedFace&, const Triangle&);
-    WingedVertex& addVertex   (WingedMesh&, const glm::vec3&, unsigned int = 0);
+    WingedVertex& addVertex   (WingedMesh&, const glm::vec3&);
     WingedFace&   realignFace (WingedMesh&, const WingedFace&, const Triangle&);
 
     void undo ();

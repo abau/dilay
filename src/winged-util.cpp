@@ -21,8 +21,7 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedVertex&
                                    , bool printDerived) {
   std::cout   << "Vertex "               << v.index   () 
               << "\n\tposition:\t"       << v.vertex  (mesh)
-              << "\n\tedge:\t\t"         << v.edge    ()->id ()
-              << "\n\tlevel:\t\t"        << v.level   ();
+              << "\n\tedge:\t\t"         << v.edge    ()->id ();
   if (printDerived)
     std::cout << "\n\tnormal:\t\t"       << v.normal  (mesh);
   std::cout   << std::endl;
@@ -74,8 +73,7 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
               << "\n\toctree node:\t\t"      << f.octreeNode ()
               << "\n\tfirst index number:\t" << f.firstIndexNumber ();
   if (printDerived) {
-    std::cout << "\n\tlevel:\t\t\t"          << f.level   ()
-              << "\n\tnormal:\t\t\t"         << f.normal  (mesh);
+    std::cout << "\n\tnormal:\t\t\t"         << f.normal  (mesh);
   }
   std::cout   << std::endl;
 }
