@@ -330,6 +330,7 @@ struct PAModifyEdge :: Impl {
         FaceGradient gradient = edge.faceGradient ();
         edge.faceGradient     (*this->fGradient);
         this->fGradient.reset (new FaceGradient (gradient));
+        break;
       }
       case Operation::VertexGradient: {
         int gradient = edge.vertexGradient ();
