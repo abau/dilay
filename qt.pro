@@ -49,6 +49,8 @@ SOURCES += \
            src/ray.cpp \
            src/rendermode.cpp \
            src/sphere.cpp \
+           src/sphere-joint.cpp \
+           src/sphere-mesh.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
@@ -108,6 +110,8 @@ HEADERS += \
            src/ray.hpp \
            src/rendermode.hpp \
            src/sphere.hpp \
+           src/sphere-joint.hpp \
+           src/sphere-mesh.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
