@@ -1,5 +1,5 @@
-#ifndef DILAY_PARTIAL_ACTION_MODIFY_MESH
-#define DILAY_PARTIAL_ACTION_MODIFY_MESH
+#ifndef DILAY_PARTIAL_ACTION_MODIFY_WINGED_MESH
+#define DILAY_PARTIAL_ACTION_MODIFY_WINGED_MESH
 
 #include "action.hpp"
 #include "fwd-glm.hpp"
@@ -10,11 +10,11 @@ class WingedEdge;
 class WingedVertex;
 class Triangle;
 
-class PAModifyMesh : public Action {
-  public: PAModifyMesh            ();
-          PAModifyMesh            (const PAModifyMesh&) = delete;
-    const PAModifyMesh& operator= (const PAModifyMesh&) = delete;
-         ~PAModifyMesh            ();
+class PAModifyWMesh : public Action {
+  public: PAModifyWMesh            ();
+          PAModifyWMesh            (const PAModifyWMesh&) = delete;
+    const PAModifyWMesh& operator= (const PAModifyWMesh&) = delete;
+         ~PAModifyWMesh            ();
 
     void          deleteEdge  (WingedMesh&, const WingedEdge&);
     void          deleteFace  (WingedMesh&, const WingedFace&);

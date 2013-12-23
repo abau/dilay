@@ -6,7 +6,7 @@
 #include "id.hpp"
 #include "action/unit.hpp"
 #include "action/subdivide.hpp"
-#include "partial-action/modify-vertex.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
 #include "sphere.hpp"
 #include "carve-brush.hpp"
 #include "winged-face.hpp"
@@ -97,13 +97,13 @@ struct ActionCarve::Impl {
     assert (newPositions.size () == vertices.size ());
     auto newPosition = newPositions.begin ();
     for (WingedVertex* v : vertices) {
-      this->actions.add <PAModifyVertex> ()->move        (mesh,*v,*newPosition);
+      this->actions.add <PAModifyWVertex> ()->move        (mesh,*v,*newPosition);
       ++newPosition;
     }
 
     // write normals
     for (WingedVertex* v : vertices) {
-      this->actions.add <PAModifyVertex> ()->writeNormal (mesh,*v);
+      this->actions.add <PAModifyWVertex> ()->writeNormal (mesh,*v);
     }
   }
 };

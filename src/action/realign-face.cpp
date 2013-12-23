@@ -4,8 +4,8 @@
 #include "winged-mesh.hpp"
 #include "winged-face.hpp"
 #include "winged-edge.hpp"
-#include "partial-action/modify-mesh.hpp"
-#include "partial-action/modify-edge.hpp"
+#include "partial-action/modify-winged-mesh.hpp"
+#include "partial-action/modify-winged-edge.hpp"
 #include "adjacent-iterator.hpp"
 #include "triangle.hpp"
 
@@ -19,16 +19,16 @@ struct ActionRealignFace :: Impl {
     Triangle                triangle  = face.triangle (mesh);
 
     for (WingedEdge* e : adjacents) {
-      this->actions.add <PAModifyEdge> ()->face (mesh,*e,face,nullptr);
+      this->actions.add <PAModifyWEdge> ()->face (mesh,*e,face,nullptr);
     }
 
-    WingedFace& newFace = this->actions.add <PAModifyMesh> ()->realignFace (mesh, face, triangle);
+    WingedFace& newFace = this->actions.add <PAModifyWMesh> ()->realignFace (mesh, face, triangle);
 
     for (WingedEdge* e : adjacents) {
       if (e->leftFace () == nullptr)
-        this->actions.add <PAModifyEdge> ()->leftFace (mesh,*e,&newFace);
+        this->actions.add <PAModifyWEdge> ()->leftFace (mesh,*e,&newFace);
       else if (e->rightFace () == nullptr)
-        this->actions.add <PAModifyEdge> ()->rightFace (mesh,*e,&newFace);
+        this->actions.add <PAModifyWEdge> ()->rightFace (mesh,*e,&newFace);
       else
         assert (false);
     }

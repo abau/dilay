@@ -1,6 +1,6 @@
 #include <memory>
 #include <glm/glm.hpp>
-#include "partial-action/modify-vertex.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
 #include "macro.hpp"
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
@@ -10,7 +10,7 @@
 
 enum class Operation { Edge, WriteIndex, WriteNormal, Move };
 
-struct PAModifyVertex :: Impl {
+struct PAModifyWVertex :: Impl {
   Operation                   operation;
   PAIds                       operands;
   std::unique_ptr <glm::vec3> vec3;
@@ -86,12 +86,12 @@ struct PAModifyVertex :: Impl {
   void redo () { this->toggle (); }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyVertex)
-DELEGATE_DESTRUCTOR  (PAModifyVertex)
+DELEGATE_CONSTRUCTOR (PAModifyWVertex)
+DELEGATE_DESTRUCTOR  (PAModifyWVertex)
 
-DELEGATE3 (void,PAModifyVertex,edge       ,WingedMesh&,WingedVertex&,WingedEdge*)
-DELEGATE3 (void,PAModifyVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)
-DELEGATE2 (void,PAModifyVertex,writeNormal,WingedMesh&,WingedVertex&)
-DELEGATE3 (void,PAModifyVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
-DELEGATE  (void,PAModifyVertex,undo)
-DELEGATE  (void,PAModifyVertex,redo)
+DELEGATE3 (void,PAModifyWVertex,edge       ,WingedMesh&,WingedVertex&,WingedEdge*)
+DELEGATE3 (void,PAModifyWVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)
+DELEGATE2 (void,PAModifyWVertex,writeNormal,WingedMesh&,WingedVertex&)
+DELEGATE3 (void,PAModifyWVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
+DELEGATE  (void,PAModifyWVertex,undo)
+DELEGATE  (void,PAModifyWVertex,redo)

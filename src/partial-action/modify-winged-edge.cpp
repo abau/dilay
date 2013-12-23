@@ -1,5 +1,5 @@
 #include <memory>
-#include "partial-action/modify-edge.hpp"
+#include "partial-action/modify-winged-edge.hpp"
 #include "macro.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
@@ -17,7 +17,7 @@ enum class Operation
   , SetGeometry, IsTEdge, FaceGradient, VertexGradient
   };
 
-struct PAModifyEdge :: Impl {
+struct PAModifyWEdge :: Impl {
   Operation                        operation;
   PAIds                            operands; 
   std::unique_ptr <bool>           flag;
@@ -346,32 +346,32 @@ struct PAModifyEdge :: Impl {
   void redo () { this->toggle (); }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyEdge)
-DELEGATE_DESTRUCTOR  (PAModifyEdge)
+DELEGATE_CONSTRUCTOR (PAModifyWEdge)
+DELEGATE_DESTRUCTOR  (PAModifyWEdge)
 
-DELEGATE3 (void,PAModifyEdge,vertex1         ,WingedMesh&,WingedEdge&,WingedVertex*)
-DELEGATE3 (void,PAModifyEdge,vertex2         ,WingedMesh&,WingedEdge&,WingedVertex*)
-DELEGATE3 (void,PAModifyEdge,leftFace        ,WingedMesh&,WingedEdge&,WingedFace*)
-DELEGATE3 (void,PAModifyEdge,rightFace       ,WingedMesh&,WingedEdge&,WingedFace*)
-DELEGATE3 (void,PAModifyEdge,leftPredecessor ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyEdge,leftSuccessor   ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyEdge,rightPredecessor,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyEdge,rightSuccessor  ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyEdge,previousSibling ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyEdge,nextSibling     ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE4 (void,PAModifyEdge,firstVertex     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedVertex*)
-DELEGATE4 (void,PAModifyEdge,secondVertex    ,WingedMesh&,WingedEdge&,const WingedFace&,WingedVertex*)
-DELEGATE4 (void,PAModifyEdge,face            ,WingedMesh&,WingedEdge&,const WingedFace&,WingedFace*)
-DELEGATE4 (void,PAModifyEdge,predecessor     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
-DELEGATE4 (void,PAModifyEdge,successor       ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
-DELEGATE3 (void,PAModifyEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
-DELEGATE3 (void,PAModifyEdge,faceGradient    ,WingedMesh&,WingedEdge&,FaceGradient)
-DELEGATE3 (void,PAModifyEdge,increaseFaceGradient,WingedMesh&,WingedEdge&,const WingedFace&)
-DELEGATE3 (void,PAModifyEdge,vertexGradient  ,WingedMesh&,WingedEdge&,int)
-DELEGATE  (void,PAModifyEdge,undo)
-DELEGATE  (void,PAModifyEdge,redo)
+DELEGATE3 (void,PAModifyWEdge,vertex1         ,WingedMesh&,WingedEdge&,WingedVertex*)
+DELEGATE3 (void,PAModifyWEdge,vertex2         ,WingedMesh&,WingedEdge&,WingedVertex*)
+DELEGATE3 (void,PAModifyWEdge,leftFace        ,WingedMesh&,WingedEdge&,WingedFace*)
+DELEGATE3 (void,PAModifyWEdge,rightFace       ,WingedMesh&,WingedEdge&,WingedFace*)
+DELEGATE3 (void,PAModifyWEdge,leftPredecessor ,WingedMesh&,WingedEdge&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,leftSuccessor   ,WingedMesh&,WingedEdge&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,rightPredecessor,WingedMesh&,WingedEdge&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,rightSuccessor  ,WingedMesh&,WingedEdge&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,previousSibling ,WingedMesh&,WingedEdge&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,nextSibling     ,WingedMesh&,WingedEdge&,WingedEdge*)
+DELEGATE4 (void,PAModifyWEdge,firstVertex     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedVertex*)
+DELEGATE4 (void,PAModifyWEdge,secondVertex    ,WingedMesh&,WingedEdge&,const WingedFace&,WingedVertex*)
+DELEGATE4 (void,PAModifyWEdge,face            ,WingedMesh&,WingedEdge&,const WingedFace&,WingedFace*)
+DELEGATE4 (void,PAModifyWEdge,predecessor     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
+DELEGATE4 (void,PAModifyWEdge,successor       ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
+DELEGATE3 (void,PAModifyWEdge,faceGradient    ,WingedMesh&,WingedEdge&,FaceGradient)
+DELEGATE3 (void,PAModifyWEdge,increaseFaceGradient,WingedMesh&,WingedEdge&,const WingedFace&)
+DELEGATE3 (void,PAModifyWEdge,vertexGradient  ,WingedMesh&,WingedEdge&,int)
+DELEGATE  (void,PAModifyWEdge,undo)
+DELEGATE  (void,PAModifyWEdge,redo)
 
-void PAModifyEdge::setGeometry 
+void PAModifyWEdge::setGeometry 
   ( WingedMesh& mesh, WingedEdge& edge, WingedVertex* v1, WingedVertex* v2
   , WingedFace* lF, WingedFace* rF, WingedEdge* lP, WingedEdge* lS
   , WingedEdge* rP, WingedEdge* rS, WingedEdge* p, WingedEdge* n) {

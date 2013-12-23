@@ -39,10 +39,10 @@ SOURCES += \
            src/partial-action/delete-t-edges.cpp \
            src/partial-action/ids.cpp \
            src/partial-action/insert-edge-vertex.cpp \
-           src/partial-action/modify-edge.cpp \
-           src/partial-action/modify-face.cpp \
-           src/partial-action/modify-mesh.cpp \
-           src/partial-action/modify-vertex.cpp \
+           src/partial-action/modify-winged-edge.cpp \
+           src/partial-action/modify-winged-face.cpp \
+           src/partial-action/modify-winged-mesh.cpp \
+           src/partial-action/modify-winged-vertex.cpp \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
            src/renderer.cpp \
@@ -100,10 +100,10 @@ HEADERS += \
            src/partial-action/delete-t-edges.hpp \
            src/partial-action/ids.hpp \
            src/partial-action/insert-edge-vertex.hpp \
-           src/partial-action/modify-edge.hpp \
-           src/partial-action/modify-face.hpp \
-           src/partial-action/modify-mesh.hpp \
-           src/partial-action/modify-vertex.hpp \
+           src/partial-action/modify-winged-edge.hpp \
+           src/partial-action/modify-winged-face.hpp \
+           src/partial-action/modify-winged-mesh.hpp \
+           src/partial-action/modify-winged-vertex.hpp \
            src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
            src/renderer.hpp \

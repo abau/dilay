@@ -1,5 +1,5 @@
-#ifndef DILAY_PARTIAL_ACTION_MODIFY_EDGE
-#define DILAY_PARTIAL_ACTION_MODIFY_EDGE
+#ifndef DILAY_PARTIAL_ACTION_MODIFY_WINGED_EDGE
+#define DILAY_PARTIAL_ACTION_MODIFY_WINGED_EDGE
 
 #include "action.hpp"
 #include "fwd-glm.hpp"
@@ -10,11 +10,11 @@ enum class FaceGradient : char;
 class WingedFace;
 class WingedVertex;
 
-class PAModifyEdge : public Action {
-  public: PAModifyEdge            ();
-          PAModifyEdge            (const PAModifyEdge&) = delete;
-    const PAModifyEdge& operator= (const PAModifyEdge&) = delete;
-         ~PAModifyEdge            ();
+class PAModifyWEdge : public Action {
+  public: PAModifyWEdge            ();
+          PAModifyWEdge            (const PAModifyWEdge&) = delete;
+    const PAModifyWEdge& operator= (const PAModifyWEdge&) = delete;
+         ~PAModifyWEdge            ();
 
     void vertex1              (WingedMesh&, WingedEdge&, WingedVertex*);
     void vertex2              (WingedMesh&, WingedEdge&, WingedVertex*);

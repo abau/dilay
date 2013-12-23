@@ -1,4 +1,4 @@
-#include "partial-action/modify-face.hpp"
+#include "partial-action/modify-winged-face.hpp"
 #include "macro.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
@@ -7,11 +7,11 @@
 #include "partial-action/ids.hpp"
 #include "adjacent-iterator.hpp"
 #include "action/unit.hpp"
-#include "partial-action/modify-vertex.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
 
 enum class Operation { Edge, Write };
 
-struct PAModifyFace :: Impl {
+struct PAModifyWFace :: Impl {
   Operation  operation;
   PAIds      operands;
   ActionUnit actions;
@@ -31,12 +31,12 @@ struct PAModifyFace :: Impl {
     // write indices
     unsigned int indexNumber = face.firstIndexNumber ();
     for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-      this->actions.add <PAModifyVertex> ()->writeIndex (mesh, it.element (), indexNumber);
+      this->actions.add <PAModifyWVertex> ()->writeIndex (mesh, it.element (), indexNumber);
       indexNumber++;
     }
     // write normals
     for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-      this->actions.add <PAModifyVertex> ()->writeNormal (mesh, it.element ());
+      this->actions.add <PAModifyWVertex> ()->writeNormal (mesh, it.element ());
     }
   }
 
@@ -82,10 +82,10 @@ struct PAModifyFace :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyFace)
-DELEGATE_DESTRUCTOR  (PAModifyFace)
+DELEGATE_CONSTRUCTOR (PAModifyWFace)
+DELEGATE_DESTRUCTOR  (PAModifyWFace)
 
-DELEGATE3 (void,PAModifyFace,edge        ,WingedMesh&,WingedFace&,WingedEdge*)
-DELEGATE2 (void,PAModifyFace,write       ,WingedMesh&,WingedFace&)
-DELEGATE  (void,PAModifyFace,undo)
-DELEGATE  (void,PAModifyFace,redo)
+DELEGATE3 (void,PAModifyWFace,edge        ,WingedMesh&,WingedFace&,WingedEdge*)
+DELEGATE2 (void,PAModifyWFace,write       ,WingedMesh&,WingedFace&)
+DELEGATE  (void,PAModifyWFace,undo)
+DELEGATE  (void,PAModifyWFace,redo)

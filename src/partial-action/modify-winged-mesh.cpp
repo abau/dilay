@@ -1,6 +1,6 @@
 #include <memory>
 #include <glm/glm.hpp>
-#include "partial-action/modify-mesh.hpp"
+#include "partial-action/modify-winged-mesh.hpp"
 #include "macro.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
@@ -15,7 +15,7 @@ enum class Operation {
   DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex, RealignFace
 };
 
-struct PAModifyMesh :: Impl {
+struct PAModifyWMesh :: Impl {
   Operation                        operation;
   PAIds                            operands;
   std::unique_ptr <bool>           isTEdge;
@@ -210,18 +210,18 @@ struct PAModifyMesh :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyMesh)
-DELEGATE_DESTRUCTOR  (PAModifyMesh)
+DELEGATE_CONSTRUCTOR (PAModifyWMesh)
+DELEGATE_DESTRUCTOR  (PAModifyWMesh)
 
-DELEGATE2 (void         ,PAModifyMesh,deleteEdge  ,WingedMesh&,const WingedEdge&)
-DELEGATE2 (void         ,PAModifyMesh,deleteFace  ,WingedMesh&,const WingedFace&)
-DELEGATE3 (void         ,PAModifyMesh,deleteFace  ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE1 (void         ,PAModifyMesh,popVertex   ,WingedMesh&)
-DELEGATE2 (WingedEdge&  ,PAModifyMesh,addEdge     ,WingedMesh&,const WingedEdge&)
-DELEGATE2 (WingedFace&  ,PAModifyMesh,addFace     ,WingedMesh&,const WingedFace&)
-DELEGATE2 (WingedFace&  ,PAModifyMesh,addFace     ,WingedMesh&,const Triangle&)
-DELEGATE3 (WingedFace&  ,PAModifyMesh,addFace     ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE2 (WingedVertex&,PAModifyMesh,addVertex   ,WingedMesh&,const glm::vec3&)
-DELEGATE3 (WingedFace&  ,PAModifyMesh,realignFace ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE  (void         ,PAModifyMesh,undo)
-DELEGATE  (void         ,PAModifyMesh,redo)
+DELEGATE2 (void         ,PAModifyWMesh,deleteEdge  ,WingedMesh&,const WingedEdge&)
+DELEGATE2 (void         ,PAModifyWMesh,deleteFace  ,WingedMesh&,const WingedFace&)
+DELEGATE3 (void         ,PAModifyWMesh,deleteFace  ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE1 (void         ,PAModifyWMesh,popVertex   ,WingedMesh&)
+DELEGATE2 (WingedEdge&  ,PAModifyWMesh,addEdge     ,WingedMesh&,const WingedEdge&)
+DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const WingedFace&)
+DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const Triangle&)
+DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE2 (WingedVertex&,PAModifyWMesh,addVertex   ,WingedMesh&,const glm::vec3&)
+DELEGATE3 (WingedFace&  ,PAModifyWMesh,realignFace ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE  (void         ,PAModifyWMesh,undo)
+DELEGATE  (void         ,PAModifyWMesh,redo)

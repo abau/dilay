@@ -4,9 +4,9 @@
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
 #include "action/unit.hpp"
-#include "partial-action/modify-mesh.hpp"
-#include "partial-action/modify-edge.hpp"
-#include "partial-action/modify-face.hpp"
+#include "partial-action/modify-winged-mesh.hpp"
+#include "partial-action/modify-winged-edge.hpp"
+#include "partial-action/modify-winged-face.hpp"
 #include "triangle.hpp"
 
 struct PATriangulateQuad :: Impl {
@@ -27,7 +27,7 @@ struct PATriangulateQuad :: Impl {
                                     , edge.vertexRef (face, 2)
                                     , edge.vertexRef (face, 3));
 
-      newFace = &this->actions.add <PAModifyMesh> ()->addFace (mesh, newLeftGeometry);
+      newFace = &this->actions.add <PAModifyWMesh> ()->addFace (mesh, newLeftGeometry);
       newEdge = &splitFaceWith ( mesh, *newFace, face
                                , edge.predecessorRef (face), counterpart
                                , edge.successorRef (face), edge);
@@ -37,14 +37,14 @@ struct PATriangulateQuad :: Impl {
                                     , edge.vertexRef (face, 1)
                                     , edge.vertexRef (face, 3));
 
-      newFace = &this->actions.add <PAModifyMesh> ()->addFace (mesh, newLeftGeometry);
+      newFace = &this->actions.add <PAModifyWMesh> ()->addFace (mesh, newLeftGeometry);
       newEdge = &splitFaceWith ( mesh, *newFace ,face
                                , edge       , edge.predecessorRef (face)
                                , counterpart, edge.successorRef   (face));
     }
-    this->actions.add <PAModifyEdge> ()->isTEdge (mesh, *newEdge, true);
-    this->actions.add <PAModifyFace> ()->write   (mesh, *newFace);
-    this->actions.add <PAModifyFace> ()->write   (mesh, face);
+    this->actions.add <PAModifyWEdge> ()->isTEdge (mesh, *newEdge, true);
+    this->actions.add <PAModifyWFace> ()->write   (mesh, *newFace);
+    this->actions.add <PAModifyWFace> ()->write   (mesh, face);
 
     if (affectedFaces) {
       affectedFaces->push_back (face.    id ());
@@ -57,38 +57,38 @@ struct PATriangulateQuad :: Impl {
                             , WingedEdge& leftPred,  WingedEdge& leftSucc
                             , WingedEdge& rightPred, WingedEdge& rightSucc) {
 
-    WingedEdge& splitAlong = this->actions.add <PAModifyMesh> ()->
+    WingedEdge& splitAlong = this->actions.add <PAModifyWMesh> ()->
       addEdge (mesh, WingedEdge ());
 
-    this->actions.add <PAModifyFace> ()->edge (mesh, newLeft    , &splitAlong);
-    this->actions.add <PAModifyFace> ()->edge (mesh, faceToSplit, &splitAlong);
+    this->actions.add <PAModifyWFace> ()->edge (mesh, newLeft    , &splitAlong);
+    this->actions.add <PAModifyWFace> ()->edge (mesh, faceToSplit, &splitAlong);
 
-    this->actions.add <PAModifyEdge> ()->
+    this->actions.add <PAModifyWEdge> ()->
       vertex1 (mesh, splitAlong, leftPred.secondVertex (faceToSplit));
-    this->actions.add <PAModifyEdge> ()->
+    this->actions.add <PAModifyWEdge> ()->
       vertex2 (mesh, splitAlong, leftSucc.firstVertex (faceToSplit));
 
-    this->actions.add <PAModifyEdge> ()->leftFace  (mesh, splitAlong, &newLeft);
-    this->actions.add <PAModifyEdge> ()->rightFace (mesh, splitAlong, &faceToSplit);
+    this->actions.add <PAModifyWEdge> ()->leftFace  (mesh, splitAlong, &newLeft);
+    this->actions.add <PAModifyWEdge> ()->rightFace (mesh, splitAlong, &faceToSplit);
 
-    this->actions.add <PAModifyEdge> ()->leftPredecessor  (mesh, splitAlong, &leftPred);
-    this->actions.add <PAModifyEdge> ()->leftSuccessor    (mesh, splitAlong, &leftSucc);
-    this->actions.add <PAModifyEdge> ()->rightPredecessor (mesh, splitAlong, &rightPred);
-    this->actions.add <PAModifyEdge> ()->rightSuccessor   (mesh, splitAlong, &rightSucc);
+    this->actions.add <PAModifyWEdge> ()->leftPredecessor  (mesh, splitAlong, &leftPred);
+    this->actions.add <PAModifyWEdge> ()->leftSuccessor    (mesh, splitAlong, &leftSucc);
+    this->actions.add <PAModifyWEdge> ()->rightPredecessor (mesh, splitAlong, &rightPred);
+    this->actions.add <PAModifyWEdge> ()->rightSuccessor   (mesh, splitAlong, &rightSucc);
 
-    this->actions.add <PAModifyEdge> ()->face        (mesh, leftPred, faceToSplit, &newLeft);
-    this->actions.add <PAModifyEdge> ()->predecessor (mesh, leftPred, newLeft, &leftSucc);
-    this->actions.add <PAModifyEdge> ()->successor   (mesh, leftPred, newLeft, &splitAlong);
+    this->actions.add <PAModifyWEdge> ()->face        (mesh, leftPred, faceToSplit, &newLeft);
+    this->actions.add <PAModifyWEdge> ()->predecessor (mesh, leftPred, newLeft, &leftSucc);
+    this->actions.add <PAModifyWEdge> ()->successor   (mesh, leftPred, newLeft, &splitAlong);
 
-    this->actions.add <PAModifyEdge> ()->face        (mesh, leftSucc, faceToSplit, &newLeft);
-    this->actions.add <PAModifyEdge> ()->predecessor (mesh, leftSucc, newLeft, &splitAlong);
-    this->actions.add <PAModifyEdge> ()->successor   (mesh, leftSucc, newLeft, &leftPred);
+    this->actions.add <PAModifyWEdge> ()->face        (mesh, leftSucc, faceToSplit, &newLeft);
+    this->actions.add <PAModifyWEdge> ()->predecessor (mesh, leftSucc, newLeft, &splitAlong);
+    this->actions.add <PAModifyWEdge> ()->successor   (mesh, leftSucc, newLeft, &leftPred);
 
-    this->actions.add <PAModifyEdge> ()->predecessor (mesh, rightPred, faceToSplit, &rightSucc);
-    this->actions.add <PAModifyEdge> ()->successor   (mesh, rightPred, faceToSplit, &splitAlong);
+    this->actions.add <PAModifyWEdge> ()->predecessor (mesh, rightPred, faceToSplit, &rightSucc);
+    this->actions.add <PAModifyWEdge> ()->successor   (mesh, rightPred, faceToSplit, &splitAlong);
 
-    this->actions.add <PAModifyEdge> ()->predecessor (mesh, rightSucc, faceToSplit, &splitAlong);
-    this->actions.add <PAModifyEdge> ()->successor   (mesh, rightSucc, faceToSplit, &rightPred);
+    this->actions.add <PAModifyWEdge> ()->predecessor (mesh, rightSucc, faceToSplit, &splitAlong);
+    this->actions.add <PAModifyWEdge> ()->successor   (mesh, rightSucc, faceToSplit, &rightPred);
 
     return splitAlong;
   }
