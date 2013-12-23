@@ -251,12 +251,20 @@ struct Mesh::Impl {
     this->translations = glm::translate (this->translations, v);
   }
 
+  void scale (const glm::vec3& v) {
+    this->scalings = glm::scale (this->scalings, v);
+  }
+
   void setPosition (const glm::vec3& v) {
     this->translations = glm::translate (glm::mat4x4 (1.0f), v);
   }
 
   void setRotation (const glm::mat4x4& r) {
     this->rotations = r;
+  }
+
+  void setScaling (const glm::vec3& v) {
+    this->scalings = glm::scale (glm::mat4x4 (1.0f), v);
   }
 
   static Mesh cube (float side) {
@@ -479,8 +487,10 @@ DELEGATE         (void        , Mesh, reset)
 DELEGATE         (void        , Mesh, toggleRenderMode)
 
 DELEGATE1        (void        , Mesh, translate  , const glm::vec3&)
+DELEGATE1        (void        , Mesh, scale      , const glm::vec3&)
 DELEGATE1        (void        , Mesh, setPosition, const glm::vec3&)
 DELEGATE1        (void        , Mesh, setRotation, const glm::mat4&)
+DELEGATE1        (void        , Mesh, setScaling , const glm::vec3&)
 
 DELEGATE1_STATIC (Mesh, Mesh, cube   , float)
 DELEGATE3_STATIC (Mesh, Mesh, sphere , float, int, int)

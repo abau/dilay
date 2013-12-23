@@ -40,8 +40,10 @@ class Mesh {
     void         toggleRenderMode ();
 
     void         translate        (const glm::vec3&);
+    void         scale            (const glm::vec3&);
     void         setPosition      (const glm::vec3&);
     void         setRotation      (const glm::mat4x4&);
+    void         setScaling       (const glm::vec3&);
 
     static Mesh  cube             (float);
     static Mesh  sphere           (float, int, int);
