@@ -30,6 +30,7 @@ class Mesh {
     void         resizeIndices    (unsigned int);
 
     void         bufferData       ();
+    void         fixModelMatrix   ();
     void         renderBegin      ();
     void         render           ();
     void         renderSolid      ();

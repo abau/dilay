@@ -186,11 +186,15 @@ struct Mesh::Impl {
     glBindVertexArray (0);
   }
 
-  void renderBegin () {
-    Renderer :: setProgram (this->renderMode);
+  void fixModelMatrix () {
     glm::mat4x4 modelMatrix = this->translations * this->rotations * this->scalings;
     State :: camera ().modelViewProjection (modelMatrix);
-    glBindVertexArray (this->arrayObjectId);
+  }
+
+  void renderBegin () {
+    Renderer :: setProgram (this->renderMode);
+    this->fixModelMatrix   ();
+    glBindVertexArray      (this->arrayObjectId);
   }
 
   void render () {
@@ -465,6 +469,7 @@ DELEGATE1        (void        , Mesh, allocateIndices, unsigned int)
 DELEGATE1        (void        , Mesh, resizeIndices, unsigned int)
 
 DELEGATE         (void        , Mesh, bufferData)
+DELEGATE         (void        , Mesh, fixModelMatrix)
 DELEGATE         (void        , Mesh, renderBegin)
 DELEGATE         (void        , Mesh, render)
 DELEGATE         (void        , Mesh, renderSolid)
