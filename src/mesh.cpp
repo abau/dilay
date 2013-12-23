@@ -16,9 +16,9 @@
 
 struct Mesh::Impl {
   // cf. copy-constructor, reset
-  glm::mat4x4                 scalings;
-  glm::mat4x4                 rotations;
-  glm::mat4x4                 translations;
+  glm::mat4x4                 scaling;
+  glm::mat4x4                 rotation;
+  glm::mat4x4                 translation;
   std::vector<   GLfloat   >  vertices;
   std::vector< unsigned int>  indices;
   std::vector<   GLfloat   >  normals;
@@ -33,9 +33,9 @@ struct Mesh::Impl {
   RenderMode                  renderMode;
 
   Impl () { 
-    this->scalings       = glm::mat4x4 (1.0f);
-    this->rotations      = glm::mat4x4 (1.0f);
-    this->translations   = glm::mat4x4 (1.0f);
+    this->scaling        = glm::mat4x4 (1.0f);
+    this->rotation       = glm::mat4x4 (1.0f);
+    this->translation    = glm::mat4x4 (1.0f);
     this->arrayObjectId  = 0;
     this->vertexBufferId = 0;
     this->indexBufferId  = 0;
@@ -47,9 +47,9 @@ struct Mesh::Impl {
   }
 
   Impl (const Impl& source)
-              : scalings       (source.scalings)
-              , rotations      (source.rotations)
-              , translations   (source.translations)
+              : scaling        (source.scaling)
+              , rotation       (source.rotation)
+              , translation    (source.translation)
               , vertices       (source.vertices)
               , indices        (source.indices)
               , normals        (source.normals)
@@ -187,7 +187,7 @@ struct Mesh::Impl {
   }
 
   void fixModelMatrix () {
-    glm::mat4x4 modelMatrix = this->translations * this->rotations * this->scalings;
+    glm::mat4x4 modelMatrix = this->translation * this->rotation * this->scaling;
     State :: camera ().modelViewProjection (modelMatrix);
   }
 
@@ -231,9 +231,9 @@ struct Mesh::Impl {
   void renderEnd () { glBindVertexArray (0); }
 
   void reset () {
-    this->scalings      = glm::mat4x4 (1.0f);
-    this->rotations     = glm::mat4x4 (1.0f);
-    this->translations  = glm::mat4x4 (1.0f);
+    this->scaling       = glm::mat4x4 (1.0f);
+    this->rotation      = glm::mat4x4 (1.0f);
+    this->translation   = glm::mat4x4 (1.0f);
     this->vertices.clear ();
     this->indices.clear  ();
     this->normals.clear  ();
@@ -248,23 +248,23 @@ struct Mesh::Impl {
   }
 
   void translate (const glm::vec3& v) {
-    this->translations = glm::translate (this->translations, v);
+    this->translation = glm::translate (this->translation, v);
   }
 
   void scale (const glm::vec3& v) {
-    this->scalings = glm::scale (this->scalings, v);
+    this->scaling = glm::scale (this->scaling, v);
   }
 
   void setPosition (const glm::vec3& v) {
-    this->translations = glm::translate (glm::mat4x4 (1.0f), v);
+    this->translation = glm::translate (glm::mat4x4 (1.0f), v);
   }
 
   void setRotation (const glm::mat4x4& r) {
-    this->rotations = r;
+    this->rotation = r;
   }
 
   void setScaling (const glm::vec3& v) {
-    this->scalings = glm::scale (glm::mat4x4 (1.0f), v);
+    this->scaling = glm::scale (glm::mat4x4 (1.0f), v);
   }
 
   static Mesh cube (float side) {
