@@ -267,9 +267,9 @@ struct Mesh::Impl {
     this->scaling = glm::scale (glm::mat4x4 (1.0f), v);
   }
 
-  static Mesh cube (float side) {
+  static Mesh cube () {
     Mesh m;
-    float d = side * 0.5f;
+    float d = 0.5f;
     m.addVertex ( glm::vec3 (-d, -d, -d) );
     m.addVertex ( glm::vec3 (-d, -d, +d) );
     m.addVertex ( glm::vec3 (-d, +d, -d) );
@@ -299,14 +299,15 @@ struct Mesh::Impl {
     return m;
   }
 
-  static Mesh sphere (float radius, int rings, int sectors) {
+  static Mesh sphere (int rings, int sectors) {
     assert (rings > 1 && sectors > 2);
     Mesh m;
 
-    float ringStep   =        M_PI / float (rings);
-    float sectorStep = 2.0f * M_PI / float (sectors);
-    float phi        = ringStep;
-    float theta      = 0.0f;
+    const float radius     = 1.0f;
+    const float ringStep   =        M_PI / float (rings);
+    const float sectorStep = 2.0f * M_PI / float (sectors);
+          float phi        = ringStep;
+          float theta      = 0.0f;
 
     // Inner rings vertices
     for (int r = 0; r < rings - 1; r++) {
@@ -352,7 +353,7 @@ struct Mesh::Impl {
     return m;
   }
 
-  static Mesh icosphere (float radius, unsigned int subdivisionSteps) {
+  static Mesh icosphere (unsigned int subdivisionSteps) {
     Mesh m;
     typedef unsigned long                          Key;
     typedef std::unordered_map <Key, unsigned int> VertexCache;
@@ -360,8 +361,8 @@ struct Mesh::Impl {
     VertexCache vertexCache;
 
     // adds new vertex to ico-sphere
-    auto addIcoVertex = [&m,radius] (const glm::vec3& v) -> unsigned int {
-      return m.addVertex (glm::normalize (v) * glm::vec3 (radius));
+    auto addIcoVertex = [&m] (const glm::vec3& v) -> unsigned int {
+      return m.addVertex (glm::normalize (v));
     };
 
     // computes key for vertex cache
@@ -492,6 +493,6 @@ DELEGATE1        (void        , Mesh, setPosition, const glm::vec3&)
 DELEGATE1        (void        , Mesh, setRotation, const glm::mat4&)
 DELEGATE1        (void        , Mesh, setScaling , const glm::vec3&)
 
-DELEGATE1_STATIC (Mesh, Mesh, cube   , float)
-DELEGATE3_STATIC (Mesh, Mesh, sphere , float, int, int)
-DELEGATE2_STATIC (Mesh, Mesh, icosphere , float, unsigned int)
+DELEGATE_STATIC  (Mesh, Mesh, cube)
+DELEGATE2_STATIC (Mesh, Mesh, sphere, int, int)
+DELEGATE1_STATIC (Mesh, Mesh, icosphere, unsigned int)

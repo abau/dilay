@@ -28,10 +28,10 @@ struct State::Impl {
   MouseMovement& mouseMovement () { return this->_mouseMovement; }
 
   void initialize () { 
-    //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (1.0f,100,200));
-    //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (1.0f,10,20));
-    WingedUtil :: fromMesh (this->_mesh, Mesh :: icosphere (1.0f,2));
-    //WingedUtil :: fromMesh (this->_mesh, Mesh :: cube (1.0f));
+    //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (100,200));
+    //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (10,20));
+    WingedUtil :: fromMesh (this->_mesh, Mesh :: icosphere (2));
+    //WingedUtil :: fromMesh (this->_mesh, Mesh :: cube ());
     this->_camera.initialize ();
     this->_cursor.initialize ();
   }
