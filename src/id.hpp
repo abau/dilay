@@ -50,6 +50,8 @@ class IdObject {
   private:
     const  IdPrimitive _id;
     static IdPrimitive nextId ();
+
+    static IdPrimitive _currentId;
 };
 
 #endif

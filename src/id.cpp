@@ -1,6 +1,8 @@
 #include <fstream>
 #include "id.hpp"
 
+IdPrimitive IdObject::_currentId = IdObject::invalidId ().get ();
+
 std::ostream& operator<<(std::ostream& os, const Id& id) {
   os << id.get ();
   return os;
@@ -12,8 +14,6 @@ IdObject :: IdObject (const Id& id)
 IdObject :: IdObject (const IdObject&) : _id (IdObject::nextId ()) {}
 
 IdPrimitive IdObject :: nextId () {
-  static IdPrimitive nextId = IdObject::invalidId ().get ();
-  nextId++;
-  return nextId;
+  IdObject :: _currentId++;
+  return IdObject :: _currentId++;
 }
-
