@@ -45,7 +45,6 @@ class IdObject {
     }
            Id id        () const { return Id (this->_id); }
     static Id invalidId ()       { return Id (); }
-    static Id staticId  ()       { return Id (IdObject::nextId ()); }
 
   private:
     const  IdPrimitive _id;
