@@ -37,7 +37,10 @@ namespace std {
 
 // Generates `Id`s
 class IdObject {
-  public:    IdObject (const Id& = IdObject::invalidId ());
+  public:    
+    friend class ActionIdState;
+    
+             IdObject (const Id& = IdObject::invalidId ());
     explicit IdObject (const IdObject&);
 
     const IdObject& operator= (const IdObject&) {
