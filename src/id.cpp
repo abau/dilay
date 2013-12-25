@@ -1,7 +1,7 @@
 #include <fstream>
 #include "id.hpp"
 
-IdPrimitive IdObject::_currentId = Id ().get ();
+IdPrimitive IdObject::_currentIdPrimitive = Id ().get ();
 
 std::ostream& operator<<(std::ostream& os, const Id& id) {
   os << id.get ();
@@ -9,11 +9,11 @@ std::ostream& operator<<(std::ostream& os, const Id& id) {
 }
 
 IdObject :: IdObject (const Id& id) 
-  : _id (id == Id () ? IdObject::nextId () : id.get ()) {}
+  : _id (id.isInvalid () ? IdObject::nextId () : id.get ()) {}
 
 IdObject :: IdObject (const IdObject&) : _id (IdObject::nextId ()) {}
 
 IdPrimitive IdObject :: nextId () {
-  IdObject :: _currentId++;
-  return IdObject :: _currentId;
+  IdObject :: _currentIdPrimitive++;
+  return IdObject :: _currentIdPrimitive;
 }

@@ -5,17 +5,16 @@
 struct ActionIdState :: Impl {
   IdPrimitive state;
 
-  Impl () : state (IdObject::invalidId ().get ())
-    {}
+  Impl () : state (Id ().get ()) {}
 
   void run () { 
-    this->state = IdObject::_currentId;
+    this->state = IdObject::_currentIdPrimitive;
   }
 
   void toggle () {
-    IdPrimitive currentId = IdObject::_currentId;
-    IdObject::_currentId  = this->state;
-    this->state           = currentId;
+    IdPrimitive currentIdPrimitive = IdObject::_currentIdPrimitive;
+    IdObject::_currentIdPrimitive  = this->state;
+    this->state                    = currentIdPrimitive;
   }
 
   void undo () { this->toggle (); }

@@ -47,13 +47,13 @@ class IdObject {
       return *this;
     }
 
-    Id id () const { return Id (this->_id); }
+    const Id& id () const { return this->_id; }
 
   private:
-    const  IdPrimitive _id;
-    static IdPrimitive nextId ();
+    const  Id          _id;
+    static IdPrimitive _currentIdPrimitive;
 
-    static IdPrimitive _currentId;
+    static IdPrimitive nextId ();
 };
 
 #endif
