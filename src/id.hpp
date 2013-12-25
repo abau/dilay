@@ -40,7 +40,7 @@ class IdObject {
   public:    
     friend class ActionIdState;
     
-             IdObject (const Id& = IdObject::invalidId ());
+    explicit IdObject (const Id& = IdObject::invalidId ());
     explicit IdObject (const IdObject&);
 
     const IdObject& operator= (const IdObject&) {
