@@ -5,7 +5,7 @@
 struct ActionIdState :: Impl {
   IdPrimitive state;
 
-  Impl () : state (Id ().get ()) {}
+  Impl () : state (Id ().primitive ()) {}
 
   void run () { 
     this->state = IdObject::_currentIdPrimitive;

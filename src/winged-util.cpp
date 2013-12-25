@@ -29,11 +29,11 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedVertex&
 
 void WingedUtil :: printStatistics (const WingedEdge& e) {
   auto maybeEdgeId = [] (WingedEdge* edge) {
-    if (edge) return std::to_string (edge->id ().get ());
+    if (edge) return std::to_string (edge->id ().primitive ());
     else      return std::string ("NULL");
   };
   auto maybeFaceId = [] (WingedFace* face) {
-    if (face) return std::to_string (face->id ().get ());
+    if (face) return std::to_string (face->id ().primitive ());
     else      return std::string ("NULL");
   };
   auto maybeIndex = [] (WingedVertex* vertex) {

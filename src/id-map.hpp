@@ -10,19 +10,19 @@ class IdMap {
     typedef std::unordered_map <IdPrimitive, T*> InternalMap;
 
     void insert (const Id& id, T& element) {
-      this->map.insert ({{id.get (), &element}});
+      this->map.insert ({{id.primitive (), &element}});
     }
 
     void erase (const Id& id) {
-      this->map.erase (id.get ());
+      this->map.erase (id.primitive ());
     }
 
     bool hasElement (const Id& id) const {
-      return this->map.count (id.get ()) == 1;
+      return this->map.count (id.primitive ()) == 1;
     }
 
     T* element (const Id& id) const {
-      typename InternalMap::const_iterator result = this->map.find (id.get ());
+      typename InternalMap::const_iterator result = this->map.find (id.primitive ());
       if (result == this->map.end ())
         return nullptr;
       else
