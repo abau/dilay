@@ -40,14 +40,14 @@ class IdObject {
   public:    
     friend class ActionIdState;
     
-    explicit IdObject (const Id& = IdObject::invalidId ());
+    explicit IdObject (const Id& = Id ());
     explicit IdObject (const IdObject&);
 
     const IdObject& operator= (const IdObject&) {
       return *this;
     }
-           Id id        () const { return Id (this->_id); }
-    static Id invalidId ()       { return Id (); }
+
+    Id id () const { return Id (this->_id); }
 
   private:
     const  IdPrimitive _id;
