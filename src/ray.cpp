@@ -1,7 +1,6 @@
 #include <sstream>
 #include <glm/glm.hpp>
 #include "ray.hpp"
-#include "macro.hpp"
 #include "util.hpp"
 
 struct Ray::Impl {
@@ -18,7 +17,7 @@ struct Ray::Impl {
   }
 };
 
-DELEGATE2_BIG4 (Ray,const glm::vec3&,const glm::vec3&)
+DELEGATE2_BIG5 (Ray,const glm::vec3&,const glm::vec3&)
 
 GETTER_CONST    (const glm::vec3&, Ray, origin)
 GETTER_CONST    (const glm::vec3&, Ray, direction)

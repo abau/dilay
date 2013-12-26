@@ -4,7 +4,6 @@
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
-#include "macro.hpp"
 #include "sphere.hpp"
 #include "adjacent-iterator.hpp"
 #include "ray.hpp"
@@ -38,7 +37,7 @@ struct FaceIntersection::Impl {
   }
 };
 
-DELEGATE_BIG4  (FaceIntersection)
+DELEGATE_BIG5  (FaceIntersection)
 DELEGATE3      (void            , FaceIntersection, update, float, const glm::vec3&, WingedFace&)
 DELEGATE       (void            , FaceIntersection, reset)
 DELEGATE_CONST (WingedFace&     , FaceIntersection, face)

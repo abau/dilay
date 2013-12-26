@@ -1,6 +1,7 @@
 #ifndef DILAY_INTERSECTION
 #define DILAY_INTERSECTION
 
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Sphere;
@@ -13,10 +14,7 @@ class WingedMesh;
 
 class FaceIntersection {
   public:
-          FaceIntersection            ();
-          FaceIntersection            (const FaceIntersection&);
-    const FaceIntersection& operator= (const FaceIntersection&);
-         ~FaceIntersection            ();
+    DECLARE_BIG5 (FaceIntersection)
 
     bool             isIntersection () const;
     float            distance       () const;

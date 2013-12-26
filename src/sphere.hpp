@@ -2,14 +2,12 @@
 #define DILAY_SPHERE
 
 #include <iosfwd>
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Sphere {
   public:
-          Sphere            (const glm::vec3&, float);
-          Sphere            (const Sphere&);
-    const Sphere& operator= (const Sphere&);
-         ~Sphere            ();
+    DECLARE2_BIG5 (Sphere, const glm::vec3&, float)
 
     const glm::vec3& center () const;
     float            radius () const;

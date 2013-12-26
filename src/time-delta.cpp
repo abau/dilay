@@ -1,7 +1,6 @@
 #include <ctime>
 #include <iostream>
 #include "time-delta.hpp"
-#include "macro.hpp"
 
 struct TimeDelta :: Impl {
   const std::clock_t start;
@@ -27,6 +26,6 @@ struct TimeDelta :: Impl {
   }
 };
 
-DELEGATE_BIG4         (TimeDelta)
+DELEGATE_BIG5         (TimeDelta)
 DELEGATE2_CONSTRUCTOR (TimeDelta,const char*,int)
 DELEGATE              (void, TimeDelta, stopAndPrint)

@@ -3,7 +3,6 @@
 #include "cursor.hpp"
 #include "mesh.hpp"
 #include "renderer.hpp"
-#include "macro.hpp"
 #include "color.hpp"
 #include "util.hpp"
 
@@ -72,7 +71,7 @@ struct Cursor::Impl {
   bool  isEnabled () const { return this->_isEnabled;  }
 };
 
-DELEGATE_BIG4 (Cursor)
+DELEGATE_BIG5 (Cursor)
 
 DELEGATE        (void,  Cursor, initialize)
 DELEGATE1       (void,  Cursor, setPosition, const glm::vec3&)

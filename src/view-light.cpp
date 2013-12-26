@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include "view-light.hpp"
-#include "macro.hpp"
 #include "color.hpp"
 
 struct ViewLight::Impl {
@@ -15,7 +14,7 @@ struct ViewLight::Impl {
     {}
 };
 
-DELEGATE3_BIG4 (ViewLight,const glm::vec3&, const Color&, float)
+DELEGATE3_BIG5 (ViewLight,const glm::vec3&, const Color&, float)
 
 GETTER_CONST   (const glm::vec3&, ViewLight, position)
 GETTER_CONST   (const Color&    , ViewLight, color)

@@ -16,6 +16,10 @@ IdObject :: IdObject (const IdObject&)
   : _id (IdObject::nextIdPrimitive ()) 
   {}
 
+IdObject :: IdObject (IdObject&& o) 
+  : _id (o._id) 
+  {}
+
 IdPrimitive IdObject :: nextIdPrimitive () {
   IdObject :: _currentIdPrimitive++;
   return IdObject :: _currentIdPrimitive;

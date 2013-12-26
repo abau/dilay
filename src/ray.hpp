@@ -2,14 +2,12 @@
 #define DILAY_RAY
 
 #include <iosfwd>
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Ray {
   public:
-          Ray            (const glm::vec3&, const glm::vec3&);
-          Ray            (const Ray&);
-    const Ray& operator= (const Ray&);
-         ~Ray            ();
+    DECLARE2_BIG5 (Ray,const glm::vec3&, const glm::vec3&)
 
     const glm::vec3& origin    () const;
     const glm::vec3& direction () const;

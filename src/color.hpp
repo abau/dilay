@@ -2,23 +2,21 @@
 #define DILAY_COLOR
 
 #include <iosfwd>
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Color {
   public: 
-          Color            (float,float,float,float);
-          Color            (float,float,float);
-          Color            (const glm::vec3&);
-          Color            (const glm::vec4&);
-          Color            (const Color&);
-          Color            ();
-    const Color& operator= (const Color&);
-         ~Color            ();
+    DECLARE4_BIG5  (Color,float,float,float,float)
+    Color          ();
+    Color          (float,float,float);
+    Color          (const glm::vec3&);
+    Color          (const glm::vec4&);
 
-    float r       () const;
-    float g       () const;
-    float b       () const;
-    float opacity () const;
+    float r        () const;
+    float g        () const;
+    float b        () const;
+    float opacity  () const;
 
     glm::vec3 vec3 () const;
     glm::vec4 vec4 () const;

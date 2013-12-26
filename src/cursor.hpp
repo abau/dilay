@@ -1,13 +1,12 @@
 #ifndef DILAY_CURSOR
 #define DILAY_CURSOR
 
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Cursor {
-  public: Cursor             ();
-          Cursor             (const Cursor&);
-    const Cursor& operator=  (const Cursor&);
-         ~Cursor             ();
+  public: 
+    DECLARE_BIG5 (Cursor)
 
     void  initialize         ();
     void  setPosition        (const glm::vec3&);

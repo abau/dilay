@@ -1,16 +1,14 @@
 #ifndef DILAY_VIEW_LIGHT
 #define DILAY_VIEW_LIGHT
 
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Color;
 
 class ViewLight {
   public:
-          ViewLight             (const glm::vec3&, const Color&, float); 
-          ViewLight             (const ViewLight&);
-    const ViewLight& operator=  (const ViewLight&);
-         ~ViewLight             (); 
+    DECLARE3_BIG5 (ViewLight,const glm::vec3&, const Color&, float); 
 
     const glm::vec3& position   () const;
     const Color&     color      () const;

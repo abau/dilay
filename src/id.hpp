@@ -43,6 +43,7 @@ class IdObject {
     
     explicit IdObject (const Id& = Id ());
     explicit IdObject (const IdObject&);
+             IdObject (IdObject&&);
 
     const IdObject& operator= (const IdObject&) {
       return *this;

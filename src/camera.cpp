@@ -6,7 +6,6 @@
 #include "opengl-util.hpp"
 #include "ray.hpp"
 #include "renderer.hpp"
-#include "macro.hpp"
 
 struct Camera::Impl {
   float        gazeStepSize;
@@ -137,7 +136,7 @@ struct Camera::Impl {
   }
 };
 
-DELEGATE_BIG4 (Camera)
+DELEGATE_BIG5 (Camera)
 
 DELEGATE        (void              , Camera, initialize)
 GETTER_CONST    (const glm::uvec2& , Camera, resolution)

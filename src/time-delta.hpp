@@ -1,14 +1,14 @@
 #ifndef DILAY_TIME_DELTA
 #define DILAY_TIME_DELTA
 
+#include "macro.hpp"
+
 #define TIME_DELTA(t) TimeDelta t (__FILE__,__LINE__);
 
 class TimeDelta {
-  public: TimeDelta            ();
-          TimeDelta            (const char*,int);
-          TimeDelta            (const TimeDelta&);
-    const TimeDelta& operator= (const TimeDelta&);
-         ~TimeDelta            ();
+  public: 
+    DECLARE_BIG5 (TimeDelta)
+    TimeDelta    (const char*,int);
 
     void stopAndPrint          ();
 

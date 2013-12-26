@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include <QPoint>
 #include "view-mouse-movement.hpp"
-#include "macro.hpp"
 
 struct MouseMovement::Impl {
   enum State { UpdateNewPos, UpdateOldPos, UpdateBothPos };
@@ -44,7 +43,7 @@ struct MouseMovement::Impl {
   bool hasOld      () const { return this->state == UpdateBothPos; }
 };
 
-DELEGATE_BIG4  (MouseMovement)
+DELEGATE_BIG5  (MouseMovement)
 DELEGATE1      (void             , MouseMovement, update, const QPoint&)
 DELEGATE       (void             , MouseMovement, invalidate)
 DELEGATE_CONST (glm::ivec2       , MouseMovement, delta)

@@ -1,16 +1,14 @@
 #ifndef DILAY_CAMERA
 #define DILAY_CAMERA
 
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Ray;
 
 class Camera {
   public:
-          Camera            ();
-          Camera            (const Camera&);
-    const Camera& operator= (const Camera&);
-         ~Camera            ();
+    DECLARE_BIG5 (Camera)
 
     void               initialize            ();
 

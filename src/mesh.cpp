@@ -55,13 +55,12 @@ struct Mesh::Impl {
               , normals        (source.normals)
               , color          (source.color)
               , wireframeColor (source.wireframeColor)
-              , renderMode     (source.renderMode) {
-              
-    this->arrayObjectId  = 0;
-    this->vertexBufferId = 0;
-    this->indexBufferId  = 0;
-    this->normalBufferId = 0;
-  }
+              , arrayObjectId  (0)
+              , vertexBufferId (0)
+              , indexBufferId  (0)
+              , normalBufferId (0)
+              , renderMode     (source.renderMode) 
+              {}
 
   ~Impl () { this->reset (); }
 

@@ -1,6 +1,5 @@
 #include <fstream>
 #include <glm/glm.hpp>
-#include "macro.hpp"
 #include "color.hpp"
 
 struct Color::Impl {
@@ -21,7 +20,7 @@ struct Color::Impl {
   }
 };
 
-DELEGATE4_BIG4 (Color,float,float,float,float)
+DELEGATE4_BIG5 (Color,float,float,float,float)
 GETTER_CONST   (float,Color,r)
 GETTER_CONST   (float,Color,g)
 GETTER_CONST   (float,Color,b)

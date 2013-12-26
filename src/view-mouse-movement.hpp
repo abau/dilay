@@ -1,16 +1,14 @@
 #ifndef VIEW_MOUSE_MOVEMENT
 #define VIEW_MOUSE_MOVEMENT
 
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class QPoint;
 
 class MouseMovement {
   public:
-          MouseMovement            ();
-          MouseMovement            (const MouseMovement&);
-    const MouseMovement& operator= (const MouseMovement&);
-         ~MouseMovement            ();
+    DECLARE_BIG5 (MouseMovement)
 
     void              update       (const QPoint&);
     void              update       (const glm::uvec2&);

@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include "triangle.hpp"
-#include "macro.hpp"
 #include "util.hpp"
 #include "ray.hpp"
 #include "winged-vertex.hpp"
@@ -70,7 +69,7 @@ struct Triangle::Impl {
   }
 };
 
-DELEGATE_BIG4          (Triangle)
+DELEGATE_BIG5          (Triangle)
 DELEGATE3_CONSTRUCTOR  (Triangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE4_CONSTRUCTOR  (Triangle, const WingedMesh&, const WingedVertex&, const WingedVertex&, const WingedVertex&)
 

@@ -1,6 +1,7 @@
 #ifndef DILAY_TRIANGLE
 #define DILAY_TRIANGLE
 
+#include "macro.hpp"
 #include "fwd-glm.hpp"
 
 class Ray;
@@ -9,13 +10,10 @@ class WingedVertex;
 
 class Triangle {
   public:
-          Triangle              (const glm::vec3&, const glm::vec3&, const glm::vec3&);
-          Triangle              ( const WingedMesh&, const WingedVertex&
-                                , const WingedVertex&, const WingedVertex&);
-          Triangle              ();
-          Triangle              (const Triangle&);
-    const Triangle& operator=   (const Triangle&);
-         ~Triangle              ();
+    DECLARE_BIG5 (Triangle)
+    Triangle     ( const glm::vec3&, const glm::vec3&, const glm::vec3&);
+    Triangle     ( const WingedMesh&, const WingedVertex&
+                 , const WingedVertex&, const WingedVertex&);
 
     const glm::vec3&  vertex1   () const;
     const glm::vec3&  vertex2   () const;

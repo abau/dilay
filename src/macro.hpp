@@ -11,6 +11,11 @@
 #define DELEGATE_COPY_CONSTRUCTOR(from) \
   from :: from (const from & a1) { this->impl = new Impl (*a1.impl); }
 
+#define DELEGATE_MOVE_CONSTRUCTOR(from) \
+  from :: from (from && a1) { \
+    this->impl = a1.impl; \
+    a1.impl    = nullptr; }
+
 #define DELEGATE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (const from & source) { \
     if (this == &source) return *this; \
@@ -37,40 +42,46 @@
 
 #define DELEGATE_DESTRUCTOR(from) from :: ~ from () { delete this->impl; }
 
-#define DELEGATE_BIG4(from) \
+#define DELEGATE_BIG5(from) \
   DELEGATE_CONSTRUCTOR(from) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
 
-#define DELEGATE1_BIG4(from,t1) \
+#define DELEGATE1_BIG5(from,t1) \
   DELEGATE1_CONSTRUCTOR(from,t1) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
 
-#define DELEGATE2_BIG4(from,t1,t2) \
+#define DELEGATE2_BIG5(from,t1,t2) \
   DELEGATE2_CONSTRUCTOR(from,t1,t2) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
 
-#define DELEGATE3_BIG4(from,t1,t2,t3) \
+#define DELEGATE3_BIG5(from,t1,t2,t3) \
   DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
 
-#define DELEGATE4_BIG4(from,t1,t2,t3,t4) \
+#define DELEGATE4_BIG5(from,t1,t2,t3,t4) \
   DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
 
-#define DELEGATE5_BIG4(from,t1,t2,t3,t4,t5) \
+#define DELEGATE5_BIG5(from,t1,t2,t3,t4,t5) \
   DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
 
 #define DELEGATE(r,from,method) \
@@ -187,7 +198,7 @@
 #define ID(from) \
   Id from :: id () const { return this->impl->id.id () ; }
 
-// Utilities
+// Safe references
 
 #define SAFE_REF(r,method) \
   r & method ## Ref () { \
@@ -260,5 +271,49 @@
     r * ptr = this-> method (a1,a2,a3,a4,a5); \
     assert (ptr); \
     return *ptr; }
+
+// Big 5 declarations
+
+#define DECLARE_BIG5(t)                  \
+         t             ();               \
+         t             (const t &);      \
+         t             (      t &&);     \
+  const  t & operator= (const t &);      \
+       ~ t             ();
+
+#define DECLARE1_BIG5(t,t1)              \
+         t             (t1);             \
+         t             (const t &);      \
+         t             (      t &&);     \
+  const  t & operator= (const t &);      \
+       ~ t             ();
+
+#define DECLARE2_BIG5(t,t1,t2)           \
+         t             (t1,t2);          \
+         t             (const t &);      \
+         t             (      t &&);     \
+  const  t & operator= (const t &);      \
+       ~ t             ();
+
+#define DECLARE3_BIG5(t,t1,t2,t3)        \
+         t             (t1,t2,t3);       \
+         t             (const t &);      \
+         t             (      t &&);     \
+  const  t & operator= (const t &);      \
+       ~ t             ();
+
+#define DECLARE4_BIG5(t,t1,t2,t3,t4)     \
+         t             (t1,t2,t3,t4);    \
+         t             (const t &);      \
+         t             (      t &&);     \
+  const  t & operator= (const t &);      \
+       ~ t             ();
+
+#define DECLARE5_BIG5(t,t1,t2,t3,t4,t5)  \
+         t             (t1,t2,t3,t4,t5); \
+         t             (const t &);      \
+         t             (      t &&);     \
+  const  t & operator= (const t &);      \
+       ~ t             ();
 
 #endif

@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <unordered_map>
 #include "octree.hpp"
-#include "macro.hpp"
 #include "winged-face.hpp"
 #include "winged-vertex.hpp"
 #include "triangle.hpp"
@@ -508,13 +507,13 @@ struct OctreeNodeFaceIteratorTemplate {
   }
 };
 
-DELEGATE1_BIG4 (OctreeNodeFaceIterator,OctreeNode::Impl&)
+DELEGATE1_BIG5 (OctreeNodeFaceIterator,OctreeNode::Impl&)
 DELEGATE_CONST (bool       , OctreeNodeFaceIterator, isValid)
 DELEGATE_CONST (WingedFace&, OctreeNodeFaceIterator, element)
 DELEGATE       (void       , OctreeNodeFaceIterator, next)
 DELEGATE_CONST (int        , OctreeNodeFaceIterator, depth)
 
-DELEGATE1_BIG4 (ConstOctreeNodeFaceIterator,const OctreeNode::Impl&)
+DELEGATE1_BIG5 (ConstOctreeNodeFaceIterator,const OctreeNode::Impl&)
 DELEGATE_CONST (bool             , ConstOctreeNodeFaceIterator, isValid)
 DELEGATE_CONST (const WingedFace&, ConstOctreeNodeFaceIterator, element)
 DELEGATE       (void             , ConstOctreeNodeFaceIterator, next)
@@ -575,13 +574,13 @@ struct OctreeFaceIteratorTemplate {
   }
 };
 
-DELEGATE1_BIG4 (OctreeFaceIterator,Octree::Impl&)
+DELEGATE1_BIG5 (OctreeFaceIterator,Octree::Impl&)
 DELEGATE_CONST (bool       , OctreeFaceIterator, isValid)
 DELEGATE_CONST (WingedFace&, OctreeFaceIterator, element)
 DELEGATE       (void       , OctreeFaceIterator, next)
 DELEGATE_CONST (int        , OctreeFaceIterator, depth)
 
-DELEGATE1_BIG4 (ConstOctreeFaceIterator,const Octree::Impl&)
+DELEGATE1_BIG5 (ConstOctreeFaceIterator,const Octree::Impl&)
 DELEGATE_CONST (bool             , ConstOctreeFaceIterator, isValid)
 DELEGATE_CONST (const WingedFace&, ConstOctreeFaceIterator, element)
 DELEGATE       (void             , ConstOctreeFaceIterator, next)
@@ -624,12 +623,12 @@ struct OctreeNodeIteratorTemplate {
   }
 };
 
-DELEGATE1_BIG4 (OctreeNodeIterator, Octree::Impl&)    
+DELEGATE1_BIG5 (OctreeNodeIterator, Octree::Impl&)    
 DELEGATE_CONST (bool              , OctreeNodeIterator, isValid)
 DELEGATE_CONST (OctreeNode&       , OctreeNodeIterator, element)
 DELEGATE       (void              , OctreeNodeIterator, next)
 
-DELEGATE1_BIG4 (ConstOctreeNodeIterator, const Octree::Impl&)    
+DELEGATE1_BIG5 (ConstOctreeNodeIterator, const Octree::Impl&)    
 DELEGATE_CONST (bool              , ConstOctreeNodeIterator, isValid)
 DELEGATE_CONST (const OctreeNode& , ConstOctreeNodeIterator, element)
 DELEGATE       (void              , ConstOctreeNodeIterator, next)
