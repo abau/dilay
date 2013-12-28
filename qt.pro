@@ -93,7 +93,6 @@ HEADERS += \
            src/intersection.hpp \
            src/iterator.hpp \
            src/macro.hpp \
-           src/maybe.hpp \
            src/mesh.hpp \
            src/octree.hpp \
            src/octree-util.hpp \

@@ -3,7 +3,6 @@
 
 #include "fwd-glm.hpp"
 
-template <class T> class Maybe;
 class AdjacentEdgeIterator;
 class AdjacentVertexIterator;
 class AdjacentFaceIterator;
