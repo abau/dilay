@@ -19,6 +19,8 @@ class WingedEdge {
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*  
                , WingedEdge*, WingedEdge*, const Id&, bool
                , FaceGradient, int);
+    WingedEdge (const WingedEdge&)  = default;
+    WingedEdge (      WingedEdge&&) = default;
 
     Id              id               () const { return this->_id.id (); }
     WingedVertex*   vertex1          () const { return this->_vertex1; }

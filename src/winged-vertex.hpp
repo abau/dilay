@@ -11,7 +11,10 @@ class WingedEdge;
 class WingedMesh;
 
 class WingedVertex {
-  public: WingedVertex       (unsigned int, WingedEdge*);
+  public: 
+    WingedVertex (unsigned int, WingedEdge*);
+    WingedVertex (const WingedVertex&)  = default;
+    WingedVertex (      WingedVertex&&) = default;
 
     unsigned int index       () const { return this->_index; }
     WingedEdge*  edge        () const { return this->_edge;  }

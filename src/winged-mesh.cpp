@@ -9,7 +9,6 @@
 #include "intersection.hpp"
 #include "triangle.hpp"
 #include "ray.hpp"
-#include "macro.hpp"
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "octree-util.hpp"
@@ -17,14 +16,14 @@
 
 struct WingedMesh::Impl {
   const IdObject           id;
-  WingedMesh&              wingedMesh;
+  WingedMesh*              wingedMesh;
   Mesh                     mesh;
   std::list <WingedVertex> vertices;
   std::list <WingedEdge>   edges;
   Octree                   octree;
   std::set  <unsigned int> freeFirstIndexNumbers;
 
-  Impl (WingedMesh& p) : wingedMesh (p) {}
+  Impl (WingedMesh& p) : wingedMesh (&p) {}
 
   glm::vec3    vertex (unsigned int i) const { return this->mesh.vertex (i); }
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
@@ -139,19 +138,19 @@ struct WingedMesh::Impl {
       unsigned int fin = 0;
       this->mesh.resizeIndices (this->numFaces () * 3);
       for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
-        it.element ().writeIndices (this->wingedMesh, &fin);
+        it.element ().writeIndices (*this->wingedMesh, &fin);
         fin = fin + 3;
       }
       this->freeFirstIndexNumbers.clear ();
     }
     else {
       for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
-        it.element ().writeIndices (this->wingedMesh);
+        it.element ().writeIndices (*this->wingedMesh);
       }
     }
     // Normals
     for (WingedVertex& v : this->vertices) {
-      v.writeNormal (this->wingedMesh);
+      v.writeNormal (*this->wingedMesh);
     }
   }
 
@@ -182,15 +181,15 @@ struct WingedMesh::Impl {
   void toggleRenderMode () { this->mesh.toggleRenderMode (); }
 
   void intersectRay (const Ray& ray, FaceIntersection& intersection) {
-    this->octree.intersectRay (this->wingedMesh,ray,intersection);
+    this->octree.intersectRay (*this->wingedMesh,ray,intersection);
   }
 
   void intersectSphere (const Sphere& sphere, std::unordered_set <Id>& ids) {
-    this->octree.intersectSphere (this->wingedMesh,sphere,ids);
+    this->octree.intersectSphere (*this->wingedMesh,sphere,ids);
   }
 
   void intersectSphere (const Sphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
-    this->octree.intersectSphere (this->wingedMesh,sphere,vertices);
+    this->octree.intersectSphere (*this->wingedMesh,sphere,vertices);
   }
 
   bool hasFreeFirstIndexNumber () const { 
@@ -210,6 +209,12 @@ WingedMesh :: WingedMesh () : impl (new WingedMesh::Impl (*this)) {}
 WingedMesh :: WingedMesh (const WingedMesh& source) 
   : impl (new WingedMesh::Impl (*this)) {
     WingedUtil :: fromMesh (*this, source.impl->mesh);
+}
+
+WingedMesh :: WingedMesh (WingedMesh&& source) {
+  this->impl             = source.impl;
+  this->impl->wingedMesh = this;
+  source.impl            = nullptr;
 }
 
 const WingedMesh& WingedMesh :: operator= (const WingedMesh& source) {

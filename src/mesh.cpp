@@ -455,6 +455,7 @@ struct Mesh::Impl {
 DELEGATE_CONSTRUCTOR      (Mesh)
 DELEGATE_DESTRUCTOR       (Mesh)
 DELEGATE_COPY_CONSTRUCTOR (Mesh)
+DELEGATE_MOVE_CONSTRUCTOR (Mesh)
 
 DELEGATE_CONST   (unsigned int, Mesh, numVertices)
 DELEGATE_CONST   (unsigned int, Mesh, numIndices)

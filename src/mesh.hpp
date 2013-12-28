@@ -7,6 +7,7 @@ class Mesh {
   public:        Mesh             ();
     /** `bufferData` must be called on the new mesh after copying */
                  Mesh             (const Mesh&);
+                 Mesh             (Mesh&&);
                  ~Mesh            ();
     const Mesh&  operator=        (const Mesh&) = delete;
 

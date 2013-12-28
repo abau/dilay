@@ -18,6 +18,8 @@ class WingedFace {
   public:                      
     WingedFace ();
     WingedFace (WingedEdge*, const Id&, OctreeNode* = nullptr, unsigned int = 0);
+    WingedFace (const WingedFace&)  = default;
+    WingedFace (      WingedFace&&) = default;
 
     Id                     id               () const { return this->_id.id (); }
     WingedEdge*            edge             () const { return this->_edge; }
