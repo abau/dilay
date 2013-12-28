@@ -34,7 +34,7 @@ class FaceToInsert {
       , minimum          (t.minimum          ())
       {}
 
-    Id                           id;
+    Id           id;
     WingedEdge*  edge;
     unsigned int firstIndexNumber;
     glm::vec3    center;
