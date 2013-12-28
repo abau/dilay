@@ -42,7 +42,7 @@ class IdObject {
     friend class ActionIdState;
     
     explicit IdObject (const Id& = Id ());
-    explicit IdObject (const IdObject&);
+             IdObject (const IdObject&);
              IdObject (IdObject&&);
 
     const IdObject& operator= (const IdObject&) {
