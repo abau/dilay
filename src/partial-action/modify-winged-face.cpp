@@ -3,7 +3,7 @@
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
 #include "state.hpp"
-#include "partial-action/ids.hpp"
+#include "action/ids.hpp"
 #include "adjacent-iterator.hpp"
 #include "action/unit.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
@@ -12,7 +12,7 @@ enum class Operation { Edge, Write };
 
 struct PAModifyWFace :: Impl {
   Operation  operation;
-  PAIds      operands;
+  ActionIds  operands;
   ActionUnit actions;
 
   void edge (WingedMesh& mesh, WingedFace& face, WingedEdge* e) {

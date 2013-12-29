@@ -1,6 +1,6 @@
 #include <memory>
 #include <vector>
-#include "partial-action/ids.hpp"
+#include "action/ids.hpp"
 #include "id.hpp"
 #include "state.hpp"
 #include "winged-mesh.hpp"
@@ -8,7 +8,7 @@
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
 
-struct PAIds :: Impl {
+struct ActionIds :: Impl {
   std::vector <std::unique_ptr <Id>>           ids;
   std::vector <std::unique_ptr <unsigned int>> indices;
 
@@ -105,24 +105,24 @@ struct PAIds :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG5 (PAIds)
+DELEGATE_ACTION_BIG5 (ActionIds)
 
-DELEGATE1 (void         , PAIds, reserveIds,     unsigned int)
-DELEGATE1 (void         , PAIds, reserveIndices, unsigned int)
-DELEGATE2 (void         , PAIds, reserve,        unsigned int, unsigned int)
-DELEGATE2 (void         , PAIds, setId,          unsigned int, const Id&)
-DELEGATE2 (void         , PAIds, setIds,         std::initializer_list <Id>, unsigned int)
-DELEGATE2 (void         , PAIds, setIndex,       unsigned int, unsigned int)
-DELEGATE2 (void         , PAIds, setIndices,     std::initializer_list <unsigned int>, unsigned int)
-DELEGATE1 (Id*          , PAIds, getId,          unsigned int)
-DELEGATE1 (unsigned int*, PAIds, getIndex,       unsigned int)
-DELEGATE1 (void         , PAIds, resetId,        unsigned int)
-DELEGATE1 (void         , PAIds, resetIndex,     unsigned int)
-DELEGATE1 (WingedMesh&  , PAIds, getMesh,        unsigned int)
-DELEGATE2 (WingedFace*  , PAIds, getFace,        WingedMesh&, unsigned int)
-DELEGATE2 (WingedEdge*  , PAIds, getEdge,        WingedMesh&, unsigned int)
-DELEGATE2 (WingedVertex*, PAIds, getVertex,      WingedMesh&, unsigned int)
-DELEGATE2 (void         , PAIds, setMesh,        unsigned int, const WingedMesh*)
-DELEGATE2 (void         , PAIds, setFace,        unsigned int, const WingedFace*)
-DELEGATE2 (void         , PAIds, setEdge,        unsigned int, const WingedEdge*)
-DELEGATE2 (void         , PAIds, setVertex,      unsigned int, const WingedVertex*)
+DELEGATE1 (void         , ActionIds, reserveIds,     unsigned int)
+DELEGATE1 (void         , ActionIds, reserveIndices, unsigned int)
+DELEGATE2 (void         , ActionIds, reserve,        unsigned int, unsigned int)
+DELEGATE2 (void         , ActionIds, setId,          unsigned int, const Id&)
+DELEGATE2 (void         , ActionIds, setIds,         std::initializer_list <Id>, unsigned int)
+DELEGATE2 (void         , ActionIds, setIndex,       unsigned int, unsigned int)
+DELEGATE2 (void         , ActionIds, setIndices,     std::initializer_list <unsigned int>, unsigned int)
+DELEGATE1 (Id*          , ActionIds, getId,          unsigned int)
+DELEGATE1 (unsigned int*, ActionIds, getIndex,       unsigned int)
+DELEGATE1 (void         , ActionIds, resetId,        unsigned int)
+DELEGATE1 (void         , ActionIds, resetIndex,     unsigned int)
+DELEGATE1 (WingedMesh&  , ActionIds, getMesh,        unsigned int)
+DELEGATE2 (WingedFace*  , ActionIds, getFace,        WingedMesh&, unsigned int)
+DELEGATE2 (WingedEdge*  , ActionIds, getEdge,        WingedMesh&, unsigned int)
+DELEGATE2 (WingedVertex*, ActionIds, getVertex,      WingedMesh&, unsigned int)
+DELEGATE2 (void         , ActionIds, setMesh,        unsigned int, const WingedMesh*)
+DELEGATE2 (void         , ActionIds, setFace,        unsigned int, const WingedFace*)
+DELEGATE2 (void         , ActionIds, setEdge,        unsigned int, const WingedEdge*)
+DELEGATE2 (void         , ActionIds, setVertex,      unsigned int, const WingedVertex*)

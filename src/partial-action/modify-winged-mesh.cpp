@@ -6,7 +6,7 @@
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
 #include "state.hpp"
-#include "partial-action/ids.hpp"
+#include "action/ids.hpp"
 #include "triangle.hpp"
 #include "octree.hpp"
 
@@ -16,7 +16,7 @@ enum class Operation {
 
 struct PAModifyWMesh :: Impl {
   Operation                        operation;
-  PAIds                            operands;
+  ActionIds                        operands;
   std::unique_ptr <bool>           isTEdge;
   std::unique_ptr <Triangle>       triangle;
   std::unique_ptr <glm::vec3>      vector;

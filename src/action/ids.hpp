@@ -1,5 +1,5 @@
-#ifndef DILAY_PARTIAL_ACTION_IDS
-#define DILAY_PARTIAL_ACTION_IDS
+#ifndef DILAY_ACTION_IDS
+#define DILAY_ACTION_IDS
 
 #include <initializer_list>
 #include "macro.hpp"
@@ -10,9 +10,9 @@ class WingedEdge;
 class WingedVertex;
 class Id;
 
-class PAIds {
+class ActionIds {
   public: 
-    DECLARE_ACTION_BIG5 (PAIds)
+    DECLARE_ACTION_BIG5 (ActionIds)
 
     void          reserveIds     (unsigned int);
     void          reserveIndices (unsigned int);

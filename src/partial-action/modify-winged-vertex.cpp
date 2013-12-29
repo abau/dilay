@@ -5,13 +5,13 @@
 #include "winged-vertex.hpp"
 #include "winged-mesh.hpp"
 #include "state.hpp"
-#include "partial-action/ids.hpp"
+#include "action/ids.hpp"
 
 enum class Operation { Edge, WriteIndex, WriteNormal, Move };
 
 struct PAModifyWVertex :: Impl {
   Operation                   operation;
-  PAIds                       operands;
+  ActionIds                   operands;
   std::unique_ptr <glm::vec3> vec3;
 
   void edge (WingedMesh& mesh, WingedVertex& vertex, WingedEdge* e) {

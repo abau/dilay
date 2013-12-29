@@ -17,6 +17,7 @@ QMAKE_LFLAGS_DEBUG     += # -pg
 
 SOURCES += \
            src/action/carve.cpp \
+           src/action/ids.cpp \
            src/action/id-state.cpp \
            src/action/realign-face.cpp \
            src/action/subdivide.cpp \
@@ -39,7 +40,6 @@ SOURCES += \
            src/opengl-util.cpp \
            src/partial-action/delete-edge-face.cpp \
            src/partial-action/delete-t-edges.cpp \
-           src/partial-action/ids.cpp \
            src/partial-action/insert-edge-vertex.cpp \
            src/partial-action/modify-winged-edge.cpp \
            src/partial-action/modify-winged-face.cpp \
@@ -74,6 +74,7 @@ SOURCES += \
 HEADERS += \
            src/action.hpp \
            src/action/carve.hpp \
+           src/action/ids.hpp \
            src/action/id-state.hpp \
            src/action/on-winged-mesh.hpp \
            src/action/realign-face.hpp \
@@ -104,7 +105,6 @@ HEADERS += \
            src/opengl-util.hpp \
            src/partial-action/delete-edge-face.hpp \
            src/partial-action/delete-t-edges.hpp \
-           src/partial-action/ids.hpp \
            src/partial-action/insert-edge-vertex.hpp \
            src/partial-action/modify-winged-edge.hpp \
            src/partial-action/modify-winged-face.hpp \

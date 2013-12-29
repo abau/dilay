@@ -5,7 +5,7 @@
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
 #include "state.hpp"
-#include "partial-action/ids.hpp"
+#include "action/ids.hpp"
 
 enum class Operation 
   { Vertex1, Vertex2, LeftFace, RightFace
@@ -18,7 +18,7 @@ enum class Operation
 
 struct PAModifyWEdge :: Impl {
   Operation                        operation;
-  PAIds                            operands; 
+  ActionIds                        operands; 
   std::unique_ptr <bool>           flag;
   std::unique_ptr <FaceGradient>   fGradient;
   std::unique_ptr <int>            vGradient;
