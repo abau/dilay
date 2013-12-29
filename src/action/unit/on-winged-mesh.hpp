@@ -1,14 +1,14 @@
-#ifndef DILAY_ACTION_UNIT_WINGED_MESH
-#define DILAY_ACTION_UNIT_WINGED_MESH
+#ifndef DILAY_ACTION_UNIT_ON_WINGED_MESH
+#define DILAY_ACTION_UNIT_ON_WINGED_MESH
 
 #include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 
-class ActionUnitWMesh : public ActionOnWMesh {
+class ActionUnitOnWMesh : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (ActionUnitWMesh)
+    DECLARE_ACTION_BIG5 (ActionUnitOnWMesh)
 
     template <class T>
     T* add () { 

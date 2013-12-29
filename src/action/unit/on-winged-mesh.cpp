@@ -1,7 +1,7 @@
-#include "action/unit/winged-mesh.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "action/unit/template.hpp"
 
-struct ActionUnitWMesh :: Impl {
+struct ActionUnitOnWMesh :: Impl {
   ActionUnitTemplate <ActionOnWMesh> unitTemplate;
 
   void undo (WingedMesh& mesh) {
@@ -13,8 +13,8 @@ struct ActionUnitWMesh :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG5      (ActionUnitWMesh)
-DELEGATE_TO_UNIT_TEMPLATE (ActionUnitWMesh,ActionOnWMesh)
+DELEGATE_ACTION_BIG5      (ActionUnitOnWMesh)
+DELEGATE_TO_UNIT_TEMPLATE (ActionUnitOnWMesh,ActionOnWMesh)
 
-DELEGATE1 (void, ActionUnitWMesh, undo, WingedMesh&)
-DELEGATE1 (void, ActionUnitWMesh, redo, WingedMesh&)
+DELEGATE1 (void, ActionUnitOnWMesh, undo, WingedMesh&)
+DELEGATE1 (void, ActionUnitOnWMesh, redo, WingedMesh&)
