@@ -4,14 +4,14 @@
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
-#include "action/unit.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 
 struct PAInsertEdgeVertex :: Impl {
-  ActionUnit actions;
+  ActionUnitOnWMesh actions;
 
   WingedEdge& run (WingedMesh& mesh, WingedEdge& e, const glm::vec3& v, bool setGradient) {
     this->actions.reset ();
@@ -60,13 +60,13 @@ struct PAInsertEdgeVertex :: Impl {
     return newE;
   }
 
-  void undo () { this->actions.undo (); }
-  void redo () { this->actions.redo (); }
+  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_ACTION_BIG5 (PAInsertEdgeVertex)
 
 DELEGATE4 (WingedEdge&,PAInsertEdgeVertex,run,WingedMesh&,WingedEdge&,const glm::vec3&,bool)
-DELEGATE  (void,PAInsertEdgeVertex,undo)
-DELEGATE  (void,PAInsertEdgeVertex,redo)
+DELEGATE1 (void,PAInsertEdgeVertex,undo,WingedMesh&)
+DELEGATE1 (void,PAInsertEdgeVertex,redo,WingedMesh&)
 

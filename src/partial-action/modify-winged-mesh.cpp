@@ -24,17 +24,16 @@ struct PAModifyWMesh :: Impl {
   std::unique_ptr <FaceGradient>   faceGradient;
   std::unique_ptr <int>            vertexGradient;
 
-  void saveEdgeOperand (const WingedMesh& mesh, const WingedEdge& edge) {
-    this->operands.setMesh (0, &mesh);
-    this->operands.setEdge (1, &edge);
-    this->operands.setFace (2, edge.leftFace ());
-    this->operands.setFace (3, edge.rightFace ());
-    this->operands.setEdge (4, edge.leftPredecessor ());
-    this->operands.setEdge (5, edge.leftSuccessor ());
-    this->operands.setEdge (6, edge.rightPredecessor ());
-    this->operands.setEdge (7, edge.rightSuccessor ());
-    this->operands.setEdge (8, edge.previousSibling ());
-    this->operands.setEdge (9, edge.nextSibling ());
+  void saveEdgeOperand (const WingedEdge& edge) {
+    this->operands.setEdge (0, &edge);
+    this->operands.setFace (1, edge.leftFace ());
+    this->operands.setFace (2, edge.rightFace ());
+    this->operands.setEdge (3, edge.leftPredecessor ());
+    this->operands.setEdge (4, edge.leftSuccessor ());
+    this->operands.setEdge (5, edge.rightPredecessor ());
+    this->operands.setEdge (6, edge.rightSuccessor ());
+    this->operands.setEdge (7, edge.previousSibling ());
+    this->operands.setEdge (8, edge.nextSibling ());
 
     this->operands.setVertex   (0, edge.vertex1 ());
     this->operands.setVertex   (1, edge.vertex2 ());
@@ -47,31 +46,29 @@ struct PAModifyWMesh :: Impl {
   WingedEdge& addSavedEdge (WingedMesh& mesh) {
     return mesh.addEdge (
       WingedEdge ( this->operands.getVertex (mesh,0), this->operands.getVertex (mesh,1)
-                 , this->operands.getFace   (mesh,2), this->operands.getFace   (mesh,3)
-                 , this->operands.getEdge   (mesh,4), this->operands.getEdge   (mesh,5)
-                 , this->operands.getEdge   (mesh,6), this->operands.getEdge   (mesh,7)
-                 , this->operands.getEdge   (mesh,8), this->operands.getEdge   (mesh,9)
-                 ,*this->operands.getId     (1)     ,*this->isTEdge
+                 , this->operands.getFace   (mesh,1), this->operands.getFace   (mesh,2)
+                 , this->operands.getEdge   (mesh,3), this->operands.getEdge   (mesh,4)
+                 , this->operands.getEdge   (mesh,5), this->operands.getEdge   (mesh,6)
+                 , this->operands.getEdge   (mesh,7), this->operands.getEdge   (mesh,8)
+                 ,*this->operands.getId     (0)     ,*this->isTEdge
                  ,*this->faceGradient, *this->vertexGradient));
   }
 
-  void saveFaceOperand (const WingedMesh& mesh, const WingedFace& face, const Triangle& triangle) {
-    this->operands.setMesh       (0, &mesh);
-    this->operands.setFace       (1, &face);
-    this->operands.setEdge       (2, face.edge ());
+  void saveFaceOperand (const WingedFace& face, const Triangle& triangle) {
+    this->operands.setFace       (0, &face);
+    this->operands.setEdge       (1, face.edge ());
     this->triangle.reset         (new Triangle (triangle));
     this->firstIndexNumber.reset (new unsigned int (face.firstIndexNumber ()));
   }
   
   WingedFace& addSavedFace (WingedMesh& mesh) {
     return mesh.addFace ( 
-        WingedFace (this->operands.getEdge (mesh,2), *this->operands.getId (1))
+        WingedFace (this->operands.getEdge (mesh,1), *this->operands.getId (0))
       ,*this->triangle);
   }
 
   void saveVertexOperand (const WingedMesh& mesh, const WingedVertex& vertex) {
-    this->operands.setMesh (0, &mesh);
-    this->vector.reset     (new glm::vec3 (vertex.vertex (mesh)));
+    this->vector.reset (new glm::vec3 (vertex.vertex (mesh)));
   }
 
   WingedVertex& addSavedVertex (WingedMesh& mesh) {
@@ -80,7 +77,7 @@ struct PAModifyWMesh :: Impl {
 
   void deleteEdge (WingedMesh& mesh, const WingedEdge& edge) {
     this->operation = Operation::DeleteEdge;
-    this->saveEdgeOperand (mesh,edge);
+    this->saveEdgeOperand (edge);
     mesh.deleteEdge (edge);
   }
 
@@ -90,7 +87,7 @@ struct PAModifyWMesh :: Impl {
 
   void deleteFace (WingedMesh& mesh, const WingedFace& face, const Triangle& t) {
     this->operation = Operation::DeleteFace;
-    this->saveFaceOperand (mesh, face, t);
+    this->saveFaceOperand (face, t);
     mesh.deleteFace (face);
   }
 
@@ -102,7 +99,7 @@ struct PAModifyWMesh :: Impl {
 
   WingedEdge& addEdge (WingedMesh& mesh, const WingedEdge& edge) {
     this->operation = Operation::AddEdge;
-    this->saveEdgeOperand (mesh,edge);
+    this->saveEdgeOperand (edge);
     return mesh.addEdge (edge);
   }
 
@@ -116,13 +113,12 @@ struct PAModifyWMesh :: Impl {
 
   WingedFace& addFace (WingedMesh& mesh, const WingedFace& face, const Triangle& t) {
     this->operation = Operation::AddFace;
-    this->saveFaceOperand (mesh, face, t);
+    this->saveFaceOperand (face, t);
     return mesh.addFace (face, t);
   }
 
   WingedVertex& addVertex (WingedMesh& mesh, const glm::vec3& vector) {
     this->operation = Operation::AddVertex;
-    this->operands.setMesh (0, &mesh);
     this->vector.reset     (new glm::vec3 (vector));
     return mesh.addVertex (vector);
   }
@@ -130,13 +126,12 @@ struct PAModifyWMesh :: Impl {
   WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face, const Triangle& triangle) {
     assert (face.octreeNode ());
     this->operation = Operation::RealignFace;
-    this->operands.setIds ({ mesh.id (), face.id (), face.octreeNode ()->id ()}); 
+    this->operands.setIds ({ face.id (), face.octreeNode ()->id ()}); 
     this->triangle.reset  (new Triangle (triangle));
     return mesh.realignFace (face, triangle);
   }
 
-  void undo () { 
-    WingedMesh& mesh = this->operands.getMesh (0);
+  void undo (WingedMesh& mesh) { 
 
     switch (this->operation) {
       case Operation::DeleteEdge: {
@@ -152,11 +147,11 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::AddEdge: {
-        mesh.deleteEdge (*this->operands.getEdge (mesh,1));
+        mesh.deleteEdge (*this->operands.getEdge (mesh,0));
         break;
       }
       case Operation::AddFace: {
-        mesh.deleteFace (*this->operands.getFace (mesh,1));
+        mesh.deleteFace (*this->operands.getFace (mesh,0));
         break;
       }
       case Operation::AddVertex: {
@@ -164,24 +159,23 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::RealignFace: {
-        this->operands.getFace (mesh,1)->octreeNode (
-            &mesh.octreeNodeSLOW (*this->operands.getId (2)));
+        this->operands.getFace (mesh,0)->octreeNode (
+            &mesh.octreeNodeSLOW (*this->operands.getId (1)));
         break;
       }
       default: assert (false);
     }
   }
 
-  void redo () { 
-    WingedMesh& mesh = this->operands.getMesh (0);
+  void redo (WingedMesh& mesh) { 
 
     switch (this->operation) {
       case Operation::DeleteEdge: {
-        mesh.deleteEdge (*this->operands.getEdge (mesh,1));
+        mesh.deleteEdge (*this->operands.getEdge (mesh,0));
         break;
       }
       case Operation::DeleteFace: {
-        mesh.deleteFace (*this->operands.getFace (mesh,1));
+        mesh.deleteFace (*this->operands.getFace (mesh,0));
         break;
       }
       case Operation::PopVertex: {
@@ -201,7 +195,7 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::RealignFace: {
-        mesh.realignFace (*this->operands.getFace (mesh,1), *this->triangle);
+        mesh.realignFace (*this->operands.getFace (mesh,0), *this->triangle);
         break;
       }
       default: assert (false);
@@ -221,5 +215,5 @@ DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const Triangle&)
 DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const WingedFace&,const Triangle&)
 DELEGATE2 (WingedVertex&,PAModifyWMesh,addVertex   ,WingedMesh&,const glm::vec3&)
 DELEGATE3 (WingedFace&  ,PAModifyWMesh,realignFace ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE  (void         ,PAModifyWMesh,undo)
-DELEGATE  (void         ,PAModifyWMesh,redo)
+DELEGATE1 (void         ,PAModifyWMesh,undo        ,WingedMesh&)
+DELEGATE1 (void         ,PAModifyWMesh,redo        ,WingedMesh&)

@@ -5,20 +5,20 @@
 #include "state.hpp"
 #include "action/ids.hpp"
 #include "adjacent-iterator.hpp"
-#include "action/unit.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 
 enum class Operation { Edge, Write };
 
 struct PAModifyWFace :: Impl {
-  Operation  operation;
-  ActionIds  operands;
-  ActionUnit actions;
+  Operation         operation;
+  ActionIds         operands;
+  ActionUnitOnWMesh actions;
 
   void edge (WingedMesh& mesh, WingedFace& face, WingedEdge* e) {
     this->operation = Operation::Edge;
-    this->operands.setIds ({mesh.id (), face.id ()});
-    this->operands.setEdge (2, face.edge ());
+    this->operands.setFace (0, &face);
+    this->operands.setEdge (1,  face.edge ());
     face.edge (e);
   }
 
@@ -39,42 +39,41 @@ struct PAModifyWFace :: Impl {
     }
   }
 
-  void toggle () { 
-    WingedMesh& mesh =  this->operands.getMesh (0);
-    WingedFace& face = *this->operands.getFace (mesh,1);
+  void toggle (WingedMesh& mesh) { 
+    WingedFace& face = this->operands.getFaceRef (mesh,0);
 
     switch (this->operation) {
       case Operation::Edge: {
         WingedEdge* e = face.edge ();
-        face.edge (this->operands.getEdge (mesh,2)); 
-        this->operands.setEdge (2,e);
+        face.edge (this->operands.getEdge (mesh,1)); 
+        this->operands.setEdge (1,e);
         break;
       }
       default: assert (false);
     }
   }
 
-  void undo () { 
+  void undo (WingedMesh& mesh) { 
     switch (this->operation) {
       case Operation::Write: {
-        this->actions.undo ();
+        this->actions.undo (mesh);
         break;
       }
       default: {
-        this->toggle ();
+        this->toggle (mesh);
         break;
       }
     }
   }
 
-  void redo () { 
+  void redo (WingedMesh& mesh) { 
     switch (this->operation) {
       case Operation::Write: {
-        this->actions.redo ();
+        this->actions.redo (mesh);
         break;
       }
       default: {
-        this->toggle ();
+        this->toggle (mesh);
         break;
       }
     }
@@ -83,7 +82,7 @@ struct PAModifyWFace :: Impl {
 
 DELEGATE_ACTION_BIG5 (PAModifyWFace)
 
-DELEGATE3 (void,PAModifyWFace,edge        ,WingedMesh&,WingedFace&,WingedEdge*)
-DELEGATE2 (void,PAModifyWFace,write       ,WingedMesh&,WingedFace&)
-DELEGATE  (void,PAModifyWFace,undo)
-DELEGATE  (void,PAModifyWFace,redo)
+DELEGATE3 (void,PAModifyWFace,edge ,WingedMesh&,WingedFace&,WingedEdge*)
+DELEGATE2 (void,PAModifyWFace,write,WingedMesh&,WingedFace&)
+DELEGATE1 (void,PAModifyWFace,undo ,WingedMesh&)
+DELEGATE1 (void,PAModifyWFace,redo ,WingedMesh&)

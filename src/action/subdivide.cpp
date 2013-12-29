@@ -5,7 +5,7 @@
 #include "winged-face.hpp"
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
-#include "action/unit.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
 #include "partial-action/triangulate-quad.hpp"
 #include "partial-action/delete-t-edges.hpp"
@@ -36,10 +36,10 @@ struct SubdivideData {
 };
 
 struct ActionSubdivide::Impl {
-  ActionUnit actions;
+  ActionUnitOnWMesh actions;
 
-  void undo () { this->actions.undo (); }
-  void redo () { this->actions.redo (); }
+  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
   WingedFace& run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) { 
     this->actions.reset ();
@@ -228,5 +228,5 @@ struct ActionSubdivide::Impl {
 
 DELEGATE_ACTION_BIG5 (ActionSubdivide)
 DELEGATE3            (WingedFace&, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
-DELEGATE             (void, ActionSubdivide, undo)
-DELEGATE             (void, ActionSubdivide, redo)
+DELEGATE1            (void, ActionSubdivide, undo, WingedMesh&)
+DELEGATE1            (void, ActionSubdivide, redo, WingedMesh&)

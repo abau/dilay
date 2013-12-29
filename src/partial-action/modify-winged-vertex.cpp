@@ -16,15 +16,13 @@ struct PAModifyWVertex :: Impl {
 
   void edge (WingedMesh& mesh, WingedVertex& vertex, WingedEdge* e) {
     this->operation = Operation::Edge;
-    this->operands.setMesh   (0, &mesh);
     this->operands.setVertex (0, &vertex);
-    this->operands.setEdge   (1, vertex.edge ());
+    this->operands.setEdge   (0, vertex.edge ());
     vertex.edge              (e);
   }
 
   void writeIndex (WingedMesh& mesh, WingedVertex& vertex, unsigned int indexNumber) {
     this->operation = Operation::WriteIndex;
-    this->operands.setMesh   (0, &mesh);
     this->operands.setVertex (0, &vertex);
     this->operands.setIndex  (1, indexNumber);
     this->operands.setIndex  (2, mesh.index (indexNumber));
@@ -33,7 +31,6 @@ struct PAModifyWVertex :: Impl {
 
   void writeNormal (WingedMesh& mesh, WingedVertex& vertex) {
     this->operation = Operation::WriteNormal;
-    this->operands.setMesh   (0, &mesh);
     this->operands.setVertex (0, &vertex);
     this->vec3.reset         (new glm::vec3 (mesh.normal (vertex.index ())));
     vertex.writeNormal       (mesh);
@@ -41,21 +38,19 @@ struct PAModifyWVertex :: Impl {
 
   void move (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& pos) {
     this->operation = Operation::Move;
-    this->operands.setMesh   (0, &mesh);
     this->operands.setVertex (0, &vertex);
     this->vec3.reset         (new glm::vec3 (vertex.vertex (mesh)));
     mesh.setVertex           (vertex.index (), pos);
   }
 
-  void toggle () { 
-    WingedMesh&   mesh   =  this->operands.getMesh (0);
-    WingedVertex& vertex = *this->operands.getVertex (mesh,0);
+  void toggle (WingedMesh& mesh) { 
+    WingedVertex& vertex = this->operands.getVertexRef (mesh,0);
 
     switch (this->operation) {
       case Operation::Edge: {
         WingedEdge* e = vertex.edge ();
-        vertex.edge (this->operands.getEdge (mesh, 1)); 
-        this->operands.setEdge (1,e);
+        vertex.edge (this->operands.getEdge (mesh, 0)); 
+        this->operands.setEdge (0,e);
         break;
       }
       case Operation::WriteIndex: {
@@ -81,8 +76,8 @@ struct PAModifyWVertex :: Impl {
     }
   }
 
-  void undo () { this->toggle (); }
-  void redo () { this->toggle (); }
+  void undo (WingedMesh& mesh) { this->toggle (mesh); }
+  void redo (WingedMesh& mesh) { this->toggle (mesh); }
 };
 
 DELEGATE_ACTION_BIG5 (PAModifyWVertex)
@@ -91,5 +86,5 @@ DELEGATE3 (void,PAModifyWVertex,edge       ,WingedMesh&,WingedVertex&,WingedEdge
 DELEGATE3 (void,PAModifyWVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)
 DELEGATE2 (void,PAModifyWVertex,writeNormal,WingedMesh&,WingedVertex&)
 DELEGATE3 (void,PAModifyWVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
-DELEGATE  (void,PAModifyWVertex,undo)
-DELEGATE  (void,PAModifyWVertex,redo)
+DELEGATE1 (void,PAModifyWVertex,undo,WingedMesh&)
+DELEGATE1 (void,PAModifyWVertex,redo,WingedMesh&)

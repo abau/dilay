@@ -1,22 +1,22 @@
 #ifndef DILAY_PARTIAL_ACTION_MODIFY_WINGED_FACE
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_FACE
 
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedEdge;
 class WingedFace;
 
-class PAModifyWFace : public Action {
+class PAModifyWFace : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PAModifyWFace)
 
     void edge  (WingedMesh&, WingedFace&, WingedEdge*);
     void write (WingedMesh&, WingedFace&);
 
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
   private:
     class Impl;
     Impl* impl;

@@ -1,14 +1,14 @@
 #ifndef DILAY_PARTIAL_ACTION_MODIFY_WINGED_VERTEX
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_VERTEX
 
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedEdge;
 class WingedVertex;
 
-class PAModifyWVertex : public Action {
+class PAModifyWVertex : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PAModifyWVertex)
 
@@ -17,8 +17,8 @@ class PAModifyWVertex : public Action {
     void writeNormal (WingedMesh&, WingedVertex&);
     void move        (WingedMesh&, WingedVertex&, const glm::vec3&);
 
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
   private:
     class Impl;
     Impl* impl;

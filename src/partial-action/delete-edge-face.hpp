@@ -1,14 +1,14 @@
 #ifndef DILAY_PARTIAL_ACTION_DELETE_EDGE_FACE
 #define DILAY_PARTIAL_ACTION_DELETE_EDGE_FACE
 
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "fwd-glm.hpp"
 #include "macro.hpp"
 
 class WingedEdge;
 class WingedMesh;
 
-class PADeleteEdgeFace : public Action {
+class PADeleteEdgeFace : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PADeleteEdgeFace)
 
@@ -16,8 +16,8 @@ class PADeleteEdgeFace : public Action {
      * Note that other parts of the program depend on this behaviour. */
     void run (WingedMesh&, WingedEdge&);
 
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
   private:
     class Impl;
     Impl* impl;

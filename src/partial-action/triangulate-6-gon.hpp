@@ -2,14 +2,14 @@
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_6_GON
 
 #include <list>
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 class Id;
 
-class PATriangulate6Gon : public Action {
+class PATriangulate6Gon : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PATriangulate6Gon)
 
@@ -22,8 +22,8 @@ class PATriangulate6Gon : public Action {
    */
     WingedFace& run (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
 
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
   private:
     class Impl;
     Impl* impl;

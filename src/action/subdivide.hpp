@@ -2,20 +2,20 @@
 #define DILAY_ACTION_SUBDIVIDE
 
 #include <list>
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 class Id;
 
-class ActionSubdivide : public Action {
+class ActionSubdivide : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (ActionSubdivide)
 
     WingedFace& run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
 
   private:
     class Impl;

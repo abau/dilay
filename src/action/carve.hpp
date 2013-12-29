@@ -2,19 +2,19 @@
 #define DILAY_ACTION_CARVE
 
 #include <list>
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class Id;
 class WingedMesh;
 
-class ActionCarve : public Action {
+class ActionCarve : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (ActionCarve)
 
     void run  (WingedMesh&, const glm::vec3&, float);
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
 
   private:
     class Impl;

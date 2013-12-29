@@ -2,14 +2,14 @@
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
-#include "action/unit.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "triangle.hpp"
 
 struct PATriangulateQuad :: Impl {
-  ActionUnit actions;
+  ActionUnitOnWMesh actions;
 
   void run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) {
     assert (face.numEdges () == 4);
@@ -93,13 +93,13 @@ struct PATriangulateQuad :: Impl {
   }
 
 
-  void undo () { this->actions.undo (); }
-  void redo () { this->actions.redo (); }
+  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_ACTION_BIG5 (PATriangulateQuad)
 
 DELEGATE3 (void,PATriangulateQuad,run,WingedMesh&,WingedFace&,std::list <Id>*)
-DELEGATE  (void,PATriangulateQuad,undo)
-DELEGATE  (void,PATriangulateQuad,redo)
+DELEGATE1 (void,PATriangulateQuad,undo,WingedMesh&)
+DELEGATE1 (void,PATriangulateQuad,redo,WingedMesh&)
 

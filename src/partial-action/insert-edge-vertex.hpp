@@ -1,14 +1,14 @@
 #ifndef DILAY_PARITAL_ACTION_INSERT_VERTEX
 #define DILAY_PARITAL_ACTION_INSERT_VERTEX
 
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "fwd-glm.hpp"
 #include "macro.hpp"
 
 class WingedEdge;
 class WingedMesh;
 
-class PAInsertEdgeVertex : public Action {
+class PAInsertEdgeVertex : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PAInsertEdgeVertex)
 
@@ -18,8 +18,8 @@ class PAInsertEdgeVertex : public Action {
      */
     WingedEdge& run (WingedMesh&, WingedEdge&, const glm::vec3&, bool = false);
 
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
   private:
     class Impl;
     Impl* impl;

@@ -1,5 +1,5 @@
 #include "action/realign-face.hpp"
-#include "action/unit.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "winged-mesh.hpp"
 #include "winged-face.hpp"
 #include "winged-edge.hpp"
@@ -9,7 +9,7 @@
 #include "triangle.hpp"
 
 struct ActionRealignFace :: Impl {
-  ActionUnit actions;
+  ActionUnitOnWMesh actions;
 
   WingedFace& run (WingedMesh& mesh, const WingedFace& face) {
     assert (face.octreeNode ());
@@ -34,11 +34,11 @@ struct ActionRealignFace :: Impl {
     return newFace;
   }
 
-  void undo () { this->actions.undo (); }
-  void redo () { this->actions.redo (); }
+  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_ACTION_BIG5 (ActionRealignFace)
 DELEGATE2 (WingedFace&, ActionRealignFace, run, WingedMesh&, const WingedFace&)
-DELEGATE  (void, ActionRealignFace, undo)
-DELEGATE  (void, ActionRealignFace, redo)
+DELEGATE1 (void, ActionRealignFace, undo, WingedMesh&)
+DELEGATE1 (void, ActionRealignFace, redo, WingedMesh&)

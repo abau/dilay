@@ -34,6 +34,10 @@ class ActionIds {
     void          setEdge        (unsigned int, const WingedEdge*);
     void          setVertex      (unsigned int, const WingedVertex*);
 
+    SAFE_REF2 (WingedFace  ,getFace  , WingedMesh&, unsigned int)
+    SAFE_REF2 (WingedEdge  ,getEdge  , WingedMesh&, unsigned int)
+    SAFE_REF2 (WingedVertex,getVertex, WingedMesh&, unsigned int)
+
   private:
     class Impl;
     Impl* impl;

@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "action/carve.hpp"
 #include "id.hpp"
-#include "action/unit.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "action/subdivide.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "sphere.hpp"
@@ -15,10 +15,10 @@
 #include "intersection.hpp"
 
 struct ActionCarve::Impl {
-  ActionUnit actions;
+  ActionUnitOnWMesh actions;
 
-  void undo () { this->actions.undo (); }
-  void redo () { this->actions.redo (); }
+  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, const glm::vec3& position, float width) { 
     CarveBrush              brush (width, 0.05f);
@@ -108,6 +108,6 @@ struct ActionCarve::Impl {
 };
 
 DELEGATE_ACTION_BIG5 (ActionCarve)
-DELEGATE3            (void, ActionCarve, run, WingedMesh&, const glm::vec3&, float)
-DELEGATE             (void, ActionCarve, undo)
-DELEGATE             (void, ActionCarve, redo)
+DELEGATE3            (void, ActionCarve, run , WingedMesh&, const glm::vec3&, float)
+DELEGATE1            (void, ActionCarve, undo, WingedMesh&)
+DELEGATE1            (void, ActionCarve, redo, WingedMesh&)

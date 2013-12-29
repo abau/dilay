@@ -2,14 +2,14 @@
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_QUAD
 
 #include <list>
-#include "action.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 class Id;
 
-class PATriangulateQuad : public Action {
+class PATriangulateQuad : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PATriangulateQuad)
 
@@ -18,8 +18,8 @@ class PATriangulateQuad : public Action {
      * `f` and the new face are inserted into `a`, if `a` is not `nullptr`.*/
     void run (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
 
-    void undo ();
-    void redo ();
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
   private:
     class Impl;
     Impl* impl;
