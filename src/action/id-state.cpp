@@ -1,5 +1,4 @@
 #include "action/id-state.hpp"
-#include "macro.hpp"
 #include "id.hpp"
 
 struct ActionIdState :: Impl {
@@ -21,8 +20,8 @@ struct ActionIdState :: Impl {
   void redo () { this->toggle (); }
 };
 
-DELEGATE_CONSTRUCTOR (ActionIdState)
-DELEGATE_DESTRUCTOR  (ActionIdState)
+
+DELEGATE_ACTION_BIG5 (ActionIdState)
 DELEGATE             (void, ActionIdState, run)
 DELEGATE             (void, ActionIdState, undo)
 DELEGATE             (void, ActionIdState, redo)

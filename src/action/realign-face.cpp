@@ -1,5 +1,4 @@
 #include "action/realign-face.hpp"
-#include "macro.hpp"
 #include "action/unit.hpp"
 #include "winged-mesh.hpp"
 #include "winged-face.hpp"
@@ -39,9 +38,7 @@ struct ActionRealignFace :: Impl {
   void redo () { this->actions.redo (); }
 };
 
-DELEGATE_CONSTRUCTOR (ActionRealignFace)
-DELEGATE_DESTRUCTOR  (ActionRealignFace)
-
+DELEGATE_ACTION_BIG5 (ActionRealignFace)
 DELEGATE2 (WingedFace&, ActionRealignFace, run, WingedMesh&, const WingedFace&)
 DELEGATE  (void, ActionRealignFace, undo)
 DELEGATE  (void, ActionRealignFace, redo)

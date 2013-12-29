@@ -1,5 +1,4 @@
 #include "partial-action/triangulate-6-gon.hpp"
-#include "macro.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
@@ -106,8 +105,7 @@ struct PATriangulate6Gon :: Impl {
   void redo () { this->actions.redo (); }
 };
 
-DELEGATE_CONSTRUCTOR (PATriangulate6Gon)
-DELEGATE_DESTRUCTOR  (PATriangulate6Gon)
+DELEGATE_ACTION_BIG5 (PATriangulate6Gon)
 
 DELEGATE3 (WingedFace&,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::list<Id>*)
 DELEGATE  (void,PATriangulate6Gon,undo)

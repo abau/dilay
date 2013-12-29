@@ -3,6 +3,7 @@
 
 #include <list>
 #include "action.hpp"
+#include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
@@ -10,10 +11,7 @@ class Id;
 
 class ActionSubdivide : public Action {
   public: 
-          ActionSubdivide            ();
-          ActionSubdivide            (const ActionSubdivide&) = delete;
-    const ActionSubdivide& operator= (const ActionSubdivide&) = delete;
-         ~ActionSubdivide            ();
+    DECLARE_ACTION_BIG5 (ActionSubdivide)
 
     WingedFace& run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
     void undo ();

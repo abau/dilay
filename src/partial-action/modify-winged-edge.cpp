@@ -1,6 +1,5 @@
 #include <memory>
 #include "partial-action/modify-winged-edge.hpp"
-#include "macro.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
@@ -346,8 +345,7 @@ struct PAModifyWEdge :: Impl {
   void redo () { this->toggle (); }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyWEdge)
-DELEGATE_DESTRUCTOR  (PAModifyWEdge)
+DELEGATE_ACTION_BIG5 (PAModifyWEdge)
 
 DELEGATE3 (void,PAModifyWEdge,vertex1         ,WingedMesh&,WingedEdge&,WingedVertex*)
 DELEGATE3 (void,PAModifyWEdge,vertex2         ,WingedMesh&,WingedEdge&,WingedVertex*)

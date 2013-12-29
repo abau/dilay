@@ -2,15 +2,14 @@
 #define DILAY_ACTION_FROM_MESH
 
 #include "action.hpp"
+#include "macro.hpp"
 
 class WingedMesh;
 class Mesh;
 
 class ActionFromMesh : public Action {
-  public: ActionFromMesh            ();
-          ActionFromMesh            (const ActionFromMesh&) = delete;
-    const ActionFromMesh& operator= (const ActionFromMesh&) = delete;
-         ~ActionFromMesh            ();
+  public: 
+    DECLARE_ACTION_BIG5 (ActionFromMesh)
 
     void cube (WingedMesh&, float);
     void undo ();

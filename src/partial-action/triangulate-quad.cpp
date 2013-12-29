@@ -1,5 +1,4 @@
 #include "partial-action/triangulate-quad.hpp"
-#include "macro.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
@@ -98,8 +97,7 @@ struct PATriangulateQuad :: Impl {
   void redo () { this->actions.redo (); }
 };
 
-DELEGATE_CONSTRUCTOR (PATriangulateQuad)
-DELEGATE_DESTRUCTOR  (PATriangulateQuad)
+DELEGATE_ACTION_BIG5 (PATriangulateQuad)
 
 DELEGATE3 (void,PATriangulateQuad,run,WingedMesh&,WingedFace&,std::list <Id>*)
 DELEGATE  (void,PATriangulateQuad,undo)

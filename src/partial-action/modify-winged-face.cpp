@@ -1,5 +1,4 @@
 #include "partial-action/modify-winged-face.hpp"
-#include "macro.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
@@ -82,8 +81,7 @@ struct PAModifyWFace :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyWFace)
-DELEGATE_DESTRUCTOR  (PAModifyWFace)
+DELEGATE_ACTION_BIG5 (PAModifyWFace)
 
 DELEGATE3 (void,PAModifyWFace,edge        ,WingedMesh&,WingedFace&,WingedEdge*)
 DELEGATE2 (void,PAModifyWFace,write       ,WingedMesh&,WingedFace&)

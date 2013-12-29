@@ -1,5 +1,4 @@
 #include "partial-action/delete-edge-face.hpp"
-#include "macro.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
@@ -129,8 +128,7 @@ struct PADeleteEdgeFace :: Impl {
   void redo () { this->actions.redo (); }
 };
 
-DELEGATE_CONSTRUCTOR (PADeleteEdgeFace)
-DELEGATE_DESTRUCTOR  (PADeleteEdgeFace)
+DELEGATE_ACTION_BIG5 (PADeleteEdgeFace)
 
 DELEGATE2 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&)
 DELEGATE  (void,PADeleteEdgeFace,undo)

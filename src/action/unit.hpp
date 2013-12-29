@@ -2,12 +2,11 @@
 #define DILAY_ACTION_UNIT
 
 #include "action.hpp"
+#include "macro.hpp"
 
 class ActionUnit : public Action {
-  public: ActionUnit            ();
-          ActionUnit            (const ActionUnit&) = delete;
-    const ActionUnit& operator= (const ActionUnit&) = delete;
-         ~ActionUnit            ();
+  public: 
+    DECLARE_ACTION_BIG5 (ActionUnit)
 
     template <class T>
     T* add () { 

@@ -3,6 +3,7 @@
 
 #include "action.hpp"
 #include "fwd-glm.hpp"
+#include "macro.hpp"
 
 class WingedMesh;
 class WingedFace;
@@ -11,10 +12,8 @@ class WingedVertex;
 class Triangle;
 
 class PAModifyWMesh : public Action {
-  public: PAModifyWMesh            ();
-          PAModifyWMesh            (const PAModifyWMesh&) = delete;
-    const PAModifyWMesh& operator= (const PAModifyWMesh&) = delete;
-         ~PAModifyWMesh            ();
+  public: 
+    DECLARE_ACTION_BIG5 (PAModifyWMesh)
 
     void          deleteEdge  (WingedMesh&, const WingedEdge&);
     void          deleteFace  (WingedMesh&, const WingedFace&);

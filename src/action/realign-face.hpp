@@ -2,15 +2,14 @@
 #define DILAY_ACTION_REALIGN_FACE
 
 #include "action.hpp"
+#include "macro.hpp"
 
 class WingedMesh;
 class WingedFace;
 
 class ActionRealignFace : public Action {
-  public: ActionRealignFace            ();
-          ActionRealignFace            (const ActionRealignFace&) = delete;
-    const ActionRealignFace& operator= (const ActionRealignFace&) = delete;
-         ~ActionRealignFace            ();
+  public: 
+    DECLARE_ACTION_BIG5 (ActionRealignFace)
 
     WingedFace& run  (WingedMesh&, const WingedFace&);
     void        undo ();

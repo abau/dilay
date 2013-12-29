@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include "partial-action/insert-edge-vertex.hpp"
-#include "macro.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
@@ -65,8 +64,7 @@ struct PAInsertEdgeVertex :: Impl {
   void redo () { this->actions.redo (); }
 };
 
-DELEGATE_CONSTRUCTOR (PAInsertEdgeVertex)
-DELEGATE_DESTRUCTOR  (PAInsertEdgeVertex)
+DELEGATE_ACTION_BIG5 (PAInsertEdgeVertex)
 
 DELEGATE4 (WingedEdge&,PAInsertEdgeVertex,run,WingedMesh&,WingedEdge&,const glm::vec3&,bool)
 DELEGATE  (void,PAInsertEdgeVertex,undo)

@@ -3,16 +3,15 @@
 
 #include <list>
 #include "action.hpp"
+#include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 class Id;
 
 class PATriangulateQuad : public Action {
-  public: PATriangulateQuad            ();
-          PATriangulateQuad            (const PATriangulateQuad&) = delete;
-    const PATriangulateQuad& operator= (const PATriangulateQuad&) = delete;
-         ~PATriangulateQuad            ();
+  public: 
+    DECLARE_ACTION_BIG5 (PATriangulateQuad)
 
     /** `run (m,f,a)` triangulates the quad `f` by 
      * inserting an edge from the vertex of `f` with the heighest level. 

@@ -3,16 +3,15 @@
 
 #include <list>
 #include "action.hpp"
+#include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 class Id;
 
 class PATriangulate6Gon : public Action {
-  public: PATriangulate6Gon            ();
-          PATriangulate6Gon            (const PATriangulate6Gon&) = delete;
-    const PATriangulate6Gon& operator= (const PATriangulate6Gon&) = delete;
-         ~PATriangulate6Gon            ();
+  public: 
+    DECLARE_ACTION_BIG5 (PATriangulate6Gon)
 
   /** `r' = run (m,f,n)` triangulates the 6-gon `f`.
    * Note thate `f.edge ()->firstVertex (f)` must be an even vertex, i.e.

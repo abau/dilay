@@ -3,15 +3,14 @@
 
 #include "action.hpp"
 #include "fwd-glm.hpp"
+#include "macro.hpp"
 
 class WingedEdge;
 class WingedMesh;
 
 class PAInsertEdgeVertex : public Action {
-  public: PAInsertEdgeVertex            ();
-          PAInsertEdgeVertex            (const PAInsertEdgeVertex&) = delete;
-    const PAInsertEdgeVertex& operator= (const PAInsertEdgeVertex&) = delete;
-         ~PAInsertEdgeVertex            ();
+  public: 
+    DECLARE_ACTION_BIG5 (PAInsertEdgeVertex)
 
     /** `run (m,e,v,g)` inserts a new vertex `v` at edge `e`.
      * The new edge `n` (from the first vertex of `e` to `v`) is returned.

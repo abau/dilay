@@ -2,6 +2,7 @@
 #define DILAY_PARTIAL_ACTION_IDS
 
 #include <initializer_list>
+#include "macro.hpp"
 
 class WingedMesh;
 class WingedFace;
@@ -10,10 +11,8 @@ class WingedVertex;
 class Id;
 
 class PAIds {
-  public: PAIds            ();
-          PAIds            (const PAIds&) = delete;
-    const PAIds& operator= (const PAIds&) = delete;
-         ~PAIds            ();
+  public: 
+    DECLARE_ACTION_BIG5 (PAIds)
 
     void          reserveIds     (unsigned int);
     void          reserveIndices (unsigned int);

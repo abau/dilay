@@ -1,7 +1,6 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "partial-action/modify-winged-mesh.hpp"
-#include "macro.hpp"
 #include "winged-face.hpp"
 #include "winged-mesh.hpp"
 #include "winged-edge.hpp"
@@ -210,8 +209,7 @@ struct PAModifyWMesh :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyWMesh)
-DELEGATE_DESTRUCTOR  (PAModifyWMesh)
+DELEGATE_ACTION_BIG5 (PAModifyWMesh)
 
 DELEGATE2 (void         ,PAModifyWMesh,deleteEdge  ,WingedMesh&,const WingedEdge&)
 DELEGATE2 (void         ,PAModifyWMesh,deleteFace  ,WingedMesh&,const WingedFace&)

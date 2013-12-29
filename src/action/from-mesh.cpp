@@ -11,8 +11,7 @@ struct ActionFromMesh :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (ActionFromMesh)
-DELEGATE_DESTRUCTOR  (ActionFromMesh)
+DELEGATE_ACTION_BIG5 (ActionFromMesh)
 DELEGATE2            (void, ActionFromMesh, cube, WingedMesh&, const Mesh&);
 DELEGATE             (void, ActionFromMesh, undo)
 DELEGATE             (void, ActionFromMesh, redo)

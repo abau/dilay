@@ -67,7 +67,8 @@ SOURCES += \
            src/winged-face.cpp \
            src/winged-mesh.cpp \
            src/winged-util.cpp \
-           src/winged-vertex.cpp
+           src/winged-vertex.cpp \
+           src/workbench-mesh.cpp
 
 HEADERS += \
            src/action.hpp \
@@ -128,4 +129,5 @@ HEADERS += \
            src/winged-face.hpp \
            src/winged-mesh.hpp \
            src/winged-util.hpp \
-           src/winged-vertex.hpp
+           src/winged-vertex.hpp \
+           src/workbench-mesh.hpp

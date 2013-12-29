@@ -1,7 +1,6 @@
 #include <memory>
 #include <vector>
 #include "partial-action/ids.hpp"
-#include "macro.hpp"
 #include "id.hpp"
 #include "state.hpp"
 #include "winged-mesh.hpp"
@@ -106,8 +105,7 @@ struct PAIds :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (PAIds)
-DELEGATE_DESTRUCTOR  (PAIds)
+DELEGATE_ACTION_BIG5 (PAIds)
 
 DELEGATE1 (void         , PAIds, reserveIds,     unsigned int)
 DELEGATE1 (void         , PAIds, reserveIndices, unsigned int)

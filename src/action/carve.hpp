@@ -3,16 +3,14 @@
 
 #include <list>
 #include "action.hpp"
+#include "macro.hpp"
 
 class Id;
 class WingedMesh;
 
 class ActionCarve : public Action {
   public: 
-          ActionCarve            ();
-          ActionCarve            (const ActionCarve&) = delete;
-    const ActionCarve& operator= (const ActionCarve&) = delete;
-         ~ActionCarve            ();
+    DECLARE_ACTION_BIG5 (ActionCarve)
 
     void run  (WingedMesh&, const glm::vec3&, float);
     void undo ();

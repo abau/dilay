@@ -1,7 +1,6 @@
 #include <list>
 #include <memory>
 #include "action/unit.hpp"
-#include "macro.hpp"
 
 typedef std::unique_ptr <Action> ActionPtr;
 
@@ -27,8 +26,7 @@ struct ActionUnit :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (ActionUnit)
-DELEGATE_DESTRUCTOR  (ActionUnit)
+DELEGATE_ACTION_BIG5 (ActionUnit)
 
 DELEGATE1 (void, ActionUnit, addAction, Action*)
 DELEGATE  (void, ActionUnit, reset)

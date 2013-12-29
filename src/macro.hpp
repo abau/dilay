@@ -316,4 +316,18 @@
   const  t & operator= (const t &);      \
        ~ t             ();
 
+// Action related macros
+
+#define DECLARE_ACTION_BIG5(t)               \
+         t             ();                   \
+         t             (const t &) = delete; \
+         t             (      t &&);         \
+  const  t & operator= (const t &) = delete; \
+       ~ t             ();
+
+#define DELEGATE_ACTION_BIG5(from) \
+  DELEGATE_CONSTRUCTOR(from) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from)
+
 #endif

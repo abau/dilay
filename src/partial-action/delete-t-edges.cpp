@@ -1,6 +1,5 @@
 #include <unordered_set>
 #include "partial-action/delete-t-edges.hpp"
-#include "macro.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
 #include "action/unit.hpp"
@@ -32,8 +31,7 @@ struct PADeleteTEdges :: Impl {
   void redo () { this->actions.redo (); }
 };
 
-DELEGATE_CONSTRUCTOR (PADeleteTEdges)
-DELEGATE_DESTRUCTOR  (PADeleteTEdges)
+DELEGATE_ACTION_BIG5 (PADeleteTEdges)
 
 DELEGATE2 (void,PADeleteTEdges,run,WingedMesh&,std::unordered_set <WingedFace*>&)
 DELEGATE  (void,PADeleteTEdges,undo)

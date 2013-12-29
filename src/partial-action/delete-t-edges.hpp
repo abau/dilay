@@ -3,15 +3,14 @@
 
 #include "action.hpp"
 #include "fwd-glm.hpp"
+#include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 
 class PADeleteTEdges : public Action {
-  public: PADeleteTEdges            ();
-          PADeleteTEdges            (const PADeleteTEdges&) = delete;
-    const PADeleteTEdges& operator= (const PADeleteTEdges&) = delete;
-         ~PADeleteTEdges            ();
+  public: 
+    DECLARE_ACTION_BIG5 (PADeleteTEdges)
 
     void run (WingedMesh&, std::unordered_set <WingedFace*>&);
 

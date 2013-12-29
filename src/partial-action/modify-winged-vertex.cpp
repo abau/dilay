@@ -1,7 +1,6 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "partial-action/modify-winged-vertex.hpp"
-#include "macro.hpp"
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
 #include "winged-mesh.hpp"
@@ -86,8 +85,7 @@ struct PAModifyWVertex :: Impl {
   void redo () { this->toggle (); }
 };
 
-DELEGATE_CONSTRUCTOR (PAModifyWVertex)
-DELEGATE_DESTRUCTOR  (PAModifyWVertex)
+DELEGATE_ACTION_BIG5 (PAModifyWVertex)
 
 DELEGATE3 (void,PAModifyWVertex,edge       ,WingedMesh&,WingedVertex&,WingedEdge*)
 DELEGATE3 (void,PAModifyWVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)

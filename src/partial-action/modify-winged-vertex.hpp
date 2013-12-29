@@ -2,16 +2,15 @@
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_VERTEX
 
 #include "action.hpp"
+#include "macro.hpp"
 
 class WingedMesh;
 class WingedEdge;
 class WingedVertex;
 
 class PAModifyWVertex : public Action {
-  public: PAModifyWVertex            ();
-          PAModifyWVertex            (const PAModifyWVertex&) = delete;
-    const PAModifyWVertex& operator= (const PAModifyWVertex&) = delete;
-         ~PAModifyWVertex            ();
+  public: 
+    DECLARE_ACTION_BIG5 (PAModifyWVertex)
 
     void edge        (WingedMesh&, WingedVertex&, WingedEdge*);
     void writeIndex  (WingedMesh&, WingedVertex&, unsigned int);

@@ -2,7 +2,6 @@
 #include <set>
 #include <glm/glm.hpp>
 #include "action/carve.hpp"
-#include "macro.hpp"
 #include "id.hpp"
 #include "action/unit.hpp"
 #include "action/subdivide.hpp"
@@ -108,8 +107,7 @@ struct ActionCarve::Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (ActionCarve)
-DELEGATE_DESTRUCTOR  (ActionCarve)
+DELEGATE_ACTION_BIG5 (ActionCarve)
 DELEGATE3            (void, ActionCarve, run, WingedMesh&, const glm::vec3&, float)
 DELEGATE             (void, ActionCarve, undo)
 DELEGATE             (void, ActionCarve, redo)

@@ -2,7 +2,6 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include "action/subdivide.hpp"
-#include "macro.hpp"
 #include "winged-face.hpp"
 #include "winged-edge.hpp"
 #include "winged-vertex.hpp"
@@ -227,8 +226,7 @@ struct ActionSubdivide::Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (ActionSubdivide)
-DELEGATE_DESTRUCTOR  (ActionSubdivide)
+DELEGATE_ACTION_BIG5 (ActionSubdivide)
 DELEGATE3            (WingedFace&, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
 DELEGATE             (void, ActionSubdivide, undo)
 DELEGATE             (void, ActionSubdivide, redo)
