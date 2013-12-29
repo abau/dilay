@@ -47,11 +47,6 @@ struct PADeleteEdgeFace :: Impl {
     if (edge.nextSibling ())
       actions.add <PAModifyWEdge> ()->previousSibling (mesh, edge.nextSiblingRef (), nullptr);
 
-    // if (edge.previousSibling ())
-    //   edge.previousSiblingRef ().nextSibling (edge.nextSibling ());
-    // if (edge.nextSibling ())
-    //   edge.nextSiblingRef ().previousSibling (edge.previousSibling ());
-
     actions.add <PAModifyWFace> ()->edge (mesh, remainingFace, edge.leftSuccessor ());
 
     actions.add <PAModifyWFace> ()->edge       (mesh, faceToDelete, nullptr);
@@ -60,69 +55,6 @@ struct PADeleteEdgeFace :: Impl {
     actions.add <PAModifyWMesh> ()->deleteEdge (mesh,edge);
     actions.add <PAModifyWMesh> ()->deleteFace (mesh,faceToDelete,triangle); 
   }
-
-
-  /*
-  void run (WingedMesh& mesh, WingedEdge& edge) {
-    this->meshId.reset      (new Id (mesh.id ()));
-    this->edgeId.reset      (new Id (edge.id ()));
-    this->leftFaceId.reset  (new Id (edge.leftFaceRef         ().id ()));
-    this->rightFaceId.reset (new Id (edge.rightFaceRef        ().id ()));
-    this->leftPredId.reset  (new Id (edge.leftPredecessorRef  ().id ()));
-    this->rightPredId.reset (new Id (edge.rightPredecessorRef ().id ()));
-    this->leftSuccId.reset  (new Id (edge.leftSuccessorRef    ().id ()));
-    this->rightSuccId.reset (new Id (edge.rightSuccessorRef   ().id ()));
-    if (edge.previousSibling ())
-      this->prevSibId.reset (new Id (edge.previousSiblingRef  ().id ()));
-    else
-      this->prevSibId.reset (nullptr);
-    if (edge.nextSibling ())
-      this->nextSibId.reset (new Id (edge.nextSiblingRef      ().id ()));
-    else
-      this->nextSibId.reset (nullptr);
-
-    this->vertex1Index      = edge.vertex1Ref   ().index    ();
-    this->vertex2Index      = edge.vertex2Ref   ().index    ();
-    this->rightFaceGeometry = edge.rightFaceRef ().triangle (mesh);
-
-    WingedFace* faceToDelete  = edge.rightFace ();
-    WingedFace* remainingFace = edge.leftFace ();
-
-    assert (faceToDelete->octreeNode ());
-
-    for (auto it = faceToDelete->adjacentEdgeIterator (); it.isValid (); ) {
-      WingedEdge& adjacent = it.element ();
-      it.next ();
-      adjacent.face (*faceToDelete, remainingFace);
-    }
-
-    edge.leftPredecessorRef  ().successor   (*remainingFace, edge.rightSuccessor   ());
-    edge.leftSuccessorRef    ().predecessor (*remainingFace, edge.rightPredecessor ());
-
-    edge.rightPredecessorRef ().successor   (*remainingFace, edge.leftSuccessor   ());
-    edge.rightSuccessorRef   ().predecessor (*remainingFace, edge.leftPredecessor ());
-
-    edge.vertex1Ref ().edge (edge.leftPredecessor ());
-    edge.vertex2Ref ().edge (edge.leftSuccessor   ());
-
-    if (edge.previousSibling ())
-      edge.previousSiblingRef ().nextSibling (nullptr);
-    if (edge.nextSibling ())
-      edge.nextSiblingRef ().previousSibling (nullptr);
-
-    // if (edge.previousSibling ())
-    //   edge.previousSiblingRef ().nextSibling (edge.nextSibling ());
-    // if (edge.nextSibling ())
-    //   edge.nextSiblingRef ().previousSibling (edge.previousSibling ());
-
-    remainingFace->edge (edge.leftSuccessor ());
-
-    mesh.releaseFirstIndexNumber (*remainingFace);
-    mesh.releaseFirstIndexNumber (*faceToDelete);
-    mesh.deleteEdge              (edge);
-    mesh.deleteFace              (*faceToDelete); 
-  }
-  */
 
   void undo () { this->actions.undo (); }
   void redo () { this->actions.redo (); }
