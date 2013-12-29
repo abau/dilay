@@ -21,6 +21,7 @@ SOURCES += \
            src/action/id-state.cpp \
            src/action/realign-face.cpp \
            src/action/subdivide.cpp \
+           src/action/transformer.cpp \
            src/action/unit.cpp \
            src/action/unit/winged-mesh.cpp \
            src/adjacent-iterator.cpp \
@@ -79,6 +80,7 @@ HEADERS += \
            src/action/on-winged-mesh.hpp \
            src/action/realign-face.hpp \
            src/action/subdivide.hpp \
+           src/action/transformer.hpp \
            src/action/unit.hpp \
            src/action/unit/template.hpp \
            src/action/unit/winged-mesh.hpp \
