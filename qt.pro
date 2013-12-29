@@ -21,6 +21,7 @@ SOURCES += \
            src/action/realign-face.cpp \
            src/action/subdivide.cpp \
            src/action/unit.cpp \
+           src/action/unit/winged-mesh.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
            src/camera.cpp \
@@ -74,10 +75,12 @@ HEADERS += \
            src/action.hpp \
            src/action/carve.hpp \
            src/action/id-state.hpp \
+           src/action/on-winged-mesh.hpp \
            src/action/realign-face.hpp \
            src/action/subdivide.hpp \
            src/action/unit.hpp \
            src/action/unit/template.hpp \
+           src/action/unit/winged-mesh.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/camera.hpp \
