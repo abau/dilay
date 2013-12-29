@@ -18,16 +18,16 @@ struct ActionRealignFace :: Impl {
     Triangle                triangle  = face.triangle (mesh);
 
     for (WingedEdge* e : adjacents) {
-      this->actions.add <PAModifyWEdge> ()->face (mesh,*e,face,nullptr);
+      this->actions.add <PAModifyWEdge> ()->face (*e,face,nullptr);
     }
 
     WingedFace& newFace = this->actions.add <PAModifyWMesh> ()->realignFace (mesh, face, triangle);
 
     for (WingedEdge* e : adjacents) {
       if (e->leftFace () == nullptr)
-        this->actions.add <PAModifyWEdge> ()->leftFace (mesh,*e,&newFace);
+        this->actions.add <PAModifyWEdge> ()->leftFace (*e,&newFace);
       else if (e->rightFace () == nullptr)
-        this->actions.add <PAModifyWEdge> ()->rightFace (mesh,*e,&newFace);
+        this->actions.add <PAModifyWEdge> ()->rightFace (*e,&newFace);
       else
         assert (false);
     }

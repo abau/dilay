@@ -31,31 +31,31 @@ struct PAInsertEdgeVertex :: Impl {
                         , setGradient ? newEVertexGradient : 0
                         ));
 
-    this->actions.add <PAModifyWEdge> ()->vertex1         (mesh, e, &newV);
-    this->actions.add <PAModifyWEdge> ()->successor       (mesh, e, e.rightFaceRef (), &newE);
-    this->actions.add <PAModifyWEdge> ()->predecessor     (mesh, e, e.leftFaceRef  (), &newE);
-    this->actions.add <PAModifyWEdge> ()->previousSibling (mesh, e, &newE);
+    this->actions.add <PAModifyWEdge> ()->vertex1         (e, &newV);
+    this->actions.add <PAModifyWEdge> ()->successor       (e, e.rightFaceRef (), &newE);
+    this->actions.add <PAModifyWEdge> ()->predecessor     (e, e.leftFaceRef  (), &newE);
+    this->actions.add <PAModifyWEdge> ()->previousSibling (e, &newE);
 
-    this->actions.add <PAModifyWVertex> ()->edge (mesh, newV, &e);
+    this->actions.add <PAModifyWVertex> ()->edge (newV, &e);
 
     this->actions.add <PAModifyWEdge> ()->successor 
-      (mesh, newE.leftPredecessorRef (), newE.leftFaceRef (), &newE);
+      (newE.leftPredecessorRef (), newE.leftFaceRef (), &newE);
     this->actions.add <PAModifyWEdge> ()->predecessor 
-      (mesh, newE.rightSuccessorRef (), newE.rightFaceRef (), &newE);
+      (newE.rightSuccessorRef (), newE.rightFaceRef (), &newE);
 
-    this->actions.add <PAModifyWVertex> ()->edge (mesh, newE.vertex1Ref  (), &newE);
+    this->actions.add <PAModifyWVertex> ()->edge (newE.vertex1Ref  (), &newE);
     
-    this->actions.add <PAModifyWFace> ()->edge (mesh, newE.leftFaceRef (), &newE);
+    this->actions.add <PAModifyWFace> ()->edge (newE.leftFaceRef (), &newE);
 
     if (newE.previousSibling ()) {
-      this->actions.add <PAModifyWEdge> ()->nextSibling (mesh, newE.previousSiblingRef (), &newE);
+      this->actions.add <PAModifyWEdge> ()->nextSibling (newE.previousSiblingRef (), &newE);
     }
 
     if (setGradient) {
       if (eGradient < 0)
-        this->actions.add <PAModifyWEdge> ()->vertexGradient (mesh, e, eGradient - 1);
+        this->actions.add <PAModifyWEdge> ()->vertexGradient (e, eGradient - 1);
       else
-        this->actions.add <PAModifyWEdge> ()->vertexGradient (mesh, e, - 1);
+        this->actions.add <PAModifyWEdge> ()->vertexGradient (e, - 1);
     }
     return newE;
   }

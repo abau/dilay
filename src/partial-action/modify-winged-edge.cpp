@@ -23,114 +23,114 @@ struct PAModifyWEdge :: Impl {
   std::unique_ptr <FaceGradient>   fGradient;
   std::unique_ptr <int>            vGradient;
 
-  void vertex1 (WingedMesh& mesh, WingedEdge& edge, WingedVertex* v) {
+  void vertex1 (WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
     this->operands.setEdge   (0, &edge);
     this->operands.setVertex (0, edge.vertex1 ());
     edge.vertex1 (v);
   }
 
-  void vertex2 (WingedMesh& mesh, WingedEdge& edge, WingedVertex* v) {
+  void vertex2 (WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex2;
     this->operands.setEdge   (0, &edge);
     this->operands.setVertex (0, edge.vertex2 ());
     edge.vertex2 (v);
   }
 
-  void leftFace (WingedMesh& mesh, WingedEdge& edge, WingedFace* f) {
+  void leftFace (WingedEdge& edge, WingedFace* f) {
     this->operation = Operation::LeftFace;
     this->operands.setEdge (0, &edge);
     this->operands.setFace (1, edge.leftFace ());
     edge.leftFace (f);
   }
 
-  void rightFace (WingedMesh& mesh, WingedEdge& edge, WingedFace* f) {
+  void rightFace (WingedEdge& edge, WingedFace* f) {
     this->operation = Operation::RightFace;
     this->operands.setEdge (0, &edge);
     this->operands.setFace (1, edge.rightFace ());
     edge.rightFace (f);
   }
 
-  void leftPredecessor (WingedMesh& mesh, WingedEdge& edge, WingedEdge* e) {
+  void leftPredecessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::LeftPredecessor;
     this->operands.setEdge (0, &edge);
     this->operands.setEdge (1, edge.leftPredecessor ());
     edge.leftPredecessor (e);
   }
 
-  void leftSuccessor (WingedMesh& mesh, WingedEdge& edge, WingedEdge* e) {
+  void leftSuccessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::LeftSuccessor;
     this->operands.setEdge (0, &edge);
     this->operands.setEdge (1, edge.leftSuccessor ());
     edge.leftSuccessor (e);
   }
 
-  void rightPredecessor (WingedMesh& mesh, WingedEdge& edge, WingedEdge* e) {
+  void rightPredecessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::RightPredecessor;
     this->operands.setEdge (0, &edge);
     this->operands.setEdge (1, edge.rightPredecessor ());
     edge.rightPredecessor (e);
   }
 
-  void rightSuccessor (WingedMesh& mesh, WingedEdge& edge, WingedEdge* e) {
+  void rightSuccessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::RightSuccessor;
     this->operands.setEdge (0, &edge);
     this->operands.setEdge (1, edge.rightSuccessor ());
     edge.rightSuccessor (e);
   }
 
-  void previousSibling (WingedMesh& mesh, WingedEdge& edge, WingedEdge* e) {
+  void previousSibling (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::PreviousSibling;
     this->operands.setEdge (0, &edge);
     this->operands.setEdge (1, edge.previousSibling ());
     edge.previousSibling (e);
   }
 
-  void nextSibling (WingedMesh& mesh, WingedEdge& edge, WingedEdge* e) {
+  void nextSibling (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::NextSibling;
     this->operands.setEdge (0, &edge);
     this->operands.setEdge (1, edge.nextSibling ());
     edge.nextSibling   (e);
   }
 
-  void firstVertex (WingedMesh& mesh, WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
+  void firstVertex (WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
     this->operation = Operation::FirstVertex;
     this->operands.setIds    ({edge.id (), f.id ()});
     this->operands.setVertex (0, edge.firstVertex (f));
     edge.firstVertex (f,v);
   }
 
-  void secondVertex (WingedMesh& mesh, WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
+  void secondVertex (WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
     this->operation = Operation::SecondVertex;
     this->operands.setIds    ({edge.id (), f.id ()});
     this->operands.setVertex (0, edge.secondVertex (f));
     edge.secondVertex (f,v);
   }
 
-  void face (WingedMesh& mesh, WingedEdge& edge, const WingedFace& fOld, WingedFace* fNew) {
+  void face (WingedEdge& edge, const WingedFace& fOld, WingedFace* fNew) {
     if (edge.isLeftFace (fOld))
-      this->leftFace (mesh,edge,fNew);
+      this->leftFace (edge,fNew);
     else if (edge.isRightFace (fOld))
-      this->rightFace (mesh,edge,fNew);
+      this->rightFace (edge,fNew);
     else
       assert (false);
   }
 
-  void predecessor (WingedMesh& mesh, WingedEdge& edge, const WingedFace& f, WingedEdge* e) {
+  void predecessor (WingedEdge& edge, const WingedFace& f, WingedEdge* e) {
     this->operation = Operation::Predecessor;
     this->operands.setIds ({edge.id (), f.id ()});
     this->operands.setEdge (2, edge.predecessor (f));
     edge.predecessor (f,e);
   }
 
-  void successor (WingedMesh& mesh, WingedEdge& edge, const WingedFace& f, WingedEdge* e) {
+  void successor (WingedEdge& edge, const WingedFace& f, WingedEdge* e) {
     this->operation = Operation::Successor;
     this->operands.setIds ({edge.id (), f.id ()});
     this->operands.setEdge (2, edge.successor (f));
     edge.successor (f,e);
   }
   
-  void setGeometry ( WingedMesh& mesh, WingedEdge& edge
+  void setGeometry ( WingedEdge& edge
                    , WingedVertex* v1, WingedVertex* v2
                    , WingedFace* lF, WingedFace* rF
                    , WingedEdge* lP, WingedEdge* lS
@@ -153,44 +153,44 @@ struct PAModifyWEdge :: Impl {
     edge.setGeometry (v1,v2,lF,rF,lP,lS,rP,rS,p,n);
   }
 
-  void isTEdge (WingedMesh& mesh, WingedEdge& edge, bool value) {
+  void isTEdge (WingedEdge& edge, bool value) {
     this->operation = Operation::IsTEdge;
     this->operands.setEdge (0, &edge);
     this->flag.reset       (new bool (edge.isTEdge ()));
     edge.isTEdge (value);
   }
 
-  void faceGradient (WingedMesh& mesh, WingedEdge& edge, FaceGradient g) {
+  void faceGradient (WingedEdge& edge, FaceGradient g) {
     this->operation = Operation::FaceGradient;
     this->operands.setEdge (0, &edge);
     this->fGradient.reset  (new FaceGradient (edge.faceGradient ())); 
     edge.faceGradient (g);
   }
 
-  void increaseFaceGradient (WingedMesh& mesh, WingedEdge& edge, const WingedFace& face) {
+  void increaseFaceGradient (WingedEdge& edge, const WingedFace& face) {
     if (edge.isLeftFace (face)) {
       switch (edge.faceGradient ()) {
         case FaceGradient::Left:
           assert (false);
         case FaceGradient::None:
-          return this->faceGradient (mesh, edge, FaceGradient::Left);
+          return this->faceGradient (edge, FaceGradient::Left);
         case FaceGradient::Right:
-          return this->faceGradient (mesh, edge, FaceGradient::None);
+          return this->faceGradient (edge, FaceGradient::None);
       };
     }
     else {
       switch (edge.faceGradient ()) {
         case FaceGradient::Left:
-          return this->faceGradient (mesh, edge, FaceGradient::None);
+          return this->faceGradient (edge, FaceGradient::None);
         case FaceGradient::None:
-          return this->faceGradient (mesh, edge, FaceGradient::Right);
+          return this->faceGradient (edge, FaceGradient::Right);
         case FaceGradient::Right:
           assert (false);
       };
     }
   }
 
-  void vertexGradient (WingedMesh& mesh, WingedEdge& edge, int g) {
+  void vertexGradient (WingedEdge& edge, int g) {
     this->operation = Operation::VertexGradient;
     this->operands.setEdge (0, &edge);
     this->vGradient.reset  (new int (edge.vertexGradient ())); 
@@ -349,31 +349,31 @@ struct PAModifyWEdge :: Impl {
 
 DELEGATE_ACTION_BIG5 (PAModifyWEdge)
 
-DELEGATE3 (void,PAModifyWEdge,vertex1         ,WingedMesh&,WingedEdge&,WingedVertex*)
-DELEGATE3 (void,PAModifyWEdge,vertex2         ,WingedMesh&,WingedEdge&,WingedVertex*)
-DELEGATE3 (void,PAModifyWEdge,leftFace        ,WingedMesh&,WingedEdge&,WingedFace*)
-DELEGATE3 (void,PAModifyWEdge,rightFace       ,WingedMesh&,WingedEdge&,WingedFace*)
-DELEGATE3 (void,PAModifyWEdge,leftPredecessor ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyWEdge,leftSuccessor   ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyWEdge,rightPredecessor,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyWEdge,rightSuccessor  ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyWEdge,previousSibling ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE3 (void,PAModifyWEdge,nextSibling     ,WingedMesh&,WingedEdge&,WingedEdge*)
-DELEGATE4 (void,PAModifyWEdge,firstVertex     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedVertex*)
-DELEGATE4 (void,PAModifyWEdge,secondVertex    ,WingedMesh&,WingedEdge&,const WingedFace&,WingedVertex*)
-DELEGATE4 (void,PAModifyWEdge,face            ,WingedMesh&,WingedEdge&,const WingedFace&,WingedFace*)
-DELEGATE4 (void,PAModifyWEdge,predecessor     ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
-DELEGATE4 (void,PAModifyWEdge,successor       ,WingedMesh&,WingedEdge&,const WingedFace&,WingedEdge*)
-DELEGATE3 (void,PAModifyWEdge,isTEdge         ,WingedMesh&,WingedEdge&,bool)
-DELEGATE3 (void,PAModifyWEdge,faceGradient    ,WingedMesh&,WingedEdge&,FaceGradient)
-DELEGATE3 (void,PAModifyWEdge,increaseFaceGradient,WingedMesh&,WingedEdge&,const WingedFace&)
-DELEGATE3 (void,PAModifyWEdge,vertexGradient  ,WingedMesh&,WingedEdge&,int)
+DELEGATE2 (void,PAModifyWEdge,vertex1         ,WingedEdge&,WingedVertex*)
+DELEGATE2 (void,PAModifyWEdge,vertex2         ,WingedEdge&,WingedVertex*)
+DELEGATE2 (void,PAModifyWEdge,leftFace        ,WingedEdge&,WingedFace*)
+DELEGATE2 (void,PAModifyWEdge,rightFace       ,WingedEdge&,WingedFace*)
+DELEGATE2 (void,PAModifyWEdge,leftPredecessor ,WingedEdge&,WingedEdge*)
+DELEGATE2 (void,PAModifyWEdge,leftSuccessor   ,WingedEdge&,WingedEdge*)
+DELEGATE2 (void,PAModifyWEdge,rightPredecessor,WingedEdge&,WingedEdge*)
+DELEGATE2 (void,PAModifyWEdge,rightSuccessor  ,WingedEdge&,WingedEdge*)
+DELEGATE2 (void,PAModifyWEdge,previousSibling ,WingedEdge&,WingedEdge*)
+DELEGATE2 (void,PAModifyWEdge,nextSibling     ,WingedEdge&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,firstVertex     ,WingedEdge&,const WingedFace&,WingedVertex*)
+DELEGATE3 (void,PAModifyWEdge,secondVertex    ,WingedEdge&,const WingedFace&,WingedVertex*)
+DELEGATE3 (void,PAModifyWEdge,face            ,WingedEdge&,const WingedFace&,WingedFace*)
+DELEGATE3 (void,PAModifyWEdge,predecessor     ,WingedEdge&,const WingedFace&,WingedEdge*)
+DELEGATE3 (void,PAModifyWEdge,successor       ,WingedEdge&,const WingedFace&,WingedEdge*)
+DELEGATE2 (void,PAModifyWEdge,isTEdge         ,WingedEdge&,bool)
+DELEGATE2 (void,PAModifyWEdge,faceGradient    ,WingedEdge&,FaceGradient)
+DELEGATE2 (void,PAModifyWEdge,increaseFaceGradient,WingedEdge&,const WingedFace&)
+DELEGATE2 (void,PAModifyWEdge,vertexGradient  ,WingedEdge&,int)
 DELEGATE1 (void,PAModifyWEdge,undo            ,WingedMesh&)
 DELEGATE1 (void,PAModifyWEdge,redo            ,WingedMesh&)
 
 void PAModifyWEdge::setGeometry 
-  ( WingedMesh& mesh, WingedEdge& edge, WingedVertex* v1, WingedVertex* v2
+  ( WingedEdge& edge, WingedVertex* v1, WingedVertex* v2
   , WingedFace* lF, WingedFace* rF, WingedEdge* lP, WingedEdge* lS
   , WingedEdge* rP, WingedEdge* rS, WingedEdge* p, WingedEdge* n) {
-    this->impl->setGeometry (mesh,edge,v1,v2,lF,rF,lP,lS,rP,rS,p,n);
+    this->impl->setGeometry (edge,v1,v2,lF,rF,lP,lS,rP,rS,p,n);
 }

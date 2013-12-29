@@ -12,7 +12,7 @@ class PAModifyWVertex : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PAModifyWVertex)
 
-    void edge        (WingedMesh&, WingedVertex&, WingedEdge*);
+    void edge        (WingedVertex&, WingedEdge*);
     void writeIndex  (WingedMesh&, WingedVertex&, unsigned int);
     void writeNormal (WingedMesh&, WingedVertex&);
     void move        (WingedMesh&, WingedVertex&, const glm::vec3&);

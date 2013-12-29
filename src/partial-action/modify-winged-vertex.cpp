@@ -14,7 +14,7 @@ struct PAModifyWVertex :: Impl {
   ActionIds                   operands;
   std::unique_ptr <glm::vec3> vec3;
 
-  void edge (WingedMesh& mesh, WingedVertex& vertex, WingedEdge* e) {
+  void edge (WingedVertex& vertex, WingedEdge* e) {
     this->operation = Operation::Edge;
     this->operands.setVertex (0, &vertex);
     this->operands.setEdge   (0, vertex.edge ());
@@ -82,7 +82,7 @@ struct PAModifyWVertex :: Impl {
 
 DELEGATE_ACTION_BIG5 (PAModifyWVertex)
 
-DELEGATE3 (void,PAModifyWVertex,edge       ,WingedMesh&,WingedVertex&,WingedEdge*)
+DELEGATE2 (void,PAModifyWVertex,edge       ,WingedVertex&,WingedEdge*)
 DELEGATE3 (void,PAModifyWVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)
 DELEGATE2 (void,PAModifyWVertex,writeNormal,WingedMesh&,WingedVertex&)
 DELEGATE3 (void,PAModifyWVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)

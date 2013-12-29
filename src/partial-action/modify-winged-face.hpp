@@ -12,7 +12,7 @@ class PAModifyWFace : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG5 (PAModifyWFace)
 
-    void edge  (WingedMesh&, WingedFace&, WingedEdge*);
+    void edge  (WingedFace&, WingedEdge*);
     void write (WingedMesh&, WingedFace&);
 
     void undo (WingedMesh&);

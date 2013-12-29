@@ -15,7 +15,7 @@ struct PAModifyWFace :: Impl {
   ActionIds         operands;
   ActionUnitOnWMesh actions;
 
-  void edge (WingedMesh& mesh, WingedFace& face, WingedEdge* e) {
+  void edge (WingedFace& face, WingedEdge* e) {
     this->operation = Operation::Edge;
     this->operands.setFace (0, &face);
     this->operands.setEdge (1,  face.edge ());
@@ -82,7 +82,7 @@ struct PAModifyWFace :: Impl {
 
 DELEGATE_ACTION_BIG5 (PAModifyWFace)
 
-DELEGATE3 (void,PAModifyWFace,edge ,WingedMesh&,WingedFace&,WingedEdge*)
+DELEGATE2 (void,PAModifyWFace,edge ,WingedFace&,WingedEdge*)
 DELEGATE2 (void,PAModifyWFace,write,WingedMesh&,WingedFace&)
 DELEGATE1 (void,PAModifyWFace,undo ,WingedMesh&)
 DELEGATE1 (void,PAModifyWFace,redo ,WingedMesh&)
