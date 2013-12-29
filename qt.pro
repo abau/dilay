@@ -77,6 +77,7 @@ HEADERS += \
            src/action/realign-face.hpp \
            src/action/subdivide.hpp \
            src/action/unit.hpp \
+           src/action/unit/template.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/camera.hpp \

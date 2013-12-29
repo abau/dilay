@@ -1,34 +1,20 @@
-#include <list>
-#include <memory>
 #include "action/unit.hpp"
-
-typedef std::unique_ptr <Action> ActionPtr;
+#include "action/unit/template.hpp"
 
 struct ActionUnit :: Impl {
-  std::list <ActionPtr> actions;
-
-  void addAction (Action* action) {
-    this->actions.push_back (ActionPtr (action));
-  }
-
-  void reset () {
-    this->actions.clear ();
-  }
+  ActionUnitTemplate <Action> unitTemplate;
 
   void undo () {
-    for (auto it = this->actions.rbegin (); it != this->actions.rend (); ++it)
-      (*it)->undo ();
+    this->unitTemplate.forallReverse ([] (Action& a) { a.undo (); });
   }
 
   void redo () {
-    for (auto it = this->actions.begin (); it != this->actions.end (); ++it)
-      (*it)->redo ();
+    this->unitTemplate.forall ([] (Action& a) { a.redo (); });
   }
 };
 
-DELEGATE_ACTION_BIG5 (ActionUnit)
+DELEGATE_ACTION_BIG5      (ActionUnit)
+DELEGATE_TO_UNIT_TEMPLATE (ActionUnit,Action)
 
-DELEGATE1 (void, ActionUnit, addAction, Action*)
-DELEGATE  (void, ActionUnit, reset)
 DELEGATE  (void, ActionUnit, undo)
 DELEGATE  (void, ActionUnit, redo)

@@ -330,4 +330,10 @@
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from)
 
+#define DELEGATE_TO_UNIT_TEMPLATE(from,t) \
+  void from :: addAction (t * a) { \
+    this->impl->unitTemplate.addAction (a); } \
+  void from :: reset () { \
+    this->impl->unitTemplate.reset (); } \
+
 #endif
