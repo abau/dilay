@@ -53,7 +53,6 @@ class WingedMesh {
     WingedFace&     realignFace       (const WingedFace&, const Triangle&);
 
     unsigned int    numVertices       () const;
-    unsigned int    numWingedVertices () const;
     unsigned int    numEdges          () const;
     unsigned int    numFaces          () const;
     unsigned int    numIndices        () const;

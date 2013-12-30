@@ -124,13 +124,22 @@ struct WingedMesh::Impl {
     return this->octree.realignFace (face, triangle);
   }
 
-  unsigned int numVertices       () const { return this->mesh.numVertices (); }
-  unsigned int numWingedVertices () const { return this->vertices.size    (); }
-  unsigned int numEdges          () const { return this->edges.size       (); }
-  unsigned int numFaces          () const { 
+  unsigned int numVertices () const { 
+    assert (this->mesh.numVertices () == this->vertices.size ());
+    return this->vertices.size (); 
+  }
+
+  unsigned int numEdges () const { 
+    return this->edges.size (); 
+  }
+
+  unsigned int numFaces () const { 
     return OctreeUtil :: numFaces (this->octree); 
   }
-  unsigned int numIndices        () const { return this->mesh.numIndices  (); }
+
+  unsigned int numIndices () const { 
+    return this->mesh.numIndices (); 
+  }
 
   void write () {
     // Indices
@@ -252,7 +261,6 @@ DELEGATE        (void        , WingedMesh, popVertex)
 DELEGATE2       (WingedFace& , WingedMesh, realignFace, const WingedFace&, const Triangle&)
  
 DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
-DELEGATE_CONST  (unsigned int, WingedMesh, numWingedVertices)
 DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
