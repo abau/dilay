@@ -29,6 +29,10 @@ class IdMap {
         return result->second; 
     }
 
+    void reset () {
+      this->map.clear ();
+    }
+
   private:
     InternalMap map;
 };

@@ -423,7 +423,10 @@ struct Octree::Impl {
       this->root->intersectSphere (mesh,sphere,vertices);
   }
 
-  void reset () { this->root.release (); }
+  void reset () { 
+    this->idMap.reset  ();
+    this->root.release (); 
+  }
 
   void reset (const glm::vec3& center, float width) {
     this->reset ();
