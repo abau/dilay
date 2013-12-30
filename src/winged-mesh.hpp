@@ -56,6 +56,7 @@ class WingedMesh {
     unsigned int    numEdges          () const;
     unsigned int    numFaces          () const;
     unsigned int    numIndices        () const;
+    bool            isEmpty           () const;
 
     void            write             (); 
     void            bufferData        ();

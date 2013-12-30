@@ -141,6 +141,12 @@ struct WingedMesh::Impl {
     return this->mesh.numIndices (); 
   }
 
+  bool isEmpty () const {
+    return this->numVertices () == 0
+        && this->numFaces    () == 0
+        && this->numIndices  () == 0;
+  }
+
   void write () {
     // Indices
     if (this->freeFirstIndexNumbers.size () > 0) {
@@ -264,6 +270,7 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
+DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 
 DELEGATE        (void, WingedMesh, write)
 DELEGATE        (void, WingedMesh, bufferData)
