@@ -136,7 +136,7 @@ struct Camera::Impl {
   }
 };
 
-DELEGATE_BIG5 (Camera)
+DELEGATE_BIG6 (Camera)
 
 DELEGATE        (void              , Camera, initialize)
 GETTER_CONST    (const glm::uvec2& , Camera, resolution)

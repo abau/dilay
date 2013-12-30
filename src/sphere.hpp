@@ -7,7 +7,7 @@
 
 class Sphere {
   public:
-    DECLARE2_BIG5 (Sphere, const glm::vec3&, float)
+    DECLARE2_BIG6 (Sphere, const glm::vec3&, float)
 
     const glm::vec3& center () const;
     float            radius () const;

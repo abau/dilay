@@ -10,7 +10,7 @@ class WingedFace;
 
 class PAModifyWFace : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (PAModifyWFace)
+    DECLARE_ACTION_BIG6 (PAModifyWFace)
 
     void edge  (WingedFace&, WingedEdge*);
     void write (WingedMesh&, WingedFace&);

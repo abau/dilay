@@ -6,7 +6,7 @@
 
 class ActionUnit : public Action {
   public: 
-    DECLARE_ACTION_BIG5 (ActionUnit)
+    DECLARE_ACTION_BIG6 (ActionUnit)
 
     template <class T>
     T* add () { 

@@ -11,7 +11,7 @@ class Id;
 
 class PATriangulateQuad : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (PATriangulateQuad)
+    DECLARE_ACTION_BIG6 (PATriangulateQuad)
 
     /** `run (m,f,a)` triangulates the quad `f` by 
      * inserting an edge from the vertex of `f` with the heighest level. 

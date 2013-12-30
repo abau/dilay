@@ -14,7 +14,7 @@ class WingedMesh;
 
 class FaceIntersection {
   public:
-    DECLARE_BIG5 (FaceIntersection)
+    DECLARE_BIG6 (FaceIntersection)
 
     bool             isIntersection () const;
     float            distance       () const;

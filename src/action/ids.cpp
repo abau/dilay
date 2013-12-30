@@ -105,7 +105,7 @@ struct ActionIds :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG5 (ActionIds)
+DELEGATE_ACTION_BIG6 (ActionIds)
 
 DELEGATE1 (void         , ActionIds, reserveIds,     unsigned int)
 DELEGATE1 (void         , ActionIds, reserveIndices, unsigned int)

@@ -9,7 +9,7 @@ class Mesh;
 
 class ActionFromMesh : public Action {
   public: 
-    DECLARE_ACTION_BIG5 (ActionFromMesh)
+    DECLARE_ACTION_BIG6 (ActionFromMesh)
 
     void cube (WingedMesh&, float);
     void undo ();

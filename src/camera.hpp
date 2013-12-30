@@ -8,7 +8,7 @@ class Ray;
 
 class Camera {
   public:
-    DECLARE_BIG5 (Camera)
+    DECLARE_BIG6 (Camera)
 
     void               initialize            ();
 

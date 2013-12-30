@@ -71,7 +71,7 @@ struct Cursor::Impl {
   bool  isEnabled () const { return this->_isEnabled;  }
 };
 
-DELEGATE_BIG5 (Cursor)
+DELEGATE_BIG6 (Cursor)
 
 DELEGATE        (void,  Cursor, initialize)
 DELEGATE1       (void,  Cursor, setPosition, const glm::vec3&)

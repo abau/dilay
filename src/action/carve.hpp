@@ -10,7 +10,7 @@ class WingedMesh;
 
 class ActionCarve : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (ActionCarve)
+    DECLARE_ACTION_BIG6 (ActionCarve)
 
     void run  (WingedMesh&, const glm::vec3&, float);
     void undo (WingedMesh&);

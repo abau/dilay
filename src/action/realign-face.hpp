@@ -9,7 +9,7 @@ class WingedFace;
 
 class ActionRealignFace : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (ActionRealignFace)
+    DECLARE_ACTION_BIG6 (ActionRealignFace)
 
     WingedFace& run  (WingedMesh&, const WingedFace&);
     void        undo (WingedMesh&);

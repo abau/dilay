@@ -14,7 +14,7 @@ struct ViewLight::Impl {
     {}
 };
 
-DELEGATE3_BIG5 (ViewLight,const glm::vec3&, const Color&, float)
+DELEGATE3_BIG6 (ViewLight,const glm::vec3&, const Color&, float)
 
 GETTER_CONST   (const glm::vec3&, ViewLight, position)
 GETTER_CONST   (const Color&    , ViewLight, color)

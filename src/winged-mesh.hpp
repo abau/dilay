@@ -19,7 +19,7 @@ class Sphere;
 
 class WingedMesh {
   public: 
-    DECLARE_BIG5 (WingedMesh)
+    DECLARE_BIG6 (WingedMesh)
 
     Id              id                () const;
     glm::vec3       vertex            (unsigned int) const;

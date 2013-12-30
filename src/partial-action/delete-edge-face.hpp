@@ -10,7 +10,7 @@ class WingedMesh;
 
 class PADeleteEdgeFace : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (PADeleteEdgeFace)
+    DECLARE_ACTION_BIG6 (PADeleteEdgeFace)
 
     /** `run (m,e)` deletes edge `e` and its _right_ face of mesh `m`. 
      * Note that other parts of the program depend on this behaviour. */

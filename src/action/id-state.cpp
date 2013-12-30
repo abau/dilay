@@ -21,7 +21,7 @@ struct ActionIdState :: Impl {
 };
 
 
-DELEGATE_ACTION_BIG5 (ActionIdState)
+DELEGATE_ACTION_BIG6 (ActionIdState)
 DELEGATE             (void, ActionIdState, run)
 DELEGATE             (void, ActionIdState, undo)
 DELEGATE             (void, ActionIdState, redo)

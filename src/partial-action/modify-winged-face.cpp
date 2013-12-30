@@ -80,7 +80,7 @@ struct PAModifyWFace :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG5 (PAModifyWFace)
+DELEGATE_ACTION_BIG6 (PAModifyWFace)
 
 DELEGATE2 (void,PAModifyWFace,edge ,WingedFace&,WingedEdge*)
 DELEGATE2 (void,PAModifyWFace,write,WingedMesh&,WingedFace&)

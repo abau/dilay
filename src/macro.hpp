@@ -25,6 +25,14 @@
     this->impl     = tmpImpl; \
     return *this; }
 
+#define DELEGATE_MOVE_ASSIGNMENT_OP(from) \
+  const from & from :: operator= (from && source) { \
+    if (this == &source) return *this; \
+    Impl * tmpImpl = source.impl; \
+    source.impl    = this->impl; \
+    this->impl     = tmpImpl; \
+    return *this; }
+
 #define DELEGATE1_CONSTRUCTOR(from,t1) \
   from :: from (t1 a1) { this->impl = new Impl (a1); }
 
@@ -42,47 +50,53 @@
 
 #define DELEGATE_DESTRUCTOR(from) from :: ~ from () { delete this->impl; }
 
-#define DELEGATE_BIG5(from) \
+#define DELEGATE_BIG6(from) \
   DELEGATE_CONSTRUCTOR(from) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE1_BIG5(from,t1) \
+#define DELEGATE1_BIG6(from,t1) \
   DELEGATE1_CONSTRUCTOR(from,t1) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE2_BIG5(from,t1,t2) \
+#define DELEGATE2_BIG6(from,t1,t2) \
   DELEGATE2_CONSTRUCTOR(from,t1,t2) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE3_BIG5(from,t1,t2,t3) \
+#define DELEGATE3_BIG6(from,t1,t2,t3) \
   DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE4_BIG5(from,t1,t2,t3,t4) \
+#define DELEGATE4_BIG6(from,t1,t2,t3,t4) \
   DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE5_BIG5(from,t1,t2,t3,t4,t5) \
+#define DELEGATE5_BIG6(from,t1,t2,t3,t4,t5) \
   DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
 #define DELEGATE(r,from,method) \
   r from :: method () { return this->impl-> method (); }
@@ -272,60 +286,67 @@
     assert (ptr); \
     return *ptr; }
 
-// Big 5 declarations
+// Big 6 declarations
 
-#define DECLARE_BIG5(t)                  \
+#define DECLARE_BIG6(t)                  \
          t             ();               \
          t             (const t &);      \
          t             (      t &&);     \
   const  t & operator= (const t &);      \
+  const  t & operator= (      t &&);     \
        ~ t             ();
 
-#define DECLARE1_BIG5(t,t1)              \
+#define DECLARE1_BIG6(t,t1)              \
          t             (t1);             \
          t             (const t &);      \
          t             (      t &&);     \
   const  t & operator= (const t &);      \
+  const  t & operator= (      t &&);     \
        ~ t             ();
 
-#define DECLARE2_BIG5(t,t1,t2)           \
+#define DECLARE2_BIG6(t,t1,t2)           \
          t             (t1,t2);          \
          t             (const t &);      \
          t             (      t &&);     \
   const  t & operator= (const t &);      \
+  const  t & operator= (      t &&);     \
        ~ t             ();
 
-#define DECLARE3_BIG5(t,t1,t2,t3)        \
+#define DECLARE3_BIG6(t,t1,t2,t3)        \
          t             (t1,t2,t3);       \
          t             (const t &);      \
          t             (      t &&);     \
   const  t & operator= (const t &);      \
+  const  t & operator= (      t &&);     \
        ~ t             ();
 
-#define DECLARE4_BIG5(t,t1,t2,t3,t4)     \
+#define DECLARE4_BIG6(t,t1,t2,t3,t4)     \
          t             (t1,t2,t3,t4);    \
          t             (const t &);      \
          t             (      t &&);     \
   const  t & operator= (const t &);      \
+  const  t & operator= (      t &&);     \
        ~ t             ();
 
-#define DECLARE5_BIG5(t,t1,t2,t3,t4,t5)  \
+#define DECLARE5_BIG6(t,t1,t2,t3,t4,t5)  \
          t             (t1,t2,t3,t4,t5); \
          t             (const t &);      \
          t             (      t &&);     \
   const  t & operator= (const t &);      \
+  const  t & operator= (      t &&);     \
        ~ t             ();
 
 // Action related macros
 
-#define DECLARE_ACTION_BIG5(t)               \
-         t             ();                   \
-         t             (const t &) = delete; \
-         t             (      t &&);         \
-  const  t & operator= (const t &) = delete; \
+#define DECLARE_ACTION_BIG6(t)                \
+         t             ();                    \
+         t             (const t &)  = delete; \
+         t             (      t &&);          \
+  const  t & operator= (const t &)  = delete; \
+  const  t & operator= (      t &&) = delete; \
        ~ t             ();
 
-#define DELEGATE_ACTION_BIG5(from) \
+#define DELEGATE_ACTION_BIG6(from) \
   DELEGATE_CONSTRUCTOR(from) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from)

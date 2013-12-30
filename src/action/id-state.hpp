@@ -6,7 +6,7 @@
 
 class ActionIdState : public Action {
   public: 
-    DECLARE_ACTION_BIG5 (ActionIdState)
+    DECLARE_ACTION_BIG6 (ActionIdState)
 
     void run  ();
     void undo ();

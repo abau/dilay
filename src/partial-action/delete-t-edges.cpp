@@ -31,7 +31,7 @@ struct PADeleteTEdges :: Impl {
   void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
-DELEGATE_ACTION_BIG5 (PADeleteTEdges)
+DELEGATE_ACTION_BIG6 (PADeleteTEdges)
 
 DELEGATE2 (void,PADeleteTEdges,run,WingedMesh&,std::unordered_set <WingedFace*>&)
 DELEGATE1 (void,PADeleteTEdges,undo,WingedMesh&)

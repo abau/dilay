@@ -10,7 +10,7 @@ class WingedVertex;
 
 class Triangle {
   public:
-    DECLARE_BIG5 (Triangle)
+    DECLARE_BIG6 (Triangle)
     Triangle     ( const glm::vec3&, const glm::vec3&, const glm::vec3&);
     Triangle     ( const WingedMesh&, const WingedVertex&
                  , const WingedVertex&, const WingedVertex&);

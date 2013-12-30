@@ -6,7 +6,7 @@
 
 class Cursor {
   public: 
-    DECLARE_BIG5 (Cursor)
+    DECLARE_BIG6 (Cursor)
 
     void  initialize         ();
     void  setPosition        (const glm::vec3&);

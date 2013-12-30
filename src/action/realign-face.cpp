@@ -38,7 +38,7 @@ struct ActionRealignFace :: Impl {
   void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
-DELEGATE_ACTION_BIG5 (ActionRealignFace)
+DELEGATE_ACTION_BIG6 (ActionRealignFace)
 DELEGATE2 (WingedFace&, ActionRealignFace, run, WingedMesh&, const WingedFace&)
 DELEGATE1 (void, ActionRealignFace, undo, WingedMesh&)
 DELEGATE1 (void, ActionRealignFace, redo, WingedMesh&)

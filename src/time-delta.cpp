@@ -26,6 +26,6 @@ struct TimeDelta :: Impl {
   }
 };
 
-DELEGATE_BIG5         (TimeDelta)
+DELEGATE_BIG6         (TimeDelta)
 DELEGATE2_CONSTRUCTOR (TimeDelta,const char*,int)
 DELEGATE              (void, TimeDelta, stopAndPrint)

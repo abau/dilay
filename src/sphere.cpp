@@ -10,7 +10,7 @@ struct Sphere::Impl {
   Impl (const glm::vec3& o, float r) : center (o), radius (r) {}
 };
 
-DELEGATE2_BIG5 (Sphere,const glm::vec3&, float)
+DELEGATE2_BIG6 (Sphere,const glm::vec3&, float)
 GETTER_CONST   (const glm::vec3&,Sphere,center)
 GETTER_CONST   (float           ,Sphere,radius)
 

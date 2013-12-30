@@ -203,7 +203,7 @@ struct PAModifyWMesh :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG5 (PAModifyWMesh)
+DELEGATE_ACTION_BIG6 (PAModifyWMesh)
 
 DELEGATE2 (void         ,PAModifyWMesh,deleteEdge  ,WingedMesh&,const WingedEdge&)
 DELEGATE2 (void         ,PAModifyWMesh,deleteFace  ,WingedMesh&,const WingedFace&)

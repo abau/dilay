@@ -13,7 +13,7 @@ class Triangle;
 
 class PAModifyWMesh : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (PAModifyWMesh)
+    DECLARE_ACTION_BIG6 (PAModifyWMesh)
 
     void          deleteEdge  (WingedMesh&, const WingedEdge&);
     void          deleteFace  (WingedMesh&, const WingedFace&);

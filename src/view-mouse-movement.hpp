@@ -8,7 +8,7 @@ class QPoint;
 
 class MouseMovement {
   public:
-    DECLARE_BIG5 (MouseMovement)
+    DECLARE_BIG6 (MouseMovement)
 
     void              update       (const QPoint&);
     void              update       (const glm::uvec2&);

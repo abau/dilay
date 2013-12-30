@@ -12,7 +12,7 @@ class Id;
 
 class ActionIds {
   public: 
-    DECLARE_ACTION_BIG5 (ActionIds)
+    DECLARE_ACTION_BIG6 (ActionIds)
 
     void          reserveIds     (unsigned int);
     void          reserveIndices (unsigned int);

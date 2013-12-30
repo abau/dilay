@@ -43,7 +43,7 @@ struct MouseMovement::Impl {
   bool hasOld      () const { return this->state == UpdateBothPos; }
 };
 
-DELEGATE_BIG5  (MouseMovement)
+DELEGATE_BIG6  (MouseMovement)
 DELEGATE1      (void             , MouseMovement, update, const QPoint&)
 DELEGATE       (void             , MouseMovement, invalidate)
 DELEGATE_CONST (glm::ivec2       , MouseMovement, delta)

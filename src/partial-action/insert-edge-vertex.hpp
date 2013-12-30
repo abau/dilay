@@ -10,7 +10,7 @@ class WingedMesh;
 
 class PAInsertEdgeVertex : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (PAInsertEdgeVertex)
+    DECLARE_ACTION_BIG6 (PAInsertEdgeVertex)
 
     /** `run (m,e,v,g)` inserts a new vertex `v` at edge `e`.
      * The new edge `n` (from the first vertex of `e` to `v`) is returned.

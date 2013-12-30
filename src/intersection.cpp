@@ -37,7 +37,7 @@ struct FaceIntersection::Impl {
   }
 };
 
-DELEGATE_BIG5  (FaceIntersection)
+DELEGATE_BIG6  (FaceIntersection)
 DELEGATE3      (void            , FaceIntersection, update, float, const glm::vec3&, WingedFace&)
 DELEGATE       (void            , FaceIntersection, reset)
 DELEGATE_CONST (WingedFace&     , FaceIntersection, face)

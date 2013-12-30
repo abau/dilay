@@ -11,7 +11,7 @@ class Id;
 
 class PATriangulate6Gon : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (PATriangulate6Gon)
+    DECLARE_ACTION_BIG6 (PATriangulate6Gon)
 
   /** `r' = run (m,f,n)` triangulates the 6-gon `f`.
    * Note thate `f.edge ()->firstVertex (f)` must be an even vertex, i.e.

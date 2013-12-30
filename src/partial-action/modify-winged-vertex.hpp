@@ -10,7 +10,7 @@ class WingedVertex;
 
 class PAModifyWVertex : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (PAModifyWVertex)
+    DECLARE_ACTION_BIG6 (PAModifyWVertex)
 
     void edge        (WingedVertex&, WingedEdge*);
     void writeIndex  (WingedMesh&, WingedVertex&, unsigned int);

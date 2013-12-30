@@ -13,7 +13,7 @@ struct ActionUnit :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG5      (ActionUnit)
+DELEGATE_ACTION_BIG6      (ActionUnit)
 DELEGATE_TO_UNIT_TEMPLATE (ActionUnit,Action)
 
 DELEGATE  (void, ActionUnit, undo)

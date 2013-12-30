@@ -7,7 +7,7 @@
 
 class Color {
   public: 
-    DECLARE4_BIG5  (Color,float,float,float,float)
+    DECLARE4_BIG6  (Color,float,float,float,float)
     Color          ();
     Color          (float,float,float);
     Color          (const glm::vec3&);

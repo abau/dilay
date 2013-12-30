@@ -20,7 +20,7 @@ struct Color::Impl {
   }
 };
 
-DELEGATE4_BIG5 (Color,float,float,float,float)
+DELEGATE4_BIG6 (Color,float,float,float,float)
 GETTER_CONST   (float,Color,r)
 GETTER_CONST   (float,Color,g)
 GETTER_CONST   (float,Color,b)

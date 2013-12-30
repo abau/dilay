@@ -69,7 +69,7 @@ struct Triangle::Impl {
   }
 };
 
-DELEGATE_BIG5          (Triangle)
+DELEGATE_BIG6          (Triangle)
 DELEGATE3_CONSTRUCTOR  (Triangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE4_CONSTRUCTOR  (Triangle, const WingedMesh&, const WingedVertex&, const WingedVertex&, const WingedVertex&)
 

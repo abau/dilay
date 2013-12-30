@@ -11,7 +11,7 @@ class Id;
 
 class ActionSubdivide : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG5 (ActionSubdivide)
+    DECLARE_ACTION_BIG6 (ActionSubdivide)
 
     WingedFace& run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
     void undo (WingedMesh&);

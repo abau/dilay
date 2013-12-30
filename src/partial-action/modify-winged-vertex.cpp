@@ -80,7 +80,7 @@ struct PAModifyWVertex :: Impl {
   void redo (WingedMesh& mesh) { this->toggle (mesh); }
 };
 
-DELEGATE_ACTION_BIG5 (PAModifyWVertex)
+DELEGATE_ACTION_BIG6 (PAModifyWVertex)
 
 DELEGATE2 (void,PAModifyWVertex,edge       ,WingedVertex&,WingedEdge*)
 DELEGATE3 (void,PAModifyWVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)

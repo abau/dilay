@@ -226,7 +226,7 @@ struct ActionSubdivide::Impl {
   }
 };
 
-DELEGATE_ACTION_BIG5 (ActionSubdivide)
+DELEGATE_ACTION_BIG6 (ActionSubdivide)
 DELEGATE3            (WingedFace&, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
 DELEGATE1            (void, ActionSubdivide, undo, WingedMesh&)
 DELEGATE1            (void, ActionSubdivide, redo, WingedMesh&)

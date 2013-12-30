@@ -7,7 +7,7 @@
 
 class TimeDelta {
   public: 
-    DECLARE_BIG5 (TimeDelta)
+    DECLARE_BIG6 (TimeDelta)
     TimeDelta    (const char*,int);
 
     void stopAndPrint          ();
