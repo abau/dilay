@@ -17,8 +17,8 @@ QMAKE_LFLAGS_DEBUG     += # -pg
 
 SOURCES += \
            src/action/carve.cpp \
+           src/action/from-mesh.cpp \
            src/action/ids.cpp \
-           src/action/id-state.cpp \
            src/action/realign-face.cpp \
            src/action/subdivide.cpp \
            src/action/transformer.cpp \
@@ -72,8 +72,8 @@ SOURCES += \
 HEADERS += \
            src/action.hpp \
            src/action/carve.hpp \
+           src/action/from-mesh.hpp \
            src/action/ids.hpp \
-           src/action/id-state.hpp \
            src/action/on-winged-mesh.hpp \
            src/action/realign-face.hpp \
            src/action/subdivide.hpp \
