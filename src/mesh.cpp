@@ -298,7 +298,7 @@ struct Mesh::Impl {
     return m;
   }
 
-  static Mesh sphere (int rings, int sectors) {
+  static Mesh sphere (unsigned int rings, unsigned int sectors) {
     assert (rings > 1 && sectors > 2);
     Mesh m;
 
@@ -309,8 +309,8 @@ struct Mesh::Impl {
           float theta      = 0.0f;
 
     // Inner rings vertices
-    for (int r = 0; r < rings - 1; r++) {
-      for (int s = 0; s < sectors; s++) {
+    for (unsigned int r = 0; r < rings - 1; r++) {
+      for (unsigned int s = 0; s < sectors; s++) {
         float x = radius * sin (theta) * sin (phi);
         float y = radius * cos (phi);
         float z = radius * cos (theta) * sin (phi);
@@ -327,8 +327,8 @@ struct Mesh::Impl {
     unsigned int botCapIndex = m.addVertex (glm::vec3 (0.0f,-radius, 0.0f));
 
     // Inner rings indices
-    for (int r = 0; r < rings - 2; r++) {
-      for (int s = 0; s < sectors; s++) {
+    for (unsigned int r = 0; r < rings - 2; r++) {
+      for (unsigned int s = 0; s < sectors; s++) {
         m.addIndex ((sectors * r) + s);
         m.addIndex ((sectors * (r+1)) + s);
         m.addIndex ((sectors * r) + ((s+1) % sectors));
@@ -340,7 +340,7 @@ struct Mesh::Impl {
     }
 
     // Caps indices
-    for (int s = 0; s < sectors; s++) {
+    for (unsigned int s = 0; s < sectors; s++) {
       m.addIndex (topCapIndex);
       m.addIndex (s);
       m.addIndex ((s+1) % sectors);
@@ -494,5 +494,5 @@ DELEGATE1        (void        , Mesh, setRotation, const glm::mat4&)
 DELEGATE1        (void        , Mesh, setScaling , const glm::vec3&)
 
 DELEGATE_STATIC  (Mesh, Mesh, cube)
-DELEGATE2_STATIC (Mesh, Mesh, sphere, int, int)
+DELEGATE2_STATIC (Mesh, Mesh, sphere, unsigned int, unsigned int)
 DELEGATE1_STATIC (Mesh, Mesh, icosphere, unsigned int)

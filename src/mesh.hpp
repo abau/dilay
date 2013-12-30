@@ -47,7 +47,7 @@ class Mesh {
     void         setScaling       (const glm::vec3&);
 
     static Mesh  cube             ();
-    static Mesh  sphere           (int, int);
+    static Mesh  sphere           (unsigned int, unsigned int);
     static Mesh  icosphere        (unsigned int);
 
   private: 
