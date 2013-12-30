@@ -52,8 +52,6 @@ SOURCES += \
            src/ray.cpp \
            src/rendermode.cpp \
            src/sphere.cpp \
-           src/sphere-joint.cpp \
-           src/sphere-mesh.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
@@ -70,7 +68,6 @@ SOURCES += \
            src/winged-mesh.cpp \
            src/winged-util.cpp \
            src/winged-vertex.cpp \
-           src/workbench-mesh.cpp
 
 HEADERS += \
            src/action.hpp \
@@ -118,8 +115,6 @@ HEADERS += \
            src/ray.hpp \
            src/rendermode.hpp \
            src/sphere.hpp \
-           src/sphere-joint.hpp \
-           src/sphere-mesh.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
@@ -136,4 +131,3 @@ HEADERS += \
            src/winged-mesh.hpp \
            src/winged-util.hpp \
            src/winged-vertex.hpp \
-           src/workbench-mesh.hpp
