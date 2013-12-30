@@ -83,7 +83,7 @@ class Octree {
     void        intersectSphere ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<WingedVertex*>&);
     void        reset           ();
-    void        reset           (const glm::vec3&, float);
+    void        initRoot        (const glm::vec3&, float);
     OctreeNode& nodeSLOW        (const Id&);
 
     OctreeFaceIterator      faceIterator ();

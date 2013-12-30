@@ -428,8 +428,8 @@ struct Octree::Impl {
     this->root.release (); 
   }
 
-  void reset (const glm::vec3& center, float width) {
-    this->reset ();
+  void initRoot (const glm::vec3& center, float width) {
+    assert (this->root == false);
     this->root = Child (new OctreeNode::Impl (center, width, 0));
   }
 
@@ -462,7 +462,7 @@ DELEGATE3       (void, Octree, intersectRay, const WingedMesh&, const Ray&, Face
 DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
 DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
-DELEGATE2       (void, Octree, reset, const glm::vec3&, float)
+DELEGATE2       (void, Octree, initRoot, const glm::vec3&, float)
 DELEGATE1       (OctreeNode&, Octree, nodeSLOW, const Id&)
 DELEGATE        (OctreeFaceIterator, Octree, faceIterator)
 DELEGATE_CONST  (ConstOctreeFaceIterator, Octree, faceIterator)

@@ -62,7 +62,7 @@ class WingedMesh {
     void            bufferData        ();
     void            render            ();
     void            reset             ();
-    void            reset             (const glm::vec3&, float);
+    void            initOctreeRoot    (const glm::vec3&, float);
     void            toggleRenderMode  ();
     
     void            intersectRay      (const Ray&, FaceIntersection&);
