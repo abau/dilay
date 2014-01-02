@@ -16,25 +16,25 @@ struct OpenGLUtil::Impl {
   }
 
   void safeDeleteArray (GLuint& id) {
-    if (glIsVertexArray (id) == GL_TRUE) 
+    if (id > 0 && glIsVertexArray (id) == GL_TRUE) 
       glDeleteVertexArrays (1,&id);
     id = 0;
   }
 
   void safeDeleteBuffer (GLuint& id) {
-    if (glIsBuffer (id) == GL_TRUE) 
+    if (id > 0 && glIsBuffer (id) == GL_TRUE) 
       glDeleteBuffers (1,&id);
     id = 0;
   }
 
   void safeDeleteShader (GLuint& id) {
-    if (glIsShader (id) == GL_TRUE) 
+    if (id > 0 && glIsShader (id) == GL_TRUE) 
       glDeleteShader (id);
     id = 0;
   }
 
   void safeDeleteProgram (GLuint& id) {
-    if (glIsProgram (id) == GL_TRUE) {
+    if (id > 0 && glIsProgram (id) == GL_TRUE) {
       GLsizei numShaders;
       GLuint  shaderIds[2];
 
