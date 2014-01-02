@@ -5,6 +5,8 @@ class WingedMesh;
 
 class ActionOnWMesh {
   public:
+    virtual ~ActionOnWMesh () {}
+
     virtual void undo (WingedMesh&) = 0;
     virtual void redo (WingedMesh&) = 0;
 };
