@@ -1,4 +1,3 @@
-#include <memory>
 #include "partial-action/modify-winged-edge.hpp"
 #include "winged-vertex.hpp"
 #include "winged-edge.hpp"
@@ -6,6 +5,7 @@
 #include "winged-mesh.hpp"
 #include "state.hpp"
 #include "action/ids.hpp"
+#include "variant.hpp"
 
 enum class Operation 
   { Vertex1, Vertex2, LeftFace, RightFace
@@ -19,9 +19,7 @@ enum class Operation
 struct PAModifyWEdge :: Impl {
   Operation                        operation;
   ActionIds                        operands; 
-  std::unique_ptr <bool>           flag;
-  std::unique_ptr <FaceGradient>   fGradient;
-  std::unique_ptr <int>            vGradient;
+  Variant <bool,FaceGradient,int>  operandData;
 
   void vertex1 (WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
@@ -156,14 +154,14 @@ struct PAModifyWEdge :: Impl {
   void isTEdge (WingedEdge& edge, bool value) {
     this->operation = Operation::IsTEdge;
     this->operands.setEdge (0, &edge);
-    this->flag.reset       (new bool (edge.isTEdge ()));
+    this->operandData.set <bool> (edge.isTEdge ());
     edge.isTEdge (value);
   }
 
   void faceGradient (WingedEdge& edge, FaceGradient g) {
     this->operation = Operation::FaceGradient;
     this->operands.setEdge (0, &edge);
-    this->fGradient.reset  (new FaceGradient (edge.faceGradient ())); 
+    this->operandData.set <FaceGradient> (edge.faceGradient ());
     edge.faceGradient (g);
   }
 
@@ -193,7 +191,7 @@ struct PAModifyWEdge :: Impl {
   void vertexGradient (WingedEdge& edge, int g) {
     this->operation = Operation::VertexGradient;
     this->operands.setEdge (0, &edge);
-    this->vGradient.reset  (new int (edge.vertexGradient ())); 
+    this->operandData.set <int> (edge.vertexGradient ());
     edge.vertexGradient (g);
   }
 
@@ -323,20 +321,20 @@ struct PAModifyWEdge :: Impl {
       }
       case Operation::IsTEdge: {
         bool isTEdge = edge.isTEdge ();
-        edge.isTEdge     (*this->flag);
-        this->flag.reset (new bool (isTEdge));
+        edge.isTEdge (*this->operandData.get <bool> ());
+        this->operandData.set <bool> (isTEdge);
         break;
       }
       case Operation::FaceGradient: {
         FaceGradient gradient = edge.faceGradient ();
-        edge.faceGradient     (*this->fGradient);
-        this->fGradient.reset (new FaceGradient (gradient));
+        edge.faceGradient (*this->operandData.get <FaceGradient> ());
+        this->operandData.set <FaceGradient> (gradient);
         break;
       }
       case Operation::VertexGradient: {
         int gradient = edge.vertexGradient ();
-        edge.vertexGradient   (*this->vGradient);
-        this->vGradient.reset (new int (gradient));
+        edge.vertexGradient (*this->operandData.get <int> ());
+        this->operandData.set <int> (gradient);
         break;
       }
       default: assert (false);
