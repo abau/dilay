@@ -1,4 +1,3 @@
-#include <memory>
 #include <glm/glm.hpp>
 #include "partial-action/modify-winged-mesh.hpp"
 #include "winged-face.hpp"
@@ -9,6 +8,7 @@
 #include "action/ids.hpp"
 #include "triangle.hpp"
 #include "octree.hpp"
+#include "variant.hpp"
 
 enum class Operation { 
   DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex, RealignFace
@@ -29,11 +29,10 @@ struct VertexData {
 };
 
 struct PAModifyWMesh :: Impl {
-  Operation                    operation;
-  ActionIds                    operandIds;
-  std::unique_ptr <EdgeData>   edgeData;
-  std::unique_ptr <FaceData>   faceData;
-  std::unique_ptr <VertexData> vertexData;
+  Operation operation;
+  ActionIds operandIds;
+
+  Variant <EdgeData, FaceData, VertexData> operandData;
 
   void saveEdgeOperand (const WingedEdge& edge) {
     this->operandIds.setEdge (0, &edge);
@@ -49,40 +48,42 @@ struct PAModifyWMesh :: Impl {
     this->operandIds.setVertex (0, edge.vertex1 ());
     this->operandIds.setVertex (1, edge.vertex2 ());
 
-    this->edgeData.reset (new EdgeData { edge.isTEdge ()
-                                       , edge.faceGradient ()
-                                       , edge.vertexGradient () });
+    this->operandData.set <EdgeData> (
+        EdgeData { edge.isTEdge ()
+                 , edge.faceGradient ()
+                 , edge.vertexGradient () });
   }
 
   WingedEdge& addSavedEdge (WingedMesh& mesh) {
+    EdgeData* data = this->operandData.get <EdgeData> ();
     return mesh.addEdge (
       WingedEdge ( this->operandIds.getVertex (mesh,0), this->operandIds.getVertex (mesh,1)
                  , this->operandIds.getFace   (mesh,1), this->operandIds.getFace   (mesh,2)
                  , this->operandIds.getEdge   (mesh,3), this->operandIds.getEdge   (mesh,4)
                  , this->operandIds.getEdge   (mesh,5), this->operandIds.getEdge   (mesh,6)
                  , this->operandIds.getEdge   (mesh,7), this->operandIds.getEdge   (mesh,8)
-                 ,*this->operandIds.getId     (0)     , this->edgeData->isTEdge
-                 , this->edgeData->faceGradient       , this->edgeData->vertexGradient));
+                 ,*this->operandIds.getId     (0)     , data->isTEdge
+                 , data->faceGradient                 , data->vertexGradient));
   }
 
   void saveFaceOperand (const WingedFace& face, const Triangle& triangle) {
     this->operandIds.setFace     (0, &face);
     this->operandIds.setEdge     (1, face.edge ());
-    this->faceData.reset (new FaceData {triangle});
+    this->operandData.set <FaceData> (FaceData {triangle});
   }
   
   WingedFace& addSavedFace (WingedMesh& mesh) {
     return mesh.addFace ( 
         WingedFace (this->operandIds.getEdge (mesh,1), *this->operandIds.getId (0))
-      , this->faceData->triangle);
+      , this->operandData.get <FaceData> ()->triangle);
   }
 
   void saveVertexOperand (const WingedMesh& mesh, const WingedVertex& vertex) {
-    this->vertexData.reset (new VertexData {vertex.vertex (mesh)});
+    this->operandData.set <VertexData> (VertexData {vertex.vertex (mesh)});
   }
 
   WingedVertex& addSavedVertex (WingedMesh& mesh) {
-    return mesh.addVertex (this->vertexData->position);
+    return mesh.addVertex (this->operandData.get <VertexData> ()->position);
   }
 
   void deleteEdge (WingedMesh& mesh, const WingedEdge& edge) {
@@ -129,7 +130,7 @@ struct PAModifyWMesh :: Impl {
 
   WingedVertex& addVertex (WingedMesh& mesh, const glm::vec3& vector) {
     this->operation = Operation::AddVertex;
-    this->vertexData.reset (new VertexData {vector});
+    this->operandData.set <VertexData> (VertexData {vector});
     return mesh.addVertex (vector);
   }
 
@@ -137,7 +138,7 @@ struct PAModifyWMesh :: Impl {
     assert (face.octreeNode ());
     this->operation = Operation::RealignFace;
     this->operandIds.setIds ({ face.id (), face.octreeNode ()->id ()}); 
-    this->faceData.reset (new FaceData {triangle});
+    this->operandData.set <FaceData> (FaceData {triangle});
     return mesh.realignFace (face, triangle);
   }
 
@@ -205,7 +206,8 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::RealignFace: {
-        mesh.realignFace (*this->operandIds.getFace (mesh,0), this->faceData->triangle);
+        mesh.realignFace (*this->operandIds.getFace (mesh,0)
+                         , this->operandData.get <FaceData> ()->triangle);
         break;
       }
       default: assert (false);
