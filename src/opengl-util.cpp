@@ -5,7 +5,7 @@
 #include "util.hpp"
 #include "macro.hpp"
 
-struct OpenGLUtil::Impl {
+namespace OpenGLUtil {
 
   void glUniformVec3 (GLuint id, const glm::vec3& v) {
     glUniform3f (id, v.x, v.y, v.z);
@@ -41,18 +41,21 @@ struct OpenGLUtil::Impl {
       glGetAttachedShaders (id,2,&numShaders,shaderIds);
 
       for(GLsizei i = 0; i < numShaders; i++) {
-        this->safeDeleteShader (shaderIds[i]);
+        OpenGLUtil::safeDeleteShader (shaderIds[i]);
       }
       glDeleteProgram (id);
     }
     id = 0;
   }
 
+  GLuint compileShader (GLenum, const std::string&);
+  void   showInfoLog   (GLuint, const std::string&);
+
   GLuint loadProgram ( const std::string& vertexShader
                      , const std::string& fragmentShader) {
 
-    GLuint vsId = this->compileShader (GL_VERTEX_SHADER,   vertexShader);
-    GLuint fsId = this->compileShader (GL_FRAGMENT_SHADER, fragmentShader);
+    GLuint vsId = OpenGLUtil::compileShader (GL_VERTEX_SHADER,   vertexShader);
+    GLuint fsId = OpenGLUtil::compileShader (GL_FRAGMENT_SHADER, fragmentShader);
 
     GLuint programId = glCreateProgram();
     glAttachShader (programId, vsId);
@@ -67,10 +70,10 @@ struct OpenGLUtil::Impl {
     glGetProgramiv(programId, GL_LINK_STATUS, &status);
 
     if (status == GL_FALSE) {
-      this->showInfoLog         (programId, "");
-      this->safeDeleteProgram   (programId);
-      this->safeDeleteShader    (vsId);
-      this->safeDeleteShader    (fsId);
+      OpenGLUtil::showInfoLog         (programId, "");
+      OpenGLUtil::safeDeleteProgram   (programId);
+      OpenGLUtil::safeDeleteShader    (vsId);
+      OpenGLUtil::safeDeleteShader    (fsId);
       throw (std::runtime_error ("Can not link shader program: see info log"));
     }
     return programId;
@@ -95,22 +98,9 @@ struct OpenGLUtil::Impl {
     GLint status;
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
-      this->showInfoLog (shaderId, filePath);
+      OpenGLUtil::showInfoLog (shaderId, filePath);
       throw (std::runtime_error ("Can not compile shader: see info log"));
     }
     return shaderId;
   }
 };
-
-GLOBAL(OpenGLUtil)
-
-DELEGATE_CONSTRUCTOR  (OpenGLUtil)
-DELEGATE_DESTRUCTOR   (OpenGLUtil)
-
-DELEGATE2_GLOBAL (void,OpenGLUtil,glUniformVec3,GLuint,const glm::vec3&)
-DELEGATE2_GLOBAL (void,OpenGLUtil,glUniformVec4,GLuint,const glm::vec4&)
-DELEGATE1_GLOBAL (void,OpenGLUtil,safeDeleteArray,GLuint&)
-DELEGATE1_GLOBAL (void,OpenGLUtil,safeDeleteBuffer,GLuint&)
-DELEGATE1_GLOBAL (void,OpenGLUtil,safeDeleteShader,GLuint&)
-DELEGATE1_GLOBAL (void,OpenGLUtil,safeDeleteProgram,GLuint&)
-DELEGATE2_GLOBAL (GLuint,OpenGLUtil,loadProgram,const std::string&,const std::string&)
