@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include "carve-brush.hpp"
-#include "macro.hpp"
 
 struct CarveBrush :: Impl {
 
@@ -26,7 +25,7 @@ struct CarveBrush :: Impl {
   }
 };
 
-DELEGATE2_CONSTRUCTOR (CarveBrush, float, float)
+DELEGATE2_BIG6 (CarveBrush, float, float)
   
 DELEGATE1_CONST (float, CarveBrush, y, float)
 GETTER_CONST    (float, CarveBrush, width)

@@ -1,9 +1,11 @@
 #ifndef DILAY_CARVE_BRUSH
 #define DILAY_CARVE_BRUSH
 
+#include "macro.hpp"
+
 class CarveBrush {
   public:
-    CarveBrush (float, float);
+    DECLARE2_BIG6 (CarveBrush, float, float)
 
     float y      (float) const;
     float width  ()      const;
