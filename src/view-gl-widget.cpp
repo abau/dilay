@@ -4,7 +4,6 @@
 #include "view-gl-widget.hpp"
 #include "renderer.hpp"
 #include "view-mouse-movement.hpp"
-#include "axis.hpp"
 #include "state.hpp"
 #include "macro.hpp"
 #include "camera.hpp"
@@ -18,23 +17,13 @@
 #include "tool-rotate.hpp"
 #include "history.hpp"
 
-struct GLWidgetImpl {
-  Axis          axis;
-};
-
-GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) 
-                                               , impl (new GLWidgetImpl)
-                                               {}
-
-GLWidget :: ~GLWidget () {
-  delete this->impl;
-}
+GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
 
 void GLWidget :: initializeGL () {
   Renderer :: initialize ();
   State    :: initialize ();
 
-  this->impl->axis.initialize ();
+  this->axis.initialize ();
   this->setMouseTracking (true);
 
   Renderer :: updateLights (State :: camera ());
@@ -43,7 +32,7 @@ void GLWidget :: initializeGL () {
 void GLWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   State :: render ();
-  this->impl->axis.render ();
+  this->axis.render ();
 }
 
 void GLWidget :: resizeGL (int w, int h) {

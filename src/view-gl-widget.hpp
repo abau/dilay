@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <QGLWidget>
+#include "axis.hpp"
 
 class GLWidgetImpl;
 
@@ -12,7 +13,6 @@ class GLWidget : public QGLWidget {
     friend class GLWidgetImpl;
 
      GLWidget (const QGLFormat&);
-    ~GLWidget ();
  
   protected:
     virtual void initializeGL       ();
@@ -27,7 +27,7 @@ class GLWidget : public QGLWidget {
     virtual void wheelEvent         (QWheelEvent*);
 
   private:
-    GLWidgetImpl* impl;
+    Axis axis;
 };
 
 #endif
