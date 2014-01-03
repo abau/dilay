@@ -123,6 +123,7 @@ HEADERS += \
            src/tool-rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \
+           src/variant.hpp \
            src/view-gl-widget.hpp \
            src/view-light.hpp \
            src/view-mouse-movement.hpp \
