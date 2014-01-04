@@ -147,8 +147,7 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  void write () {
-    // Indices
+  void writeIndices () {
     if (this->freeFirstIndexNumbers.size () > 0) {
       unsigned int fin = 0;
       this->mesh.resizeIndices (this->numFaces () * 3);
@@ -163,15 +162,28 @@ struct WingedMesh::Impl {
         it.element ().writeIndices (*this->wingedMesh);
       }
     }
-    // Normals
+  }
+
+
+  void writeNormals () {
     for (WingedVertex& v : this->vertices) {
       v.writeNormal (*this->wingedMesh);
     }
   }
 
+  void write () {
+    this->writeIndices ();
+    this->writeNormals ();
+  }
+
   void bufferData  () { 
     assert (this->freeFirstIndexNumbers.size () == 0);
     this->mesh.bufferData   (); 
+  }
+
+  void writeAndBuffer () {
+    this->write      ();
+    this->bufferData ();
   }
 
   void render      () { 
@@ -272,8 +284,11 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 
+DELEGATE        (void, WingedMesh, writeIndices)
+DELEGATE        (void, WingedMesh, writeNormals)
 DELEGATE        (void, WingedMesh, write)
 DELEGATE        (void, WingedMesh, bufferData)
+DELEGATE        (void, WingedMesh, writeAndBuffer)
 DELEGATE        (void, WingedMesh, render)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, initOctreeRoot, const glm::vec3&, float)

@@ -58,8 +58,11 @@ class WingedMesh {
     unsigned int    numIndices        () const;
     bool            isEmpty           () const;
 
+    void            writeIndices      (); 
+    void            writeNormals      (); 
     void            write             (); 
     void            bufferData        ();
+    void            writeAndBuffer    ();
     void            render            ();
     void            reset             ();
     void            initOctreeRoot    (const glm::vec3&, float);
