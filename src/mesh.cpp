@@ -352,7 +352,7 @@ struct Mesh::Impl {
     return m;
   }
 
-  static Mesh icosphere (unsigned int subdivisionSteps) {
+  static Mesh icosphere (unsigned int numSubdivisions) {
     Mesh m;
     typedef unsigned long                          Key;
     typedef std::unordered_map <Key, unsigned int> VertexCache;
@@ -424,29 +424,29 @@ struct Mesh::Impl {
     addIcoVertex (glm::vec3 (-t   ,  0.0f, -1.0f));
     addIcoVertex (glm::vec3 (-t   ,  0.0f, +1.0f));
 
-    subdivide (subdivisionSteps, 0 ,11,5 ); 
-    subdivide (subdivisionSteps, 0 ,5 ,1 ); 
-    subdivide (subdivisionSteps, 0 ,1 ,7 ); 
-    subdivide (subdivisionSteps, 0 ,7 ,10); 
-    subdivide (subdivisionSteps, 0 ,10,11); 
+    subdivide (numSubdivisions, 0 ,11,5 ); 
+    subdivide (numSubdivisions, 0 ,5 ,1 ); 
+    subdivide (numSubdivisions, 0 ,1 ,7 ); 
+    subdivide (numSubdivisions, 0 ,7 ,10); 
+    subdivide (numSubdivisions, 0 ,10,11); 
 
-    subdivide (subdivisionSteps, 1 ,5 ,9 ); 
-    subdivide (subdivisionSteps, 5 ,11,4 ); 
-    subdivide (subdivisionSteps, 11,10,2 ); 
-    subdivide (subdivisionSteps, 10,7 ,6 ); 
-    subdivide (subdivisionSteps, 7 ,1 ,8 ); 
+    subdivide (numSubdivisions, 1 ,5 ,9 ); 
+    subdivide (numSubdivisions, 5 ,11,4 ); 
+    subdivide (numSubdivisions, 11,10,2 ); 
+    subdivide (numSubdivisions, 10,7 ,6 ); 
+    subdivide (numSubdivisions, 7 ,1 ,8 ); 
 
-    subdivide (subdivisionSteps, 3 ,9 ,4 ); 
-    subdivide (subdivisionSteps, 3 ,4 ,2 ); 
-    subdivide (subdivisionSteps, 3 ,2 ,6 ); 
-    subdivide (subdivisionSteps, 3 ,6 ,8 ); 
-    subdivide (subdivisionSteps, 3 ,8 ,9 ); 
+    subdivide (numSubdivisions, 3 ,9 ,4 ); 
+    subdivide (numSubdivisions, 3 ,4 ,2 ); 
+    subdivide (numSubdivisions, 3 ,2 ,6 ); 
+    subdivide (numSubdivisions, 3 ,6 ,8 ); 
+    subdivide (numSubdivisions, 3 ,8 ,9 ); 
 
-    subdivide (subdivisionSteps, 4 ,9 ,5 ); 
-    subdivide (subdivisionSteps, 2 ,4 ,11); 
-    subdivide (subdivisionSteps, 6 ,2 ,10); 
-    subdivide (subdivisionSteps, 8 ,6 ,7 ); 
-    subdivide (subdivisionSteps, 9 ,8 ,1 ); 
+    subdivide (numSubdivisions, 4 ,9 ,5 ); 
+    subdivide (numSubdivisions, 2 ,4 ,11); 
+    subdivide (numSubdivisions, 6 ,2 ,10); 
+    subdivide (numSubdivisions, 8 ,6 ,7 ); 
+    subdivide (numSubdivisions, 9 ,8 ,1 ); 
 
     return m;
   }
