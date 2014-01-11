@@ -11,7 +11,8 @@
 #include "variant.hpp"
 
 enum class Operation { 
-  DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex, RealignFace
+    DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex
+  , RealignFace, InitOctreeRoot
 };
 
 struct EdgeData {
@@ -28,11 +29,16 @@ struct VertexData {
   glm::vec3 position;
 };
 
+struct OctreeRootData {
+  glm::vec3 position;
+  float     width;
+};
+
 struct PAModifyWMesh :: Impl {
   Operation operation;
   ActionIds operandIds;
 
-  Variant <EdgeData, FaceData, VertexData> operandData;
+  Variant <EdgeData, FaceData, VertexData, OctreeRootData> operandData;
 
   void saveEdgeOperand (const WingedEdge& edge) {
     this->operandIds.setEdge (0, &edge);
@@ -142,6 +148,12 @@ struct PAModifyWMesh :: Impl {
     return mesh.realignFace (face, triangle);
   }
 
+  void initOctreeRoot (WingedMesh& mesh, const glm::vec3& pos, float width) {
+    this->operation = Operation::InitOctreeRoot;
+    this->operandData.set <OctreeRootData> (OctreeRootData {pos, width});
+    mesh.initOctreeRoot (pos, width);
+  }
+
   void undo (WingedMesh& mesh) { 
 
     switch (this->operation) {
@@ -172,6 +184,10 @@ struct PAModifyWMesh :: Impl {
       case Operation::RealignFace: {
         this->operandIds.getFace (mesh,0)->octreeNode (
             &mesh.octreeNodeSLOW (*this->operandIds.getId (1)));
+        break;
+      }
+      case Operation::InitOctreeRoot: {
+        assert (false);
         break;
       }
       default: assert (false);
@@ -210,6 +226,13 @@ struct PAModifyWMesh :: Impl {
                          , this->operandData.get <FaceData> ()->triangle);
         break;
       }
+      case Operation::InitOctreeRoot: {
+        mesh.initOctreeRoot (
+            this->operandData.get <OctreeRootData> ()->position
+          , this->operandData.get <OctreeRootData> ()->width
+          );
+        break;
+      }
       default: assert (false);
     }
   }
@@ -217,15 +240,16 @@ struct PAModifyWMesh :: Impl {
 
 DELEGATE_ACTION_BIG6 (PAModifyWMesh)
 
-DELEGATE2 (void         ,PAModifyWMesh,deleteEdge  ,WingedMesh&,const WingedEdge&)
-DELEGATE2 (void         ,PAModifyWMesh,deleteFace  ,WingedMesh&,const WingedFace&)
-DELEGATE3 (void         ,PAModifyWMesh,deleteFace  ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE1 (void         ,PAModifyWMesh,popVertex   ,WingedMesh&)
-DELEGATE2 (WingedEdge&  ,PAModifyWMesh,addEdge     ,WingedMesh&,const WingedEdge&)
-DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const WingedFace&)
-DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const Triangle&)
-DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace     ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE2 (WingedVertex&,PAModifyWMesh,addVertex   ,WingedMesh&,const glm::vec3&)
-DELEGATE3 (WingedFace&  ,PAModifyWMesh,realignFace ,WingedMesh&,const WingedFace&,const Triangle&)
-DELEGATE1 (void         ,PAModifyWMesh,undo        ,WingedMesh&)
-DELEGATE1 (void         ,PAModifyWMesh,redo        ,WingedMesh&)
+DELEGATE2 (void         ,PAModifyWMesh,deleteEdge    ,WingedMesh&,const WingedEdge&)
+DELEGATE2 (void         ,PAModifyWMesh,deleteFace    ,WingedMesh&,const WingedFace&)
+DELEGATE3 (void         ,PAModifyWMesh,deleteFace    ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE1 (void         ,PAModifyWMesh,popVertex     ,WingedMesh&)
+DELEGATE2 (WingedEdge&  ,PAModifyWMesh,addEdge       ,WingedMesh&,const WingedEdge&)
+DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFace&)
+DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const Triangle&)
+DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE2 (WingedVertex&,PAModifyWMesh,addVertex     ,WingedMesh&,const glm::vec3&)
+DELEGATE3 (WingedFace&  ,PAModifyWMesh,realignFace   ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE3 (void         ,PAModifyWMesh,initOctreeRoot,WingedMesh&,const glm::vec3&,float)
+DELEGATE1 (void         ,PAModifyWMesh,undo          ,WingedMesh&)
+DELEGATE1 (void         ,PAModifyWMesh,redo          ,WingedMesh&)

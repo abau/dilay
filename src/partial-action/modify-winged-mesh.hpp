@@ -15,16 +15,17 @@ class PAModifyWMesh : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG6 (PAModifyWMesh)
 
-    void          deleteEdge  (WingedMesh&, const WingedEdge&);
-    void          deleteFace  (WingedMesh&, const WingedFace&);
-    void          deleteFace  (WingedMesh&, const WingedFace&, const Triangle&);
-    void          popVertex   (WingedMesh&);
-    WingedEdge&   addEdge     (WingedMesh&, const WingedEdge&);
-    WingedFace&   addFace     (WingedMesh&, const WingedFace&);
-    WingedFace&   addFace     (WingedMesh&, const Triangle&);
-    WingedFace&   addFace     (WingedMesh&, const WingedFace&, const Triangle&);
-    WingedVertex& addVertex   (WingedMesh&, const glm::vec3&);
-    WingedFace&   realignFace (WingedMesh&, const WingedFace&, const Triangle&);
+    void          deleteEdge     (WingedMesh&, const WingedEdge&);
+    void          deleteFace     (WingedMesh&, const WingedFace&);
+    void          deleteFace     (WingedMesh&, const WingedFace&, const Triangle&);
+    void          popVertex      (WingedMesh&);
+    WingedEdge&   addEdge        (WingedMesh&, const WingedEdge&);
+    WingedFace&   addFace        (WingedMesh&, const WingedFace&);
+    WingedFace&   addFace        (WingedMesh&, const Triangle&);
+    WingedFace&   addFace        (WingedMesh&, const WingedFace&, const Triangle&);
+    WingedVertex& addVertex      (WingedMesh&, const glm::vec3&);
+    WingedFace&   realignFace    (WingedMesh&, const WingedFace&, const Triangle&);
+    void          initOctreeRoot (WingedMesh&, const glm::vec3&, float);
 
     void undo (WingedMesh&);
     void redo (WingedMesh&);
