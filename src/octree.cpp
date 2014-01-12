@@ -118,14 +118,13 @@ struct OctreeNode::Impl {
 
   void render () {
 #ifdef DILAY_RENDER_OCTREE
-    if (this->faces.size () > 0) {
-      this->mesh.renderBegin ();
-      glDisable (GL_DEPTH_TEST);
-      Renderer :: setColor3 (Color (1.0f, 1.0f, 0.0f));
-      glDrawElements (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
-      glEnable (GL_DEPTH_TEST);
-      this->mesh.renderEnd ();
-    }
+    this->mesh.renderBegin ();
+    glDisable (GL_DEPTH_TEST);
+    Renderer :: setColor3 (Color (1.0f, 1.0f, 0.0f));
+    glDrawElements (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
+    glEnable (GL_DEPTH_TEST);
+    this->mesh.renderEnd ();
+
     for (Child& c : this->children) 
       c->render ();
 #else
