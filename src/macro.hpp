@@ -288,48 +288,8 @@
 
 // Big 6 declarations
 
-#define DECLARE_BIG6(t)                  \
-         t             ();               \
-         t             (const t &);      \
-         t             (      t &&);     \
-  const  t & operator= (const t &);      \
-  const  t & operator= (      t &&);     \
-       ~ t             ();
-
-#define DECLARE1_BIG6(t,t1)              \
-         t             (t1);             \
-         t             (const t &);      \
-         t             (      t &&);     \
-  const  t & operator= (const t &);      \
-  const  t & operator= (      t &&);     \
-       ~ t             ();
-
-#define DECLARE2_BIG6(t,t1,t2)           \
-         t             (t1,t2);          \
-         t             (const t &);      \
-         t             (      t &&);     \
-  const  t & operator= (const t &);      \
-  const  t & operator= (      t &&);     \
-       ~ t             ();
-
-#define DECLARE3_BIG6(t,t1,t2,t3)        \
-         t             (t1,t2,t3);       \
-         t             (const t &);      \
-         t             (      t &&);     \
-  const  t & operator= (const t &);      \
-  const  t & operator= (      t &&);     \
-       ~ t             ();
-
-#define DECLARE4_BIG6(t,t1,t2,t3,t4)     \
-         t             (t1,t2,t3,t4);    \
-         t             (const t &);      \
-         t             (      t &&);     \
-  const  t & operator= (const t &);      \
-  const  t & operator= (      t &&);     \
-       ~ t             ();
-
-#define DECLARE5_BIG6(t,t1,t2,t3,t4,t5)  \
-         t             (t1,t2,t3,t4,t5); \
+#define DECLARE_BIG6(t,...)              \
+         t             (__VA_ARGS__);    \
          t             (const t &);      \
          t             (      t &&);     \
   const  t & operator= (const t &);      \
@@ -338,8 +298,8 @@
 
 // Action related macros
 
-#define DECLARE_ACTION_BIG6(t)                \
-         t             ();                    \
+#define DECLARE_ACTION_BIG6(t,...)            \
+         t             (__VA_ARGS__);         \
          t             (const t &)  = delete; \
          t             (      t &&);          \
   const  t & operator= (const t &)  = delete; \

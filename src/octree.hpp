@@ -100,7 +100,7 @@ class Octree {
 /** Iterator over all faces of a node */
 class OctreeNodeFaceIterator : public Iterator <WingedFace> {
   public: 
-    DECLARE1_BIG6 (OctreeNodeFaceIterator, OctreeNode::Impl&)
+    DECLARE_BIG6 (OctreeNodeFaceIterator, OctreeNode::Impl&)
 
     bool         isValid () const;
     WingedFace&  element () const;
@@ -115,7 +115,7 @@ class OctreeNodeFaceIterator : public Iterator <WingedFace> {
 /** Constant iterator over all faces of a node */
 class ConstOctreeNodeFaceIterator : public ConstIterator <WingedFace> {
   public: 
-    DECLARE1_BIG6 (ConstOctreeNodeFaceIterator, const OctreeNode::Impl&)
+    DECLARE_BIG6 (ConstOctreeNodeFaceIterator, const OctreeNode::Impl&)
 
     bool              isValid () const;
     const WingedFace& element () const;
@@ -130,7 +130,7 @@ class ConstOctreeNodeFaceIterator : public ConstIterator <WingedFace> {
 /** Iterator over all faces of an octree */
 class OctreeFaceIterator : public Iterator <WingedFace> {
   public: 
-    DECLARE1_BIG6 (OctreeFaceIterator, Octree::Impl&)
+    DECLARE_BIG6 (OctreeFaceIterator, Octree::Impl&)
 
     bool         isValid () const;
     WingedFace&  element () const;
@@ -145,7 +145,7 @@ class OctreeFaceIterator : public Iterator <WingedFace> {
 /** Constant iterator over all faces of an octree */
 class ConstOctreeFaceIterator : public ConstIterator <WingedFace> {
   public: 
-    DECLARE1_BIG6 (ConstOctreeFaceIterator, const Octree::Impl&)
+    DECLARE_BIG6 (ConstOctreeFaceIterator, const Octree::Impl&)
      
     bool              isValid () const;
     const WingedFace& element () const;
@@ -160,7 +160,7 @@ class ConstOctreeFaceIterator : public ConstIterator <WingedFace> {
 /** Iterator over all nodes of an octree */
 class OctreeNodeIterator : public Iterator <OctreeNode> {
   public: 
-    DECLARE1_BIG6 (OctreeNodeIterator, Octree::Impl&)
+    DECLARE_BIG6 (OctreeNodeIterator, Octree::Impl&)
 
     bool         isValid () const;
     OctreeNode&  element () const;
@@ -174,7 +174,7 @@ class OctreeNodeIterator : public Iterator <OctreeNode> {
 /** Constant iterator over all nodes of an octree */
 class ConstOctreeNodeIterator : public ConstIterator <OctreeNode> {
   public: 
-    DECLARE1_BIG6 (ConstOctreeNodeIterator, const Octree::Impl&)
+    DECLARE_BIG6 (ConstOctreeNodeIterator, const Octree::Impl&)
 
     bool              isValid () const;
     const OctreeNode& element () const;

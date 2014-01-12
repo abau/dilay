@@ -7,7 +7,7 @@
 
 class Ray {
   public:
-    DECLARE2_BIG6 (Ray,const glm::vec3&, const glm::vec3&)
+    DECLARE_BIG6 (Ray,const glm::vec3&, const glm::vec3&)
 
     const glm::vec3& origin    () const;
     const glm::vec3& direction () const;

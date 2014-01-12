@@ -5,7 +5,7 @@
 
 class CarveBrush {
   public:
-    DECLARE2_BIG6 (CarveBrush, float, float)
+    DECLARE_BIG6 (CarveBrush, float, float)
 
     float y      (float) const;
     float width  ()      const;

@@ -8,7 +8,7 @@ class Color;
 
 class ViewLight {
   public:
-    DECLARE3_BIG6 (ViewLight,const glm::vec3&, const Color&, float); 
+    DECLARE_BIG6 (ViewLight,const glm::vec3&, const Color&, float); 
 
     const glm::vec3& position   () const;
     const Color&     color      () const;
