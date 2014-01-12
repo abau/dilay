@@ -52,7 +52,8 @@ struct OctreeNode::Impl {
   std::vector <Child> children;
   const int           depth;
   Faces               faces;
-  // cf. Octree.newParent
+  OctreeNode::Impl*   parent;
+  // cf. move constructor
 
   static constexpr float relativeMinFaceSize = 0.1f;
 
@@ -60,8 +61,8 @@ struct OctreeNode::Impl {
   Mesh mesh;
 #endif
 
-  Impl (const glm::vec3& c, float w, int d) 
-    : node (this), center (c), width  (w), depth (d) {
+  Impl (const glm::vec3& c, float w, int d, Impl* p) 
+    : node (this), center (c), width  (w), depth (d), parent (p) {
 
 #ifdef DILAY_RENDER_OCTREE
       float q = w * 0.5f;
@@ -102,14 +103,15 @@ struct OctreeNode::Impl {
   const Impl& operator= (const Impl&) = delete;
 
   Impl (Impl&& source) 
-    : node     (this)
-    , center   (source.center)
-    , width    (source.width)
+    : node     (std::move (this))
+    , center   (std::move (source.center))
+    , width    (std::move (source.width))
     , children (std::move (source.children))
-    , depth    (source.depth)
+    , depth    (std::move (source.depth))
     , faces    (std::move (source.faces))
+    , parent   (std::move (source.parent))
 #ifdef DILAY_RENDER_OCTREE
-    , mesh     (source.mesh)
+    , mesh     (std::move (source.mesh))
 
   { this->mesh.bufferData  (); }
 #else
@@ -152,7 +154,7 @@ struct OctreeNode::Impl {
     int   childDepth = this->depth + 1;
 
     auto add = [this,childWidth,childDepth] (const glm::vec3& v) {
-      this->children.emplace_back (new Impl (v,childWidth,childDepth));
+      this->children.emplace_back (new Impl (v,childWidth,childDepth,this));
     };
     
     this->children.reserve (8);
@@ -332,7 +334,8 @@ struct Octree::Impl {
     if (! this->root) {
       glm::vec3 rootCenter = (faceToInsert.maximum + faceToInsert.minimum) 
                            * glm::vec3 (0.5f);
-      this->root = Child (new OctreeNode::Impl (rootCenter, faceToInsert.width, 0));
+      this->root = Child (new OctreeNode::Impl 
+          (rootCenter, faceToInsert.width, 0, nullptr));
     }
 
     if (this->root->contains (faceToInsert)) {
@@ -389,10 +392,12 @@ struct Octree::Impl {
 
     OctreeNode::Impl* newRoot = new OctreeNode::Impl ( parentCenter
                                                      , rootWidth * 2.0f
-                                                     , this->root->depth - 1);
+                                                     , this->root->depth - 1
+                                                     , nullptr );
     newRoot->makeChildren ();
     newRoot->children [index] = std::move (this->root);
     this->root.reset (newRoot);
+    this->root->children [index]->parent = &*this->root;
   }
 
   void render () { 
@@ -429,7 +434,7 @@ struct Octree::Impl {
 
   void initRoot (const glm::vec3& center, float width) {
     assert (this->root == false);
-    this->root = Child (new OctreeNode::Impl (center, width, 0));
+    this->root = Child (new OctreeNode::Impl (center, width, 0, nullptr));
   }
 
   OctreeNode& nodeSLOW (const Id& id) {
