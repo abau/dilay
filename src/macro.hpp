@@ -312,9 +312,9 @@
   DELEGATE_MOVE_CONSTRUCTOR(from)
 
 #define DELEGATE_TO_UNIT_TEMPLATE(from,t) \
-  void from :: addAction (t * a) { \
-    this->impl->unitTemplate.addAction (a); } \
+  void from :: addAction (t * a, SubActionKind kind) { \
+    this->impl->unitTemplate.addAction (a, kind); } \
   void from :: reset () { \
-    this->impl->unitTemplate.reset (); } \
+    this->impl->unitTemplate.reset (); }
 
 #endif

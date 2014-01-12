@@ -2,6 +2,7 @@
 #define DILAY_ACTION_UNIT
 
 #include "action.hpp"
+#include "action/sub-action-kind.hpp"
 #include "macro.hpp"
 
 class ActionUnit : public Action {
@@ -9,13 +10,13 @@ class ActionUnit : public Action {
     DECLARE_ACTION_BIG6 (ActionUnit)
 
     template <class T>
-    T* add () { 
+    T* add (SubActionKind kind = SubActionKind::Normal) { 
       T* action = new T ();
-      this->addAction (action); 
+      this->addAction (action, kind); 
       return action; 
     }
 
-    void addAction (Action*);
+    void addAction (Action*, SubActionKind);
     void reset     ();
     void undo      ();
     void redo      ();
