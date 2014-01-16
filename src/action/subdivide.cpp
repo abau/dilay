@@ -12,6 +12,7 @@
 #include "partial-action/insert-edge-vertex.hpp"
 #include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
+#include "action/realign-face.hpp"
 
 typedef std::unordered_set <WingedFace*> FaceSet;
 
@@ -65,6 +66,8 @@ struct ActionSubdivide::Impl {
 
     this->subdivideFaces (data, neighbourhood);
     this->refineBorder   (data, border);
+    this->realignFaces   (data, neighbourhood);
+    this->realignFaces   (data, border);
   }
 
   bool extendNeighbourhood ( const SubdivideData& data, FaceSet& neighbourhood) {
@@ -223,6 +226,14 @@ struct ActionSubdivide::Impl {
     for (WingedFace* face : border) {
       assert (face->tEdge () == nullptr);
       this->actions.add <PATriangulateQuad> ()->run (data.mesh, *face, data.affectedFaces);
+    }
+  }
+
+  void realignFaces (const SubdivideData& data, FaceSet& faces) {
+    for (WingedFace* f : faces) {
+      assert (f->isTriangle ());
+      this->actions.add <ActionRealignFace> (SubActionKind::Post)
+          ->run (data.mesh, *f);
     }
   }
 };

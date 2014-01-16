@@ -16,8 +16,7 @@ class PATriangulateQuad : public ActionOnWMesh {
     /** `run (m,f,a)` triangulates the quad `f` by 
      * inserting an edge from a t-vertex of `f`. 
      * `f` and the new face are inserted into `a`, if `a` is not `nullptr`.*/
-    void run (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
-
+    void run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
     void undo (WingedMesh&);
     void redo (WingedMesh&);
   private:

@@ -23,7 +23,6 @@ class PAModifyWMesh : public ActionOnWMesh {
     WingedFace&   addFace        (WingedMesh&, const Triangle&);
     WingedFace&   addFace        (WingedMesh&, const WingedFace&, const Triangle&);
     WingedVertex& addVertex      (WingedMesh&, const glm::vec3&);
-    WingedFace&   realignFace    (WingedMesh&, const WingedFace&, const Triangle&);
     void          initOctreeRoot (WingedMesh&, const glm::vec3&, float);
 
     void undo (WingedMesh&);

@@ -11,8 +11,7 @@
 #include "variant.hpp"
 
 enum class Operation { 
-    DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex
-  , RealignFace, InitOctreeRoot
+    DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex, InitOctreeRoot
 };
 
 struct EdgeData {
@@ -140,14 +139,6 @@ struct PAModifyWMesh :: Impl {
     return mesh.addVertex (vector);
   }
 
-  WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face, const Triangle& triangle) {
-    assert (face.octreeNode ());
-    this->operation = Operation::RealignFace;
-    this->operandIds.setIds ({ face.id (), face.octreeNode ()->id ()}); 
-    this->operandData.set <FaceData> (FaceData {triangle});
-    return mesh.realignFace (face, triangle);
-  }
-
   void initOctreeRoot (WingedMesh& mesh, const glm::vec3& pos, float width) {
     this->operation = Operation::InitOctreeRoot;
     this->operandData.set <OctreeRootData> (OctreeRootData {pos, width});
@@ -179,11 +170,6 @@ struct PAModifyWMesh :: Impl {
       }
       case Operation::AddVertex: {
         mesh.popVertex ();
-        break;
-      }
-      case Operation::RealignFace: {
-        this->operandIds.getFace (mesh,0)->octreeNode (
-            &mesh.octreeNodeSLOW (*this->operandIds.getId (1)));
         break;
       }
       case Operation::InitOctreeRoot: {
@@ -221,11 +207,6 @@ struct PAModifyWMesh :: Impl {
         this->addSavedVertex (mesh);
         break;
       }
-      case Operation::RealignFace: {
-        mesh.realignFace (*this->operandIds.getFace (mesh,0)
-                         , this->operandData.get <FaceData> ()->triangle);
-        break;
-      }
       case Operation::InitOctreeRoot: {
         mesh.initOctreeRoot (
             this->operandData.get <OctreeRootData> ()->position
@@ -248,7 +229,6 @@ DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFa
 DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const Triangle&)
 DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFace&,const Triangle&)
 DELEGATE2 (WingedVertex&,PAModifyWMesh,addVertex     ,WingedMesh&,const glm::vec3&)
-DELEGATE3 (WingedFace&  ,PAModifyWMesh,realignFace   ,WingedMesh&,const WingedFace&,const Triangle&)
 DELEGATE3 (void         ,PAModifyWMesh,initOctreeRoot,WingedMesh&,const glm::vec3&,float)
 DELEGATE1 (void         ,PAModifyWMesh,undo          ,WingedMesh&)
 DELEGATE1 (void         ,PAModifyWMesh,redo          ,WingedMesh&)

@@ -1,41 +1,51 @@
 #include "action/realign-face.hpp"
-#include "action/unit/on-winged-mesh.hpp"
 #include "winged-mesh.hpp"
 #include "winged-face.hpp"
 #include "winged-edge.hpp"
-#include "partial-action/modify-winged-mesh.hpp"
-#include "partial-action/modify-winged-edge.hpp"
 #include "adjacent-iterator.hpp"
+#include "action/ids.hpp"
 #include "triangle.hpp"
 
 struct ActionRealignFace :: Impl {
-  ActionUnitOnWMesh actions;
+  ActionIds operand;
 
   WingedFace& run (WingedMesh& mesh, const WingedFace& face) {
     assert (face.octreeNode ());
+    this->operand.setFace (0,&face);
+
+    Triangle faceTriangle (face.triangle (mesh));
 
     std::list <WingedEdge*> adjacents = face.adjacentEdgeIterator ().collect ();
-    Triangle                triangle  = face.triangle (mesh);
 
     for (WingedEdge* e : adjacents) {
-      this->actions.add <PAModifyWEdge> ()->face (*e,face,nullptr);
+      e->face (face,nullptr);
     }
 
-    WingedFace& newFace = this->actions.add <PAModifyWMesh> ()->realignFace (mesh, face, triangle);
+    WingedFace& newFace = mesh.realignFace (face, faceTriangle);
 
     for (WingedEdge* e : adjacents) {
       if (e->leftFace () == nullptr)
-        this->actions.add <PAModifyWEdge> ()->leftFace (*e,&newFace);
+        e->leftFace (&newFace);
       else if (e->rightFace () == nullptr)
-        this->actions.add <PAModifyWEdge> ()->rightFace (*e,&newFace);
+        e->rightFace (&newFace);
       else
         assert (false);
     }
     return newFace;
   }
 
-  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void undo (WingedMesh& mesh) { 
+    WingedFace* face = this->operand.getFace (mesh,0);
+
+    if (face) {
+      this->run (mesh, *face); 
+    }
+  }
+
+  void redo (WingedMesh& mesh) { 
+    WingedFace& face = this->operand.getFaceRef (mesh,0);
+    this->run (mesh, face); 
+  }
 };
 
 DELEGATE_ACTION_BIG6 (ActionRealignFace)

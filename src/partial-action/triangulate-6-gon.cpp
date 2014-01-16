@@ -8,12 +8,11 @@
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "triangle.hpp"
-#include "action/realign-face.hpp"
 
 struct PATriangulate6Gon :: Impl {
   ActionUnitOnWMesh actions;
 
-  WingedFace& run (WingedMesh& mesh, WingedFace& f, std::list <Id>* affectedFaces) {
+  void run (WingedMesh& mesh, WingedFace& f, std::list <Id>* affectedFaces) {
     assert (f.numEdges () == 6);
 
     this->actions.reset ();
@@ -91,14 +90,12 @@ struct PATriangulate6Gon :: Impl {
     this->actions.add <PAModifyWFace> ()->write (mesh,b);
     this->actions.add <PAModifyWFace> ()->write (mesh,c);
 
-    WingedFace& realigned = this->actions.add <ActionRealignFace> ()->run (mesh,f);
     if (affectedFaces) {
-      affectedFaces->push_back (realigned.id ());
+      affectedFaces->push_back (f.id ());
       affectedFaces->push_back (a.id ());
       affectedFaces->push_back (b.id ());
       affectedFaces->push_back (c.id ());
     }
-    return realigned;
   }
 
   void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
@@ -107,7 +104,6 @@ struct PATriangulate6Gon :: Impl {
 
 DELEGATE_ACTION_BIG6 (PATriangulate6Gon)
 
-DELEGATE3 (WingedFace&,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::list<Id>*)
+DELEGATE3 (void,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::list<Id>*)
 DELEGATE1 (void,PATriangulate6Gon,undo,WingedMesh&)
 DELEGATE1 (void,PATriangulate6Gon,redo,WingedMesh&)
-
