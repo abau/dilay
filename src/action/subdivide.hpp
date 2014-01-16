@@ -13,7 +13,7 @@ class ActionSubdivide : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG6 (ActionSubdivide)
 
-    WingedFace& run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
+    void run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
     void undo (WingedMesh&);
     void redo (WingedMesh&);
 

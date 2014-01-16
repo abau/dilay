@@ -41,29 +41,30 @@ struct ActionSubdivide::Impl {
   void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
   void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
-  WingedFace& run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) { 
+  void run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) { 
     this->actions.reset ();
-    return this->subdivide (SubdivideData (mesh, face, affectedFaces)); 
+    this->subdivide (SubdivideData (mesh, face, affectedFaces)); 
   }
 
-  WingedFace& subdivide (const SubdivideData& data, WingedFace& face) {
-    return this->subdivide (SubdivideData (data.mesh, face, data.affectedFaces));
+  void subdivide (const SubdivideData& data, WingedFace& face) {
+    this->subdivide (SubdivideData (data.mesh, face, data.affectedFaces));
   }
 
-  WingedFace& subdivide (const SubdivideData& data) {
+  void subdivide (const SubdivideData& data) {
     FaceSet neighbourhood, border;
 
     if (! this->extendNeighbourhood (data, neighbourhood)) {
-      return this->subdivide (data);
+      this->subdivide (data);
+      return;
     }
 
     if (! this->oneRingBorder (data, neighbourhood, border)) {
-      return this->subdivide (data);
+      this->subdivide (data);
+      return;
     }
 
     this->subdivideFaces (data, neighbourhood);
     this->refineBorder   (data, border);
-    return data.selection;
   }
 
   bool extendNeighbourhood ( const SubdivideData& data, FaceSet& neighbourhood) {
@@ -227,6 +228,6 @@ struct ActionSubdivide::Impl {
 };
 
 DELEGATE_ACTION_BIG6 (ActionSubdivide)
-DELEGATE3            (WingedFace&, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
+DELEGATE3            (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
 DELEGATE1            (void, ActionSubdivide, undo, WingedMesh&)
 DELEGATE1            (void, ActionSubdivide, redo, WingedMesh&)
