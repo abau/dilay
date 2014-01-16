@@ -16,7 +16,6 @@ class PAModifyWMesh : public ActionOnWMesh {
     DECLARE_ACTION_BIG6 (PAModifyWMesh)
 
     void          deleteEdge     (WingedMesh&, const WingedEdge&);
-    void          deleteFace     (WingedMesh&, const WingedFace&);
     void          deleteFace     (WingedMesh&, const WingedFace&, const Triangle&);
     void          popVertex      (WingedMesh&);
     WingedEdge&   addEdge        (WingedMesh&, const WingedEdge&);

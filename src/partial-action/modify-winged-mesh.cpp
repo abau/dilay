@@ -241,7 +241,6 @@ struct PAModifyWMesh :: Impl {
 DELEGATE_ACTION_BIG6 (PAModifyWMesh)
 
 DELEGATE2 (void         ,PAModifyWMesh,deleteEdge    ,WingedMesh&,const WingedEdge&)
-DELEGATE2 (void         ,PAModifyWMesh,deleteFace    ,WingedMesh&,const WingedFace&)
 DELEGATE3 (void         ,PAModifyWMesh,deleteFace    ,WingedMesh&,const WingedFace&,const Triangle&)
 DELEGATE1 (void         ,PAModifyWMesh,popVertex     ,WingedMesh&)
 DELEGATE2 (WingedEdge&  ,PAModifyWMesh,addEdge       ,WingedMesh&,const WingedEdge&)

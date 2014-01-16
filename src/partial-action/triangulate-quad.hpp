@@ -14,7 +14,7 @@ class PATriangulateQuad : public ActionOnWMesh {
     DECLARE_ACTION_BIG6 (PATriangulateQuad)
 
     /** `run (m,f,a)` triangulates the quad `f` by 
-     * inserting an edge from the vertex of `f` with the heighest level. 
+     * inserting an edge from a t-vertex of `f`. 
      * `f` and the new face are inserted into `a`, if `a` is not `nullptr`.*/
     void run (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
 
