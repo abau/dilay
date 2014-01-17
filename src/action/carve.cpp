@@ -13,6 +13,7 @@
 #include "winged-vertex.hpp"
 #include "adjacent-iterator.hpp"
 #include "intersection.hpp"
+#include "action/realign-face.hpp"
 
 struct ActionCarve::Impl {
   ActionUnitOnWMesh actions;
@@ -75,7 +76,7 @@ struct ActionCarve::Impl {
       return vOld + (n * brush.y (glm::distance <float> (vOld, sphere.center ())));
     };
 
-    // compute set of vertices
+    // Compute set of vertices
     std::set <WingedVertex*> vertices;
     for (const Id& id : ids) {
       WingedFace* face = mesh.face (id);
@@ -86,13 +87,13 @@ struct ActionCarve::Impl {
       }
     }
 
-    // compute new positions
+    // Compute new positions
     std::list <glm::vec3> newPositions;
     for (WingedVertex* v : vertices) {
       newPositions.push_back (carveVertex (*v));
     }
 
-    // write new positions
+    // Write new positions
     assert (newPositions.size () == vertices.size ());
     auto newPosition = newPositions.begin ();
     for (WingedVertex* v : vertices) {
@@ -100,9 +101,19 @@ struct ActionCarve::Impl {
       ++newPosition;
     }
 
-    // write normals
+    // Write normals
     for (WingedVertex* v : vertices) {
       this->actions.add <PAModifyWVertex> ()->writeNormal (mesh,*v);
+    }
+
+    // Realign faces.
+    // Note that this action is not inserted in `this->actions` because
+    // undoing all realignments is done by `ActionSubdivide`.
+    for (const Id& id : ids) {
+      WingedFace* face = mesh.face (id);
+      if (face) {
+        ActionRealignFace::runStatic (mesh,*face);
+      }
     }
   }
 };

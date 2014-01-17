@@ -6,32 +6,35 @@
 #include "action/ids.hpp"
 #include "triangle.hpp"
 
+WingedFace& ActionRealignFace :: runStatic (WingedMesh& mesh, const WingedFace& face) {
+  assert (face.octreeNode ());
+
+  Triangle faceTriangle (face.triangle (mesh));
+  std::list <WingedEdge*> adjacents = face.adjacentEdgeIterator ().collect ();
+
+  for (WingedEdge* e : adjacents) {
+    e->face (face,nullptr);
+  }
+
+  WingedFace& newFace = mesh.realignFace (face, faceTriangle);
+
+  for (WingedEdge* e : adjacents) {
+    if (e->leftFace () == nullptr)
+      e->leftFace (&newFace);
+    else if (e->rightFace () == nullptr)
+      e->rightFace (&newFace);
+    else
+      assert (false);
+  }
+  return newFace;
+}
+
 struct ActionRealignFace :: Impl {
   ActionIds operand;
 
   WingedFace& run (WingedMesh& mesh, const WingedFace& face) {
-    assert (face.octreeNode ());
     this->operand.setFace (0,&face);
-
-    Triangle faceTriangle (face.triangle (mesh));
-
-    std::list <WingedEdge*> adjacents = face.adjacentEdgeIterator ().collect ();
-
-    for (WingedEdge* e : adjacents) {
-      e->face (face,nullptr);
-    }
-
-    WingedFace& newFace = mesh.realignFace (face, faceTriangle);
-
-    for (WingedEdge* e : adjacents) {
-      if (e->leftFace () == nullptr)
-        e->leftFace (&newFace);
-      else if (e->rightFace () == nullptr)
-        e->rightFace (&newFace);
-      else
-        assert (false);
-    }
-    return newFace;
+    return ActionRealignFace::runStatic (mesh, face);
   }
 
   void undo (WingedMesh& mesh) { 

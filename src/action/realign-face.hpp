@@ -11,9 +11,11 @@ class ActionRealignFace : public ActionOnWMesh {
   public: 
     DECLARE_ACTION_BIG6 (ActionRealignFace)
 
-    WingedFace& run  (WingedMesh&, const WingedFace&);
-    void        undo (WingedMesh&);
-    void        redo (WingedMesh&);
+    static WingedFace& runStatic (WingedMesh&, const WingedFace&);
+           WingedFace& run       (WingedMesh&, const WingedFace&);
+
+    void undo (WingedMesh&);
+    void redo (WingedMesh&);
   private:
     class Impl;
     Impl* impl;
