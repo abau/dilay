@@ -1,7 +1,7 @@
 #ifndef DILAY_WINGED_VERTEX
 #define DILAY_WINGED_VERTEX
 
-#include "fwd-glm.hpp"
+#include <glm/fwd.hpp>
 
 class AdjacentEdgeIterator;
 class AdjacentVertexIterator;

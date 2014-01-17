@@ -1,8 +1,8 @@
 #ifndef DILAY_PARTIAL_ACTION_MODIFY_WINGED_MESH
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_MESH
 
+#include <glm/fwd.hpp>
 #include "action/on-winged-mesh.hpp"
-#include "fwd-glm.hpp"
 #include "macro.hpp"
 
 class WingedMesh;

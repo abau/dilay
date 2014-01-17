@@ -2,8 +2,8 @@
 #define DILAY_SPHERE
 
 #include <iosfwd>
+#include <glm/fwd.hpp>
 #include "macro.hpp"
-#include "fwd-glm.hpp"
 
 class Sphere {
   public:

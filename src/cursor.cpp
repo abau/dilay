@@ -1,3 +1,4 @@
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "cursor.hpp"
@@ -46,7 +47,7 @@ struct Cursor::Impl {
     }
     else {
       glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
-      float     angle = glm::degrees (glm::acos (d));
+      float     angle = glm::acos (d);
       this->mesh.setRotation (glm::rotate (glm::mat4(1.0f), angle, axis));
     }
   }

@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <string>
-#include "fwd-glm.hpp"
+#include <glm/fwd.hpp>
 
 namespace OpenGLUtil {
   enum VertexAttributIndex { PositionIndex = 0

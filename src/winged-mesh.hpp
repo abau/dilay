@@ -2,7 +2,7 @@
 #define DILAY_WINGED_MESH
 
 #include <unordered_set>
-#include "fwd-glm.hpp"
+#include <glm/fwd.hpp>
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 

@@ -1,7 +1,7 @@
 #ifndef DILAY_MESH
 #define DILAY_MESH
 
-#include "fwd-glm.hpp"
+#include <glm/fwd.hpp>
 
 class Mesh {
   public:        Mesh             ();

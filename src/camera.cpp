@@ -1,3 +1,4 @@
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -78,14 +79,14 @@ struct Camera::Impl {
   }
 
   void verticalRotation (float angle) {
-    glm::quat q      = glm::angleAxis (angle,this->up);
+    glm::quat q       = glm::angleAxis (glm::radians (angle),this->up);
     this->right       = glm::rotate (q, this->right);
     this->toEyePoint  = glm::rotate (q, this->toEyePoint);
     this->updateView ();
   }
 
   void horizontalRotation (float angle) {
-    glm::quat q      = glm::angleAxis (angle,this->right);
+    glm::quat q      = glm::angleAxis (glm::radians (angle),this->right);
     this->toEyePoint = glm::rotate (q, this->toEyePoint);
 
     if (glm::dot ( glm::cross (this->up, this->toEyePoint), this->right ) < 0) {
@@ -114,7 +115,7 @@ struct Camera::Impl {
   void updateProjection (const glm::uvec2& p, const glm::uvec2& dim) {
     glViewport (p.x, p.y, dim.x, dim.y);
     this->projection = glm::perspective ( 
-        45.0f
+        glm::radians (45.0f)
       , float (dim.x) / float (dim.y)
       , this->nearClipping, this->farClipping);
   }

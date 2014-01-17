@@ -3,7 +3,7 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <fwd-glm.hpp>
+#include <glm/fwd.hpp>
 
 class Color;
 enum  class RenderMode;

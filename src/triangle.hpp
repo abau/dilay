@@ -1,8 +1,8 @@
 #ifndef DILAY_TRIANGLE
 #define DILAY_TRIANGLE
 
+#include <glm/fwd.hpp>
 #include "macro.hpp"
-#include "fwd-glm.hpp"
 
 class Ray;
 class WingedMesh;

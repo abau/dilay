@@ -1,8 +1,8 @@
 #ifndef DILAY_CURSOR
 #define DILAY_CURSOR
 
+#include <glm/fwd.hpp>
 #include "macro.hpp"
-#include "fwd-glm.hpp"
 
 class Cursor {
   public: 

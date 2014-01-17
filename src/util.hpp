@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 #include <initializer_list>
-#include "fwd-glm.hpp"
+#include <glm/fwd.hpp>
 
 std::ostream& operator<<(std::ostream&, const glm::ivec2&);
 std::ostream& operator<<(std::ostream&, const glm::uvec2&);

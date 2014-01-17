@@ -90,7 +90,6 @@ HEADERS += \
            src/config.hpp \
            src/config-conversion.hpp \
            src/cursor.hpp \
-           src/fwd-glm.hpp \
            src/fwd-winged.hpp \
            src/fwd-yaml.hpp \
            src/history.hpp \

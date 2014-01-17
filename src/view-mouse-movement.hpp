@@ -1,8 +1,8 @@
 #ifndef VIEW_MOUSE_MOVEMENT
 #define VIEW_MOUSE_MOVEMENT
 
+#include <glm/fwd.hpp>
 #include "macro.hpp"
-#include "fwd-glm.hpp"
 
 class QPoint;
 

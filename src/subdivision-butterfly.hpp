@@ -1,7 +1,7 @@
 #ifndef DILAY_SUBDIVISION_BUTTERFLY
 #define DILAY_SUBDIVISION_BUTTERFLY
 
-#include <fwd-glm.hpp>
+#include <glm/fwd.hpp>
 
 class WingedMesh;
 class WingedEdge;

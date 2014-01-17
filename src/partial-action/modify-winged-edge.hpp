@@ -2,7 +2,6 @@
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_EDGE
 
 #include "action/on-winged-mesh.hpp"
-#include "fwd-glm.hpp"
 #include "macro.hpp"
 
 class WingedMesh;

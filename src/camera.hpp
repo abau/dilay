@@ -1,8 +1,8 @@
 #ifndef DILAY_CAMERA
 #define DILAY_CAMERA
 
+#include <glm/fwd.hpp>
 #include "macro.hpp"
-#include "fwd-glm.hpp"
 
 class Ray;
 

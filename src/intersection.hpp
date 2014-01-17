@@ -1,8 +1,8 @@
 #ifndef DILAY_INTERSECTION
 #define DILAY_INTERSECTION
 
+#include <glm/fwd.hpp>
 #include "macro.hpp"
-#include "fwd-glm.hpp"
 
 class Sphere;
 class Ray;

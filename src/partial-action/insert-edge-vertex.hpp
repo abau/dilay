@@ -1,8 +1,8 @@
 #ifndef DILAY_PARITAL_ACTION_INSERT_VERTEX
 #define DILAY_PARITAL_ACTION_INSERT_VERTEX
 
+#include <glm/fwd.hpp>
 #include "action/on-winged-mesh.hpp"
-#include "fwd-glm.hpp"
 #include "macro.hpp"
 
 class WingedEdge;

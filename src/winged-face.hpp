@@ -1,8 +1,8 @@
 #ifndef DILAY_WINGED_FACE
 #define DILAY_WINGED_FACE
 
+#include <glm/fwd.hpp>
 #include "fwd-winged.hpp"
-#include "fwd-glm.hpp"
 #include "macro.hpp"
 #include "id.hpp"
 

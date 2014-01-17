@@ -2,7 +2,6 @@
 #define DILAY_PARTIAL_ACTION_DELETE_EDGE_FACE
 
 #include "action/on-winged-mesh.hpp"
-#include "fwd-glm.hpp"
 #include "macro.hpp"
 
 class WingedEdge;

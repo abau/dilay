@@ -2,7 +2,7 @@
 #define DILAY_OCTREE
 
 #include <unordered_set>
-#include "fwd-glm.hpp"
+#include <glm/fwd.hpp>
 #include "iterator.hpp"
 #include "macro.hpp"
 

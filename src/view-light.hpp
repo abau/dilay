@@ -1,8 +1,8 @@
 #ifndef DILAY_VIEW_LIGHT
 #define DILAY_VIEW_LIGHT
 
+#include <glm/fwd.hpp>
 #include "macro.hpp"
-#include "fwd-glm.hpp"
 
 class Color;
 

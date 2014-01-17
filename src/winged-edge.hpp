@@ -1,7 +1,7 @@
 #ifndef DILAY_WINGED_EDGE
 #define DILAY_WINGED_EDGE
 
-#include "fwd-glm.hpp"
+#include <glm/fwd.hpp>
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 #include "id.hpp"

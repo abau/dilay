@@ -1,3 +1,4 @@
+#define GLM_FORCE_RADIANS
 #include <vector>
 #include <unordered_map>
 #include <functional>
