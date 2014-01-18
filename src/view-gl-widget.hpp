@@ -15,16 +15,16 @@ class GLWidget : public QGLWidget {
      GLWidget (const QGLFormat&);
  
   protected:
-    virtual void initializeGL       ();
-    virtual void resizeGL           (int,int);
-    virtual void paintGL            ();
+    void initializeGL       ();
+    void resizeGL           (int,int);
+    void paintGL            ();
  
-    virtual void keyPressEvent      (QKeyEvent*);
-    virtual void mouseMoveEvent     (QMouseEvent*);
-    virtual void mousePressEvent    (QMouseEvent*);
-    virtual void mouseReleaseEvent  (QMouseEvent*);
-    virtual void resizeEvent        (QResizeEvent*);
-    virtual void wheelEvent         (QWheelEvent*);
+    void keyPressEvent      (QKeyEvent*);
+    void mouseMoveEvent     (QMouseEvent*);
+    void mousePressEvent    (QMouseEvent*);
+    void mouseReleaseEvent  (QMouseEvent*);
+    void resizeEvent        (QResizeEvent*);
+    void wheelEvent         (QWheelEvent*);
 
   private:
     Axis axis;
