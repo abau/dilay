@@ -296,6 +296,14 @@
   const  t & operator= (      t &&);     \
        ~ t             ();
 
+#define DECLARE_BIG6_VIRTUAL(t,...)              \
+                 t             (__VA_ARGS__);    \
+                 t             (const t &);      \
+                 t             (      t &&);     \
+          const  t & operator= (const t &);      \
+          const  t & operator= (      t &&);     \
+  virtual      ~ t             ();
+
 // Action related macros
 
 #define DECLARE_ACTION_BIG6(t,...)            \
@@ -305,6 +313,14 @@
   const  t & operator= (const t &)  = delete; \
   const  t & operator= (      t &&) = delete; \
        ~ t             ();
+
+#define DECLARE_ACTION_BIG6_VIRTUAL(t,...)            \
+                 t             (__VA_ARGS__);         \
+                 t             (const t &)  = delete; \
+                 t             (      t &&);          \
+          const  t & operator= (const t &)  = delete; \
+          const  t & operator= (      t &&) = delete; \
+  virtual      ~ t             ();
 
 #define DELEGATE_ACTION_BIG6(from) \
   DELEGATE_CONSTRUCTOR(from) \
