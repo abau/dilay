@@ -18,9 +18,11 @@ class ActionUnit : public Action {
 
     void addAction (Action*, SubActionKind);
     void reset     ();
-    void undo      ();
-    void redo      ();
+
   private:
+    void runUndo ();
+    void runRedo ();
+
     class Impl;
     Impl* impl;
 };

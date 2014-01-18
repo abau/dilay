@@ -14,9 +14,10 @@ class PADeleteTEdges : public ActionOnWMesh {
 
     void run (WingedMesh&, std::unordered_set <WingedFace*>&);
 
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

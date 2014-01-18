@@ -20,9 +20,11 @@ class PATriangulate6Gon : public ActionOnWMesh {
    * `f` and the new faces are added to `n` if `n` is not `nullptr`.
    */
     void run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
+
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

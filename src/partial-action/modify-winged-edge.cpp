@@ -341,8 +341,8 @@ struct PAModifyWEdge :: Impl {
     }
   }
 
-  void undo (WingedMesh& mesh) { this->toggle (mesh); }
-  void redo (WingedMesh& mesh) { this->toggle (mesh); }
+  void runUndo (WingedMesh& mesh) { this->toggle (mesh); }
+  void runRedo (WingedMesh& mesh) { this->toggle (mesh); }
 };
 
 DELEGATE_ACTION_BIG6 (PAModifyWEdge)
@@ -366,8 +366,8 @@ DELEGATE2 (void,PAModifyWEdge,isTEdge         ,WingedEdge&,bool)
 DELEGATE2 (void,PAModifyWEdge,faceGradient    ,WingedEdge&,FaceGradient)
 DELEGATE2 (void,PAModifyWEdge,increaseFaceGradient,WingedEdge&,const WingedFace&)
 DELEGATE2 (void,PAModifyWEdge,vertexGradient  ,WingedEdge&,int)
-DELEGATE1 (void,PAModifyWEdge,undo            ,WingedMesh&)
-DELEGATE1 (void,PAModifyWEdge,redo            ,WingedMesh&)
+DELEGATE1 (void,PAModifyWEdge,runUndo         ,WingedMesh&)
+DELEGATE1 (void,PAModifyWEdge,runRedo         ,WingedMesh&)
 
 void PAModifyWEdge::setGeometry 
   ( WingedEdge& edge, WingedVertex* v1, WingedVertex* v2

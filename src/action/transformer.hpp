@@ -11,10 +11,10 @@ class ActionTransformer : public Action {
   public:
     DECLARE_ACTION_BIG6 (ActionTransformer, WingedMesh&, ActionOnWMesh*);
 
-    void undo ();
-    void redo ();
-
   private:
+    void runUndo ();
+    void runRedo ();
+
     class Impl;
     Impl* impl;
 };

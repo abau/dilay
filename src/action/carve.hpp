@@ -13,10 +13,11 @@ class ActionCarve : public ActionOnWMesh {
     DECLARE_ACTION_BIG6 (ActionCarve)
 
     void run  (WingedMesh&, const glm::vec3&, float);
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
 
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

@@ -12,13 +12,13 @@ struct ActionTransformer :: Impl {
     this->onWMesh.reset    (action);
   }
 
-  void undo () {
+  void runUndo () {
     if (this->onWMesh) {
       this->onWMesh->undo (this->operands.getMesh (0));
     }
   }
 
-  void redo () {
+  void runRedo () {
     if (this->onWMesh) {
       this->onWMesh->redo (this->operands.getMesh (0));
     }
@@ -29,5 +29,5 @@ DELEGATE2_CONSTRUCTOR     (ActionTransformer,WingedMesh&,ActionOnWMesh*)
 DELEGATE_MOVE_CONSTRUCTOR (ActionTransformer)
 DELEGATE_DESTRUCTOR       (ActionTransformer)
 
-DELEGATE (void, ActionTransformer, undo)
-DELEGATE (void, ActionTransformer, redo)
+DELEGATE (void, ActionTransformer, runUndo)
+DELEGATE (void, ActionTransformer, runRedo)

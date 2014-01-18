@@ -38,9 +38,10 @@ class PAModifyWEdge : public ActionOnWMesh {
     void increaseFaceGradient (WingedEdge&, const WingedFace&);
     void vertexGradient       (WingedEdge&, int);
 
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

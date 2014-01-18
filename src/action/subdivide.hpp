@@ -14,10 +14,11 @@ class ActionSubdivide : public ActionOnWMesh {
     DECLARE_ACTION_BIG6 (ActionSubdivide)
 
     void run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
 
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

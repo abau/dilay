@@ -18,8 +18,8 @@
 struct ActionCarve::Impl {
   ActionUnitOnWMesh actions;
 
-  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, const glm::vec3& position, float width) { 
     CarveBrush              brush (width, 0.05f);
@@ -120,5 +120,5 @@ struct ActionCarve::Impl {
 
 DELEGATE_ACTION_BIG6 (ActionCarve)
 DELEGATE3            (void, ActionCarve, run , WingedMesh&, const glm::vec3&, float)
-DELEGATE1            (void, ActionCarve, undo, WingedMesh&)
-DELEGATE1            (void, ActionCarve, redo, WingedMesh&)
+DELEGATE1            (void, ActionCarve, runUndo, WingedMesh&)
+DELEGATE1            (void, ActionCarve, runRedo, WingedMesh&)

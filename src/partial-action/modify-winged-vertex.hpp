@@ -17,9 +17,10 @@ class PAModifyWVertex : public ActionOnWMesh {
     void writeNormal (WingedMesh&, WingedVertex&);
     void move        (WingedMesh&, WingedVertex&, const glm::vec3&);
 
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

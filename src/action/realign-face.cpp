@@ -37,7 +37,7 @@ struct ActionRealignFace :: Impl {
     return ActionRealignFace::runStatic (mesh, face);
   }
 
-  void undo (WingedMesh& mesh) { 
+  void runUndo (WingedMesh& mesh) { 
     WingedFace* face = this->operand.getFace (mesh,0);
 
     if (face) {
@@ -45,7 +45,7 @@ struct ActionRealignFace :: Impl {
     }
   }
 
-  void redo (WingedMesh& mesh) { 
+  void runRedo (WingedMesh& mesh) { 
     WingedFace& face = this->operand.getFaceRef (mesh,0);
     this->run (mesh, face); 
   }
@@ -53,5 +53,5 @@ struct ActionRealignFace :: Impl {
 
 DELEGATE_ACTION_BIG6 (ActionRealignFace)
 DELEGATE2 (WingedFace&, ActionRealignFace, run, WingedMesh&, const WingedFace&)
-DELEGATE1 (void, ActionRealignFace, undo, WingedMesh&)
-DELEGATE1 (void, ActionRealignFace, redo, WingedMesh&)
+DELEGATE1 (void, ActionRealignFace, runUndo, WingedMesh&)
+DELEGATE1 (void, ActionRealignFace, runRedo, WingedMesh&)

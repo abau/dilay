@@ -145,7 +145,7 @@ struct PAModifyWMesh :: Impl {
     mesh.initOctreeRoot (pos, width);
   }
 
-  void undo (WingedMesh& mesh) { 
+  void runUndo (WingedMesh& mesh) { 
 
     switch (this->operation) {
       case Operation::DeleteEdge: {
@@ -180,7 +180,7 @@ struct PAModifyWMesh :: Impl {
     }
   }
 
-  void redo (WingedMesh& mesh) { 
+  void runRedo (WingedMesh& mesh) { 
 
     switch (this->operation) {
       case Operation::DeleteEdge: {
@@ -230,5 +230,5 @@ DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const Triangle
 DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFace&,const Triangle&)
 DELEGATE2 (WingedVertex&,PAModifyWMesh,addVertex     ,WingedMesh&,const glm::vec3&)
 DELEGATE3 (void         ,PAModifyWMesh,initOctreeRoot,WingedMesh&,const glm::vec3&,float)
-DELEGATE1 (void         ,PAModifyWMesh,undo          ,WingedMesh&)
-DELEGATE1 (void         ,PAModifyWMesh,redo          ,WingedMesh&)
+DELEGATE1 (void         ,PAModifyWMesh,runUndo       ,WingedMesh&)
+DELEGATE1 (void         ,PAModifyWMesh,runRedo       ,WingedMesh&)

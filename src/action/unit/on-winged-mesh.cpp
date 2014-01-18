@@ -4,11 +4,11 @@
 struct ActionUnitOnWMesh :: Impl {
   ActionUnitTemplate <ActionOnWMesh> unitTemplate;
 
-  void undo (WingedMesh& mesh) {
+  void runUndo (WingedMesh& mesh) {
     this->unitTemplate.forallReverse ([&mesh] (ActionOnWMesh& a) { a.undo (mesh); });
   }
 
-  void redo (WingedMesh& mesh) {
+  void runRedo (WingedMesh& mesh) {
     this->unitTemplate.forall ([&mesh] (ActionOnWMesh& a) { a.redo (mesh); });
   }
 };
@@ -16,5 +16,5 @@ struct ActionUnitOnWMesh :: Impl {
 DELEGATE_ACTION_BIG6      (ActionUnitOnWMesh)
 DELEGATE_TO_UNIT_TEMPLATE (ActionUnitOnWMesh,ActionOnWMesh)
 
-DELEGATE1 (void, ActionUnitOnWMesh, undo, WingedMesh&)
-DELEGATE1 (void, ActionUnitOnWMesh, redo, WingedMesh&)
+DELEGATE1 (void, ActionUnitOnWMesh, runUndo, WingedMesh&)
+DELEGATE1 (void, ActionUnitOnWMesh, runRedo, WingedMesh&)

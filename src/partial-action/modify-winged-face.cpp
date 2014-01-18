@@ -53,7 +53,7 @@ struct PAModifyWFace :: Impl {
     }
   }
 
-  void undo (WingedMesh& mesh) { 
+  void runUndo (WingedMesh& mesh) { 
     switch (this->operation) {
       case Operation::Write: {
         this->actions.undo (mesh);
@@ -66,7 +66,7 @@ struct PAModifyWFace :: Impl {
     }
   }
 
-  void redo (WingedMesh& mesh) { 
+  void runRedo (WingedMesh& mesh) { 
     switch (this->operation) {
       case Operation::Write: {
         this->actions.redo (mesh);
@@ -84,5 +84,5 @@ DELEGATE_ACTION_BIG6 (PAModifyWFace)
 
 DELEGATE2 (void,PAModifyWFace,edge ,WingedFace&,WingedEdge*)
 DELEGATE2 (void,PAModifyWFace,write,WingedMesh&,WingedFace&)
-DELEGATE1 (void,PAModifyWFace,undo ,WingedMesh&)
-DELEGATE1 (void,PAModifyWFace,redo ,WingedMesh&)
+DELEGATE1 (void,PAModifyWFace,runUndo ,WingedMesh&)
+DELEGATE1 (void,PAModifyWFace,runRedo ,WingedMesh&)

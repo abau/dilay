@@ -4,11 +4,11 @@
 struct ActionUnit :: Impl {
   ActionUnitTemplate <Action> unitTemplate;
 
-  void undo () {
+  void runUndo () {
     this->unitTemplate.forallReverse ([] (Action& a) { a.undo (); });
   }
 
-  void redo () {
+  void runRedo () {
     this->unitTemplate.forall ([] (Action& a) { a.redo (); });
   }
 };
@@ -16,5 +16,5 @@ struct ActionUnit :: Impl {
 DELEGATE_ACTION_BIG6      (ActionUnit)
 DELEGATE_TO_UNIT_TEMPLATE (ActionUnit,Action)
 
-DELEGATE  (void, ActionUnit, undo)
-DELEGATE  (void, ActionUnit, redo)
+DELEGATE  (void, ActionUnit, runUndo)
+DELEGATE  (void, ActionUnit, runRedo)

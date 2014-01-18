@@ -56,13 +56,13 @@ struct PADeleteEdgeFace :: Impl {
     actions.add <PAModifyWMesh> ()->deleteFace (mesh,faceToDelete,triangle); 
   }
 
-  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_ACTION_BIG6 (PADeleteEdgeFace)
 
 DELEGATE2 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&)
-DELEGATE1 (void,PADeleteEdgeFace,undo,WingedMesh&)
-DELEGATE1 (void,PADeleteEdgeFace,redo,WingedMesh&)
+DELEGATE1 (void,PADeleteEdgeFace,runUndo,WingedMesh&)
+DELEGATE1 (void,PADeleteEdgeFace,runRedo,WingedMesh&)
 

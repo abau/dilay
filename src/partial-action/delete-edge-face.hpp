@@ -15,9 +15,10 @@ class PADeleteEdgeFace : public ActionOnWMesh {
      * Note that other parts of the program depend on this behaviour. */
     void run (WingedMesh&, WingedEdge&);
 
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

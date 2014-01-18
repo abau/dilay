@@ -92,13 +92,13 @@ struct PATriangulateQuad :: Impl {
     return splitAlong;
   }
 
-  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_ACTION_BIG6 (PATriangulateQuad)
 
 DELEGATE3 (void,PATriangulateQuad,run,WingedMesh&,WingedFace&,std::list <Id>*)
-DELEGATE1 (void,PATriangulateQuad,undo,WingedMesh&)
-DELEGATE1 (void,PATriangulateQuad,redo,WingedMesh&)
+DELEGATE1 (void,PATriangulateQuad,runUndo,WingedMesh&)
+DELEGATE1 (void,PATriangulateQuad,runRedo,WingedMesh&)
 

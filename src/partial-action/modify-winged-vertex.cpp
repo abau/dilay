@@ -76,8 +76,8 @@ struct PAModifyWVertex :: Impl {
     }
   }
 
-  void undo (WingedMesh& mesh) { this->toggle (mesh); }
-  void redo (WingedMesh& mesh) { this->toggle (mesh); }
+  void runUndo (WingedMesh& mesh) { this->toggle (mesh); }
+  void runRedo (WingedMesh& mesh) { this->toggle (mesh); }
 };
 
 DELEGATE_ACTION_BIG6 (PAModifyWVertex)
@@ -86,5 +86,5 @@ DELEGATE2 (void,PAModifyWVertex,edge       ,WingedVertex&,WingedEdge*)
 DELEGATE3 (void,PAModifyWVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned int)
 DELEGATE2 (void,PAModifyWVertex,writeNormal,WingedMesh&,WingedVertex&)
 DELEGATE3 (void,PAModifyWVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
-DELEGATE1 (void,PAModifyWVertex,undo,WingedMesh&)
-DELEGATE1 (void,PAModifyWVertex,redo,WingedMesh&)
+DELEGATE1 (void,PAModifyWVertex,runUndo,WingedMesh&)
+DELEGATE1 (void,PAModifyWVertex,runRedo,WingedMesh&)

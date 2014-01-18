@@ -15,9 +15,10 @@ class PAModifyWFace : public ActionOnWMesh {
     void edge  (WingedFace&, WingedEdge*);
     void write (WingedMesh&, WingedFace&);
 
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

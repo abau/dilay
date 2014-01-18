@@ -7,8 +7,12 @@ class ActionOnWMesh {
   public:
     virtual ~ActionOnWMesh () {}
 
-    virtual void undo (WingedMesh&) = 0;
-    virtual void redo (WingedMesh&) = 0;
+    void undo (WingedMesh& m) { this->runUndo (m); }
+    void redo (WingedMesh& m) { this->runRedo (m); }
+
+  private:
+    virtual void runUndo (WingedMesh&) = 0;
+    virtual void runRedo (WingedMesh&) = 0;
 };
 
 #endif

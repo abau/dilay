@@ -98,12 +98,12 @@ struct PATriangulate6Gon :: Impl {
     }
   }
 
-  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_ACTION_BIG6 (PATriangulate6Gon)
 
 DELEGATE3 (void,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::list<Id>*)
-DELEGATE1 (void,PATriangulate6Gon,undo,WingedMesh&)
-DELEGATE1 (void,PATriangulate6Gon,redo,WingedMesh&)
+DELEGATE1 (void,PATriangulate6Gon,runUndo,WingedMesh&)
+DELEGATE1 (void,PATriangulate6Gon,runRedo,WingedMesh&)

@@ -39,8 +39,8 @@ struct SubdivideData {
 struct ActionSubdivide::Impl {
   ActionUnitOnWMesh actions;
 
-  void undo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void redo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) { 
     this->actions.reset ();
@@ -240,5 +240,5 @@ struct ActionSubdivide::Impl {
 
 DELEGATE_ACTION_BIG6 (ActionSubdivide)
 DELEGATE3            (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
-DELEGATE1            (void, ActionSubdivide, undo, WingedMesh&)
-DELEGATE1            (void, ActionSubdivide, redo, WingedMesh&)
+DELEGATE1            (void, ActionSubdivide, runUndo, WingedMesh&)
+DELEGATE1            (void, ActionSubdivide, runRedo, WingedMesh&)

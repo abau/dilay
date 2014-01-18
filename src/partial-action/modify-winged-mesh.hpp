@@ -25,9 +25,10 @@ class PAModifyWMesh : public ActionOnWMesh {
     WingedVertex& addVertex      (WingedMesh&, const glm::vec3&);
     void          initOctreeRoot (WingedMesh&, const glm::vec3&, float);
 
-    void undo (WingedMesh&);
-    void redo (WingedMesh&);
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };

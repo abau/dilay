@@ -20,9 +20,11 @@ class ActionUnitOnWMesh : public ActionOnWMesh {
 
     void addAction (ActionOnWMesh*, SubActionKind);
     void reset     ();
-    void undo      (WingedMesh&);
-    void redo      (WingedMesh&);
+
   private:
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
+
     class Impl;
     Impl* impl;
 };
