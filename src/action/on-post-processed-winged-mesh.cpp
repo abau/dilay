@@ -11,8 +11,13 @@ struct ActionOnPostProcessedWMesh :: Impl {
   std::unordered_set <Id> ids;
 
   WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face) {
-    this->ids.insert (face.id ());
-    return this->runRealignFace (mesh, face);
+    bool        sameNode  = false;
+    WingedFace& realigned = this->runRealignFace (mesh, face, &sameNode);
+
+    if (sameNode == false) {
+      this->ids.insert (face.id ());
+    }
+    return realigned;
   }
 
   void realignAllFaces (WingedMesh& mesh) {
@@ -24,7 +29,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
     }
   }
 
-  WingedFace& runRealignFace (WingedMesh& mesh, const WingedFace& face) {
+  WingedFace& runRealignFace (WingedMesh& mesh, const WingedFace& face, bool* sameNode = nullptr) {
     Triangle faceTriangle (face.triangle (mesh));
     std::list <WingedEdge*> adjacents = face.adjacentEdgeIterator ().collect ();
 
@@ -32,8 +37,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
       e->face (face,nullptr);
     }
 
-    bool        sameNode = false;
-    WingedFace& newFace  = mesh.realignFace (face, faceTriangle, &sameNode);
+    WingedFace& newFace = mesh.realignFace (face, faceTriangle, sameNode);
 
     for (WingedEdge* e : adjacents) {
       if (e->leftFace () == nullptr)
@@ -42,9 +46,6 @@ struct ActionOnPostProcessedWMesh :: Impl {
         e->rightFace (&newFace);
       else
         assert (false);
-    }
-    if (sameNode) {
-    //  this->ids.erase (newFace.id ());
     }
     return newFace;
   }
