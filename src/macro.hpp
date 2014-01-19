@@ -5,16 +5,22 @@
 
 // Delegators
 
-#define DELEGATE_CONSTRUCTOR(from) \
-  from :: from () { this->impl = new Impl (); }
-
 #define DELEGATE_COPY_CONSTRUCTOR(from) \
   from :: from (const from & a1) { this->impl = new Impl (*a1.impl); }
+
+#define DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
+  from :: from (const from & a1) { this->impl = new Impl (this,*a1.impl); }
 
 #define DELEGATE_MOVE_CONSTRUCTOR(from) \
   from :: from (from && a1) { \
     this->impl = a1.impl; \
     a1.impl    = nullptr; }
+
+#define DELEGATE_MOVE_CONSTRUCTOR_SELF(from) \
+  from :: from (from && a1) { \
+    this->impl       = a1.impl; \
+    this->impl->self = this; \
+    a1.impl          = nullptr; }
 
 #define DELEGATE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (const from & source) { \
@@ -25,6 +31,16 @@
     this->impl     = tmpImpl; \
     return *this; }
 
+#define DELEGATE_ASSIGNMENT_OP_SELF(from) \
+  const from & from :: operator= (const from & source) { \
+    if (this == &source) return *this; \
+    from tmp (nullptr,source); \
+    Impl * tmpImpl   = tmp.impl; \
+    tmp.impl         = this->impl; \
+    this->impl       = tmpImpl; \
+    this->impl->self = this; \
+    return *this; }
+
 #define DELEGATE_MOVE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (from && source) { \
     if (this == &source) return *this; \
@@ -32,6 +48,34 @@
     source.impl    = this->impl; \
     this->impl     = tmpImpl; \
     return *this; }
+
+#define DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from) \
+  const from & from :: operator= (from && source) { \
+    if (this == &source) return *this; \
+    Impl * tmpImpl   = source.impl; \
+    source.impl      = this->impl; \
+    this->impl       = tmpImpl; \
+    this->impl->self = this; \
+    return *this; }
+
+#define DELEGATE_DESTRUCTOR(from) from :: ~ from () { delete this->impl; }
+
+#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from) \
+  DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+
+#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
+  DELEGATE_MOVE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_ASSIGNMENT_OP_SELF(from)\
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
+
+#define DELEGATE_CONSTRUCTOR(from) \
+  from :: from () { this->impl = new Impl (); }
 
 #define DELEGATE1_CONSTRUCTOR(from,t1) \
   from :: from (t1 a1) { this->impl = new Impl (a1); }
@@ -48,55 +92,71 @@
 #define DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
   from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { this->impl = new Impl (a1,a2,a3,a4,a5); }
 
-#define DELEGATE_DESTRUCTOR(from) from :: ~ from () { delete this->impl; }
+#define DELEGATE_CONSTRUCTOR_SELF(from) \
+  from :: from () { this->impl = new Impl (this); }
+
+#define DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  from :: from (t1 a1) { this->impl = new Impl (this,a1); }
+
+#define DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  from :: from (t1 a1,t2 a2) { this->impl = new Impl (this,a1,a2); }
+
+#define DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  from :: from (t1 a1,t2 a2,t3 a3) { this->impl = new Impl (this,a1,a2,a3); }
+
+#define DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { this->impl = new Impl (this,a1,a2,a3,a4); }
+
+#define DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { this->impl = new Impl (this,a1,a2,a3,a4,a5); }
 
 #define DELEGATE_BIG6(from) \
   DELEGATE_CONSTRUCTOR(from) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from)\
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
 
 #define DELEGATE1_BIG6(from,t1) \
   DELEGATE1_CONSTRUCTOR(from,t1) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from)\
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
 
 #define DELEGATE2_BIG6(from,t1,t2) \
   DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from)\
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
 
 #define DELEGATE3_BIG6(from,t1,t2,t3) \
   DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from)\
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
 
 #define DELEGATE4_BIG6(from,t1,t2,t3,t4) \
   DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from)\
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
 
 #define DELEGATE5_BIG6(from,t1,t2,t3,t4,t5) \
   DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from)\
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG6_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE1_BIG6_SELF(from,t1) \
+  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE2_BIG6_SELF(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE3_BIG6_SELF(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE4_BIG6_SELF(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE5_BIG6_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
 
 #define DELEGATE(r,from,method) \
   r from :: method () { return this->impl-> method (); }
@@ -326,6 +386,11 @@
   DELEGATE_CONSTRUCTOR(from) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from)
+
+#define DELEGATE_ACTION_BIG6_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR_SELF(from)
 
 #define DELEGATE_TO_UNIT_TEMPLATE(from,t) \
   void from :: addAction (t * a, SubActionKind kind) { \
