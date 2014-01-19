@@ -12,7 +12,6 @@
 #include "partial-action/insert-edge-vertex.hpp"
 #include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
-#include "action/realign-face.hpp"
 
 typedef std::unordered_set <WingedFace*> FaceSet;
 
@@ -37,10 +36,13 @@ struct SubdivideData {
 };
 
 struct ActionSubdivide::Impl {
+  ActionSubdivide* self;
   ActionUnitOnWMesh actions;
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  Impl (ActionSubdivide* s) : self (s) {}
+
+  void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) { 
     this->actions.reset ();
@@ -232,13 +234,12 @@ struct ActionSubdivide::Impl {
   void realignFaces (const SubdivideData& data, FaceSet& faces) {
     for (WingedFace* f : faces) {
       assert (f->isTriangle ());
-      this->actions.add <ActionRealignFace> (SubActionKind::Post)
-          ->run (data.mesh, *f);
-    }
-  }
+      this->self->realignFace (data.mesh, *f);
+     }
+   }
 };
 
-DELEGATE_ACTION_BIG6 (ActionSubdivide)
-DELEGATE3            (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
-DELEGATE1            (void, ActionSubdivide, runUndo, WingedMesh&)
-DELEGATE1            (void, ActionSubdivide, runRedo, WingedMesh&)
+DELEGATE_ACTION_BIG6_SELF (ActionSubdivide)
+DELEGATE3                 (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
+DELEGATE1                 (void, ActionSubdivide, runUndoBeforePostProcessing, WingedMesh&)
+DELEGATE1                 (void, ActionSubdivide, runRedoBeforePostProcessing, WingedMesh&)

@@ -19,7 +19,7 @@ SOURCES += \
            src/action/carve.cpp \
            src/action/from-mesh.cpp \
            src/action/ids.cpp \
-           src/action/realign-face.cpp \
+           src/action/on-post-processed-winged-mesh.cpp \
            src/action/subdivide.cpp \
            src/action/transformer.cpp \
            src/action/unit.cpp \
@@ -74,8 +74,8 @@ HEADERS += \
            src/action/carve.hpp \
            src/action/from-mesh.hpp \
            src/action/ids.hpp \
+           src/action/on-post-processed-winged-mesh.hpp \
            src/action/on-winged-mesh.hpp \
-           src/action/realign-face.hpp \
            src/action/sub-action-kind.hpp \
            src/action/subdivide.hpp \
            src/action/transformer.hpp \

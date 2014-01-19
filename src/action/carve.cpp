@@ -13,13 +13,15 @@
 #include "winged-vertex.hpp"
 #include "adjacent-iterator.hpp"
 #include "intersection.hpp"
-#include "action/realign-face.hpp"
 
 struct ActionCarve::Impl {
+  ActionCarve* self;
   ActionUnitOnWMesh actions;
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  Impl (ActionCarve* s) : self (s) {}
+
+  void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, const glm::vec3& position, float width) { 
     CarveBrush              brush (width, 0.05f);
@@ -107,18 +109,16 @@ struct ActionCarve::Impl {
     }
 
     // Realign faces.
-    // Note that this action is not inserted in `this->actions` because
-    // undoing all realignments is done by `ActionSubdivide`.
     for (const Id& id : ids) {
       WingedFace* face = mesh.face (id);
       if (face) {
-        ActionRealignFace::runStatic (mesh,*face);
+        this->self->realignFace (mesh, *face);
       }
     }
   }
 };
 
-DELEGATE_ACTION_BIG6 (ActionCarve)
-DELEGATE3            (void, ActionCarve, run , WingedMesh&, const glm::vec3&, float)
-DELEGATE1            (void, ActionCarve, runUndo, WingedMesh&)
-DELEGATE1            (void, ActionCarve, runRedo, WingedMesh&)
+DELEGATE_ACTION_BIG6_SELF (ActionCarve)
+DELEGATE3                 (void, ActionCarve, run , WingedMesh&, const glm::vec3&, float)
+DELEGATE1                 (void, ActionCarve, runUndoBeforePostProcessing, WingedMesh&)
+DELEGATE1                 (void, ActionCarve, runRedoBeforePostProcessing, WingedMesh&)
