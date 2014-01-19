@@ -328,8 +328,9 @@ struct Octree::Impl {
     assert (face.octreeNode ()); 
     OctreeNode* formerNode = face.octreeNode ();
 
+    FaceToInsert faceToInsert (face,geometry);
     this->deleteFace (face);
-    WingedFace& newFace = this->insertFace (FaceToInsert (face,geometry));
+    WingedFace& newFace = this->insertFace (faceToInsert);
 
     if (sameNode) {
       *sameNode = formerNode == newFace.octreeNode ();
