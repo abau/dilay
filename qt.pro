@@ -76,7 +76,6 @@ HEADERS += \
            src/action/ids.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/on-winged-mesh.hpp \
-           src/action/sub-action-kind.hpp \
            src/action/subdivide.hpp \
            src/action/transformer.hpp \
            src/action/unit.hpp \

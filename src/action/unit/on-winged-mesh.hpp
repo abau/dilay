@@ -2,7 +2,6 @@
 #define DILAY_ACTION_UNIT_ON_WINGED_MESH
 
 #include "action/on-winged-mesh.hpp"
-#include "action/sub-action-kind.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
@@ -12,13 +11,13 @@ class ActionUnitOnWMesh : public ActionOnWMesh {
     DECLARE_ACTION_BIG6 (ActionUnitOnWMesh)
 
     template <class T>
-    T* add (SubActionKind kind = SubActionKind::Normal) { 
+    T* add () { 
       T* action = new T ();
-      this->addAction (action, kind); 
+      this->addAction (action); 
       return action; 
     }
 
-    void addAction (ActionOnWMesh*, SubActionKind);
+    void addAction (ActionOnWMesh*);
     void reset     ();
 
   private:
