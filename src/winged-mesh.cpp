@@ -120,8 +120,8 @@ struct WingedMesh::Impl {
     this->vertices.pop_back ();
   }
 
-  WingedFace& realignFace (const WingedFace& face, const Triangle& triangle) {
-    return this->octree.realignFace (face, triangle);
+  WingedFace& realignFace (const WingedFace& face, const Triangle& triangle, bool* sameNode) {
+    return this->octree.realignFace (face, triangle, sameNode);
   }
 
   unsigned int numVertices () const { 
@@ -276,7 +276,7 @@ DELEGATE1       (OctreeNode&    , WingedMesh, octreeNodeSLOW, const Id&)
 DELEGATE1       (void        , WingedMesh, deleteEdge, const WingedEdge&)
 DELEGATE1       (void        , WingedMesh, deleteFace, const WingedFace&)
 DELEGATE        (void        , WingedMesh, popVertex)
-DELEGATE2       (WingedFace& , WingedMesh, realignFace, const WingedFace&, const Triangle&)
+DELEGATE3       (WingedFace& , WingedMesh, realignFace, const WingedFace&, const Triangle&, bool*)
  
 DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)

@@ -72,7 +72,7 @@ class Octree {
          ~Octree                ();
 
     WingedFace& insertFace      (const WingedFace&, const Triangle&);
-    WingedFace& realignFace     (const WingedFace&, const Triangle&);
+    WingedFace& realignFace     (const WingedFace&, const Triangle&, bool* = nullptr);
     void        deleteFace      (const WingedFace&);
     bool        hasFace         (const Id&) const;
     WingedFace* face            (const Id&);

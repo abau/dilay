@@ -34,13 +34,13 @@ class FaceToInsert {
       , minimum          (t.minimum          ())
       {}
 
-    Id           id;
-    WingedEdge*  edge;
-    unsigned int firstIndexNumber;
-    glm::vec3    center;
-    float        width;
-    glm::vec3    maximum;
-    glm::vec3    minimum;
+    const Id           id;
+    WingedEdge* const  edge;
+    const unsigned int firstIndexNumber;
+    const glm::vec3    center;
+    const float        width;
+    const glm::vec3    maximum;
+    const glm::vec3    minimum;
 };
 
 /** Octree node implementation */
@@ -323,14 +323,21 @@ struct Octree::Impl {
     return this->insertFace (faceToInsert);
   }
 
-  WingedFace& realignFace (const WingedFace& face, const Triangle& geometry) {
-    assert (this->hasFace (face.id ())); 
-    FaceToInsert faceToInsert (face,geometry);
+  WingedFace& realignFace (const WingedFace& face, const Triangle& geometry, bool* sameNode) {
+    assert (this->hasFace   (face.id ())); 
+    assert (face.octreeNode ()); 
+    OctreeNode* formerNode = face.octreeNode ();
+
     this->deleteFace (face);
-    return this->insertFace (faceToInsert);
+    WingedFace& newFace = this->insertFace (FaceToInsert (face,geometry));
+
+    if (sameNode) {
+      *sameNode = formerNode == newFace.octreeNode ();
+    }
+    return newFace;
   }
 
-  WingedFace& insertFace (FaceToInsert& faceToInsert) {
+  WingedFace& insertFace (const FaceToInsert& faceToInsert) {
     if (! this->root) {
       glm::vec3 rootCenter = (faceToInsert.maximum + faceToInsert.minimum) 
                            * glm::vec3 (0.5f);
@@ -457,7 +464,7 @@ struct Octree::Impl {
 DELEGATE_CONSTRUCTOR (Octree)
 DELEGATE_DESTRUCTOR  (Octree)
 DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const Triangle&)
-DELEGATE2       (WingedFace& , Octree, realignFace, const WingedFace&, const Triangle&)
+DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const Triangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
 DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)

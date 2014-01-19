@@ -50,7 +50,7 @@ class WingedMesh {
     void            deleteFace        (const WingedFace&);
     void            popVertex         ();
 
-    WingedFace&     realignFace       (const WingedFace&, const Triangle&);
+    WingedFace&     realignFace       (const WingedFace&, const Triangle&, bool* = nullptr);
 
     unsigned int    numVertices       () const;
     unsigned int    numEdges          () const;
