@@ -169,7 +169,7 @@ struct OctreeNode::Impl {
   }
 
   WingedFace& insertIntoChild (const FaceToInsert& f) {
-    if (this->children.size () == 0) {
+    if (this->children.empty ()) {
       this->makeChildren           ();
       return this->insertIntoChild (f);
     }
@@ -198,8 +198,27 @@ struct OctreeNode::Impl {
     }
   }
 
+  bool isEmpty () const {
+    return this->faces.empty () && this->children.empty ();
+  }
+
   void deleteFace (const WingedFace& face) {
     this->faces.erase (face.iterator ());
+    if (this->isEmpty () && this->parent) {
+      this->parent->childEmptyNotification ();
+    }
+  }
+
+  void childEmptyNotification () {
+    for (Child& c : this->children) {
+      if (c->isEmpty () == false) {
+        return;
+      }
+    }
+    children.clear ();
+    if (this->isEmpty () && this->parent) {
+      this->parent->childEmptyNotification ();
+    }
   }
 
   bool bboxIntersectRay (const Ray& ray) const {
@@ -362,6 +381,9 @@ struct Octree::Impl {
     assert (this->hasFace (face.id ())); 
     this->idMap.erase (face.id ());
     face.octreeNodeRef ().impl->deleteFace (face);
+    if (this->root->isEmpty ()) {
+      this->root.reset ();
+    }
   }
 
   bool hasFace (const Id& id) const { return this->idMap.hasElement (id); }
