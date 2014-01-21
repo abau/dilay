@@ -206,6 +206,7 @@ struct OctreeNode::Impl {
     this->faces.erase (face.iterator ());
     if (this->isEmpty () && this->parent) {
       this->parent->childEmptyNotification ();
+      // don't call anything after calling childEmptyNotification
     }
   }
 
@@ -218,6 +219,7 @@ struct OctreeNode::Impl {
     children.clear ();
     if (this->isEmpty () && this->parent) {
       this->parent->childEmptyNotification ();
+      // don't call anything after calling childEmptyNotification
     }
   }
 
@@ -384,6 +386,9 @@ struct Octree::Impl {
     if (this->root->isEmpty ()) {
       this->root.reset ();
     }
+    else {
+      this->shrinkRoot ();
+    }
   }
 
   bool hasFace (const Id& id) const { return this->idMap.hasElement (id); }
@@ -467,6 +472,28 @@ struct Octree::Impl {
     this->root = Child (new OctreeNode::Impl (center, width, 0, nullptr));
   }
 
+  void shrinkRoot () {
+    if (this->root && this->root->faces.empty    () == true 
+                   && this->root->children.empty () == false) {
+      int singleNonEmptyChildIndex = -1;
+      for (int i = 0; i < 8; i++) {
+        const Child& c = this->root->children [i];
+        if (c->isEmpty () == false) {
+          if (singleNonEmptyChildIndex == -1) 
+            singleNonEmptyChildIndex = i;
+          else
+            return;
+        }
+      }
+      if (singleNonEmptyChildIndex != -1) {
+        Child newRoot      = std::move (this->root->children [singleNonEmptyChildIndex]);
+        this->root         = std::move (newRoot);
+        this->root->parent = nullptr;
+        this->shrinkRoot ();
+      }
+    }
+  }
+
   OctreeNode& nodeSLOW (const Id& id) {
     if (this->root) {
       OctreeNode* result = this->root->nodeSLOW (id);
@@ -497,6 +524,7 @@ DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&
 DELEGATE3       (void, Octree, intersectSphere, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, initRoot, const glm::vec3&, float)
+DELEGATE        (void, Octree, shrinkRoot)
 DELEGATE1       (OctreeNode&, Octree, nodeSLOW, const Id&)
 DELEGATE        (OctreeFaceIterator, Octree, faceIterator)
 DELEGATE_CONST  (ConstOctreeFaceIterator, Octree, faceIterator)

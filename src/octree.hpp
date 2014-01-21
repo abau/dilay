@@ -84,6 +84,7 @@ class Octree {
                                 , std::unordered_set<WingedVertex*>&);
     void        reset           ();
     void        initRoot        (const glm::vec3&, float);
+    void        shrinkRoot      ();
     OctreeNode& nodeSLOW        (const Id&);
 
     OctreeFaceIterator      faceIterator ();
