@@ -19,10 +19,10 @@ class Sphere;
 
 class WingedMesh {
   public: WingedMesh             ();
-          WingedMesh             (const WingedMesh&);
+          WingedMesh             (const WingedMesh&) = delete;
           WingedMesh             (      WingedMesh&&);
-    const WingedMesh& operator=  (const WingedMesh&);
-    const WingedMesh& operator=  (      WingedMesh&&) = delete;
+    const WingedMesh& operator=  (const WingedMesh&) = delete;
+    const WingedMesh& operator=  (      WingedMesh&&);
          ~WingedMesh             ();
 
     Id              id                () const;

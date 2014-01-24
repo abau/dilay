@@ -6,9 +6,17 @@
 #include "winged-mesh.hpp"
 #include "triangle.hpp"
 #include "adjacent-iterator.hpp"
+#include "bitset.hpp"
 
 struct ActionOnPostProcessedWMesh :: Impl {
   std::unordered_set <Id> ids;
+  Bitset <char>           flags;
+
+  bool writeMesh () const { return this->flags.get (0); }
+  void writeMesh (bool v) {        this->flags.set (0,v); }
+
+  bool bufferMesh () const { return this->flags.get (1); }
+  void bufferMesh (bool v) {        this->flags.set (1,v); }
 
   WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face) {
     bool        sameNode  = false;
@@ -49,18 +57,28 @@ struct ActionOnPostProcessedWMesh :: Impl {
     }
     return newFace;
   }
+
+  void postProcess (WingedMesh& mesh) {
+    this->realignAllFaces (mesh);
+    if (this->writeMesh ())
+      mesh.write ();
+    if (this->bufferMesh ())
+      mesh.bufferData ();
+  }
 };
 
 DELEGATE_ACTION_BIG6 (ActionOnPostProcessedWMesh)
 
 DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, const WingedFace&)
+DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeMesh, bool)
+DELEGATE1 (void       , ActionOnPostProcessedWMesh, bufferMesh, bool)
 
 void ActionOnPostProcessedWMesh :: runUndo (WingedMesh& mesh) {
   this->runUndoBeforePostProcessing (mesh);
-  this->impl->realignAllFaces       (mesh);
+  this->impl->postProcess           (mesh);
 }
 
 void ActionOnPostProcessedWMesh :: runRedo (WingedMesh& mesh) {
   this->runRedoBeforePostProcessing (mesh);
-  this->impl->realignAllFaces       (mesh);
+  this->impl->postProcess           (mesh);
 }

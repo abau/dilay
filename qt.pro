@@ -83,6 +83,7 @@ HEADERS += \
            src/action/unit/on-winged-mesh.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
+           src/bitset.hpp \
            src/camera.hpp \
            src/carve-brush.hpp \
            src/color.hpp \

@@ -233,20 +233,18 @@ struct WingedMesh::Impl {
 
 WingedMesh :: WingedMesh () : impl (new WingedMesh::Impl (this)) {}
 
-WingedMesh :: WingedMesh (const WingedMesh& source) 
-  : impl (new WingedMesh::Impl (this)) {
-    WingedUtil :: fromMesh (*this, source.impl->mesh);
-}
-
 WingedMesh :: WingedMesh (WingedMesh&& source) {
   this->impl       = source.impl;
   this->impl->self = this;
   source.impl      = nullptr;
 }
 
-const WingedMesh& WingedMesh :: operator= (const WingedMesh& source) {
+const WingedMesh& WingedMesh :: operator= (WingedMesh&& source) {
   if (this == &source) return *this;
-  WingedUtil :: fromMesh (*this, source.impl->mesh);
+  this->reset ();
+  this->impl       = source.impl;
+  this->impl->self = this;
+  source.impl      = nullptr;
   return *this;
 }
 DELEGATE_DESTRUCTOR (WingedMesh)

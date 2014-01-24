@@ -173,7 +173,6 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::InitOctreeRoot: {
-        assert (false);
         break;
       }
       default: assert (false);

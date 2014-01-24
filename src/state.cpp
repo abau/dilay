@@ -2,13 +2,13 @@
 #include "state.hpp"
 #include "mesh.hpp"
 #include "winged-mesh.hpp"
-#include "winged-util.hpp"
 #include "camera.hpp"
 #include "cursor.hpp"
 #include "macro.hpp"
 #include "history.hpp"
 #include "view-mouse-movement.hpp"
 #include "id.hpp"
+#include "action/from-mesh.hpp"
 
 struct State::Impl {
   WingedMesh    _mesh;
@@ -30,10 +30,12 @@ struct State::Impl {
   void initialize () { 
     //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (100,200));
     //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (10,20));
-    WingedUtil :: fromMesh (this->_mesh, Mesh :: icosphere (2));
+    //WingedUtil :: fromMesh (this->_mesh, Mesh :: icosphere (2));
     //WingedUtil :: fromMesh (this->_mesh, Mesh :: cube ());
     this->_camera.initialize ();
     this->_cursor.initialize ();
+
+    this->_history.add <ActionFromMesh> (this->_mesh)->icosphere (this->_mesh, 2);
   }
 
   void render () {
@@ -41,8 +43,8 @@ struct State::Impl {
     this->_cursor.render ();
   }
 
-  void setMesh (const Mesh& mesh) {
-    WingedUtil :: fromMesh (this->_mesh,mesh);
+  void setMesh (const Mesh&) {
+    assert (false);
   }
 
   void writeAllData () {

@@ -1,7 +1,6 @@
 #ifndef DILAY_WINGED_UTIL
 #define DILAY_WINGED_UTIL
 
-class Mesh;
 class WingedMesh;
 class WingedFace;
 class WingedEdge;
@@ -16,9 +15,6 @@ namespace WingedUtil {
   void printStatistics (                     const WingedEdge&);
   void printStatistics (const WingedMesh&  , const WingedFace&  , bool = true);
   void printStatistics (const WingedMesh&  , bool = true);
-
-  /** `fromMesh (w,m)` loads mesh `m` as winged mesh `w` */
-  void fromMesh (WingedMesh&, const Mesh&);
 }
 
 #endif
