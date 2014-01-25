@@ -1,10 +1,10 @@
 #include <limits>
 #include <algorithm>
 #include <glm/glm.hpp>
-#include "winged-vertex.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
-#include "winged-mesh.hpp"
+#include "winged/vertex.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
 #include "adjacent-iterator.hpp"
 #include "triangle.hpp"
 #include "octree.hpp"

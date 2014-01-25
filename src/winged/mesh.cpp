@@ -1,11 +1,10 @@
 #include <glm/glm.hpp>
 #include <set>
-#include "winged-vertex.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
-#include "winged-mesh.hpp"
-#include "winged-util.hpp"
-#include "mesh.hpp"
+#include "winged/vertex.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "../mesh.hpp"
 #include "intersection.hpp"
 #include "triangle.hpp"
 #include "ray.hpp"

@@ -1,11 +1,11 @@
 #include <iostream>
 #include <glm/glm.hpp>
-#include "winged-util.hpp"
-#include "winged-mesh.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
-#include "winged-vertex.hpp"
-#include "util.hpp"
+#include "winged/util.hpp"
+#include "winged/mesh.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/vertex.hpp"
+#include "../util.hpp"
 #include "octree.hpp"
 #include "octree-util.hpp"
 

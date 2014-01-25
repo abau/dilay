@@ -4,8 +4,8 @@
 #include <type_traits>
 #include <unordered_map>
 #include "octree.hpp"
-#include "winged-face.hpp"
-#include "winged-vertex.hpp"
+#include "winged/face.hpp"
+#include "winged/vertex.hpp"
 #include "triangle.hpp"
 #include "ray.hpp"
 #include "intersection.hpp"

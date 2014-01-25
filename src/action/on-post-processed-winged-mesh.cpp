@@ -1,9 +1,9 @@
 #include <unordered_set>
 #include "action/on-post-processed-winged-mesh.hpp"
 #include "id.hpp"
-#include "winged-face.hpp"
-#include "winged-edge.hpp"
-#include "winged-mesh.hpp"
+#include "winged/face.hpp"
+#include "winged/edge.hpp"
+#include "winged/mesh.hpp"
 #include "triangle.hpp"
 #include "adjacent-iterator.hpp"
 #include "bitset.hpp"

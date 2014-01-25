@@ -2,9 +2,9 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include "action/subdivide.hpp"
-#include "winged-face.hpp"
-#include "winged-edge.hpp"
-#include "winged-vertex.hpp"
+#include "winged/face.hpp"
+#include "winged/edge.hpp"
+#include "winged/vertex.hpp"
 #include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
 #include "partial-action/triangulate-quad.hpp"

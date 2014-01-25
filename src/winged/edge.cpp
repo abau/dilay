@@ -1,9 +1,9 @@
 #include <glm/glm.hpp>
-#include "winged-vertex.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
-#include "winged-mesh.hpp"
-#include "util.hpp"
+#include "winged/vertex.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "../util.hpp"
   
 WingedEdge :: WingedEdge () :
   WingedEdge ( nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr

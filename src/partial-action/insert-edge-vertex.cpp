@@ -1,9 +1,9 @@
 #include <glm/glm.hpp>
 #include "partial-action/insert-edge-vertex.hpp"
-#include "winged-vertex.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
-#include "winged-mesh.hpp"
+#include "winged/vertex.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
 #include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-edge.hpp"

@@ -2,7 +2,7 @@
 #include "triangle.hpp"
 #include "util.hpp"
 #include "ray.hpp"
-#include "winged-vertex.hpp"
+#include "winged/vertex.hpp"
 
 struct Triangle::Impl {
   glm::vec3 vertex1;

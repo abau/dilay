@@ -1,9 +1,9 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include "intersection.hpp"
-#include "winged-vertex.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
+#include "winged/vertex.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
 #include "sphere.hpp"
 #include "adjacent-iterator.hpp"
 #include "ray.hpp"

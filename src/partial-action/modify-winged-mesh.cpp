@@ -1,9 +1,9 @@
 #include <glm/glm.hpp>
 #include "partial-action/modify-winged-mesh.hpp"
-#include "winged-face.hpp"
-#include "winged-mesh.hpp"
-#include "winged-edge.hpp"
-#include "winged-vertex.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "winged/edge.hpp"
+#include "winged/vertex.hpp"
 #include "state.hpp"
 #include "action/ids.hpp"
 #include "triangle.hpp"

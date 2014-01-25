@@ -2,8 +2,8 @@
 #include <map>
 #include <glm/glm.hpp>
 #include "action/from-mesh.hpp"
-#include "winged-mesh.hpp"
-#include "winged-edge.hpp"
+#include "winged/mesh.hpp"
+#include "winged/edge.hpp"
 #include "mesh.hpp"
 #include "variant.hpp"
 #include "action/unit/on-winged-mesh.hpp"

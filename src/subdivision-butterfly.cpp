@@ -2,10 +2,10 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include "subdivision-butterfly.hpp"
-#include "winged-vertex.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
-#include "winged-mesh.hpp"
+#include "winged/vertex.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
 #include "adjacent-iterator.hpp"
 
 typedef std::vector <glm::vec3> Adjacents;

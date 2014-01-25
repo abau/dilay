@@ -8,9 +8,9 @@
 #include "partial-action/modify-winged-vertex.hpp"
 #include "sphere.hpp"
 #include "carve-brush.hpp"
-#include "winged-face.hpp"
-#include "winged-mesh.hpp"
-#include "winged-vertex.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "winged/vertex.hpp"
 #include "adjacent-iterator.hpp"
 #include "intersection.hpp"
 

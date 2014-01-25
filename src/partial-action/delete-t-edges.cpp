@@ -1,7 +1,7 @@
 #include <unordered_set>
 #include "partial-action/delete-t-edges.hpp"
-#include "winged-edge.hpp"
-#include "winged-face.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
 #include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/delete-edge-face.hpp"
 

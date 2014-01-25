@@ -62,11 +62,11 @@ SOURCES += \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
            src/view/mouse-movement.cpp \
-           src/winged-edge.cpp \
-           src/winged-face.cpp \
-           src/winged-mesh.cpp \
-           src/winged-util.cpp \
-           src/winged-vertex.cpp \
+           src/winged/edge.cpp \
+           src/winged/face.cpp \
+           src/winged/mesh.cpp \
+           src/winged/util.cpp \
+           src/winged/vertex.cpp \
 
 HEADERS += \
            src/action.hpp \
@@ -125,8 +125,8 @@ HEADERS += \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
            src/view/mouse-movement.hpp \
-           src/winged-edge.hpp \
-           src/winged-face.hpp \
-           src/winged-mesh.hpp \
-           src/winged-util.hpp \
-           src/winged-vertex.hpp \
+           src/winged/edge.hpp \
+           src/winged/face.hpp \
+           src/winged/mesh.hpp \
+           src/winged/util.hpp \
+           src/winged/vertex.hpp \

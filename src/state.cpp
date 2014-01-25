@@ -1,7 +1,7 @@
 #include <list>
 #include "state.hpp"
 #include "mesh.hpp"
-#include "winged-mesh.hpp"
+#include "winged/mesh.hpp"
 #include "camera.hpp"
 #include "cursor.hpp"
 #include "macro.hpp"
