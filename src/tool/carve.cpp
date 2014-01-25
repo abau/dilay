@@ -1,4 +1,4 @@
-#include "tool.hpp"
+#include "tool/carve.hpp"
 #include "ray.hpp"
 #include "winged-edge.hpp"
 #include "winged-face.hpp"
@@ -12,10 +12,9 @@
 #include "view-mouse-movement.hpp"
 #include "history.hpp"
 #include "action/carve.hpp"
+//#include "action/subdivide.hpp"
 
-#include "action/subdivide.hpp" // delete this
-
-bool Tool :: click () {
+bool ToolCarve :: click () {
   WingedMesh& mesh   = State :: mesh ();
   Ray         ray    = State :: camera ().getRay (State :: mouseMovement (). position ());
   Cursor&     cursor = State :: cursor ();

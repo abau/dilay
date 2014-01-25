@@ -1,5 +1,5 @@
 #include <glm/glm.hpp>
-#include "tool-rotate.hpp"
+#include "tool/rotate.hpp"
 #include "renderer.hpp"
 #include "state.hpp"
 #include "camera.hpp"

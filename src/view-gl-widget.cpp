@@ -13,8 +13,8 @@
 #include "ray.hpp"
 #include "cursor.hpp"
 #include "winged-face.hpp"
-#include "tool.hpp"
-#include "tool-rotate.hpp"
+#include "tool/carve.hpp"
+#include "tool/rotate.hpp"
 #include "history.hpp"
 
 GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
@@ -108,8 +108,7 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
 
 void GLWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
-    if (Tool :: click ())
-//    if (ToolCarve :: run ())
+    if (ToolCarve :: click ())
       this->update ();
   }
 }

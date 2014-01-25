@@ -28,8 +28,8 @@ SOURCES += \
            src/axis.cpp \
            src/camera.cpp \
            src/carve-brush.cpp \
-           src/config.cpp \
            src/color.cpp \
+           src/config.cpp \
            src/cursor.cpp \
            src/history.cpp \
            src/id.cpp \
@@ -48,16 +48,15 @@ SOURCES += \
            src/partial-action/modify-winged-vertex.cpp \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
-           src/renderer.cpp \
            src/ray.cpp \
+           src/renderer.cpp \
            src/rendermode.cpp \
            src/sphere.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
-           src/tool.cpp \
-        #  src/tool-carve.cpp \
-           src/tool-rotate.cpp \
+           src/tool/carve.cpp \
+           src/tool/rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
            src/view-gl-widget.cpp \
@@ -79,8 +78,8 @@ HEADERS += \
            src/action/subdivide.hpp \
            src/action/transformer.hpp \
            src/action/unit.hpp \
-           src/action/unit/template.hpp \
            src/action/unit/on-winged-mesh.hpp \
+           src/action/unit/template.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/bitset.hpp \
@@ -118,9 +117,8 @@ HEADERS += \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
-           src/tool.hpp \
-        #  src/tool-carve.hpp \
-           src/tool-rotate.hpp \
+           src/tool/carve.hpp \
+           src/tool/rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \
            src/variant.hpp \
