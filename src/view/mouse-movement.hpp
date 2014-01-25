@@ -6,9 +6,9 @@
 
 class QPoint;
 
-class MouseMovement {
+class ViewMouseMovement {
   public:
-    DECLARE_BIG6 (MouseMovement)
+    DECLARE_BIG6 (ViewMouseMovement)
 
     void              update       (const QPoint&);
     void              update       (const glm::uvec2&);

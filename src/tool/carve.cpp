@@ -9,7 +9,7 @@
 #include "cursor.hpp"
 #include "camera.hpp"
 #include "winged-util.hpp"
-#include "view-mouse-movement.hpp"
+#include "view/mouse-movement.hpp"
 #include "history.hpp"
 #include "action/carve.hpp"
 //#include "action/subdivide.hpp"

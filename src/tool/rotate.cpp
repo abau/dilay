@@ -3,10 +3,10 @@
 #include "renderer.hpp"
 #include "state.hpp"
 #include "camera.hpp"
-#include "view-mouse-movement.hpp"
+#include "view/mouse-movement.hpp"
 
 void ToolRotate :: run () {
-  MouseMovement& mm = State :: mouseMovement ();
+  ViewMouseMovement& mm = State :: mouseMovement ();
 
   if (mm.hasOld ()) {
     Camera&        cam  = State :: camera ();

@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 #include <QApplication>
 #include <QGLFormat>
-#include "view-gl-widget.hpp"
+#include "view/gl-widget.hpp"
 
 int main(int argv, char **args) {
   QApplication app(argv, args);
@@ -13,7 +13,7 @@ int main(int argv, char **args) {
   glFormat.setDepth           (true); 
   glFormat.setDepthBufferSize (24); 
 
-  GLWidget w (glFormat);
+  ViewGlWidget w (glFormat);
   w.show ();
 
   return app.exec();

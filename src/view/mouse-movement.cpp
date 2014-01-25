@@ -1,8 +1,8 @@
 #include <glm/glm.hpp>
 #include <QPoint>
-#include "view-mouse-movement.hpp"
+#include "view/mouse-movement.hpp"
 
-struct MouseMovement::Impl {
+struct ViewMouseMovement::Impl {
   enum State { UpdateNewPos, UpdateOldPos, UpdateBothPos };
 
   glm::uvec2 old;
@@ -43,11 +43,11 @@ struct MouseMovement::Impl {
   bool hasOld      () const { return this->state == UpdateBothPos; }
 };
 
-DELEGATE_BIG6  (MouseMovement)
-DELEGATE1      (void             , MouseMovement, update, const QPoint&)
-DELEGATE       (void             , MouseMovement, invalidate)
-DELEGATE_CONST (glm::ivec2       , MouseMovement, delta)
-DELEGATE_CONST (bool             , MouseMovement, hasPosition)
-DELEGATE_CONST (bool             , MouseMovement, hasOld)
-GETTER_CONST   (const glm::uvec2&, MouseMovement, old)
-GETTER_CONST   (const glm::uvec2&, MouseMovement, position)
+DELEGATE_BIG6  (ViewMouseMovement)
+DELEGATE1      (void             , ViewMouseMovement, update, const QPoint&)
+DELEGATE       (void             , ViewMouseMovement, invalidate)
+DELEGATE_CONST (glm::ivec2       , ViewMouseMovement, delta)
+DELEGATE_CONST (bool             , ViewMouseMovement, hasPosition)
+DELEGATE_CONST (bool             , ViewMouseMovement, hasOld)
+GETTER_CONST   (const glm::uvec2&, ViewMouseMovement, old)
+GETTER_CONST   (const glm::uvec2&, ViewMouseMovement, position)

@@ -5,14 +5,10 @@
 #include <QGLWidget>
 #include "axis.hpp"
 
-class GLWidgetImpl;
-
-class GLWidget : public QGLWidget {
+class ViewGlWidget : public QGLWidget {
     Q_OBJECT
   public:
-    friend class GLWidgetImpl;
-
-     GLWidget (const QGLFormat&);
+    ViewGlWidget (const QGLFormat&);
  
   protected:
     void initializeGL       ();

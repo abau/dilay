@@ -1,5 +1,5 @@
 #include <glm/glm.hpp>
-#include "view-light.hpp"
+#include "view/light.hpp"
 #include "color.hpp"
 
 struct ViewLight::Impl {

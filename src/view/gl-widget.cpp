@@ -1,9 +1,9 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <glm/glm.hpp>
-#include "view-gl-widget.hpp"
+#include "view/gl-widget.hpp"
 #include "renderer.hpp"
-#include "view-mouse-movement.hpp"
+#include "view/mouse-movement.hpp"
 #include "state.hpp"
 #include "macro.hpp"
 #include "camera.hpp"
@@ -17,9 +17,9 @@
 #include "tool/rotate.hpp"
 #include "history.hpp"
 
-GLWidget :: GLWidget (const QGLFormat& format) : QGLWidget (format) {}
+ViewGlWidget :: ViewGlWidget (const QGLFormat& format) : QGLWidget (format) {}
 
-void GLWidget :: initializeGL () {
+void ViewGlWidget :: initializeGL () {
   Renderer :: initialize ();
   State    :: initialize ();
 
@@ -29,18 +29,18 @@ void GLWidget :: initializeGL () {
   Renderer :: updateLights (State :: camera ());
 }
 
-void GLWidget :: paintGL () {
+void ViewGlWidget :: paintGL () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   State :: render ();
   this->axis.render ();
 }
 
-void GLWidget :: resizeGL (int w, int h) {
+void ViewGlWidget :: resizeGL (int w, int h) {
   State :: camera ().updateResolution (glm::uvec2 (w,h));
   glViewport (0,0,w, h < 1 ? 1 : h );
 }
 
-void GLWidget :: keyPressEvent (QKeyEvent* e) {
+void ViewGlWidget :: keyPressEvent (QKeyEvent* e) {
   switch (e->key()) {
     case Qt::Key_Escape:
       QCoreApplication::instance()->quit();
@@ -77,7 +77,7 @@ void GLWidget :: keyPressEvent (QKeyEvent* e) {
   }
 }
 
-void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
+void ViewGlWidget :: mouseMoveEvent (QMouseEvent* e) {
   State :: mouseMovement ().update (e->pos ());
   if (e->buttons () == Qt :: NoButton) {
     WingedMesh& mesh = State :: mesh ();
@@ -106,23 +106,23 @@ void GLWidget :: mouseMoveEvent (QMouseEvent* e) {
   }
 }
 
-void GLWidget :: mousePressEvent (QMouseEvent* e) {
+void ViewGlWidget :: mousePressEvent (QMouseEvent* e) {
   if (e->buttons () == Qt :: LeftButton) {
     if (ToolCarve :: click ())
       this->update ();
   }
 }
 
-void GLWidget :: mouseReleaseEvent (QMouseEvent*) {
+void ViewGlWidget :: mouseReleaseEvent (QMouseEvent*) {
   State :: mouseMovement ().invalidate ();
 }
 
-void GLWidget :: resizeEvent (QResizeEvent* e) {
+void ViewGlWidget :: resizeEvent (QResizeEvent* e) {
   State :: camera ().updateResolution (glm::uvec2 ( e->size ().width  ()
                                                   , e->size ().height ()));
 }
 
-void GLWidget :: wheelEvent (QWheelEvent* e) {
+void ViewGlWidget :: wheelEvent (QWheelEvent* e) {
   if (e->orientation () == Qt :: Vertical) {
     if (e->delta () > 0)
       State :: camera ().stepAlongGaze (true);
