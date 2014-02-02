@@ -23,6 +23,10 @@ struct WingedMesh::Impl {
   std::set  <unsigned int> freeFirstIndexNumbers;
 
   Impl (WingedMesh* s) : self (s) {}
+  Impl (WingedMesh* s, const Id& i) 
+    : self (s) 
+    , id   (i)
+    {}
 
   glm::vec3    vertex (unsigned int i) const { return this->mesh.vertex (i); }
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
@@ -231,6 +235,7 @@ struct WingedMesh::Impl {
 };
 
 DELEGATE_CONSTRUCTOR_SELF        (WingedMesh)
+DELEGATE1_CONSTRUCTOR_SELF       (WingedMesh,const Id&)
 DELEGATE_MOVE_CONSTRUCTOR_SELF   (WingedMesh)
 DELEGATE_MOVE_ASSIGNMENT_OP_SELF (WingedMesh)
 DELEGATE_DESTRUCTOR              (WingedMesh)
