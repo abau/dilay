@@ -19,8 +19,9 @@ class FaceIntersection {
     bool             isIntersection () const;
     float            distance       () const;
     const glm::vec3& position       () const;
+    WingedMesh&      mesh           () const;
     WingedFace&      face           () const;
-    void             update         (float, const glm::vec3&, WingedFace&);
+    void             update         (float, const glm::vec3&, WingedMesh&, WingedFace&);
     void             reset          ();
 
   private:

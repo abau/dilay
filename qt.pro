@@ -19,6 +19,7 @@ SOURCES += \
            src/action/carve.cpp \
            src/action/from-mesh.cpp \
            src/action/ids.cpp \
+           src/action/new-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/subdivide.cpp \
            src/action/transformer.cpp \
@@ -51,6 +52,7 @@ SOURCES += \
            src/ray.cpp \
            src/renderer.cpp \
            src/rendermode.cpp \
+           src/scene.cpp \
            src/sphere.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
@@ -73,6 +75,7 @@ HEADERS += \
            src/action/carve.hpp \
            src/action/from-mesh.hpp \
            src/action/ids.hpp \
+           src/action/new-mesh.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/on-winged-mesh.hpp \
            src/action/subdivide.hpp \
@@ -113,6 +116,7 @@ HEADERS += \
            src/renderer.hpp \
            src/ray.hpp \
            src/rendermode.hpp \
+           src/scene.hpp \
            src/sphere.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \

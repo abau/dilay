@@ -8,7 +8,6 @@
 #include "macro.hpp"
 #include "camera.hpp"
 #include "winged/util.hpp"
-#include "winged/mesh.hpp"
 #include "intersection.hpp"
 #include "ray.hpp"
 #include "cursor.hpp"
@@ -16,6 +15,7 @@
 #include "tool/carve.hpp"
 #include "tool/rotate.hpp"
 #include "history.hpp"
+#include "scene.hpp"
 
 ViewGlWidget :: ViewGlWidget (const QGLFormat& format) : QGLWidget (format) {}
 
@@ -45,6 +45,7 @@ void ViewGlWidget :: keyPressEvent (QKeyEvent* e) {
     case Qt::Key_Escape:
       QCoreApplication::instance()->quit();
       break;
+      /*
     case Qt::Key_W:
       State :: mesh ().toggleRenderMode ();
       this->update ();
@@ -52,11 +53,10 @@ void ViewGlWidget :: keyPressEvent (QKeyEvent* e) {
     case Qt::Key_I:
       WingedUtil :: printStatistics (State :: mesh ());
       break;
+      */
     case Qt::Key_Z:
       if (e->modifiers () == Qt::ControlModifier) {
         State :: history ().undo ();
-        State :: writeAllData  ();
-        State :: bufferAllData ();
         this->update ();
       }
       else
@@ -65,8 +65,6 @@ void ViewGlWidget :: keyPressEvent (QKeyEvent* e) {
     case Qt::Key_Y:
       if (e->modifiers () == Qt::ControlModifier) {
         State :: history ().redo ();
-        State :: writeAllData  ();
-        State :: bufferAllData ();
         this->update ();
       }
       else
@@ -80,15 +78,14 @@ void ViewGlWidget :: keyPressEvent (QKeyEvent* e) {
 void ViewGlWidget :: mouseMoveEvent (QMouseEvent* e) {
   State :: mouseMovement ().update (e->pos ());
   if (e->buttons () == Qt :: NoButton) {
-    WingedMesh& mesh = State :: mesh ();
     Ray ray          = State :: camera ().getRay (glm::uvec2 (e->x (), e->y ()));
 
     FaceIntersection intersection;
-    mesh.intersectRay (ray, intersection);
+    State :: scene ().intersectRay (ray, intersection);
 
     if (intersection.isIntersection ()) {
       glm::vec3 pos    = intersection.position ();
-      glm::vec3 normal = intersection.face ().normal (mesh);
+      glm::vec3 normal = intersection.face ().normal (intersection.mesh ());
 
       State :: cursor ().enable      ();
       State :: cursor ().setPosition (pos);

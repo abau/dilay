@@ -4,6 +4,7 @@
 #include "winged/vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
+#include "winged/mesh.hpp"
 #include "sphere.hpp"
 #include "adjacent-iterator.hpp"
 #include "ray.hpp"
@@ -14,21 +15,28 @@ struct FaceIntersection::Impl {
   bool        isIntersection;
   float       distance;
   glm::vec3   position;
+  WingedMesh* _mesh;
   WingedFace* _face;
 
   Impl () : isIntersection (false) {}
 
-  void update (float d, const glm::vec3& p, WingedFace& f) {
+  void update (float d, const glm::vec3& p, WingedMesh& m, WingedFace& f) {
     if (this->isIntersection == false || d < this->distance) {
       this->isIntersection = true;
       this->distance       = d;
       this->position       = p;
+      this->_mesh          = &m;
       this->_face          = &f;
     }
   }
 
   void reset () {
     this->isIntersection = false;
+  }
+
+  WingedMesh& mesh () const {
+    assert (this->isIntersection);
+    return *this->_mesh;
   }
 
   WingedFace& face () const {
@@ -38,8 +46,9 @@ struct FaceIntersection::Impl {
 };
 
 DELEGATE_BIG6  (FaceIntersection)
-DELEGATE3      (void            , FaceIntersection, update, float, const glm::vec3&, WingedFace&)
+DELEGATE4      (void            , FaceIntersection, update, float, const glm::vec3&, WingedMesh&, WingedFace&)
 DELEGATE       (void            , FaceIntersection, reset)
+DELEGATE_CONST (WingedMesh&     , FaceIntersection, mesh)
 DELEGATE_CONST (WingedFace&     , FaceIntersection, face)
 GETTER_CONST   (bool            , FaceIntersection, isIntersection)
 GETTER_CONST   (float           , FaceIntersection, distance)

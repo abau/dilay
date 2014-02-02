@@ -7,6 +7,7 @@
 #include "winged/face.hpp"
 #include "winged/edge.hpp"
 #include "winged/vertex.hpp"
+#include "scene.hpp"
 
 struct ActionIds :: Impl {
   std::vector <std::unique_ptr <Id>>           ids;
@@ -69,7 +70,7 @@ struct ActionIds :: Impl {
 
   WingedMesh& getMesh (unsigned int i) {
     assert (this->ids [i]);
-    return State::mesh (*this->ids [i]);
+    return State::scene ().wingedMesh (*this->ids [i]);
   }
 
   WingedFace* getFace (WingedMesh& mesh, unsigned int i) {
