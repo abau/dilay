@@ -67,7 +67,7 @@ struct PAModifyWMesh :: Impl {
                  , this->operandIds.getEdge   (mesh,3), this->operandIds.getEdge   (mesh,4)
                  , this->operandIds.getEdge   (mesh,5), this->operandIds.getEdge   (mesh,6)
                  , this->operandIds.getEdge   (mesh,7), this->operandIds.getEdge   (mesh,8)
-                 ,*this->operandIds.getId     (0)     , data->isTEdge
+                 , this->operandIds.getIdRef  (0)     , data->isTEdge
                  , data->faceGradient                 , data->vertexGradient));
   }
 
@@ -79,7 +79,7 @@ struct PAModifyWMesh :: Impl {
   
   WingedFace& addSavedFace (WingedMesh& mesh) {
     return mesh.addFace ( 
-        WingedFace (this->operandIds.getEdge (mesh,1), *this->operandIds.getId (0))
+        WingedFace (this->operandIds.getEdge (mesh,1), this->operandIds.getIdRef (0))
       , this->operandData.get <FaceData> ()->triangle);
   }
 
