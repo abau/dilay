@@ -230,24 +230,11 @@ struct WingedMesh::Impl {
   }
 };
 
-WingedMesh :: WingedMesh () : impl (new WingedMesh::Impl (this)) {}
-
-WingedMesh :: WingedMesh (WingedMesh&& source) {
-  this->impl       = source.impl;
-  this->impl->self = this;
-  source.impl      = nullptr;
-}
-
-const WingedMesh& WingedMesh :: operator= (WingedMesh&& source) {
-  if (this == &source) return *this;
-  this->reset ();
-  this->impl       = source.impl;
-  this->impl->self = this;
-  source.impl      = nullptr;
-  return *this;
-}
-DELEGATE_DESTRUCTOR (WingedMesh)
-ID                  (WingedMesh)
+DELEGATE_CONSTRUCTOR_SELF        (WingedMesh)
+DELEGATE_MOVE_CONSTRUCTOR_SELF   (WingedMesh)
+DELEGATE_MOVE_ASSIGNMENT_OP_SELF (WingedMesh)
+DELEGATE_DESTRUCTOR              (WingedMesh)
+ID                               (WingedMesh)
 
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
 DELEGATE1_CONST (unsigned int   , WingedMesh, index, unsigned int)
