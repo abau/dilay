@@ -135,11 +135,7 @@ struct ViewGlWidget :: Impl {
   }
 };
 
-ViewGlWidget :: ViewGlWidget (const QGLFormat& format) : QGLWidget (format) {
-  this->impl = new Impl (this);
-}
-
-DELEGATE_DESTRUCTOR (ViewGlWidget)
+DELEGATE1_WIDGET_BIG6 (ViewGlWidget,QGLWidget,const QGLFormat&)
 
 DELEGATE  (void, ViewGlWidget, initializeGL)
 DELEGATE2 (void, ViewGlWidget, resizeGL         , int, int)

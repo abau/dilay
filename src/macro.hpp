@@ -396,6 +396,16 @@
   void from :: addAction (t * a) { \
     this->impl->unitTemplate.addAction (a); } \
   void from :: reset () { \
-    this->impl->unitTemplate.reset (); } \
+    this->impl->unitTemplate.reset (); }
+
+// Widget related macros
+
+#define DECLARE_WIDGET_BIG6(t,...) \
+  DECLARE_ACTION_BIG6(t,__VA_ARGS__)
+
+#define DELEGATE1_WIDGET_BIG6(from,parent,t1) \
+  from :: from (t1 a1) : parent (a1) { this->impl = new Impl (this); } \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from)
 
 #endif

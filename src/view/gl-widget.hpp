@@ -8,10 +8,7 @@
 class ViewGlWidget : public QGLWidget {
     Q_OBJECT
   public:
-           ViewGlWidget            (const QGLFormat&);
-           ViewGlWidget            (const ViewGlWidget&) = delete;
-     const ViewGlWidget& operator= (const ViewGlWidget&) = delete;
-          ~ViewGlWidget            ();
+    DECLARE_WIDGET_BIG6 (ViewGlWidget, const QGLFormat&)
        
   protected:
     void initializeGL       ();
