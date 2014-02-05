@@ -5,7 +5,6 @@
 #include "renderer.hpp"
 #include "view/mouse-movement.hpp"
 #include "state.hpp"
-#include "macro.hpp"
 #include "camera.hpp"
 #include "winged/util.hpp"
 #include "intersection.hpp"
@@ -30,6 +29,7 @@ struct ViewGlWidget :: Impl {
 
     this->axis.initialize ();
     this->self->setMouseTracking (true);
+    this->self->setFocusPolicy   (Qt::StrongFocus);
 
     Renderer :: updateLights (State :: camera ());
   }

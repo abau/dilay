@@ -2,18 +2,12 @@
 #include <GL/gl.h>
 #include <QApplication>
 #include <QGLFormat>
-#include "view/gl-widget.hpp"
+#include "view/main-window.hpp"
 
 int main(int argv, char **args) {
   QApplication app(argv, args);
 
-  QGLFormat glFormat;
-  glFormat.setVersion         (2,1);
-  glFormat.setProfile         (QGLFormat::CoreProfile); 
-  glFormat.setDepth           (true); 
-  glFormat.setDepthBufferSize (24); 
-
-  ViewGlWidget w (glFormat);
+  ViewMainWindow w;
   w.show ();
 
   return app.exec();

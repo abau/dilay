@@ -403,6 +403,11 @@
 #define DECLARE_WIDGET_BIG6(t,...) \
   DECLARE_ACTION_BIG6(t,__VA_ARGS__)
 
+#define DELEGATE_WIDGET_BIG6(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from)
+
 #define DELEGATE1_WIDGET_BIG6(from,parent,t1) \
   from :: from (t1 a1) : parent (a1) { this->impl = new Impl (this); } \
   DELEGATE_DESTRUCTOR(from) \

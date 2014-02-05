@@ -63,6 +63,7 @@ SOURCES += \
            src/util.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
+           src/view/main-window.cpp \
            src/view/mouse-movement.cpp \
            src/winged/edge.cpp \
            src/winged/face.cpp \
@@ -128,6 +129,7 @@ HEADERS += \
            src/variant.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
+           src/view/main-window.hpp \
            src/view/mouse-movement.hpp \
            src/winged/edge.hpp \
            src/winged/face.hpp \
