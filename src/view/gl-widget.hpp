@@ -3,13 +3,16 @@
 
 #include <GL/glew.h>
 #include <QGLWidget>
-#include "axis.hpp"
+#include "macro.hpp"
 
 class ViewGlWidget : public QGLWidget {
     Q_OBJECT
   public:
-    ViewGlWidget (const QGLFormat&);
- 
+           ViewGlWidget            (const QGLFormat&);
+           ViewGlWidget            (const ViewGlWidget&) = delete;
+     const ViewGlWidget& operator= (const ViewGlWidget&) = delete;
+          ~ViewGlWidget            ();
+       
   protected:
     void initializeGL       ();
     void resizeGL           (int,int);
@@ -23,7 +26,8 @@ class ViewGlWidget : public QGLWidget {
     void wheelEvent         (QWheelEvent*);
 
   private:
-    Axis axis;
+    class Impl;
+    Impl* impl;
 };
 
 #endif
