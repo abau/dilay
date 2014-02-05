@@ -18,7 +18,10 @@ struct ActionCarve::Impl {
   ActionCarve* self;
   ActionUnitOnWMesh actions;
 
-  Impl (ActionCarve* s) : self (s) {}
+  Impl (ActionCarve* s) : self (s) {
+    self->writeMesh  (true);
+    self->bufferMesh (true);
+  }
 
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
