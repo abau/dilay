@@ -14,6 +14,7 @@ OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++11
 QMAKE_CXXFLAGS_DEBUG   += # -pg # -DDILAY_RENDER_OCTREE
 QMAKE_LFLAGS_DEBUG     += # -pg 
+TRANSLATIONS           = i18n/dilay_de.ts
 
 SOURCES += \
            src/action/carve.cpp \
