@@ -41,9 +41,13 @@ struct ViewToolbar :: Impl {
           if (this->actions[i] != a) 
             a->setChecked (false);
         }
+        if (! this->hideOthersCheckbox->isEnabled ()) {
+          this->hideOthersCheckbox->setEnabled (true);
+        }
         emit this->self->selectionChanged (meshType);
       }
       else {
+        this->hideOthersCheckbox->setEnabled (false);
         emit this->self->selectionReseted ();
       }
     });
@@ -51,6 +55,9 @@ struct ViewToolbar :: Impl {
 
   void addHideOthers () {
     this->hideOthersCheckbox = new QCheckBox (tr ("Hide Others"));
+    this->hideOthersCheckbox->setChecked     (false);
+    this->hideOthersCheckbox->setEnabled     (false);
+    this->hideOthersCheckbox->setFocusPolicy (Qt::NoFocus);
     this->self->addWidget (this->hideOthersCheckbox);
 
     QObject::connect (this->hideOthersCheckbox, &QCheckBox::stateChanged, [this] (int state) {
