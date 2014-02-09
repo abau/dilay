@@ -24,13 +24,8 @@ struct State::Impl {
   Scene&             scene         () { return this->_scene; }
 
   void initialize () { 
-    //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (100,200));
-    //WingedUtil :: fromMesh (this->_mesh, Mesh :: sphere (10,20));
-    //WingedUtil :: fromMesh (this->_mesh, Mesh :: icosphere (2));
-    //WingedUtil :: fromMesh (this->_mesh, Mesh :: cube ());
     this->_camera.initialize ();
     this->_cursor.initialize ();
-
     this->_history.add <ActionNewMesh> ()->icosphere (MeshType::FreeForm, 2);
   }
 };

@@ -17,12 +17,14 @@
 #include "scene.hpp"
 #include "axis.hpp"
 #include "mesh-type.hpp"
+#include "view/toolbar.hpp"
 
 struct ViewGlWidget :: Impl {
   ViewGlWidget* self;
+  ViewToolbar*  toolbar;
   Axis          axis;
 
-  Impl (ViewGlWidget* s) : self (s) {}
+  Impl (ViewGlWidget* s, ViewToolbar* tb) : self (s), toolbar (tb) {}
 
   void initializeGL () {
     Renderer :: initialize ();
@@ -33,11 +35,21 @@ struct ViewGlWidget :: Impl {
     this->self->setFocusPolicy   (Qt::StrongFocus);
 
     Renderer :: updateLights (State :: camera ());
+
+    QObject::connect ( this->toolbar, &ViewToolbar::selectionChanged 
+                     , [this] () { this->self->update (); });
+    QObject::connect (this->toolbar, &ViewToolbar::selectionReseted
+                     , [this] () { this->self->update (); });
+    QObject::connect (this->toolbar, &ViewToolbar::hideOthersChanged
+                     , [this] () { this->self->update (); });
   }
 
   void paintGL () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    State :: scene  ().render (MeshType::FreeForm);
+
+    if (this->toolbar->show (MeshType::FreeForm)) {
+      State :: scene ().render (MeshType::FreeForm);
+    }
     State :: cursor ().render ();
     this->axis        .render ();
   }
@@ -137,7 +149,14 @@ struct ViewGlWidget :: Impl {
   }
 };
 
-DELEGATE1_WIDGET_BIG6 (ViewGlWidget,QGLWidget,const QGLFormat&)
+ViewGlWidget :: ViewGlWidget (const QGLFormat& format, ViewToolbar* toolbar) 
+  : QGLWidget (format) 
+{ 
+  this->impl = new Impl (this, toolbar);
+}
+
+DELEGATE_DESTRUCTOR       (ViewGlWidget)
+DELEGATE_MOVE_CONSTRUCTOR (ViewGlWidget)
 
 DELEGATE  (void, ViewGlWidget, initializeGL)
 DELEGATE2 (void, ViewGlWidget, resizeGL         , int, int)

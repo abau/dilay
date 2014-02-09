@@ -5,10 +5,12 @@
 #include <QGLWidget>
 #include "macro.hpp"
 
+class ViewToolbar;
+
 class ViewGlWidget : public QGLWidget {
     Q_OBJECT
   public:
-    DECLARE_WIDGET_BIG6 (ViewGlWidget, const QGLFormat&)
+    DECLARE_WIDGET_BIG6 (ViewGlWidget, const QGLFormat&, ViewToolbar*)
        
   protected:
     void initializeGL       ();

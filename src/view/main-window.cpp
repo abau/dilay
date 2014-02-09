@@ -1,5 +1,6 @@
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
+#include "view/toolbar.hpp"
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
@@ -11,10 +12,12 @@ struct ViewMainWindow :: Impl {
     glFormat.setProfile         (QGLFormat::CoreProfile); 
     glFormat.setDepth           (true); 
     glFormat.setDepthBufferSize (24); 
-    this->glWidget = new ViewGlWidget (glFormat);
+    ViewToolbar* toolbar = new ViewToolbar  (nullptr);
+    this->glWidget = new ViewGlWidget (glFormat, toolbar);
 
     this->self->setFocusPolicy   (Qt::NoFocus);
     this->self->setCentralWidget (this->glWidget);
+    this->self->addToolBar       (toolbar);
   }
 };
 
