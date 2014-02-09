@@ -36,8 +36,9 @@ struct ViewGlWidget :: Impl {
 
   void paintGL () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    State :: render ();
-    this->axis.render ();
+    State :: scene  ().render ();
+    State :: cursor ().render ();
+    this->axis        .render ();
   }
 
   void resizeGL (int w, int h) {

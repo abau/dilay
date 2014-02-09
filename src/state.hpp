@@ -21,7 +21,6 @@ class State {
     static Scene&              scene         ();
 
     static void                initialize    ();
-    static void                render        ();
   private:
           State            ();
           State            (const State&) = delete;

@@ -32,11 +32,6 @@ struct State::Impl {
 
     this->_history.add <ActionNewMesh> ()->icosphere (2);
   }
-
-  void render () {
-    this->_scene .render ();
-    this->_cursor.render ();
-  }
 };
 
 GLOBAL               (State)
@@ -50,4 +45,3 @@ DELEGATE_GLOBAL  (ViewMouseMovement&, State, mouseMovement)
 DELEGATE_GLOBAL  (Scene&            , State, scene)
 
 DELEGATE_GLOBAL  (void, State, initialize)
-DELEGATE_GLOBAL  (void, State, render)
