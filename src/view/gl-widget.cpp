@@ -16,6 +16,7 @@
 #include "history.hpp"
 #include "scene.hpp"
 #include "axis.hpp"
+#include "mesh-type.hpp"
 
 struct ViewGlWidget :: Impl {
   ViewGlWidget* self;
@@ -36,7 +37,7 @@ struct ViewGlWidget :: Impl {
 
   void paintGL () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    State :: scene  ().render ();
+    State :: scene  ().render (MeshType::FreeForm);
     State :: cursor ().render ();
     this->axis        .render ();
   }

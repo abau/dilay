@@ -8,6 +8,7 @@
 #include "id.hpp"
 #include "action/new-mesh.hpp"
 #include "scene.hpp"
+#include "mesh-type.hpp"
 
 struct State::Impl {
   Camera            _camera;
@@ -30,7 +31,7 @@ struct State::Impl {
     this->_camera.initialize ();
     this->_cursor.initialize ();
 
-    this->_history.add <ActionNewMesh> ()->icosphere (2);
+    this->_history.add <ActionNewMesh> ()->icosphere (MeshType::FreeForm, 2);
   }
 };
 

@@ -103,6 +103,7 @@ HEADERS += \
            src/iterator.hpp \
            src/macro.hpp \
            src/mesh.hpp \
+           src/mesh-type.hpp \
            src/octree.hpp \
            src/octree-util.hpp \
            src/opengl-util.hpp \

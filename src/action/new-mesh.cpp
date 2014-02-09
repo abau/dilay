@@ -5,14 +5,17 @@
 #include "action/unit/on-winged-mesh.hpp"
 #include "winged/mesh.hpp"
 #include "scene.hpp"
+#include "mesh-type.hpp"
 
 struct ActionNewMesh :: Impl {
   ActionUnitOnWMesh actions;
   ActionIds         ids;
+  MeshType          meshType;
 
-  WingedMesh& icosphere (unsigned int numSubdivisions) {
-    WingedMesh& mesh = State::scene ().newWingedMesh ();
+  WingedMesh& icosphere (MeshType t, unsigned int numSubdivisions) {
+    WingedMesh& mesh = State::scene ().newWingedMesh (t);
 
+    this->meshType = t;
     this->ids.setMesh (0, &mesh);
     this->actions.add <ActionFromMesh> ()->icosphere (mesh, numSubdivisions);
     return mesh;
@@ -24,7 +27,7 @@ struct ActionNewMesh :: Impl {
   }
 
   void runRedo () {
-    WingedMesh& mesh = State::scene ().newWingedMesh (this->ids.getIdRef (0));
+    WingedMesh& mesh = State::scene ().newWingedMesh (this->meshType, this->ids.getIdRef (0));
     this->actions.redo (mesh);
   }
 };
@@ -32,6 +35,6 @@ struct ActionNewMesh :: Impl {
 
 DELEGATE_ACTION_BIG6 (ActionNewMesh)
 
-DELEGATE1 (WingedMesh&, ActionNewMesh, icosphere, unsigned int)
+DELEGATE2 (WingedMesh&, ActionNewMesh, icosphere, MeshType, unsigned int)
 DELEGATE  (void       , ActionNewMesh, runUndo)
 DELEGATE  (void       , ActionNewMesh, runRedo)
