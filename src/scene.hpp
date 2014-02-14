@@ -22,7 +22,7 @@ class Scene {
     const WingedMesh& wingedMesh       (const Id&) const;
 
           void        render           (MeshType);
-          void        intersectRay     (const Ray&, FaceIntersection&);
+          void        intersectRay     (MeshType, const Ray&, FaceIntersection&);
 
   private:
     class Impl;

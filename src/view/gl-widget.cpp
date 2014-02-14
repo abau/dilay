@@ -100,7 +100,7 @@ struct ViewGlWidget :: Impl {
       Ray ray = State :: camera ().getRay (glm::uvec2 (e->x (), e->y ()));
 
       FaceIntersection intersection;
-      State :: scene ().intersectRay (ray, intersection);
+      State :: scene ().intersectRay (MeshType::FreeForm, ray, intersection);
 
       if (intersection.isIntersection ()) {
         glm::vec3 pos    = intersection.position ();

@@ -13,13 +13,14 @@
 #include "action/carve.hpp"
 #include "scene.hpp"
 //#include "action/subdivide.hpp"
+#include "mesh-type.hpp"
 
 bool ToolCarve :: click () {
   Ray         ray    = State :: camera ().getRay (State :: mouseMovement (). position ());
   Cursor&     cursor = State :: cursor ();
   FaceIntersection intersection;
 
-  State :: scene ().intersectRay (ray,intersection);
+  State :: scene ().intersectRay (MeshType::FreeForm,ray,intersection);
   if (intersection.isIntersection ()) {
     State :: history ().add <ActionCarve> (intersection.mesh ())
       ->run (intersection.mesh (), intersection.position (), cursor.radius ());

@@ -33,9 +33,11 @@ struct Scene :: Impl {
     }
   }
 
-  void intersectRay (const Ray& ray, FaceIntersection& intersection) {
-    for (auto it = this->wingedMeshes.begin (); it != this->wingedMeshes.end (); ++it) {
-      it->second->intersectRay (ray, intersection);
+  void intersectRay (MeshType t, const Ray& ray, FaceIntersection& intersection) {
+    if (t == MeshType::FreeForm) {
+      for (auto it = this->wingedMeshes.begin (); it != this->wingedMeshes.end (); ++it) {
+        it->second->intersectRay (ray, intersection);
+      }
     }
   }
 };
@@ -49,4 +51,4 @@ DELEGATE1       (void             , Scene, removeWingedMesh, const Id&)
 DELEGATE1       (WingedMesh&      , Scene, wingedMesh, const Id&)
 DELEGATE1_CONST (const WingedMesh&, Scene, wingedMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
-DELEGATE2       (void             , Scene, intersectRay, const Ray&, FaceIntersection&)
+DELEGATE3       (void             , Scene, intersectRay, MeshType, const Ray&, FaceIntersection&)
