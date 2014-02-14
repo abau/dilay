@@ -17,8 +17,9 @@ class ActionUnitOnWMesh : public ActionOnWMesh {
       return action; 
     }
 
-    void addAction (ActionOnWMesh*);
-    void reset     ();
+    void         addAction  (ActionOnWMesh*);
+    void         reset      ();
+    unsigned int numActions () const;
 
   private:
     void runUndo (WingedMesh&);

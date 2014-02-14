@@ -396,7 +396,9 @@
   void from :: addAction (t * a) { \
     this->impl->unitTemplate.addAction (a); } \
   void from :: reset () { \
-    this->impl->unitTemplate.reset (); }
+    this->impl->unitTemplate.reset (); } \
+  unsigned int from :: numActions () const { \
+    return this->impl->unitTemplate.numActions (); }
 
 // Widget related macros
 

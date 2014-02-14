@@ -32,8 +32,9 @@ class ActionUnitTemplate {
       }
     }
 
-    void                     reset   () { this->_actions.clear (); }
-    std::list < ActionPtr >& actions () { return this->_actions; }
+    void                     reset      ()       { this->_actions.clear (); }
+    std::list < ActionPtr >& actions    ()       { return this->_actions; }
+    unsigned int             numActions () const { return this->_actions.size (); }
 
   private:
     std::list < ActionPtr > _actions;

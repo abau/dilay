@@ -15,8 +15,9 @@ class ActionUnit : public Action {
       return action; 
     }
 
-    void addAction (Action*);
-    void reset     ();
+    void         addAction  (Action*);
+    void         reset      ();
+    unsigned int numActions () const;
 
   private:
     void runUndo ();
