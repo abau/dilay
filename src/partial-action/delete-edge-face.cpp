@@ -60,7 +60,7 @@ struct PADeleteEdgeFace :: Impl {
   void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
-DELEGATE_ACTION_BIG6 (PADeleteEdgeFace)
+DELEGATE_BIG3 (PADeleteEdgeFace)
 
 DELEGATE2 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&)
 DELEGATE1 (void,PADeleteEdgeFace,runUndo,WingedMesh&)

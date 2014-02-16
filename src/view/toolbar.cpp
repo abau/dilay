@@ -81,7 +81,7 @@ struct ViewToolbar :: Impl {
   }
 }; 
 
-DELEGATE_WIDGET_BIG6 (ViewToolbar)
+DELEGATE_BIG3_SELF (ViewToolbar)
 
 DELEGATE1_CONST (bool, ViewToolbar, selected, MeshType)
 DELEGATE1_CONST (bool, ViewToolbar, show, MeshType)

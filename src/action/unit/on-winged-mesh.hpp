@@ -8,7 +8,7 @@ class WingedMesh;
 
 class ActionUnitOnWMesh : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG6 (ActionUnitOnWMesh)
+    DECLARE_BIG3 (ActionUnitOnWMesh)
 
     template <class T>
     T* add () { 

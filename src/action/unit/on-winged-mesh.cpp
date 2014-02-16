@@ -13,7 +13,7 @@ struct ActionUnitOnWMesh :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG6      (ActionUnitOnWMesh)
+DELEGATE_BIG3             (ActionUnitOnWMesh)
 DELEGATE_TO_UNIT_TEMPLATE (ActionUnitOnWMesh,ActionOnWMesh)
 
 DELEGATE1 (void, ActionUnitOnWMesh, runUndo, WingedMesh&)

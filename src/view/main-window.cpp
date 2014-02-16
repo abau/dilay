@@ -21,4 +21,4 @@ struct ViewMainWindow :: Impl {
   }
 };
 
-DELEGATE_WIDGET_BIG6 (ViewMainWindow)
+DELEGATE_BIG3_SELF (ViewMainWindow)

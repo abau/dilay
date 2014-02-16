@@ -10,7 +10,7 @@ class WingedMesh;
 
 class ActionCarve : public ActionOnPostProcessedWMesh {
   public: 
-    DECLARE_ACTION_BIG6 (ActionCarve)
+    DECLARE_BIG6 (ActionCarve)
 
     void run (WingedMesh&, const glm::vec3&, float);
 

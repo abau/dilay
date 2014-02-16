@@ -239,7 +239,7 @@ struct ActionSubdivide::Impl {
    }
 };
 
-DELEGATE_ACTION_BIG6_SELF (ActionSubdivide)
-DELEGATE3                 (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
-DELEGATE1                 (void, ActionSubdivide, runUndoBeforePostProcessing, WingedMesh&)
-DELEGATE1                 (void, ActionSubdivide, runRedoBeforePostProcessing, WingedMesh&)
+DELEGATE_BIG3_SELF (ActionSubdivide)
+DELEGATE3          (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
+DELEGATE1          (void, ActionSubdivide, runUndoBeforePostProcessing, WingedMesh&)
+DELEGATE1          (void, ActionSubdivide, runRedoBeforePostProcessing, WingedMesh&)

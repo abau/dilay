@@ -102,7 +102,7 @@ struct PATriangulate6Gon :: Impl {
   void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
-DELEGATE_ACTION_BIG6 (PATriangulate6Gon)
+DELEGATE_BIG3 (PATriangulate6Gon)
 
 DELEGATE3 (void,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::list<Id>*)
 DELEGATE1 (void,PATriangulate6Gon,runUndo,WingedMesh&)

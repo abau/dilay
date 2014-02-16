@@ -12,7 +12,7 @@ class WingedVertex;
 
 class PAModifyWEdge : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG6 (PAModifyWEdge)
+    DECLARE_BIG3 (PAModifyWEdge)
 
     void vertex1              (WingedEdge&, WingedVertex*);
     void vertex2              (WingedEdge&, WingedVertex*);

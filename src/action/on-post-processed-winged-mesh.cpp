@@ -67,7 +67,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
   }
 };
 
-DELEGATE_ACTION_BIG6 (ActionOnPostProcessedWMesh)
+DELEGATE_BIG3 (ActionOnPostProcessedWMesh)
 
 DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, const WingedFace&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeMesh, bool)

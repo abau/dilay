@@ -64,7 +64,7 @@ struct PAInsertEdgeVertex :: Impl {
   void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
-DELEGATE_ACTION_BIG6 (PAInsertEdgeVertex)
+DELEGATE_BIG3 (PAInsertEdgeVertex)
 
 DELEGATE4 (WingedEdge&,PAInsertEdgeVertex,run,WingedMesh&,WingedEdge&,const glm::vec3&,bool)
 DELEGATE1 (void,PAInsertEdgeVertex,runUndo,WingedMesh&)

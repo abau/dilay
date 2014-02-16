@@ -11,7 +11,7 @@ class Id;
 
 class ActionSubdivide : public ActionOnPostProcessedWMesh {
   public: 
-    DECLARE_ACTION_BIG6 (ActionSubdivide)
+    DECLARE_BIG3 (ActionSubdivide)
 
     void run (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
 

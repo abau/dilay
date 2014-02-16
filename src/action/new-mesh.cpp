@@ -33,7 +33,7 @@ struct ActionNewMesh :: Impl {
 };
 
 
-DELEGATE_ACTION_BIG6 (ActionNewMesh)
+DELEGATE_BIG3 (ActionNewMesh)
 
 DELEGATE2 (WingedMesh&, ActionNewMesh, icosphere, MeshType, unsigned int)
 DELEGATE  (void       , ActionNewMesh, runUndo)

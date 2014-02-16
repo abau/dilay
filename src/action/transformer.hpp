@@ -9,7 +9,7 @@ class ActionOnWMesh;
 
 class ActionTransformer : public Action {
   public:
-    DECLARE_ACTION_BIG6 (ActionTransformer, WingedMesh&, ActionOnWMesh*);
+    DECLARE_BIG3 (ActionTransformer, WingedMesh&, ActionOnWMesh*);
 
   private:
     void runUndo ();

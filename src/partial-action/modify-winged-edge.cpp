@@ -345,7 +345,7 @@ struct PAModifyWEdge :: Impl {
   void runRedo (WingedMesh& mesh) { this->toggle (mesh); }
 };
 
-DELEGATE_ACTION_BIG6 (PAModifyWEdge)
+DELEGATE_BIG3 (PAModifyWEdge)
 
 DELEGATE2 (void,PAModifyWEdge,vertex1         ,WingedEdge&,WingedVertex*)
 DELEGATE2 (void,PAModifyWEdge,vertex2         ,WingedEdge&,WingedVertex*)

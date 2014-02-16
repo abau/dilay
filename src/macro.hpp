@@ -60,17 +60,23 @@
 
 #define DELEGATE_DESTRUCTOR(from) from :: ~ from () { delete this->impl; }
 
-#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
+#define DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from) \
   DELEGATE_ASSIGNMENT_OP(from)\
   DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
 #define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
-  DELEGATE_MOVE_CONSTRUCTOR_SELF(from) \
   DELEGATE_ASSIGNMENT_OP_SELF(from)\
   DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
@@ -109,6 +115,54 @@
 
 #define DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
   from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { this->impl = new Impl (this,a1,a2,a3,a4,a5); }
+
+#define DELEGATE_BIG3(from) \
+  DELEGATE_CONSTRUCTOR(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE1_BIG3(from,t1) \
+  DELEGATE1_CONSTRUCTOR(from,t1) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE2_BIG3(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE3_BIG3(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE4_BIG3(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE5_BIG3(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG3_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE1_BIG3_SELF(from,t1) \
+  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE2_BIG3_SELF(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE3_BIG3_SELF(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE4_BIG3_SELF(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE5_BIG3_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
 
 #define DELEGATE_BIG6(from) \
   DELEGATE_CONSTRUCTOR(from) \
@@ -346,6 +400,24 @@
     assert (ptr); \
     return *ptr; }
 
+// Big 3 declarations
+
+#define DECLARE_BIG3(t,...)                   \
+         t             (__VA_ARGS__);         \
+         t             (const t &)  = delete; \
+         t             (      t &&);          \
+  const  t & operator= (const t &)  = delete; \
+  const  t & operator= (      t &&) = delete; \
+       ~ t             ();
+
+#define DECLARE_BIG3_VIRTUAL(t,...)                   \
+                 t             (__VA_ARGS__);         \
+                 t             (const t &)  = delete; \
+                 t             (      t &&);          \
+          const  t & operator= (const t &)  = delete; \
+          const  t & operator= (      t &&) = delete; \
+  virtual      ~ t             ();
+
 // Big 6 declarations
 
 #define DECLARE_BIG6(t,...)              \
@@ -366,32 +438,6 @@
 
 // Action related macros
 
-#define DECLARE_ACTION_BIG6(t,...)            \
-         t             (__VA_ARGS__);         \
-         t             (const t &)  = delete; \
-         t             (      t &&);          \
-  const  t & operator= (const t &)  = delete; \
-  const  t & operator= (      t &&) = delete; \
-       ~ t             ();
-
-#define DECLARE_ACTION_BIG6_VIRTUAL(t,...)            \
-                 t             (__VA_ARGS__);         \
-                 t             (const t &)  = delete; \
-                 t             (      t &&);          \
-          const  t & operator= (const t &)  = delete; \
-          const  t & operator= (      t &&) = delete; \
-  virtual      ~ t             ();
-
-#define DELEGATE_ACTION_BIG6(from) \
-  DELEGATE_CONSTRUCTOR(from) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from)
-
-#define DELEGATE_ACTION_BIG6_SELF(from) \
-  DELEGATE_CONSTRUCTOR_SELF(from) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR_SELF(from)
-
 #define DELEGATE_TO_UNIT_TEMPLATE(from,t) \
   void from :: addAction (t * a) { \
     this->impl->unitTemplate.addAction (a); } \
@@ -399,15 +445,5 @@
     this->impl->unitTemplate.reset (); } \
   unsigned int from :: numActions () const { \
     return this->impl->unitTemplate.numActions (); }
-
-// Widget related macros
-
-#define DECLARE_WIDGET_BIG6(t,...) \
-  DECLARE_ACTION_BIG6(t,__VA_ARGS__)
-
-#define DELEGATE_WIDGET_BIG6(from) \
-  DELEGATE_CONSTRUCTOR_SELF(from) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from)
 
 #endif

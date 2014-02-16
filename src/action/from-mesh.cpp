@@ -135,7 +135,7 @@ struct ActionFromMesh :: Impl {
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
-DELEGATE_ACTION_BIG6_SELF (ActionFromMesh)
-DELEGATE2                 (void, ActionFromMesh, icosphere, WingedMesh&, unsigned int);
-DELEGATE1                 (void, ActionFromMesh, runUndoBeforePostProcessing, WingedMesh&)
-DELEGATE1                 (void, ActionFromMesh, runRedoBeforePostProcessing, WingedMesh&)
+DELEGATE_BIG3_SELF (ActionFromMesh)
+DELEGATE2          (void, ActionFromMesh, icosphere, WingedMesh&, unsigned int);
+DELEGATE1          (void, ActionFromMesh, runUndoBeforePostProcessing, WingedMesh&)
+DELEGATE1          (void, ActionFromMesh, runRedoBeforePostProcessing, WingedMesh&)

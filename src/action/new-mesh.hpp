@@ -9,7 +9,7 @@ enum class MeshType;
 
 class ActionNewMesh : public Action {
   public: 
-    DECLARE_ACTION_BIG6 (ActionNewMesh)
+    DECLARE_BIG3 (ActionNewMesh)
 
     WingedMesh& icosphere (MeshType, unsigned int);
 

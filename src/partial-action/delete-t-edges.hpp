@@ -10,7 +10,7 @@ class WingedMesh;
 
 class PADeleteTEdges : public ActionOnWMesh {
   public: 
-    DECLARE_ACTION_BIG6 (PADeleteTEdges)
+    DECLARE_BIG3 (PADeleteTEdges)
 
     void run (WingedMesh&, std::unordered_set <WingedFace*>&);
 

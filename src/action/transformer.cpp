@@ -25,9 +25,7 @@ struct ActionTransformer :: Impl {
   }
 };
 
-DELEGATE2_CONSTRUCTOR     (ActionTransformer,WingedMesh&,ActionOnWMesh*)
-DELEGATE_MOVE_CONSTRUCTOR (ActionTransformer)
-DELEGATE_DESTRUCTOR       (ActionTransformer)
+DELEGATE2_BIG3 (ActionTransformer,WingedMesh&,ActionOnWMesh*)
 
 DELEGATE (void, ActionTransformer, runUndo)
 DELEGATE (void, ActionTransformer, runRedo)

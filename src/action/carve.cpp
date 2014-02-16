@@ -121,7 +121,7 @@ struct ActionCarve::Impl {
   }
 };
 
-DELEGATE_ACTION_BIG6_SELF (ActionCarve)
-DELEGATE3                 (void, ActionCarve, run , WingedMesh&, const glm::vec3&, float)
-DELEGATE1                 (void, ActionCarve, runUndoBeforePostProcessing, WingedMesh&)
-DELEGATE1                 (void, ActionCarve, runRedoBeforePostProcessing, WingedMesh&)
+DELEGATE_BIG3_SELF (ActionCarve)
+DELEGATE3          (void, ActionCarve, run , WingedMesh&, const glm::vec3&, float)
+DELEGATE1          (void, ActionCarve, runUndoBeforePostProcessing, WingedMesh&)
+DELEGATE1          (void, ActionCarve, runRedoBeforePostProcessing, WingedMesh&)

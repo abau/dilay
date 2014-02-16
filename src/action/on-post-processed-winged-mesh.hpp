@@ -9,7 +9,7 @@ class WingedFace;
 
 class ActionOnPostProcessedWMesh : public ActionOnWMesh {
   public:
-    DECLARE_ACTION_BIG6_VIRTUAL (ActionOnPostProcessedWMesh)
+    DECLARE_BIG3_VIRTUAL (ActionOnPostProcessedWMesh)
 
   protected:
     WingedFace& realignFace (WingedMesh&, const WingedFace&);

@@ -8,7 +8,7 @@ class WingedMesh;
 
 class ActionFromMesh : public ActionOnPostProcessedWMesh {
   public: 
-    DECLARE_ACTION_BIG6 (ActionFromMesh)
+    DECLARE_BIG3 (ActionFromMesh)
 
     void cube      (WingedMesh&);
     void sphere    (WingedMesh&, unsigned int, unsigned int);

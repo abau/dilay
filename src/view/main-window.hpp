@@ -7,7 +7,7 @@
 class ViewMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    DECLARE_WIDGET_BIG6 (ViewMainWindow)
+    DECLARE_BIG3 (ViewMainWindow)
 
   private:
     class Impl;
