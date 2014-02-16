@@ -10,7 +10,7 @@ class TimeDelta {
     DECLARE_BIG6 (TimeDelta)
     TimeDelta    (const char*,int);
 
-    void stopAndPrint          ();
+    void stopAndPrint ();
 
   private:
     class Impl;
