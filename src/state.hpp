@@ -1,6 +1,8 @@
 #ifndef DILAY_STATE
 #define DILAY_STATE
 
+#include "macro.hpp"
+
 class Mesh;
 class WingedMesh;
 class Camera;
@@ -22,10 +24,7 @@ class State {
 
     static void                initialize    ();
   private:
-          State            ();
-          State            (const State&) = delete;
-    const State& operator= (const State&) = delete;
-         ~State            ();
+    DECLARE_BIG3 (State)
 
     class Impl;
     Impl* impl;

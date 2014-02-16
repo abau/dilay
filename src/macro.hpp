@@ -323,6 +323,18 @@
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
     return from :: global ().impl-> method (a1,a2,a3,a4,a5); }
 
+#define GETTER_CONST_GLOBAL(r,from,member) \
+  r from :: member () const { \
+    return from :: global ().impl-> member ; }
+
+#define GETTER_GLOBAL(r,from,member) \
+  r from :: member () { \
+    return from :: global ().impl-> member ; }
+
+#define SETTER_GLOBAL(t,from,member) \
+  void from :: member (t a) { \
+    from :: global ().impl -> member = a; }
+
 #define ID(from) \
   Id from :: id () const { return this->impl->id.id () ; }
 
