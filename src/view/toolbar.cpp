@@ -81,7 +81,7 @@ struct ViewToolbar :: Impl {
   }
 }; 
 
-DELEGATE1_WIDGET_BIG6 (ViewToolbar, QToolBar, QWidget*)
+DELEGATE_WIDGET_BIG6 (ViewToolbar)
 
 DELEGATE1_CONST (bool, ViewToolbar, selected, MeshType)
 DELEGATE1_CONST (bool, ViewToolbar, show, MeshType)

@@ -410,9 +410,4 @@
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR(from)
 
-#define DELEGATE1_WIDGET_BIG6(from,parent,t1) \
-  from :: from (t1 a1) : parent (a1) { this->impl = new Impl (this); } \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR(from)
-
 #endif

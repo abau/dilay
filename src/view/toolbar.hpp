@@ -9,7 +9,7 @@ enum class MeshType;
 class ViewToolbar : public QToolBar {
     Q_OBJECT
   public:
-    DECLARE_WIDGET_BIG6 (ViewToolbar, QWidget*)
+    DECLARE_WIDGET_BIG6 (ViewToolbar)
 
     bool selected (MeshType) const;
     bool show     (MeshType) const;

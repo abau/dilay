@@ -12,8 +12,8 @@ struct ViewMainWindow :: Impl {
     glFormat.setProfile         (QGLFormat::CoreProfile); 
     glFormat.setDepth           (true); 
     glFormat.setDepthBufferSize (24); 
-    ViewToolbar* toolbar = new ViewToolbar  (nullptr);
-    this->glWidget = new ViewGlWidget (glFormat, toolbar);
+    ViewToolbar* toolbar = new ViewToolbar  ();
+    this->glWidget       = new ViewGlWidget (glFormat, toolbar);
 
     this->self->setFocusPolicy   (Qt::NoFocus);
     this->self->setCentralWidget (this->glWidget);
