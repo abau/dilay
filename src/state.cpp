@@ -19,7 +19,7 @@ struct State::Impl {
   void initialize () { 
     this->camera.initialize ();
     this->cursor.initialize ();
-    this->history.add <ActionNewMesh> ()->icosphere (MeshType::FreeForm, 2);
+    this->history.add <ActionNewMesh> ()->newMesh (MeshType::FreeForm, Mesh::icosphere (2));
   }
 };
 

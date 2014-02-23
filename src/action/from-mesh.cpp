@@ -5,7 +5,6 @@
 #include "winged/mesh.hpp"
 #include "winged/edge.hpp"
 #include "mesh.hpp"
-#include "variant.hpp"
 #include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-face.hpp"
@@ -14,18 +13,9 @@
 #include "id.hpp"
 #include "triangle.hpp"
 
-enum class Operation { Cube, Sphere, Icosphere };
-
-struct IcoData {
-  unsigned int numSubdivisions;
-};
-
 struct ActionFromMesh :: Impl {
   ActionFromMesh*   self;
   ActionUnitOnWMesh actions;
-  Operation         operation;
-
-  Variant <IcoData> operandData;
 
   Impl (ActionFromMesh* s) : self (s) {
     self->writeMesh  (true);
@@ -125,17 +115,11 @@ struct ActionFromMesh :: Impl {
     w.writeAndBuffer ();
   }
 
-  void icosphere (WingedMesh& mesh, unsigned int numSubdivisions) {
-    this->operation = Operation::Icosphere;
-    this->operandData.set <IcoData> (IcoData {numSubdivisions});
-    this->fromMesh (mesh, Mesh::icosphere (numSubdivisions));
-  }
-
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_BIG3_SELF (ActionFromMesh)
-DELEGATE2          (void, ActionFromMesh, icosphere, WingedMesh&, unsigned int);
+DELEGATE2          (void, ActionFromMesh, fromMesh, WingedMesh&, const Mesh&);
 DELEGATE1          (void, ActionFromMesh, runUndoBeforePostProcessing, WingedMesh&)
 DELEGATE1          (void, ActionFromMesh, runRedoBeforePostProcessing, WingedMesh&)

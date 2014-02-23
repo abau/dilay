@@ -12,13 +12,13 @@ struct ActionNewMesh :: Impl {
   ActionIds         ids;
   MeshType          meshType;
 
-  WingedMesh& icosphere (MeshType t, unsigned int numSubdivisions) {
-    WingedMesh& mesh = State::scene ().newWingedMesh (t);
+  WingedMesh& newMesh (MeshType t, const Mesh& mesh) {
+    WingedMesh& wMesh = State::scene ().newWingedMesh (t);
 
     this->meshType = t;
-    this->ids.setMesh (0, &mesh);
-    this->actions.add <ActionFromMesh> ()->icosphere (mesh, numSubdivisions);
-    return mesh;
+    this->ids.setMesh (0, &wMesh);
+    this->actions.add <ActionFromMesh> ()->fromMesh (wMesh, mesh);
+    return wMesh;
   }
 
   void runUndo () {
@@ -35,6 +35,6 @@ struct ActionNewMesh :: Impl {
 
 DELEGATE_BIG3 (ActionNewMesh)
 
-DELEGATE2 (WingedMesh&, ActionNewMesh, icosphere, MeshType, unsigned int)
+DELEGATE2 (WingedMesh&, ActionNewMesh, newMesh, MeshType, const Mesh&)
 DELEGATE  (void       , ActionNewMesh, runUndo)
 DELEGATE  (void       , ActionNewMesh, runRedo)

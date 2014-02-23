@@ -5,14 +5,13 @@
 #include "macro.hpp"
 
 class WingedMesh;
+class Mesh;
 
 class ActionFromMesh : public ActionOnPostProcessedWMesh {
   public: 
     DECLARE_BIG3 (ActionFromMesh)
 
-    void cube      (WingedMesh&);
-    void sphere    (WingedMesh&, unsigned int, unsigned int);
-    void icosphere (WingedMesh&, unsigned int);
+    void fromMesh (WingedMesh&, const Mesh&);
 
   private:
     void runUndoBeforePostProcessing (WingedMesh&);
