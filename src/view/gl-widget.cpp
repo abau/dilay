@@ -147,9 +147,9 @@ struct ViewGlWidget :: Impl {
     this->self->update ();
   }
 
-  void contextMenuEvent (QContextMenuEvent*) {
+  void contextMenuEvent (QContextMenuEvent* e) {
     if (this->mainWindow->topToolbar ()->selected (MeshType::FreeForm)) {
-      ViewFreeformMenu menu (this->mainWindow);
+      ViewFreeformMenu menu (this->mainWindow, e);
       this->hasActiveContextMenu = true;
       menu.exec (QCursor::pos ());
     }

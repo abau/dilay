@@ -4,10 +4,15 @@
 #include "view/main-window.hpp"
 
 struct ViewFreeformMenu::Impl {
-  ViewFreeformMenu* self;
-  ViewMainWindow*   mainWindow;
+  ViewFreeformMenu*  self;
+  ViewMainWindow*    mainWindow;
+  QContextMenuEvent* menuEvent;
 
-  Impl (ViewFreeformMenu* s, ViewMainWindow* mW) : self (s), mainWindow (mW) {
+  Impl (ViewFreeformMenu* s, ViewMainWindow* mW, QContextMenuEvent* e) 
+    : self (s)
+    , mainWindow (mW) 
+    , menuEvent  (e) {
+
     this->addAction (tr("New Freeform Mesh"), new ToolNewFreeformMesh ());
   }
 
@@ -15,9 +20,9 @@ struct ViewFreeformMenu::Impl {
     QAction* a = this->self->addAction (label);
     QObject::connect (a, &QAction::triggered, [this,tool] () { 
         State::setTool   (tool); 
-        tool->initialize (this->mainWindow);
+        tool->initialize (this->mainWindow, this->menuEvent);
     });
   }
 };
 
-DELEGATE1_BIG3_SELF (ViewFreeformMenu, ViewMainWindow*)
+DELEGATE2_BIG3_SELF (ViewFreeformMenu, ViewMainWindow*, QContextMenuEvent*)

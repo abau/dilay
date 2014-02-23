@@ -5,11 +5,12 @@
 #include "macro.hpp"
 
 class ViewMainWindow;
+class QContextMenuEvent;
 
 class ViewFreeformMenu : public QMenu {
     Q_OBJECT
   public:
-    DECLARE_BIG3 (ViewFreeformMenu, ViewMainWindow*)
+    DECLARE_BIG3 (ViewFreeformMenu, ViewMainWindow*, QContextMenuEvent*)
 
   private:
     class Impl;

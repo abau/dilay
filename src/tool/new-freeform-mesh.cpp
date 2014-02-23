@@ -19,12 +19,13 @@ struct ToolNewFreeformMesh::Impl {
   Plane                plane;
 
   Impl (ToolNewFreeformMesh* s) 
-    : self   (s) 
+    : self  (s) 
     , plane (glm::vec3 (0.0f), glm::vec3 (0.0f, 1.0f, 0.0f))
   {}
 
-  void runInitialize (ViewMainWindow*) {
+  void runInitialize (ViewMainWindow*, QContextMenuEvent* e) {
     this->mesh = Mesh::icosphere (2);
+    this->setMeshPosition (glm::uvec2 (e->x (), e->y ()));
     this->mesh.bufferData ();
 
     //w->bottomToolbar ()->
@@ -34,15 +35,22 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.render ();
   }
 
-  ToolResponse runMouseMoveEvent (QMouseEvent* e) {
-    const Ray   r = State::camera ().getRay (glm::uvec2 (e->x (), e->y ()));
+  bool setMeshPosition (const glm::uvec2& cameraPos) {
+    const Ray   r = State::camera ().getRay (cameraPos);
           float t;
     
     if (IntersectionUtil::intersects (r, this->plane, t)) {
       this->mesh.setPosition (r.pointAt (t));
-      return ToolResponse::Redraw;
+      return true;
     }
-    return ToolResponse::None;
+    return false;
+  }
+
+  ToolResponse runMouseMoveEvent (QMouseEvent* e) {
+    if (this->setMeshPosition (glm::uvec2 (e->x (), e->y ())))
+      return ToolResponse::Redraw;
+    else
+      return ToolResponse::None;
   }
 
   ToolResponse runMousePressEvent (QMouseEvent* e) { 
@@ -55,7 +63,7 @@ struct ToolNewFreeformMesh::Impl {
 };
 
 DELEGATE_BIG3_SELF (ToolNewFreeformMesh)
-DELEGATE1 (void        , ToolNewFreeformMesh, runInitialize, ViewMainWindow*)
+DELEGATE2 (void        , ToolNewFreeformMesh, runInitialize, ViewMainWindow*, QContextMenuEvent*)
 DELEGATE  (void        , ToolNewFreeformMesh, runRender)
 DELEGATE1 (ToolResponse, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
 DELEGATE1 (ToolResponse, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
