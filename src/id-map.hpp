@@ -28,7 +28,8 @@ class IdMapPtr {
         return result->second; 
     }
 
-    void reset () { this->map.clear (); }
+    void         reset ()       {        this->map.clear (); }
+    unsigned int size  () const { return this->map.size  (); }
 
   private:
     typedef std::unordered_map <IdPrimitive, T*> InternalMap;
@@ -70,7 +71,8 @@ class IdMap {
         return *result->second; 
     }
 
-    void reset () { this->map.clear (); }
+    void         reset ()       {        this->map.clear (); }
+    unsigned int size  () const { return this->map.size  (); }
 
     typedef typename std::unordered_map <IdPrimitive, std::unique_ptr <T>>::iterator Iterator;
 

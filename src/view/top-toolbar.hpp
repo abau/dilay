@@ -1,15 +1,15 @@
-#ifndef DILAY_VIEW_TOOLBAR
-#define DILAY_VIEW_TOOLBAR
+#ifndef DILAY_VIEW_TOP_TOOLBAR
+#define DILAY_VIEW_TOP_TOOLBAR
 
 #include <QToolBar>
 #include "macro.hpp"
 
 enum class MeshType;
 
-class ViewToolbar : public QToolBar {
+class ViewTopToolbar : public QToolBar {
     Q_OBJECT
   public:
-    DECLARE_BIG3 (ViewToolbar)
+    DECLARE_BIG3 (ViewTopToolbar)
 
     bool selected (MeshType) const;
     bool show     (MeshType) const;

@@ -17,7 +17,9 @@ namespace Util {
 
   template <class T> std::string toString (const std::initializer_list<T>&);
 
-  glm::vec3 between (const glm::vec3&, const glm::vec3&);
+  glm::vec3 between            (const glm::vec3&, const glm::vec3&);
+  glm::vec3 transformPosition  (const glm::mat4x4&, const glm::vec3&);
+  glm::vec3 transformDirection (const glm::mat4x4&, const glm::vec3&);
 
   std::string readFile (const std::string&); 
 

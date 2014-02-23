@@ -6,25 +6,27 @@
 #include "view/mouse-movement.hpp"
 #include "state.hpp"
 #include "camera.hpp"
-#include "winged/util.hpp"
-#include "intersection.hpp"
-#include "ray.hpp"
-#include "cursor.hpp"
-#include "winged/face.hpp"
-#include "tool/carve.hpp"
+#include "tool.hpp"
 #include "tool/rotate.hpp"
 #include "history.hpp"
 #include "scene.hpp"
 #include "axis.hpp"
 #include "mesh-type.hpp"
-#include "view/toolbar.hpp"
+#include "view/main-window.hpp"
+#include "view/top-toolbar.hpp"
+#include "view/freeform-menu.hpp"
 
 struct ViewGlWidget :: Impl {
-  ViewGlWidget* self;
-  ViewToolbar*  toolbar;
-  Axis          axis;
+  ViewGlWidget*   self;
+  ViewMainWindow* mainWindow;
+  Axis            axis;
+  bool            hasActiveContextMenu;
 
-  Impl (ViewGlWidget* s, ViewToolbar* tb) : self (s), toolbar (tb) {}
+  Impl (ViewGlWidget* s, ViewMainWindow* mW) 
+    : self (s)
+    , mainWindow (mW) 
+    , hasActiveContextMenu (false)
+  {}
 
   void initializeGL () {
     Renderer :: initialize ();
@@ -36,22 +38,24 @@ struct ViewGlWidget :: Impl {
 
     Renderer :: updateLights (State :: camera ());
 
-    QObject::connect ( this->toolbar, &ViewToolbar::selectionChanged 
+    QObject::connect ( this->mainWindow->topToolbar (), &ViewTopToolbar::selectionChanged 
                      , [this] () { this->self->update (); });
-    QObject::connect (this->toolbar, &ViewToolbar::selectionReseted
+    QObject::connect ( this->mainWindow->topToolbar (), &ViewTopToolbar::selectionReseted
                      , [this] () { this->self->update (); });
-    QObject::connect (this->toolbar, &ViewToolbar::hideOthersChanged
+    QObject::connect ( this->mainWindow->topToolbar (), &ViewTopToolbar::hideOthersChanged
                      , [this] () { this->self->update (); });
   }
 
   void paintGL () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if (this->toolbar->show (MeshType::FreeForm)) {
+    if (this->mainWindow->topToolbar ()->show (MeshType::FreeForm)) {
       State :: scene ().render (MeshType::FreeForm);
     }
-    State :: cursor ().render ();
-    this->axis        .render ();
+    if (State::hasTool ()) {
+      State::tool ().render ();
+    }
+    this->axis.render ();
   }
 
   void resizeGL (int w, int h) {
@@ -94,27 +98,20 @@ struct ViewGlWidget :: Impl {
     }
   }
 
+  void handleToolResponse (ToolResponse response) {
+    if (response == ToolResponse::Terminate) {
+      State::setTool (nullptr);
+      this->self->update ();
+    }
+    else if (response == ToolResponse::Redraw) {
+      this->self->update ();
+    }
+  }
+
   void mouseMoveEvent (QMouseEvent* e) {
     State :: mouseMovement ().update (e->pos ());
-    if (e->buttons () == Qt :: NoButton) {
-      Ray ray = State :: camera ().getRay (glm::uvec2 (e->x (), e->y ()));
-
-      FaceIntersection intersection;
-      State :: scene ().intersectRay (MeshType::FreeForm, ray, intersection);
-
-      if (intersection.isIntersection ()) {
-        glm::vec3 pos    = intersection.position ();
-        glm::vec3 normal = intersection.face ().normal (intersection.mesh ());
-
-        State :: cursor ().enable      ();
-        State :: cursor ().setPosition (pos);
-        State :: cursor ().setNormal   (normal);
-        this->self->update ();
-      }
-      else if (State :: cursor ().isEnabled ()) {
-        State :: cursor ().disable ();
-        this->self->update ();
-      }
+    if (e->buttons () == Qt :: NoButton && State::hasTool ()) {
+      this->handleToolResponse (State::tool ().mouseMoveEvent (e));
     }
     if (e->buttons () == Qt :: MiddleButton) {
       ToolRotate :: run ();
@@ -123,9 +120,11 @@ struct ViewGlWidget :: Impl {
   }
 
   void mousePressEvent (QMouseEvent* e) {
-    if (e->buttons () == Qt :: LeftButton) {
-      if (ToolCarve :: click ())
-        this->self->update ();
+    if (this->hasActiveContextMenu == false
+     && e->buttons () == Qt :: LeftButton
+     && State::hasTool () ) {
+
+      this->handleToolResponse (State::tool ().mousePressEvent (e));
     }
   }
 
@@ -147,12 +146,21 @@ struct ViewGlWidget :: Impl {
     }
     this->self->update ();
   }
+
+  void contextMenuEvent (QContextMenuEvent*) {
+    if (this->mainWindow->topToolbar ()->selected (MeshType::FreeForm)) {
+      ViewFreeformMenu menu (this->mainWindow);
+      this->hasActiveContextMenu = true;
+      menu.exec (QCursor::pos ());
+    }
+    this->hasActiveContextMenu = false;
+  }
 };
 
-ViewGlWidget :: ViewGlWidget (const QGLFormat& format, ViewToolbar* toolbar) 
+ViewGlWidget :: ViewGlWidget (const QGLFormat& format, ViewMainWindow* mainWindow) 
   : QGLWidget (format) 
 { 
-  this->impl = new Impl (this, toolbar);
+  this->impl = new Impl (this, mainWindow);
 }
 
 DELEGATE_DESTRUCTOR       (ViewGlWidget)
@@ -167,3 +175,4 @@ DELEGATE1 (void, ViewGlWidget, mousePressEvent  , QMouseEvent*)
 DELEGATE1 (void, ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
 DELEGATE1 (void, ViewGlWidget, resizeEvent      , QResizeEvent*)
 DELEGATE1 (void, ViewGlWidget, wheelEvent       , QWheelEvent*)
+DELEGATE1 (void, ViewGlWidget, contextMenuEvent , QContextMenuEvent*)

@@ -10,6 +10,7 @@
 #include "ray.hpp"
 #include "util.hpp"
 #include "octree.hpp"
+#include "plane.hpp"
 
 struct FaceIntersection::Impl {
   bool        isIntersection;
@@ -149,12 +150,12 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float
   float s1,s2;
   const glm::vec3& d  = ray.direction ();
   const glm::vec3& v  = ray.origin () - sphere.center ();
-  float            r2 = sphere.radius () * sphere.radius ();
+  const float      r2 = sphere.radius () * sphere.radius ();
 
-  unsigned int n = Util :: solveQuadraticEq ( glm::dot (d,d)
-                                            , 2.0f * glm::dot (d,v)
-                                            , glm::dot (v, v) - r2
-                                            , s1, s2);
+  const unsigned int n = Util :: solveQuadraticEq ( glm::dot (d,d)
+                                                  , 2.0f * glm::dot (d,v)
+                                                  , glm::dot (v, v) - r2
+                                                  , s1, s2);
   if (n == 0)
     return false;
   else if (n == 1) {
@@ -165,4 +166,14 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float
     t = glm::min (s1,s2);
     return true;
   }
+}
+
+bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& t) {
+  const float d = glm::dot (ray.direction (), plane.normal ());
+
+  if (d > -Util::epsilon) {
+    return false;
+  }
+  t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
+  return true;
 }

@@ -5,12 +5,12 @@
 #include <QGLWidget>
 #include "macro.hpp"
 
-class ViewToolbar;
+class ViewMainWindow;
 
 class ViewGlWidget : public QGLWidget {
     Q_OBJECT
   public:
-    DECLARE_BIG3 (ViewGlWidget, const QGLFormat&, ViewToolbar*)
+    DECLARE_BIG3 (ViewGlWidget, const QGLFormat&, ViewMainWindow*)
        
   protected:
     void initializeGL       ();
@@ -23,6 +23,7 @@ class ViewGlWidget : public QGLWidget {
     void mouseReleaseEvent  (QMouseEvent*);
     void resizeEvent        (QResizeEvent*);
     void wheelEvent         (QWheelEvent*);
+    void contextMenuEvent   (QContextMenuEvent*);
 
   private:
     class Impl;

@@ -11,6 +11,7 @@ class WingedVertex;
 class WingedEdge;
 class WingedFace;
 class WingedMesh;
+class Plane;
 
 class FaceIntersection {
   public:
@@ -36,6 +37,7 @@ namespace IntersectionUtil {
   bool intersects (const Sphere&, const WingedMesh&, const WingedFace&);
   bool intersects (const Sphere&, const OctreeNode&);
   bool intersects (const Ray&, const Sphere&, float&); 
+  bool intersects (const Ray&, const Plane& , float&); 
 }
 
 #endif

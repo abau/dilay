@@ -50,6 +50,7 @@ SOURCES += \
            src/partial-action/modify-winged-vertex.cpp \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
+           src/plane.cpp \
            src/ray.cpp \
            src/renderer.cpp \
            src/rendermode.cpp \
@@ -58,15 +59,19 @@ SOURCES += \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
+           src/tool.cpp \
            src/tool/carve.cpp \
+           src/tool/new-freeform-mesh.cpp \
            src/tool/rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
+           src/view/bottom-toolbar.cpp \
+           src/view/freeform-menu.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
            src/view/main-window.cpp \
            src/view/mouse-movement.cpp \
-           src/view/toolbar.cpp \
+           src/view/top-toolbar.cpp \
            src/winged/edge.cpp \
            src/winged/face.cpp \
            src/winged/mesh.cpp \
@@ -117,24 +122,29 @@ HEADERS += \
            src/partial-action/modify-winged-vertex.hpp \
            src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
-           src/renderer.hpp \
+           src/plane.hpp \
            src/ray.hpp \
+           src/renderer.hpp \
            src/rendermode.hpp \
            src/scene.hpp \
            src/sphere.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
+           src/tool.hpp \
            src/tool/carve.hpp \
+           src/tool/new-freeform-mesh.hpp \
            src/tool/rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \
            src/variant.hpp \
+           src/view/bottom-toolbar.hpp \
+           src/view/freeform-menu.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
            src/view/main-window.hpp \
            src/view/mouse-movement.hpp \
-           src/view/toolbar.hpp \
+           src/view/top-toolbar.hpp \
            src/winged/edge.hpp \
            src/winged/face.hpp \
            src/winged/mesh.hpp \

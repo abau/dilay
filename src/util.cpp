@@ -27,6 +27,14 @@ glm::vec3 Util :: between (const glm::vec3& a, const glm::vec3& b) {
   return (a + b) * (glm::vec3 (0.5f));
 }
 
+glm::vec3 Util :: transformPosition (const glm::mat4x4& m, const glm::vec3& v) {
+  return glm::vec3 (m * glm::vec4 (v, 1.0f));
+}
+
+glm::vec3 Util :: transformDirection (const glm::mat4x4& m, const glm::vec3& v) {
+  return glm::vec3 (m * glm::vec4 (v, 0.0f));
+}
+
 std::string Util :: readFile (const std::string& filePath) {
   std::string   content;
   std::ifstream stream(filePath, std::ios::in);
@@ -43,17 +51,17 @@ unsigned int Util :: solveQuadraticEq ( float a, float b, float c
                                       , float& s1, float& s2) {
   float radicand = (b*b) - (4.0f * a * c);
 
-  if (radicand < 0.0f)
+  if (radicand < Util::epsilon)
     return 0;
 
   float root = glm::sqrt (radicand);
 
-  if (b < 0.0f) {
+  if (b < -Util::epsilon) {
     s1 = (-b + root) / (2.0f * a);
     s2 = (2.0f * c)  / (-b + root);
     return 2;
   }
-  else if (b > 0.0f) {
+  else if (b > Util::epsilon) {
     s1 = (-b - root) / (2.0f * a);
     s2 = (2.0f * c)  / (-b - root);
     return 2;

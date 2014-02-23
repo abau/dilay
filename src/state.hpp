@@ -6,21 +6,23 @@
 class Mesh;
 class WingedMesh;
 class Camera;
-class Cursor;
 class ViewMouseMovement;
 class Id;
 class History;
 class Scene;
+class Tool;
 
 class State {
   public:                                   
     static State&              global        ();
 
     static Camera&             camera        ();
-    static Cursor&             cursor        ();
     static History&            history       ();
     static ViewMouseMovement&  mouseMovement ();
     static Scene&              scene         ();
+    static bool                hasTool       ();
+    static Tool&               tool          ();
+    static void                setTool       (Tool*);
 
     static void                initialize    ();
   private:

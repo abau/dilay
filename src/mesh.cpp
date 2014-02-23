@@ -88,6 +88,10 @@ struct Mesh::Impl {
         );
   }
 
+  glm::vec3 transformedVertex (unsigned int i) const {
+    return Util::transformPosition (this->modelMatrix (), this->vertex (i));
+  }
+
   unsigned int index (unsigned int i) const { return this->indices [i]; }
 
   glm::vec3 normal (unsigned int i) const {
@@ -186,9 +190,12 @@ struct Mesh::Impl {
     glBindVertexArray (0);
   }
 
+  glm::mat4x4 modelMatrix () const {
+    return this->translation * this->rotation * this->scaling;
+  }
+
   void fixModelMatrix () {
-    glm::mat4x4 modelMatrix = this->translation * this->rotation * this->scaling;
-    State :: camera ().modelViewProjection (modelMatrix);
+    State::camera ().modelViewProjection (this->modelMatrix ());
   }
 
   void renderBegin () {
@@ -453,11 +460,7 @@ struct Mesh::Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR      (Mesh)
-DELEGATE_DESTRUCTOR       (Mesh)
-DELEGATE_COPY_CONSTRUCTOR (Mesh)
-DELEGATE_MOVE_CONSTRUCTOR (Mesh)
-
+DELEGATE_BIG6    (Mesh)
 DELEGATE_CONST   (unsigned int, Mesh, numVertices)
 DELEGATE_CONST   (unsigned int, Mesh, numIndices)
 DELEGATE_CONST   (unsigned int, Mesh, numNormals)
@@ -465,6 +468,7 @@ DELEGATE_CONST   (unsigned int, Mesh, sizeOfVertices)
 DELEGATE_CONST   (unsigned int, Mesh, sizeOfIndices)
 DELEGATE_CONST   (unsigned int, Mesh, sizeOfNormals)
 DELEGATE1_CONST  (glm::vec3   , Mesh, vertex, unsigned int)
+DELEGATE1_CONST  (glm::vec3   , Mesh, transformedVertex, unsigned int)
 DELEGATE1_CONST  (unsigned int, Mesh, index, unsigned int)
 DELEGATE1_CONST  (glm::vec3   , Mesh, normal, unsigned int)
 
@@ -479,6 +483,7 @@ DELEGATE1        (void        , Mesh, allocateIndices, unsigned int)
 DELEGATE1        (void        , Mesh, resizeIndices, unsigned int)
 
 DELEGATE         (void        , Mesh, bufferData)
+DELEGATE_CONST   (glm::mat4x4 , Mesh, modelMatrix)
 DELEGATE         (void        , Mesh, fixModelMatrix)
 DELEGATE         (void        , Mesh, renderBegin)
 DELEGATE         (void        , Mesh, render)
@@ -491,7 +496,7 @@ DELEGATE         (void        , Mesh, toggleRenderMode)
 DELEGATE1        (void        , Mesh, translate  , const glm::vec3&)
 DELEGATE1        (void        , Mesh, scale      , const glm::vec3&)
 DELEGATE1        (void        , Mesh, setPosition, const glm::vec3&)
-DELEGATE1        (void        , Mesh, setRotation, const glm::mat4&)
+DELEGATE1        (void        , Mesh, setRotation, const glm::mat4x4&)
 DELEGATE1        (void        , Mesh, setScaling , const glm::vec3&)
 
 DELEGATE_STATIC  (Mesh, Mesh, cube)

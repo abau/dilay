@@ -16,6 +16,7 @@
 #include "mesh-type.hpp"
 
 bool ToolCarve :: click () {
+  /*
   Ray         ray    = State :: camera ().getRay (State :: mouseMovement (). position ());
   Cursor&     cursor = State :: cursor ();
   FaceIntersection intersection;
@@ -29,5 +30,6 @@ bool ToolCarve :: click () {
     intersection.mesh ().bufferData ();
     return true;
   }
+  */
   return false;
 }

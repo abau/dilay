@@ -1,22 +1,25 @@
 #include <QAction>
 #include <QToolButton>
 #include <QCheckBox>
-#include "view/toolbar.hpp"
+#include "view/top-toolbar.hpp"
 #include "mesh-type.hpp"
 
-struct ViewToolbar :: Impl {
+struct ViewTopToolbar :: Impl {
   static const unsigned int actionsSize = 2;
   typedef std::array <QAction*, Impl::actionsSize> Actions;
 
-  ViewToolbar* self;
-  Actions      actions;
-  QCheckBox*   hideOthersCheckbox;
+  ViewTopToolbar* self;
+  Actions         actions;
+  QCheckBox*      hideOthersCheckbox;
 
-  Impl (ViewToolbar* s) : self (s) {
-    this->self->setMovable (false);
+  Impl (ViewTopToolbar* s) : self (s) {
+    this->self->setMovable   (false);
+    this->self->setFloatable (false);
     this->addState      (MeshType::FreeForm, tr("Freeform Mesh"));
     this->addState      (MeshType::Sphere  , tr("Sphere Mesh"));
     this->addHideOthers ();
+
+    emit actions[0]->toggled (true);
   }
 
   unsigned int actionIndex (MeshType t) const {
@@ -38,7 +41,9 @@ struct ViewToolbar :: Impl {
     QObject::connect (this->actions[i], &QAction::toggled, [meshType,i,this] (bool checked) {
       if (checked) {
         for (QAction* a : this->actions) {
-          if (this->actions[i] != a) 
+          if (this->actions[i] == a)
+            a->setChecked (true);
+          else
             a->setChecked (false);
         }
         if (! this->hideOthersCheckbox->isEnabled ()) {
@@ -81,7 +86,7 @@ struct ViewToolbar :: Impl {
   }
 }; 
 
-DELEGATE_BIG3_SELF (ViewToolbar)
+DELEGATE_BIG3_SELF (ViewTopToolbar)
 
-DELEGATE1_CONST (bool, ViewToolbar, selected, MeshType)
-DELEGATE1_CONST (bool, ViewToolbar, show, MeshType)
+DELEGATE1_CONST (bool, ViewTopToolbar, selected, MeshType)
+DELEGATE1_CONST (bool, ViewTopToolbar, show, MeshType)

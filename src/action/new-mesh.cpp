@@ -32,7 +32,6 @@ struct ActionNewMesh :: Impl {
   }
 };
 
-
 DELEGATE_BIG3 (ActionNewMesh)
 
 DELEGATE2 (WingedMesh&, ActionNewMesh, newMesh, MeshType, const Mesh&)
