@@ -74,7 +74,7 @@ struct ActionFromMesh :: Impl {
 
     // Octree
     for (unsigned int i = 0; i < m.numVertices (); i++) {
-      glm::vec3 v = m.transformedVertex (i);
+      glm::vec3 v = m.worldVertex (i);
       maxVertex = glm::max (maxVertex, v);
       minVertex = glm::min (minVertex, v);
     }
@@ -87,7 +87,7 @@ struct ActionFromMesh :: Impl {
     // Vertices
     for (unsigned int i = 0; i < m.numVertices (); i++) {
       vecVertices [i] = &this->actions.add<PAModifyWMesh> ()
-                             ->addVertex (w, m.transformedVertex (i));
+                             ->addVertex (w, m.worldVertex (i));
     }
 
     // Faces & Edges
