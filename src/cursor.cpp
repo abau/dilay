@@ -6,6 +6,7 @@
 #include "renderer.hpp"
 #include "color.hpp"
 #include "util.hpp"
+#include "rendermode.hpp"
 
 struct Cursor::Impl {
   Mesh          mesh;
@@ -35,6 +36,7 @@ struct Cursor::Impl {
     }
     this->mesh.addIndex   (0);
     this->mesh.addIndex   (this->sectors-1);
+    this->mesh.renderMode (RenderMode::Wireframe);
     this->mesh.bufferData ();
   }
 

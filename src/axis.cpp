@@ -6,6 +6,7 @@
 #include "macro.hpp"
 #include "camera.hpp"
 #include "color.hpp"
+#include "rendermode.hpp"
 
 struct Axis::Impl {
   Mesh   mesh;
@@ -26,6 +27,7 @@ struct Axis::Impl {
     this->mesh.addIndex (0);
     this->mesh.addIndex (3);
 
+    this->mesh.renderMode (RenderMode::Wireframe);
     this->mesh.bufferData ();
   }
 
