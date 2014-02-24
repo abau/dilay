@@ -4,6 +4,8 @@
 #include "macro.hpp"
 #include <glm/fwd.hpp>
 
+enum class RenderMode;
+
 class Mesh {
   public:
     /** `bufferData` must be called on the mutated mesh after copy or assignment */
@@ -38,6 +40,7 @@ class Mesh {
     void         renderWireframe   ();
     void         renderEnd         ();
     void         reset             ();
+    void         renderMode        (RenderMode);
     void         toggleRenderMode  ();
 
     void         translate         (const glm::vec3&);

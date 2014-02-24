@@ -41,7 +41,7 @@ struct Mesh::Impl {
     this->vertexBufferId = 0;
     this->indexBufferId  = 0;
     this->normalBufferId = 0;
-    this->renderMode     = RenderMode::Wireframe;
+    this->renderMode     = RenderMode::Smooth;
 
     this->color          = Config::get <Color> ("/editor/initial-mesh-color");
     this->wireframeColor = Config::get <Color> ("/editor/initial-mesh-wireframe-color");
@@ -495,6 +495,7 @@ DELEGATE         (void        , Mesh, renderSolid)
 DELEGATE         (void        , Mesh, renderWireframe)
 DELEGATE         (void        , Mesh, renderEnd)
 DELEGATE         (void        , Mesh, reset)
+SETTER           (RenderMode  , Mesh, renderMode)
 DELEGATE         (void        , Mesh, toggleRenderMode)
 
 DELEGATE1        (void        , Mesh, translate  , const glm::vec3&)
