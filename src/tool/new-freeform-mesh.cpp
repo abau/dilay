@@ -7,28 +7,25 @@
 #include "action/new-mesh.hpp"
 #include "mesh-type.hpp"
 #include "mesh.hpp"
-#include "plane.hpp"
-#include "ray.hpp"
 #include "state.hpp"
-#include "camera.hpp"
-#include "intersection.hpp"
 #include "history.hpp"
 #include "rendermode.hpp"
 #include "view/bottom-toolbar.hpp"
+#include "tool/movement.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
   Mesh                 mesh;
-  Plane                xzPlane;
+  ToolMovement         movement;
 
   Impl (ToolNewFreeformMesh* s) 
     : self    (s) 
-    , xzPlane (glm::vec3 (0.0f), glm::vec3 (0.0f, 1.0f, 0.0f))
   {}
 
   void runInitialize (ViewMainWindow* w, QContextMenuEvent* e) {
     this->setMesh (2);
-    this->setMeshXZPosition (glm::uvec2 (e->x (), e->y ()));
+    this->movement.moveXZ  (glm::uvec2 (e->x (), e->y ()));
+    this->mesh.setPosition (this->movement.position ());
 
     QSpinBox* numSubdivBox = w->bottomToolbar ()->addSpinBox ("subdivisions", 1, 2, 5);
     void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
@@ -47,46 +44,20 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.render ();
   }
 
-  bool setMeshXZPosition (const glm::uvec2& mousePos) {
-    const Ray   ray = State::camera ().getRay (mousePos);
-          float t;
-    
-    if (IntersectionUtil::intersects (ray, this->xzPlane, t)) {
-      this->mesh.setPosition (ray.pointAt (t));
-      return true;
-    }
-    return false;
-  }
-
-  bool setMeshYPosition (const glm::uvec2& mousePos) {
-    glm::vec3 meshPos = this->mesh.getPosition ();
-    glm::vec3 gaze    = State::camera ().toEyePoint ();
-              gaze.y  = 0.0f;
-
-    Plane plane (meshPos, glm::normalize (gaze));
-
-    const Ray   ray = State::camera ().getRay (mousePos);
-          float t;
-    
-    if (IntersectionUtil::intersects (ray, plane, t)) {
-      meshPos.y = ray.pointAt (t).y;
-      this->mesh.setPosition (meshPos);
-      this->xzPlane.point    (meshPos);
-      return true;
-    }
-    return false;
-  }
-
   ToolResponse runMouseMoveEvent (QMouseEvent* e) {
     glm::uvec2 mousePos (e->x (), e->y ());
 
     if (e->modifiers ().testFlag (Qt::ShiftModifier) ) {
-      if (this->setMeshYPosition (mousePos))
+      if (this->movement.moveY (mousePos)) {
+        this->mesh.setPosition (this->movement.position ());
         return ToolResponse::Redraw;
+      }
     }
     else {
-      if (this->setMeshXZPosition (mousePos))
+      if (this->movement.moveXZ (mousePos)) {
+        this->mesh.setPosition (this->movement.position ());
         return ToolResponse::Redraw;
+      }
     }
     return ToolResponse::None;
   }
