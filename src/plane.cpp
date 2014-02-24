@@ -14,3 +14,5 @@ struct Plane::Impl {
 DELEGATE2_BIG6 (Plane, const glm::vec3&, const glm::vec3&)
 GETTER_CONST   (const glm::vec3&, Plane, point)
 GETTER_CONST   (const glm::vec3&, Plane, normal)
+SETTER         (const glm::vec3&, Plane, point)
+SETTER         (const glm::vec3&, Plane, normal)

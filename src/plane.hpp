@@ -10,6 +10,8 @@ class Plane {
 
     const glm::vec3& point  () const;
     const glm::vec3& normal () const;
+          void       point  (const glm::vec3&);
+          void       normal (const glm::vec3&);
 
   private:
     class Impl;
