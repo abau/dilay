@@ -1,6 +1,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include <QMouseEvent>
+#include <QSpinBox>
 #include "tool/new-freeform-mesh.hpp"
 #include "view/main-window.hpp"
 #include "action/new-mesh.hpp"
@@ -12,6 +13,8 @@
 #include "camera.hpp"
 #include "intersection.hpp"
 #include "history.hpp"
+#include "rendermode.hpp"
+#include "view/bottom-toolbar.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
@@ -23,12 +26,21 @@ struct ToolNewFreeformMesh::Impl {
     , xzPlane (glm::vec3 (0.0f), glm::vec3 (0.0f, 1.0f, 0.0f))
   {}
 
-  void runInitialize (ViewMainWindow*, QContextMenuEvent* e) {
-    this->mesh = Mesh::icosphere (2);
+  void runInitialize (ViewMainWindow* w, QContextMenuEvent* e) {
+    this->setMesh (2);
     this->setMeshXZPosition (glm::uvec2 (e->x (), e->y ()));
-    this->mesh.bufferData ();
 
-    //w->bottomToolbar ()->
+    QSpinBox* numSubdivBox = w->bottomToolbar ()->addSpinBox ("subdivisions", 1, 2, 5);
+    void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
+    QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMesh (n); });
+  }
+
+  void setMesh (int numSubdivisions) {
+    glm::vec3 oldPos = this->mesh.getPosition ();
+    this->mesh = Mesh::icosphere (numSubdivisions);
+    this->mesh.renderMode  (RenderMode::Flat);
+    this->mesh.bufferData  ();
+    this->mesh.setPosition (oldPos);
   }
 
   void runRender () {

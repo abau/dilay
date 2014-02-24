@@ -14,6 +14,7 @@
 #include "mesh-type.hpp"
 #include "view/main-window.hpp"
 #include "view/top-toolbar.hpp"
+#include "view/bottom-toolbar.hpp"
 #include "view/freeform-menu.hpp"
 
 struct ViewGlWidget :: Impl {
@@ -101,6 +102,7 @@ struct ViewGlWidget :: Impl {
   void handleToolResponse (ToolResponse response) {
     if (response == ToolResponse::Terminate) {
       State::setTool (nullptr);
+      this->mainWindow->bottomToolbar ()->clear ();
       this->self->update ();
     }
     else if (response == ToolResponse::Redraw) {
@@ -150,6 +152,7 @@ struct ViewGlWidget :: Impl {
   void contextMenuEvent (QContextMenuEvent* e) {
     if (State::hasTool ()) {
       State::setTool (nullptr);
+      this->mainWindow->bottomToolbar ()->clear ();
     }
     if (this->mainWindow->topToolbar ()->selected (MeshType::FreeForm)) {
       ViewFreeformMenu menu (this->mainWindow, e);

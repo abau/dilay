@@ -4,10 +4,15 @@
 #include <QToolBar>
 #include "macro.hpp"
 
+class QSpinBox;
+class QString;
+
 class ViewBottomToolbar : public QToolBar {
     Q_OBJECT
   public:
     DECLARE_BIG3 (ViewBottomToolbar)
+
+    QSpinBox* addSpinBox (const QString&, int, int, int);
 
   private:
     class Impl;
