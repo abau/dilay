@@ -274,6 +274,10 @@ struct Mesh::Impl {
     this->scaling = glm::scale (glm::mat4x4 (1.0f), v);
   }
 
+  glm::vec3 getPosition () const {
+    return Util::transformPosition (this->modelMatrix (), glm::vec3 (0.0f));
+  }
+
   static Mesh cube () {
     Mesh m;
     float d = 0.5f;
@@ -498,6 +502,7 @@ DELEGATE1        (void        , Mesh, scale      , const glm::vec3&)
 DELEGATE1        (void        , Mesh, setPosition, const glm::vec3&)
 DELEGATE1        (void        , Mesh, setRotation, const glm::mat4x4&)
 DELEGATE1        (void        , Mesh, setScaling , const glm::vec3&)
+DELEGATE_CONST   (glm::vec3   , Mesh, getPosition)
 
 DELEGATE_STATIC  (Mesh, Mesh, cube)
 DELEGATE2_STATIC (Mesh, Mesh, sphere, unsigned int, unsigned int)

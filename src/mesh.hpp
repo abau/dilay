@@ -45,6 +45,7 @@ class Mesh {
     void         setPosition       (const glm::vec3&);
     void         setRotation       (const glm::mat4x4&);
     void         setScaling        (const glm::vec3&);
+    glm::vec3    getPosition       () const;
 
     static Mesh  cube              ();
     static Mesh  sphere            (unsigned int, unsigned int);
