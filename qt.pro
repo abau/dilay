@@ -56,6 +56,7 @@ SOURCES += \
            src/rendermode.cpp \
            src/scene.cpp \
            src/sphere.cpp \
+           src/sphere/mesh.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
@@ -129,6 +130,7 @@ HEADERS += \
            src/rendermode.hpp \
            src/scene.hpp \
            src/sphere.hpp \
+           src/sphere/mesh.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
