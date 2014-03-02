@@ -12,10 +12,11 @@ class ToolNewFreeformMesh : public Tool {
     class Impl;
     Impl* impl;
 
-    void         runInitialize      (ViewMainWindow*,QContextMenuEvent*);
-    void         runRender          ();
-    ToolResponse runMouseMoveEvent  (QMouseEvent*);
-    ToolResponse runMousePressEvent (QMouseEvent*);
+    void runInitialize      (QContextMenuEvent*);
+    void runRender          ();
+    void runMouseMoveEvent  (QMouseEvent*);
+    void runMousePressEvent (QMouseEvent*);
+    void runApply           ();
 };
 
 #endif

@@ -1,0 +1,71 @@
+#include <QPushButton>
+#include <QGridLayout>
+#include <QSpinBox>
+#include <QLabel>
+#include "tool/options.hpp"
+#include "view/main-window.hpp"
+
+struct ToolOptions::Impl {
+  ToolOptions*    self;
+  QVBoxLayout*    vBoxLayout;
+  QGridLayout*    gridLayout;
+  QPushButton*    cancelButton;
+  QPushButton*    applyButton;
+
+  Impl (ToolOptions* s, ViewMainWindow* p) 
+    : self   (s)
+  {
+    this->vBoxLayout = new QVBoxLayout;
+    this->gridLayout = new QGridLayout;
+
+    this->vBoxLayout->addLayout (this->gridLayout);
+    this->self->setParent       (p, this->self->windowFlags ());
+    this->self->setLayout       (this->vBoxLayout);
+    this->self->move            (100,100);
+    this->self->setAttribute    (Qt::WA_DeleteOnClose);
+    this->makeDefaultButtons    ();
+  }
+  
+  void makeDefaultButtons () {
+    this->cancelButton = this->pushButton (tr("Cancel"));
+    this->applyButton  = this->pushButton (tr("Apply"));
+
+    QHBoxLayout* hLayout = new QHBoxLayout;
+    hLayout->addWidget(this->cancelButton);
+    hLayout->addWidget(this->applyButton);
+
+    this->vBoxLayout->addLayout (hLayout);
+  }
+
+  void addGridRow (QWidget* w1, QWidget* w2) {
+    const int r = this->gridLayout->rowCount ();
+    this->gridLayout->addWidget (w1, r, 0);
+    this->gridLayout->addWidget (w2, r, 1);
+  }
+
+  void addGridRow (const QString& label, QWidget* w2) {
+    this->addGridRow (new QLabel (label), w2);
+  }
+
+  QPushButton* pushButton (const QString& label) {
+    QPushButton* button = new QPushButton (label);
+    button->setFocusPolicy (Qt::NoFocus);
+    return button;
+  }
+
+  QSpinBox* spinBox (const QString& label, int min, int value, int max) {
+    QSpinBox* spinBox = new QSpinBox;
+    spinBox->setRange       (min, max);
+    spinBox->setValue       (value);
+    spinBox->setFocusPolicy (Qt::NoFocus);
+
+    this->addGridRow (label, spinBox);
+    return spinBox;
+  }
+};
+
+DELEGATE1_BIG3_SELF (ToolOptions, ViewMainWindow*)
+
+GETTER    (QPushButton*, ToolOptions, cancelButton)
+GETTER    (QPushButton*, ToolOptions, applyButton)
+DELEGATE4 (QSpinBox*   , ToolOptions, spinBox, const QString&, int, int, int)

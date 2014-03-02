@@ -6,32 +6,29 @@
 class QMouseEvent;
 class QContextMenuEvent;
 class ViewMainWindow;
-
-enum class ToolResponse { None, Terminate, Redraw };
+class ToolOptions;
 
 class Tool {
   public:
-    //DECLARE_BIG6_VIRTUAL (Tool)
+    DECLARE_BIG3_VIRTUAL (Tool)
 
-    void initialize (ViewMainWindow* w, QContextMenuEvent* e) { 
-      return this->runInitialize (w, e); 
-    }
-
-    void         render          ()               { return this->runRender          ( ); }
-    ToolResponse mouseMoveEvent  (QMouseEvent* e) { return this->runMouseMoveEvent  (e); }
-    ToolResponse mousePressEvent (QMouseEvent* e) { return this->runMousePressEvent (e); }
+    ViewMainWindow* mainWindow      ();
+    ToolOptions*    toolOptions     ();
+    void            initialize      (ViewMainWindow*, QContextMenuEvent*);
+    void            render          ();
+    void            mouseMoveEvent  (QMouseEvent*);
+    void            mousePressEvent (QMouseEvent*);
+    void            close           ();
 
   private:
-    /*
     class Impl;
     Impl* impl;
-    */
 
-    virtual void runInitialize (ViewMainWindow*, QContextMenuEvent*) {}
-
-    virtual void         runRender          ()                {}
-    virtual ToolResponse runMouseMoveEvent  (QMouseEvent*)    { return ToolResponse::None; }
-    virtual ToolResponse runMousePressEvent (QMouseEvent*)    { return ToolResponse::None; }
+    virtual void runInitialize      (QContextMenuEvent*) {}
+    virtual void runRender          ()                   {}
+    virtual void runMouseMoveEvent  (QMouseEvent*)       {}
+    virtual void runMousePressEvent (QMouseEvent*)       {}
+    virtual void runApply           ()                   = 0;
 };
 
 #endif

@@ -64,10 +64,10 @@ SOURCES += \
            src/tool/carve.cpp \
            src/tool/movement.cpp \
            src/tool/new-freeform-mesh.cpp \
+           src/tool/options.cpp \
            src/tool/rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
-           src/view/bottom-toolbar.cpp \
            src/view/freeform-menu.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
@@ -138,11 +138,11 @@ HEADERS += \
            src/tool/carve.hpp \
            src/tool/movement.hpp \
            src/tool/new-freeform-mesh.hpp \
+           src/tool/options.hpp \
            src/tool/rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \
            src/variant.hpp \
-           src/view/bottom-toolbar.hpp \
            src/view/freeform-menu.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \

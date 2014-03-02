@@ -14,7 +14,6 @@
 #include "mesh-type.hpp"
 #include "view/main-window.hpp"
 #include "view/top-toolbar.hpp"
-#include "view/bottom-toolbar.hpp"
 #include "view/freeform-menu.hpp"
 
 struct ViewGlWidget :: Impl {
@@ -33,9 +32,9 @@ struct ViewGlWidget :: Impl {
     Renderer :: initialize ();
     State    :: initialize ();
 
-    this->axis.initialize ();
+    this->axis.initialize        ();
     this->self->setMouseTracking (true);
-    this->self->setFocusPolicy   (Qt::StrongFocus);
+    this->self->setFocus         ();
 
     Renderer :: updateLights (State :: camera ());
 
@@ -99,25 +98,14 @@ struct ViewGlWidget :: Impl {
     }
   }
 
-  void handleToolResponse (ToolResponse response) {
-    if (response == ToolResponse::Terminate) {
-      State::setTool (nullptr);
-      this->mainWindow->bottomToolbar ()->clear ();
-      this->self->update ();
-    }
-    else if (response == ToolResponse::Redraw) {
-      this->self->update ();
-    }
-  }
-
   void mouseMoveEvent (QMouseEvent* e) {
     State :: mouseMovement ().update (e->pos ());
-    if (e->buttons () == Qt :: NoButton && State::hasTool ()) {
-      this->handleToolResponse (State::tool ().mouseMoveEvent (e));
-    }
     if (e->buttons () == Qt :: MiddleButton) {
       ToolRotate :: run ();
       this->self->update ();
+    }
+    else if (State::hasTool ()) {
+      State::tool ().mouseMoveEvent (e);
     }
   }
 
@@ -126,7 +114,7 @@ struct ViewGlWidget :: Impl {
      && e->buttons () == Qt :: LeftButton
      && State::hasTool () ) {
 
-      this->handleToolResponse (State::tool ().mousePressEvent (e));
+      State::tool ().mousePressEvent (e);
     }
   }
 
@@ -151,13 +139,13 @@ struct ViewGlWidget :: Impl {
 
   void contextMenuEvent (QContextMenuEvent* e) {
     if (State::hasTool ()) {
-      State::setTool (nullptr);
-      this->mainWindow->bottomToolbar ()->clear ();
+      State::tool ().close ();
     }
     if (this->mainWindow->topToolbar ()->selected (MeshType::FreeForm)) {
       ViewFreeformMenu menu (this->mainWindow, e);
       this->hasActiveContextMenu = true;
       menu.exec (QCursor::pos ());
+      this->mainWindow->activateWindow ();
     }
     this->hasActiveContextMenu = false;
   }
@@ -169,8 +157,7 @@ ViewGlWidget :: ViewGlWidget (const QGLFormat& format, ViewMainWindow* mainWindo
   this->impl = new Impl (this, mainWindow);
 }
 
-DELEGATE_DESTRUCTOR       (ViewGlWidget)
-DELEGATE_MOVE_CONSTRUCTOR (ViewGlWidget)
+DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (ViewGlWidget)
 
 DELEGATE  (void, ViewGlWidget, initializeGL)
 DELEGATE2 (void, ViewGlWidget, resizeGL         , int, int)

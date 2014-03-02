@@ -5,15 +5,15 @@
 #include "macro.hpp"
 
 class ViewTopToolbar;
-class ViewBottomToolbar;
+class ViewGlWidget;
 
 class ViewMainWindow : public QMainWindow {
     Q_OBJECT
   public:
     DECLARE_BIG3 (ViewMainWindow)
 
-    ViewTopToolbar*    topToolbar    ();
-    ViewBottomToolbar* bottomToolbar ();
+    ViewTopToolbar* topToolbar  ();
+    ViewGlWidget*   glWidget    ();
 
   private:
     class Impl;
