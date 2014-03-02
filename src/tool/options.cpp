@@ -4,6 +4,7 @@
 #include <QLabel>
 #include "tool/options.hpp"
 #include "view/main-window.hpp"
+#include "view/vector-edit.hpp"
 
 struct ToolOptions::Impl {
   ToolOptions*    self;
@@ -18,6 +19,7 @@ struct ToolOptions::Impl {
     this->vBoxLayout = new QVBoxLayout;
     this->gridLayout = new QGridLayout;
 
+    this->gridLayout->setVerticalSpacing (0);
     this->vBoxLayout->addLayout (this->gridLayout);
     this->self->setParent       (p, this->self->windowFlags ());
     this->self->setLayout       (this->vBoxLayout);
@@ -62,10 +64,17 @@ struct ToolOptions::Impl {
     this->addGridRow (label, spinBox);
     return spinBox;
   }
+
+  ViewVectorEdit* vectorEdit (const QString& label) {
+    ViewVectorEdit* vectorEdit = new ViewVectorEdit;
+    this->addGridRow (label, vectorEdit);
+    return vectorEdit;
+  }
 };
 
 DELEGATE1_BIG3_SELF (ToolOptions, ViewMainWindow*)
 
-GETTER    (QPushButton*, ToolOptions, cancelButton)
-GETTER    (QPushButton*, ToolOptions, applyButton)
-DELEGATE4 (QSpinBox*   , ToolOptions, spinBox, const QString&, int, int, int)
+GETTER    (QPushButton*   , ToolOptions, cancelButton)
+GETTER    (QPushButton*   , ToolOptions, applyButton)
+DELEGATE4 (QSpinBox*      , ToolOptions, spinBox, const QString&, int, int, int)
+DELEGATE1 (ViewVectorEdit*, ToolOptions, vectorEdit, const QString&)

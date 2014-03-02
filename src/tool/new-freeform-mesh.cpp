@@ -14,6 +14,7 @@
 #include "rendermode.hpp"
 #include "tool/movement.hpp"
 #include "tool/options.hpp"
+#include "view/vector-edit.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
@@ -35,6 +36,9 @@ struct ToolNewFreeformMesh::Impl {
                                        ->spinBox (QObject::tr ("subdivisions"), 1, 2, 5);
     void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
     QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMesh (n); });
+
+    ViewVectorEdit* positionEdit = this->self->toolOptions ()
+                                       ->vectorEdit (QObject::tr ("position"));
 
     this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
   }

@@ -75,6 +75,7 @@ SOURCES += \
            src/view/main-window.cpp \
            src/view/mouse-movement.cpp \
            src/view/top-toolbar.cpp \
+           src/view/vector-edit.cpp \
            src/winged/edge.cpp \
            src/winged/face.cpp \
            src/winged/mesh.cpp \
@@ -150,6 +151,7 @@ HEADERS += \
            src/view/main-window.hpp \
            src/view/mouse-movement.hpp \
            src/view/top-toolbar.hpp \
+           src/view/vector-edit.hpp \
            src/winged/edge.hpp \
            src/winged/face.hpp \
            src/winged/mesh.hpp \

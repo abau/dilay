@@ -8,14 +8,16 @@ class ViewMainWindow;
 class QPushButton;
 class QSpinBox;
 class QString;
+class ViewVectorEdit;
 
 class ToolOptions : public QDialog {
   public:
     DECLARE_BIG3 (ToolOptions, ViewMainWindow*);
 
-    QPushButton* cancelButton ();
-    QPushButton* applyButton  ();
-    QSpinBox*    spinBox      (const QString&, int, int, int);
+    QPushButton*    cancelButton ();
+    QPushButton*    applyButton  ();
+    QSpinBox*       spinBox      (const QString&, int, int, int);
+    ViewVectorEdit* vectorEdit   (const QString&);
 
   private:
     class Impl;
