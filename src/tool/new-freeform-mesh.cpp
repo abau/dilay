@@ -22,14 +22,17 @@ struct ToolNewFreeformMesh::Impl {
 
   Impl (ToolNewFreeformMesh* s) 
     : self    (s) 
-  {}
+  {
+    this->self->toolName (QObject::tr ("New Freeform Mesh"));
+  }
 
   void runInitialize (QContextMenuEvent* e) {
     this->setMesh (2);
     this->movement.moveXZ  (glm::uvec2 (e->x (), e->y ()));
     this->mesh.setPosition (this->movement.position ());
 
-    QSpinBox* numSubdivBox = this->self->toolOptions ()->spinBox ("subdivisions", 1, 2, 5);
+    QSpinBox* numSubdivBox = this->self->toolOptions ()
+                                       ->spinBox (QObject::tr ("subdivisions"), 1, 2, 5);
     void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
     QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMesh (n); });
 

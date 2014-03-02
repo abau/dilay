@@ -7,11 +7,13 @@ class QMouseEvent;
 class QContextMenuEvent;
 class ViewMainWindow;
 class ToolOptions;
+class QString;
 
 class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool)
 
+    const QString&  toolName        ();
     ViewMainWindow* mainWindow      ();
     ToolOptions*    toolOptions     ();
     void            initialize      (ViewMainWindow*, QContextMenuEvent*);
@@ -19,6 +21,9 @@ class Tool {
     void            mouseMoveEvent  (QMouseEvent*);
     void            mousePressEvent (QMouseEvent*);
     void            close           ();
+
+  protected:
+    void            toolName        (const QString&);
 
   private:
     class Impl;

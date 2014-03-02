@@ -13,11 +13,11 @@ struct ViewFreeformMenu::Impl {
     , mainWindow (mW) 
     , menuEvent  (e) {
 
-    this->addAction (tr("New Freeform Mesh"), new ToolNewFreeformMesh ());
+    this->addAction (new ToolNewFreeformMesh ());
   }
 
-  void addAction (const QString& label, Tool* tool) {
-    QAction* a = this->self->addAction (label);
+  void addAction (Tool* tool) {
+    QAction* a = this->self->addAction (tool->toolName ());
     QObject::connect (a, &QAction::triggered, [this,tool] () { 
         State::setTool   (tool); 
         tool->initialize (this->mainWindow, this->menuEvent);
