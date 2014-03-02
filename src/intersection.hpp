@@ -38,6 +38,7 @@ namespace IntersectionUtil {
   bool intersects (const Sphere&, const OctreeNode&);
   bool intersects (const Ray&, const Sphere&, float&); 
   bool intersects (const Ray&, const Plane& , float&); 
+  bool intersects (const Ray&, WingedMesh&, FaceIntersection&);
 }
 
 #endif

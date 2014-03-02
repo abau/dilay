@@ -177,3 +177,8 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& 
   t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
   return true;
 }
+
+bool IntersectionUtil :: intersects (const Ray& ray, WingedMesh& mesh, FaceIntersection& fi) {
+  mesh.intersectRay (ray, fi);
+  return fi.isIntersection ();
+}
