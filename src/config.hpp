@@ -1,17 +1,16 @@
 #ifndef DILAY_CONFIG
 #define DILAY_CONFIG
 
+#include "macro.hpp"
+
 class Config {
   public:   
     static Config& global (); 
 
-    template <class T> static T get (const std::string&);  
+    template <class T> static const T& get (const std::string&);  
 
   private:
-          Config            ();
-          Config            (const Config&) = delete;
-    const Config& operator= (const Config&) = delete;
-         ~Config            ();
+    DECLARE_BIG3 (Config)
 
     class Impl;
     Impl* impl;

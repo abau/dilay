@@ -43,8 +43,8 @@ struct Mesh::Impl {
     this->normalBufferId = 0;
     this->renderMode     = RenderMode::Flat;
 
-    this->color          = Config::get <Color> ("/editor/initial-mesh-color");
-    this->wireframeColor = Config::get <Color> ("/editor/initial-mesh-wireframe-color");
+    this->color          = Config::get <Color> ("/editor/color/initial-mesh");
+    this->wireframeColor = Config::get <Color> ("/editor/color/initial-mesh-wireframe");
   }
 
   Impl (const Impl& source)

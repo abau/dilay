@@ -1,71 +1,120 @@
-#include <yaml-cpp/yaml.h>
 #include <glm/glm.hpp>
 #include <unordered_map>
+#include <QDomNode>
+#include <QFile>
 #include "config.hpp"
 #include "macro.hpp"
+#include "variant.hpp"
+#include "color.hpp"
 #include "config-conversion.hpp"
 
-typedef std::unordered_map <std::string, YAML::Node> ConfigMap;
+typedef Variant <float,int,glm::vec3,Color> Value;
+
+typedef std::unordered_map <std::string, Value> ConfigMap;
 
 struct Config::Impl {
-  YAML::Node document;
-  ConfigMap  configMap;
+  const std::string fileName;
 
-  Impl (const std::string& fileName) {
-    try {
-      this->document = YAML::LoadFile (fileName);
-      this->loadConfigMap ("",this->document);
-    }
-    catch (YAML::Exception e) {
-      throw (std::runtime_error ( "YAML::Exception when loading file " + fileName
-                                + ": " + e.what ()));
-    }
-  }
+  ConfigMap configMap;
 
-  /** Builds a map from paths to yaml nodes where each path references a
-   * scalar value. Sequences are inserted per element (with the element's index 
-   * as last path segment) and as complete node.
-   */
-  void loadConfigMap (const std::string& prefix, const YAML::Node& node) {
-    if (node.IsMap ()) {
-      for (YAML::const_iterator it = node.begin (); it != node.end (); ++it)
-        this->loadConfigMap (prefix + "/" + it->first.as <std::string>(), it->second);
-    }
-    else if (node.IsSequence ()) {
-      this->configMap.insert (ConfigMap::value_type (prefix, node));
-
-      unsigned int i = 0;
-      for (YAML::const_iterator it = node.begin (); it != node.end (); ++it, ++i) {
-        this->loadConfigMap (prefix + "/" + std::to_string (i), *it);
-      }
-    }
-    else {
-      this->configMap.insert (ConfigMap::value_type (prefix, node));
-    }
+  Impl (const std::string& fn) : fileName (fn) {
+    this->loadFile ();
   }
 
   template <class T>
-  T get (const std::string& path) const {
+  const T& get (const std::string& path) const {
     ConfigMap::const_iterator value = this->configMap.find (path);
 
     if (value == this->configMap.end ()) {
       throw (std::runtime_error ("Can not find config path " + path));
     }
-    return value->second.as<T> ();
+    return *value->second.get <T> ();
+  }
+
+  void loadFile () {
+    QFile file (this->fileName.c_str ());
+    if (file.open (QIODevice::ReadOnly) == false) {
+      throw (std::runtime_error ("Configuration file '" + this->fileName + "' not found"));
+    }
+    QDomDocument doc (this->fileName.c_str ());
+    QString      errorMsg;
+    int          errorLine   = -1;
+    int          errorColumn = -1;
+    if (doc.setContent (&file, &errorMsg, &errorLine, &errorColumn) == false) {
+      file.close();
+      this->throwError (errorMsg.toStdString (), errorLine, errorColumn);
+    }
+    file.close();
+    this->loadConfigMap ("", doc);
+  }
+
+  void loadConfigMap (const QString& prefix, QDomNode& node) {
+    QDomNode child = node.firstChild ();
+
+    while (child.isNull () == false) {
+      if (child.isElement()) {
+          QDomElement element   = child.toElement();
+          QDomAttr    attribute = element.attributeNode ("type");
+          Value       value;
+
+          if (attribute.isNull ()) {
+            this->loadConfigMap (prefix + "/" + element.tagName (), child);
+          }
+          else if (attribute.value () == "float") {
+            this->insertIntoConfigMap <float> (prefix,element);
+          }
+          else if (attribute.value () == "integer") {
+            this->insertIntoConfigMap <int> (prefix,element);
+          }
+          else if (attribute.value () == "vector3") {
+            this->insertIntoConfigMap <glm::vec3> (prefix,element);
+          }
+          else if (attribute.value () == "color") {
+            this->insertIntoConfigMap <Color> (prefix,element);
+          }
+          else {
+            this->throwError ("invalid type '" + attribute.value ().toStdString () + "'"
+                             , child.lineNumber (), child.columnNumber ());
+          }
+      }
+      child = child.nextSibling();
+    }
+  }
+
+  template <typename T>
+  bool insertIntoConfigMap (const QString& prefix, QDomElement& element) {
+    T           t;
+    bool        ok  = ConfigConversion::fromDomElement (element, t);
+    std::string key = (prefix + "/" + element.tagName ()).toStdString ();
+
+    if (ok) {
+      Value value;
+      value.set <T> (t);
+      this->configMap.emplace (key, value);
+    }
+    else {
+      this->throwError ("can't parse '" + key + "'", element.lineNumber (), element.columnNumber ());
+    }
+    return ok;
+  }
+
+  void throwError (const std::string& msg, int line, int column) {
+    throw (std::runtime_error 
+        ( "Error while loading configuration file '" + this->fileName + "': "
+        + msg + " (" + std::to_string (line) + "," + std::to_string (column) + ")"));
   }
 };
 
 Config :: Config () : impl (new Impl ("dilay.config")) {}
-
-DELEGATE_DESTRUCTOR (Config)
-GLOBAL              (Config);
+DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (Config)
+GLOBAL (Config);
 
 template <class T>
-T Config :: get (const std::string& path) {
+const T& Config :: get (const std::string& path) {
   return Config::global ().impl->get<T> (path);
 }
 
-template float     Config :: get<float>     (const std::string&);
-template int       Config :: get<int>       (const std::string&);
-template Color     Config :: get<Color>     (const std::string&);
-template glm::vec3 Config :: get<glm::vec3> (const std::string&);
+template const float&     Config :: get<float>     (const std::string&);
+template const int&       Config :: get<int>       (const std::string&);
+template const Color&     Config :: get<Color>     (const std::string&);
+template const glm::vec3& Config :: get<glm::vec3> (const std::string&);

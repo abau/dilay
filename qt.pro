@@ -7,8 +7,8 @@ TARGET                 =  dilay
 DEPENDPATH             += src 
 INCLUDEPATH            += src 
 CONFIG                 += warn_on debug object_parallel_to_source
-LIBS                   += -lGL -lGLEW -lyaml-cpp 
-QT                     += opengl 
+LIBS                   += -lGL -lGLEW
+QT                     += widgets opengl xml
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++11
@@ -32,6 +32,7 @@ SOURCES += \
            src/carve-brush.cpp \
            src/color.cpp \
            src/config.cpp \
+           src/config-conversion.cpp \
            src/cursor.cpp \
            src/history.cpp \
            src/id.cpp \

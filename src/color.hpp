@@ -18,6 +18,11 @@ class Color {
     float b        () const;
     float opacity  () const;
 
+    void  r        (float);
+    void  g        (float);
+    void  b        (float);
+    void  opacity  (float);
+
     glm::vec3 vec3 () const;
     glm::vec4 vec4 () const;
 
