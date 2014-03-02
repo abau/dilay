@@ -49,6 +49,7 @@ struct Tool::Impl {
 
   void close () {
     assert (this->toolOptions);
+    this->self->runClose     ();
     this->toolOptions->close ();
     State::setTool (nullptr);
   }

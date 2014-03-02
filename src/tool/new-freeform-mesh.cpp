@@ -32,10 +32,16 @@ struct ToolNewFreeformMesh::Impl {
     QSpinBox* numSubdivBox = this->self->toolOptions ()->spinBox ("subdivisions", 1, 2, 5);
     void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
     QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMesh (n); });
+
+    this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
   }
 
   void runApply () {
     State::history ().add <ActionNewMesh> ()->newMesh (MeshType::FreeForm, this->mesh);
+  }
+
+  void runClose () {
+    this->self->mainWindow ()->glWidget ()->unsetCursor ();
   }
 
   void setMesh (int numSubdivisions) {
@@ -82,3 +88,4 @@ DELEGATE  (void, ToolNewFreeformMesh, runRender)
 DELEGATE1 (void, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
 DELEGATE1 (void, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
 DELEGATE  (void, ToolNewFreeformMesh, runApply)
+DELEGATE  (void, ToolNewFreeformMesh, runClose)
