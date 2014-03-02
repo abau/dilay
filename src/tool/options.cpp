@@ -37,6 +37,11 @@ struct ToolOptions::Impl {
     hLayout->addWidget(this->applyButton);
 
     this->vBoxLayout->addLayout (hLayout);
+
+    QObject::connect ( this->cancelButton, &QPushButton::released
+                     , [this] () { this->self->reject (); } );
+    QObject::connect ( this->applyButton, &QPushButton::released
+                     , [this] () { this->self->accept (); } );
   }
 
   void addGridRow (QWidget* w1, QWidget* w2) {
@@ -74,7 +79,5 @@ struct ToolOptions::Impl {
 
 DELEGATE1_BIG3_SELF (ToolOptions, ViewMainWindow*)
 
-GETTER    (QPushButton*   , ToolOptions, cancelButton)
-GETTER    (QPushButton*   , ToolOptions, applyButton)
 DELEGATE4 (QSpinBox*      , ToolOptions, spinBox, const QString&, int, int, int)
 DELEGATE1 (ViewVectorEdit*, ToolOptions, vectorEdit, const QString&)

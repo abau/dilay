@@ -1,4 +1,3 @@
-#include <QPushButton>
 #include "tool.hpp"
 #include "tool/options.hpp"
 #include "view/main-window.hpp"
@@ -22,10 +21,10 @@ struct Tool::Impl {
     this->toolOptions = new ToolOptions (w);
     this->toolOptions->setWindowTitle   (this->toolName);
 
-    QObject::connect ( this->toolOptions->applyButton (), &QPushButton::released
+    QObject::connect ( this->toolOptions, &ToolOptions::accepted
                      , [this] () { this->apply (); } );
 
-    QObject::connect ( this->toolOptions->cancelButton (), &QPushButton::released
+    QObject::connect ( this->toolOptions, &ToolOptions::rejected
                      , [this] () { this->close (); } );
 
     this->self->runInitialize (e);
