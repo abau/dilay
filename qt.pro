@@ -65,7 +65,6 @@ SOURCES += \
            src/tool/carve.cpp \
            src/tool/movement.cpp \
            src/tool/new-freeform-mesh.cpp \
-           src/tool/options.cpp \
            src/tool/rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
@@ -74,6 +73,7 @@ SOURCES += \
            src/view/light.cpp \
            src/view/main-window.cpp \
            src/view/mouse-movement.cpp \
+           src/view/tool-options.cpp \
            src/view/top-toolbar.cpp \
            src/view/vector-edit.cpp \
            src/winged/edge.cpp \
@@ -140,7 +140,6 @@ HEADERS += \
            src/tool/carve.hpp \
            src/tool/movement.hpp \
            src/tool/new-freeform-mesh.hpp \
-           src/tool/options.hpp \
            src/tool/rotate.hpp \
            src/triangle.hpp \
            src/util.hpp \
@@ -150,6 +149,7 @@ HEADERS += \
            src/view/light.hpp \
            src/view/main-window.hpp \
            src/view/mouse-movement.hpp \
+           src/view/tool-options.hpp \
            src/view/top-toolbar.hpp \
            src/view/vector-edit.hpp \
            src/winged/edge.hpp \

@@ -13,7 +13,7 @@
 #include "history.hpp"
 #include "rendermode.hpp"
 #include "tool/movement.hpp"
-#include "tool/options.hpp"
+#include "view/tool-options.hpp"
 #include "view/vector-edit.hpp"
 
 struct ToolNewFreeformMesh::Impl {
@@ -65,8 +65,9 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void setMeshSlot (const glm::vec3& pos) {
-    this->mesh.setPosition (pos);
-    this->self->mainWindow ()->glWidget ()->update ();
+    this->movement.position (pos);
+    this->mesh.setPosition  (pos);
+    this->self->mainWindow  ()->glWidget ()->update ();
   }
 
   void setMeshByMovement () {

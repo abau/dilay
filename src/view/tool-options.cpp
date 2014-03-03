@@ -2,18 +2,18 @@
 #include <QGridLayout>
 #include <QSpinBox>
 #include <QLabel>
-#include "tool/options.hpp"
+#include "view/tool-options.hpp"
 #include "view/main-window.hpp"
 #include "view/vector-edit.hpp"
 
-struct ToolOptions::Impl {
-  ToolOptions*    self;
-  QVBoxLayout*    vBoxLayout;
-  QGridLayout*    gridLayout;
-  QPushButton*    cancelButton;
-  QPushButton*    applyButton;
+struct ViewToolOptions::Impl {
+  ViewToolOptions* self;
+  QVBoxLayout*     vBoxLayout;
+  QGridLayout*     gridLayout;
+  QPushButton*     cancelButton;
+  QPushButton*     applyButton;
 
-  Impl (ToolOptions* s, ViewMainWindow* p) 
+  Impl (ViewToolOptions* s, ViewMainWindow* p) 
     : self   (s)
   {
     this->vBoxLayout = new QVBoxLayout;
@@ -78,7 +78,7 @@ struct ToolOptions::Impl {
   }
 };
 
-DELEGATE1_BIG3_SELF (ToolOptions, ViewMainWindow*)
+DELEGATE1_BIG3_SELF (ViewToolOptions, ViewMainWindow*)
 
-DELEGATE4 (QSpinBox*      , ToolOptions, spinBox, const QString&, int, int, int)
-DELEGATE1 (ViewVectorEdit*, ToolOptions, vectorEdit, const QString&)
+DELEGATE4 (QSpinBox*      , ViewToolOptions, spinBox, const QString&, int, int, int)
+DELEGATE1 (ViewVectorEdit*, ViewToolOptions, vectorEdit, const QString&)
