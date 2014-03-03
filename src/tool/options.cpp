@@ -19,13 +19,14 @@ struct ToolOptions::Impl {
     this->vBoxLayout = new QVBoxLayout;
     this->gridLayout = new QGridLayout;
 
-    this->gridLayout->setVerticalSpacing (0);
-    this->vBoxLayout->addLayout (this->gridLayout);
-    this->self->setParent       (p, this->self->windowFlags ());
-    this->self->setLayout       (this->vBoxLayout);
-    this->self->move            (100,100);
-    this->self->setAttribute    (Qt::WA_DeleteOnClose);
-    this->makeDefaultButtons    ();
+    this->gridLayout->setColumnStretch (0,0);
+    this->gridLayout->setColumnStretch (1,1);
+    this->vBoxLayout->addLayout        (this->gridLayout);
+    this->self->setParent              (p, this->self->windowFlags ());
+    this->self->setLayout              (this->vBoxLayout);
+    this->self->move                   (100,100);
+    this->self->setAttribute           (Qt::WA_DeleteOnClose);
+    this->makeDefaultButtons           ();
   }
   
   void makeDefaultButtons () {

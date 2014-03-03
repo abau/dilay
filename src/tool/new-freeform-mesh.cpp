@@ -20,6 +20,7 @@ struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
   Mesh                 mesh;
   ToolMovement         movement;
+  ViewVectorEdit*      positionEdit;
 
   Impl (ToolNewFreeformMesh* s) 
     : self    (s) 
@@ -28,17 +29,21 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void runInitialize (QContextMenuEvent* e) {
-    this->setMesh (2);
-    this->movement.moveXZ  (glm::uvec2 (e->x (), e->y ()));
-    this->mesh.setPosition (this->movement.position ());
-
+    // connect spin box
     QSpinBox* numSubdivBox = this->self->toolOptions ()
-                                       ->spinBox (QObject::tr ("subdivisions"), 1, 2, 5);
+                                       ->spinBox (QObject::tr ("Subdivisions"), 1, 2, 5);
     void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
-    QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMesh (n); });
+    QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMeshSlot (n); });
 
-    ViewVectorEdit* positionEdit = this->self->toolOptions ()
-                                       ->vectorEdit (QObject::tr ("position"));
+    // connect position edit
+    this->positionEdit = this->self->toolOptions ()->vectorEdit (QObject::tr ("Position"));
+    QObject::connect (this->positionEdit, &ViewVectorEdit::vectorEdited, [this] 
+        (const glm::vec3& p) { this->setMeshSlot (p); });
+
+    // setup mesh
+    this->setMeshSlot       (2);
+    this->movement.moveXZ   (glm::uvec2 (e->x (), e->y ()));
+    this->setMeshByMovement ();
 
     this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
   }
@@ -51,14 +56,22 @@ struct ToolNewFreeformMesh::Impl {
     this->self->mainWindow ()->glWidget ()->unsetCursor ();
   }
 
-  void setMesh (int numSubdivisions) {
+  void setMeshSlot (int numSubdivisions) {
     glm::vec3 oldPos = this->mesh.getPosition ();
     this->mesh = Mesh::icosphere (numSubdivisions);
-    this->mesh.renderMode  (RenderMode::Flat);
     this->mesh.bufferData  ();
     this->mesh.setPosition (oldPos);
-
     this->self->mainWindow ()->glWidget ()->update ();
+  }
+
+  void setMeshSlot (const glm::vec3& pos) {
+    this->mesh.setPosition (pos);
+    this->self->mainWindow ()->glWidget ()->update ();
+  }
+
+  void setMeshByMovement () {
+    this->mesh.setPosition     (this->movement.position ());
+    this->positionEdit->vector (this->movement.position ());
   }
 
   void runRender () {
@@ -75,13 +88,13 @@ struct ToolNewFreeformMesh::Impl {
 
       if (e->modifiers ().testFlag (Qt::ShiftModifier) ) {
         if (this->movement.moveY (mousePos)) {
-          this->mesh.setPosition (this->movement.position ());
+          this->setMeshByMovement ();
           this->self->mainWindow ()->glWidget ()->update ();
         }
       }
       else {
         if (this->movement.moveXZ (mousePos)) {
-          this->mesh.setPosition (this->movement.position ());
+          this->setMeshByMovement ();
           this->self->mainWindow ()->glWidget ()->update ();
         }
       }
