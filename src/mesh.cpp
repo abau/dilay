@@ -290,6 +290,10 @@ struct Mesh::Impl {
     m.addVertex ( glm::vec3 (+d, +d, -d) );
     m.addVertex ( glm::vec3 (+d, +d, +d) );
 
+    for (unsigned int i = 0; i < m.numVertices (); i++) {
+      m.setNormal (i, glm::normalize (m.vertex (i)));
+    }
+
     m.addIndex (0); m.addIndex (1); m.addIndex (2);
     m.addIndex (3); m.addIndex (2); m.addIndex (1);
 
@@ -320,7 +324,7 @@ struct Mesh::Impl {
           float phi        = ringStep;
           float theta      = 0.0f;
 
-    // Inner rings vertices
+    // inner rings vertices
     for (unsigned int r = 0; r < rings - 1; r++) {
       for (unsigned int s = 0; s < sectors; s++) {
         float x = radius * sin (theta) * sin (phi);
@@ -334,11 +338,16 @@ struct Mesh::Impl {
       phi += ringStep;
     }
 
-    // Caps vertices
+    // caps vertices
     unsigned int topCapIndex = m.addVertex (glm::vec3 (0.0f, radius, 0.0f));
     unsigned int botCapIndex = m.addVertex (glm::vec3 (0.0f,-radius, 0.0f));
 
-    // Inner rings indices
+    // set normals
+    for (unsigned int i = 0; i < m.numVertices (); i++) {
+      m.setNormal (i, glm::normalize (m.vertex (i)));
+    }
+
+    // inner rings indices
     for (unsigned int r = 0; r < rings - 2; r++) {
       for (unsigned int s = 0; s < sectors; s++) {
         m.addIndex ((sectors * r) + s);
@@ -351,7 +360,7 @@ struct Mesh::Impl {
       }
     }
 
-    // Caps indices
+    // caps indices
     for (unsigned int s = 0; s < sectors; s++) {
       m.addIndex (topCapIndex);
       m.addIndex (s);
@@ -459,6 +468,11 @@ struct Mesh::Impl {
     subdivide (numSubdivisions, 6 ,2 ,10); 
     subdivide (numSubdivisions, 8 ,6 ,7 ); 
     subdivide (numSubdivisions, 9 ,8 ,1 ); 
+
+    // set normals
+    for (unsigned int i = 0; i < m.numVertices (); i++) {
+      m.setNormal (i, glm::normalize (m.vertex (i)));
+    }
 
     return m;
   }
