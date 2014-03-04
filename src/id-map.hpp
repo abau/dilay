@@ -12,6 +12,10 @@ class IdMapPtr {
       this->map.emplace (id.primitive (), &element);
     }
 
+    void insert (T& element) {
+      this->insert (element.id (), element);
+    }
+
     void erase (const Id& id) {
       this->map.erase (id.primitive ());
     }

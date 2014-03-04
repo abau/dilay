@@ -367,7 +367,7 @@ struct Octree::Impl {
 
     if (this->root->contains (faceToInsert)) {
       WingedFace& wingedFace = this->root->insertFace (faceToInsert);
-      this->idMap.insert (faceToInsert.id, wingedFace);
+      this->idMap.insert (wingedFace);
       return wingedFace;
     }
     else {
