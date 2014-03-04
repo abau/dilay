@@ -419,7 +419,7 @@ struct Mesh::Impl {
         }
       };
 
-    float t = (1.0f + glm::sqrt <float> (5.0f)) * 0.5f;
+    float t = (1.0f + glm::sqrt (5.0f)) * 0.5f;
 
     addIcoVertex (glm::vec3 (-1.0f, +t   ,  0.0f));
     addIcoVertex (glm::vec3 (+1.0f, +t   ,  0.0f));
