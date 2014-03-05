@@ -8,7 +8,7 @@
 #include "macro.hpp"
 #include "opengl-util.hpp"
 #include "renderer.hpp"
-#include "rendermode.hpp"
+#include "render-mode.hpp"
 #include "color.hpp"
 #include "state.hpp"
 #include "camera.hpp"

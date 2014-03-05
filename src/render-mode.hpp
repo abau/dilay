@@ -1,5 +1,5 @@
-#ifndef DILAY_RENDERMODE
-#define DILAY_RENDERMODE
+#ifndef DILAY_RENDER_MODE
+#define DILAY_RENDER_MODE
 
 enum class RenderMode 
   { Smooth    = 0 // c.f. numRenderModes

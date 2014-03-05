@@ -1,4 +1,4 @@
-#include "rendermode.hpp"
+#include "render-mode.hpp"
 
 RenderMode RenderModeUtil :: toggle (RenderMode renderMode) {
   if (renderMode == RenderMode::Smooth)

@@ -11,7 +11,7 @@
 #include "mesh.hpp"
 #include "state.hpp"
 #include "history.hpp"
-#include "rendermode.hpp"
+#include "render-mode.hpp"
 #include "tool/movement.hpp"
 #include "view/tool-options.hpp"
 #include "view/vector-edit.hpp"

@@ -3,7 +3,7 @@
 #include "renderer.hpp"
 #include "config.hpp"
 #include "opengl-util.hpp"
-#include "rendermode.hpp"
+#include "render-mode.hpp"
 #include "color.hpp"
 #include "macro.hpp"
 #include "camera.hpp"

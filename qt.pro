@@ -54,7 +54,7 @@ SOURCES += \
            src/plane.cpp \
            src/ray.cpp \
            src/renderer.cpp \
-           src/rendermode.cpp \
+           src/render-mode.cpp \
            src/scene.cpp \
            src/sphere.cpp \
            src/sphere/mesh.cpp \
@@ -129,7 +129,7 @@ HEADERS += \
            src/plane.hpp \
            src/ray.hpp \
            src/renderer.hpp \
-           src/rendermode.hpp \
+           src/render-mode.hpp \
            src/scene.hpp \
            src/sphere.hpp \
            src/sphere/mesh.hpp \

@@ -6,7 +6,7 @@
 #include "renderer.hpp"
 #include "color.hpp"
 #include "util.hpp"
-#include "rendermode.hpp"
+#include "render-mode.hpp"
 
 struct Cursor::Impl {
   Mesh          mesh;

@@ -6,7 +6,7 @@
 #include "macro.hpp"
 #include "camera.hpp"
 #include "color.hpp"
-#include "rendermode.hpp"
+#include "render-mode.hpp"
 
 struct Axis::Impl {
   Mesh   mesh;
