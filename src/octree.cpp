@@ -508,8 +508,7 @@ struct Octree::Impl {
   ConstOctreeNodeIterator nodeIterator () const { return ConstOctreeNodeIterator (*this); }
 };
 
-DELEGATE_CONSTRUCTOR (Octree)
-DELEGATE_DESTRUCTOR  (Octree)
+DELEGATE_BIG3   (Octree)
 DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const Triangle&)
 DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const Triangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)

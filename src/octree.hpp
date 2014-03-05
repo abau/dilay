@@ -36,9 +36,8 @@ class OctreeNode {
   public: 
     class Impl;
 
-          OctreeNode                  (Impl*);
-          OctreeNode                  (const OctreeNode&) = delete;
-    const OctreeNode& operator=       (const OctreeNode&) = delete;
+    OctreeNode            (Impl*);
+    DELETE_COPYMOVEASSIGN (OctreeNode)
 
     Id                id              () const;
     int               depth           () const;
@@ -66,10 +65,7 @@ class Octree {
   public: 
     class Impl; 
     
-          Octree                ();
-          Octree                (const Octree&) = delete;
-    const Octree& operator=     (const Octree&) = delete;
-         ~Octree                ();
+    DECLARE_BIG3 (Octree)
 
     WingedFace& insertFace      (const WingedFace&, const Triangle&);
     WingedFace& realignFace     (const WingedFace&, const Triangle&, bool* = nullptr);

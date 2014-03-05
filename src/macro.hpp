@@ -448,6 +448,12 @@
           const  t & operator= (      t &&);     \
   virtual      ~ t             ();
 
+#define DELETE_COPYMOVEASSIGN(t)              \
+         t             (const t &)  = delete; \
+         t             (      t &&) = delete; \
+  const  t & operator= (const t &)  = delete; \
+  const  t & operator= (      t &&) = delete;
+
 // Action related macros
 
 #define DELEGATE_TO_UNIT_TEMPLATE(from,t) \
