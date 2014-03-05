@@ -45,6 +45,11 @@ class IdObject {
              IdObject (const IdObject&);
              IdObject (const IdObject&&);
 
+    bool operator== (const IdObject& o) const { return this->operator== (o._id); }
+    bool operator!= (const IdObject& o) const { return this->operator!= (o._id); }
+    bool operator== (const Id& id)      const { return this->_id == id; }
+    bool operator!= (const Id& id)      const { return this->_id != id; }
+
     const IdObject& operator= (const IdObject&) {
       return *this;
     }
