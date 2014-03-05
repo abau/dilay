@@ -33,6 +33,7 @@ class SphereMesh {
     void addNode    (SphereMeshNode*, const glm::vec3&);
     void addNode    (const Id&, SphereMeshNode*, const glm::vec3&);
     void removeNode (const Id&);
+    void render     ();
 
   private:
     class Impl;

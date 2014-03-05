@@ -4,6 +4,8 @@
 #include "sphere/mesh.hpp"
 #include "id.hpp"
 #include "id-map.hpp"
+#include "../mesh.hpp"
+#include "render-mode.hpp"
 
 typedef std::unique_ptr <SphereMeshNode::Impl> Child;
 
@@ -45,6 +47,12 @@ struct SphereMeshNode::Impl {
     }
     assert (false);
   }
+  
+  void render (Mesh& mesh) {
+    mesh.setPosition (this->position);
+    mesh.setScaling  (glm::vec3 (this->radius));
+    mesh.render      ();
+  }
 };
 
 SphereMeshNode :: SphereMeshNode (SphereMeshNode::Impl* i) : impl (i) {}
@@ -59,6 +67,12 @@ struct SphereMesh::Impl {
   IdObject                        id;
   Child                           root;
   IdMapPtr <SphereMeshNode::Impl> idMap;
+  Mesh                            mesh;
+
+  Impl () {
+    this->mesh = Mesh::icosphere (3);
+    this->mesh.renderMode (RenderMode::Smooth);
+  }
 
   void addNode (SphereMeshNode* parent, const glm::vec3& position) {
     this->addNode (Id (), parent, position);
@@ -90,9 +104,16 @@ struct SphereMesh::Impl {
     }
     this->idMap.erase (id);
   }
+
+  void render () {
+    if (this->root) {
+      this->root->render (this->mesh);
+    }
+  }
 };
 
 DELEGATE_BIG3 (SphereMesh)
 ID        (SphereMesh)
 DELEGATE2 (void, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&)
 DELEGATE3 (void, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&)
+DELEGATE  (void, SphereMesh, render)
