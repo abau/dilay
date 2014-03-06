@@ -18,7 +18,7 @@ class ConstOctreeFaceIterator;
 class OctreeNodeIterator;
 class ConstOctreeNodeIterator;
 class Ray;
-class FaceIntersection;
+class WingedFaceIntersection;
 class Sphere;
 class Id;
 
@@ -44,7 +44,7 @@ class OctreeNode {
     const glm::vec3&  center          () const;
     float             looseWidth      () const;
     float             width           () const;
-    void              intersectRay    (WingedMesh&, const Ray&, FaceIntersection&);
+    void              intersectRay    (WingedMesh&, const Ray&, WingedFaceIntersection&);
     void              intersectSphere ( const WingedMesh&, const Sphere&
                                       , std::unordered_set<Id>&);
     void              intersectSphere ( const WingedMesh&, const Sphere&
@@ -73,7 +73,7 @@ class Octree {
     bool        hasFace         (const Id&) const;
     WingedFace* face            (const Id&);
     void        render          ();
-    void        intersectRay    (WingedMesh&, const Ray&, FaceIntersection&);
+    void        intersectRay    (WingedMesh&, const Ray&, WingedFaceIntersection&);
     void        intersectSphere ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<Id>&);
     void        intersectSphere ( const WingedMesh&, const Sphere&

@@ -4,7 +4,7 @@
 class WingedMesh;
 class Id;
 class Ray;
-class FaceIntersection;
+class WingedFaceIntersection;
 enum class MeshType;
 class SphereMesh;
 
@@ -29,7 +29,7 @@ class Scene {
     const SphereMesh& sphereMesh       (const Id&) const;
 
           void        render           (MeshType);
-          void        intersectRay     (MeshType, const Ray&, FaceIntersection&);
+          void        intersectRay     (MeshType, const Ray&, WingedFaceIntersection&);
 
   private:
     class Impl;

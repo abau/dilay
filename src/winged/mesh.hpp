@@ -6,7 +6,7 @@
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 
-class FaceIntersection;
+class WingedFaceIntersection;
 class Ray;
 class Triangle;
 class Octree;
@@ -69,7 +69,7 @@ class WingedMesh {
     void            initOctreeRoot    (const glm::vec3&, float);
     void            toggleRenderMode  ();
     
-    void            intersectRay      (const Ray&, FaceIntersection&);
+    void            intersectRay      (const Ray&, WingedFaceIntersection&);
     void            intersectSphere   (const Sphere&, std::unordered_set <Id>&);
     void            intersectSphere   (const Sphere&, std::unordered_set <WingedVertex*>&);
     

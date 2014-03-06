@@ -210,7 +210,7 @@ struct WingedMesh::Impl {
 
   void toggleRenderMode () { this->mesh.toggleRenderMode (); }
 
-  void intersectRay (const Ray& ray, FaceIntersection& intersection) {
+  void intersectRay (const Ray& ray, WingedFaceIntersection& intersection) {
     this->octree.intersectRay (*this->self,ray,intersection);
   }
 
@@ -283,6 +283,6 @@ DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, initOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
 
-DELEGATE2       (void, WingedMesh, intersectRay, const Ray&, FaceIntersection&)
+DELEGATE2       (void, WingedMesh, intersectRay, const Ray&, WingedFaceIntersection&)
 DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::unordered_set<Id>&)
 DELEGATE2       (void, WingedMesh, intersectSphere, const Sphere&, std::unordered_set<WingedVertex*>&)

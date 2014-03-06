@@ -78,6 +78,7 @@ SOURCES += \
            src/view/vector-edit.cpp \
            src/winged/edge.cpp \
            src/winged/face.cpp \
+           src/winged/face-intersection.cpp \
            src/winged/mesh.cpp \
            src/winged/util.cpp \
            src/winged/vertex.cpp \
@@ -154,6 +155,7 @@ HEADERS += \
            src/view/vector-edit.hpp \
            src/winged/edge.hpp \
            src/winged/face.hpp \
+           src/winged/face-intersection.hpp \
            src/winged/mesh.hpp \
            src/winged/util.hpp \
            src/winged/vertex.hpp \
