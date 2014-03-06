@@ -4,9 +4,11 @@
 #include "winged/mesh.hpp"
 #include "ray.hpp"
 #include "mesh-type.hpp"
+#include "sphere/mesh.hpp"
 
 struct Scene :: Impl {
   IdMap <WingedMesh> wingedMeshes;
+  IdMap <SphereMesh> sphereMeshes;
 
   WingedMesh& newWingedMesh (MeshType t) {
     assert (MeshType::FreeForm == t);
@@ -19,15 +21,37 @@ struct Scene :: Impl {
   }
 
   void removeWingedMesh (const Id& id) {
+    assert (this->wingedMeshes.hasElement (id));
     this->wingedMeshes.erase (id);
   }
 
         WingedMesh& wingedMesh (const Id& id)       { return this->wingedMeshes.element (id); }
   const WingedMesh& wingedMesh (const Id& id) const { return this->wingedMeshes.element (id); }
 
+  SphereMesh& newSphereMesh () {
+    return this->sphereMeshes.insert (new SphereMesh ());
+  }
+
+  SphereMesh& newSphereMesh (const Id& id) {
+    return this->sphereMeshes.insert (new SphereMesh (id));
+  }
+
+  void removeSphereMesh (const Id& id) {
+    assert (this->sphereMeshes.hasElement (id));
+    this->sphereMeshes.erase (id);
+  }
+
+        SphereMesh& sphereMesh (const Id& id)       { return this->sphereMeshes.element (id); }
+  const SphereMesh& sphereMesh (const Id& id) const { return this->sphereMeshes.element (id); }
+
   void render (MeshType t) {
     if (t == MeshType::FreeForm) {
       for (auto it = this->wingedMeshes.begin (); it != this->wingedMeshes.end (); ++it) {
+        it->second->render ();
+      }
+    }
+    else if (t == MeshType::Sphere) {
+      for (auto it = this->sphereMeshes.begin (); it != this->sphereMeshes.end (); ++it) {
         it->second->render ();
       }
     }
