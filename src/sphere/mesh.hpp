@@ -27,7 +27,8 @@ class SphereMeshNode {
 
 class SphereMesh {
   public:
-    DECLARE_BIG3 (SphereMesh)
+    DECLARE_BIG3 (SphereMesh, const Id&)
+    SphereMesh   ();
 
     Id   id         () const;
     void addNode    (SphereMeshNode*, const glm::vec3&);

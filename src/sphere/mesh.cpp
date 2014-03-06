@@ -69,7 +69,9 @@ struct SphereMesh::Impl {
   IdMapPtr <SphereMeshNode::Impl> idMap;
   Mesh                            mesh;
 
-  Impl () {
+  Impl () : Impl (Id ()) {}
+
+  Impl (const Id& i) : id (i) {
     this->mesh = Mesh::icosphere (3);
     this->mesh.renderMode (RenderMode::Smooth);
   }
@@ -112,7 +114,9 @@ struct SphereMesh::Impl {
   }
 };
 
-DELEGATE_BIG3 (SphereMesh)
+DELEGATE1_BIG3       (SphereMesh, const Id&)
+DELEGATE_CONSTRUCTOR (SphereMesh)
+
 ID        (SphereMesh)
 DELEGATE2 (void, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&)
 DELEGATE3 (void, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&)
