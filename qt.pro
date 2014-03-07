@@ -57,6 +57,7 @@ SOURCES += \
            src/render-mode.cpp \
            src/scene.cpp \
            src/sphere.cpp \
+           src/sphere/node-intersection.cpp \
            src/sphere/mesh.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
@@ -133,6 +134,7 @@ HEADERS += \
            src/render-mode.hpp \
            src/scene.hpp \
            src/sphere.hpp \
+           src/sphere/node-intersection.hpp \
            src/sphere/mesh.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
