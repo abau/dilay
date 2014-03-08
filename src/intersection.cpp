@@ -137,6 +137,6 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& 
 }
 
 bool IntersectionUtil :: intersects (const Ray& ray, WingedMesh& mesh, WingedFaceIntersection& fi) {
-  mesh.intersectRay (ray, fi);
+  mesh.intersects (ray, fi);
   return fi.isIntersection ();
 }

@@ -42,7 +42,7 @@ struct Triangle::Impl {
     return glm::max ( glm::max (delta.x, delta.y), delta.z );
   }
 
-  bool intersectRay (const Ray& ray, glm::vec3& intersection) const {
+  bool intersects (const Ray& ray, glm::vec3& intersection) const {
     glm::vec3 e1 = this->edge1 ();
     glm::vec3 e2 = this->edge2 ();
 
@@ -88,4 +88,4 @@ DELEGATE_CONST  (glm::vec3         , Triangle, center)
 DELEGATE_CONST  (glm::vec3         , Triangle, minimum)
 DELEGATE_CONST  (glm::vec3         , Triangle, maximum)
 DELEGATE_CONST  (float             , Triangle, maxExtent)
-DELEGATE2_CONST (bool              , Triangle, intersectRay, const Ray&, glm::vec3&)
+DELEGATE2_CONST (bool              , Triangle, intersects, const Ray&, glm::vec3&)

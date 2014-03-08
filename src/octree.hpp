@@ -39,18 +39,18 @@ class OctreeNode {
     OctreeNode            (Impl*);
     DELETE_COPYMOVEASSIGN (OctreeNode)
 
-    Id                id              () const;
-    int               depth           () const;
-    const glm::vec3&  center          () const;
-    float             looseWidth      () const;
-    float             width           () const;
-    void              intersectRay    (WingedMesh&, const Ray&, WingedFaceIntersection&);
-    void              intersectSphere ( const WingedMesh&, const Sphere&
-                                      , std::unordered_set<Id>&);
-    void              intersectSphere ( const WingedMesh&, const Sphere&
-                                      , std::unordered_set<WingedVertex*>&);
-    unsigned int      numFaces        () const;
-    OctreeNode*       nodeSLOW        (const Id&);
+    Id                id         () const;
+    int               depth      () const;
+    const glm::vec3&  center     () const;
+    float             looseWidth () const;
+    float             width      () const;
+    void              intersects (WingedMesh&, const Ray&, WingedFaceIntersection&);
+    void              intersects ( const WingedMesh&, const Sphere&
+                                 , std::unordered_set<Id>&);
+    void              intersects ( const WingedMesh&, const Sphere&
+                                 , std::unordered_set<WingedVertex*>&);
+    unsigned int      numFaces   () const;
+    OctreeNode*       nodeSLOW   (const Id&);
 
     OctreeNodeFaceIterator      faceIterator ();
     ConstOctreeNodeFaceIterator faceIterator () const;
@@ -73,10 +73,10 @@ class Octree {
     bool        hasFace         (const Id&) const;
     WingedFace* face            (const Id&);
     void        render          ();
-    void        intersectRay    (WingedMesh&, const Ray&, WingedFaceIntersection&);
-    void        intersectSphere ( const WingedMesh&, const Sphere&
+    void        intersects      (WingedMesh&, const Ray&, WingedFaceIntersection&);
+    void        intersects      ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<Id>&);
-    void        intersectSphere ( const WingedMesh&, const Sphere&
+    void        intersects      ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<WingedVertex*>&);
     void        reset           ();
     void        initRoot        (const glm::vec3&, float);

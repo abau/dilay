@@ -31,7 +31,7 @@ struct ActionCarve::Impl {
     std::unordered_set <Id> ids;
     Sphere                  sphere (position, width);
 
-    mesh.intersectSphere (sphere, ids);
+    mesh.intersects (sphere, ids);
 
     this->subdivideFaces (sphere, mesh, ids, 0.01f);
     this->carveFaces     (sphere, brush,  mesh, ids);
