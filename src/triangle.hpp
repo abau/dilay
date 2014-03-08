@@ -30,7 +30,6 @@ class Triangle {
     glm::vec3         minimum    () const;
     glm::vec3         maximum    () const;
     float             maxExtent  () const;
-    bool              intersects (const Ray&, glm::vec3&) const;
 
   private:
     class Impl;

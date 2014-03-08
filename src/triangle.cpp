@@ -41,32 +41,6 @@ struct Triangle::Impl {
     glm::vec3 delta = this->maximum () - this->minimum ();
     return glm::max ( glm::max (delta.x, delta.y), delta.z );
   }
-
-  bool intersects (const Ray& ray, glm::vec3& intersection) const {
-    glm::vec3 e1 = this->edge1 ();
-    glm::vec3 e2 = this->edge2 ();
-
-    glm::vec3 s1  = glm::cross (ray.direction (), e2);
-    float divisor = glm::dot   (s1, e1);
-
-    if (divisor < Util :: epsilon) 
-      return false;
-
-    float     invDivisor = 1.0f / divisor;
-    glm::vec3 d          = ray.origin () - this->vertex1;
-    glm::vec3 s2         = glm::cross (d,e1);
-    float     b1         = glm::dot (d,s1)                 * invDivisor;
-    float     b2         = glm::dot (ray.direction (), s2) * invDivisor;
-    float     t          = glm::dot (e2, s2)               * invDivisor;
-
-    if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) {
-      return false;
-    }
-    else {
-      intersection = ray.pointAt (t);
-      return true;
-    }
-  }
 };
 
 DELEGATE_BIG6          (Triangle)
@@ -88,4 +62,3 @@ DELEGATE_CONST  (glm::vec3         , Triangle, center)
 DELEGATE_CONST  (glm::vec3         , Triangle, minimum)
 DELEGATE_CONST  (glm::vec3         , Triangle, maximum)
 DELEGATE_CONST  (float             , Triangle, maxExtent)
-DELEGATE2_CONST (bool              , Triangle, intersects, const Ray&, glm::vec3&)

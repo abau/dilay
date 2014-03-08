@@ -11,6 +11,7 @@ class WingedEdge;
 class WingedFace;
 class WingedMesh;
 class Plane;
+class Triangle;
 
 namespace IntersectionUtil {
   bool intersects (const Sphere&, const glm::vec3&);
@@ -20,6 +21,7 @@ namespace IntersectionUtil {
   bool intersects (const Sphere&, const OctreeNode&);
   bool intersects (const Ray&, const Sphere&, float&); 
   bool intersects (const Ray&, const Plane& , float&); 
+  bool intersects (const Ray&, const Triangle& , glm::vec3&); 
 }
 
 #endif

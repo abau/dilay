@@ -11,6 +11,7 @@
 #include "util.hpp"
 #include "octree.hpp"
 #include "plane.hpp"
+#include "triangle.hpp"
 
 bool IntersectionUtil :: intersects (const Sphere& sphere, const glm::vec3& vec) {
   return glm::distance (vec,sphere.center ()) <= sphere.radius ();
@@ -133,4 +134,30 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& 
   }
   t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
   return true;
+}
+
+bool IntersectionUtil :: intersects (const Ray& ray, const Triangle& tri, glm::vec3& intersection) {
+  glm::vec3 e1 = tri.edge1 ();
+  glm::vec3 e2 = tri.edge2 ();
+
+  glm::vec3 s1  = glm::cross (ray.direction (), e2);
+  float divisor = glm::dot   (s1, e1);
+
+  if (divisor < Util :: epsilon) 
+    return false;
+
+  float     invDivisor = 1.0f / divisor;
+  glm::vec3 d          = ray.origin () - tri.vertex1 ();
+  glm::vec3 s2         = glm::cross (d,e1);
+  float     b1         = glm::dot (d,s1)                 * invDivisor;
+  float     b2         = glm::dot (ray.direction (), s2) * invDivisor;
+  float     t          = glm::dot (e2, s2)               * invDivisor;
+
+  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) {
+    return false;
+  }
+  else {
+    intersection = ray.pointAt (t);
+    return true;
+  }
 }
