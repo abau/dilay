@@ -253,16 +253,16 @@ struct OctreeNode::Impl {
     }
   }
 
-  void intersects (WingedMesh& mesh, const Ray& ray, WingedFaceIntersection& intersection) {
+  bool intersects (WingedMesh& mesh, const Ray& ray, WingedFaceIntersection& intersection) {
     if (this->bboxIntersectRay (ray)) {
       this->facesIntersectRay (mesh,ray,intersection);
       for (Child& c : this->children) 
         c->intersects (mesh,ray,intersection);
     }
+    return intersection.isIntersection ();
   }
 
-  void intersects ( const WingedMesh& mesh, const Sphere& sphere
-                       , std::unordered_set<Id>& ids) {
+  bool intersects (const WingedMesh& mesh, const Sphere& sphere, std::unordered_set<Id>& ids) {
     if (IntersectionUtil :: intersects (sphere, this->node)) {
       for (auto fIt = this->faceIterator (); fIt.isValid (); fIt.next ()) {
         WingedFace& face = fIt.element ();
@@ -274,9 +274,10 @@ struct OctreeNode::Impl {
         c->intersects (mesh, sphere, ids);
       }
     }
+    return ids.empty () == false;
   }
 
-  void intersects ( const WingedMesh& mesh, const Sphere& sphere
+  bool intersects ( const WingedMesh& mesh, const Sphere& sphere
                        , std::unordered_set<WingedVertex*>& vertices) {
     if (IntersectionUtil :: intersects (sphere, this->node)) {
       for (auto fIt = this->faceIterator (); fIt.isValid (); fIt.next ()) {
@@ -292,6 +293,7 @@ struct OctreeNode::Impl {
         c->intersects (mesh, sphere, vertices);
       }
     }
+    return vertices.empty () == false;
   }
 
   unsigned int numFaces () const { return this->faces.size (); }
@@ -324,9 +326,9 @@ GETTER_CONST   (int, OctreeNode, depth)
 GETTER_CONST   (const glm::vec3&, OctreeNode, center)
 DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER_CONST   (float, OctreeNode, width)
-DELEGATE3      (void, OctreeNode, intersects, WingedMesh&, const Ray&, WingedFaceIntersection&)
-DELEGATE3      (void, OctreeNode, intersects, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
-DELEGATE3      (void, OctreeNode, intersects, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
+DELEGATE3      (bool, OctreeNode, intersects, WingedMesh&, const Ray&, WingedFaceIntersection&)
+DELEGATE3      (bool, OctreeNode, intersects, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
+DELEGATE3      (bool, OctreeNode, intersects, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 DELEGATE1      (OctreeNode* , OctreeNode, nodeSLOW, const Id&)
 DELEGATE       (OctreeNodeFaceIterator, OctreeNode, faceIterator)
@@ -443,20 +445,26 @@ struct Octree::Impl {
 #endif
   }
 
-  void intersects (WingedMesh& mesh, const Ray& ray, WingedFaceIntersection& intersection) {
-    if (this->root) 
-      this->root->intersects (mesh,ray,intersection);
+  bool intersects (WingedMesh& mesh, const Ray& ray, WingedFaceIntersection& intersection) {
+    if (this->root) {
+      return this->root->intersects (mesh,ray,intersection);
+    }
+    return false;
   }
 
-  void intersects (const WingedMesh& mesh, const Sphere& sphere, std::unordered_set<Id>& ids) {
-    if (this->root)
-      this->root->intersects (mesh,sphere,ids);
+  bool intersects (const WingedMesh& mesh, const Sphere& sphere, std::unordered_set<Id>& ids) {
+    if (this->root) {
+      return this->root->intersects (mesh,sphere,ids);
+    }
+    return false;
   }
 
-  void intersects ( const WingedMesh& mesh, const Sphere& sphere
+  bool intersects ( const WingedMesh& mesh, const Sphere& sphere
                   , std::unordered_set<WingedVertex*>& vertices) {
-    if (this->root)
-      this->root->intersects (mesh,sphere,vertices);
+    if (this->root) {
+      return this->root->intersects (mesh,sphere,vertices);
+    }
+    return false;
   }
 
   void reset () { 
@@ -515,9 +523,9 @@ DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
 DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
-DELEGATE3       (void, Octree, intersects, WingedMesh&, const Ray&, WingedFaceIntersection&)
-DELEGATE3       (void, Octree, intersects, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
-DELEGATE3       (void, Octree, intersects, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
+DELEGATE3       (bool, Octree, intersects, WingedMesh&, const Ray&, WingedFaceIntersection&)
+DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
+DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, initRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)

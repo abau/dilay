@@ -5,6 +5,7 @@
 #include "ray.hpp"
 #include "mesh-type.hpp"
 #include "sphere/mesh.hpp"
+#include "winged/face-intersection.hpp"
 
 struct Scene :: Impl {
   IdMap <WingedMesh> wingedMeshes;
@@ -57,12 +58,13 @@ struct Scene :: Impl {
     }
   }
 
-  void intersects (MeshType t, const Ray& ray, WingedFaceIntersection& intersection) {
+  bool intersects (MeshType t, const Ray& ray, WingedFaceIntersection& intersection) {
     if (t == MeshType::FreeForm) {
       for (auto it = this->wingedMeshes.begin (); it != this->wingedMeshes.end (); ++it) {
         it->second->intersects (ray, intersection);
       }
     }
+    return intersection.isIntersection ();
   }
 };
 
@@ -75,4 +77,4 @@ DELEGATE1       (void             , Scene, removeWingedMesh, const Id&)
 DELEGATE1       (WingedMesh&      , Scene, wingedMesh, const Id&)
 DELEGATE1_CONST (const WingedMesh&, Scene, wingedMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
-DELEGATE3       (void             , Scene, intersects, MeshType, const Ray&, WingedFaceIntersection&)
+DELEGATE3       (bool             , Scene, intersects, MeshType, const Ray&, WingedFaceIntersection&)

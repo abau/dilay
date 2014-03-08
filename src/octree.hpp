@@ -44,10 +44,10 @@ class OctreeNode {
     const glm::vec3&  center     () const;
     float             looseWidth () const;
     float             width      () const;
-    void              intersects (WingedMesh&, const Ray&, WingedFaceIntersection&);
-    void              intersects ( const WingedMesh&, const Sphere&
+    bool              intersects (WingedMesh&, const Ray&, WingedFaceIntersection&);
+    bool              intersects ( const WingedMesh&, const Sphere&
                                  , std::unordered_set<Id>&);
-    void              intersects ( const WingedMesh&, const Sphere&
+    bool              intersects ( const WingedMesh&, const Sphere&
                                  , std::unordered_set<WingedVertex*>&);
     unsigned int      numFaces   () const;
     OctreeNode*       nodeSLOW   (const Id&);
@@ -73,10 +73,10 @@ class Octree {
     bool        hasFace         (const Id&) const;
     WingedFace* face            (const Id&);
     void        render          ();
-    void        intersects      (WingedMesh&, const Ray&, WingedFaceIntersection&);
-    void        intersects      ( const WingedMesh&, const Sphere&
+    bool        intersects      (WingedMesh&, const Ray&, WingedFaceIntersection&);
+    bool        intersects      ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<Id>&);
-    void        intersects      ( const WingedMesh&, const Sphere&
+    bool        intersects      ( const WingedMesh&, const Sphere&
                                 , std::unordered_set<WingedVertex*>&);
     void        reset           ();
     void        initRoot        (const glm::vec3&, float);

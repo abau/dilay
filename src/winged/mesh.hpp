@@ -69,9 +69,9 @@ class WingedMesh {
     void            initOctreeRoot    (const glm::vec3&, float);
     void            toggleRenderMode  ();
     
-    void            intersects        (const Ray&, WingedFaceIntersection&);
-    void            intersects        (const Sphere&, std::unordered_set <Id>&);
-    void            intersects        (const Sphere&, std::unordered_set <WingedVertex*>&);
+    bool            intersects        (const Ray&, WingedFaceIntersection&);
+    bool            intersects        (const Sphere&, std::unordered_set <Id>&);
+    bool            intersects        (const Sphere&, std::unordered_set <WingedVertex*>&);
     
     SAFE_REF1 (WingedVertex, vertexSLOW, unsigned int)
     SAFE_REF1 (WingedEdge  , edgeSLOW  , const Id&)

@@ -210,16 +210,16 @@ struct WingedMesh::Impl {
 
   void toggleRenderMode () { this->mesh.toggleRenderMode (); }
 
-  void intersects (const Ray& ray, WingedFaceIntersection& intersection) {
-    this->octree.intersects (*this->self,ray,intersection);
+  bool intersects (const Ray& ray, WingedFaceIntersection& intersection) {
+    return this->octree.intersects (*this->self,ray,intersection);
   }
 
-  void intersects (const Sphere& sphere, std::unordered_set <Id>& ids) {
-    this->octree.intersects (*this->self,sphere,ids);
+  bool intersects (const Sphere& sphere, std::unordered_set <Id>& ids) {
+    return this->octree.intersects (*this->self,sphere,ids);
   }
 
-  void intersects (const Sphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
-    this->octree.intersects (*this->self,sphere,vertices);
+  bool intersects (const Sphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
+    return this->octree.intersects (*this->self,sphere,vertices);
   }
 
   bool hasFreeFirstIndexNumber () const { 
@@ -283,6 +283,6 @@ DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, initOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
 
-DELEGATE2       (void, WingedMesh, intersects, const Ray&, WingedFaceIntersection&)
-DELEGATE2       (void, WingedMesh, intersects, const Sphere&, std::unordered_set<Id>&)
-DELEGATE2       (void, WingedMesh, intersects, const Sphere&, std::unordered_set<WingedVertex*>&)
+DELEGATE2       (bool, WingedMesh, intersects, const Ray&, WingedFaceIntersection&)
+DELEGATE2       (bool, WingedMesh, intersects, const Sphere&, std::unordered_set<Id>&)
+DELEGATE2       (bool, WingedMesh, intersects, const Sphere&, std::unordered_set<WingedVertex*>&)

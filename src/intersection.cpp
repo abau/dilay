@@ -5,7 +5,6 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "winged/face-intersection.hpp"
 #include "sphere.hpp"
 #include "adjacent-iterator.hpp"
 #include "ray.hpp"
@@ -134,9 +133,4 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& 
   }
   t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
   return true;
-}
-
-bool IntersectionUtil :: intersects (const Ray& ray, WingedMesh& mesh, WingedFaceIntersection& fi) {
-  mesh.intersects (ray, fi);
-  return fi.isIntersection ();
 }
