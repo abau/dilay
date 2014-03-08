@@ -13,8 +13,6 @@ class WingedMesh;
 class Plane;
 
 namespace IntersectionUtil {
-  bool intersects (const Sphere&, const glm::vec3&);
-  bool intersects (const Sphere&, const WingedMesh&, const WingedVertex&);
   bool intersects (const Sphere&, const WingedMesh&, const WingedEdge&);
   bool intersects (const Sphere&, const WingedMesh&, const WingedFace&);
   bool intersects (const Sphere&, const OctreeNode&);

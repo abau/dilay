@@ -9,8 +9,9 @@ class Sphere {
   public:
     DECLARE_BIG6 (Sphere, const glm::vec3&, float)
 
-    const glm::vec3& center () const;
-    float            radius () const;
+    const glm::vec3& center     () const;
+          float      radius     () const;
+          bool       intersects (const glm::vec3&) const;
   private:
     class Impl;
     Impl* impl;

@@ -12,15 +12,6 @@
 #include "octree.hpp"
 #include "plane.hpp"
 
-bool IntersectionUtil :: intersects (const Sphere& sphere, const glm::vec3& vec) {
-  return glm::distance (vec,sphere.center ()) <= sphere.radius ();
-}
-
-bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
-                                    , const WingedVertex& vertex) {
-  return IntersectionUtil :: intersects (sphere, vertex.vertex (mesh));
-}
-
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
                                     , const WingedEdge& edge) {
   glm::vec3 v1       = edge.vertex1 ()->vertex (mesh);
@@ -48,7 +39,7 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
 bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
                                     , const WingedFace& face) {
   for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-    if (IntersectionUtil :: intersects (sphere, mesh, it.element ()))
+    if (it.element ().intersects (mesh, sphere))
       return true;
   }
   for (ADJACENT_EDGE_ITERATOR (it,face)) {

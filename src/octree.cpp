@@ -284,7 +284,7 @@ struct OctreeNode::Impl {
         WingedFace& face = fIt.element ();
         for (ADJACENT_VERTEX_ITERATOR (vIt,face)) {
           WingedVertex& vertex = vIt.element ();
-          if (IntersectionUtil :: intersects (sphere, mesh, vertex)) {
+          if (vertex.intersects (mesh, sphere)) {
             vertices.insert (&vertex);
           }
         }

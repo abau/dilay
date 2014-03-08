@@ -8,6 +8,7 @@ class AdjacentVertexIterator;
 class AdjacentFaceIterator;
 class WingedEdge;
 class WingedMesh;
+class Sphere;
 
 class WingedVertex {
   public: 
@@ -26,6 +27,7 @@ class WingedVertex {
     void         writeNormal (WingedMesh&) const;
     unsigned int valence     () const;
     WingedEdge*  tEdge       () const;
+    bool         intersects  (const WingedMesh&, const Sphere&) const;
 
     AdjacentEdgeIterator    adjacentEdgeIterator   (bool = false) const;
     AdjacentVertexIterator  adjacentVertexIterator (bool = false) const;

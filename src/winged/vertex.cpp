@@ -4,6 +4,7 @@
 #include "winged/edge.hpp"
 #include "winged/vertex.hpp"
 #include "adjacent-iterator.hpp"
+#include "sphere.hpp"
 
 WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e) 
   : _index (i), _edge (e) {}
@@ -48,6 +49,10 @@ WingedEdge* WingedVertex :: tEdge () const {
       return &it.element ();
   }
   return nullptr;
+}
+
+bool WingedVertex :: intersects (const WingedMesh& mesh, const Sphere& sphere) const {
+  return sphere.intersects (this->vertex (mesh));
 }
 
 AdjacentEdgeIterator WingedVertex :: adjacentEdgeIterator (bool skipT) const {
