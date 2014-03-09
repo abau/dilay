@@ -2,8 +2,8 @@
 #define DILAY_OCTREE
 
 #include <unordered_set>
+#include <unordered_map>
 #include <glm/fwd.hpp>
-#include "iterator.hpp"
 #include "macro.hpp"
 
 class WingedFace;
@@ -11,27 +11,23 @@ class WingedVertex;
 class WingedMesh;
 class Triangle;
 class OctreeNode;
-class OctreeNodeFaceIterator;
-class ConstOctreeNodeFaceIterator;
-class OctreeFaceIterator;
-class ConstOctreeFaceIterator;
-class OctreeNodeIterator;
-class ConstOctreeNodeIterator;
 class Ray;
 class WingedFaceIntersection;
 class Sphere;
 class Id;
 
-/** Internal template for iterators over all faces of a node */
-template <bool> struct OctreeNodeFaceIteratorTemplate;
+struct OctreeStatistics {
+  typedef std::unordered_map <int, unsigned int> DepthMap;
 
-/** Internal template for iterators over all faces of an octree */
-template <bool> struct OctreeFaceIteratorTemplate;
+  unsigned int numNodes;
+  unsigned int numFaces;
+  int          minDepth;
+  int          maxDepth;
+  unsigned int maxFacesPerNode;
+  DepthMap     numFacesPerDepth;
+  DepthMap     numNodesPerDepth;
+};
 
-/** Internal template for iterators over all nodes of an octree */
-template <bool> struct OctreeNodeIteratorTemplate;
-
-/** Octree node interface */
 class OctreeNode {
   public: 
     class Impl;
@@ -52,133 +48,41 @@ class OctreeNode {
     unsigned int      numFaces   () const;
     OctreeNode*       nodeSLOW   (const Id&);
 
-    OctreeNodeFaceIterator      faceIterator ();
-    ConstOctreeNodeFaceIterator faceIterator () const;
-
   private:
     friend class Octree;
     Impl* impl;
 };
 
-/** Octree main class */
 class Octree { 
   public: 
     class Impl; 
     
     DECLARE_BIG3 (Octree)
 
-    WingedFace& insertFace      (const WingedFace&, const Triangle&);
-    WingedFace& realignFace     (const WingedFace&, const Triangle&, bool* = nullptr);
-    void        deleteFace      (const WingedFace&);
-    bool        hasFace         (const Id&) const;
-    WingedFace* face            (const Id&);
-    void        render          ();
-    bool        intersects      (WingedMesh&, const Ray&, WingedFaceIntersection&);
-    bool        intersects      ( const WingedMesh&, const Sphere&
-                                , std::unordered_set<Id>&);
-    bool        intersects      ( const WingedMesh&, const Sphere&
-                                , std::unordered_set<WingedVertex*>&);
-    void        reset           ();
-    void        initRoot        (const glm::vec3&, float);
-    void        shrinkRoot      ();
-    OctreeNode& nodeSLOW        (const Id&);
+    WingedFace&      insertFace  (const WingedFace&, const Triangle&);
+    WingedFace&      realignFace (const WingedFace&, const Triangle&, bool* = nullptr);
+    void             deleteFace  (const WingedFace&);
+    bool             hasFace     (const Id&) const;
+    WingedFace*      face        (const Id&);
+    void             render      ();
+    bool             intersects  (WingedMesh&, const Ray&, WingedFaceIntersection&);
+    bool             intersects  ( const WingedMesh&, const Sphere&
+                                 , std::unordered_set<Id>&);
+    bool             intersects  ( const WingedMesh&, const Sphere&
+                                 , std::unordered_set<WingedVertex*>&);
+    void             reset       ();
+    void             initRoot    (const glm::vec3&, float);
+    void             shrinkRoot  ();
+    OctreeNode&      nodeSLOW    (const Id&);
+    unsigned int     numFaces    () const;
+    OctreeStatistics statistics  () const;
 
-    OctreeFaceIterator      faceIterator ();
-    ConstOctreeFaceIterator faceIterator () const;
-    OctreeNodeIterator      nodeIterator ();
-    ConstOctreeNodeIterator nodeIterator () const;
+    void        forEachFace      (const std::function <void (WingedFace&)>&);
+    void        forEachConstFace (const std::function <void (const WingedFace&)>&) const;
 
     SAFE_REF1 (WingedFace,face,const Id&)
 
   private:
-    Impl* impl;
-};
-
-/** Iterator over all faces of a node */
-class OctreeNodeFaceIterator : public Iterator <WingedFace> {
-  public: 
-    DECLARE_BIG6 (OctreeNodeFaceIterator, OctreeNode::Impl&)
-
-    bool         isValid () const;
-    WingedFace&  element () const;
-    void         next    ();
-    int          depth   () const;
-
-    using Impl = OctreeNodeFaceIteratorTemplate <false>;
-  private:
-    Impl* impl;
-};
-
-/** Constant iterator over all faces of a node */
-class ConstOctreeNodeFaceIterator : public ConstIterator <WingedFace> {
-  public: 
-    DECLARE_BIG6 (ConstOctreeNodeFaceIterator, const OctreeNode::Impl&)
-
-    bool              isValid () const;
-    const WingedFace& element () const;
-    void              next    ();
-    int               depth   () const;
-
-    using Impl = OctreeNodeFaceIteratorTemplate <true>;
-  private:
-    Impl* impl;
-};
-
-/** Iterator over all faces of an octree */
-class OctreeFaceIterator : public Iterator <WingedFace> {
-  public: 
-    DECLARE_BIG6 (OctreeFaceIterator, Octree::Impl&)
-
-    bool         isValid () const;
-    WingedFace&  element () const;
-    void         next    ();
-    int          depth   () const;
-
-  private:
-    using Impl = OctreeFaceIteratorTemplate <false>;
-    Impl* impl;
-};
-
-/** Constant iterator over all faces of an octree */
-class ConstOctreeFaceIterator : public ConstIterator <WingedFace> {
-  public: 
-    DECLARE_BIG6 (ConstOctreeFaceIterator, const Octree::Impl&)
-     
-    bool              isValid () const;
-    const WingedFace& element () const;
-    void              next    ();
-    int               depth   () const;
-
-  private:
-    using Impl = OctreeFaceIteratorTemplate <true>;
-    Impl* impl;
-};
-
-/** Iterator over all nodes of an octree */
-class OctreeNodeIterator : public Iterator <OctreeNode> {
-  public: 
-    DECLARE_BIG6 (OctreeNodeIterator, Octree::Impl&)
-
-    bool         isValid () const;
-    OctreeNode&  element () const;
-    void         next    ();
-
-  private:
-    using Impl = OctreeNodeIteratorTemplate <false>;
-    Impl* impl;
-};
-
-/** Constant iterator over all nodes of an octree */
-class ConstOctreeNodeIterator : public ConstIterator <OctreeNode> {
-  public: 
-    DECLARE_BIG6 (ConstOctreeNodeIterator, const Octree::Impl&)
-
-    bool              isValid () const;
-    const OctreeNode& element () const;
-    void              next    ();
-
-  private:
-    using Impl = OctreeNodeIteratorTemplate <true>;
     Impl* impl;
 };
 

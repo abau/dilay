@@ -10,7 +10,6 @@
 #include "ray.hpp"
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
-#include "octree-util.hpp"
 #include "id.hpp"
 
 struct WingedMesh::Impl {
@@ -137,7 +136,7 @@ struct WingedMesh::Impl {
   }
 
   unsigned int numFaces () const { 
-    return OctreeUtil :: numFaces (this->octree); 
+    return this->octree.numFaces ();
   }
 
   unsigned int numIndices () const { 
@@ -154,19 +153,19 @@ struct WingedMesh::Impl {
     if (this->freeFirstIndexNumbers.size () > 0) {
       unsigned int fin = 0;
       this->mesh.resizeIndices (this->numFaces () * 3);
-      for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
-        it.element ().writeIndices (*this->self, &fin);
+
+      this->octree.forEachFace ([this,&fin] (WingedFace& face) {
+        face.writeIndices (*this->self, &fin);
         fin = fin + 3;
-      }
+      });
       this->freeFirstIndexNumbers.clear ();
     }
     else {
-      for (OctreeFaceIterator it = this->octree.faceIterator (); it.isValid (); it.next ()) {
-        it.element ().writeIndices (*this->self);
-      }
+      this->octree.forEachFace ([this] (WingedFace& face) {
+        face.writeIndices (*this->self);
+      });
     }
   }
-
 
   void writeNormals () {
     for (WingedVertex& v : this->vertices) {

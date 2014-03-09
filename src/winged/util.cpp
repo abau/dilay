@@ -7,7 +7,6 @@
 #include "winged/vertex.hpp"
 #include "../util.hpp"
 #include "octree.hpp"
-#include "octree-util.hpp"
 
 void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedVertex& v
                                    , bool printDerived) {
@@ -84,9 +83,25 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
     for (const WingedEdge& e : mesh.edges ())
       WingedUtil :: printStatistics (e);
 
-
-    for (auto it = mesh.octree ().faceIterator (); it.isValid (); it.next ())
-      WingedUtil :: printStatistics (mesh,it.element (),printDerived);
+    mesh.octree ().forEachConstFace ([&mesh,printDerived] (const WingedFace& face) {
+      WingedUtil :: printStatistics (mesh,face,printDerived);
+    });
   }
-  OctreeUtil :: printStatistics (mesh.octree ());
+  OctreeStatistics oStats = mesh.octree ().statistics ();
+
+  std::cout << "Octree:"
+            << "\n\tnum nodes:\t\t"        << oStats.numNodes
+            << "\n\tnum faces:\t\t"        << oStats.numFaces
+            << "\n\tmax faces per node:\t" << oStats.maxFacesPerNode
+            << "\n\tmin depth:\t\t"        << oStats.minDepth
+            << "\n\tmax depth:\t\t"        << oStats.maxDepth
+            << "\n\tfaces per node:\t\t"   << float (oStats.numFaces) / float (oStats.numNodes) 
+            << std::endl;
+
+  for (OctreeStatistics::DepthMap::value_type& e : oStats.numNodesPerDepth) {
+    std::cout << "\t" << e.second << "\tnodes at depth\t" << e.first << std::endl;
+  }
+  for (OctreeStatistics::DepthMap::value_type& e : oStats.numFacesPerDepth) {
+    std::cout << "\t" << e.second << "\tfaces at depth\t" << e.first << std::endl;
+  }
 }

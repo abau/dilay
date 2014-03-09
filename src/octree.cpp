@@ -1,8 +1,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>
-#include <type_traits>
-#include <unordered_map>
+#include <limits>
 #include "octree.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
@@ -264,8 +263,7 @@ struct OctreeNode::Impl {
 
   bool intersects (const WingedMesh& mesh, const Sphere& sphere, std::unordered_set<Id>& ids) {
     if (IntersectionUtil :: intersects (sphere, this->node)) {
-      for (auto fIt = this->faceIterator (); fIt.isValid (); fIt.next ()) {
-        WingedFace& face = fIt.element ();
+      for (WingedFace& face : this->faces) {
         if (IntersectionUtil :: intersects (sphere, mesh, face)) {
           ids.insert (face.id ());
         }
@@ -280,8 +278,7 @@ struct OctreeNode::Impl {
   bool intersects ( const WingedMesh& mesh, const Sphere& sphere
                        , std::unordered_set<WingedVertex*>& vertices) {
     if (IntersectionUtil :: intersects (sphere, this->node)) {
-      for (auto fIt = this->faceIterator (); fIt.isValid (); fIt.next ()) {
-        WingedFace& face = fIt.element ();
+      for (WingedFace& face : this->faces) {
         for (ADJACENT_VERTEX_ITERATOR (vIt,face)) {
           WingedVertex& vertex = vIt.element ();
           if (IntersectionUtil :: intersects (sphere, mesh, vertex)) {
@@ -310,12 +307,38 @@ struct OctreeNode::Impl {
     return nullptr;
   }
 
-  OctreeNodeFaceIterator faceIterator () { 
-    return OctreeNodeFaceIterator (*this);
+  void updateStatistics (OctreeStatistics& stats) {
+    const unsigned int d  = this->depth;
+    const unsigned int f  = this->numFaces ();
+    stats.numNodes        = stats.numNodes + 1;
+    stats.numFaces        = stats.numFaces + f;
+    stats.minDepth        = std::min <int> (stats.minDepth, d);
+    stats.maxDepth        = std::max <int> (stats.maxDepth, d);
+    stats.maxFacesPerNode = std::max <int> (stats.maxFacesPerNode, f);
+
+    OctreeStatistics::DepthMap::iterator e = stats.numFacesPerDepth.find (d);
+    if (e == stats.numFacesPerDepth.end ()) {
+      stats.numFacesPerDepth.emplace (d, f);
+    }
+    else {
+      e->second = e->second + f;
+    }
+    e = stats.numNodesPerDepth.find (d);
+    if (e == stats.numNodesPerDepth.end ()) {
+      stats.numNodesPerDepth.emplace (d, 1);
+    }
+    else {
+      e->second = e->second + 1;
+    }
   }
 
-  ConstOctreeNodeFaceIterator faceIterator () const { 
-    return ConstOctreeNodeFaceIterator (*this); 
+  void forEachFace (const std::function <void (WingedFace&)>& f) {
+    for (WingedFace& face : this->faces) { f (face); }
+    for (Child& c : this->children)      { c->forEachFace (f);    }
+  }
+  void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
+    for (const WingedFace& face : this->faces) { f (face); }
+    for (const Child& c : this->children)      { c->forEachConstFace (f); }
   }
 };
 
@@ -331,8 +354,6 @@ DELEGATE3      (bool, OctreeNode, intersects, const WingedMesh&, const Sphere&, 
 DELEGATE3      (bool, OctreeNode, intersects, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
 DELEGATE1      (OctreeNode* , OctreeNode, nodeSLOW, const Id&)
-DELEGATE       (OctreeNodeFaceIterator, OctreeNode, faceIterator)
-DELEGATE_CONST (ConstOctreeNodeFaceIterator, OctreeNode, faceIterator)
 
 /** Octree class */
 struct Octree::Impl {
@@ -510,10 +531,28 @@ struct Octree::Impl {
     assert (false);
   }
 
-  OctreeFaceIterator      faceIterator ()       { return OctreeFaceIterator      (*this); }
-  ConstOctreeFaceIterator faceIterator () const { return ConstOctreeFaceIterator (*this); }
-  OctreeNodeIterator      nodeIterator ()       { return OctreeNodeIterator      (*this); }
-  ConstOctreeNodeIterator nodeIterator () const { return ConstOctreeNodeIterator (*this); }
+  unsigned int numFaces () const { return this->idMap.size (); }
+
+  OctreeStatistics statistics () const {
+    OctreeStatistics stats { 0, 0
+                           , std::numeric_limits <int>::max ()
+                           , std::numeric_limits <int>::min ()
+                           , 0 
+                           , OctreeStatistics::DepthMap ()
+                           , OctreeStatistics::DepthMap () };
+    if (this->root) {
+      this->root->updateStatistics (stats);
+    }
+    assert (stats.numFaces == this->numFaces ());
+    return stats;
+  }
+
+  void forEachFace (const std::function <void (WingedFace&)>& f) {
+    if (this->root) { this->root->forEachFace (f); }
+  }
+  void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
+    if (this->root) { this->root->forEachConstFace (f); }
+  }
 };
 
 DELEGATE_BIG3   (Octree)
@@ -530,174 +569,7 @@ DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, initRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)
 DELEGATE1       (OctreeNode&, Octree, nodeSLOW, const Id&)
-DELEGATE        (OctreeFaceIterator, Octree, faceIterator)
-DELEGATE_CONST  (ConstOctreeFaceIterator, Octree, faceIterator)
-DELEGATE        (OctreeNodeIterator, Octree, nodeIterator)
-DELEGATE_CONST  (ConstOctreeNodeIterator, Octree, nodeIterator)
-
-/** Internal template for iterators over all faces of a node */
-template <bool isConstant>
-struct OctreeNodeFaceIteratorTemplate {
-  typedef typename 
-    std::conditional <isConstant, const OctreeNode::Impl, OctreeNode::Impl>::type 
-    T_OctreeNodeImpl;
-  typedef typename 
-    std::conditional <isConstant, std::list <WingedFace>::const_iterator
-                                , std::list <WingedFace>::iterator>::type
-    T_Iterator;
-  typedef typename 
-    std::conditional <isConstant, const WingedFace, WingedFace>::type
-    T_Element;
-
-  T_OctreeNodeImpl& octreeNode;
-  T_Iterator        iterator;
-
-  OctreeNodeFaceIteratorTemplate (T_OctreeNodeImpl& n) 
-    : octreeNode (n) 
-    , iterator (n.faces.begin ())
-  {}
-
-  bool isValid () const { 
-    return this->iterator != this->octreeNode.faces.end ();
-  }
-
-  T_Element& element () const {
-    assert (this->isValid ());
-    return * this->iterator;
-  }
-
-  void next () {
-    assert (this->isValid ());
-    this->iterator++;
-  }
-
-  int depth () const { 
-    return this->octreeNode.depth;
-  }
-};
-
-DELEGATE1_BIG6 (OctreeNodeFaceIterator,OctreeNode::Impl&)
-DELEGATE_CONST (bool       , OctreeNodeFaceIterator, isValid)
-DELEGATE_CONST (WingedFace&, OctreeNodeFaceIterator, element)
-DELEGATE       (void       , OctreeNodeFaceIterator, next)
-DELEGATE_CONST (int        , OctreeNodeFaceIterator, depth)
-
-DELEGATE1_BIG6 (ConstOctreeNodeFaceIterator,const OctreeNode::Impl&)
-DELEGATE_CONST (bool             , ConstOctreeNodeFaceIterator, isValid)
-DELEGATE_CONST (const WingedFace&, ConstOctreeNodeFaceIterator, element)
-DELEGATE       (void             , ConstOctreeNodeFaceIterator, next)
-DELEGATE_CONST (int              , ConstOctreeNodeFaceIterator, depth)
-
-/** Internal template for iterators over all faces of an octree */
-template <bool isConstant>
-struct OctreeFaceIteratorTemplate {
-  typedef typename 
-    std::conditional <isConstant, const Octree::Impl, Octree::Impl>::type 
-    T_OctreeImpl;
-  typedef typename 
-    std::conditional <isConstant, const WingedFace, WingedFace>::type
-    T_Element;
-  typedef 
-    OctreeNodeFaceIteratorTemplate <isConstant>
-    T_OctreeNodeFaceIterator;
-
-  std::list <T_OctreeNodeFaceIterator> faceIterators;
-
-  OctreeFaceIteratorTemplate (T_OctreeImpl& octree) {
-    if (octree.root) {
-      T_OctreeNodeFaceIterator rootIterator (*octree.root);
-      this->faceIterators.push_back (rootIterator);
-      this->skipEmptyNodes ();
-    }
-  }
-
-  void skipEmptyNodes () {
-    if (this->faceIterators.size () > 0) {
-      T_OctreeNodeFaceIterator& current = this->faceIterators.front ();
-      if (! current.isValid ()) {
-        for (auto & c : current.octreeNode.children) {
-          this->faceIterators.push_back (T_OctreeNodeFaceIterator (*c.get ()));
-        }
-        this->faceIterators.pop_front ();
-        this->skipEmptyNodes ();
-      }
-    }
-  }
-
-  bool isValid () const { return this->faceIterators.size () > 0; }
-
-  T_Element & element () const {
-    assert (this->isValid ());
-    return this->faceIterators.front ().element ();
-  }
-
-  void next () { 
-    assert (this->isValid ());
-    this->faceIterators.front ().next ();
-    this->skipEmptyNodes ();
-  }
-
-  int depth () const {
-    assert (this->isValid ());
-    return this->faceIterators.front ().octreeNode.depth;
-  }
-};
-
-DELEGATE1_BIG6 (OctreeFaceIterator,Octree::Impl&)
-DELEGATE_CONST (bool       , OctreeFaceIterator, isValid)
-DELEGATE_CONST (WingedFace&, OctreeFaceIterator, element)
-DELEGATE       (void       , OctreeFaceIterator, next)
-DELEGATE_CONST (int        , OctreeFaceIterator, depth)
-
-DELEGATE1_BIG6 (ConstOctreeFaceIterator,const Octree::Impl&)
-DELEGATE_CONST (bool             , ConstOctreeFaceIterator, isValid)
-DELEGATE_CONST (const WingedFace&, ConstOctreeFaceIterator, element)
-DELEGATE       (void             , ConstOctreeFaceIterator, next)
-DELEGATE_CONST (int              , ConstOctreeFaceIterator, depth)
-
-/** Internal template for iterators over all nodes of an octree */
-template <bool isConstant>
-struct OctreeNodeIteratorTemplate {
-  typedef typename 
-    std::conditional <isConstant, const Octree::Impl, Octree::Impl>::type 
-    T_OctreeImpl;
-  typedef typename 
-    std::conditional <isConstant, const OctreeNode,OctreeNode>::type 
-    T_OctreeNode;
-  typedef typename 
-    std::conditional <isConstant, const OctreeNode::Impl,OctreeNode::Impl>::type 
-    T_OctreeNodeImpl;
-
-  std::list <T_OctreeNodeImpl*> nodes;
-
-  OctreeNodeIteratorTemplate (T_OctreeImpl& octree) {
-    if (octree.root) {
-      this->nodes.push_back (octree.root.get ());
-    }
-  }
-
-  T_OctreeNode& element () const {
-    assert (this->isValid ());
-    return this->nodes.front ()->node;
-  }
-
-  bool isValid () const { return this->nodes.size () > 0; }
-
-  void next () { 
-    assert (this->isValid ());
-    for (auto & c : this->nodes.front ()->children) {
-      this->nodes.push_back (c.get ());
-    }
-    this->nodes.pop_front ();
-  }
-};
-
-DELEGATE1_BIG6 (OctreeNodeIterator, Octree::Impl&)    
-DELEGATE_CONST (bool              , OctreeNodeIterator, isValid)
-DELEGATE_CONST (OctreeNode&       , OctreeNodeIterator, element)
-DELEGATE       (void              , OctreeNodeIterator, next)
-
-DELEGATE1_BIG6 (ConstOctreeNodeIterator, const Octree::Impl&)    
-DELEGATE_CONST (bool              , ConstOctreeNodeIterator, isValid)
-DELEGATE_CONST (const OctreeNode& , ConstOctreeNodeIterator, element)
-DELEGATE       (void              , ConstOctreeNodeIterator, next)
+DELEGATE_CONST  (unsigned int, Octree, numFaces)
+DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
+DELEGATE1       (void            , Octree, forEachFace, const std::function <void (WingedFace&)>&)
+DELEGATE1_CONST (void            , Octree, forEachConstFace, const std::function <void (const WingedFace&)>&)

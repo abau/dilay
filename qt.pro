@@ -40,7 +40,6 @@ SOURCES += \
            src/main.cpp \
            src/mesh.cpp \
            src/octree.cpp \
-           src/octree-util.cpp \
            src/opengl-util.cpp \
            src/partial-action/delete-edge-face.cpp \
            src/partial-action/delete-t-edges.cpp \
@@ -117,7 +116,6 @@ HEADERS += \
            src/mesh.hpp \
            src/mesh-type.hpp \
            src/octree.hpp \
-           src/octree-util.hpp \
            src/opengl-util.hpp \
            src/partial-action/delete-edge-face.hpp \
            src/partial-action/delete-t-edges.hpp \
