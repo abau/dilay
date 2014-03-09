@@ -295,18 +295,6 @@ struct OctreeNode::Impl {
 
   unsigned int numFaces () const { return this->faces.size (); }
 
-  OctreeNode* nodeSLOW (const Id& otherId) {
-    if (otherId == this->id.id ())
-      return &this->node;
-    else {
-      for (Child& c : this->children) {
-        OctreeNode* r = c->nodeSLOW (otherId);
-        if (r) return r;
-      }
-    }
-    return nullptr;
-  }
-
   void updateStatistics (OctreeStatistics& stats) {
     const unsigned int d  = this->depth;
     const unsigned int f  = this->numFaces ();
@@ -349,11 +337,6 @@ GETTER_CONST   (int, OctreeNode, depth)
 GETTER_CONST   (const glm::vec3&, OctreeNode, center)
 DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER_CONST   (float, OctreeNode, width)
-DELEGATE3      (bool, OctreeNode, intersects, WingedMesh&, const Ray&, WingedFaceIntersection&)
-DELEGATE3      (bool, OctreeNode, intersects, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
-DELEGATE3      (bool, OctreeNode, intersects, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
-DELEGATE_CONST (unsigned int, OctreeNode, numFaces)
-DELEGATE1      (OctreeNode* , OctreeNode, nodeSLOW, const Id&)
 
 /** Octree class */
 struct Octree::Impl {
@@ -520,17 +503,6 @@ struct Octree::Impl {
     }
   }
 
-  OctreeNode& nodeSLOW (const Id& id) {
-    if (this->root) {
-      OctreeNode* result = this->root->nodeSLOW (id);
-      if (result) 
-        return *result;
-      else 
-        assert (false);
-    }
-    assert (false);
-  }
-
   unsigned int numFaces () const { return this->idMap.size (); }
 
   OctreeStatistics statistics () const {
@@ -568,7 +540,6 @@ DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const Sphere&, std
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, initRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)
-DELEGATE1       (OctreeNode&, Octree, nodeSLOW, const Id&)
 DELEGATE_CONST  (unsigned int, Octree, numFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE1       (void            , Octree, forEachFace, const std::function <void (WingedFace&)>&)

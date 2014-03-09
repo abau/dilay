@@ -102,10 +102,6 @@ struct WingedMesh::Impl {
     return this->mesh.setNormal (index,n);
   }
 
-  OctreeNode& octreeNodeSLOW (const Id& id) {
-    return this->octree.nodeSLOW (id);
-  }
-
   void deleteEdge (const WingedEdge& edge) { this->edges.erase (edge.iterator ()); }
   void deleteFace (const WingedFace& face) { 
     if (face.firstIndexNumber () == this->mesh.numIndices () - 3) {
@@ -259,7 +255,6 @@ DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm
 GETTER_CONST    (const Vertices&, WingedMesh, vertices)
 GETTER_CONST    (const Edges&   , WingedMesh, edges)
 GETTER_CONST    (const Octree&  , WingedMesh, octree)
-DELEGATE1       (OctreeNode&    , WingedMesh, octreeNodeSLOW, const Id&)
 
 DELEGATE1       (void        , WingedMesh, deleteEdge, const WingedEdge&)
 DELEGATE1       (void        , WingedMesh, deleteFace, const WingedFace&)

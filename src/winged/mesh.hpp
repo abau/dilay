@@ -10,7 +10,6 @@ class WingedFaceIntersection;
 class Ray;
 class Triangle;
 class Octree;
-class OctreeNode;
 class WingedVertex;
 class WingedFace;
 class WingedEdge;
@@ -45,7 +44,6 @@ class WingedMesh {
     const Vertices& vertices          () const;
     const Edges&    edges             () const;
     const Octree&   octree            () const;
-    OctreeNode&     octreeNodeSLOW    (const Id&);
 
     void            deleteEdge        (const WingedEdge&);
     void            deleteFace        (const WingedFace&);

@@ -40,13 +40,6 @@ class OctreeNode {
     const glm::vec3&  center     () const;
     float             looseWidth () const;
     float             width      () const;
-    bool              intersects (WingedMesh&, const Ray&, WingedFaceIntersection&);
-    bool              intersects ( const WingedMesh&, const Sphere&
-                                 , std::unordered_set<Id>&);
-    bool              intersects ( const WingedMesh&, const Sphere&
-                                 , std::unordered_set<WingedVertex*>&);
-    unsigned int      numFaces   () const;
-    OctreeNode*       nodeSLOW   (const Id&);
 
   private:
     friend class Octree;
@@ -55,8 +48,6 @@ class OctreeNode {
 
 class Octree { 
   public: 
-    class Impl; 
-    
     DECLARE_BIG3 (Octree)
 
     WingedFace&      insertFace  (const WingedFace&, const Triangle&);
@@ -73,7 +64,6 @@ class Octree {
     void             reset       ();
     void             initRoot    (const glm::vec3&, float);
     void             shrinkRoot  ();
-    OctreeNode&      nodeSLOW    (const Id&);
     unsigned int     numFaces    () const;
     OctreeStatistics statistics  () const;
 
@@ -83,6 +73,7 @@ class Octree {
     SAFE_REF1 (WingedFace,face,const Id&)
 
   private:
+    class Impl; 
     Impl* impl;
 };
 
