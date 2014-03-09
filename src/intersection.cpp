@@ -13,6 +13,34 @@
 #include "plane.hpp"
 #include "triangle.hpp"
 
+struct Intersection :: Impl {
+  bool      isIntersection;
+  float     distance;
+  glm::vec3 position;
+
+  Impl () : isIntersection (false) {}
+
+  bool update (float d, const glm::vec3& p) {
+    if (this->isIntersection == false || d < this->distance) {
+      this->isIntersection = true;
+      this->distance       = d;
+      this->position       = p;
+      return true;
+    }
+    return false;
+  }
+
+  void reset () {
+    this->isIntersection = false;
+  }
+};
+
+DELEGATE_BIG6 (Intersection)
+DELEGATE2     (bool            , Intersection, update, float, const glm::vec3&)
+GETTER_CONST  (bool            , Intersection, isIntersection)
+GETTER_CONST  (float           , Intersection, distance)
+GETTER_CONST  (const glm::vec3&, Intersection, position)
+
 bool IntersectionUtil :: intersects (const Sphere& sphere, const glm::vec3& vec) {
   return glm::distance (vec,sphere.center ()) <= sphere.radius ();
 }
