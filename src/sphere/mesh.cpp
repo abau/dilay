@@ -6,6 +6,10 @@
 #include "id-map.hpp"
 #include "../mesh.hpp"
 #include "render-mode.hpp"
+#include "intersection.hpp"
+#include "sphere.hpp"
+#include "ray.hpp"
+#include "sphere/node-intersection.hpp"
 
 typedef std::unique_ptr <SphereMeshNode::Impl> Child;
 
@@ -53,6 +57,18 @@ struct SphereMeshNode::Impl {
     mesh.setScaling  (glm::vec3 (this->radius));
     mesh.render      ();
   }
+
+  bool intersects (SphereMesh& mesh, const Ray& ray, SphereNodeIntersection& sni) {
+    float t;
+    if (IntersectionUtil::intersects (ray, Sphere (this->position, this->radius), t)) {
+      const glm::vec3 p = ray.pointAt (t);
+      sni.update (glm::distance (ray.origin (), p), p, mesh, this->self);
+    }
+    for (Child& c : this->children) {
+      c->intersects (mesh, ray, sni);
+    }
+    return sni.isIntersection ();
+  }
 };
 
 SphereMeshNode :: SphereMeshNode (SphereMeshNode::Impl* i) : impl (i) {}
@@ -64,14 +80,18 @@ GETTER_CONST (float           , SphereMeshNode, radius)
 SETTER       (float           , SphereMeshNode, radius)
 
 struct SphereMesh::Impl {
+  SphereMesh*                     self;
   IdObject                        id;
   Child                           root;
   IdMapPtr <SphereMeshNode::Impl> idMap;
   Mesh                            mesh;
 
-  Impl () : Impl (Id ()) {}
+  Impl (SphereMesh* s) : Impl (s, Id ()) {}
 
-  Impl (const Id& i) : id (i) {
+  Impl (SphereMesh* s, const Id& i) 
+    : self (s)
+    , id (i) 
+  {
     this->mesh = Mesh::icosphere (3);
     this->mesh.renderMode (RenderMode::Smooth);
   }
@@ -112,12 +132,20 @@ struct SphereMesh::Impl {
       this->root->render (this->mesh);
     }
   }
+
+  bool intersects (const Ray& ray, SphereNodeIntersection& sni) {
+    if (this->root) {
+      return this->root->intersects (*this->self, ray, sni);
+    }
+    return false;
+  }
 };
 
-DELEGATE1_BIG3       (SphereMesh, const Id&)
-DELEGATE_CONSTRUCTOR (SphereMesh)
+DELEGATE1_BIG3_SELF       (SphereMesh, const Id&)
+DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 
 ID        (SphereMesh)
 DELEGATE2 (void, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&)
 DELEGATE3 (void, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&)
 DELEGATE  (void, SphereMesh, render)
+DELEGATE2 (bool, SphereMesh, intersects, const Ray&, SphereNodeIntersection&)
