@@ -8,8 +8,10 @@
 #define DELEGATE_COPY_CONSTRUCTOR(from) \
   from :: from (const from & a1) { this->impl = new Impl (*a1.impl); }
 
-#define DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
-  from :: from (const from & a1) { this->impl = new Impl (this,*a1.impl); }
+#define DELEGATE_COPY_CONSTRUCTOR_SELF(from,base) \
+  from :: from (const from & a1) : base ( a1 ) { \
+    this->impl       = new Impl (*a1.impl); \
+    this->impl->self = this; }
 
 #define DELEGATE_MOVE_CONSTRUCTOR(from) \
   from :: from (from && a1) { \
@@ -34,7 +36,7 @@
 #define DELEGATE_ASSIGNMENT_OP_SELF(from) \
   const from & from :: operator= (const from & source) { \
     if (this == &source) return *this; \
-    from tmp (nullptr,source); \
+    from tmp (source); \
     Impl * tmpImpl   = tmp.impl; \
     tmp.impl         = this->impl; \
     this->impl       = tmpImpl; \
@@ -71,13 +73,13 @@
 #define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from)\
+  DELEGATE_ASSIGNMENT_OP(from) \
   DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
+#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from,base) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
-  DELEGATE_ASSIGNMENT_OP_SELF(from)\
+  DELEGATE_COPY_CONSTRUCTOR_SELF(from,base) \
+  DELEGATE_ASSIGNMENT_OP_SELF(from) \
   DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
 #define DELEGATE_CONSTRUCTOR(from) \
@@ -188,29 +190,29 @@
   DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
   DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
 
-#define DELEGATE_BIG6_SELF(from) \
+#define DELEGATE_BIG6_SELF(from,base) \
   DELEGATE_CONSTRUCTOR_SELF(from) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from,base)
 
-#define DELEGATE1_BIG6_SELF(from,t1) \
+#define DELEGATE1_BIG6_SELF(from,base,t1) \
   DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from,base)
 
-#define DELEGATE2_BIG6_SELF(from,t1,t2) \
+#define DELEGATE2_BIG6_SELF(from,base,t1,t2) \
   DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from,base)
 
-#define DELEGATE3_BIG6_SELF(from,t1,t2,t3) \
+#define DELEGATE3_BIG6_SELF(from,base,t1,t2,t3) \
   DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from,base)
 
-#define DELEGATE4_BIG6_SELF(from,t1,t2,t3,t4) \
+#define DELEGATE4_BIG6_SELF(from,base,t1,t2,t3,t4) \
   DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from,base)
 
-#define DELEGATE5_BIG6_SELF(from,t1,t2,t3,t4,t5) \
+#define DELEGATE5_BIG6_SELF(from,base,t1,t2,t3,t4,t5) \
   DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from,base)
 
 #define DELEGATE(r,from,method) \
   r from :: method () { return this->impl-> method (); }
