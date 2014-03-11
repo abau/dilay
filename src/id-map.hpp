@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include "macro.hpp"
 #include "id.hpp"
 
 template <class T>
@@ -34,6 +35,8 @@ class IdMapPtr {
 
     void         reset ()       {        this->map.clear (); }
     unsigned int size  () const { return this->map.size  (); }
+
+    SAFE_REF1_CONST (T, element, const Id&)
 
   private:
     typedef std::unordered_map <IdPrimitive, T*> InternalMap;

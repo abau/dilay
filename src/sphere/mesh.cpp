@@ -116,10 +116,10 @@ struct SphereMesh::Impl {
   void removeNode (const Id& id) {
     assert (this->idMap.hasElement (id));
 
-    SphereMeshNode::Impl* node = this->idMap.element (id);
+    SphereMeshNode::Impl& node = this->idMap.elementRef (id);
 
-    if (node->parentImpl) {
-      node->parentImpl->removeChild (id);
+    if (node.parentImpl) {
+      node.parentImpl->removeChild (id);
     }
     else {
       this->root.reset (nullptr);
