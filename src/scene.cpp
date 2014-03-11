@@ -1,3 +1,5 @@
+#include <list>
+#include <algorithm>
 #include "scene.hpp"
 #include "macro.hpp"
 #include "id-map.hpp"
@@ -8,60 +10,68 @@
 #include "winged/face-intersection.hpp"
 
 struct Scene :: Impl {
-  IdMap <WingedMesh> wingedMeshes;
-  IdMap <SphereMesh> sphereMeshes;
+  std::list <WingedMesh> wingedMeshes;
+  std::list <SphereMesh> sphereMeshes;
+
+  IdMapPtr <WingedMesh> wingedMeshIdMap;
+  IdMapPtr <SphereMesh> sphereMeshIdMap;
 
   WingedMesh& newWingedMesh (MeshType t) {
-    assert (MeshType::FreeForm == t);
-    return this->wingedMeshes.insert (new WingedMesh ());
+    return this->newWingedMesh (t, Id ());
   }
 
   WingedMesh& newWingedMesh (MeshType t, const Id& id) {
     assert (MeshType::FreeForm == t);
-    return this->wingedMeshes.insert (new WingedMesh (id));
+    this->wingedMeshes.emplace_back (id);
+    this->wingedMeshIdMap.insert (this->wingedMeshes.back ());
+    return this->wingedMeshes.back ();
   }
 
   void removeWingedMesh (const Id& id) {
-    assert (this->wingedMeshes.hasElement (id));
-    this->wingedMeshes.erase (id);
+    assert (this->wingedMeshIdMap.hasElement (id));
+    this->wingedMeshIdMap.erase (id);
+    this->wingedMeshes.remove_if ([&id] (WingedMesh& m) { return m.id () == id; });
   }
 
-        WingedMesh& wingedMesh (const Id& id)       { return this->wingedMeshes.element (id); }
-  const WingedMesh& wingedMesh (const Id& id) const { return this->wingedMeshes.element (id); }
+        WingedMesh& wingedMesh (const Id& id)       { return this->wingedMeshIdMap.elementRef (id); }
+  const WingedMesh& wingedMesh (const Id& id) const { return this->wingedMeshIdMap.elementRef (id); }
 
   SphereMesh& newSphereMesh () {
-    return this->sphereMeshes.insert (new SphereMesh ());
+    return this->newSphereMesh (Id ());
   }
 
   SphereMesh& newSphereMesh (const Id& id) {
-    return this->sphereMeshes.insert (new SphereMesh (id));
+    this->sphereMeshes.emplace_back (id);
+    this->sphereMeshIdMap.insert (this->sphereMeshes.back ());
+    return this->sphereMeshes.back ();
   }
 
   void removeSphereMesh (const Id& id) {
-    assert (this->sphereMeshes.hasElement (id));
-    this->sphereMeshes.erase (id);
+    assert (this->sphereMeshIdMap.hasElement (id));
+    this->sphereMeshIdMap.erase (id);
+    this->sphereMeshes.remove_if ([&id] (SphereMesh& m) { return m.id () == id; });
   }
 
-        SphereMesh& sphereMesh (const Id& id)       { return this->sphereMeshes.element (id); }
-  const SphereMesh& sphereMesh (const Id& id) const { return this->sphereMeshes.element (id); }
+        SphereMesh& sphereMesh (const Id& id)       { return this->sphereMeshIdMap.elementRef (id); }
+  const SphereMesh& sphereMesh (const Id& id) const { return this->sphereMeshIdMap.elementRef (id); }
 
   void render (MeshType t) {
     if (t == MeshType::FreeForm) {
-      for (auto it = this->wingedMeshes.begin (); it != this->wingedMeshes.end (); ++it) {
-        it->second->render ();
+      for (WingedMesh& m : this->wingedMeshes) {
+        m.render ();
       }
     }
     else if (t == MeshType::Sphere) {
-      for (auto it = this->sphereMeshes.begin (); it != this->sphereMeshes.end (); ++it) {
-        it->second->render ();
+      for (SphereMesh& m : this->sphereMeshes) {
+        m.render ();
       }
     }
   }
 
   bool intersects (MeshType t, const Ray& ray, WingedFaceIntersection& intersection) {
     if (t == MeshType::FreeForm) {
-      for (auto it = this->wingedMeshes.begin (); it != this->wingedMeshes.end (); ++it) {
-        it->second->intersects (ray, intersection);
+      for (WingedMesh& m : this->wingedMeshes) {
+        m.intersects (ray, intersection);
       }
     }
     return intersection.isIntersection ();

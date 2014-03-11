@@ -8,8 +8,6 @@ class WingedFaceIntersection;
 enum class MeshType;
 class SphereMesh;
 
-/** Note that removing or adding meshes to the scene may invalidate references
- * returned by `new*Mesh` or `*mesh` */
 class Scene {
   public: Scene            ();
           Scene            (const Scene&) = delete;
