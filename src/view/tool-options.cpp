@@ -10,8 +10,7 @@ struct ViewToolOptions::Impl {
   ViewToolOptions* self;
   QVBoxLayout*     vBoxLayout;
   QGridLayout*     gridLayout;
-  QPushButton*     cancelButton;
-  QPushButton*     applyButton;
+  QPushButton*     closeButton;
 
   Impl (ViewToolOptions* s, ViewMainWindow* p) 
     : self   (s)
@@ -30,18 +29,11 @@ struct ViewToolOptions::Impl {
   }
   
   void makeDefaultButtons () {
-    this->cancelButton = this->pushButton (tr("Cancel"));
-    this->applyButton  = this->pushButton (tr("Apply"));
+    this->closeButton = this->pushButton (tr("Close"));
 
-    QHBoxLayout* hLayout = new QHBoxLayout;
-    hLayout->addWidget(this->cancelButton);
-    hLayout->addWidget(this->applyButton);
+    this->vBoxLayout->addWidget (this->closeButton);
 
-    this->vBoxLayout->addLayout (hLayout);
-
-    QObject::connect ( this->cancelButton, &QPushButton::released
-                     , [this] () { this->self->reject (); } );
-    QObject::connect ( this->applyButton, &QPushButton::released
+    QObject::connect ( this->closeButton, &QPushButton::released
                      , [this] () { this->self->accept (); } );
   }
 

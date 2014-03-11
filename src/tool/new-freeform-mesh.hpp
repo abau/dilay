@@ -16,7 +16,6 @@ class ToolNewFreeformMesh : public Tool {
     void runRender          ();
     void runMouseMoveEvent  (QMouseEvent*);
     void runMousePressEvent (QMouseEvent*);
-    void runApply           ();
     void runClose           ();
 };
 

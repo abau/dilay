@@ -33,7 +33,6 @@ class Tool {
     virtual void runRender          ()                   {}
     virtual void runMouseMoveEvent  (QMouseEvent*)       {}
     virtual void runMousePressEvent (QMouseEvent*)       {}
-    virtual void runApply           ()                   = 0;
     virtual void runClose           ()                   {};
 };
 

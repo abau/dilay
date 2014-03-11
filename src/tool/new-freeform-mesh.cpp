@@ -48,11 +48,8 @@ struct ToolNewFreeformMesh::Impl {
     this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
   }
 
-  void runApply () {
-    State::history ().add <ActionNewMesh> ()->newMesh (MeshType::FreeForm, this->mesh);
-  }
-
   void runClose () {
+    State::history ().add <ActionNewMesh> ()->newMesh (MeshType::FreeForm, this->mesh);
     this->self->mainWindow ()->glWidget ()->unsetCursor ();
   }
 
@@ -108,5 +105,4 @@ DELEGATE1 (void, ToolNewFreeformMesh, runInitialize, QContextMenuEvent*)
 DELEGATE  (void, ToolNewFreeformMesh, runRender)
 DELEGATE1 (void, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
 DELEGATE1 (void, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
-DELEGATE  (void, ToolNewFreeformMesh, runApply)
 DELEGATE  (void, ToolNewFreeformMesh, runClose)

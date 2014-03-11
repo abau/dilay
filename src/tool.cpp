@@ -22,7 +22,7 @@ struct Tool::Impl {
     this->toolOptions->setWindowTitle   (this->toolName);
 
     QObject::connect ( this->toolOptions, &ViewToolOptions::accepted
-                     , [this] () { this->apply (); } );
+                     , [this] () { this->close (); } );
 
     QObject::connect ( this->toolOptions, &ViewToolOptions::rejected
                      , [this] () { this->close (); } );
@@ -43,16 +43,10 @@ struct Tool::Impl {
     this->self->runMousePressEvent (e);
   }
 
-  void apply () {
-    this->self->runApply ();
-    this->close          ();
-  }
-
   void close () {
-    assert (this->toolOptions);
     this->self->runClose     ();
     this->toolOptions->close ();
-    State::setTool (nullptr);
+    State::setTool           (nullptr);
   }
 };
 
