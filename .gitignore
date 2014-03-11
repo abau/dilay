@@ -7,3 +7,4 @@ Makefile
 src/session.vim
 archive/
 i18n/*.qm
+dilay.cache
