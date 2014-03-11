@@ -15,6 +15,7 @@
 #include "tool/movement.hpp"
 #include "view/tool-options.hpp"
 #include "view/vector-edit.hpp"
+#include "config.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
@@ -29,9 +30,12 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void runInitialize (QContextMenuEvent* e) {
+    int initialSubdivisions = Config::get <int> ("/editor/tool/new-freeform-mesh/subdivisions", 2);
+
     // connect spin box
     QSpinBox* numSubdivBox = this->self->toolOptions ()
-                                       ->spinBox (QObject::tr ("Subdivisions"), 1, 2, 5);
+                                       ->spinBox ( QObject::tr ("Subdivisions")
+                                                 , 1, initialSubdivisions, 5);
     void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
     QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMeshSlot (n); });
 
@@ -41,7 +45,7 @@ struct ToolNewFreeformMesh::Impl {
         (const glm::vec3& p) { this->setMeshSlot (p); });
 
     // setup mesh
-    this->setMeshSlot       (2);
+    this->setMeshSlot       (initialSubdivisions);
     this->movement.moveXZ   (glm::uvec2 (e->x (), e->y ()));
     this->setMeshByMovement ();
 
@@ -59,6 +63,7 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.bufferData  ();
     this->mesh.setPosition (oldPos);
     this->self->mainWindow ()->glWidget ()->update ();
+    Config::set <int> ("/editor/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
 
   void setMeshSlot (const glm::vec3& pos) {

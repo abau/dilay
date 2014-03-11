@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include "view/main-window.hpp"
+#include "config.hpp"
 
 int main(int argv, char **args) {
   QApplication app (argv, args);
@@ -16,5 +17,8 @@ int main(int argv, char **args) {
   ViewMainWindow w;
   w.show ();
 
+  QObject::connect (&app, &QApplication::aboutToQuit, [] () {
+    Config::writeCache ();
+  });
   return app.exec();
 }

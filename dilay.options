@@ -2,35 +2,35 @@
 <editor>
   <color>
     <background type="color">
-      <r>0.1</r> <g>0.1</g> <b>0.2</b>
+      <r type="float">0.1</r> <g type="float">0.1</g> <b type="float">0.2</b>
     </background>
     <initial-mesh type="color">
-      <r>0.8</r> <g>0.8</g> <b>0.8</b>
+      <r type="float">0.8</r> <g type="float">0.8</g> <b type="float">0.8</b>
     </initial-mesh>
     <initial-mesh-wireframe type="color">
-      <r>0.3</r> <g>0.3</g> <b>0.3</b>
+      <r type="float">0.3</r> <g type="float">0.3</g> <b type="float">0.3</b>
     </initial-mesh-wireframe>
   </color>
 
   <light>
     <ambient type="color">
-      <r>0.0</r> <g>0.0</g> <b>0.0</b>
+      <r type="float">0.0</r> <g type="float">0.0</g> <b type="float">0.0</b>
     </ambient>
     <light1>
       <position type="vector3">
-        <x>-0.8</x> <y>0.8</y> <z>1.0</z>
+        <x type="float">-0.8</x> <y type="float">0.8</y> <z type="float">1.0</z>
       </position>
       <color type="color">
-        <r>1.0</r> <g>1.0</g> <b>1.0</b>
+        <r type="float">1.0</r> <g type="float">1.0</g> <b type="float">1.0</b>
       </color>
       <irradiance type="float">1.0</irradiance>
     </light1>
     <light2>
       <position type="vector3">
-        <x>1.0</x> <y>0.0</y> <z>1.0</z>
+        <x type="float">1.0</x> <y type="float">0.0</y> <z type="float">1.0</z>
       </position>
       <color type="color">
-        <r>1.0</r> <g>1.0</g> <b>1.0</b>
+        <r type="float">1.0</r> <g type="float">1.0</g> <b type="float">1.0</b>
       </color>
       <irradiance type="float">0.3</irradiance>
     </light2>

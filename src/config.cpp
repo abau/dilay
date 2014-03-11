@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <QDomNode>
 #include <QFile>
+#include <QTextStream>
 #include "config.hpp"
 #include "macro.hpp"
 #include "variant.hpp"
@@ -13,42 +14,79 @@ typedef Variant <float,int,glm::vec3,Color> Value;
 typedef std::unordered_map <std::string, Value> ConfigMap;
 
 struct Config::Impl {
-  const std::string fileName;
+  const std::string optionsFileName;
+  const std::string cacheFileName;
 
-  ConfigMap configMap;
+  ConfigMap options;
+  ConfigMap cache;
 
-  Impl (const std::string& fn) : fileName (fn) {
-    this->loadFile ();
+  Impl (const std::string& o, const std::string& c) 
+    : optionsFileName (o) 
+    , cacheFileName   (c) 
+  {
+    this->loadFile (o, this->options, false);
+    this->loadFile (c, this->cache  , true);
   }
 
   template <class T>
   const T& get (const std::string& path) const {
-    ConfigMap::const_iterator value = this->configMap.find (path);
+    ConfigMap::const_iterator value = this->options.find (path);
 
-    if (value == this->configMap.end ()) {
+    if (value == this->options.end ()) {
       throw (std::runtime_error ("Can not find config path " + path));
     }
     return *value->second.get <T> ();
   }
 
-  void loadFile () {
-    QFile file (this->fileName.c_str ());
-    if (file.open (QIODevice::ReadOnly) == false) {
-      throw (std::runtime_error ("Configuration file '" + this->fileName + "' not found"));
+  template <class T>
+  const T& get (const std::string& path, const T& defaultV) const {
+    ConfigMap::const_iterator value = this->cache.find (path);
+
+    if (value == this->cache.end ()) {
+      return defaultV;
     }
-    QDomDocument doc (this->fileName.c_str ());
+    return *value->second.get <T> ();
+  }
+
+  template <class T>
+  void set (const std::string& key, const T& t) {
+    Value value;
+    value.set <T>       (t);
+    this->cache.erase   (key);
+    this->cache.emplace (key, value);
+  }
+
+  void loadFile (const std::string& fileName, ConfigMap& configMap, bool allowEmpty) {
+    QFile file (fileName.c_str ());
+    if (file.open (QIODevice::ReadOnly) == false) {
+      if (allowEmpty) {
+        return;
+      }
+      else {
+        throw (std::runtime_error ("Can not open configuration file '" + fileName + "'"));
+      }
+    }
+    QDomDocument doc (fileName.c_str ());
     QString      errorMsg;
     int          errorLine   = -1;
     int          errorColumn = -1;
     if (doc.setContent (&file, &errorMsg, &errorLine, &errorColumn) == false) {
       file.close();
-      this->throwError (errorMsg.toStdString (), errorLine, errorColumn);
+      throw (std::runtime_error 
+          ( "Error while loading configuration file '" + fileName + "': " + errorMsg.toStdString ()
+          + " (" + std::to_string (errorLine) + ","  + std::to_string (errorColumn) + ")"));
     }
     file.close();
-    this->loadConfigMap ("", doc);
+    try {
+      this->loadConfigMap (configMap, "", doc);
+    }
+    catch (std::runtime_error& e) {
+      throw (std::runtime_error 
+          ("Error while parsing configuration file '" + fileName + "': " + e.what ()));
+    }
   }
 
-  void loadConfigMap (const QString& prefix, QDomNode& node) {
+  void loadConfigMap (ConfigMap& configMap, const QString& prefix, QDomNode& node) {
     QDomNode child = node.firstChild ();
 
     while (child.isNull () == false) {
@@ -58,23 +96,25 @@ struct Config::Impl {
           Value       value;
 
           if (attribute.isNull ()) {
-            this->loadConfigMap (prefix + "/" + element.tagName (), child);
+            this->loadConfigMap (configMap, prefix + "/" + element.tagName (), child);
           }
           else if (attribute.value () == "float") {
-            this->insertIntoConfigMap <float> (prefix,element);
+            this->insertIntoConfigMap <float> (configMap, prefix, element);
           }
           else if (attribute.value () == "integer") {
-            this->insertIntoConfigMap <int> (prefix,element);
+            this->insertIntoConfigMap <int> (configMap, prefix, element);
           }
           else if (attribute.value () == "vector3") {
-            this->insertIntoConfigMap <glm::vec3> (prefix,element);
+            this->insertIntoConfigMap <glm::vec3> (configMap, prefix, element);
           }
           else if (attribute.value () == "color") {
-            this->insertIntoConfigMap <Color> (prefix,element);
+            this->insertIntoConfigMap <Color> (configMap, prefix, element);
           }
           else {
-            this->throwError ("invalid type '" + attribute.value ().toStdString () + "'"
-                             , child.lineNumber (), child.columnNumber ());
+            throw (std::runtime_error 
+              ( "invalid type '" + attribute.value ().toStdString () + "' "
+              + "(" + std::to_string (child.lineNumber   ()) 
+              + "," + std::to_string (child.columnNumber ()) + ")"));
           }
       }
       child = child.nextSibling();
@@ -82,7 +122,7 @@ struct Config::Impl {
   }
 
   template <typename T>
-  bool insertIntoConfigMap (const QString& prefix, QDomElement& element) {
+  bool insertIntoConfigMap (ConfigMap& configMap, const QString& prefix, QDomElement& element) {
     T           t;
     bool        ok  = ConfigConversion::fromDomElement (element, t);
     std::string key = (prefix + "/" + element.tagName ()).toStdString ();
@@ -90,31 +130,77 @@ struct Config::Impl {
     if (ok) {
       Value value;
       value.set <T> (t);
-      this->configMap.emplace (key, value);
+      configMap.emplace (key, value);
     }
     else {
-      this->throwError ("can't parse '" + key + "'", element.lineNumber (), element.columnNumber ());
+      throw (std::runtime_error 
+          ( "can not parse value of key '" + key + "' "
+          + "(" + std::to_string (element.lineNumber   ()) 
+          + "," + std::to_string (element.columnNumber ()) + ")"));
     }
     return ok;
   }
 
-  void throwError (const std::string& msg, int line, int column) {
-    throw (std::runtime_error 
-        ( "Error while loading configuration file '" + this->fileName + "': "
-        + msg + " (" + std::to_string (line) + "," + std::to_string (column) + ")"));
+  void writeCache () {
+    QDomDocument doc (this->cacheFileName.c_str ());
+    QDomNode     root = doc.appendChild (doc.createElement ("cache"));
+
+    for (auto& c : this->cache) {
+      const std::string& key   = c.first;
+            Value&       value = c.second;
+
+      if (value.is <float> ()) {
+        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <float> ()));
+      }
+      else if (value.is <int> ()) {
+        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <int> ()));
+      }
+      else if (value.is <glm::vec3> ()) {
+        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <glm::vec3> ()));
+      }
+      else if (value.is <Color> ()) {
+        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <Color> ()));
+      }
+    }
+    QFile file (this->cacheFileName.c_str ());
+    if (file.open (QIODevice::WriteOnly)) {
+      QTextStream stream (&file);
+      doc.save (stream, 2);
+      file.close ();
+    }
   }
 };
 
-Config :: Config () : impl (new Impl ("dilay.config")) {}
+Config :: Config () : impl (new Impl ("dilay.options", "dilay.cache")) {}
 DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (Config)
 GLOBAL (Config);
+
+DELEGATE_GLOBAL (void, Config, writeCache);
 
 template <class T>
 const T& Config :: get (const std::string& path) {
   return Config::global ().impl->get<T> (path);
 }
 
+template <class T>
+const T& Config :: get (const std::string& path, const T& defaultV) {
+  return Config::global ().impl->get<T> (path, defaultV);
+}
+
+template <class T>
+void Config :: set (const std::string& path, const T& value) {
+  return Config::global ().impl->set<T> (path, value);
+}
+
 template const float&     Config :: get<float>     (const std::string&);
+template const float&     Config :: get<float>     (const std::string&, const float&);
+template void             Config :: set<float>     (const std::string&, const float&);
 template const int&       Config :: get<int>       (const std::string&);
+template const int&       Config :: get<int>       (const std::string&, const int&);
+template void             Config :: set<int>       (const std::string&, const int&);
 template const Color&     Config :: get<Color>     (const std::string&);
+template const Color&     Config :: get<Color>     (const std::string&, const Color&);
+template void             Config :: set<Color>     (const std::string&, const Color&);
 template const glm::vec3& Config :: get<glm::vec3> (const std::string&);
+template const glm::vec3& Config :: get<glm::vec3> (const std::string&, const glm::vec3&);
+template void             Config :: set<glm::vec3> (const std::string&, const glm::vec3&);
