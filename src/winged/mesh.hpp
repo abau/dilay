@@ -17,13 +17,9 @@ class Id;
 class Sphere;
 
 class WingedMesh {
-  public: WingedMesh             ();
-          WingedMesh             (const Id&);
-          WingedMesh             (const WingedMesh&) = delete;
-          WingedMesh             (      WingedMesh&&);
-    const WingedMesh& operator=  (const WingedMesh&) = delete;
-    const WingedMesh& operator=  (      WingedMesh&&);
-         ~WingedMesh             ();
+  public: 
+    DECLARE_BIG3 (WingedMesh)
+    WingedMesh   (const Id&);
 
     Id              id                () const;
     glm::vec3       vertex            (unsigned int) const;

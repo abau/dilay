@@ -229,12 +229,9 @@ struct WingedMesh::Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR_SELF        (WingedMesh)
-DELEGATE1_CONSTRUCTOR_SELF       (WingedMesh,const Id&)
-DELEGATE_MOVE_CONSTRUCTOR_SELF   (WingedMesh)
-DELEGATE_MOVE_ASSIGNMENT_OP_SELF (WingedMesh)
-DELEGATE_DESTRUCTOR              (WingedMesh)
-ID                               (WingedMesh)
+DELEGATE_BIG3_SELF         (WingedMesh)
+DELEGATE1_CONSTRUCTOR_SELF (WingedMesh,const Id&)
+ID                         (WingedMesh)
 
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
 DELEGATE1_CONST (unsigned int   , WingedMesh, index, unsigned int)
