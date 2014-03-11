@@ -7,6 +7,7 @@ class Ray;
 class WingedFaceIntersection;
 enum class MeshType;
 class SphereMesh;
+class SphereNodeIntersection;
 
 class Scene {
   public: Scene            ();
@@ -28,6 +29,7 @@ class Scene {
 
           void        render           (MeshType);
           bool        intersects       (MeshType, const Ray&, WingedFaceIntersection&);
+          bool        intersects       (const Ray&, SphereNodeIntersection&);
 
   private:
     class Impl;

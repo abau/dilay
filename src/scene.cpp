@@ -8,6 +8,7 @@
 #include "mesh-type.hpp"
 #include "sphere/mesh.hpp"
 #include "winged/face-intersection.hpp"
+#include "sphere/node-intersection.hpp"
 
 struct Scene :: Impl {
   std::list <WingedMesh> wingedMeshes;
@@ -76,6 +77,13 @@ struct Scene :: Impl {
     }
     return intersection.isIntersection ();
   }
+
+  bool intersects (const Ray& ray, SphereNodeIntersection& intersection) {
+    for (SphereMesh& m : this->sphereMeshes) {
+      m.intersects (ray, intersection);
+    }
+    return intersection.isIntersection ();
+  }
 };
 
 DELEGATE_CONSTRUCTOR (Scene)
@@ -88,3 +96,4 @@ DELEGATE1       (WingedMesh&      , Scene, wingedMesh, const Id&)
 DELEGATE1_CONST (const WingedMesh&, Scene, wingedMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, MeshType, const Ray&, WingedFaceIntersection&)
+DELEGATE2       (bool             , Scene, intersects, const Ray&, SphereNodeIntersection&)
