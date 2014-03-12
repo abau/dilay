@@ -10,6 +10,7 @@ template <class T>
 class IdMapPtr {
   public:
     void insert (const Id& id, T& element) {
+      assert (this->hasElement (id) == false);
       this->map.emplace (id.primitive (), &element);
     }
 
@@ -48,6 +49,7 @@ template <class T>
 class IdMap {
   public:
     T& insert (T* element) {
+      assert (this->hasElement (element->id ()) == false);
       this->map.emplace (element->id ().primitive (), std::unique_ptr <T> (element));
       return *element;
     }
