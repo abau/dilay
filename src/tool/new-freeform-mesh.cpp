@@ -30,7 +30,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void runInitialize (QContextMenuEvent* e) {
-    int initialSubdivisions = Config::get <int> ("/editor/tool/new-freeform-mesh/subdivisions", 2);
+    int initialSubdivisions = Config::get <int> ("/cache/tool/new-freeform-mesh/subdivisions", 2);
 
     // connect spin box
     QSpinBox* numSubdivBox = this->self->toolOptions ()
@@ -63,7 +63,7 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.bufferData  ();
     this->mesh.setPosition (oldPos);
     this->self->mainWindow ()->glWidget ()->update ();
-    Config::set <int> ("/editor/tool/new-freeform-mesh/subdivisions", numSubdivisions);
+    Config::set <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
 
   void setMeshSlot (const glm::vec3& pos) {

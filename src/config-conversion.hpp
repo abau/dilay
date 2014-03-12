@@ -2,7 +2,6 @@
 #define DILAY_CONFIG_CONVERSION
 
 #include <glm/fwd.hpp>
-#include <string>
 
 class QDomDocument;
 class QDomElement;
@@ -14,10 +13,10 @@ namespace ConfigConversion {
   bool fromDomElement (QDomElement, glm::vec3&);
   bool fromDomElement (QDomElement, Color&);
 
-  QDomElement toDomElement (QDomDocument, const std::string&, const float&);
-  QDomElement toDomElement (QDomDocument, const std::string&, const int&);
-  QDomElement toDomElement (QDomDocument, const std::string&, const glm::vec3&);
-  QDomElement toDomElement (QDomDocument, const std::string&, const Color&);
+  QDomElement& toDomElement (QDomDocument&, QDomElement&, const float&);
+  QDomElement& toDomElement (QDomDocument&, QDomElement&, const int&);
+  QDomElement& toDomElement (QDomDocument&, QDomElement&, const glm::vec3&);
+  QDomElement& toDomElement (QDomDocument&, QDomElement&, const Color&);
 }
 
 #endif

@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
+#include <algorithm>
 #include <QDomNode>
 #include <QFile>
 #include <QTextStream>
@@ -16,6 +17,7 @@ typedef std::unordered_map <std::string, Value> ConfigMap;
 struct Config::Impl {
   const std::string optionsFileName;
   const std::string cacheFileName;
+  const std::string cacheRoot;
 
   ConfigMap options;
   ConfigMap cache;
@@ -23,6 +25,7 @@ struct Config::Impl {
   Impl (const std::string& o, const std::string& c) 
     : optionsFileName (o) 
     , cacheFileName   (c) 
+    , cacheRoot       ("cache")
   {
     this->loadFile (o, this->options, false);
     this->loadFile (c, this->cache  , true);
@@ -40,6 +43,7 @@ struct Config::Impl {
 
   template <class T>
   const T& get (const std::string& path, const T& defaultV) const {
+    assert (path.find ("/" + this->cacheRoot) == 0);
     ConfigMap::const_iterator value = this->cache.find (path);
 
     if (value == this->cache.end ()) {
@@ -49,11 +53,12 @@ struct Config::Impl {
   }
 
   template <class T>
-  void set (const std::string& key, const T& t) {
+  void set (const std::string& path, const T& t) {
+    assert (path.find ("/" + this->cacheRoot) == 0);
     Value value;
     value.set <T>       (t);
-    this->cache.erase   (key);
-    this->cache.emplace (key, value);
+    this->cache.erase   (path);
+    this->cache.emplace (path, value);
   }
 
   void loadFile (const std::string& fileName, ConfigMap& configMap, bool allowEmpty) {
@@ -142,31 +147,58 @@ struct Config::Impl {
   }
 
   void writeCache () {
-    QDomDocument doc (this->cacheFileName.c_str ());
-    QDomNode     root = doc.appendChild (doc.createElement ("cache"));
+    QDomDocument doc;
 
     for (auto& c : this->cache) {
       const std::string& key   = c.first;
             Value&       value = c.second;
+            QStringList  path  = QString (key.c_str ()).split ("/", QString::SkipEmptyParts);
 
-      if (value.is <float> ()) {
-        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <float> ()));
-      }
-      else if (value.is <int> ()) {
-        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <int> ()));
-      }
-      else if (value.is <glm::vec3> ()) {
-        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <glm::vec3> ()));
-      }
-      else if (value.is <Color> ()) {
-        root.appendChild (ConfigConversion::toDomElement (doc, key, *value.get <Color> ()));
+      this->appendAsDomChild (doc, doc, path, value);
+    }
+    if (doc.isNull () == false) {
+      QFile file (this->cacheFileName.c_str ());
+      if (file.open (QIODevice::WriteOnly)) {
+        QTextStream stream (&file);
+        doc.save (stream, 2);
+        file.close ();
       }
     }
-    QFile file (this->cacheFileName.c_str ());
-    if (file.open (QIODevice::WriteOnly)) {
-      QTextStream stream (&file);
-      doc.save (stream, 2);
-      file.close ();
+  }
+
+  void appendAsDomChild (QDomDocument& doc, QDomNode& parent, QStringList& path, Value& value) {
+    if (path.empty ()) {
+      assert (parent.isElement ());
+      QDomElement elem = parent.toElement ();
+      if (value.is <float> ()) {
+        ConfigConversion::toDomElement (doc, elem, *value.get <float> ());
+      }
+      else if (value.is <int> ()) {
+        ConfigConversion::toDomElement (doc, elem, *value.get <int> ());
+      }
+      else if (value.is <glm::vec3> ()) {
+        ConfigConversion::toDomElement (doc, elem, *value.get <glm::vec3> ());
+      }
+      else if (value.is <Color> ()) {
+        ConfigConversion::toDomElement (doc, elem, *value.get <Color> ());
+      }
+    }
+    else {
+      const QString& head  = path.first ();
+      QDomElement    child = parent.firstChildElement (head);
+      if (child.isNull ()) {
+        child = doc.createElement (head);
+        if (parent.isNull ()) {
+          doc.appendChild (child);
+        }
+        else {
+          parent.appendChild (child);
+        }
+      }
+      assert (child.hasAttribute ("type") == false);
+
+      path.removeFirst ();
+      this->appendAsDomChild (doc, child, path, value);
     }
   }
 };

@@ -40,49 +40,40 @@ bool ConfigConversion :: fromDomElement (QDomElement e, Color& v) {
   return okR && okG && okB;
 }
 
-QDomElement withType (QDomDocument doc, const std::string& name, const std::string& type) {
-  QDomElement e = doc.createElement (name.c_str ());
-  e.setAttribute ("type", type.c_str ());
-  return e;
+QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& elem
+                                              , const float& v) {
+  elem.setAttribute ("type", "float");
+  elem.appendChild  (doc.createTextNode (std::to_string (v).c_str ()));
+  return elem;
 }
 
-QDomElement withType ( QDomDocument doc, const std::string& name, const std::string& type
-                     , QDomNode node) {
-  QDomElement e = withType (doc, name,type);
-  e.appendChild  (node);
-  return e;
+QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& elem
+                                              , const int& v) {
+  elem.setAttribute ("type", "integer");
+  elem.appendChild  (doc.createTextNode (std::to_string (v).c_str ()));
+  return elem;
 }
 
-QDomElement withType ( QDomDocument doc, const std::string& name, const std::string& type
-                     , const std::string& v) {
-  QDomText text = doc.createTextNode (v.c_str ());
-  return withType (doc, name, type, text);
+QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& elem
+                                              , const glm::vec3& v) {
+  elem.setAttribute ("type", "vector3");
+  QDomElement x = doc.createElement ("x");
+  QDomElement y = doc.createElement ("y");
+  QDomElement z = doc.createElement ("z");
+  elem.appendChild (ConfigConversion::toDomElement (doc, x, v.x));
+  elem.appendChild (ConfigConversion::toDomElement (doc, y, v.y));
+  elem.appendChild (ConfigConversion::toDomElement (doc, z, v.z));
+  return elem;
 }
 
-QDomElement ConfigConversion :: toDomElement ( QDomDocument doc, const std::string& name
-                                             , const float& v) {
-  return withType (doc, name, "float", std::to_string (v));
-}
-
-QDomElement ConfigConversion :: toDomElement ( QDomDocument doc, const std::string& name
-                                             , const int& v) {
-  return withType (doc, name, "integer", std::to_string (v));
-}
-
-QDomElement ConfigConversion :: toDomElement ( QDomDocument doc, const std::string& name
-                                             , const glm::vec3& v) {
-  QDomElement e = withType (doc, name, "vector3");
-  e.appendChild (ConfigConversion::toDomElement (doc, "x", v.x));
-  e.appendChild (ConfigConversion::toDomElement (doc, "y", v.y));
-  e.appendChild (ConfigConversion::toDomElement (doc, "z", v.z));
-  return e;
-}
-
-QDomElement ConfigConversion :: toDomElement ( QDomDocument doc, const std::string& name
-                                             , const Color& v) {
-  QDomElement e = withType (doc, name, "color");
-  e.appendChild (ConfigConversion::toDomElement (doc, "r", v.r ()));
-  e.appendChild (ConfigConversion::toDomElement (doc, "g", v.g ()));
-  e.appendChild (ConfigConversion::toDomElement (doc, "b", v.b ()));
-  return e;
+QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& elem
+                                              , const Color& v) {
+  elem.setAttribute ("type", "color");
+  QDomElement r = doc.createElement ("r");
+  QDomElement g = doc.createElement ("g");
+  QDomElement b = doc.createElement ("b");
+  elem.appendChild (ConfigConversion::toDomElement (doc, r, v.r ()));
+  elem.appendChild (ConfigConversion::toDomElement (doc, g, v.g ()));
+  elem.appendChild (ConfigConversion::toDomElement (doc, b, v.b ()));
+  return elem;
 }
