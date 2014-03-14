@@ -1,4 +1,3 @@
-#include <cmath>
 #include <limits>
 #include <glm/glm.hpp>
 #include "intersection.hpp"
