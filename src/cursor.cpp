@@ -1,11 +1,11 @@
 #define GLM_FORCE_RADIANS
+#include <limits>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "cursor.hpp"
 #include "mesh.hpp"
 #include "renderer.hpp"
 #include "color.hpp"
-#include "util.hpp"
 #include "render-mode.hpp"
 
 struct Cursor::Impl {
@@ -43,13 +43,14 @@ struct Cursor::Impl {
   void setPosition (const glm::vec3& v) { this->mesh.setPosition (v); }
 
   void setNormal (const glm::vec3& v) {
-    float d = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
-    if (d >= 1.0f - Util :: epsilon || d <= -1.0f + Util :: epsilon) {
+    const float d   = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
+    const float eps = std::numeric_limits<float>::epsilon ();
+    if (d >= 1.0f - eps || d <= -1.0f + eps) {
       this->mesh.setRotation (glm::mat4(1.0f));
     }
     else {
-      glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
-      float     angle = glm::acos (d);
+      const glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
+      const float     angle = glm::acos (d);
       this->mesh.setRotation (glm::rotate (glm::mat4(1.0f), angle, axis));
     }
   }

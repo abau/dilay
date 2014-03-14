@@ -1,4 +1,5 @@
 #include <cmath>
+#include <limits>
 #include <glm/glm.hpp>
 #include "intersection.hpp"
 #include "winged/vertex.hpp"
@@ -157,7 +158,7 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float
 bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& t) {
   const float d = glm::dot (ray.direction (), plane.normal ());
 
-  if (d > -Util::epsilon) {
+  if (d > - std::numeric_limits<float>::epsilon ()) {
     return false;
   }
   t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
@@ -171,7 +172,7 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Triangle& tri, glm::v
   glm::vec3 s1  = glm::cross (ray.direction (), e2);
   float divisor = glm::dot   (s1, e1);
 
-  if (divisor < Util :: epsilon) 
+  if (divisor < std::numeric_limits<float>::epsilon ()) 
     return false;
 
   float     invDivisor = 1.0f / divisor;
