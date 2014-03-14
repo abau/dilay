@@ -37,7 +37,11 @@ struct Triangle::Impl {
     return glm::max (glm::max (this->vertex1, this->vertex2), this->vertex3);
   }
 
-  float maxExtent () const {
+  float extent () const {
+    return glm::length (this->maximum () - this->minimum ());
+  }
+
+  float oneDimExtent () const {
     glm::vec3 delta = this->maximum () - this->minimum ();
     return glm::max ( glm::max (delta.x, delta.y), delta.z );
   }
@@ -61,4 +65,5 @@ DELEGATE_CONST  (glm::vec3         , Triangle, normal)
 DELEGATE_CONST  (glm::vec3         , Triangle, center)
 DELEGATE_CONST  (glm::vec3         , Triangle, minimum)
 DELEGATE_CONST  (glm::vec3         , Triangle, maximum)
-DELEGATE_CONST  (float             , Triangle, maxExtent)
+DELEGATE_CONST  (float             , Triangle, extent)
+DELEGATE_CONST  (float             , Triangle, oneDimExtent)
