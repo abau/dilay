@@ -9,6 +9,7 @@ class WingedFace;
 class WingedEdge;
 class WingedVertex;
 class Id;
+class SphereMesh;
 
 class ActionIds {
   public: 
@@ -26,10 +27,12 @@ class ActionIds {
     void          resetId        (unsigned int);
     void          resetIndex     (unsigned int);
     WingedMesh&   getWingedMesh  (unsigned int);
+    SphereMesh&   getSphereMesh  (unsigned int);
     WingedFace*   getFace        (WingedMesh&, unsigned int);
     WingedEdge*   getEdge        (WingedMesh&, unsigned int);
     WingedVertex* getVertex      (WingedMesh&, unsigned int);
     void          setMesh        (unsigned int, const WingedMesh*);
+    void          setMesh        (unsigned int, const SphereMesh*);
     void          setFace        (unsigned int, const WingedFace*);
     void          setEdge        (unsigned int, const WingedEdge*);
     void          setVertex      (unsigned int, const WingedVertex*);
