@@ -68,7 +68,7 @@ struct ActionIds :: Impl {
     this->indices [i].reset (nullptr);
   }
 
-  WingedMesh& getMesh (unsigned int i) {
+  WingedMesh& getWingedMesh (unsigned int i) {
     assert (this->ids [i]);
     return State::scene ().wingedMesh (*this->ids [i]);
   }
@@ -119,7 +119,7 @@ DELEGATE1 (Id*          , ActionIds, getId,          unsigned int)
 DELEGATE1 (unsigned int*, ActionIds, getIndex,       unsigned int)
 DELEGATE1 (void         , ActionIds, resetId,        unsigned int)
 DELEGATE1 (void         , ActionIds, resetIndex,     unsigned int)
-DELEGATE1 (WingedMesh&  , ActionIds, getMesh,        unsigned int)
+DELEGATE1 (WingedMesh&  , ActionIds, getWingedMesh,  unsigned int)
 DELEGATE2 (WingedFace*  , ActionIds, getFace,        WingedMesh&, unsigned int)
 DELEGATE2 (WingedEdge*  , ActionIds, getEdge,        WingedMesh&, unsigned int)
 DELEGATE2 (WingedVertex*, ActionIds, getVertex,      WingedMesh&, unsigned int)

@@ -25,7 +25,7 @@ class ActionIds {
     unsigned int* getIndex       (unsigned int);
     void          resetId        (unsigned int);
     void          resetIndex     (unsigned int);
-    WingedMesh&   getMesh        (unsigned int);
+    WingedMesh&   getWingedMesh  (unsigned int);
     WingedFace*   getFace        (WingedMesh&, unsigned int);
     WingedEdge*   getEdge        (WingedMesh&, unsigned int);
     WingedVertex* getVertex      (WingedMesh&, unsigned int);

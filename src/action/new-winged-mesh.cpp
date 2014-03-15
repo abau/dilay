@@ -22,7 +22,7 @@ struct ActionNewWingedMesh :: Impl {
   }
 
   void runUndo () {
-    this->actions.undo (this->ids.getMesh (0));
+    this->actions.undo (this->ids.getWingedMesh (0));
     State::scene ().removeWingedMesh (this->ids.getIdRef (0));
   }
 

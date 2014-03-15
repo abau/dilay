@@ -14,11 +14,11 @@ struct ActionTransformer :: Impl {
   }
 
   void runUndo () {
-    this->onWMesh->undo (this->operands.getMesh (0));
+    this->onWMesh->undo (this->operands.getWingedMesh (0));
   }
 
   void runRedo () {
-    this->onWMesh->redo (this->operands.getMesh (0));
+    this->onWMesh->redo (this->operands.getWingedMesh (0));
   }
 };
 
