@@ -1,5 +1,5 @@
-#ifndef DILAY_ACTION_NEW_MESH
-#define DILAY_ACTION_NEW_MESH
+#ifndef DILAY_ACTION_NEW_WINGED_MESH
+#define DILAY_ACTION_NEW_WINGED_MESH
 
 #include "action.hpp"
 #include "macro.hpp"
@@ -8,11 +8,11 @@ class WingedMesh;
 class Mesh;
 enum class MeshType;
 
-class ActionNewMesh : public Action {
+class ActionNewWingedMesh : public Action {
   public: 
-    DECLARE_BIG3 (ActionNewMesh)
+    DECLARE_BIG3 (ActionNewWingedMesh)
 
-    WingedMesh& newMesh (MeshType, const Mesh&);
+    WingedMesh& run (MeshType, const Mesh&);
 
   private:
     void runUndo ();

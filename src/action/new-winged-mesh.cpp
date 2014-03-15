@@ -1,4 +1,4 @@
-#include "action/new-mesh.hpp"
+#include "action/new-winged-mesh.hpp"
 #include "state.hpp"
 #include "action/from-mesh.hpp"
 #include "action/ids.hpp"
@@ -7,12 +7,12 @@
 #include "scene.hpp"
 #include "mesh-type.hpp"
 
-struct ActionNewMesh :: Impl {
+struct ActionNewWingedMesh :: Impl {
   ActionUnitOn <WingedMesh> actions;
   ActionIds                 ids;
   MeshType                  meshType;
 
-  WingedMesh& newMesh (MeshType t, const Mesh& mesh) {
+  WingedMesh& run (MeshType t, const Mesh& mesh) {
     WingedMesh& wMesh = State::scene ().newWingedMesh (t);
 
     this->meshType = t;
@@ -32,8 +32,8 @@ struct ActionNewMesh :: Impl {
   }
 };
 
-DELEGATE_BIG3 (ActionNewMesh)
+DELEGATE_BIG3 (ActionNewWingedMesh)
 
-DELEGATE2 (WingedMesh&, ActionNewMesh, newMesh, MeshType, const Mesh&)
-DELEGATE  (void       , ActionNewMesh, runUndo)
-DELEGATE  (void       , ActionNewMesh, runRedo)
+DELEGATE2 (WingedMesh&, ActionNewWingedMesh, run, MeshType, const Mesh&)
+DELEGATE  (void       , ActionNewWingedMesh, runUndo)
+DELEGATE  (void       , ActionNewWingedMesh, runRedo)

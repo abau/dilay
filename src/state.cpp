@@ -5,7 +5,7 @@
 #include "history.hpp"
 #include "view/mouse-movement.hpp"
 #include "id.hpp"
-#include "action/new-mesh.hpp"
+#include "action/new-winged-mesh.hpp"
 #include "scene.hpp"
 #include "mesh-type.hpp"
 #include "tool.hpp"
@@ -19,7 +19,7 @@ struct State::Impl {
 
   void initialize () { 
     this->camera.initialize ();
-    this->history.add <ActionNewMesh> ()->newMesh (MeshType::FreeForm, Mesh::icosphere (2));
+    this->history.add <ActionNewWingedMesh> ()->run (MeshType::FreeForm, Mesh::icosphere (2));
   }
 
   bool hasTool () const { 

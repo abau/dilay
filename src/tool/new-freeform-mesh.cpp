@@ -6,7 +6,7 @@
 #include "tool/new-freeform-mesh.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
-#include "action/new-mesh.hpp"
+#include "action/new-winged-mesh.hpp"
 #include "mesh-type.hpp"
 #include "mesh.hpp"
 #include "state.hpp"
@@ -53,7 +53,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void runClose () {
-    State::history ().add <ActionNewMesh> ()->newMesh (MeshType::FreeForm, this->mesh);
+    State::history ().add <ActionNewWingedMesh> ()->run (MeshType::FreeForm, this->mesh);
     this->self->mainWindow ()->glWidget ()->unsetCursor ();
   }
 
