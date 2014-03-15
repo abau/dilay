@@ -21,6 +21,7 @@ SOURCES += \
            src/action/from-mesh.cpp \
            src/action/ids.cpp \
            src/action/new-winged-mesh.cpp \
+           src/action/new-sphere-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/subdivide.cpp \
            src/action/transformer.cpp \
@@ -88,6 +89,7 @@ HEADERS += \
            src/action/from-mesh.hpp \
            src/action/ids.hpp \
            src/action/new-winged-mesh.hpp \
+           src/action/new-sphere-mesh.hpp \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/subdivide.hpp \
