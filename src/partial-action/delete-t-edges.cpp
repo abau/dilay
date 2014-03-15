@@ -2,14 +2,14 @@
 #include "partial-action/delete-t-edges.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "partial-action/delete-edge-face.hpp"
 
 struct PADeleteTEdges :: Impl {
-  ActionUnitOnWMesh actions;
+  ActionUnitOn <WingedMesh> actions;
 
   void run (WingedMesh& mesh, std::unordered_set <WingedFace*>& faces) {
-    this->actions.reset ();
+    assert (this->actions.isEmpty ());
 
     for (auto it = faces.begin (); it != faces.end (); ) {
       auto        faceIt = it;

@@ -2,13 +2,13 @@
 #define DILAY_PARITAL_ACTION_INSERT_VERTEX
 
 #include <glm/fwd.hpp>
-#include "action/on-winged-mesh.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedEdge;
 class WingedMesh;
 
-class PAInsertEdgeVertex : public ActionOnWMesh {
+class PAInsertEdgeVertex : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAInsertEdgeVertex)
 

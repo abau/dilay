@@ -25,7 +25,6 @@ SOURCES += \
            src/action/subdivide.cpp \
            src/action/transformer.cpp \
            src/action/unit.cpp \
-           src/action/unit/on-winged-mesh.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
            src/camera.cpp \
@@ -89,13 +88,12 @@ HEADERS += \
            src/action/from-mesh.hpp \
            src/action/ids.hpp \
            src/action/new-mesh.hpp \
+           src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
-           src/action/on-winged-mesh.hpp \
            src/action/subdivide.hpp \
            src/action/transformer.hpp \
            src/action/unit.hpp \
-           src/action/unit/on-winged-mesh.hpp \
-           src/action/unit/template.hpp \
+           src/action/unit/on.hpp \
            src/adjacent-iterator.hpp \
            src/axis.hpp \
            src/bitset.hpp \

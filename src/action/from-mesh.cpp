@@ -5,7 +5,7 @@
 #include "winged/mesh.hpp"
 #include "winged/edge.hpp"
 #include "mesh.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-edge.hpp"
@@ -14,8 +14,8 @@
 #include "triangle.hpp"
 
 struct ActionFromMesh :: Impl {
-  ActionFromMesh*   self;
-  ActionUnitOnWMesh actions;
+  ActionFromMesh*           self;
+  ActionUnitOn <WingedMesh> actions;
 
   Impl (ActionFromMesh* s) : self (s) {
     self->writeMesh  (true);
@@ -23,7 +23,7 @@ struct ActionFromMesh :: Impl {
   }
 
   void fromMesh (WingedMesh& w, const Mesh& m) {
-    this->actions.reset ();
+    assert (this->actions.isEmpty ());
     assert (w.isEmpty ());
 
     typedef std::pair  <unsigned int,unsigned int> uiPair;

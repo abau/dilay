@@ -2,14 +2,14 @@
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_QUAD
 
 #include <list>
-#include "action/on-winged-mesh.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 class Id;
 
-class PATriangulateQuad : public ActionOnWMesh {
+class PATriangulateQuad : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PATriangulateQuad)
 

@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "action/carve.hpp"
 #include "id.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "action/subdivide.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "sphere.hpp"
@@ -15,8 +15,8 @@
 #include "intersection.hpp"
 
 struct ActionCarve::Impl {
-  ActionCarve* self;
-  ActionUnitOnWMesh actions;
+  ActionCarve*              self;
+  ActionUnitOn <WingedMesh> actions;
 
   Impl (ActionCarve* s) : self (s) {
     self->writeMesh  (true);

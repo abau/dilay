@@ -5,15 +5,15 @@
 #include "state.hpp"
 #include "action/ids.hpp"
 #include "adjacent-iterator.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 
 enum class Operation { Edge, Write };
 
 struct PAModifyWFace :: Impl {
-  Operation         operation;
-  ActionIds         operands;
-  ActionUnitOnWMesh actions;
+  Operation                 operation;
+  ActionIds                 operands;
+  ActionUnitOn <WingedMesh> actions;
 
   void edge (WingedFace& face, WingedEdge* e) {
     this->operation = Operation::Edge;
@@ -24,7 +24,7 @@ struct PAModifyWFace :: Impl {
 
   void write (WingedMesh& mesh, WingedFace& face) {
     assert (face.isTriangle ());
-    this->actions.reset ();
+    assert (this->actions.isEmpty ());
     this->operation = Operation::Write;
 
     // write indices

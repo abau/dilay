@@ -1,13 +1,13 @@
 #ifndef DILAY_ACTION_ON_POST_PROCESSED_WINGED_MESH
 #define DILAY_ACTION_ON_POST_PROCESSED_WINGED_MESH
 
-#include "action/on-winged-mesh.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedFace;
 
-class ActionOnPostProcessedWMesh : public ActionOnWMesh {
+class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
   public:
     DECLARE_BIG3_VIRTUAL (ActionOnPostProcessedWMesh)
 

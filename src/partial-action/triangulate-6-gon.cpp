@@ -3,19 +3,18 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "triangle.hpp"
 
 struct PATriangulate6Gon :: Impl {
-  ActionUnitOnWMesh actions;
+  ActionUnitOn <WingedMesh> actions;
 
   void run (WingedMesh& mesh, WingedFace& f, std::list <Id>* affectedFaces) {
     assert (f.numEdges () == 6);
-
-    this->actions.reset ();
+    assert (this->actions.isEmpty ());
 
     /*     4
      *    /c\

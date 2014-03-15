@@ -2,14 +2,14 @@
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_6_GON
 
 #include <list>
-#include "action/on-winged-mesh.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 class Id;
 
-class PATriangulate6Gon : public ActionOnWMesh {
+class PATriangulate6Gon : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PATriangulate6Gon)
 

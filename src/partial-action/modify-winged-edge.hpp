@@ -1,7 +1,7 @@
 #ifndef DILAY_PARTIAL_ACTION_MODIFY_WINGED_EDGE
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_EDGE
 
-#include "action/on-winged-mesh.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
@@ -10,7 +10,7 @@ enum class FaceGradient : char;
 class WingedFace;
 class WingedVertex;
 
-class PAModifyWEdge : public ActionOnWMesh {
+class PAModifyWEdge : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAModifyWEdge)
 

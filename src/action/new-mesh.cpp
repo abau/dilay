@@ -2,15 +2,15 @@
 #include "state.hpp"
 #include "action/from-mesh.hpp"
 #include "action/ids.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "winged/mesh.hpp"
 #include "scene.hpp"
 #include "mesh-type.hpp"
 
 struct ActionNewMesh :: Impl {
-  ActionUnitOnWMesh actions;
-  ActionIds         ids;
-  MeshType          meshType;
+  ActionUnitOn <WingedMesh> actions;
+  ActionIds                 ids;
+  MeshType                  meshType;
 
   WingedMesh& newMesh (MeshType t, const Mesh& mesh) {
     WingedMesh& wMesh = State::scene ().newWingedMesh (t);

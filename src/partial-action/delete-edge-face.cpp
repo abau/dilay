@@ -3,7 +3,7 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
@@ -12,10 +12,10 @@
 #include "triangle.hpp"
 
 struct PADeleteEdgeFace :: Impl {
-  ActionUnitOnWMesh actions;
+  ActionUnitOn <WingedMesh> actions;
 
   void run (WingedMesh& mesh, WingedEdge& edge) {
-    this->actions.reset ();
+    assert (this->actions.isEmpty ());
 
     WingedFace& faceToDelete  = *edge.rightFace ();
     WingedFace& remainingFace = *edge.leftFace ();

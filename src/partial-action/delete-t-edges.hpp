@@ -2,13 +2,13 @@
 #define DILAY_PARTIAL_ACTION_DELETE_T_EDGES
 
 #include <glm/fwd.hpp>
-#include "action/on-winged-mesh.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;
 
-class PADeleteTEdges : public ActionOnWMesh {
+class PADeleteTEdges : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PADeleteTEdges)
 

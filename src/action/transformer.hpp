@@ -5,11 +5,11 @@
 #include "action.hpp"
 
 class WingedMesh;
-class ActionOnWMesh;
+template <typename T> class ActionOn;
 
 class ActionTransformer : public Action {
   public:
-    DECLARE_BIG3 (ActionTransformer, WingedMesh&, ActionOnWMesh*);
+    DECLARE_BIG3 (ActionTransformer, WingedMesh&, ActionOn <WingedMesh>*);
 
   private:
     void runUndo ();

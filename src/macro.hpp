@@ -456,14 +456,4 @@
   const  t & operator= (const t &)  = delete; \
   const  t & operator= (      t &&) = delete;
 
-// Action related macros
-
-#define DELEGATE_TO_UNIT_TEMPLATE(from,t) \
-  void from :: addAction (t * a) { \
-    this->impl->unitTemplate.addAction (a); } \
-  void from :: reset () { \
-    this->impl->unitTemplate.reset (); } \
-  unsigned int from :: numActions () const { \
-    return this->impl->unitTemplate.numActions (); }
-
 #endif

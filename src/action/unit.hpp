@@ -15,13 +15,12 @@ class ActionUnit : public Action {
       return action; 
     }
 
-    void         addAction  (Action*);
-    void         reset      ();
-    unsigned int numActions () const;
+    bool isEmpty () const;
 
   private:
-    void runUndo ();
-    void runRedo ();
+    void addAction (Action*);
+    void runUndo   ();
+    void runRedo   ();
 
     class Impl;
     Impl* impl;

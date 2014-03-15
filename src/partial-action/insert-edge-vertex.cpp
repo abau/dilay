@@ -4,17 +4,17 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "action/unit/on-winged-mesh.hpp"
+#include "action/unit/on.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 
 struct PAInsertEdgeVertex :: Impl {
-  ActionUnitOnWMesh actions;
+  ActionUnitOn <WingedMesh> actions;
 
   WingedEdge& run (WingedMesh& mesh, WingedEdge& e, const glm::vec3& v, bool setGradient) {
-    this->actions.reset ();
+    assert (this->actions.isEmpty ());
     //   newE        e
     // 1----->newV------->2
     int eGradient          = e.vertexGradient ();
