@@ -6,19 +6,15 @@
 
 class ToolNewFreeformMesh : public Tool {
   public:
-    DECLARE_BIG3 (ToolNewFreeformMesh)
-
-    static QString toolName ();
+    DECLARE_TOOL (ToolNewFreeformMesh)
 
   private:
     class Impl;
     Impl* impl;
 
-    void runInitialize      (QContextMenuEvent*);
     void runRender          ();
     void runMouseMoveEvent  (QMouseEvent*);
     void runMousePressEvent (QMouseEvent*);
-    void runClose           ();
 };
 
 #endif

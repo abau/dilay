@@ -152,6 +152,7 @@ HEADERS += \
            src/view/main-window.hpp \
            src/view/mouse-movement.hpp \
            src/view/tool-options.hpp \
+           src/view/tool-menu.hpp \
            src/view/top-toolbar.hpp \
            src/view/vector-edit.hpp \
            src/winged/edge.hpp \

@@ -23,13 +23,7 @@ struct ToolNewFreeformMesh::Impl {
   ToolMovement         movement;
   ViewVectorEdit*      positionEdit;
 
-  Impl (ToolNewFreeformMesh* s) : self (s) {}
-
-  static QString toolName () {
-    return QObject::tr ("New Freeform Mesh");
-  }
-
-  void runInitialize (QContextMenuEvent* e) {
+  Impl (ToolNewFreeformMesh* s) : self (s) {
     int initialSubdivisions = Config::get <int> ("/cache/tool/new-freeform-mesh/subdivisions", 2);
 
     // connect spin box
@@ -46,15 +40,20 @@ struct ToolNewFreeformMesh::Impl {
 
     // setup mesh
     this->setMeshSlot       (initialSubdivisions);
-    this->movement.moveXZ   (glm::uvec2 (e->x (), e->y ()));
+    this->movement.moveXZ   (glm::uvec2 ( this->self->menuEvent ()->x ()
+                                        , this->self->menuEvent ()->y ()));
     this->setMeshByMovement ();
 
     this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
   }
 
-  void runClose () {
+  ~Impl () {
     State::history ().add <ActionNewWingedMesh> ()->run (MeshType::FreeForm, this->mesh);
     this->self->mainWindow ()->glWidget ()->unsetCursor ();
+  }
+
+  static QString toolName () {
+    return QObject::tr ("New Freeform Mesh");
   }
 
   void setMeshSlot (int numSubdivisions) {
@@ -105,10 +104,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 };
 
-DELEGATE_BIG3_SELF (ToolNewFreeformMesh)
-DELEGATE_STATIC (QString, ToolNewFreeformMesh, toolName)
-DELEGATE1       (void   , ToolNewFreeformMesh, runInitialize, QContextMenuEvent*)
-DELEGATE        (void   , ToolNewFreeformMesh, runRender)
-DELEGATE1       (void   , ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
-DELEGATE1       (void   , ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
-DELEGATE        (void   , ToolNewFreeformMesh, runClose)
+DELEGATE_TOOL   (ToolNewFreeformMesh)
+DELEGATE        (void, ToolNewFreeformMesh, runRender)
+DELEGATE1       (void, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
+DELEGATE1       (void, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)

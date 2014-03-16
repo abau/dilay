@@ -1,20 +1,11 @@
 #ifndef DILAY_VIEW_FREEFORM_MENU
 #define DILAY_VIEW_FREEFORM_MENU
 
-#include <QMenu>
-#include "macro.hpp"
+#include "view/tool-menu.hpp"
 
-class ViewMainWindow;
-class QContextMenuEvent;
-
-class ViewFreeformMenu : public QMenu {
-    Q_OBJECT
+class ViewFreeformMenu : public ViewToolMenu {
   public:
-    DECLARE_BIG3 (ViewFreeformMenu, ViewMainWindow*, QContextMenuEvent*)
-
-  private:
-    class Impl;
-    Impl* impl;
+    ViewFreeformMenu (ViewMainWindow*, QContextMenuEvent*);
 };
 
 #endif

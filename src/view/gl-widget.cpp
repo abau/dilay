@@ -138,9 +138,7 @@ struct ViewGlWidget :: Impl {
   }
 
   void contextMenuEvent (QContextMenuEvent* e) {
-    if (State::hasTool ()) {
-      State::tool ().close ();
-    }
+    State::setTool (nullptr);
     if (this->mainWindow->topToolbar ()->selected (MeshType::FreeForm)) {
       ViewFreeformMenu menu (this->mainWindow, e);
       this->hasActiveContextMenu = true;

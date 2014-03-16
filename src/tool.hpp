@@ -11,25 +11,37 @@ class QString;
 
 class Tool {
   public:
-    DECLARE_BIG3_VIRTUAL (Tool)
+    DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
 
-    ViewMainWindow*  mainWindow      ();
-    ViewToolOptions* toolOptions     ();
-    void             initialize      (ViewMainWindow*, QContextMenuEvent*, const QString&);
-    void             render          ();
-    void             mouseMoveEvent  (QMouseEvent*);
-    void             mousePressEvent (QMouseEvent*);
-    void             close           ();
+    ViewMainWindow*    mainWindow      ();
+    QContextMenuEvent* menuEvent       ();
+    ViewToolOptions*   toolOptions     ();
+    void               render          ();
+    void               mouseMoveEvent  (QMouseEvent*);
+    void               mousePressEvent (QMouseEvent*);
+
+  protected:
+    Tool ();
 
   private:
     class Impl;
     Impl* impl;
 
-    virtual void runInitialize      (QContextMenuEvent*) {}
     virtual void runRender          ()                   {}
     virtual void runMouseMoveEvent  (QMouseEvent*)       {}
     virtual void runMousePressEvent (QMouseEvent*)       {}
-    virtual void runClose           ()                   {};
 };
+
+#define DECLARE_TOOL(t)                                   \
+  DECLARE_BIG3 ( t , ViewMainWindow*, QContextMenuEvent*) \
+  static QString toolName ();
+
+#define DELEGATE_TOOL(t)                              \
+  t :: t (ViewMainWindow* mW, QContextMenuEvent* mE)  \
+    : Tool (mW, mE, t :: toolName ()) {               \
+        DELEGATE_NEW_IMPL (this)                      \
+    }                                                 \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF ( t )        \
+  DELEGATE_STATIC (QString, t , toolName)
 
 #endif
