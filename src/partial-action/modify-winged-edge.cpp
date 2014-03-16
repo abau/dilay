@@ -321,19 +321,19 @@ struct PAModifyWEdge :: Impl {
       }
       case Operation::IsTEdge: {
         bool isTEdge = edge.isTEdge ();
-        edge.isTEdge (*this->operandData.get <bool> ());
+        edge.isTEdge (this->operandData.get <bool> ());
         this->operandData.set <bool> (isTEdge);
         break;
       }
       case Operation::FaceGradient: {
         FaceGradient gradient = edge.faceGradient ();
-        edge.faceGradient (*this->operandData.get <FaceGradient> ());
+        edge.faceGradient (this->operandData.get <FaceGradient> ());
         this->operandData.set <FaceGradient> (gradient);
         break;
       }
       case Operation::VertexGradient: {
         int gradient = edge.vertexGradient ();
-        edge.vertexGradient (*this->operandData.get <int> ());
+        edge.vertexGradient (this->operandData.get <int> ());
         this->operandData.set <int> (gradient);
         break;
       }

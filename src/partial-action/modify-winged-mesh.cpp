@@ -60,15 +60,15 @@ struct PAModifyWMesh :: Impl {
   }
 
   WingedEdge& addSavedEdge (WingedMesh& mesh) {
-    EdgeData* data = this->operandData.get <EdgeData> ();
+    EdgeData& data = this->operandData.get <EdgeData> ();
     return mesh.addEdge (
       WingedEdge ( this->operandIds.getVertex (mesh,0), this->operandIds.getVertex (mesh,1)
                  , this->operandIds.getFace   (mesh,1), this->operandIds.getFace   (mesh,2)
                  , this->operandIds.getEdge   (mesh,3), this->operandIds.getEdge   (mesh,4)
                  , this->operandIds.getEdge   (mesh,5), this->operandIds.getEdge   (mesh,6)
                  , this->operandIds.getEdge   (mesh,7), this->operandIds.getEdge   (mesh,8)
-                 , this->operandIds.getIdRef  (0)     , data->isTEdge
-                 , data->faceGradient                 , data->vertexGradient));
+                 , this->operandIds.getIdRef  (0)     , data. isTEdge
+                 , data. faceGradient                 , data. vertexGradient));
   }
 
   void saveFaceOperand (const WingedFace& face, const Triangle& triangle) {
@@ -80,7 +80,7 @@ struct PAModifyWMesh :: Impl {
   WingedFace& addSavedFace (WingedMesh& mesh) {
     return mesh.addFace ( 
         WingedFace (this->operandIds.getEdge (mesh,1), this->operandIds.getIdRef (0))
-      , this->operandData.get <FaceData> ()->triangle);
+      , this->operandData.get <FaceData> ().triangle);
   }
 
   void saveVertexOperand (const WingedMesh& mesh, const WingedVertex& vertex) {
@@ -88,7 +88,7 @@ struct PAModifyWMesh :: Impl {
   }
 
   WingedVertex& addSavedVertex (WingedMesh& mesh) {
-    return mesh.addVertex (this->operandData.get <VertexData> ()->position);
+    return mesh.addVertex (this->operandData.get <VertexData> ().position);
   }
 
   void deleteEdge (WingedMesh& mesh, const WingedEdge& edge) {
@@ -208,8 +208,8 @@ struct PAModifyWMesh :: Impl {
       }
       case Operation::InitOctreeRoot: {
         mesh.initOctreeRoot (
-            this->operandData.get <OctreeRootData> ()->position
-          , this->operandData.get <OctreeRootData> ()->width
+            this->operandData.get <OctreeRootData> ().position
+          , this->operandData.get <OctreeRootData> ().width
           );
         break;
       }

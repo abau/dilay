@@ -38,7 +38,7 @@ struct Config::Impl {
     if (value == this->options.end ()) {
       throw (std::runtime_error ("Can not find config path " + path));
     }
-    return *value->second.get <T> ();
+    return value->second.get <T> ();
   }
 
   template <class T>
@@ -49,7 +49,7 @@ struct Config::Impl {
     if (value == this->cache.end ()) {
       return defaultV;
     }
-    return *value->second.get <T> ();
+    return value->second.get <T> ();
   }
 
   template <class T>
@@ -171,16 +171,16 @@ struct Config::Impl {
       assert (parent.isElement ());
       QDomElement elem = parent.toElement ();
       if (value.is <float> ()) {
-        ConfigConversion::toDomElement (doc, elem, *value.get <float> ());
+        ConfigConversion::toDomElement (doc, elem, value.get <float> ());
       }
       else if (value.is <int> ()) {
-        ConfigConversion::toDomElement (doc, elem, *value.get <int> ());
+        ConfigConversion::toDomElement (doc, elem, value.get <int> ());
       }
       else if (value.is <glm::vec3> ()) {
-        ConfigConversion::toDomElement (doc, elem, *value.get <glm::vec3> ());
+        ConfigConversion::toDomElement (doc, elem, value.get <glm::vec3> ());
       }
       else if (value.is <Color> ()) {
-        ConfigConversion::toDomElement (doc, elem, *value.get <Color> ());
+        ConfigConversion::toDomElement (doc, elem, value.get <Color> ());
       }
     }
     else {
