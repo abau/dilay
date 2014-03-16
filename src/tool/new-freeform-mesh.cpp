@@ -1,8 +1,6 @@
-#include <memory>
 #include <glm/glm.hpp>
 #include <QMouseEvent>
 #include <QSpinBox>
-#include <QPushButton>
 #include "tool/new-freeform-mesh.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"

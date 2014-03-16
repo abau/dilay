@@ -1,7 +1,6 @@
 #ifndef DILAY_TOOL_NEW_FREEFORM_MESH
 #define DILAY_TOOL_NEW_FREEFORM_MESH
 
-#include "macro.hpp"
 #include "tool.hpp"
 
 class ToolNewFreeformMesh : public Tool {
