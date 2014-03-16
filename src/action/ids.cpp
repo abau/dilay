@@ -79,6 +79,11 @@ struct ActionIds :: Impl {
     return State::scene ().sphereMesh (*this->ids [i]);
   }
 
+  SphereMeshNode& getSphereMeshNode (SphereMesh& mesh, unsigned int i) {
+    assert (this->ids [i]);
+    return mesh.node (*this->ids [i]);
+  }
+
   WingedFace* getFace (WingedMesh& mesh, unsigned int i) {
     return this->ids [i] ? mesh.face (*this->ids [i]) : nullptr;
   }
@@ -98,6 +103,11 @@ struct ActionIds :: Impl {
 
   void setMesh (unsigned int i, const SphereMesh* mesh) {
     if (mesh) this->setId   (i, mesh->id ());
+    else      this->resetId (i);
+  }
+
+  void setNode (unsigned int i, const SphereMeshNode* node) {
+    if (node) this->setId   (i, node->id ());
     else      this->resetId (i);
   }
 
@@ -137,6 +147,7 @@ DELEGATE2 (WingedEdge*  , ActionIds, getEdge,        WingedMesh&, unsigned int)
 DELEGATE2 (WingedVertex*, ActionIds, getVertex,      WingedMesh&, unsigned int)
 DELEGATE2 (void         , ActionIds, setMesh,        unsigned int, const WingedMesh*)
 DELEGATE2 (void         , ActionIds, setMesh,        unsigned int, const SphereMesh*)
+DELEGATE2 (void         , ActionIds, setNode,        unsigned int, const SphereMeshNode*)
 DELEGATE2 (void         , ActionIds, setFace,        unsigned int, const WingedFace*)
 DELEGATE2 (void         , ActionIds, setEdge,        unsigned int, const WingedEdge*)
 DELEGATE2 (void         , ActionIds, setVertex,      unsigned int, const WingedVertex*)

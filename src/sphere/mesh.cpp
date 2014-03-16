@@ -139,13 +139,19 @@ struct SphereMesh::Impl {
     }
     return false;
   }
+
+  SphereMeshNode& node (const Id& id) {
+    assert (this->idMap.hasElement (id));
+    return this->idMap.elementRef (id).self;
+  }
 };
 
 DELEGATE1_BIG3_SELF       (SphereMesh, const Id&)
 DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 
 ID        (SphereMesh)
-DELEGATE2 (void, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&)
-DELEGATE3 (void, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&)
-DELEGATE  (void, SphereMesh, render)
-DELEGATE2 (bool, SphereMesh, intersects, const Ray&, SphereNodeIntersection&)
+DELEGATE2 (void           , SphereMesh, addNode, SphereMeshNode*, const glm::vec3&)
+DELEGATE3 (void           , SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&)
+DELEGATE  (void           , SphereMesh, render)
+DELEGATE2 (bool           , SphereMesh, intersects, const Ray&, SphereNodeIntersection&)
+DELEGATE1 (SphereMeshNode&, SphereMesh, node, const Id&)
