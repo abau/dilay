@@ -82,41 +82,44 @@
   DELEGATE_ASSIGNMENT_OP_SELF(from) \
   DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
+#define DELEGATE_NEW_IMPL(...) \
+  this->impl = new Impl (__VA_ARGS__);
+
 #define DELEGATE_CONSTRUCTOR(from) \
-  from :: from () { this->impl = new Impl (); }
+  from :: from () { DELEGATE_NEW_IMPL () }
 
 #define DELEGATE1_CONSTRUCTOR(from,t1) \
-  from :: from (t1 a1) { this->impl = new Impl (a1); }
+  from :: from (t1 a1) { DELEGATE_NEW_IMPL (a1); }
 
 #define DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  from :: from (t1 a1,t2 a2) { this->impl = new Impl (a1,a2); }
+  from :: from (t1 a1,t2 a2) { DELEGATE_NEW_IMPL (a1,a2); }
 
 #define DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  from :: from (t1 a1,t2 a2,t3 a3) { this->impl = new Impl (a1,a2,a3); }
+  from :: from (t1 a1,t2 a2,t3 a3) { DELEGATE_NEW_IMPL (a1,a2,a3); }
 
 #define DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { this->impl = new Impl (a1,a2,a3,a4); }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { DELEGATE_NEW_IMPL (a1,a2,a3,a4); }
 
 #define DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { this->impl = new Impl (a1,a2,a3,a4,a5); }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { DELEGATE_NEW_IMPL (a1,a2,a3,a4,a5); }
 
 #define DELEGATE_CONSTRUCTOR_SELF(from) \
-  from :: from () { this->impl = new Impl (this); }
+  from :: from () { DELEGATE_NEW_IMPL (this); }
 
 #define DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
-  from :: from (t1 a1) { this->impl = new Impl (this,a1); }
+  from :: from (t1 a1) { DELEGATE_NEW_IMPL (this,a1); }
 
 #define DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
-  from :: from (t1 a1,t2 a2) { this->impl = new Impl (this,a1,a2); }
+  from :: from (t1 a1,t2 a2) { DELEGATE_NEW_IMPL (this,a1,a2); }
 
 #define DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
-  from :: from (t1 a1,t2 a2,t3 a3) { this->impl = new Impl (this,a1,a2,a3); }
+  from :: from (t1 a1,t2 a2,t3 a3) { DELEGATE_NEW_IMPL (this,a1,a2,a3); }
 
 #define DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { this->impl = new Impl (this,a1,a2,a3,a4); }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { DELEGATE_NEW_IMPL (this,a1,a2,a3,a4); }
 
 #define DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { this->impl = new Impl (this,a1,a2,a3,a4,a5); }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { DELEGATE_NEW_IMPL (this,a1,a2,a3,a4,a5); }
 
 #define DELEGATE_BIG3(from) \
   DELEGATE_CONSTRUCTOR(from) \
