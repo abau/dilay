@@ -20,6 +20,7 @@ SOURCES += \
            src/action/carve.cpp \
            src/action/from-mesh.cpp \
            src/action/ids.cpp \
+           src/action/modify-sphere-mesh.cpp \
            src/action/new-winged-mesh.cpp \
            src/action/new-sphere-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
@@ -88,6 +89,7 @@ HEADERS += \
            src/action/carve.hpp \
            src/action/from-mesh.hpp \
            src/action/ids.hpp \
+           src/action/modify-sphere-mesh.hpp \
            src/action/new-winged-mesh.hpp \
            src/action/new-sphere-mesh.hpp \
            src/action/on.hpp \
