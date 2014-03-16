@@ -108,7 +108,6 @@ HEADERS += \
            src/config-conversion.hpp \
            src/cursor.hpp \
            src/fwd-winged.hpp \
-           src/fwd-yaml.hpp \
            src/history.hpp \
            src/id.hpp \
            src/id-map.hpp \
