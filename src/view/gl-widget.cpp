@@ -14,7 +14,7 @@
 #include "mesh-type.hpp"
 #include "view/main-window.hpp"
 #include "view/top-toolbar.hpp"
-#include "view/freeform-menu.hpp"
+#include "view/freeform-mesh-menu.hpp"
 
 struct ViewGlWidget :: Impl {
   ViewGlWidget*   self;
@@ -140,7 +140,7 @@ struct ViewGlWidget :: Impl {
   void contextMenuEvent (QContextMenuEvent* e) {
     State::setTool (nullptr);
     if (this->mainWindow->topToolbar ()->selected (MeshType::FreeForm)) {
-      ViewFreeformMenu menu (this->mainWindow, e);
+      ViewFreeformMeshMenu menu (this->mainWindow, e);
       this->hasActiveContextMenu = true;
       menu.exec (QCursor::pos ());
       this->mainWindow->activateWindow ();

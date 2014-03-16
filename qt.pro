@@ -69,7 +69,7 @@ SOURCES += \
            src/tool/rotate.cpp \
            src/triangle.cpp \
            src/util.cpp \
-           src/view/freeform-menu.cpp \
+           src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
            src/view/main-window.cpp \
@@ -146,7 +146,7 @@ HEADERS += \
            src/triangle.hpp \
            src/util.hpp \
            src/variant.hpp \
-           src/view/freeform-menu.hpp \
+           src/view/freeform-mesh-menu.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
            src/view/main-window.hpp \
