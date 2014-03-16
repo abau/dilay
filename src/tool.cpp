@@ -6,7 +6,6 @@
 
 struct Tool::Impl {
   Tool*            self;
-  QString          toolName;
   ViewMainWindow*  mainWindow;
   ViewToolOptions* toolOptions;
 
@@ -16,10 +15,10 @@ struct Tool::Impl {
     , toolOptions (nullptr)
   {}
 
-  void initialize (ViewMainWindow* w, QContextMenuEvent* e) {
+  void initialize (ViewMainWindow* w, QContextMenuEvent* e, const QString& name) {
     this->mainWindow = w;
     this->toolOptions = new ViewToolOptions (w);
-    this->toolOptions->setWindowTitle   (this->toolName);
+    this->toolOptions->setWindowTitle (name);
 
     QObject::connect ( this->toolOptions, &ViewToolOptions::accepted
                      , [this] () { this->close (); } );
@@ -51,11 +50,9 @@ struct Tool::Impl {
 };
 
 DELEGATE_BIG3_SELF (Tool)
-GETTER    (const QString&  , Tool, toolName)
-SETTER    (const QString&  , Tool, toolName)
 GETTER    (ViewMainWindow* , Tool, mainWindow)
 GETTER    (ViewToolOptions*, Tool, toolOptions)
-DELEGATE2 (void            , Tool, initialize, ViewMainWindow*, QContextMenuEvent*)
+DELEGATE3 (void            , Tool, initialize, ViewMainWindow*, QContextMenuEvent*, const QString&)
 DELEGATE  (void            , Tool, render)
 DELEGATE1 (void            , Tool, mouseMoveEvent, QMouseEvent*)
 DELEGATE1 (void            , Tool, mousePressEvent, QMouseEvent*)

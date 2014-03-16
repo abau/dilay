@@ -13,14 +13,16 @@ struct ViewFreeformMenu::Impl {
     , mainWindow (mW) 
     , menuEvent  (e) {
 
-    this->addAction (new ToolNewFreeformMesh ());
+    this->addAction <ToolNewFreeformMesh> ();
   }
 
-  void addAction (Tool* tool) {
-    QAction* a = this->self->addAction (tool->toolName ());
-    QObject::connect (a, &QAction::triggered, [this,tool] () { 
+  template <typename T>
+  void addAction () {
+    QAction* a = this->self->addAction (T::toolName ());
+    QObject::connect (a, &QAction::triggered, [this] () { 
+        T* tool = new T ();
         State::setTool   (tool); 
-        tool->initialize (this->mainWindow, this->menuEvent);
+        tool->initialize (this->mainWindow, this->menuEvent, T::toolName ());
     });
   }
 };

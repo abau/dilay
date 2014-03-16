@@ -13,17 +13,13 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool)
 
-    const QString&   toolName        ();
     ViewMainWindow*  mainWindow      ();
     ViewToolOptions* toolOptions     ();
-    void             initialize      (ViewMainWindow*, QContextMenuEvent*);
+    void             initialize      (ViewMainWindow*, QContextMenuEvent*, const QString&);
     void             render          ();
     void             mouseMoveEvent  (QMouseEvent*);
     void             mousePressEvent (QMouseEvent*);
     void             close           ();
-
-  protected:
-    void             toolName        (const QString&);
 
   private:
     class Impl;

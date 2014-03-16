@@ -23,10 +23,10 @@ struct ToolNewFreeformMesh::Impl {
   ToolMovement         movement;
   ViewVectorEdit*      positionEdit;
 
-  Impl (ToolNewFreeformMesh* s) 
-    : self    (s) 
-  {
-    this->self->toolName (QObject::tr ("New Freeform Mesh"));
+  Impl (ToolNewFreeformMesh* s) : self (s) {}
+
+  static QString toolName () {
+    return QObject::tr ("New Freeform Mesh");
   }
 
   void runInitialize (QContextMenuEvent* e) {
@@ -106,8 +106,9 @@ struct ToolNewFreeformMesh::Impl {
 };
 
 DELEGATE_BIG3_SELF (ToolNewFreeformMesh)
-DELEGATE1 (void, ToolNewFreeformMesh, runInitialize, QContextMenuEvent*)
-DELEGATE  (void, ToolNewFreeformMesh, runRender)
-DELEGATE1 (void, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
-DELEGATE1 (void, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
-DELEGATE  (void, ToolNewFreeformMesh, runClose)
+DELEGATE_STATIC (QString, ToolNewFreeformMesh, toolName)
+DELEGATE1       (void   , ToolNewFreeformMesh, runInitialize, QContextMenuEvent*)
+DELEGATE        (void   , ToolNewFreeformMesh, runRender)
+DELEGATE1       (void   , ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
+DELEGATE1       (void   , ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
+DELEGATE        (void   , ToolNewFreeformMesh, runClose)

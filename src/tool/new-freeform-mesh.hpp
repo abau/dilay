@@ -8,6 +8,8 @@ class ToolNewFreeformMesh : public Tool {
   public:
     DECLARE_BIG3 (ToolNewFreeformMesh)
 
+    static QString toolName ();
+
   private:
     class Impl;
     Impl* impl;
