@@ -96,19 +96,16 @@ struct ActionIds :: Impl {
     return this->indices [i] ? mesh.vertexSLOW (*this->indices [i]) : nullptr;
   }
 
-  void setMesh (unsigned int i, const WingedMesh* mesh) {
-    if (mesh) this->setId   (i, mesh->id ());
-    else      this->resetId (i);
+  void setMesh (unsigned int i, const WingedMesh& mesh) {
+    this->setId (i, mesh.id ());
   }
 
-  void setMesh (unsigned int i, const SphereMesh* mesh) {
-    if (mesh) this->setId   (i, mesh->id ());
-    else      this->resetId (i);
+  void setMesh (unsigned int i, const SphereMesh& mesh) {
+    this->setId (i, mesh.id ());
   }
 
-  void setNode (unsigned int i, const SphereMeshNode* node) {
-    if (node) this->setId   (i, node->id ());
-    else      this->resetId (i);
+  void setNode (unsigned int i, const SphereMeshNode& node) {
+    this->setId (i, node.id ());
   }
 
   void setFace (unsigned int i, const WingedFace* face) {
@@ -145,9 +142,9 @@ DELEGATE1 (SphereMesh&  , ActionIds, getSphereMesh,  unsigned int)
 DELEGATE2 (WingedFace*  , ActionIds, getFace,        WingedMesh&, unsigned int)
 DELEGATE2 (WingedEdge*  , ActionIds, getEdge,        WingedMesh&, unsigned int)
 DELEGATE2 (WingedVertex*, ActionIds, getVertex,      WingedMesh&, unsigned int)
-DELEGATE2 (void         , ActionIds, setMesh,        unsigned int, const WingedMesh*)
-DELEGATE2 (void         , ActionIds, setMesh,        unsigned int, const SphereMesh*)
-DELEGATE2 (void         , ActionIds, setNode,        unsigned int, const SphereMeshNode*)
+DELEGATE2 (void         , ActionIds, setMesh,        unsigned int, const WingedMesh&)
+DELEGATE2 (void         , ActionIds, setMesh,        unsigned int, const SphereMesh&)
+DELEGATE2 (void         , ActionIds, setNode,        unsigned int, const SphereMeshNode&)
 DELEGATE2 (void         , ActionIds, setFace,        unsigned int, const WingedFace*)
 DELEGATE2 (void         , ActionIds, setEdge,        unsigned int, const WingedEdge*)
 DELEGATE2 (void         , ActionIds, setVertex,      unsigned int, const WingedVertex*)

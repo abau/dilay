@@ -16,7 +16,7 @@ struct ActionNewWingedMesh :: Impl {
     WingedMesh& wMesh = State::scene ().newWingedMesh (t);
 
     this->meshType = t;
-    this->ids.setMesh (0, &wMesh);
+    this->ids.setMesh (0, wMesh);
     this->actions.add <ActionFromMesh> ()->fromMesh (wMesh, mesh);
     return wMesh;
   }

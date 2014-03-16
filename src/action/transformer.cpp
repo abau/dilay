@@ -9,7 +9,7 @@ struct ActionTransformer :: Impl {
 
   Impl (WingedMesh& mesh, ActionOn <WingedMesh>* action) {
     assert (action);
-    this->operands.setMesh (0,&mesh);
+    this->operands.setMesh (0,mesh);
     this->onWMesh.reset    (action);
   }
 

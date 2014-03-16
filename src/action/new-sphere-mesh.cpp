@@ -10,7 +10,7 @@ struct ActionNewSphereMesh :: Impl {
   SphereMesh& run () {
     SphereMesh& sMesh = State::scene ().newSphereMesh ();
 
-    this->ids.setMesh (0, &sMesh);
+    this->ids.setMesh (0, sMesh);
     return sMesh;
   }
 
