@@ -9,7 +9,6 @@
 #include "mesh.hpp"
 #include "state.hpp"
 #include "history.hpp"
-#include "render-mode.hpp"
 #include "tool/movement.hpp"
 #include "view/tool-options.hpp"
 #include "view/vector-edit.hpp"
@@ -29,17 +28,16 @@ struct ToolNewFreeformMesh::Impl {
                                        ->spinBox ( QObject::tr ("Subdivisions")
                                                  , 1, initialSubdivisions, 5);
     void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
-    QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMeshSlot (n); });
+    QObject::connect (numSubdivBox, ptr, [this] (int n) { this->setMeshByInput (n); });
 
     // connect position edit
     this->positionEdit = this->self->toolOptions ()->vectorEdit (QObject::tr ("Position"));
     QObject::connect (this->positionEdit, &ViewVectorEdit::vectorEdited, [this] 
-        (const glm::vec3& p) { this->setMeshSlot (p); });
+        (const glm::vec3& p) { this->setMeshByInput (p); });
 
     // setup mesh
-    this->setMeshSlot       (initialSubdivisions);
-    this->movement.moveXZ   (glm::uvec2 ( this->self->menuEvent ()->x ()
-                                        , this->self->menuEvent ()->y ()));
+    this->setMeshByInput    (initialSubdivisions);
+    this->movement.moveXZ   (this->self->menuEvent ()->pos ());
     this->setMeshByMovement ();
 
     this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
@@ -54,7 +52,7 @@ struct ToolNewFreeformMesh::Impl {
     return QObject::tr ("New Freeform Mesh");
   }
 
-  void setMeshSlot (int numSubdivisions) {
+  void setMeshByInput (int numSubdivisions) {
     glm::vec3 oldPos = this->mesh.getPosition ();
     this->mesh = Mesh::icosphere (numSubdivisions);
     this->mesh.bufferData  ();
@@ -63,7 +61,7 @@ struct ToolNewFreeformMesh::Impl {
     Config::set <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
 
-  void setMeshSlot (const glm::vec3& pos) {
+  void setMeshByInput (const glm::vec3& pos) {
     this->movement.position (pos);
     this->mesh.setPosition  (pos);
     this->self->mainWindow  ()->glWidget ()->update ();
@@ -78,31 +76,20 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.render ();
   }
 
-  void runMouseMoveEvent (QMouseEvent* e) {
-    this->runMousePressEvent (e);
+  bool runMouseMoveEvent (QMouseEvent* e) {
+    return this->runMousePressEvent (e);
   }
 
-  void runMousePressEvent (QMouseEvent* e) {
-    if (e->buttons () == Qt::LeftButton) {
-      glm::uvec2 mousePos (e->x (), e->y ());
-
-      if (e->modifiers ().testFlag (Qt::ShiftModifier) ) {
-        if (this->movement.moveY (mousePos)) {
-          this->setMeshByMovement ();
-          this->self->mainWindow ()->glWidget ()->update ();
-        }
-      }
-      else {
-        if (this->movement.moveXZ (mousePos)) {
-          this->setMeshByMovement ();
-          this->self->mainWindow ()->glWidget ()->update ();
-        }
-      }
+  bool runMousePressEvent (QMouseEvent* e) {
+    if (this->movement.byMouseEvent (e)) {
+      this->setMeshByMovement ();
+      return true;
     }
+    return false;
   }
 };
 
 DELEGATE_TOOL   (ToolNewFreeformMesh)
 DELEGATE        (void, ToolNewFreeformMesh, runRender)
-DELEGATE1       (void, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
-DELEGATE1       (void, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
+DELEGATE1       (bool, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
+DELEGATE1       (bool, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)

@@ -27,9 +27,9 @@ class Tool {
     class Impl;
     Impl* impl;
 
-    virtual void runRender          ()                   {}
-    virtual void runMouseMoveEvent  (QMouseEvent*)       {}
-    virtual void runMousePressEvent (QMouseEvent*)       {}
+    virtual void runRender          ()             {}
+    virtual bool runMouseMoveEvent  (QMouseEvent*) { return false; }
+    virtual bool runMousePressEvent (QMouseEvent*) { return false; }
 };
 
 #define DECLARE_TOOL(t)                                   \

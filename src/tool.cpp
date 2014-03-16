@@ -38,11 +38,15 @@ struct Tool::Impl {
   }
 
   void mouseMoveEvent (QMouseEvent* e) { 
-    this->self->runMouseMoveEvent (e); 
+    if (this->self->runMouseMoveEvent (e)) {
+      this->mainWindow->glWidget ()->update ();
+    }
   }
 
   void mousePressEvent (QMouseEvent* e) {
-    this->self->runMousePressEvent (e);
+    if (this->self->runMousePressEvent (e)) {
+      this->mainWindow->glWidget ()->update ();
+    }
   }
 };
 
