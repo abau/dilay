@@ -28,6 +28,10 @@ struct ViewGlWidget :: Impl {
     , hasActiveContextMenu (false)
   {}
 
+  ~Impl () {
+    State::setTool (nullptr);
+  }
+
   void initializeGL () {
     Renderer :: initialize ();
     State    :: initialize ();
