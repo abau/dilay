@@ -9,6 +9,7 @@ class QPushButton;
 class QSpinBox;
 class QString;
 class ViewVectorEdit;
+class QMoveEvent;
 
 class ViewToolOptions : public QDialog {
   public:
@@ -16,6 +17,9 @@ class ViewToolOptions : public QDialog {
 
     QSpinBox*       spinBox      (const QString&, int, int, int);
     ViewVectorEdit* vectorEdit   (const QString&);
+
+  protected:
+    void            moveEvent    (QMoveEvent*);
 
   private:
     class Impl;

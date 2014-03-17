@@ -27,6 +27,15 @@ bool ConfigConversion :: fromDomElement (QDomElement e, glm::vec3& v) {
   return okX && okY && okZ;
 }
 
+bool ConfigConversion :: fromDomElement (QDomElement e, glm::ivec2& v) {
+  assert (e.attributeNode ("type").value () == "vector2i");
+
+  bool okX = ConfigConversion::fromDomElement (e.firstChildElement ("x"), v.x);
+  bool okY = ConfigConversion::fromDomElement (e.firstChildElement ("y"), v.y);
+
+  return okX && okY;
+}
+
 bool ConfigConversion :: fromDomElement (QDomElement e, Color& v) {
   assert (e.attributeNode ("type").value () == "color");
 
@@ -63,6 +72,16 @@ QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& 
   elem.appendChild (ConfigConversion::toDomElement (doc, x, v.x));
   elem.appendChild (ConfigConversion::toDomElement (doc, y, v.y));
   elem.appendChild (ConfigConversion::toDomElement (doc, z, v.z));
+  return elem;
+}
+
+QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& elem
+                                              , const glm::ivec2& v) {
+  elem.setAttribute ("type", "vector2i");
+  QDomElement x = doc.createElement ("x");
+  QDomElement y = doc.createElement ("y");
+  elem.appendChild (ConfigConversion::toDomElement (doc, x, v.x));
+  elem.appendChild (ConfigConversion::toDomElement (doc, y, v.y));
   return elem;
 }
 

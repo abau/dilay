@@ -10,7 +10,7 @@
 #include "color.hpp"
 #include "config-conversion.hpp"
 
-typedef Variant <float,int,glm::vec3,Color> Value;
+typedef Variant <float,int,glm::vec3,glm::ivec2,Color> Value;
 
 typedef std::unordered_map <std::string, Value> ConfigMap;
 
@@ -112,6 +112,9 @@ struct Config::Impl {
           else if (attribute.value () == "vector3f") {
             this->insertIntoConfigMap <glm::vec3> (configMap, prefix, element);
           }
+          else if (attribute.value () == "vector2i") {
+            this->insertIntoConfigMap <glm::ivec2> (configMap, prefix, element);
+          }
           else if (attribute.value () == "color") {
             this->insertIntoConfigMap <Color> (configMap, prefix, element);
           }
@@ -179,9 +182,14 @@ struct Config::Impl {
       else if (value.is <glm::vec3> ()) {
         ConfigConversion::toDomElement (doc, elem, value.get <glm::vec3> ());
       }
+      else if (value.is <glm::ivec2> ()) {
+        ConfigConversion::toDomElement (doc, elem, value.get <glm::ivec2> ());
+      }
       else if (value.is <Color> ()) {
         ConfigConversion::toDomElement (doc, elem, value.get <Color> ());
       }
+      else
+        assert (false);
     }
     else {
       const QString& head  = path.first ();
@@ -224,15 +232,18 @@ void Config :: set (const std::string& path, const T& value) {
   return Config::global ().impl->set<T> (path, value);
 }
 
-template const float&     Config :: get<float>     (const std::string&);
-template const float&     Config :: get<float>     (const std::string&, const float&);
-template void             Config :: set<float>     (const std::string&, const float&);
-template const int&       Config :: get<int>       (const std::string&);
-template const int&       Config :: get<int>       (const std::string&, const int&);
-template void             Config :: set<int>       (const std::string&, const int&);
-template const Color&     Config :: get<Color>     (const std::string&);
-template const Color&     Config :: get<Color>     (const std::string&, const Color&);
-template void             Config :: set<Color>     (const std::string&, const Color&);
-template const glm::vec3& Config :: get<glm::vec3> (const std::string&);
-template const glm::vec3& Config :: get<glm::vec3> (const std::string&, const glm::vec3&);
-template void             Config :: set<glm::vec3> (const std::string&, const glm::vec3&);
+template const float&      Config :: get<float>      (const std::string&);
+template const float&      Config :: get<float>      (const std::string&, const float&);
+template void              Config :: set<float>      (const std::string&, const float&);
+template const int&        Config :: get<int>        (const std::string&);
+template const int&        Config :: get<int>        (const std::string&, const int&);
+template void              Config :: set<int>        (const std::string&, const int&);
+template const Color&      Config :: get<Color>      (const std::string&);
+template const Color&      Config :: get<Color>      (const std::string&, const Color&);
+template void              Config :: set<Color>      (const std::string&, const Color&);
+template const glm::vec3&  Config :: get<glm::vec3>  (const std::string&);
+template const glm::vec3&  Config :: get<glm::vec3>  (const std::string&, const glm::vec3&);
+template void              Config :: set<glm::vec3>  (const std::string&, const glm::vec3&);
+template const glm::ivec2& Config :: get<glm::ivec2> (const std::string&);
+template const glm::ivec2& Config :: get<glm::ivec2> (const std::string&, const glm::ivec2&);
+template void              Config :: set<glm::ivec2> (const std::string&, const glm::ivec2&);

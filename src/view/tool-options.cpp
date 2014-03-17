@@ -1,10 +1,13 @@
+#include <glm/glm.hpp>
 #include <QPushButton>
 #include <QGridLayout>
 #include <QSpinBox>
 #include <QLabel>
+#include <QMoveEvent>
 #include "view/tool-options.hpp"
 #include "view/main-window.hpp"
 #include "view/vector-edit.hpp"
+#include "config.hpp"
 
 struct ViewToolOptions::Impl {
   ViewToolOptions* self;
@@ -15,6 +18,8 @@ struct ViewToolOptions::Impl {
   Impl (ViewToolOptions* s, ViewMainWindow* p) 
     : self   (s)
   {
+    glm::ivec2 pos   = Config::get <glm::ivec2> ( "/cache/view/tool-options/position"
+                                                , glm::ivec2 (100, 100) );
     this->vBoxLayout = new QVBoxLayout;
     this->gridLayout = new QGridLayout;
 
@@ -23,7 +28,7 @@ struct ViewToolOptions::Impl {
     this->vBoxLayout->addLayout        (this->gridLayout);
     this->self->setParent              (p, this->self->windowFlags ());
     this->self->setLayout              (this->vBoxLayout);
-    this->self->move                   (100,100);
+    this->self->move                   (pos.x, pos.y);
     this->self->setAttribute           (Qt::WA_DeleteOnClose);
     this->makeDefaultButtons           ();
   }
@@ -68,9 +73,15 @@ struct ViewToolOptions::Impl {
     this->addGridRow (label, vectorEdit);
     return vectorEdit;
   }
+  
+  void moveEvent (QMoveEvent* event) {
+    Config::set <glm::ivec2> ( "/cache/view/tool-options/position"
+                             , glm::ivec2 (event->pos ().x(), event->pos ().y()) );
+  }
 };
 
 DELEGATE1_BIG3_SELF (ViewToolOptions, ViewMainWindow*)
 
 DELEGATE4 (QSpinBox*      , ViewToolOptions, spinBox, const QString&, int, int, int)
 DELEGATE1 (ViewVectorEdit*, ViewToolOptions, vectorEdit, const QString&)
+DELEGATE1 (void           , ViewToolOptions, moveEvent, QMoveEvent*)
