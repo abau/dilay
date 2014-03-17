@@ -66,7 +66,12 @@ struct ViewGlWidget :: Impl {
   void keyPressEvent (QKeyEvent* e) {
     switch (e->key()) {
       case Qt::Key_Escape:
-        QCoreApplication::instance()->quit();
+        if (State::hasTool ()) {
+          State::setTool (nullptr);
+        }
+        else {
+          QCoreApplication::instance()->quit();
+        }
         break;
         /*
       case Qt::Key_W:
