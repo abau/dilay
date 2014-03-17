@@ -109,7 +109,7 @@ struct Config::Impl {
           else if (attribute.value () == "integer") {
             this->insertIntoConfigMap <int> (configMap, prefix, element);
           }
-          else if (attribute.value () == "vector3") {
+          else if (attribute.value () == "vector3f") {
             this->insertIntoConfigMap <glm::vec3> (configMap, prefix, element);
           }
           else if (attribute.value () == "color") {

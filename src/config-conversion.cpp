@@ -18,7 +18,7 @@ bool ConfigConversion :: fromDomElement (QDomElement e, int& v) {
 }
 
 bool ConfigConversion :: fromDomElement (QDomElement e, glm::vec3& v) {
-  assert (e.attributeNode ("type").value () == "vector3");
+  assert (e.attributeNode ("type").value () == "vector3f");
 
   bool okX = ConfigConversion::fromDomElement (e.firstChildElement ("x"), v.x);
   bool okY = ConfigConversion::fromDomElement (e.firstChildElement ("y"), v.y);
@@ -56,7 +56,7 @@ QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& 
 
 QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& elem
                                               , const glm::vec3& v) {
-  elem.setAttribute ("type", "vector3");
+  elem.setAttribute ("type", "vector3f");
   QDomElement x = doc.createElement ("x");
   QDomElement y = doc.createElement ("y");
   QDomElement z = doc.createElement ("z");
