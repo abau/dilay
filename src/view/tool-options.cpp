@@ -36,7 +36,8 @@ struct ViewToolOptions::Impl {
   void makeDefaultButtons () {
     this->closeButton = this->pushButton (tr("Close"));
 
-    this->vBoxLayout->addWidget (this->closeButton);
+    this->closeButton->setDefault (true);
+    this->vBoxLayout->addWidget   (this->closeButton);
 
     QObject::connect ( this->closeButton, &QPushButton::released
                      , [this] () { this->self->accept (); } );
