@@ -82,7 +82,7 @@ SETTER       (float           , SphereMeshNode, radius)
 struct SphereMesh::Impl {
   SphereMesh*                     self;
   IdObject                        id;
-  Child                           root;
+  Child                           _root;
   IdMapPtr <SphereMeshNode::Impl> idMap;
   Mesh                            mesh;
 
@@ -103,9 +103,9 @@ struct SphereMesh::Impl {
   void addNode (const Id& id, SphereMeshNode* parent, const glm::vec3& position) {
     assert (this->idMap.hasElement (id) == false);
     if (parent == nullptr) {
-      assert (this->root == false);
-      this->root.reset (new SphereMeshNode::Impl (id, nullptr, position));
-      this->idMap.insert (this->root->id.id (), *this->root);
+      assert (this->_root == false);
+      this->_root.reset (new SphereMeshNode::Impl (id, nullptr, position));
+      this->idMap.insert (this->_root->id.id (), *this->_root);
     }
     else {
       SphereMeshNode::Impl& c = parent->impl->addChild (id, position);
@@ -122,20 +122,20 @@ struct SphereMesh::Impl {
       node.parentImpl->removeChild (id);
     }
     else {
-      this->root.reset (nullptr);
+      this->_root.reset (nullptr);
     }
     this->idMap.erase (id);
   }
 
   void render () {
-    if (this->root) {
-      this->root->render (this->mesh);
+    if (this->_root) {
+      this->_root->render (this->mesh);
     }
   }
 
   bool intersects (const Ray& ray, SphereNodeIntersection& sni) {
-    if (this->root) {
-      return this->root->intersects (*this->self, ray, sni);
+    if (this->_root) {
+      return this->_root->intersects (*this->self, ray, sni);
     }
     return false;
   }
@@ -143,6 +143,11 @@ struct SphereMesh::Impl {
   SphereMeshNode& node (const Id& id) {
     assert (this->idMap.hasElement (id));
     return this->idMap.elementRef (id).self;
+  }
+
+  SphereMeshNode& root () {
+    assert (this->_root);
+    return this->_root->self;
   }
 };
 
@@ -155,3 +160,4 @@ DELEGATE3 (void           , SphereMesh, addNode, const Id&, SphereMeshNode*, con
 DELEGATE  (void           , SphereMesh, render)
 DELEGATE2 (bool           , SphereMesh, intersects, const Ray&, SphereNodeIntersection&)
 DELEGATE1 (SphereMeshNode&, SphereMesh, node, const Id&)
+DELEGATE  (SphereMeshNode&, SphereMesh, root)

@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 #include "action/new-sphere-mesh.hpp"
 #include "state.hpp"
 #include "action/ids.hpp"
@@ -6,11 +7,14 @@
 
 struct ActionNewSphereMesh :: Impl {
   ActionIds ids;
+  glm::vec3 position;
 
-  SphereMesh& run () {
+  SphereMesh& run (const glm::vec3& p) {
     SphereMesh& sMesh = State::scene ().newSphereMesh ();
+    sMesh.root ().position (p);
 
     this->ids.setMesh (0, sMesh);
+    this->position = p;
     return sMesh;
   }
 
@@ -19,12 +23,13 @@ struct ActionNewSphereMesh :: Impl {
   }
 
   void runRedo () {
-    State::scene ().newSphereMesh (this->ids.getIdRef (0));
+    SphereMesh& sMesh = State::scene ().newSphereMesh (this->ids.getIdRef (0));
+    sMesh.root ().position (this->position);
   }
 };
 
 DELEGATE_BIG3 (ActionNewSphereMesh)
 
-DELEGATE (SphereMesh&, ActionNewSphereMesh, run)
-DELEGATE (void       , ActionNewSphereMesh, runUndo)
-DELEGATE (void       , ActionNewSphereMesh, runRedo)
+DELEGATE1 (SphereMesh&, ActionNewSphereMesh, run, const glm::vec3&)
+DELEGATE  (void       , ActionNewSphereMesh, runUndo)
+DELEGATE  (void       , ActionNewSphereMesh, runRedo)

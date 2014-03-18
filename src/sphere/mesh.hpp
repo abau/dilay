@@ -39,6 +39,7 @@ class SphereMesh {
     void            render     ();
     bool            intersects (const Ray&, SphereNodeIntersection&);
     SphereMeshNode& node       (const Id&);
+    SphereMeshNode& root       ();
 
   private:
     class Impl;
