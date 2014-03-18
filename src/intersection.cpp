@@ -12,6 +12,7 @@
 #include "octree.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/triangle.hpp"
+#include "primitive/aabox.hpp"
 
 struct Intersection :: Impl {
   bool      isIntersection;
@@ -189,4 +190,20 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
     intersection = ray.pointAt (t);
     return true;
   }
+}
+
+bool intersects (const PrimRay& ray, const PrimAABox& box) {
+  glm::vec3 invDir  = glm::vec3 (1.0f) / ray.direction ();
+  glm::vec3 lowerTs = (box.minimum () - ray.origin ()) * invDir;
+  glm::vec3 upperTs = (box.maximum () - ray.origin ()) * invDir;
+  glm::vec3 min     = glm::min (lowerTs, upperTs);
+  glm::vec3 max     = glm::max (lowerTs, upperTs);
+
+  float tMin = glm::max ( glm::max (min.x, min.y), min.z );
+  float tMax = glm::min ( glm::min (max.x, max.y), max.z );
+
+  if (tMax < 0.0f || tMin > tMax)
+    return false;
+  else
+    return true;
 }

@@ -13,6 +13,7 @@ class WingedFace;
 class WingedMesh;
 class PrimPlane;
 class PrimTriangle;
+class PrimAABox;
 
 class Intersection {
   public:
@@ -38,6 +39,7 @@ namespace IntersectionUtil {
   bool intersects (const PrimRay&, const PrimSphere&, float&); 
   bool intersects (const PrimRay&, const PrimPlane& , float&); 
   bool intersects (const PrimRay&, const PrimTriangle& , glm::vec3&); 
+  bool intersects (const PrimRay&, const PrimAABox&); 
 }
 
 #endif
