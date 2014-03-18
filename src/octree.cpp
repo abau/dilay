@@ -5,8 +5,8 @@
 #include "octree.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
-#include "triangle.hpp"
-#include "ray.hpp"
+#include "primitive/triangle.hpp"
+#include "primitive/ray.hpp"
 #include "intersection.hpp"
 #include "fwd-winged.hpp"
 #include "adjacent-iterator.hpp"
@@ -24,7 +24,7 @@ typedef std::unique_ptr <OctreeNode::Impl> Child;
 /** Container for face to insert */
 class FaceToInsert {
   public:
-    FaceToInsert (const WingedFace& f, const Triangle& t)
+    FaceToInsert (const WingedFace& f, const PrimTriangle& t)
       : id               (f.id               ())
       , edge             (f.edge             ())
       , firstIndexNumber (f.firstIndexNumber ())
@@ -230,7 +230,7 @@ struct OctreeNode::Impl {
     }
   }
 
-  bool bboxIntersectRay (const Ray& ray) const {
+  bool bboxIntersectRay (const PrimRay& ray) const {
     glm::vec3 invDir  = glm::vec3 (1.0f) / ray.direction ();
     glm::vec3 lower   = this->center - glm::vec3 (this->looseWidth () * 0.5f);
     glm::vec3 upper   = this->center + glm::vec3 (this->looseWidth () * 0.5f);
@@ -248,9 +248,9 @@ struct OctreeNode::Impl {
       return true;
   }
 
-  void facesIntersectRay (WingedMesh& mesh, const Ray& ray, WingedFaceIntersection& intersection) {
+  void facesIntersectRay (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
     for (WingedFace& face : this->faces) {
-      Triangle  triangle = face.triangle (mesh);
+      PrimTriangle triangle = face.triangle (mesh);
       glm::vec3 p;
 
       if (IntersectionUtil::intersects (ray, triangle, p)) {
@@ -259,7 +259,7 @@ struct OctreeNode::Impl {
     }
   }
 
-  bool intersects (WingedMesh& mesh, const Ray& ray, WingedFaceIntersection& intersection) {
+  bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
     if (this->bboxIntersectRay (ray)) {
       this->facesIntersectRay (mesh,ray,intersection);
       for (Child& c : this->children) 
@@ -268,7 +268,7 @@ struct OctreeNode::Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const WingedMesh& mesh, const Sphere& sphere, std::unordered_set<Id>& ids) {
+  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, std::unordered_set<Id>& ids) {
     if (IntersectionUtil :: intersects (sphere, this->node)) {
       for (WingedFace& face : this->faces) {
         if (IntersectionUtil :: intersects (sphere, mesh, face)) {
@@ -282,7 +282,7 @@ struct OctreeNode::Impl {
     return ids.empty () == false;
   }
 
-  bool intersects ( const WingedMesh& mesh, const Sphere& sphere
+  bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
                        , std::unordered_set<WingedVertex*>& vertices) {
     if (IntersectionUtil :: intersects (sphere, this->node)) {
       for (WingedFace& face : this->faces) {
@@ -350,13 +350,13 @@ struct Octree::Impl {
   Child root;
   IdMapPtr <WingedFace> idMap;
 
-  WingedFace& insertFace (const WingedFace& face, const Triangle& geometry) {
+  WingedFace& insertFace (const WingedFace& face, const PrimTriangle& geometry) {
     assert (! this->hasFace (face.id ())); 
     FaceToInsert faceToInsert (face,geometry);
     return this->insertFace (faceToInsert);
   }
 
-  WingedFace& realignFace (const WingedFace& face, const Triangle& geometry, bool* sameNode) {
+  WingedFace& realignFace (const WingedFace& face, const PrimTriangle& geometry, bool* sameNode) {
     assert (this->hasFace   (face.id ())); 
     assert (face.octreeNode ()); 
     OctreeNode* formerNode = face.octreeNode ();
@@ -456,21 +456,21 @@ struct Octree::Impl {
 #endif
   }
 
-  bool intersects (WingedMesh& mesh, const Ray& ray, WingedFaceIntersection& intersection) {
+  bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
     if (this->root) {
       return this->root->intersects (mesh,ray,intersection);
     }
     return false;
   }
 
-  bool intersects (const WingedMesh& mesh, const Sphere& sphere, std::unordered_set<Id>& ids) {
+  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, std::unordered_set<Id>& ids) {
     if (this->root) {
       return this->root->intersects (mesh,sphere,ids);
     }
     return false;
   }
 
-  bool intersects ( const WingedMesh& mesh, const Sphere& sphere
+  bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
                   , std::unordered_set<WingedVertex*>& vertices) {
     if (this->root) {
       return this->root->intersects (mesh,sphere,vertices);
@@ -535,15 +535,15 @@ struct Octree::Impl {
 };
 
 DELEGATE_BIG3   (Octree)
-DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const Triangle&)
-DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const Triangle&, bool*)
+DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const PrimTriangle&)
+DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
 DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
-DELEGATE3       (bool, Octree, intersects, WingedMesh&, const Ray&, WingedFaceIntersection&)
-DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const Sphere&, std::unordered_set<Id>&)
-DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const Sphere&, std::unordered_set<WingedVertex*>&)
+DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
+DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::unordered_set<Id>&)
+DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, initRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)

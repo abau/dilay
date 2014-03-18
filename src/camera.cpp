@@ -5,7 +5,7 @@
 #include <glm/gtx/matrix_major_storage.hpp>
 #include "camera.hpp"
 #include "opengl-util.hpp"
-#include "ray.hpp"
+#include "primitive/ray.hpp"
 #include "renderer.hpp"
 
 struct Camera::Impl {
@@ -106,10 +106,10 @@ struct Camera::Impl {
                           );
   }
 
-  Ray getRay (const glm::uvec2& p) const {
+  PrimRay getRay (const glm::uvec2& p) const {
     glm::vec3 w   = this->toWorld  (p);
     glm::vec3 eye = this->eyePoint ();
-    return Ray (eye, glm::normalize (w - eye));
+    return PrimRay (eye, glm::normalize (w - eye));
   }
 
   void updateProjection (const glm::uvec2& p, const glm::uvec2& dim) {
@@ -157,6 +157,6 @@ DELEGATE1       (void     , Camera, stepAlongGaze, bool)
 DELEGATE1       (void     , Camera, verticalRotation, float) 
 DELEGATE1       (void     , Camera, horizontalRotation, float) 
 DELEGATE2_CONST (glm::vec3, Camera, toWorld, const glm::uvec2&, float)
-DELEGATE1_CONST (Ray      , Camera, getRay, const glm::uvec2&)
+DELEGATE1_CONST (PrimRay  , Camera, getRay, const glm::uvec2&)
 DELEGATE2       (void     , Camera, updateProjection, const glm::uvec2&, const glm::uvec2&)
 DELEGATE        (void     , Camera, updateProjection)

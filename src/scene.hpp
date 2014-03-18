@@ -3,7 +3,7 @@
 
 class WingedMesh;
 class Id;
-class Ray;
+class PrimRay;
 class WingedFaceIntersection;
 enum class MeshType;
 class SphereMesh;
@@ -28,8 +28,8 @@ class Scene {
     const SphereMesh& sphereMesh       (const Id&) const;
 
           void        render           (MeshType);
-          bool        intersects       (MeshType, const Ray&, WingedFaceIntersection&);
-          bool        intersects       (const Ray&, SphereNodeIntersection&);
+          bool        intersects       (MeshType, const PrimRay&, WingedFaceIntersection&);
+          bool        intersects       (const PrimRay&, SphereNodeIntersection&);
 
   private:
     class Impl;

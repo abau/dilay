@@ -6,8 +6,8 @@
 #include "winged/mesh.hpp"
 #include "../mesh.hpp"
 #include "intersection.hpp"
-#include "triangle.hpp"
-#include "ray.hpp"
+#include "primitive/triangle.hpp"
+#include "primitive/ray.hpp"
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "id.hpp"
@@ -76,7 +76,7 @@ struct WingedMesh::Impl {
     return this->edges.back ();
   }
 
-  WingedFace& addFace (const WingedFace& f, const Triangle& geometry) {
+  WingedFace& addFace (const WingedFace& f, const PrimTriangle& geometry) {
     unsigned int firstIndexNumber;
     if (this->hasFreeFirstIndexNumber ()) {
       firstIndexNumber = this->nextFreeFirstIndexNumber ();
@@ -118,7 +118,7 @@ struct WingedMesh::Impl {
     this->vertices.pop_back ();
   }
 
-  WingedFace& realignFace (const WingedFace& face, const Triangle& triangle, bool* sameNode) {
+  WingedFace& realignFace (const WingedFace& face, const PrimTriangle& triangle, bool* sameNode) {
     return this->octree.realignFace (face, triangle, sameNode);
   }
 
@@ -205,15 +205,15 @@ struct WingedMesh::Impl {
 
   void toggleRenderMode () { this->mesh.toggleRenderMode (); }
 
-  bool intersects (const Ray& ray, WingedFaceIntersection& intersection) {
+  bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
     return this->octree.intersects (*this->self,ray,intersection);
   }
 
-  bool intersects (const Sphere& sphere, std::unordered_set <Id>& ids) {
+  bool intersects (const PrimSphere& sphere, std::unordered_set <Id>& ids) {
     return this->octree.intersects (*this->self,sphere,ids);
   }
 
-  bool intersects (const Sphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
+  bool intersects (const PrimSphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
     return this->octree.intersects (*this->self,sphere,vertices);
   }
 
@@ -244,7 +244,7 @@ DELEGATE1       (WingedFace*    , WingedMesh, face, const Id&)
 DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
-DELEGATE2       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const Triangle&)
+DELEGATE2       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const PrimTriangle&)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
@@ -256,7 +256,7 @@ GETTER_CONST    (const Octree&  , WingedMesh, octree)
 DELEGATE1       (void        , WingedMesh, deleteEdge, const WingedEdge&)
 DELEGATE1       (void        , WingedMesh, deleteFace, const WingedFace&)
 DELEGATE        (void        , WingedMesh, popVertex)
-DELEGATE3       (WingedFace& , WingedMesh, realignFace, const WingedFace&, const Triangle&, bool*)
+DELEGATE3       (WingedFace& , WingedMesh, realignFace, const WingedFace&, const PrimTriangle&, bool*)
  
 DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
@@ -274,6 +274,6 @@ DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, initOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
 
-DELEGATE2       (bool, WingedMesh, intersects, const Ray&, WingedFaceIntersection&)
-DELEGATE2       (bool, WingedMesh, intersects, const Sphere&, std::unordered_set<Id>&)
-DELEGATE2       (bool, WingedMesh, intersects, const Sphere&, std::unordered_set<WingedVertex*>&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<Id>&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<WingedVertex*>&)

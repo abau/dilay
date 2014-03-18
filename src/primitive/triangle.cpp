@@ -1,10 +1,10 @@
 #include <glm/glm.hpp>
-#include "triangle.hpp"
+#include "primitive/triangle.hpp"
 #include "util.hpp"
 #include "ray.hpp"
 #include "winged/vertex.hpp"
 
-struct Triangle::Impl {
+struct PrimTriangle::Impl {
   glm::vec3 vertex1;
   glm::vec3 vertex2;
   glm::vec3 vertex3;
@@ -47,23 +47,23 @@ struct Triangle::Impl {
   }
 };
 
-DELEGATE_BIG6          (Triangle)
-DELEGATE3_CONSTRUCTOR  (Triangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
-DELEGATE4_CONSTRUCTOR  (Triangle, const WingedMesh&, const WingedVertex&, const WingedVertex&, const WingedVertex&)
+DELEGATE_BIG6          (PrimTriangle)
+DELEGATE3_CONSTRUCTOR  (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+DELEGATE4_CONSTRUCTOR  (PrimTriangle, const WingedMesh&, const WingedVertex&, const WingedVertex&, const WingedVertex&)
 
-GETTER_CONST    (const glm::vec3&  , Triangle, vertex1)
-GETTER_CONST    (const glm::vec3&  , Triangle, vertex2)
-GETTER_CONST    (const glm::vec3&  , Triangle, vertex3)
+GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex1)
+GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex2)
+GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex3)
 
-SETTER          (const glm::vec3&  , Triangle, vertex1)
-SETTER          (const glm::vec3&  , Triangle, vertex2)
-SETTER          (const glm::vec3&  , Triangle, vertex3)
+SETTER          (const glm::vec3&  , PrimTriangle, vertex1)
+SETTER          (const glm::vec3&  , PrimTriangle, vertex2)
+SETTER          (const glm::vec3&  , PrimTriangle, vertex3)
 
-DELEGATE_CONST  (glm::vec3         , Triangle, edge1)
-DELEGATE_CONST  (glm::vec3         , Triangle, edge2)
-DELEGATE_CONST  (glm::vec3         , Triangle, normal)
-DELEGATE_CONST  (glm::vec3         , Triangle, center)
-DELEGATE_CONST  (glm::vec3         , Triangle, minimum)
-DELEGATE_CONST  (glm::vec3         , Triangle, maximum)
-DELEGATE_CONST  (float             , Triangle, extent)
-DELEGATE_CONST  (float             , Triangle, oneDimExtent)
+DELEGATE_CONST  (glm::vec3         , PrimTriangle, edge1)
+DELEGATE_CONST  (glm::vec3         , PrimTriangle, edge2)
+DELEGATE_CONST  (glm::vec3         , PrimTriangle, normal)
+DELEGATE_CONST  (glm::vec3         , PrimTriangle, center)
+DELEGATE_CONST  (glm::vec3         , PrimTriangle, minimum)
+DELEGATE_CONST  (glm::vec3         , PrimTriangle, maximum)
+DELEGATE_CONST  (float             , PrimTriangle, extent)
+DELEGATE_CONST  (float             , PrimTriangle, oneDimExtent)

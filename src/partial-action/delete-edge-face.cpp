@@ -9,7 +9,7 @@
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
-#include "triangle.hpp"
+#include "primitive/triangle.hpp"
 
 struct PADeleteEdgeFace :: Impl {
   ActionUnitOn <WingedMesh> actions;
@@ -17,9 +17,9 @@ struct PADeleteEdgeFace :: Impl {
   void run (WingedMesh& mesh, WingedEdge& edge) {
     assert (this->actions.isEmpty ());
 
-    WingedFace& faceToDelete  = *edge.rightFace ();
-    WingedFace& remainingFace = *edge.leftFace ();
-    Triangle    triangle      = faceToDelete.triangle (mesh);
+    WingedFace&  faceToDelete  = *edge.rightFace ();
+    WingedFace&  remainingFace = *edge.leftFace ();
+    PrimTriangle triangle      = faceToDelete.triangle (mesh);
 
     assert (faceToDelete.octreeNode ());
 

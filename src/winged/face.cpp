@@ -6,7 +6,7 @@
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "adjacent-iterator.hpp"
-#include "triangle.hpp"
+#include "primitive/triangle.hpp"
 #include "octree.hpp"
 
 WingedFace :: WingedFace () : WingedFace (nullptr, Id (), nullptr, 0) {}
@@ -41,13 +41,13 @@ void WingedFace :: write (WingedMesh& mesh, const unsigned int *newFIN) {
   this->writeNormals (mesh);
 }
 
-Triangle WingedFace :: triangle (const WingedMesh& mesh) const {
+PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
 
-  return Triangle ( this->firstVertex  ().vertex (mesh)
-                  , this->secondVertex ().vertex (mesh)
-                  , this->thirdVertex  ().vertex (mesh)
-                  );
+  return PrimTriangle ( this->firstVertex  ().vertex (mesh)
+                      , this->secondVertex ().vertex (mesh)
+                      , this->thirdVertex  ().vertex (mesh)
+                      );
 }
 
 WingedVertex& WingedFace :: firstVertex () const { 

@@ -5,13 +5,13 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "sphere.hpp"
+#include "primitive/sphere.hpp"
 #include "adjacent-iterator.hpp"
-#include "ray.hpp"
+#include "primitive/ray.hpp"
 #include "util.hpp"
 #include "octree.hpp"
-#include "plane.hpp"
-#include "triangle.hpp"
+#include "primitive/plane.hpp"
+#include "primitive/triangle.hpp"
 
 struct Intersection :: Impl {
   bool      isIntersection;
@@ -41,16 +41,16 @@ GETTER_CONST  (bool            , Intersection, isIntersection)
 GETTER_CONST  (float           , Intersection, distance)
 GETTER_CONST  (const glm::vec3&, Intersection, position)
 
-bool IntersectionUtil :: intersects (const Sphere& sphere, const glm::vec3& vec) {
+bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& vec) {
   return glm::distance (vec,sphere.center ()) <= sphere.radius ();
 }
 
-bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
+bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
                                     , const WingedVertex& vertex) {
   return IntersectionUtil :: intersects (sphere, vertex.vertex (mesh));
 }
 
-bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
+bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
                                     , const WingedEdge& edge) {
   glm::vec3 v1       = edge.vertex1 ()->vertex (mesh);
   glm::vec3 v2       = edge.vertex2 ()->vertex (mesh);
@@ -74,7 +74,7 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
   }
 }
 
-bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& mesh
+bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
                                     , const WingedFace& face) {
   for (ADJACENT_VERTEX_ITERATOR (it,face)) {
     if (IntersectionUtil :: intersects (sphere, mesh, it.element ()))
@@ -113,7 +113,7 @@ bool IntersectionUtil :: intersects ( const Sphere& sphere, const WingedMesh& me
   return true;
 }
 
-bool IntersectionUtil :: intersects (const Sphere& sphere, const OctreeNode& node) {
+bool IntersectionUtil :: intersects (const PrimSphere& sphere, const OctreeNode& node) {
   const float     w = node.looseWidth () * 0.5f;
   const glm::vec3 b = node.center ();
   const glm::vec3 c = sphere.center ();
@@ -132,7 +132,7 @@ bool IntersectionUtil :: intersects (const Sphere& sphere, const OctreeNode& nod
   return d <= sphere.radius () * sphere.radius ();
 }
 
-bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float& t) {
+bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& sphere, float& t) {
   float s1,s2;
   const glm::vec3& d  = ray.direction ();
   const glm::vec3& v  = ray.origin () - sphere.center ();
@@ -154,7 +154,7 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Sphere& sphere, float
   }
 }
 
-bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& t) {
+bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane, float& t) {
   const float d = glm::dot (ray.direction (), plane.normal ());
 
   if (d > - std::numeric_limits<float>::epsilon ()) {
@@ -164,7 +164,8 @@ bool IntersectionUtil :: intersects (const Ray& ray, const Plane& plane, float& 
   return true;
 }
 
-bool IntersectionUtil :: intersects (const Ray& ray, const Triangle& tri, glm::vec3& intersection) {
+bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
+                                    , glm::vec3& intersection) {
   glm::vec3 e1 = tri.edge1 ();
   glm::vec3 e2 = tri.edge2 ();
 

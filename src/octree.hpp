@@ -9,11 +9,11 @@
 class WingedFace;
 class WingedVertex;
 class WingedMesh;
-class Triangle;
+class PrimTriangle;
 class OctreeNode;
-class Ray;
+class PrimRay;
 class WingedFaceIntersection;
-class Sphere;
+class PrimSphere;
 class Id;
 
 struct OctreeStatistics {
@@ -50,16 +50,16 @@ class Octree {
   public: 
     DECLARE_BIG3 (Octree)
 
-    WingedFace&      insertFace  (const WingedFace&, const Triangle&);
-    WingedFace&      realignFace (const WingedFace&, const Triangle&, bool* = nullptr);
+    WingedFace&      insertFace  (const WingedFace&, const PrimTriangle&);
+    WingedFace&      realignFace (const WingedFace&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace  (const WingedFace&);
     bool             hasFace     (const Id&) const;
     WingedFace*      face        (const Id&);
     void             render      ();
-    bool             intersects  (WingedMesh&, const Ray&, WingedFaceIntersection&);
-    bool             intersects  ( const WingedMesh&, const Sphere&
+    bool             intersects  (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
+    bool             intersects  ( const WingedMesh&, const PrimSphere&
                                  , std::unordered_set<Id>&);
-    bool             intersects  ( const WingedMesh&, const Sphere&
+    bool             intersects  ( const WingedMesh&, const PrimSphere&
                                  , std::unordered_set<WingedVertex*>&);
     void             reset       ();
     void             initRoot    (const glm::vec3&, float);

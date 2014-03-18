@@ -6,7 +6,7 @@
 #include "winged/vertex.hpp"
 #include "state.hpp"
 #include "action/ids.hpp"
-#include "triangle.hpp"
+#include "primitive/triangle.hpp"
 #include "octree.hpp"
 #include "variant.hpp"
 
@@ -21,7 +21,7 @@ struct EdgeData {
 };
 
 struct FaceData {
-  Triangle     triangle;
+  PrimTriangle triangle;
 };
 
 struct VertexData {
@@ -71,7 +71,7 @@ struct PAModifyWMesh :: Impl {
                  , data. faceGradient                 , data. vertexGradient));
   }
 
-  void saveFaceOperand (const WingedFace& face, const Triangle& triangle) {
+  void saveFaceOperand (const WingedFace& face, const PrimTriangle& triangle) {
     this->operandIds.setFace     (0, &face);
     this->operandIds.setEdge     (1, face.edge ());
     this->operandData.set <FaceData> (FaceData {triangle});
@@ -101,7 +101,7 @@ struct PAModifyWMesh :: Impl {
     this->deleteFace (mesh, face, face.triangle (mesh));
   }
 
-  void deleteFace (WingedMesh& mesh, const WingedFace& face, const Triangle& t) {
+  void deleteFace (WingedMesh& mesh, const WingedFace& face, const PrimTriangle& t) {
     this->operation = Operation::DeleteFace;
     this->saveFaceOperand (face, t);
     mesh.deleteFace (face);
@@ -123,11 +123,11 @@ struct PAModifyWMesh :: Impl {
     return this->addFace (mesh,face,face.triangle (mesh));
   }
 
-  WingedFace& addFace (WingedMesh& mesh, const Triangle& t) {
+  WingedFace& addFace (WingedMesh& mesh, const PrimTriangle& t) {
     return this->addFace (mesh,WingedFace (),t);
   }
 
-  WingedFace& addFace (WingedMesh& mesh, const WingedFace& face, const Triangle& t) {
+  WingedFace& addFace (WingedMesh& mesh, const WingedFace& face, const PrimTriangle& t) {
     this->operation = Operation::AddFace;
     this->saveFaceOperand (face, t);
     return mesh.addFace (face, t);
@@ -221,12 +221,12 @@ struct PAModifyWMesh :: Impl {
 DELEGATE_BIG3 (PAModifyWMesh)
 
 DELEGATE2 (void         ,PAModifyWMesh,deleteEdge    ,WingedMesh&,const WingedEdge&)
-DELEGATE3 (void         ,PAModifyWMesh,deleteFace    ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE3 (void         ,PAModifyWMesh,deleteFace    ,WingedMesh&,const WingedFace&,const PrimTriangle&)
 DELEGATE1 (void         ,PAModifyWMesh,popVertex     ,WingedMesh&)
 DELEGATE2 (WingedEdge&  ,PAModifyWMesh,addEdge       ,WingedMesh&,const WingedEdge&)
 DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFace&)
-DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const Triangle&)
-DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFace&,const Triangle&)
+DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const PrimTriangle&)
+DELEGATE3 (WingedFace&  ,PAModifyWMesh,addFace       ,WingedMesh&,const WingedFace&,const PrimTriangle&)
 DELEGATE2 (WingedVertex&,PAModifyWMesh,addVertex     ,WingedMesh&,const glm::vec3&)
 DELEGATE3 (void         ,PAModifyWMesh,initOctreeRoot,WingedMesh&,const glm::vec3&,float)
 DELEGATE1 (void         ,PAModifyWMesh,runUndo       ,WingedMesh&)

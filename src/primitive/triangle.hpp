@@ -1,5 +1,5 @@
-#ifndef DILAY_TRIANGLE
-#define DILAY_TRIANGLE
+#ifndef DILAY_PRIMITIVE_TRIANGLE
+#define DILAY_PRIMITIVE_TRIANGLE
 
 #include <glm/fwd.hpp>
 #include "macro.hpp"
@@ -8,11 +8,11 @@ class Ray;
 class WingedMesh;
 class WingedVertex;
 
-class Triangle {
+class PrimTriangle {
   public:
-    DECLARE_BIG6 (Triangle)
-    Triangle     ( const glm::vec3&, const glm::vec3&, const glm::vec3&);
-    Triangle     ( const WingedMesh&, const WingedVertex&
+    DECLARE_BIG6 (PrimTriangle)
+    PrimTriangle ( const glm::vec3&, const glm::vec3&, const glm::vec3&);
+    PrimTriangle ( const WingedMesh&, const WingedVertex&
                  , const WingedVertex&, const WingedVertex&);
 
     const glm::vec3&  vertex1      () const;

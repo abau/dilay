@@ -4,7 +4,7 @@
 #include "winged/face.hpp"
 #include "winged/edge.hpp"
 #include "winged/mesh.hpp"
-#include "triangle.hpp"
+#include "primitive/triangle.hpp"
 #include "adjacent-iterator.hpp"
 #include "bitset.hpp"
 
@@ -38,7 +38,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
   }
 
   WingedFace& runRealignFace (WingedMesh& mesh, const WingedFace& face, bool* sameNode = nullptr) {
-    Triangle faceTriangle (face.triangle (mesh));
+    PrimTriangle faceTriangle (face.triangle (mesh));
     std::list <WingedEdge*> adjacents = face.adjacentEdgeIterator ().collect ();
 
     for (WingedEdge* e : adjacents) {

@@ -9,7 +9,7 @@
 class AdjacentEdgeIterator;
 class AdjacentVertexIterator;
 class AdjacentFaceIterator;
-class Triangle;
+class PrimTriangle;
 class OctreeNode;
 class WingedEdge;
 class WingedVertex;
@@ -34,7 +34,7 @@ class WingedFace {
     void                   writeIndices    (WingedMesh&, const unsigned int* = nullptr);
     void                   writeNormals    (WingedMesh&);
     void                   write           (WingedMesh&, const unsigned int* = nullptr);
-    Triangle               triangle        (const WingedMesh&) const;
+    PrimTriangle           triangle        (const WingedMesh&) const;
     WingedVertex&          firstVertex     () const;
     WingedVertex&          secondVertex    () const;
     WingedVertex&          thirdVertex     () const;

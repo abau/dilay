@@ -4,7 +4,7 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-class Ray;
+class PrimRay;
 
 class Camera {
   public:
@@ -30,7 +30,7 @@ class Camera {
     void      verticalRotation    (float);
     void      horizontalRotation  (float);
     glm::vec3 toWorld             (const glm::uvec2&, float = 0.0f) const;
-    Ray       getRay              (const glm::uvec2&) const;
+    PrimRay   getRay              (const glm::uvec2&) const;
     void      updateProjection    (const glm::uvec2&, const glm::uvec2&);
     void      updateProjection    ();
 

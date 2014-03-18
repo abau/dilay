@@ -4,15 +4,15 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-class Sphere;
-class Ray;
+class PrimSphere;
+class PrimRay;
 class OctreeNode;
 class WingedVertex;
 class WingedEdge;
 class WingedFace;
 class WingedMesh;
-class Plane;
-class Triangle;
+class PrimPlane;
+class PrimTriangle;
 
 class Intersection {
   public:
@@ -30,14 +30,14 @@ class Intersection {
 };
 
 namespace IntersectionUtil {
-  bool intersects (const Sphere&, const glm::vec3&);
-  bool intersects (const Sphere&, const WingedMesh&, const WingedVertex&);
-  bool intersects (const Sphere&, const WingedMesh&, const WingedEdge&);
-  bool intersects (const Sphere&, const WingedMesh&, const WingedFace&);
-  bool intersects (const Sphere&, const OctreeNode&);
-  bool intersects (const Ray&, const Sphere&, float&); 
-  bool intersects (const Ray&, const Plane& , float&); 
-  bool intersects (const Ray&, const Triangle& , glm::vec3&); 
+  bool intersects (const PrimSphere&, const glm::vec3&);
+  bool intersects (const PrimSphere&, const WingedMesh&, const WingedVertex&);
+  bool intersects (const PrimSphere&, const WingedMesh&, const WingedEdge&);
+  bool intersects (const PrimSphere&, const WingedMesh&, const WingedFace&);
+  bool intersects (const PrimSphere&, const OctreeNode&);
+  bool intersects (const PrimRay&, const PrimSphere&, float&); 
+  bool intersects (const PrimRay&, const PrimPlane& , float&); 
+  bool intersects (const PrimRay&, const PrimTriangle& , glm::vec3&); 
 }
 
 #endif

@@ -11,7 +11,7 @@
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "id.hpp"
-#include "triangle.hpp"
+#include "primitive/triangle.hpp"
 
 struct ActionFromMesh :: Impl {
   ActionFromMesh*           self;
@@ -97,10 +97,10 @@ struct ActionFromMesh :: Impl {
       unsigned int index3 = m.index (i + 2);
 
       WingedFace& f = this->actions.add<PAModifyWMesh> ()
-                          ->addFace (w, Triangle (w, *vecVertices [index1]
-                                                   , *vecVertices [index2]
-                                                   , *vecVertices [index3]
-                                                   ));
+                          ->addFace (w, PrimTriangle (w, *vecVertices [index1]
+                                                       , *vecVertices [index2]
+                                                       , *vecVertices [index3]
+                                                       ));
       WingedEdge* e1 = findOrAddEdge (index1, index2, f);
       WingedEdge* e2 = findOrAddEdge (index2, index3, f);
       WingedEdge* e3 = findOrAddEdge (index3, index1, f);

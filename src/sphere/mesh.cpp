@@ -7,8 +7,8 @@
 #include "../mesh.hpp"
 #include "render-mode.hpp"
 #include "intersection.hpp"
-#include "sphere.hpp"
-#include "ray.hpp"
+#include "primitive/sphere.hpp"
+#include "primitive/ray.hpp"
 #include "sphere/node-intersection.hpp"
 
 typedef std::unique_ptr <SphereMeshNode::Impl> Child;
@@ -58,9 +58,9 @@ struct SphereMeshNode::Impl {
     mesh.render      ();
   }
 
-  bool intersects (SphereMesh& mesh, const Ray& ray, SphereNodeIntersection& sni) {
+  bool intersects (SphereMesh& mesh, const PrimRay& ray, SphereNodeIntersection& sni) {
     float t;
-    if (IntersectionUtil::intersects (ray, Sphere (this->position, this->radius), t)) {
+    if (IntersectionUtil::intersects (ray, PrimSphere (this->position, this->radius), t)) {
       const glm::vec3 p = ray.pointAt (t);
       sni.update (glm::distance (ray.origin (), p), p, mesh, this->self);
     }
@@ -133,7 +133,7 @@ struct SphereMesh::Impl {
     }
   }
 
-  bool intersects (const Ray& ray, SphereNodeIntersection& sni) {
+  bool intersects (const PrimRay& ray, SphereNodeIntersection& sni) {
     if (this->_root) {
       return this->_root->intersects (*this->self, ray, sni);
     }
@@ -158,6 +158,6 @@ ID        (SphereMesh)
 DELEGATE2 (void           , SphereMesh, addNode, SphereMeshNode*, const glm::vec3&)
 DELEGATE3 (void           , SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&)
 DELEGATE  (void           , SphereMesh, render)
-DELEGATE2 (bool           , SphereMesh, intersects, const Ray&, SphereNodeIntersection&)
+DELEGATE2 (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
 DELEGATE1 (SphereMeshNode&, SphereMesh, node, const Id&)
 DELEGATE  (SphereMeshNode&, SphereMesh, root)

@@ -51,12 +51,13 @@ SOURCES += \
            src/partial-action/modify-winged-vertex.cpp \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
-           src/plane.cpp \
-           src/ray.cpp \
+           src/primitive/plane.cpp \
+           src/primitive/ray.cpp \
+           src/primitive/sphere.cpp \
+           src/primitive/triangle.cpp \
            src/renderer.cpp \
            src/render-mode.cpp \
            src/scene.cpp \
-           src/sphere.cpp \
            src/sphere/node-intersection.cpp \
            src/sphere/mesh.cpp \
            src/state.cpp \
@@ -67,7 +68,6 @@ SOURCES += \
            src/tool/movement.cpp \
            src/tool/new-freeform-mesh.cpp \
            src/tool/rotate.cpp \
-           src/triangle.cpp \
            src/util.cpp \
            src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
@@ -127,12 +127,13 @@ HEADERS += \
            src/partial-action/modify-winged-vertex.hpp \
            src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
-           src/plane.hpp \
-           src/ray.hpp \
+           src/primitive/plane.hpp \
+           src/primitive/ray.hpp \
+           src/primitive/sphere.hpp \
+           src/primitive/triangle.hpp \
            src/renderer.hpp \
            src/render-mode.hpp \
            src/scene.hpp \
-           src/sphere.hpp \
            src/sphere/node-intersection.hpp \
            src/sphere/mesh.hpp \
            src/state.hpp \
@@ -143,7 +144,6 @@ HEADERS += \
            src/tool/movement.hpp \
            src/tool/new-freeform-mesh.hpp \
            src/tool/rotate.hpp \
-           src/triangle.hpp \
            src/util.hpp \
            src/variant.hpp \
            src/view/freeform-mesh-menu.hpp \

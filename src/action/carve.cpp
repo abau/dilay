@@ -6,7 +6,7 @@
 #include "action/unit/on.hpp"
 #include "action/subdivide.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
-#include "sphere.hpp"
+#include "primitive/sphere.hpp"
 #include "carve-brush.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -29,7 +29,7 @@ struct ActionCarve::Impl {
   void run (WingedMesh& mesh, const glm::vec3& position, float width) { 
     CarveBrush              brush (width, 0.05f);
     std::unordered_set <Id> ids;
-    Sphere                  sphere (position, width);
+    PrimSphere              sphere (position, width);
 
     mesh.intersects (sphere, ids);
 
@@ -37,7 +37,7 @@ struct ActionCarve::Impl {
     this->carveFaces     (sphere, brush,  mesh, ids);
   }
 
-  void subdivideFaces ( const Sphere& sphere, WingedMesh& mesh
+  void subdivideFaces ( const PrimSphere& sphere, WingedMesh& mesh
                       , std::unordered_set <Id>& ids, float maxIncircleRadius) {
     std::unordered_set <Id> thisIteration = ids;
     std::unordered_set <Id> nextIteration;
@@ -72,7 +72,7 @@ struct ActionCarve::Impl {
     }
   }
 
-  void carveFaces ( const Sphere& sphere, const CarveBrush& brush
+  void carveFaces ( const PrimSphere& sphere, const CarveBrush& brush
                   , WingedMesh& mesh, const std::unordered_set <Id>& ids) {
 
     auto carveVertex = [&sphere, &brush, &mesh] (const WingedVertex& vertex) -> glm::vec3 {

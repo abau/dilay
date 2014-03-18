@@ -4,7 +4,7 @@
 #include "macro.hpp"
 #include "id-map.hpp"
 #include "winged/mesh.hpp"
-#include "ray.hpp"
+#include "primitive/ray.hpp"
 #include "mesh-type.hpp"
 #include "sphere/mesh.hpp"
 #include "winged/face-intersection.hpp"
@@ -69,7 +69,7 @@ struct Scene :: Impl {
     }
   }
 
-  bool intersects (MeshType t, const Ray& ray, WingedFaceIntersection& intersection) {
+  bool intersects (MeshType t, const PrimRay& ray, WingedFaceIntersection& intersection) {
     if (t == MeshType::FreeForm) {
       for (WingedMesh& m : this->wingedMeshes) {
         m.intersects (ray, intersection);
@@ -78,7 +78,7 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const Ray& ray, SphereNodeIntersection& intersection) {
+  bool intersects (const PrimRay& ray, SphereNodeIntersection& intersection) {
     for (SphereMesh& m : this->sphereMeshes) {
       m.intersects (ray, intersection);
     }
@@ -100,5 +100,5 @@ DELEGATE1       (void             , Scene, removeSphereMesh, const Id&)
 DELEGATE1       (SphereMesh&      , Scene, sphereMesh, const Id&)
 DELEGATE1_CONST (const SphereMesh&, Scene, sphereMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
-DELEGATE3       (bool             , Scene, intersects, MeshType, const Ray&, WingedFaceIntersection&)
-DELEGATE2       (bool             , Scene, intersects, const Ray&, SphereNodeIntersection&)
+DELEGATE3       (bool             , Scene, intersects, MeshType, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)

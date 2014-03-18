@@ -6,7 +6,7 @@
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
-#include "triangle.hpp"
+#include "primitive/triangle.hpp"
 
 struct PATriangulateQuad :: Impl {
   ActionUnitOn <WingedMesh> actions;
@@ -22,9 +22,9 @@ struct PATriangulateQuad :: Impl {
     WingedEdge*   newEdge;
 
     if (edge.isFirstVertex (face, vertex)) {
-      Triangle newLeftGeometry (mesh, edge.vertexRef (face, 0)
-                                    , edge.vertexRef (face, 2)
-                                    , edge.vertexRef (face, 3));
+      PrimTriangle newLeftGeometry (mesh, edge.vertexRef (face, 0)
+                                        , edge.vertexRef (face, 2)
+                                        , edge.vertexRef (face, 3));
 
       newFace = &this->actions.add <PAModifyWMesh> ()->addFace (mesh, newLeftGeometry);
       newEdge = &splitFaceWith ( mesh, *newFace, face
@@ -32,9 +32,9 @@ struct PATriangulateQuad :: Impl {
                                , edge.successorRef (face), edge);
     }
     else {
-      Triangle newLeftGeometry (mesh, edge.vertexRef (face, 0)
-                                    , edge.vertexRef (face, 1)
-                                    , edge.vertexRef (face, 3));
+      PrimTriangle newLeftGeometry (mesh, edge.vertexRef (face, 0)
+                                        , edge.vertexRef (face, 1)
+                                        , edge.vertexRef (face, 3));
 
       newFace = &this->actions.add <PAModifyWMesh> ()->addFace (mesh, newLeftGeometry);
       newEdge = &splitFaceWith ( mesh, *newFace ,face

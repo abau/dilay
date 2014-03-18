@@ -5,7 +5,7 @@
 #include "macro.hpp"
 
 class Id;
-class Ray;
+class PrimRay;
 class SphereNodeIntersection;
 
 class SphereMeshNode {
@@ -37,7 +37,7 @@ class SphereMesh {
     void            addNode    (const Id&, SphereMeshNode*, const glm::vec3&);
     void            removeNode (const Id&);
     void            render     ();
-    bool            intersects (const Ray&, SphereNodeIntersection&);
+    bool            intersects (const PrimRay&, SphereNodeIntersection&);
     SphereMeshNode& node       (const Id&);
     SphereMeshNode& root       ();
 
