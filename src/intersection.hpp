@@ -6,7 +6,6 @@
 
 class PrimSphere;
 class PrimRay;
-class OctreeNode;
 class WingedVertex;
 class WingedEdge;
 class WingedFace;
@@ -35,7 +34,7 @@ namespace IntersectionUtil {
   bool intersects (const PrimSphere&, const WingedMesh&, const WingedVertex&);
   bool intersects (const PrimSphere&, const WingedMesh&, const WingedEdge&);
   bool intersects (const PrimSphere&, const WingedMesh&, const WingedFace&);
-  bool intersects (const PrimSphere&, const OctreeNode&);
+  bool intersects (const PrimSphere&, const PrimAABox&);
   bool intersects (const PrimRay&, const PrimSphere&, float&); 
   bool intersects (const PrimRay&, const PrimPlane& , float&); 
   bool intersects (const PrimRay&, const PrimTriangle& , glm::vec3&); 

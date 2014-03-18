@@ -9,7 +9,6 @@
 #include "adjacent-iterator.hpp"
 #include "primitive/ray.hpp"
 #include "util.hpp"
-#include "octree.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/triangle.hpp"
 #include "primitive/aabox.hpp"
@@ -114,19 +113,19 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
   return true;
 }
 
-bool IntersectionUtil :: intersects (const PrimSphere& sphere, const OctreeNode& node) {
-  const float     w = node.looseWidth () * 0.5f;
-  const glm::vec3 b = node.center ();
-  const glm::vec3 c = sphere.center ();
-  float         s,d = 0.0f;
+bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& box) {
+  const glm::vec3  c   = sphere.center ();
+  const glm::vec3& min = box.minimum ();
+  const glm::vec3& max = box.maximum ();
+  float            d   = 0.0f;
 
   for (unsigned int i = 0; i < 3; i++) {
-    if (c[i] < b[i] - w) {
-      s  = c[i] - b[i] + w;
+    if (c[i] < min[i]) {
+      const float s = c[i] - min[i];
       d += s * s;
     }
-    else if (c[i] > b[i] + w) {
-      s  = c[i] - b[i] - w;
+    else if (c[i] > max[i]) {
+      const float s = c[i] - max[i];
       d += s * s;
     }
   }
@@ -192,7 +191,7 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
   }
 }
 
-bool intersects (const PrimRay& ray, const PrimAABox& box) {
+bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
   glm::vec3 invDir  = glm::vec3 (1.0f) / ray.direction ();
   glm::vec3 lowerTs = (box.minimum () - ray.origin ()) * invDir;
   glm::vec3 upperTs = (box.maximum () - ray.origin ()) * invDir;

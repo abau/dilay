@@ -12,6 +12,7 @@
 #include "adjacent-iterator.hpp"
 #include "id-map.hpp"
 #include "winged/face-intersection.hpp"
+#include "primitive/aabox.hpp"
 
 #ifdef DILAY_RENDER_OCTREE
 #include "mesh.hpp"
@@ -138,8 +139,6 @@ struct OctreeNode::Impl {
 #endif
   }
 
-  float looseWidth () const { return this->width * 2.0f; }
-
   bool contains (const glm::vec3& v) {
     const glm::vec3 min = this->center - glm::vec3 ( (this->width * 0.5f)
                                                    - std::numeric_limits<float>::epsilon());
@@ -230,22 +229,9 @@ struct OctreeNode::Impl {
     }
   }
 
-  bool bboxIntersectRay (const PrimRay& ray) const {
-    glm::vec3 invDir  = glm::vec3 (1.0f) / ray.direction ();
-    glm::vec3 lower   = this->center - glm::vec3 (this->looseWidth () * 0.5f);
-    glm::vec3 upper   = this->center + glm::vec3 (this->looseWidth () * 0.5f);
-    glm::vec3 lowerTs = (lower - ray.origin ()) * invDir;
-    glm::vec3 upperTs = (upper - ray.origin ()) * invDir;
-    glm::vec3 min     = glm::min (lowerTs, upperTs);
-    glm::vec3 max     = glm::max (lowerTs, upperTs);
-
-    float tMin = glm::max ( glm::max (min.x, min.y), min.z );
-    float tMax = glm::min ( glm::min (max.x, max.y), max.z );
-
-    if (tMax < 0.0f || tMin > tMax)
-      return false;
-    else
-      return true;
+  PrimAABox looseAABox () const {
+    const float looseWidth = this->width * 2.0f;
+    return PrimAABox (this->center, looseWidth, looseWidth, looseWidth);
   }
 
   void facesIntersectRay (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
@@ -260,7 +246,7 @@ struct OctreeNode::Impl {
   }
 
   bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
-    if (this->bboxIntersectRay (ray)) {
+    if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
       this->facesIntersectRay (mesh,ray,intersection);
       for (Child& c : this->children) 
         c->intersects (mesh,ray,intersection);
@@ -269,7 +255,7 @@ struct OctreeNode::Impl {
   }
 
   bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, std::unordered_set<Id>& ids) {
-    if (IntersectionUtil :: intersects (sphere, this->node)) {
+    if (IntersectionUtil :: intersects (sphere, this->looseAABox ())) {
       for (WingedFace& face : this->faces) {
         if (IntersectionUtil :: intersects (sphere, mesh, face)) {
           ids.insert (face.id ());
@@ -284,7 +270,7 @@ struct OctreeNode::Impl {
 
   bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
                        , std::unordered_set<WingedVertex*>& vertices) {
-    if (IntersectionUtil :: intersects (sphere, this->node)) {
+    if (IntersectionUtil :: intersects (sphere, this->looseAABox ())) {
       for (WingedFace& face : this->faces) {
         for (ADJACENT_VERTEX_ITERATOR (vIt,face)) {
           WingedVertex& vertex = vIt.element ();
@@ -342,7 +328,6 @@ OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
 ID             (OctreeNode)
 GETTER_CONST   (int, OctreeNode, depth)
 GETTER_CONST   (const glm::vec3&, OctreeNode, center)
-DELEGATE_CONST (float, OctreeNode, looseWidth)
 GETTER_CONST   (float, OctreeNode, width)
 
 /** Octree class */

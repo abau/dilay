@@ -38,7 +38,6 @@ class OctreeNode {
     Id                id         () const;
     int               depth      () const;
     const glm::vec3&  center     () const;
-    float             looseWidth () const;
     float             width      () const;
 
   private:
