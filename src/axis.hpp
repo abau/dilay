@@ -1,11 +1,11 @@
 #ifndef DILAY_AXIS
 #define DILAY_AXIS
 
+#include "macro.hpp"
+
 class Axis {
-  public: Axis             ();
-          ~Axis            ();
-          Axis             (const Axis&) = delete;
-    const Axis& operator=  (const Axis&) = delete;
+  public:
+    DECLARE_BIG3 (Axis)
 
     void  initialize ();
     void  render     ();

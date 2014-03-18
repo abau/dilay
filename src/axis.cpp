@@ -56,7 +56,6 @@ struct Axis::Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (Axis)
-DELEGATE_DESTRUCTOR  (Axis)
-DELEGATE             (void, Axis, initialize)
-DELEGATE             (void, Axis, render)
+DELEGATE_BIG3 (Axis)
+DELEGATE      (void, Axis, initialize)
+DELEGATE      (void, Axis, render)
