@@ -262,6 +262,10 @@ struct Mesh::Impl {
     this->scalingMatrix = glm::scale (glm::mat4x4 (1.0f), v);
   }
 
+  glm::vec3 scaling () const {
+    return glm::vec3 (this->scalingMatrix * glm::vec4 (1.0f));
+  }
+
   void translate (const glm::vec3& v) {
     this->translationMatrix = glm::translate (this->translationMatrix, v);
   }
@@ -510,6 +514,7 @@ DELEGATE         (void              , Mesh, toggleRenderMode)
 
 DELEGATE1        (void              , Mesh, scale      , const glm::vec3&)
 DELEGATE1        (void              , Mesh, scaling    , const glm::vec3&)
+DELEGATE_CONST   (glm::vec3         , Mesh, scaling)
 DELEGATE1        (void              , Mesh, translate  , const glm::vec3&)
 DELEGATE1        (void              , Mesh, position   , const glm::vec3&)
 DELEGATE_CONST   (glm::vec3         , Mesh, position)

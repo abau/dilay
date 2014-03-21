@@ -45,6 +45,7 @@ class Mesh {
 
     void         scale             (const glm::vec3&);
     void         scaling           (const glm::vec3&);
+    glm::vec3    scaling           () const;
     void         translate         (const glm::vec3&);
     void         position          (const glm::vec3&);
     glm::vec3    position          () const;
