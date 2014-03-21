@@ -10,12 +10,14 @@ class QSpinBox;
 class QString;
 class ViewVectorEdit;
 class QMoveEvent;
+class QDoubleSpinBox;
 
 class ViewToolOptions : public QDialog {
   public:
     DECLARE_BIG3 (ViewToolOptions, ViewMainWindow*);
 
     QSpinBox*       spinBox      (const QString&, int, int, int);
+    QDoubleSpinBox* spinBox      (const QString&, float, float, float, float);
     ViewVectorEdit* vectorEdit   (const QString&);
 
   protected:

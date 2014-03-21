@@ -4,6 +4,7 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QMoveEvent>
+#include <QDoubleSpinBox>
 #include "view/tool-options.hpp"
 #include "view/main-window.hpp"
 #include "view/vector-edit.hpp"
@@ -69,6 +70,17 @@ struct ViewToolOptions::Impl {
     return spinBox;
   }
 
+  QDoubleSpinBox* spinBox (const QString& label, float min, float value, float step, float max) {
+    QDoubleSpinBox* spinBox = new QDoubleSpinBox;
+    spinBox->setRange       (double (min), double (max));
+    spinBox->setValue       (double (value));
+    spinBox->setSingleStep  (double (step));
+    spinBox->setFocusPolicy (Qt::NoFocus);
+
+    this->addGridRow (label, spinBox);
+    return spinBox;
+  }
+
   ViewVectorEdit* vectorEdit (const QString& label) {
     ViewVectorEdit* vectorEdit = new ViewVectorEdit;
     this->addGridRow (label, vectorEdit);
@@ -84,5 +96,6 @@ struct ViewToolOptions::Impl {
 DELEGATE1_BIG3_SELF (ViewToolOptions, ViewMainWindow*)
 
 DELEGATE4 (QSpinBox*      , ViewToolOptions, spinBox, const QString&, int, int, int)
+DELEGATE5 (QDoubleSpinBox*, ViewToolOptions, spinBox, const QString&, float, float, float, float)
 DELEGATE1 (ViewVectorEdit*, ViewToolOptions, vectorEdit, const QString&)
 DELEGATE1 (void           , ViewToolOptions, moveEvent, QMoveEvent*)
