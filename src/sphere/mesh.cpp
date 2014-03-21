@@ -53,9 +53,9 @@ struct SphereMeshNode::Impl {
   }
   
   void render (Mesh& mesh) {
-    mesh.setPosition (this->position);
-    mesh.setScaling  (glm::vec3 (this->radius));
-    mesh.render      ();
+    mesh.position (this->position);
+    mesh.scaling  (glm::vec3 (this->radius));
+    mesh.render   ();
   }
 
   bool intersects (SphereMesh& mesh, const PrimRay& ray, SphereNodeIntersection& sni) {

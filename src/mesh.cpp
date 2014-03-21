@@ -17,9 +17,9 @@
 
 struct Mesh::Impl {
   // cf. copy-constructor, reset
-  glm::mat4x4                 scaling;
-  glm::mat4x4                 rotation;
-  glm::mat4x4                 translation;
+  glm::mat4x4                 scalingMatrix;
+  glm::mat4x4                 rotationMatrix;
+  glm::mat4x4                 translationMatrix;
   std::vector<   GLfloat   >  vertices;
   std::vector< unsigned int>  indices;
   std::vector<   GLfloat   >  normals;
@@ -34,33 +34,33 @@ struct Mesh::Impl {
   RenderMode                  renderMode;
 
   Impl () { 
-    this->scaling        = glm::mat4x4 (1.0f);
-    this->rotation       = glm::mat4x4 (1.0f);
-    this->translation    = glm::mat4x4 (1.0f);
-    this->arrayObjectId  = 0;
-    this->vertexBufferId = 0;
-    this->indexBufferId  = 0;
-    this->normalBufferId = 0;
-    this->renderMode     = RenderMode::Flat;
+    this->scalingMatrix     = glm::mat4x4 (1.0f);
+    this->rotationMatrix    = glm::mat4x4 (1.0f);
+    this->translationMatrix = glm::mat4x4 (1.0f);
+    this->arrayObjectId     = 0;
+    this->vertexBufferId    = 0;
+    this->indexBufferId     = 0;
+    this->normalBufferId    = 0;
+    this->renderMode        = RenderMode::Flat;
 
-    this->color          = Config::get <Color> ("/editor/color/initial-mesh");
-    this->wireframeColor = Config::get <Color> ("/editor/color/initial-mesh-wireframe");
+    this->color             = Config::get <Color> ("/editor/color/initial-mesh");
+    this->wireframeColor    = Config::get <Color> ("/editor/color/initial-mesh-wireframe");
   }
 
   Impl (const Impl& source)
-              : scaling        (source.scaling)
-              , rotation       (source.rotation)
-              , translation    (source.translation)
-              , vertices       (source.vertices)
-              , indices        (source.indices)
-              , normals        (source.normals)
-              , color          (source.color)
-              , wireframeColor (source.wireframeColor)
-              , arrayObjectId  (0)
-              , vertexBufferId (0)
-              , indexBufferId  (0)
-              , normalBufferId (0)
-              , renderMode     (source.renderMode) 
+              : scalingMatrix     (source.scalingMatrix)
+              , rotationMatrix    (source.rotationMatrix)
+              , translationMatrix (source.translationMatrix)
+              , vertices          (source.vertices)
+              , indices           (source.indices)
+              , normals           (source.normals)
+              , color             (source.color)
+              , wireframeColor    (source.wireframeColor)
+              , arrayObjectId     (0)
+              , vertexBufferId    (0)
+              , indexBufferId     (0)
+              , normalBufferId    (0)
+              , renderMode        (source.renderMode) 
               {}
 
   ~Impl () { this->reset (); }
@@ -191,7 +191,7 @@ struct Mesh::Impl {
   }
 
   glm::mat4x4 modelMatrix () const {
-    return this->translation * this->rotation * this->scaling;
+    return this->translationMatrix * this->rotationMatrix * this->scalingMatrix;
   }
 
   void fixModelMatrix () {
@@ -238,9 +238,9 @@ struct Mesh::Impl {
   void renderEnd () { glBindVertexArray (0); }
 
   void reset () {
-    this->scaling       = glm::mat4x4 (1.0f);
-    this->rotation      = glm::mat4x4 (1.0f);
-    this->translation   = glm::mat4x4 (1.0f);
+    this->scalingMatrix     = glm::mat4x4 (1.0f);
+    this->rotationMatrix    = glm::mat4x4 (1.0f);
+    this->translationMatrix = glm::mat4x4 (1.0f);
     this->vertices.clear ();
     this->indices.clear  ();
     this->normals.clear  ();
@@ -254,27 +254,23 @@ struct Mesh::Impl {
     this->renderMode = RenderModeUtil :: toggle (this->renderMode);
   }
 
-  void translate (const glm::vec3& v) {
-    this->translation = glm::translate (this->translation, v);
-  }
-
   void scale (const glm::vec3& v) {
-    this->scaling = glm::scale (this->scaling, v);
+    this->scalingMatrix = glm::scale (this->scalingMatrix, v);
   }
 
-  void setPosition (const glm::vec3& v) {
-    this->translation = glm::translate (glm::mat4x4 (1.0f), v);
+  void scaling (const glm::vec3& v) {
+    this->scalingMatrix = glm::scale (glm::mat4x4 (1.0f), v);
   }
 
-  void setRotation (const glm::mat4x4& r) {
-    this->rotation = r;
+  void translate (const glm::vec3& v) {
+    this->translationMatrix = glm::translate (this->translationMatrix, v);
   }
 
-  void setScaling (const glm::vec3& v) {
-    this->scaling = glm::scale (glm::mat4x4 (1.0f), v);
+  void position (const glm::vec3& v) {
+    this->translationMatrix = glm::translate (glm::mat4x4 (1.0f), v);
   }
 
-  glm::vec3 getPosition () const {
+  glm::vec3 position () const {
     return Util::transformPosition (this->modelMatrix (), glm::vec3 (0.0f));
   }
 
@@ -479,45 +475,45 @@ struct Mesh::Impl {
 };
 
 DELEGATE_BIG6    (Mesh)
-DELEGATE_CONST   (unsigned int, Mesh, numVertices)
-DELEGATE_CONST   (unsigned int, Mesh, numIndices)
-DELEGATE_CONST   (unsigned int, Mesh, numNormals)
-DELEGATE_CONST   (unsigned int, Mesh, sizeOfVertices)
-DELEGATE_CONST   (unsigned int, Mesh, sizeOfIndices)
-DELEGATE_CONST   (unsigned int, Mesh, sizeOfNormals)
-DELEGATE1_CONST  (glm::vec3   , Mesh, vertex, unsigned int)
-DELEGATE1_CONST  (glm::vec3   , Mesh, worldVertex, unsigned int)
-DELEGATE1_CONST  (unsigned int, Mesh, index, unsigned int)
-DELEGATE1_CONST  (glm::vec3   , Mesh, normal, unsigned int)
+DELEGATE_CONST   (unsigned int      , Mesh, numVertices)
+DELEGATE_CONST   (unsigned int      , Mesh, numIndices)
+DELEGATE_CONST   (unsigned int      , Mesh, numNormals)
+DELEGATE_CONST   (unsigned int      , Mesh, sizeOfVertices)
+DELEGATE_CONST   (unsigned int      , Mesh, sizeOfIndices)
+DELEGATE_CONST   (unsigned int      , Mesh, sizeOfNormals)
+DELEGATE1_CONST  (glm::vec3         , Mesh, vertex, unsigned int)
+DELEGATE1_CONST  (glm::vec3         , Mesh, worldVertex, unsigned int)
+DELEGATE1_CONST  (unsigned int      , Mesh, index, unsigned int)
+DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
 
-DELEGATE1        (unsigned int, Mesh, addIndex, unsigned int)
-DELEGATE1        (unsigned int, Mesh, addVertex, const glm::vec3&)
-DELEGATE2        (void        , Mesh, setIndex, unsigned int, unsigned int)
-DELEGATE2        (void        , Mesh, setVertex, unsigned int, const glm::vec3&)
-DELEGATE2        (void        , Mesh, setNormal, unsigned int, const glm::vec3&)
-DELEGATE         (void        , Mesh, popVertex)
-DELEGATE1        (void        , Mesh, popIndices, unsigned int)
-DELEGATE1        (void        , Mesh, allocateIndices, unsigned int)
-DELEGATE1        (void        , Mesh, resizeIndices, unsigned int)
+DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
+DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
+DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
+DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
+DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)
+DELEGATE         (void              , Mesh, popVertex)
+DELEGATE1        (void              , Mesh, popIndices, unsigned int)
+DELEGATE1        (void              , Mesh, allocateIndices, unsigned int)
+DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 
-DELEGATE         (void        , Mesh, bufferData)
-DELEGATE_CONST   (glm::mat4x4 , Mesh, modelMatrix)
-DELEGATE         (void        , Mesh, fixModelMatrix)
-DELEGATE         (void        , Mesh, renderBegin)
-DELEGATE         (void        , Mesh, render)
-DELEGATE         (void        , Mesh, renderSolid)
-DELEGATE         (void        , Mesh, renderWireframe)
-DELEGATE         (void        , Mesh, renderEnd)
-DELEGATE         (void        , Mesh, reset)
-SETTER           (RenderMode  , Mesh, renderMode)
-DELEGATE         (void        , Mesh, toggleRenderMode)
+DELEGATE         (void              , Mesh, bufferData)
+DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
+DELEGATE         (void              , Mesh, fixModelMatrix)
+DELEGATE         (void              , Mesh, renderBegin)
+DELEGATE         (void              , Mesh, render)
+DELEGATE         (void              , Mesh, renderSolid)
+DELEGATE         (void              , Mesh, renderWireframe)
+DELEGATE         (void              , Mesh, renderEnd)
+DELEGATE         (void              , Mesh, reset)
+SETTER           (RenderMode        , Mesh, renderMode)
+DELEGATE         (void              , Mesh, toggleRenderMode)
 
-DELEGATE1        (void        , Mesh, translate  , const glm::vec3&)
-DELEGATE1        (void        , Mesh, scale      , const glm::vec3&)
-DELEGATE1        (void        , Mesh, setPosition, const glm::vec3&)
-DELEGATE1        (void        , Mesh, setRotation, const glm::mat4x4&)
-DELEGATE1        (void        , Mesh, setScaling , const glm::vec3&)
-DELEGATE_CONST   (glm::vec3   , Mesh, getPosition)
+DELEGATE1        (void              , Mesh, scale      , const glm::vec3&)
+DELEGATE1        (void              , Mesh, scaling    , const glm::vec3&)
+DELEGATE1        (void              , Mesh, translate  , const glm::vec3&)
+DELEGATE1        (void              , Mesh, position   , const glm::vec3&)
+DELEGATE_CONST   (glm::vec3         , Mesh, position)
+SETTER           (const glm::mat4x4&, Mesh, rotationMatrix)
 
 DELEGATE_STATIC  (Mesh, Mesh, cube)
 DELEGATE2_STATIC (Mesh, Mesh, sphere, unsigned int, unsigned int)

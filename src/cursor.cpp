@@ -40,18 +40,18 @@ struct Cursor::Impl {
     this->mesh.bufferData ();
   }
 
-  void setPosition (const glm::vec3& v) { this->mesh.setPosition (v); }
+  void position (const glm::vec3& v) { this->mesh.position (v); }
 
-  void setNormal (const glm::vec3& v) {
+  void normal (const glm::vec3& v) {
     const float d   = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
     const float eps = std::numeric_limits<float>::epsilon ();
     if (d >= 1.0f - eps || d <= -1.0f + eps) {
-      this->mesh.setRotation (glm::mat4(1.0f));
+      this->mesh.rotationMatrix (glm::mat4(1.0f));
     }
     else {
       const glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
       const float     angle = glm::acos (d);
-      this->mesh.setRotation (glm::rotate (glm::mat4(1.0f), angle, axis));
+      this->mesh.rotationMatrix (glm::rotate (glm::mat4(1.0f), angle, axis));
     }
   }
 
@@ -78,8 +78,8 @@ struct Cursor::Impl {
 DELEGATE_BIG6 (Cursor)
 
 DELEGATE        (void,  Cursor, initialize)
-DELEGATE1       (void,  Cursor, setPosition, const glm::vec3&)
-DELEGATE1       (void,  Cursor, setNormal, const glm::vec3&)
+DELEGATE1       (void,  Cursor, position, const glm::vec3&)
+DELEGATE1       (void,  Cursor, normal, const glm::vec3&)
 DELEGATE        (void,  Cursor, render)
 DELEGATE        (void,  Cursor, enable)
 DELEGATE        (void,  Cursor, disable)

@@ -9,8 +9,8 @@ class Cursor {
     DECLARE_BIG6 (Cursor)
 
     void  initialize         ();
-    void  setPosition        (const glm::vec3&);
-    void  setNormal          (const glm::vec3&);
+    void  position           (const glm::vec3&);
+    void  normal             (const glm::vec3&);
     void  render             ();
     void  enable             ();
     void  disable            ();

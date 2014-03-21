@@ -53,22 +53,22 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void setMeshByInput (int numSubdivisions) {
-    glm::vec3 oldPos = this->mesh.getPosition ();
+    glm::vec3 oldPos = this->mesh.position ();
     this->mesh = Mesh::icosphere (numSubdivisions);
     this->mesh.bufferData  ();
-    this->mesh.setPosition (oldPos);
+    this->mesh.position    (oldPos);
     this->self->mainWindow ()->glWidget ()->update ();
     Config::set <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
 
   void setMeshByInput (const glm::vec3& pos) {
     this->movement.position (pos);
-    this->mesh.setPosition  (pos);
+    this->mesh.position     (pos);
     this->self->mainWindow  ()->glWidget ()->update ();
   }
 
   void setMeshByMovement () {
-    this->mesh.setPosition     (this->movement.position ());
+    this->mesh.position        (this->movement.position ());
     this->positionEdit->vector (this->movement.position ());
   }
 
