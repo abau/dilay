@@ -6,6 +6,7 @@
 
 class ViewTopToolbar;
 class ViewGlWidget;
+class ViewProperties;
 
 class ViewMainWindow : public QMainWindow {
     Q_OBJECT
@@ -14,6 +15,7 @@ class ViewMainWindow : public QMainWindow {
 
     ViewTopToolbar* topToolbar  ();
     ViewGlWidget*   glWidget    ();
+    ViewProperties* properties  ();
 
   private:
     class Impl;
