@@ -70,7 +70,6 @@ struct ViewVectorEdit::Impl {
 ViewVectorEdit :: ViewVectorEdit (QWidget* p) : QWidget (p) {
   this->impl = new Impl (this);
 }
-ViewVectorEdit :: ViewVectorEdit () : ViewVectorEdit (nullptr) {}
 
 DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (ViewVectorEdit) 
 
