@@ -1,8 +1,8 @@
 #include <QPushButton>
-#include "view/property/movement.hpp"
+#include "view/properties/movement.hpp"
 #include "view/util.hpp"
 
-ViewPropertyMovement :: ViewPropertyMovement () {
+ViewPropertiesMovement :: ViewPropertiesMovement () {
 
   this->add <QPushButton> ("Narf", ViewUtil::pushButton ("foo"));
   

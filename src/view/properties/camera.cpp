@@ -1,8 +1,8 @@
 #include <QPushButton>
-#include "view/property/camera.hpp"
+#include "view/properties/camera.hpp"
 #include "view/util.hpp"
 
-ViewPropertyCamera :: ViewPropertyCamera () {
+ViewPropertiesCamera :: ViewPropertiesCamera () {
 
   this->add <QPushButton> ("Narf", ViewUtil::pushButton ("foo"));
   

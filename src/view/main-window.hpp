@@ -6,16 +6,16 @@
 
 class ViewTopToolbar;
 class ViewGlWidget;
-class ViewProperties;
+class ViewPropertiesWidget;
 
 class ViewMainWindow : public QMainWindow {
     Q_OBJECT
   public:
     DECLARE_BIG3 (ViewMainWindow)
 
-    ViewTopToolbar* topToolbar  ();
-    ViewGlWidget*   glWidget    ();
-    ViewProperties* properties  ();
+    ViewTopToolbar*       topToolbar  ();
+    ViewGlWidget*         glWidget    ();
+    ViewPropertiesWidget* properties  ();
 
   private:
     class Impl;

@@ -1,6 +1,7 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QPushButton>
+#include <QToolButton>
 #include "view/util.hpp"
 
 QSpinBox* ViewUtil :: spinBox (int min, int value, int max) {
@@ -20,5 +21,11 @@ QDoubleSpinBox* ViewUtil :: spinBox (float min, float value, float step, float m
 
 QPushButton* ViewUtil :: pushButton (const QString& label) {
   QPushButton* button = new QPushButton (label);
+  return button;
+}
+
+QToolButton* ViewUtil :: toolButton (const QString& label) {
+  QToolButton* button = new QToolButton ();
+  button->setText (label);
   return button;
 }

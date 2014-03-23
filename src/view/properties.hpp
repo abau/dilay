@@ -1,12 +1,20 @@
 #ifndef DILAY_VIEW_PROPERTIES
 #define DILAY_VIEW_PROPERTIES
 
-#include <QToolBox>
+#include <QWidget>
 #include "macro.hpp"
 
-class ViewProperties : public QToolBox {
+class ViewProperties : public QWidget {
   public:
     DECLARE_BIG3 (ViewProperties)
+
+    template <typename T>
+    T* add (const QString& label, T* widget) {
+      this->addWidget (label, static_cast <QWidget*> (widget));
+      return widget;
+    }
+
+    QWidget* addWidget (const QString&, QWidget*);
 
   private:
     class Impl;

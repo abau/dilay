@@ -73,13 +73,14 @@ SOURCES += \
            src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
+           src/view/main-widget.cpp \
            src/view/main-window.cpp \
            src/view/mouse-movement.cpp \
            src/view/properties.cpp \
-           src/view/property.cpp \
-           src/view/property/camera.cpp \
-           src/view/property/movement.cpp \
-           src/view/property/selection.cpp \
+           src/view/properties/camera.cpp \
+           src/view/properties/movement.cpp \
+           src/view/properties/selection.cpp \
+           src/view/properties/widget.cpp \
            src/view/tool-options.cpp \
            src/view/top-toolbar.cpp \
            src/view/util.cpp \
@@ -157,13 +158,14 @@ HEADERS += \
            src/view/freeform-mesh-menu.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
+           src/view/main-widget.hpp \
            src/view/main-window.hpp \
            src/view/mouse-movement.hpp \
            src/view/properties.hpp \
-           src/view/property.hpp \
-           src/view/property/camera.hpp \
-           src/view/property/movement.hpp \
-           src/view/property/selection.hpp \
+           src/view/properties/camera.hpp \
+           src/view/properties/movement.hpp \
+           src/view/properties/selection.hpp \
+           src/view/properties/widget.hpp \
            src/view/tool-options.hpp \
            src/view/tool-menu.hpp \
            src/view/top-toolbar.hpp \
