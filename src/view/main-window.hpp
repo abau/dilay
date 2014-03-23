@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include "macro.hpp"
 
-class ViewTopToolbar;
 class ViewGlWidget;
 class ViewPropertiesWidget;
 
@@ -13,7 +12,6 @@ class ViewMainWindow : public QMainWindow {
   public:
     DECLARE_BIG3 (ViewMainWindow)
 
-    ViewTopToolbar*       topToolbar  ();
     ViewGlWidget*         glWidget    ();
     ViewPropertiesWidget* properties  ();
 

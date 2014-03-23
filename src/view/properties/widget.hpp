@@ -4,9 +4,13 @@
 #include <QWidget>
 #include "macro.hpp"
 
+class ViewPropertiesSelection;
+
 class ViewPropertiesWidget : public QWidget {
   public:
     DECLARE_BIG3 (ViewPropertiesWidget)
+
+    ViewPropertiesSelection* selection ();
 
   private:
     class Impl;

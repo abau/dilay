@@ -13,14 +13,15 @@
 #include "axis.hpp"
 #include "mesh-type.hpp"
 #include "view/main-window.hpp"
-#include "view/top-toolbar.hpp"
 #include "view/freeform-mesh-menu.hpp"
+#include "view/properties/widget.hpp"
+#include "view/properties/selection.hpp"
 
 struct ViewGlWidget :: Impl {
-  ViewGlWidget*   self;
-  ViewMainWindow* mainWindow;
-  Axis            axis;
-  bool            hasActiveContextMenu;
+  ViewGlWidget*         self;
+  ViewMainWindow*       mainWindow;
+  Axis                  axis;
+  bool                  hasActiveContextMenu;
 
   Impl (ViewGlWidget* s, ViewMainWindow* mW) 
     : self (s)
@@ -42,19 +43,19 @@ struct ViewGlWidget :: Impl {
 
     Renderer :: updateLights (State :: camera ());
 
-    QObject::connect ( this->mainWindow->topToolbar (), &ViewTopToolbar::selectionChanged 
+    QObject::connect ( this->mainWindow->properties ()->selection ()
+                     , &ViewPropertiesSelection::selectionChanged 
                      , [this] () { this->self->update (); });
-    QObject::connect ( this->mainWindow->topToolbar (), &ViewTopToolbar::selectionReseted
-                     , [this] () { this->self->update (); });
-    QObject::connect ( this->mainWindow->topToolbar (), &ViewTopToolbar::hideOthersChanged
+    QObject::connect ( this->mainWindow->properties ()->selection ()
+                     , &ViewPropertiesSelection::hideOthersChanged
                      , [this] () { this->self->update (); });
   }
 
   void paintGL () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if (this->mainWindow->topToolbar ()->show (MeshType::FreeForm)) {
-      State :: scene ().render (MeshType::FreeForm);
+    if (this->mainWindow->properties ()->selection ()->show (MeshType::Freeform)) {
+      State :: scene ().render (MeshType::Freeform);
     }
     if (State::hasTool ()) {
       State::tool ().render ();
@@ -154,7 +155,7 @@ struct ViewGlWidget :: Impl {
 
   void contextMenuEvent (QContextMenuEvent* e) {
     State::setTool (nullptr);
-    if (this->mainWindow->topToolbar ()->selected (MeshType::FreeForm)) {
+    if (this->mainWindow->properties ()->selection ()->selected (MeshType::Freeform)) {
       ViewFreeformMeshMenu menu (this->mainWindow, e);
       this->hasActiveContextMenu = true;
       menu.exec (QCursor::pos ());

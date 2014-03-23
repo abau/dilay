@@ -34,7 +34,7 @@ struct ViewToolOptions::Impl {
   }
   
   void makeDefaultButtons () {
-    this->closeButton = ViewUtil::pushButton (tr("Close"));
+    this->closeButton = ViewUtil::pushButton (tr("Close"), true);
 
     this->closeButton->setDefault (true);
     this->vBoxLayout->addWidget   (this->closeButton);

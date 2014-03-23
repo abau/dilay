@@ -5,17 +5,16 @@
 #include "view/properties/selection.hpp"
 
 struct ViewPropertiesWidget::Impl {
-  ViewPropertiesWidget* self;
+  ViewPropertiesWidget*    self;
+  ViewPropertiesSelection* selection;
 
   Impl (ViewPropertiesWidget* s) : self (s) {
     QVBoxLayout* layout = new QVBoxLayout;
 
+    this->selection = new ViewPropertiesSelection ();
+
     layout->setSpacing (0);
-    layout->addWidget  (new ViewPropertiesSelection ());
-    layout->addStretch (0);
-    layout->addWidget  (new ViewPropertiesCamera    ());
-    layout->addStretch (0);
-    layout->addWidget  (new ViewPropertiesMovement  ());
+    layout->addWidget  (this->selection);
     layout->addStretch (1);
 
     this->self->setLayout (layout);
@@ -23,3 +22,4 @@ struct ViewPropertiesWidget::Impl {
 };
 
 DELEGATE_BIG3_SELF (ViewPropertiesWidget)
+GETTER (ViewPropertiesSelection*, ViewPropertiesWidget, selection)

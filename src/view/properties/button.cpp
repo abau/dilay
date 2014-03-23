@@ -3,9 +3,10 @@
 #include "view/properties/button.hpp"
 
 ViewPropertiesButton :: ViewPropertiesButton (const QString& label, bool c) {
-  this->setText      (label);
-  this->setCheckable (true);
-  this->setChecked   (c);
+  this->setText        (label);
+  this->setCheckable   (true);
+  this->setChecked     (c);
+  this->setFocusPolicy (Qt::NoFocus);
 
   QSizePolicy sizePolicy = this->sizePolicy ();
   sizePolicy.setHorizontalPolicy (QSizePolicy::MinimumExpanding);

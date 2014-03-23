@@ -14,8 +14,8 @@ struct ViewMainWidget :: Impl {
     glFormat.setDepth           (true); 
     glFormat.setDepthBufferSize (24); 
   
-    this->glWidget      = new ViewGlWidget         (glFormat, mW);
-    this->properties    = new ViewPropertiesWidget ();
+    this->properties = new ViewPropertiesWidget ();
+    this->glWidget   = new ViewGlWidget         (glFormat, mW);
 
     this->self->addWidget (this->properties);
     this->self->addWidget (this->glWidget);

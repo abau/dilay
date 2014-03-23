@@ -4,6 +4,6 @@
 
 ViewPropertiesCamera :: ViewPropertiesCamera () {
 
-  this->add <QPushButton> ("Narf", ViewUtil::pushButton ("foo"));
+  this->add <QPushButton> ("Narf", ViewUtil::pushButton ("foo",true));
   
 }

@@ -19,7 +19,7 @@ struct State::Impl {
 
   void initialize () { 
     this->camera.initialize ();
-    this->history.add <ActionNewWingedMesh> ()->run (MeshType::FreeForm, Mesh::icosphere (2));
+    this->history.add <ActionNewWingedMesh> ()->run (MeshType::Freeform, Mesh::icosphere (2));
   }
 
   bool hasTool () const { 

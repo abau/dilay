@@ -55,7 +55,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   ~Impl () {
-    State::history ().add <ActionNewWingedMesh> ()->run (MeshType::FreeForm, this->mesh);
+    State::history ().add <ActionNewWingedMesh> ()->run (MeshType::Freeform, this->mesh);
     this->self->mainWindow ()->glWidget ()->unsetCursor ();
   }
 

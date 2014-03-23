@@ -22,7 +22,7 @@ struct Scene :: Impl {
   }
 
   WingedMesh& newWingedMesh (MeshType t, const Id& id) {
-    assert (MeshType::FreeForm == t);
+    assert (MeshType::Freeform == t);
     this->wingedMeshes.emplace_back (id);
     this->wingedMeshIdMap.insert (this->wingedMeshes.back ());
     return this->wingedMeshes.back ();
@@ -57,7 +57,7 @@ struct Scene :: Impl {
   const SphereMesh& sphereMesh (const Id& id) const { return this->sphereMeshIdMap.elementRef (id); }
 
   void render (MeshType t) {
-    if (t == MeshType::FreeForm) {
+    if (t == MeshType::Freeform) {
       for (WingedMesh& m : this->wingedMeshes) {
         m.render ();
       }
@@ -70,7 +70,7 @@ struct Scene :: Impl {
   }
 
   bool intersects (MeshType t, const PrimRay& ray, WingedFaceIntersection& intersection) {
-    if (t == MeshType::FreeForm) {
+    if (t == MeshType::Freeform) {
       for (WingedMesh& m : this->wingedMeshes) {
         m.intersects (ray, intersection);
       }
