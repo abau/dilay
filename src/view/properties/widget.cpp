@@ -10,6 +10,7 @@ struct ViewPropertiesWidget::Impl {
   Impl (ViewPropertiesWidget* s) : self (s) {
     QVBoxLayout* layout = new QVBoxLayout;
 
+    layout->setSpacing (0);
     layout->addWidget  (new ViewPropertiesSelection ());
     layout->addStretch (0);
     layout->addWidget  (new ViewPropertiesCamera    ());

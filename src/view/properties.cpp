@@ -1,8 +1,8 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
-#include <QToolButton>
 #include "view/properties.hpp"
+#include "view/properties/button.hpp"
 
 struct ViewProperties::Impl {
   ViewProperties* self;
@@ -12,43 +12,30 @@ struct ViewProperties::Impl {
   Impl (ViewProperties* s) : self (s) {
     QVBoxLayout* vBoxLayout = new QVBoxLayout;
 
-    this->makeHeader (vBoxLayout);
-    this->makeBody   (vBoxLayout);
+    vBoxLayout->setSpacing         (0);
+    vBoxLayout->setContentsMargins (0,0,0,0);
+    this->makeHeader               (vBoxLayout);
+    this->makeBody                 (vBoxLayout);
 
     this->self->setLayout (vBoxLayout);
   }
 
   void makeHeader (QBoxLayout* globalLayout) {
-    QHBoxLayout* layout = new QHBoxLayout;
+    ViewPropertiesButton* button = new ViewPropertiesButton ("Blabla");
 
-    QToolButton* button = new QToolButton;
-    button->setArrowType (Qt::DownArrow);
-    button->setCheckable (true);
-    button->setChecked   (true);
+    QObject::connect (button, &ViewPropertiesButton::expand,   [this] () { this->body->show (); });
+    QObject::connect (button, &ViewPropertiesButton::collapse, [this] () { this->body->hide (); });
 
-    QObject::connect (button, &QToolButton::toggled, [this,button] (bool checked) {
-        if (checked) {
-          button->setArrowType (Qt::DownArrow);
-          this->body->show ();
-        }
-        else {
-          button->setArrowType (Qt::RightArrow);
-          this->body->hide ();
-        }
-      }
-    );
-
-    layout->addWidget (button);
-    layout->addWidget (new QLabel ("Foo"));
-
-    globalLayout->addLayout (layout);
+    globalLayout->addWidget (button);
   }
 
   void makeBody (QBoxLayout* globalLayout) {
     this->body       = new QFrame;
     this->bodyLayout = new QGridLayout;
 
-    this->body->setLayout (this->bodyLayout);
+    this->bodyLayout->setSpacing         (0);
+    this->bodyLayout->setContentsMargins (0,0,0,0);
+    this->body->setLayout                (this->bodyLayout);
 
     globalLayout->addWidget (this->body);
   }

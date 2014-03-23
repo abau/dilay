@@ -77,6 +77,7 @@ SOURCES += \
            src/view/main-window.cpp \
            src/view/mouse-movement.cpp \
            src/view/properties.cpp \
+           src/view/properties/button.cpp \
            src/view/properties/camera.cpp \
            src/view/properties/movement.cpp \
            src/view/properties/selection.cpp \
@@ -162,6 +163,7 @@ HEADERS += \
            src/view/main-window.hpp \
            src/view/mouse-movement.hpp \
            src/view/properties.hpp \
+           src/view/properties/button.hpp \
            src/view/properties/camera.hpp \
            src/view/properties/movement.hpp \
            src/view/properties/selection.hpp \
