@@ -15,6 +15,9 @@
 #include "view/vector-edit.hpp"
 #include "config.hpp"
 #include "view/util.hpp"
+#include "camera.hpp"
+#include "util.hpp"
+#include "view/properties/widget.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
@@ -47,9 +50,11 @@ struct ToolNewFreeformMesh::Impl {
         (const glm::vec3& p) { this->setMeshByInput (p); });
 
     // setup mesh
-    this->setMeshByInput    (initSubdivisions);
-    this->movement.moveXZ   (this->self->menuEvent ()->pos ());
-    this->setMeshByMovement ();
+    this->movement.position    (State::camera ().gazePoint ());
+    this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
+                               , Util::toPoint (this->self->menuEvent ()->pos ()));
+    this->setMeshByInput       (initSubdivisions);
+    this->setMeshByMovement    ();
 
     this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
   }
@@ -95,11 +100,9 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   bool runMouseMoveEvent (QMouseEvent* e) {
-    if (e->buttons ().testFlag (Qt::LeftButton)) {
-      if (this->movement.byMouseEvent (e)) {
-        this->setMeshByMovement ();
-        return true;
-      }
+    if (this->movement.byMouseEvent (this->self->mainWindow ()->properties ()->movement (), e)) {
+      this->setMeshByMovement ();
+      return true;
     }
     return false;
   }
