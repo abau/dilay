@@ -17,7 +17,7 @@
 
 bool ToolCarve :: click () {
   /*
-  Ray         ray    = State :: camera ().getRay (State :: mouseMovement (). position ());
+  Ray         ray    = State :: camera ().ray (State :: mouseMovement (). position ());
   Cursor&     cursor = State :: cursor ();
   FaceIntersection intersection;
 

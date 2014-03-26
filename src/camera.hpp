@@ -30,7 +30,7 @@ class Camera {
     void      verticalRotation    (float);
     void      horizontalRotation  (float);
     glm::vec3 toWorld             (const glm::uvec2&, float = 0.0f) const;
-    PrimRay   getRay              (const glm::uvec2&) const;
+    PrimRay   ray                 (const glm::uvec2&) const;
     void      updateProjection    (const glm::uvec2&, const glm::uvec2&);
     void      updateProjection    ();
 

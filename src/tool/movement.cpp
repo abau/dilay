@@ -12,7 +12,7 @@ struct ToolMovement::Impl {
   glm::vec3 position;
 
   bool moveOnPlane (const glm::vec3& normal, const glm::uvec2& p) {
-    const PrimRay   ray   = State::camera ().getRay (p);
+    const PrimRay   ray   = State::camera ().ray (p);
     const PrimPlane plane (this->position, normal);
           float     t;
     
@@ -33,7 +33,7 @@ struct ToolMovement::Impl {
     glm::vec3 normal    = State::camera ().toEyePoint ();
     normal[normalIndex] = 0.0f;
 
-    const PrimRay   ray   = State::camera ().getRay (p);
+    const PrimRay   ray   = State::camera ().ray (p);
     const PrimPlane plane (this->position, glm::normalize (normal));
           float     t;
     
