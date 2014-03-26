@@ -8,12 +8,13 @@ class ViewPropertiesMovement : public ViewProperties {
   public:
     DECLARE_BIG3 (ViewPropertiesMovement)
 
-    bool xy () const;
-    bool yz () const;
-    bool xz () const;
-    bool x  () const;
-    bool y  () const;
-    bool z  () const;
+    bool xy     () const;
+    bool yz     () const;
+    bool xz     () const;
+    bool camera () const;
+    bool x      () const;
+    bool y      () const;
+    bool z      () const;
 
   private:
     class Impl;

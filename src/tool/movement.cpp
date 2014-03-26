@@ -11,11 +11,8 @@
 struct ToolMovement::Impl {
   glm::vec3 position;
 
-  bool moveOnPlane (unsigned int normalIndex, const glm::uvec2& mousePos) {
-    glm::vec3 normal (0.0f);
-    normal[normalIndex] = 1.0f;
-
-    const PrimRay   ray   = State::camera ().getRay (mousePos);
+  bool moveOnPlane (const glm::vec3& normal, const glm::uvec2& p) {
+    const PrimRay   ray   = State::camera ().getRay (p);
     const PrimPlane plane (this->position, normal);
           float     t;
     
@@ -26,11 +23,17 @@ struct ToolMovement::Impl {
     return false;
   }
 
-  bool moveOnNormal (unsigned int normalIndex, const glm::uvec2& mousePos) {
+  bool moveOnPlane (unsigned int normalIndex, const glm::uvec2& p) {
+    glm::vec3 normal (0.0f);
+    normal[normalIndex] = 1.0f;
+    return this->moveOnPlane (normal, p);
+  }
+
+  bool moveOnNormal (unsigned int normalIndex, const glm::uvec2& p) {
     glm::vec3 normal    = State::camera ().toEyePoint ();
     normal[normalIndex] = 0.0f;
 
-    const PrimRay   ray   = State::camera ().getRay (mousePos);
+    const PrimRay   ray   = State::camera ().getRay (p);
     const PrimPlane plane (this->position, glm::normalize (normal));
           float     t;
     
@@ -41,34 +44,38 @@ struct ToolMovement::Impl {
     return false;
   }
 
-  bool moveXY (const glm::uvec2& p) { return this->moveOnPlane  (2, p); }
-  bool moveYZ (const glm::uvec2& p) { return this->moveOnPlane  (0, p); }
-  bool moveXZ (const glm::uvec2& p) { return this->moveOnPlane  (1, p); }
-  bool moveX  (const glm::uvec2& p) { return this->moveOnNormal (0, p); }
-  bool moveY  (const glm::uvec2& p) { return this->moveOnNormal (1, p); }
-  bool moveZ  (const glm::uvec2& p) { return this->moveOnNormal (2, p); }
+  bool moveOnXY     (const glm::uvec2& p) { return this->moveOnPlane  (2, p); }
+  bool moveOnYZ     (const glm::uvec2& p) { return this->moveOnPlane  (0, p); }
+  bool moveOnXZ     (const glm::uvec2& p) { return this->moveOnPlane  (1, p); }
+  bool moveAlongX   (const glm::uvec2& p) { return this->moveOnNormal (0, p); }
+  bool moveAlongY   (const glm::uvec2& p) { return this->moveOnNormal (1, p); }
+  bool moveAlongZ   (const glm::uvec2& p) { return this->moveOnNormal (2, p); }
+
+  bool moveOnCamera (const glm::uvec2& p) { 
+    return this->moveOnPlane (glm::normalize (State::camera ().toEyePoint ()), p); 
+  }
 
   bool byMouseEvent (ViewPropertiesMovement* properties, QMouseEvent* e) {
     if (e->buttons () == Qt::LeftButton) {
-      glm::uvec2 mousePos (e->x (), e->y ());
+      glm::uvec2 p (e->x (), e->y ());
 
       if (e->modifiers ().testFlag (Qt::ShiftModifier) ) {
-        if      (properties->x ()) { return this->moveX (mousePos); }
-        else if (properties->y ()) { return this->moveY (mousePos); }
-        else if (properties->z ()) { return this->moveZ (mousePos); }
-        else assert (false);
+        if      (properties->x ()) { return this->moveAlongX (p); }
+        else if (properties->y ()) { return this->moveAlongY (p); }
+        else if (properties->z ()) { return this->moveAlongZ (p); }
       }
       else {
-        return this->byScreenPos (properties, mousePos);
+        return this->byScreenPos (properties, p);
       }
     }
     return false;
   }
 
   bool byScreenPos (ViewPropertiesMovement* properties, const glm::uvec2& p) {
-    if      (properties->xy ()) { return this->moveXY (p); }
-    else if (properties->yz ()) { return this->moveYZ (p); }
-    else if (properties->xz ()) { return this->moveXZ (p); }
+    if      (properties->xy     ()) { return this->moveOnXY     (p); }
+    else if (properties->yz     ()) { return this->moveOnYZ     (p); }
+    else if (properties->xz     ()) { return this->moveOnXZ     (p); }
+    else if (properties->camera ()) { return this->moveOnCamera (p); }
     else assert (false);
   }
 };
