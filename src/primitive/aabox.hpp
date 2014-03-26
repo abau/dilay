@@ -10,6 +10,7 @@ class PrimAABox {
 
     PrimAABox (const glm::vec3&, const glm::vec3&, const glm::vec3&);
     PrimAABox (const glm::vec3&, float, float, float);
+    PrimAABox (const glm::vec3&, float);
 
     const glm::vec3& position () const;
     const glm::vec3& maximum  () const;
@@ -21,6 +22,10 @@ class PrimAABox {
           void       position (const glm::vec3&);
           void       maximum  (const glm::vec3&);
           void       minimum  (const glm::vec3&);
+          void       xWidth   (float);
+          void       yWidth   (float);
+          void       zWidth   (float);
+          void       width    (float);
 
   private:
     class Impl;
