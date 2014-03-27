@@ -13,12 +13,13 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
 
-    ViewMainWindow*    mainWindow      ();
-    QContextMenuEvent* menuEvent       ();
-    ViewToolOptions*   toolOptions     ();
-    void               render          ();
-    void               mouseMoveEvent  (QMouseEvent*);
-    void               mousePressEvent (QMouseEvent*);
+    ViewMainWindow*    mainWindow        ();
+    QContextMenuEvent* menuEvent         ();
+    ViewToolOptions*   toolOptions       ();
+    void               render            ();
+    void               mouseMoveEvent    (QMouseEvent*);
+    void               mousePressEvent   (QMouseEvent*);
+    void               mouseReleaseEvent (QMouseEvent*);
 
   protected:
     Tool ();
@@ -27,9 +28,10 @@ class Tool {
     class Impl;
     Impl* impl;
 
-    virtual void runRender          ()             {}
-    virtual bool runMouseMoveEvent  (QMouseEvent*) { return false; }
-    virtual bool runMousePressEvent (QMouseEvent*) { return false; }
+    virtual void runRender            ()             {}
+    virtual bool runMouseMoveEvent    (QMouseEvent*) { return false; }
+    virtual bool runMousePressEvent   (QMouseEvent*) { return false; }
+    virtual bool runMouseReleaseEvent (QMouseEvent*) { return false; }
 };
 
 #define DECLARE_TOOL(t,...)                                              \

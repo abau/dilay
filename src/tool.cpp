@@ -48,6 +48,12 @@ struct Tool::Impl {
       this->mainWindow->glWidget ()->update ();
     }
   }
+
+  void mouseReleaseEvent (QMouseEvent* e) {
+    if (this->self->runMouseReleaseEvent (e)) {
+      this->mainWindow->glWidget ()->update ();
+    }
+  }
 };
 
 DELEGATE3_BIG3_SELF  (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
@@ -58,3 +64,4 @@ GETTER    (ViewToolOptions*  , Tool, toolOptions)
 DELEGATE  (void              , Tool, render)
 DELEGATE1 (void              , Tool, mouseMoveEvent, QMouseEvent*)
 DELEGATE1 (void              , Tool, mousePressEvent, QMouseEvent*)
+DELEGATE1 (void              , Tool, mouseReleaseEvent, QMouseEvent*)
