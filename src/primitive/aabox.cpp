@@ -2,19 +2,17 @@
 #include "primitive/aabox.hpp"
 
 struct PrimAABox::Impl {
-  glm::vec3 position;
   glm::vec3 maximum;
   glm::vec3 minimum;
 
   Impl () {}
-  Impl (const glm::vec3& pos, const glm::vec3& max, const glm::vec3& min) 
-    : position (pos)
-    , maximum  (max)
-    , minimum  (min)
+  Impl (const glm::vec3& min, const glm::vec3& max) 
+    : maximum  (min)
+    , minimum  (max)
     {}
   Impl (const glm::vec3& pos, float xW, float yW, float zW)
-    : Impl (pos, pos + glm::vec3 (xW * 0.5f, yW * 0.5f, zW * 0.5f)
-               , pos - glm::vec3 (xW * 0.5f, yW * 0.5f, zW * 0.5f))
+    : Impl ( pos + glm::vec3 (xW * 0.5f, yW * 0.5f, zW * 0.5f)
+           , pos - glm::vec3 (xW * 0.5f, yW * 0.5f, zW * 0.5f))
     {}
   Impl (const glm::vec3& pos, float w) : Impl (pos, w, w, w) {}
 
@@ -23,18 +21,21 @@ struct PrimAABox::Impl {
   float zWidth () const { return maximum.z - minimum.z; }
 
   void xWidth (float w) { 
-    this->maximum.x = this->position.x + (w * 0.5f);
-    this->minimum.x = this->position.x - (w * 0.5f);
+    float p = this->position ().x;
+    this->maximum.x = p + (w * 0.5f);
+    this->minimum.x = p - (w * 0.5f);
   }
 
   void yWidth (float w) { 
-    this->maximum.y = this->position.y + (w * 0.5f);
-    this->minimum.y = this->position.y - (w * 0.5f);
+    float p = this->position ().y;
+    this->maximum.y = p + (w * 0.5f);
+    this->minimum.y = p - (w * 0.5f);
   }
 
   void zWidth (float w) { 
-    this->maximum.z = this->position.z + (w * 0.5f);
-    this->minimum.z = this->position.z - (w * 0.5f);
+    float p = this->position ().z;
+    this->maximum.z = p + (w * 0.5f);
+    this->minimum.z = p - (w * 0.5f);
   }
 
   void width (float w) { 
@@ -42,16 +43,25 @@ struct PrimAABox::Impl {
     this->yWidth (w);
     this->zWidth (w);
   }
+
+  glm::vec3 position () const {
+    return (this->maximum + this->minimum) * 0.5f;
+  }
+
+  void position (const glm::vec3& p) {
+    glm::vec3 oldPos = this->position ();
+
+    this->maximum = p + (this->maximum - oldPos);
+    this->minimum = p + (this->minimum - oldPos);
+  }
 };
 
 DELEGATE_BIG6 (PrimAABox)
-DELEGATE3_CONSTRUCTOR (PrimAABox, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+DELEGATE2_CONSTRUCTOR (PrimAABox, const glm::vec3&, const glm::vec3&)
 DELEGATE4_CONSTRUCTOR (PrimAABox, const glm::vec3&, float, float, float)
 DELEGATE2_CONSTRUCTOR (PrimAABox, const glm::vec3&, float)
-GETTER_CONST          (const glm::vec3&, PrimAABox, position)
 GETTER_CONST          (const glm::vec3&, PrimAABox, maximum)
 GETTER_CONST          (const glm::vec3&, PrimAABox, minimum)
-SETTER                (const glm::vec3&, PrimAABox, position)
 SETTER                (const glm::vec3&, PrimAABox, maximum)
 SETTER                (const glm::vec3&, PrimAABox, minimum)
 DELEGATE_CONST        (float           , PrimAABox, xWidth)
@@ -61,3 +71,5 @@ DELEGATE1             (void            , PrimAABox, xWidth, float)
 DELEGATE1             (void            , PrimAABox, yWidth, float)
 DELEGATE1             (void            , PrimAABox, zWidth, float)
 DELEGATE1             (void            , PrimAABox, width , float)
+DELEGATE_CONST        (glm::vec3       , PrimAABox, position)
+DELEGATE1             (void            , PrimAABox, position, const glm::vec3&)
