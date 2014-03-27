@@ -17,7 +17,7 @@
 #include "view/properties/widget.hpp"
 #include "view/properties/selection.hpp"
 
-struct ViewGlWidget :: Impl {
+struct ViewGlWidget::Impl {
   ViewGlWidget*         self;
   ViewMainWindow*       mainWindow;
   Axis                  axis;
@@ -32,14 +32,14 @@ struct ViewGlWidget :: Impl {
   }
 
   void initializeGL () {
-    Renderer :: initialize ();
-    State    :: initialize ();
+    Renderer::initialize ();
+    State   ::initialize ();
 
     this->axis.initialize        ();
     this->self->setMouseTracking (true);
     this->self->setFocus         ();
 
-    Renderer :: updateLights (State :: camera ());
+    Renderer::updateLights (State::camera ());
 
     QObject::connect ( this->mainWindow->properties ()->selection ()
                      , &ViewPropertiesSelection::selectionChanged 
@@ -53,7 +53,7 @@ struct ViewGlWidget :: Impl {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     if (this->mainWindow->properties ()->selection ()->show (MeshType::Freeform)) {
-      State :: scene ().render (MeshType::Freeform);
+      State::scene ().render (MeshType::Freeform);
     }
     if (State::hasTool ()) {
       State::tool ().render ();
@@ -62,7 +62,7 @@ struct ViewGlWidget :: Impl {
   }
 
   void resizeGL (int w, int h) {
-    State :: camera ().updateResolution (glm::uvec2 (w,h));
+    State::camera ().updateResolution (glm::uvec2 (w,h));
     glViewport (0,0,w, h < 1 ? 1 : h );
   }
 
@@ -92,7 +92,7 @@ struct ViewGlWidget :: Impl {
           */
         case Qt::Key_Z:
           if (e->modifiers () == Qt::ControlModifier) {
-            State :: history ().undo ();
+            State::history ().undo ();
             this->self->update ();
           }
           else
@@ -100,7 +100,7 @@ struct ViewGlWidget :: Impl {
           break;
         case Qt::Key_Y:
           if (e->modifiers () == Qt::ControlModifier) {
-            State :: history ().redo ();
+            State::history ().redo ();
             this->self->update ();
           }
           else
@@ -113,9 +113,9 @@ struct ViewGlWidget :: Impl {
   }
 
   void mouseMoveEvent (QMouseEvent* e) {
-    State :: mouseMovement ().update (e->pos ());
-    if (e->buttons () == Qt :: MiddleButton) {
-      ToolRotate :: run ();
+    State::mouseMovement ().update (e->pos ());
+    if (e->buttons () == Qt::MiddleButton) {
+      ToolRotate::run ();
       this->self->update ();
     }
     else if (State::hasTool ()) {
@@ -130,23 +130,23 @@ struct ViewGlWidget :: Impl {
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    State :: mouseMovement ().invalidate ();
+    State::mouseMovement ().invalidate ();
     if (State::hasTool ()) {
       State::tool ().mouseReleaseEvent (e);
     }
   }
 
   void resizeEvent (QResizeEvent* e) {
-    State :: camera ().updateResolution (glm::uvec2 ( e->size ().width  ()
+    State::camera ().updateResolution (glm::uvec2 ( e->size ().width  ()
                                                     , e->size ().height ()));
   }
 
   void wheelEvent (QWheelEvent* e) {
-    if (e->orientation () == Qt :: Vertical) {
+    if (e->orientation () == Qt::Vertical) {
       if (e->delta () > 0)
-        State :: camera ().stepAlongGaze (true);
+        State::camera ().stepAlongGaze (true);
       else if (e->delta () < 0)
-        State :: camera ().stepAlongGaze (false);
+        State::camera ().stepAlongGaze (false);
     }
     this->self->update ();
   }
