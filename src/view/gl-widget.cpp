@@ -134,8 +134,11 @@ struct ViewGlWidget :: Impl {
     }
   }
 
-  void mouseReleaseEvent (QMouseEvent*) {
+  void mouseReleaseEvent (QMouseEvent* e) {
     State :: mouseMovement ().invalidate ();
+    if (State::hasTool ()) {
+      State::tool ().mouseReleaseEvent (e);
+    }
   }
 
   void resizeEvent (QResizeEvent* e) {

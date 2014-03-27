@@ -9,6 +9,7 @@ struct Tool::Impl {
   ViewMainWindow*    mainWindow;
   QContextMenuEvent* menuEvent;
   ViewToolOptions*   toolOptions;
+  bool               _isDraged;
 
   Impl () {}
 
@@ -30,11 +31,27 @@ struct Tool::Impl {
   }
 
   ~Impl () {
+    this->isDraged (false);
     this->toolOptions->close ();
   }
 
   void render () { 
     return this->self->runRender ( ); 
+  }
+
+  bool isDraged () const { 
+    return this->_isDraged;
+  }
+
+  void isDraged (bool b) { 
+    this->_isDraged = b;
+
+    if (this->_isDraged) {
+      this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
+    }
+    else {
+      this->self->mainWindow ()->glWidget ()->unsetCursor ();
+    }
   }
 
   void mouseMoveEvent (QMouseEvent* e) { 
@@ -58,10 +75,12 @@ struct Tool::Impl {
 
 DELEGATE3_BIG3_SELF  (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
 DELEGATE_CONSTRUCTOR (Tool)
-GETTER    (ViewMainWindow*   , Tool, mainWindow)
-GETTER    (QContextMenuEvent*, Tool, menuEvent)
-GETTER    (ViewToolOptions*  , Tool, toolOptions)
-DELEGATE  (void              , Tool, render)
-DELEGATE1 (void              , Tool, mouseMoveEvent, QMouseEvent*)
-DELEGATE1 (void              , Tool, mousePressEvent, QMouseEvent*)
-DELEGATE1 (void              , Tool, mouseReleaseEvent, QMouseEvent*)
+GETTER         (ViewMainWindow*   , Tool, mainWindow)
+GETTER         (QContextMenuEvent*, Tool, menuEvent)
+GETTER         (ViewToolOptions*  , Tool, toolOptions)
+DELEGATE       (void              , Tool, render)
+DELEGATE_CONST (bool              , Tool, isDraged)
+DELEGATE1      (void              , Tool, isDraged, bool)
+DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent*)
+DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent*)
+DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent*)

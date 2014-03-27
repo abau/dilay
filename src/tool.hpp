@@ -17,6 +17,9 @@ class Tool {
     QContextMenuEvent* menuEvent         ();
     ViewToolOptions*   toolOptions       ();
     void               render            ();
+    bool               isDraged          () const;
+    void               isDraged          (bool);
+
     void               mouseMoveEvent    (QMouseEvent*);
     void               mousePressEvent   (QMouseEvent*);
     void               mouseReleaseEvent (QMouseEvent*);

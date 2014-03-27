@@ -18,12 +18,16 @@
 #include "camera.hpp"
 #include "util.hpp"
 #include "view/properties/widget.hpp"
+#include "primitive/aabox.hpp"
+#include "primitive/ray.hpp"
+#include "intersection.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
   Mesh                 mesh;
   ToolMovement         movement;
   ViewVectorEdit*      positionEdit;
+  PrimAABox            meshBox;
 
   Impl (ToolNewFreeformMesh* s) : self (s) {
     int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
@@ -54,14 +58,12 @@ struct ToolNewFreeformMesh::Impl {
     this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
                                , Util::toPoint (this->self->menuEvent ()->pos ()));
     this->setMeshByInput       (initSubdivisions);
+    this->setMeshByInput       (initRadius);
     this->setMeshByMovement    ();
-
-    this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
   }
 
   ~Impl () {
     State::history ().add <ActionNewWingedMesh> ()->run (MeshType::Freeform, this->mesh);
-    this->self->mainWindow ()->glWidget ()->unsetCursor ();
   }
 
   static QString toolName () {
@@ -82,16 +84,19 @@ struct ToolNewFreeformMesh::Impl {
   void setMeshByInput (const glm::vec3& pos) {
     this->movement.position (pos);
     this->mesh.position     (pos);
+    this->meshBox.position  (pos);
     this->self->mainWindow  ()->glWidget ()->update ();
   }
 
   void setMeshByInput (float radius) {
     this->mesh.scaling     (glm::vec3 (radius));
+    this->meshBox.width    (2.0f * radius);
     this->self->mainWindow ()->glWidget ()->update ();
   }
 
   void setMeshByMovement () {
     this->mesh.position        (this->movement.position ());
+    this->meshBox.position     (this->movement.position ());
     this->positionEdit->vector (this->movement.position ());
   }
 
@@ -100,10 +105,23 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   bool runMouseMoveEvent (QMouseEvent* e) {
-    if (this->movement.byMouseEvent (this->self->mainWindow ()->properties ()->movement (), e)) {
-      this->setMeshByMovement ();
-      return true;
+    if (this->self->isDraged ()) {
+      if (this->movement.byMouseEvent (this->self->mainWindow ()->properties ()->movement (), e)) {
+        this->setMeshByMovement ();
+        return true;
+      }
     }
+    return false;
+  }
+
+  bool runMousePressEvent (QMouseEvent* e) {
+    this->self->isDraged (IntersectionUtil::intersects ( State::camera ().ray (Util::toPoint (*e))
+                                                       , this->meshBox));
+    return false;
+  }
+
+  bool runMouseReleaseEvent (QMouseEvent*) {
+    this->self->isDraged (false);
     return false;
   }
 };
@@ -111,3 +129,5 @@ struct ToolNewFreeformMesh::Impl {
 DELEGATE_TOOL   (ToolNewFreeformMesh)
 DELEGATE        (void, ToolNewFreeformMesh, runRender)
 DELEGATE1       (bool, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
+DELEGATE1       (bool, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
+DELEGATE1       (bool, ToolNewFreeformMesh, runMouseReleaseEvent, QMouseEvent*)
