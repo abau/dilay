@@ -21,12 +21,10 @@ struct ViewGlWidget :: Impl {
   ViewGlWidget*         self;
   ViewMainWindow*       mainWindow;
   Axis                  axis;
-  bool                  hasActiveContextMenu;
 
   Impl (ViewGlWidget* s, ViewMainWindow* mW) 
     : self (s)
     , mainWindow (mW) 
-    , hasActiveContextMenu (false)
   {}
 
   ~Impl () {
@@ -126,10 +124,7 @@ struct ViewGlWidget :: Impl {
   }
 
   void mousePressEvent (QMouseEvent* e) {
-    if (this->hasActiveContextMenu == false
-     && e->buttons () == Qt :: LeftButton
-     && State::hasTool () ) {
-
+    if (e->buttons () == Qt::LeftButton && State::hasTool ()) {
       State::tool ().mousePressEvent (e);
     }
   }
@@ -160,11 +155,9 @@ struct ViewGlWidget :: Impl {
     State::setTool (nullptr);
     if (this->mainWindow->properties ()->selection ()->selected (MeshType::Freeform)) {
       ViewFreeformMeshMenu menu (this->mainWindow, e);
-      this->hasActiveContextMenu = true;
       menu.exec (QCursor::pos ());
       this->mainWindow->activateWindow ();
     }
-    this->hasActiveContextMenu = false;
   }
 };
 
