@@ -18,7 +18,11 @@ class Tool {
     ViewToolOptions*   toolOptions       ();
     void               render            ();
     bool               isDraged          () const;
-    void               isDraged          (bool);
+    void               drag              (bool);
+    void               dragIfHovered     ();
+    bool               isHovered         () const;
+    void               hover             (bool);
+    void               hoverIfDraged     ();
 
     void               mouseMoveEvent    (QMouseEvent*);
     void               mousePressEvent   (QMouseEvent*);

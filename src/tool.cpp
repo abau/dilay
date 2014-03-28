@@ -9,7 +9,8 @@ struct Tool::Impl {
   ViewMainWindow*    mainWindow;
   QContextMenuEvent* menuEvent;
   ViewToolOptions*   toolOptions;
-  bool               _isDraged;
+  bool               isDraged;
+  bool               isHovered;
 
   Impl () {}
 
@@ -18,6 +19,8 @@ struct Tool::Impl {
     , mainWindow  (w)
     , menuEvent   (e)
     , toolOptions (new ViewToolOptions (w))
+    , isDraged    (false)
+    , isHovered   (false)
   {
     this->toolOptions->setWindowTitle (name);
 
@@ -31,7 +34,8 @@ struct Tool::Impl {
   }
 
   ~Impl () {
-    this->isDraged (false);
+    this->drag  (false);
+    this->hover (false);
     this->toolOptions->close ();
   }
 
@@ -39,18 +43,41 @@ struct Tool::Impl {
     return this->self->runRender ( ); 
   }
 
-  bool isDraged () const { 
-    return this->_isDraged;
-  }
+  void drag (bool b) { 
+    this->isDraged = b;
 
-  void isDraged (bool b) { 
-    this->_isDraged = b;
-
-    if (this->_isDraged) {
-      this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::SizeAllCursor));
+    if (this->isDraged) {
+      assert (this->isHovered);
+      this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::ClosedHandCursor));
     }
     else {
       this->self->mainWindow ()->glWidget ()->unsetCursor ();
+    }
+  }
+
+  void dragIfHovered () {
+    if (this->isHovered) {
+      this->drag (true);
+    }
+  }
+
+  void hover (bool b) { 
+    assert (! this->isDraged);
+
+    this->isHovered = b;
+
+    if (this->isHovered) {
+      this->self->mainWindow ()->glWidget ()->setCursor (QCursor (Qt::OpenHandCursor));
+    }
+    else {
+      this->self->mainWindow ()->glWidget ()->unsetCursor ();
+    }
+  }
+
+  void hoverIfDraged () {
+    if (this->isDraged) {
+      this->drag  (false);
+      this->hover (true);
     }
   }
 
@@ -79,8 +106,12 @@ GETTER         (ViewMainWindow*   , Tool, mainWindow)
 GETTER         (QContextMenuEvent*, Tool, menuEvent)
 GETTER         (ViewToolOptions*  , Tool, toolOptions)
 DELEGATE       (void              , Tool, render)
-DELEGATE_CONST (bool              , Tool, isDraged)
-DELEGATE1      (void              , Tool, isDraged, bool)
+GETTER_CONST   (bool              , Tool, isDraged)
+DELEGATE1      (void              , Tool, drag, bool)
+DELEGATE       (void              , Tool, dragIfHovered)
+GETTER_CONST   (bool              , Tool, isHovered)
+DELEGATE1      (void              , Tool, hover, bool)
+DELEGATE       (void              , Tool, hoverIfDraged)
 DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent*)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent*)
 DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent*)

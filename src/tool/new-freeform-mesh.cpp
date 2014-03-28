@@ -60,6 +60,7 @@ struct ToolNewFreeformMesh::Impl {
     this->setMeshByInput       (initSubdivisions);
     this->setMeshByInput       (initRadius);
     this->setMeshByMovement    ();
+    this->hover                (this->self->menuEvent ()->pos ());
   }
 
   ~Impl () {
@@ -103,6 +104,11 @@ struct ToolNewFreeformMesh::Impl {
   void runRender () {
     this->mesh.render ();
   }
+  
+  void hover (const QPoint& pos) {
+    this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (Util::toPoint (pos))
+                                                    , this->meshBox));
+  }
 
   bool runMouseMoveEvent (QMouseEvent* e) {
     if (this->self->isDraged ()) {
@@ -111,17 +117,19 @@ struct ToolNewFreeformMesh::Impl {
         return true;
       }
     }
+    else {
+      this->hover (e->pos ());
+    }
     return false;
   }
 
-  bool runMousePressEvent (QMouseEvent* e) {
-    this->self->isDraged (IntersectionUtil::intersects ( State::camera ().ray (Util::toPoint (*e))
-                                                       , this->meshBox));
+  bool runMousePressEvent (QMouseEvent*) {
+    this->self->dragIfHovered ();
     return false;
   }
 
   bool runMouseReleaseEvent (QMouseEvent*) {
-    this->self->isDraged (false);
+    this->self->hoverIfDraged ();
     return false;
   }
 };
