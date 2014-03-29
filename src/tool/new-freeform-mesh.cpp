@@ -1,5 +1,4 @@
 #include <glm/glm.hpp>
-#include <QMouseEvent>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include "view/main-window.hpp"
@@ -54,11 +53,11 @@ struct ToolNewFreeformMesh::Impl {
 
     // setup mesh
     this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
-                               , ViewUtil::toIVec2 (this->self->menuEvent ()->pos ()));
+                               , this->self->mainWindow ()->glWidget ()->cursorPos ());
     this->setMeshByInput       (initSubdivisions);
     this->setMeshByInput       (initRadius);
     this->setMeshByMovement    ();
-    this->hover                (this->self->menuEvent ()->pos ());
+    this->hover                (this->self->mainWindow ()->glWidget ()->cursorPos ());
   }
 
   ~Impl () {
@@ -104,8 +103,8 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.render ();
   }
   
-  void hover (const QPoint& pos) {
-    this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (ViewUtil::toIVec2 (pos))
+  void hover (const glm::ivec2& pos) {
+    this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (pos)
                                                     , this->meshSphere, nullptr));
   }
 
@@ -117,7 +116,7 @@ struct ToolNewFreeformMesh::Impl {
       }
     }
     else {
-      this->hover (e->pos ());
+      this->hover (ViewUtil::toIVec2 (*e));
     }
     return false;
   }
