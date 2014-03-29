@@ -93,6 +93,7 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.scaling     (glm::vec3 (radius));
     this->meshBox.width    (2.0f * radius);
     this->self->mainWindow ()->glWidget ()->update ();
+    Config::set <float> ("/cache/tool/new-freeform-mesh/radius", radius);
   }
 
   void setMeshByMovement () {
