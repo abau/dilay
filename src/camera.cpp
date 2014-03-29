@@ -95,15 +95,20 @@ struct Camera::Impl {
     this->updateView ();
   }
 
+  glm::vec4 viewport () const {
+    return glm::vec4 (0, 0, this->resolution.x, this->resolution.y);
+  }
+
+  glm::ivec2 fromWorld (const glm::vec3& p) const {
+    glm::vec3 w = glm::project (p, this->view, this->projection, this->viewport ());
+    return glm::ivec2 (int (w.x), int (resolution.y - w.y));
+  }
+
   glm::vec3 toWorld (const glm::ivec2& p, float z = 0.0f) const {
     float invY  = this->resolution.y - p.y;
     float normZ = z / this->farClipping;
     return glm::unProject ( glm::vec3 (float (p.x), float (invY), normZ)
-                          , this->view, this->projection
-                          , glm::vec4 ( 0, 0
-                                      , this->resolution.x
-                                      , this->resolution.y)
-                          );
+                          , this->view, this->projection, this->viewport ());
   }
 
   PrimRay ray (const glm::ivec2& p) const {
@@ -150,13 +155,14 @@ GETTER_CONST    (const glm::mat4x4&, Camera, viewRotation)
 DELEGATE_CONST  (glm::vec3         , Camera, position)
 DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 
-DELEGATE1       (void     , Camera, updateResolution, const glm::uvec2&) 
-DELEGATE1_CONST (void     , Camera, modelViewProjection, const glm::mat4x4&) 
-DELEGATE_CONST  (void     , Camera, rotationProjection) 
-DELEGATE1       (void     , Camera, stepAlongGaze, bool) 
-DELEGATE1       (void     , Camera, verticalRotation, float) 
-DELEGATE1       (void     , Camera, horizontalRotation, float) 
-DELEGATE2_CONST (glm::vec3, Camera, toWorld, const glm::ivec2&, float)
-DELEGATE1_CONST (PrimRay  , Camera, ray, const glm::ivec2&)
-DELEGATE2       (void     , Camera, updateProjection, const glm::uvec2&, const glm::uvec2&)
-DELEGATE        (void     , Camera, updateProjection)
+DELEGATE1       (void      , Camera, updateResolution, const glm::uvec2&) 
+DELEGATE1_CONST (void      , Camera, modelViewProjection, const glm::mat4x4&) 
+DELEGATE_CONST  (void      , Camera, rotationProjection) 
+DELEGATE1       (void      , Camera, stepAlongGaze, bool) 
+DELEGATE1       (void      , Camera, verticalRotation, float) 
+DELEGATE1       (void      , Camera, horizontalRotation, float) 
+DELEGATE1_CONST (glm::ivec2, Camera, fromWorld, const glm::vec3&)
+DELEGATE2_CONST (glm::vec3 , Camera, toWorld, const glm::ivec2&, float)
+DELEGATE1_CONST (PrimRay   , Camera, ray, const glm::ivec2&)
+DELEGATE2       (void      , Camera, updateProjection, const glm::uvec2&, const glm::uvec2&)
+DELEGATE        (void      , Camera, updateProjection)

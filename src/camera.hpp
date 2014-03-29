@@ -22,17 +22,18 @@ class Camera {
           glm::vec3    position              () const;
           glm::mat4x4  world                 () const;
 
-    void      updateResolution    (const glm::uvec2&);
-    void      modelViewProjection (const glm::mat4x4&) const;
-    void      rotationProjection  () const;
+    void       updateResolution    (const glm::uvec2&);
+    void       modelViewProjection (const glm::mat4x4&) const;
+    void       rotationProjection  () const;
 
-    void      stepAlongGaze       (bool);
-    void      verticalRotation    (float);
-    void      horizontalRotation  (float);
-    glm::vec3 toWorld             (const glm::ivec2&, float = 0.0f) const;
-    PrimRay   ray                 (const glm::ivec2&) const;
-    void      updateProjection    (const glm::uvec2&, const glm::uvec2&);
-    void      updateProjection    ();
+    void       stepAlongGaze       (bool);
+    void       verticalRotation    (float);
+    void       horizontalRotation  (float);
+    glm::ivec2 fromWorld           (const glm::vec3&) const;
+    glm::vec3  toWorld             (const glm::ivec2&, float = 0.0f) const;
+    PrimRay    ray                 (const glm::ivec2&) const;
+    void       updateProjection    (const glm::uvec2&, const glm::uvec2&);
+    void       updateProjection    ();
 
   private:
     class Impl;
