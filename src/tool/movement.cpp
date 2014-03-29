@@ -14,16 +14,20 @@ struct ToolMovement::Impl {
 
   Impl () : position (State::camera ().gazePoint ()) {}
 
-  bool moveOnPlane (const glm::vec3& normal, const glm::ivec2& p) {
+  bool intersects (const glm::vec3& normal, const glm::ivec2& p, glm::vec3& i) const {
     const PrimRay   ray   = State::camera ().ray (p);
     const PrimPlane plane (this->position, normal);
           float     t;
     
     if (IntersectionUtil::intersects (ray, plane, &t)) {
-      this->position = ray.pointAt (t);
+      i = ray.pointAt (t);
       return true;
     }
     return false;
+  }
+
+  bool moveOnPlane (const glm::vec3& normal, const glm::ivec2& p) {
+    return this->intersects (normal, p, this->position);
   }
 
   bool moveOnPlane (unsigned int normalIndex, const glm::ivec2& p) {
@@ -36,12 +40,9 @@ struct ToolMovement::Impl {
     glm::vec3 normal    = State::camera ().toEyePoint ();
     normal[normalIndex] = 0.0f;
 
-    const PrimRay   ray   = State::camera ().ray (p);
-    const PrimPlane plane (this->position, glm::normalize (normal));
-          float     t;
-    
-    if (IntersectionUtil::intersects (ray, plane, &t)) {
-      this->position[normalIndex] = ray.pointAt (t)[normalIndex];
+    glm::vec3 intersection;
+    if (this->intersects (glm::normalize (normal), p, intersection)) {
+      this->position[normalIndex] = intersection[normalIndex];
       return true;
     }
     return false;
@@ -81,10 +82,15 @@ struct ToolMovement::Impl {
     else if (properties->camera ()) { return this->moveOnCamera (p); }
     else assert (false);
   }
+
+  bool onCameraPlane (const glm::ivec2& p, glm::vec3* intersection) const {
+    return this->intersects (glm::normalize (State::camera ().toEyePoint ()), p, *intersection); 
+  }
 };
 
-DELEGATE_BIG6  (ToolMovement)
-GETTER_CONST   (const glm::vec3&, ToolMovement, position)
-SETTER         (const glm::vec3&, ToolMovement, position)
-DELEGATE2      (bool            , ToolMovement, byMouseEvent, ViewPropertiesMovement*, QMouseEvent*)
-DELEGATE2      (bool            , ToolMovement, byScreenPos , ViewPropertiesMovement*, const glm::ivec2&)
+DELEGATE_BIG6   (ToolMovement)
+GETTER_CONST    (const glm::vec3&, ToolMovement, position)
+SETTER          (const glm::vec3&, ToolMovement, position)
+DELEGATE2       (bool            , ToolMovement, byMouseEvent, ViewPropertiesMovement*, QMouseEvent*)
+DELEGATE2       (bool            , ToolMovement, byScreenPos , ViewPropertiesMovement*, const glm::ivec2&)
+DELEGATE2_CONST (bool            , ToolMovement, onCameraPlane, const glm::ivec2&, glm::vec3*)
