@@ -11,6 +11,9 @@ class PrimSphere {
 
     const glm::vec3& center () const;
     float            radius () const;
+
+    void             center (const glm::vec3&);
+    void             radius (float);
   private:
     class Impl;
     Impl* impl;
