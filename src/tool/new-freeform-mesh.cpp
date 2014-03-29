@@ -2,22 +2,21 @@
 #include <QMouseEvent>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
-#include "tool/new-freeform-mesh.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
+#include "view/tool-options.hpp"
+#include "view/vector-edit.hpp"
+#include "view/properties/widget.hpp"
+#include "view/util.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "mesh-type.hpp"
 #include "mesh.hpp"
 #include "state.hpp"
 #include "history.hpp"
 #include "tool/movement.hpp"
-#include "view/tool-options.hpp"
-#include "view/vector-edit.hpp"
+#include "tool/new-freeform-mesh.hpp"
 #include "config.hpp"
-#include "view/util.hpp"
 #include "camera.hpp"
-#include "util.hpp"
-#include "view/properties/widget.hpp"
 #include "primitive/sphere.hpp"
 #include "primitive/ray.hpp"
 #include "intersection.hpp"
@@ -55,7 +54,7 @@ struct ToolNewFreeformMesh::Impl {
 
     // setup mesh
     this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
-                               , Util::toPoint (this->self->menuEvent ()->pos ()));
+                               , ViewUtil::toIVec2 (this->self->menuEvent ()->pos ()));
     this->setMeshByInput       (initSubdivisions);
     this->setMeshByInput       (initRadius);
     this->setMeshByMovement    ();
@@ -106,7 +105,7 @@ struct ToolNewFreeformMesh::Impl {
   }
   
   void hover (const QPoint& pos) {
-    this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (Util::toPoint (pos))
+    this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (ViewUtil::toIVec2 (pos))
                                                     , this->meshSphere, nullptr));
   }
 

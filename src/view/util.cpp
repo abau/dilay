@@ -1,9 +1,11 @@
+#include <glm/glm.hpp>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QPushButton>
 #include <QToolButton>
 #include <QRadioButton>
 #include <QCheckBox>
+#include <QMouseEvent>
 #include "view/util.hpp"
 
 QSpinBox* ViewUtil :: spinBox (int min, int value, int max) {
@@ -54,4 +56,22 @@ QCheckBox* ViewUtil :: checkBox (const QString& label, bool ignoreFocus, bool is
     box->setFocusPolicy (Qt::NoFocus);
   }
   return box;
+}
+
+glm::uvec2 ViewUtil :: toUVec2 (const QPoint& p) {
+  assert (p.x () >= 0);
+  assert (p.y () >= 0);
+  return glm::uvec2 (p.x (), p.y ());
+}
+
+glm::uvec2 ViewUtil :: toUVec2 (const QMouseEvent& e) {
+  return ViewUtil::toUVec2 (e.pos ());
+}
+
+glm::ivec2 ViewUtil :: toIVec2 (const QPoint& p) {
+  return glm::ivec2 (p.x (), p.y ());
+}
+
+glm::ivec2 ViewUtil :: toIVec2 (const QMouseEvent& e) {
+  return ViewUtil::toIVec2 (e.pos ());
 }

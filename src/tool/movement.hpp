@@ -14,7 +14,7 @@ class ToolMovement {
     const glm::vec3& position     () const;
           void       position     (const glm::vec3&);
           bool       byMouseEvent (ViewPropertiesMovement*, QMouseEvent*);
-          bool       byScreenPos  (ViewPropertiesMovement*, const glm::uvec2&);
+          bool       byScreenPos  (ViewPropertiesMovement*, const glm::ivec2&);
 
   private:
     class Impl;

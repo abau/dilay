@@ -1,8 +1,6 @@
 #include <fstream>
 #include <sstream>
 #include <glm/glm.hpp>
-#include <QPoint>
-#include <QMouseEvent>
 #include "util.hpp"
 
 std::ostream& operator<<(std::ostream& os, const glm::ivec2& v) {
@@ -35,14 +33,6 @@ glm::vec3 Util :: transformPosition (const glm::mat4x4& m, const glm::vec3& v) {
 
 glm::vec3 Util :: transformDirection (const glm::mat4x4& m, const glm::vec3& v) {
   return glm::vec3 (m * glm::vec4 (v, 0.0f));
-}
-
-glm::uvec2 Util :: toPoint (const QPoint& p) {
-  return glm::uvec2 (p.x (), p.y ());
-}
-
-glm::uvec2 Util :: toPoint (const QMouseEvent& e) {
-  return Util::toPoint (e.pos ());
 }
 
 std::string Util :: readFile (const std::string& filePath) {
