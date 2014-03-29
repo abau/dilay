@@ -105,9 +105,9 @@ struct Camera::Impl {
   }
 
   glm::vec3 toWorld (const glm::ivec2& p, float z = 0.0f) const {
-    float invY  = this->resolution.y - p.y;
+    float invY  = this->resolution.y - float (p.y);
     float normZ = z / this->farClipping;
-    return glm::unProject ( glm::vec3 (float (p.x), float (invY), normZ)
+    return glm::unProject ( glm::vec3 (float (p.x), invY, normZ)
                           , this->view, this->projection, this->viewport ());
   }
 
