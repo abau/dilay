@@ -62,12 +62,12 @@ struct ToolMovement::Impl {
     if (e->buttons () == Qt::LeftButton) {
       glm::ivec2 p = ViewUtil::toIVec2 (*e);
 
-      if (e->modifiers ().testFlag (Qt::ShiftModifier) ) {
+      if (e->modifiers ().testFlag (Qt::ShiftModifier)) {
         if      (properties->x ()) { return this->moveAlongX (p); }
         else if (properties->y ()) { return this->moveAlongY (p); }
         else if (properties->z ()) { return this->moveAlongZ (p); }
       }
-      else {
+      else if (e->modifiers ().testFlag (Qt::NoModifier)) {
         return this->byScreenPos (properties, p);
       }
     }
