@@ -18,7 +18,7 @@
 #include "camera.hpp"
 #include "util.hpp"
 #include "view/properties/widget.hpp"
-#include "primitive/aabox.hpp"
+#include "primitive/sphere.hpp"
 #include "primitive/ray.hpp"
 #include "intersection.hpp"
 
@@ -27,7 +27,7 @@ struct ToolNewFreeformMesh::Impl {
   Mesh                 mesh;
   ToolMovement         movement;
   ViewVectorEdit*      positionEdit;
-  PrimAABox            meshBox;
+  PrimSphere           meshSphere;
 
   Impl (ToolNewFreeformMesh* s) : self (s) {
     int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
@@ -85,20 +85,20 @@ struct ToolNewFreeformMesh::Impl {
   void setMeshByInput (const glm::vec3& pos) {
     this->movement.position (pos);
     this->mesh.position     (pos);
-    this->meshBox.position  (pos);
+    this->meshSphere.center (pos);
     this->self->mainWindow  ()->glWidget ()->update ();
   }
 
   void setMeshByInput (float radius) {
-    this->mesh.scaling     (glm::vec3 (radius));
-    this->meshBox.width    (2.0f * radius);
-    this->self->mainWindow ()->glWidget ()->update ();
+    this->mesh.scaling      (glm::vec3 (radius));
+    this->meshSphere.radius (radius);
+    this->self->mainWindow  ()->glWidget ()->update ();
     Config::set <float> ("/cache/tool/new-freeform-mesh/radius", radius);
   }
 
   void setMeshByMovement () {
     this->mesh.position        (this->movement.position ());
-    this->meshBox.position     (this->movement.position ());
+    this->meshSphere.center    (this->movement.position ());
     this->positionEdit->vector (this->movement.position ());
   }
 
@@ -108,7 +108,7 @@ struct ToolNewFreeformMesh::Impl {
   
   void hover (const QPoint& pos) {
     this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (Util::toPoint (pos))
-                                                    , this->meshBox));
+                                                    , this->meshSphere, nullptr));
   }
 
   bool runMouseMoveEvent (QMouseEvent* e) {
