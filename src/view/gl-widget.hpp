@@ -13,7 +13,7 @@ class ViewGlWidget : public QGLWidget {
   public:
     DECLARE_BIG3 (ViewGlWidget, const QGLFormat&, ViewMainWindow*)
 
-    glm::ivec2 cursorPos ();
+    glm::ivec2 cursorPosition ();
        
   protected:
     void initializeGL       ();

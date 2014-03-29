@@ -53,11 +53,11 @@ struct ToolNewFreeformMesh::Impl {
 
     // setup mesh
     this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
-                               , this->self->mainWindow ()->glWidget ()->cursorPos ());
+                               , this->self->mainWindow ()->glWidget ()->cursorPosition ());
     this->setMeshByInput       (initSubdivisions);
     this->setMeshByInput       (initRadius);
     this->setMeshByMovement    ();
-    this->hover                (this->self->mainWindow ()->glWidget ()->cursorPos ());
+    this->hover                (this->self->mainWindow ()->glWidget ()->cursorPosition ());
   }
 
   ~Impl () {

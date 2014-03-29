@@ -32,7 +32,7 @@ struct ViewGlWidget::Impl {
     State::setTool (nullptr);
   }
 
-  glm::ivec2 cursorPos () {
+  glm::ivec2 cursorPosition () {
     return ViewUtil::toIVec2 (this->self->mapFromGlobal (QCursor::pos ()));
   }
 
@@ -174,7 +174,7 @@ ViewGlWidget :: ViewGlWidget (const QGLFormat& format, ViewMainWindow* mainWindo
 
 DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (ViewGlWidget)
 
-DELEGATE  (glm::ivec2, ViewGlWidget, cursorPos)
+DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
 DELEGATE  (void      , ViewGlWidget, initializeGL)
 DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
 DELEGATE  (void      , ViewGlWidget, paintGL)
