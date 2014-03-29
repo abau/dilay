@@ -1,9 +1,14 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <glm/glm.hpp>
+#include "view/main-window.hpp"
+#include "view/freeform-mesh-menu.hpp"
+#include "view/properties/widget.hpp"
+#include "view/properties/selection.hpp"
 #include "view/gl-widget.hpp"
-#include "renderer.hpp"
 #include "view/mouse-movement.hpp"
+#include "view/util.hpp"
+#include "renderer.hpp"
 #include "state.hpp"
 #include "camera.hpp"
 #include "tool.hpp"
@@ -12,10 +17,6 @@
 #include "scene.hpp"
 #include "axis.hpp"
 #include "mesh-type.hpp"
-#include "view/main-window.hpp"
-#include "view/freeform-mesh-menu.hpp"
-#include "view/properties/widget.hpp"
-#include "view/properties/selection.hpp"
 
 struct ViewGlWidget::Impl {
   ViewGlWidget*         self;
@@ -29,6 +30,10 @@ struct ViewGlWidget::Impl {
 
   ~Impl () {
     State::setTool (nullptr);
+  }
+
+  glm::ivec2 cursorPos () {
+    return ViewUtil::toIVec2 (this->self->mapFromGlobal (QCursor::pos ()));
   }
 
   void initializeGL () {
@@ -169,13 +174,14 @@ ViewGlWidget :: ViewGlWidget (const QGLFormat& format, ViewMainWindow* mainWindo
 
 DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (ViewGlWidget)
 
-DELEGATE  (void, ViewGlWidget, initializeGL)
-DELEGATE2 (void, ViewGlWidget, resizeGL         , int, int)
-DELEGATE  (void, ViewGlWidget, paintGL)
-DELEGATE1 (void, ViewGlWidget, keyPressEvent    , QKeyEvent*)
-DELEGATE1 (void, ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
-DELEGATE1 (void, ViewGlWidget, mousePressEvent  , QMouseEvent*)
-DELEGATE1 (void, ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
-DELEGATE1 (void, ViewGlWidget, resizeEvent      , QResizeEvent*)
-DELEGATE1 (void, ViewGlWidget, wheelEvent       , QWheelEvent*)
-DELEGATE1 (void, ViewGlWidget, contextMenuEvent , QContextMenuEvent*)
+DELEGATE  (glm::ivec2, ViewGlWidget, cursorPos)
+DELEGATE  (void      , ViewGlWidget, initializeGL)
+DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
+DELEGATE  (void      , ViewGlWidget, paintGL)
+DELEGATE1 (void      , ViewGlWidget, keyPressEvent    , QKeyEvent*)
+DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
+DELEGATE1 (void      , ViewGlWidget, mousePressEvent  , QMouseEvent*)
+DELEGATE1 (void      , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
+DELEGATE1 (void      , ViewGlWidget, resizeEvent      , QResizeEvent*)
+DELEGATE1 (void      , ViewGlWidget, wheelEvent       , QWheelEvent*)
+DELEGATE1 (void      , ViewGlWidget, contextMenuEvent , QContextMenuEvent*)
