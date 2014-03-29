@@ -132,7 +132,7 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& 
   return d <= sphere.radius () * sphere.radius ();
 }
 
-bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& sphere, float& t) {
+bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& sphere, float* t) {
   float s1,s2;
   const glm::vec3& d  = ray.direction ();
   const glm::vec3& v  = ray.origin () - sphere.center ();
@@ -145,27 +145,33 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& spher
   if (n == 0)
     return false;
   else if (n == 1) {
-    t = s1;
+    if (t) {
+      *t = s1;
+    }
     return true;
   }
   else {
-    t = glm::min (s1,s2);
+    if (t) {
+      *t = glm::min (s1,s2);
+    }
     return true;
   }
 }
 
-bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane, float& t) {
+bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane, float* t) {
   const float d = glm::dot (ray.direction (), plane.normal ());
 
   if (d > - std::numeric_limits<float>::epsilon ()) {
     return false;
   }
-  t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
+  if (t) {
+    *t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
+  }
   return true;
 }
 
 bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
-                                    , glm::vec3& intersection) {
+                                    , glm::vec3* intersection) {
   glm::vec3 e1 = tri.edge1 ();
   glm::vec3 e2 = tri.edge2 ();
 
@@ -186,7 +192,9 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
     return false;
   }
   else {
-    intersection = ray.pointAt (t);
+    if (intersection) {
+      *intersection = ray.pointAt (t);
+    }
     return true;
   }
 }

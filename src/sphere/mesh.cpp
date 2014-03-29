@@ -60,7 +60,7 @@ struct SphereMeshNode::Impl {
 
   bool intersects (SphereMesh& mesh, const PrimRay& ray, SphereNodeIntersection& sni) {
     float t;
-    if (IntersectionUtil::intersects (ray, PrimSphere (this->position, this->radius), t)) {
+    if (IntersectionUtil::intersects (ray, PrimSphere (this->position, this->radius), &t)) {
       const glm::vec3 p = ray.pointAt (t);
       sni.update (glm::distance (ray.origin (), p), p, mesh, this->self);
     }

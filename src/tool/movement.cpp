@@ -16,7 +16,7 @@ struct ToolMovement::Impl {
     const PrimPlane plane (this->position, normal);
           float     t;
     
-    if (IntersectionUtil::intersects (ray, plane, t)) {
+    if (IntersectionUtil::intersects (ray, plane, &t)) {
       this->position = ray.pointAt (t);
       return true;
     }
@@ -37,7 +37,7 @@ struct ToolMovement::Impl {
     const PrimPlane plane (this->position, glm::normalize (normal));
           float     t;
     
-    if (IntersectionUtil::intersects (ray, plane, t)) {
+    if (IntersectionUtil::intersects (ray, plane, &t)) {
       this->position[normalIndex] = ray.pointAt (t)[normalIndex];
       return true;
     }

@@ -239,7 +239,7 @@ struct OctreeNode::Impl {
       PrimTriangle triangle = face.triangle (mesh);
       glm::vec3 p;
 
-      if (IntersectionUtil::intersects (ray, triangle, p)) {
+      if (IntersectionUtil::intersects (ray, triangle, &p)) {
         intersection.update (glm::distance (ray.origin (), p), p, mesh, face);
       }
     }
