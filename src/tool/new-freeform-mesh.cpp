@@ -54,7 +54,6 @@ struct ToolNewFreeformMesh::Impl {
         (const glm::vec3& p) { this->setMeshByInput (p); });
 
     // setup mesh
-    this->movement.position    (State::camera ().gazePoint ());
     this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
                                , Util::toPoint (this->self->menuEvent ()->pos ()));
     this->setMeshByInput       (initSubdivisions);

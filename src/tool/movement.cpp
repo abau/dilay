@@ -11,6 +11,8 @@
 struct ToolMovement::Impl {
   glm::vec3 position;
 
+  Impl () : position (State::camera ().gazePoint ()) {}
+
   bool moveOnPlane (const glm::vec3& normal, const glm::uvec2& p) {
     const PrimRay   ray   = State::camera ().ray (p);
     const PrimPlane plane (this->position, normal);
