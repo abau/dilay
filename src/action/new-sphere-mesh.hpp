@@ -11,7 +11,7 @@ class ActionNewSphereMesh : public Action {
   public: 
     DECLARE_BIG3 (ActionNewSphereMesh)
 
-    SphereMesh& run (const glm::vec3&);
+    SphereMesh& run (const glm::vec3&, float);
 
   private:
     void runUndo ();
