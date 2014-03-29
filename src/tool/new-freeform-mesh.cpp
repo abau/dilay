@@ -1,6 +1,8 @@
 #include <glm/glm.hpp>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include "tool/new-freeform-mesh.hpp"
+#include "tool/movement.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
 #include "view/tool-options.hpp"
@@ -12,8 +14,6 @@
 #include "mesh.hpp"
 #include "state.hpp"
 #include "history.hpp"
-#include "tool/movement.hpp"
-#include "tool/new-freeform-mesh.hpp"
 #include "config.hpp"
 #include "camera.hpp"
 #include "primitive/sphere.hpp"
