@@ -147,13 +147,15 @@ struct ViewGlWidget::Impl {
   }
 
   void wheelEvent (QWheelEvent* e) {
-    if (e->orientation () == Qt::Vertical) {
-      if (e->delta () > 0)
-        State::camera ().stepAlongGaze (true);
-      else if (e->delta () < 0)
-        State::camera ().stepAlongGaze (false);
+    if (e->modifiers ().testFlag (Qt::NoModifier)) {
+      if (e->orientation () == Qt::Vertical) {
+        if (e->delta () > 0)
+          State::camera ().stepAlongGaze (true);
+        else if (e->delta () < 0)
+          State::camera ().stepAlongGaze (false);
+      }
+      this->self->update ();
     }
-    this->self->update ();
   }
 
   void contextMenuEvent (QContextMenuEvent* e) {
