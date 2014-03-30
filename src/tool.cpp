@@ -98,6 +98,12 @@ struct Tool::Impl {
       this->mainWindow->glWidget ()->update ();
     }
   }
+
+  void wheelEvent (QWheelEvent* e) {
+    if (this->self->runWheelEvent (e)) {
+      this->mainWindow->glWidget ()->update ();
+    }
+  }
 };
 
 DELEGATE3_BIG3_SELF  (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
@@ -115,3 +121,4 @@ DELEGATE       (void              , Tool, hoverIfDraged)
 DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent*)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent*)
 DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent*)
+DELEGATE1      (void              , Tool, wheelEvent, QWheelEvent*)

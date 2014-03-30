@@ -8,6 +8,7 @@ class QContextMenuEvent;
 class ViewMainWindow;
 class ViewToolOptions;
 class QString;
+class QWheelEvent;
 
 class Tool {
   public:
@@ -27,6 +28,7 @@ class Tool {
     void               mouseMoveEvent    (QMouseEvent*);
     void               mousePressEvent   (QMouseEvent*);
     void               mouseReleaseEvent (QMouseEvent*);
+    void               wheelEvent        (QWheelEvent*);
 
   protected:
     Tool ();
@@ -39,6 +41,7 @@ class Tool {
     virtual bool runMouseMoveEvent    (QMouseEvent*) { return false; }
     virtual bool runMousePressEvent   (QMouseEvent*) { return false; }
     virtual bool runMouseReleaseEvent (QMouseEvent*) { return false; }
+    virtual bool runWheelEvent        (QWheelEvent*) { return false; }
 };
 
 #define DECLARE_TOOL(t,...)                                              \

@@ -156,6 +156,9 @@ struct ViewGlWidget::Impl {
       }
       this->self->update ();
     }
+    else if (State::hasTool ()) {
+      State::tool ().wheelEvent (e);
+    }
   }
 
   void contextMenuEvent (QContextMenuEvent* e) {
