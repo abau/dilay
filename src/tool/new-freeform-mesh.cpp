@@ -25,6 +25,7 @@ struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
   Mesh                 mesh;
   ToolMovement         movement;
+  QSpinBox*            subdivEdit;
   QDoubleSpinBox*      radiusEdit;
   ViewVectorEdit*      positionEdit;
   PrimSphere           meshSphere;
@@ -33,14 +34,14 @@ struct ToolNewFreeformMesh::Impl {
     int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
     float initRadius       = Config::get <float> ("/cache/tool/new-freeform-mesh/radius", 1.0f);
 
-    // connect subdivisions spin box
-    QSpinBox* numSubdivEdit = this->self->toolOptions ()->add <QSpinBox> 
-                              ( QObject::tr ("Subdivisions")
-                              , ViewUtil::spinBox (1, initSubdivisions, 5));
+    // connect subdivision edit
+    this->subdivEdit = this->self->toolOptions ()->add <QSpinBox> 
+                        ( QObject::tr ("Subdivisions")
+                        , ViewUtil::spinBox (1, initSubdivisions, 5));
     void (QSpinBox::* iPtr)(int) = &QSpinBox::valueChanged;
-    QObject::connect (numSubdivEdit, iPtr, [this] (int n) { this->setMeshByInput (n); });
+    QObject::connect (this->subdivEdit, iPtr, [this] (int n) { this->setMeshByInput (n); });
 
-    // connect radius spin box
+    // connect radius edit
     this->radiusEdit = this->self->toolOptions ()->add <QDoubleSpinBox>
                         ( QObject::tr ("Radius")
                         , ViewUtil::spinBox (0.0001f, initRadius, 0.1f, 100.f));
@@ -74,9 +75,10 @@ struct ToolNewFreeformMesh::Impl {
     glm::vec3 oldPos   = this->mesh.position ();
     glm::vec3 oldScale = this->mesh.scaling  ();
     this->mesh = Mesh::icosphere (numSubdivisions);
-    this->mesh.bufferData  ();
-    this->mesh.position    (oldPos);
-    this->mesh.scaling     (oldScale);
+    this->mesh.bufferData      ();
+    this->mesh.position        (oldPos);
+    this->mesh.scaling         (oldScale);
+    this->subdivEdit->setValue (numSubdivisions);
     this->self->mainWindow ()->glWidget ()->update ();
     Config::set <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
@@ -140,6 +142,19 @@ struct ToolNewFreeformMesh::Impl {
     this->self->hoverIfDraged ();
     return false;
   }
+
+  bool runWheelEvent (QWheelEvent* e) {
+    if (e->modifiers ().testFlag (Qt::ControlModifier)) {
+      if (e->orientation () == Qt::Vertical) {
+        if (e->delta () > 0)
+          this->setMeshByInput (this->subdivEdit->value () + 1);
+        else if (e->delta () < 0)
+          this->setMeshByInput (this->subdivEdit->value () - 1);
+      }
+      return true;
+    }
+    return false;
+  }
 };
 
 DELEGATE_TOOL   (ToolNewFreeformMesh)
@@ -147,3 +162,4 @@ DELEGATE        (void, ToolNewFreeformMesh, runRender)
 DELEGATE1       (bool, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
 DELEGATE1       (bool, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
 DELEGATE1       (bool, ToolNewFreeformMesh, runMouseReleaseEvent, QMouseEvent*)
+DELEGATE1       (bool, ToolNewFreeformMesh, runWheelEvent, QWheelEvent*)
