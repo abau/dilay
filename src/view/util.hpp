@@ -2,6 +2,7 @@
 #define VIEW_UTIL
 
 #include <glm/fwd.hpp>
+#include <functional>
 
 class QSpinBox;
 class QDoubleSpinBox;
@@ -24,6 +25,8 @@ namespace ViewUtil {
   glm::uvec2      toUVec2     (const QMouseEvent&);
   glm::ivec2      toIVec2     (const QPoint&);
   glm::ivec2      toIVec2     (const QMouseEvent&);
+  void            connect     (QSpinBox*, const std::function <void (int)>&);
+  void            connect     (QDoubleSpinBox*, const std::function <void (double)>&);
 };
 
 #endif

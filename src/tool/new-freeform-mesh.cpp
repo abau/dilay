@@ -38,15 +38,13 @@ struct ToolNewFreeformMesh::Impl {
     this->subdivEdit = this->self->toolOptions ()->add <QSpinBox> 
                         ( QObject::tr ("Subdivisions")
                         , ViewUtil::spinBox (1, initSubdivisions, 5));
-    void (QSpinBox::* iPtr)(int) = &QSpinBox::valueChanged;
-    QObject::connect (this->subdivEdit, iPtr, [this] (int n) { this->setMeshByInput (n); });
+    ViewUtil::connect (this->subdivEdit, [this] (int n) { this->setMeshByInput (n); });
 
     // connect radius edit
     this->radiusEdit = this->self->toolOptions ()->add <QDoubleSpinBox>
                         ( QObject::tr ("Radius")
                         , ViewUtil::spinBox (0.0001f, initRadius, 0.1f, 100.f));
-    void (QDoubleSpinBox::* dPtr)(double) = &QDoubleSpinBox::valueChanged;
-    QObject::connect (this->radiusEdit, dPtr, [this] (double r) { this->setMeshByInput (float (r)); });
+    ViewUtil::connect (this->radiusEdit, [this] (double r) { this->setMeshByInput (float (r)); });
 
     // connect position edit
     this->positionEdit = this->self->toolOptions ()->add <ViewVectorEdit>

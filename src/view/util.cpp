@@ -75,3 +75,13 @@ glm::ivec2 ViewUtil :: toIVec2 (const QPoint& p) {
 glm::ivec2 ViewUtil :: toIVec2 (const QMouseEvent& e) {
   return ViewUtil::toIVec2 (e.pos ());
 }
+
+void ViewUtil :: connect (QSpinBox* s, const std::function <void (int)>& f) {
+  void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
+  QObject::connect (s, ptr, f);
+}
+
+void ViewUtil :: connect (QDoubleSpinBox* s, const std::function <void (double)>& f) {
+  void (QDoubleSpinBox::* ptr)(double) = &QDoubleSpinBox::valueChanged;
+  QObject::connect (s, ptr, f);
+}
