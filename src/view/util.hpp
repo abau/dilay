@@ -16,7 +16,9 @@ class QMouseEvent;
 
 namespace ViewUtil {
   QSpinBox*       spinBox     (int, int, int);
-  QDoubleSpinBox* spinBox     (float, float, float, float);
+  QDoubleSpinBox* spinBox     (float, float, float);
+  QDoubleSpinBox* spinBox     (float, float);
+  QDoubleSpinBox* spinBox     (float);
   QPushButton*    pushButton  (const QString&, bool);
   QToolButton*    toolButton  (const QString&, bool);
   QRadioButton*   radioButton (const QString&, bool, bool = false);

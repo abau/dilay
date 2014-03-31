@@ -1,3 +1,4 @@
+#include <limits>
 #include <glm/glm.hpp>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
@@ -15,11 +16,23 @@ QSpinBox* ViewUtil :: spinBox (int min, int value, int max) {
   return spinBox;
 }
 
-QDoubleSpinBox* ViewUtil :: spinBox (float min, float value, float step, float max) {
+QDoubleSpinBox* ViewUtil :: spinBox (float min, float value, float max) {
+  QDoubleSpinBox* spinBox = ViewUtil::spinBox (min,value);
+  spinBox->setMaximum (double (max));
+  return spinBox;
+}
+
+QDoubleSpinBox* ViewUtil :: spinBox (float min, float value) {
+  QDoubleSpinBox* spinBox = ViewUtil::spinBox (value);
+  spinBox->setMinimum (double (min));
+  return spinBox;
+}
+
+QDoubleSpinBox* ViewUtil :: spinBox (float value) {
   QDoubleSpinBox* spinBox = new QDoubleSpinBox;
-  spinBox->setRange       (double (min), double (max));
-  spinBox->setValue       (double (value));
-  spinBox->setSingleStep  (double (step));
+  spinBox->setValue      (double (value));
+  spinBox->setRange      (-1000.0, 1000.0);
+  spinBox->setSingleStep (0.1);
   return spinBox;
 }
 

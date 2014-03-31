@@ -43,7 +43,7 @@ struct ToolNewFreeformMesh::Impl {
     // connect radius edit
     this->radiusEdit = this->self->toolOptions ()->add <QDoubleSpinBox>
                         ( QObject::tr ("Radius")
-                        , ViewUtil::spinBox (0.0001f, initRadius, 0.1f, 100.f));
+                        , ViewUtil::spinBox (0.001f, initRadius));
     ViewUtil::connect (this->radiusEdit, [this] (double r) { this->setMeshByInput (float (r)); });
 
     // connect position edit
