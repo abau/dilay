@@ -33,6 +33,7 @@ QDoubleSpinBox* ViewUtil :: spinBox (float value) {
   spinBox->setValue      (double (value));
   spinBox->setRange      (-1000.0, 1000.0);
   spinBox->setSingleStep (0.1);
+  spinBox->setDecimals   (3);
   return spinBox;
 }
 
