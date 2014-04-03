@@ -357,13 +357,7 @@ struct Octree::Impl {
   }
 
   WingedFace& insertFace (const FaceToInsert& faceToInsert) {
-    if (! this->root) {
-      glm::vec3 rootCenter = (faceToInsert.maximum + faceToInsert.minimum) 
-                           * glm::vec3 (0.5f);
-      this->root = Child (new OctreeNode::Impl 
-          (rootCenter, faceToInsert.oneDimExtent, 0, nullptr));
-    }
-
+    assert (this->root);
     if (this->root->contains (faceToInsert)) {
       WingedFace& wingedFace = this->root->insertFace (faceToInsert);
       this->idMap.insert (wingedFace);
