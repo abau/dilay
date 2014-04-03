@@ -69,8 +69,8 @@ struct ActionFromMesh :: Impl {
         }
       };
 
-    glm::vec3 maxVertex (std::numeric_limits <float>::min ());
-    glm::vec3 minVertex (std::numeric_limits <float>::max ());
+    glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
+    glm::vec3 minVertex (std::numeric_limits <float>::max    ());
 
     // Octree
     for (unsigned int i = 0; i < m.numVertices (); i++) {
