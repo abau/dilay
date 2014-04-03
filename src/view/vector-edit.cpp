@@ -1,4 +1,4 @@
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QLineEdit>
 #include <QDoubleValidator>
 #include "view/vector-edit.hpp"
@@ -9,7 +9,7 @@ struct ViewVectorEdit::Impl {
   QLineEdit*      edit [3];
 
   Impl (ViewVectorEdit* s) : self (s) { 
-    QHBoxLayout* layout = new QHBoxLayout;
+    QVBoxLayout* layout = new QVBoxLayout;
 
     this->edit[0] = new QLineEdit;
     this->edit[1] = new QLineEdit;
@@ -19,16 +19,8 @@ struct ViewVectorEdit::Impl {
     QDoubleValidator* validator1 = new QDoubleValidator (this->edit[1]);
     QDoubleValidator* validator2 = new QDoubleValidator (this->edit[2]);
 
-    int width = this->edit[0]->fontMetrics ().width ("123.4567890");
-
-    this->edit[0]->setSizePolicy   (QSizePolicy::Ignored, QSizePolicy::Fixed);
-    this->edit[0]->setMinimumWidth (width);
     this->edit[0]->setValidator    (validator0);
-    this->edit[1]->setSizePolicy   (QSizePolicy::Ignored, QSizePolicy::Fixed);
-    this->edit[1]->setMinimumWidth (width);
     this->edit[1]->setValidator    (validator1);
-    this->edit[2]->setSizePolicy   (QSizePolicy::Ignored, QSizePolicy::Fixed);
-    this->edit[2]->setMinimumWidth (width);
     this->edit[2]->setValidator    (validator2);
 
     layout->setSpacing (0);
