@@ -4,7 +4,8 @@ moc/
 test/
 dilay
 Makefile
-src/session.vim
+*.vim
 archive/
 i18n/*.qm
 dilay.cache
+lib/libdilay.a

@@ -4,6 +4,9 @@
 #include <QDomNode>
 #include <QFile>
 #include <QTextStream>
+#include <QDir>
+#include <QStandardPaths>
+#include <QCoreApplication>
 #include "config.hpp"
 #include "macro.hpp"
 #include "variant.hpp"
@@ -19,16 +22,21 @@ struct Config::Impl {
   const std::string cacheFileName;
   const std::string cacheRoot;
 
-  ConfigMap options;
-  ConfigMap cache;
+  std::string optionsFilePath;
+  std::string cacheFilePath;
+  ConfigMap   options;
+  ConfigMap   cache;
 
-  Impl (const std::string& o, const std::string& c) 
-    : optionsFileName (o) 
-    , cacheFileName   (c) 
-    , cacheRoot       ("cache")
-  {
-    this->loadFile (o, this->options, false);
-    this->loadFile (c, this->cache  , true);
+  Impl () 
+    : optionsFileName (QCoreApplication::applicationName ().toStdString () + ".options")
+    , cacheFileName   (QCoreApplication::applicationName ().toStdString () + ".cache")
+    , cacheRoot ("cache") {
+    
+    optionsFilePath = this->getDirectory () + "/" + this->optionsFileName;
+    cacheFilePath   = this->getDirectory () + "/" + this->cacheFileName;
+
+    this->loadFile (false, this->options);
+    this->loadFile (true , this->cache);
   }
 
   template <class T>
@@ -61,10 +69,28 @@ struct Config::Impl {
     this->cache.emplace (path, value);
   }
 
-  void loadFile (const std::string& fileName, ConfigMap& configMap, bool allowEmpty) {
-    QFile file (fileName.c_str ());
+  std::string getDirectory () const {
+    QString qOptionsFile (this->optionsFileName.c_str ());
+    QString dataLocation = QStandardPaths::locate (QStandardPaths::DataLocation, qOptionsFile);
+
+    if (QDir::current ().exists (qOptionsFile)) {
+      return QDir::currentPath ().toStdString ();
+    }
+    else if (! QStandardPaths::locate (QStandardPaths::DataLocation, qOptionsFile).isEmpty ()) {
+      return QStandardPaths::writableLocation (QStandardPaths::DataLocation).toStdString ();
+    }
+    else
+      throw (std::runtime_error ("Can not find path that contains configuration file '" + this->optionsFileName + "'"));
+  }
+
+  void loadFile (bool isCache, ConfigMap& configMap) {
+    QFile file (isCache ? this->cacheFilePath.c_str ()
+                        : this->optionsFilePath.c_str () );
+
+    std::string fileName = file.fileName ().toStdString ();
+
     if (file.open (QIODevice::ReadOnly) == false) {
-      if (allowEmpty) {
+      if (isCache) {
         return;
       }
       else {
@@ -211,8 +237,7 @@ struct Config::Impl {
   }
 };
 
-Config :: Config () : impl (new Impl ("dilay.options", "dilay.cache")) {}
-DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (Config)
+DELEGATE_BIG3 (Config)
 GLOBAL (Config);
 
 DELEGATE_GLOBAL (void, Config, writeCache);

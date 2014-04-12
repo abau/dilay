@@ -2,7 +2,6 @@
 #include <glm/glm.hpp>
 #include <stdexcept>
 #include "opengl-util.hpp"
-#include "util.hpp"
 #include "macro.hpp"
 
 namespace OpenGLUtil {
@@ -49,7 +48,7 @@ namespace OpenGLUtil {
   }
 
   GLuint compileShader (GLenum, const std::string&);
-  void   showInfoLog   (GLuint, const std::string&);
+  void   showInfoLog   (GLuint);
 
   GLuint loadProgram ( const std::string& vertexShader
                      , const std::string& fragmentShader) {
@@ -70,7 +69,7 @@ namespace OpenGLUtil {
     glGetProgramiv(programId, GL_LINK_STATUS, &status);
 
     if (status == GL_FALSE) {
-      OpenGLUtil::showInfoLog         (programId, "");
+      OpenGLUtil::showInfoLog         (programId);
       OpenGLUtil::safeDeleteProgram   (programId);
       OpenGLUtil::safeDeleteShader    (vsId);
       OpenGLUtil::safeDeleteShader    (fsId);
@@ -79,26 +78,26 @@ namespace OpenGLUtil {
     return programId;
   }
 
-  void showInfoLog (GLuint id, const std::string& filePath) {
+  void showInfoLog (GLuint id) {
     const int maxLogLength = 1000;
     char      logBuffer[maxLogLength];
     GLsizei   logLength;
     glGetShaderInfoLog(id, maxLogLength, &logLength, logBuffer);
-    if (logLength > 0)
-      std::cout << filePath << ": " << logBuffer << std::endl;
+    if (logLength > 0) {
+      std::cerr << logBuffer << std::endl;
+    }
   }
 
-  GLuint compileShader (GLenum shaderType, const std::string& filePath) {
-    GLuint       shaderId   = glCreateShader(shaderType);
-    std::string  shaderCode = Util :: readFile (filePath);
-    const char* code[1]    = { shaderCode.c_str () };
-    glShaderSource(shaderId, 1, code , NULL);
-    glCompileShader(shaderId);
+  GLuint compileShader (GLenum shaderType, const std::string& shaderCode) {
+    GLuint      shaderId = glCreateShader(shaderType);
+    const char* code[1]  = { shaderCode.c_str () };
+    glShaderSource  (shaderId, 1, code , NULL);
+    glCompileShader (shaderId);
 
     GLint status;
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
+    glGetShaderiv (shaderId, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
-      OpenGLUtil::showInfoLog (shaderId, filePath);
+      OpenGLUtil::showInfoLog (shaderId);
       throw (std::runtime_error ("Can not compile shader: see info log"));
     }
     return shaderId;

@@ -7,6 +7,7 @@
 #include "color.hpp"
 #include "macro.hpp"
 #include "camera.hpp"
+#include "shader.hpp"
 
 const unsigned int numLights = 2;
 
@@ -75,16 +76,16 @@ struct Renderer::Impl {
       glEnable  (GL_DEPTH_TEST); 
 
       this->shaderIds [static_cast <int> (RenderMode::Smooth)].programId =
-        OpenGLUtil :: loadProgram ( "shader/smooth-vertex.shader"
-                                  , "shader/smooth-fragment.shader" 
+        OpenGLUtil :: loadProgram ( Shader::smoothVertexShader   ()
+                                  , Shader::smoothFragmentShader ()
                                   );
       this->shaderIds [static_cast <int> (RenderMode::Wireframe)].programId =
-        OpenGLUtil :: loadProgram ( "shader/simple-vertex.shader"
-                                  , "shader/simple-fragment.shader" 
+        OpenGLUtil :: loadProgram ( Shader::simpleVertexShader   ()
+                                  , Shader::simpleFragmentShader ()
                                   );
       this->shaderIds [static_cast <int> (RenderMode::Flat)].programId =
-        OpenGLUtil :: loadProgram ( "shader/flat-vertex.shader"
-                                  , "shader/flat-fragment.shader" 
+        OpenGLUtil :: loadProgram ( Shader::flatVertexShader   ()
+                                  , Shader::flatFragmentShader ()
                                   );
 
       for (unsigned int i = 0; i < RenderModeUtil :: numRenderModes; i++) {
