@@ -24,8 +24,8 @@ struct Config::Impl {
 
   std::string optionsFilePath;
   std::string cacheFilePath;
-  ConfigMap   options;
-  ConfigMap   cache;
+  ConfigMap   optionsMap;
+  ConfigMap   cacheMap;
 
   Impl () 
     : optionsFileName (QCoreApplication::applicationName ().toStdString () + ".options")
@@ -35,15 +35,15 @@ struct Config::Impl {
     optionsFilePath = this->getDirectory () + "/" + this->optionsFileName;
     cacheFilePath   = this->getDirectory () + "/" + this->cacheFileName;
 
-    this->loadFile (false, this->options);
-    this->loadFile (true , this->cache);
+    this->loadFile (false, this->optionsMap);
+    this->loadFile (true , this->cacheMap);
   }
 
   template <class T>
   const T& get (const std::string& path) const {
-    ConfigMap::const_iterator value = this->options.find (path);
+    ConfigMap::const_iterator value = this->optionsMap.find (path);
 
-    if (value == this->options.end ()) {
+    if (value == this->optionsMap.end ()) {
       throw (std::runtime_error ("Can not find config path " + path));
     }
     return value->second.get <T> ();
@@ -52,21 +52,21 @@ struct Config::Impl {
   template <class T>
   const T& get (const std::string& path, const T& defaultV) const {
     assert (path.find ("/" + this->cacheRoot) == 0);
-    ConfigMap::const_iterator value = this->cache.find (path);
+    ConfigMap::const_iterator value = this->cacheMap.find (path);
 
-    if (value == this->cache.end ()) {
+    if (value == this->cacheMap.end ()) {
       return defaultV;
     }
     return value->second.get <T> ();
   }
 
   template <class T>
-  void set (const std::string& path, const T& t) {
+  void cache (const std::string& path, const T& t) {
     assert (path.find ("/" + this->cacheRoot) == 0);
     Value value;
     value.set <T>       (t);
-    this->cache.erase   (path);
-    this->cache.emplace (path, value);
+    this->cacheMap.erase   (path);
+    this->cacheMap.emplace (path, value);
   }
 
   std::string getDirectory () const {
@@ -178,7 +178,7 @@ struct Config::Impl {
   void writeCache () {
     QDomDocument doc;
 
-    for (auto& c : this->cache) {
+    for (auto& c : this->cacheMap) {
       const std::string& key   = c.first;
             Value&       value = c.second;
             QStringList  path  = QString (key.c_str ()).split ("/", QString::SkipEmptyParts);
@@ -253,22 +253,22 @@ const T& Config :: get (const std::string& path, const T& defaultV) {
 }
 
 template <class T>
-void Config :: set (const std::string& path, const T& value) {
-  return Config::global ().impl->set<T> (path, value);
+void Config :: cache (const std::string& path, const T& value) {
+  return Config::global ().impl->cache<T> (path, value);
 }
 
-template const float&      Config :: get<float>      (const std::string&);
-template const float&      Config :: get<float>      (const std::string&, const float&);
-template void              Config :: set<float>      (const std::string&, const float&);
-template const int&        Config :: get<int>        (const std::string&);
-template const int&        Config :: get<int>        (const std::string&, const int&);
-template void              Config :: set<int>        (const std::string&, const int&);
-template const Color&      Config :: get<Color>      (const std::string&);
-template const Color&      Config :: get<Color>      (const std::string&, const Color&);
-template void              Config :: set<Color>      (const std::string&, const Color&);
-template const glm::vec3&  Config :: get<glm::vec3>  (const std::string&);
-template const glm::vec3&  Config :: get<glm::vec3>  (const std::string&, const glm::vec3&);
-template void              Config :: set<glm::vec3>  (const std::string&, const glm::vec3&);
-template const glm::ivec2& Config :: get<glm::ivec2> (const std::string&);
-template const glm::ivec2& Config :: get<glm::ivec2> (const std::string&, const glm::ivec2&);
-template void              Config :: set<glm::ivec2> (const std::string&, const glm::ivec2&);
+template const float&      Config :: get<float>        (const std::string&);
+template const float&      Config :: get<float>        (const std::string&, const float&);
+template void              Config :: cache<float>      (const std::string&, const float&);
+template const int&        Config :: get<int>          (const std::string&);
+template const int&        Config :: get<int>          (const std::string&, const int&);
+template void              Config :: cache<int>        (const std::string&, const int&);
+template const Color&      Config :: get<Color>        (const std::string&);
+template const Color&      Config :: get<Color>        (const std::string&, const Color&);
+template void              Config :: cache<Color>      (const std::string&, const Color&);
+template const glm::vec3&  Config :: get<glm::vec3>    (const std::string&);
+template const glm::vec3&  Config :: get<glm::vec3>    (const std::string&, const glm::vec3&);
+template void              Config :: cache<glm::vec3>  (const std::string&, const glm::vec3&);
+template const glm::ivec2& Config :: get<glm::ivec2>   (const std::string&);
+template const glm::ivec2& Config :: get<glm::ivec2>   (const std::string&, const glm::ivec2&);
+template void              Config :: cache<glm::ivec2> (const std::string&, const glm::ivec2&);

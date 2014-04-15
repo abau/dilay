@@ -78,7 +78,7 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.scaling         (oldScale);
     this->subdivEdit->setValue (numSubdivisions);
     this->self->mainWindow ()->glWidget ()->update ();
-    Config::set <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
+    Config::cache <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
 
   void setMeshByInput (const glm::vec3& pos) {
@@ -94,7 +94,7 @@ struct ToolNewFreeformMesh::Impl {
     this->meshSphere.radius    (radius);
     this->radiusEdit->setValue (radius);
     this->self->mainWindow ()->glWidget ()->update ();
-    Config::set <float> ("/cache/tool/new-freeform-mesh/radius", radius);
+    Config::cache <float> ("/cache/tool/new-freeform-mesh/radius", radius);
   }
 
   void setMeshByMovement () {

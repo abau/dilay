@@ -51,8 +51,8 @@ struct ViewToolOptions::Impl {
   }
 
   void moveEvent (QMoveEvent* event) {
-    Config::set <glm::ivec2> ( "/cache/view/tool-options/position"
-                             , glm::ivec2 (event->pos ().x(), event->pos ().y()) );
+    Config::cache <glm::ivec2> ( "/cache/view/tool-options/position"
+                               , glm::ivec2 (event->pos ().x(), event->pos ().y()) );
   }
 };
 
