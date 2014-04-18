@@ -28,7 +28,7 @@ struct ToolNewFreeformMesh::Impl {
   QSpinBox*            subdivEdit;
   QDoubleSpinBox*      radiusEdit;
   ViewVectorEdit*      positionEdit;
-  PrimSphere           meshSphere;
+  PrimSphere           controlSphere;
 
   Impl (ToolNewFreeformMesh* s) : self (s) {
     int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
@@ -66,6 +66,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   ~Impl () {
+    this->fromControlSphere ();
     State::history ().add <ActionNewWingedMesh> ()->run (MeshType::Freeform, this->mesh);
   }
 
@@ -74,43 +75,42 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void setMeshByInput (int numSubdivisions) {
-    glm::vec3 oldPos   = this->mesh.position ();
-    glm::vec3 oldScale = this->mesh.scaling  ();
     this->mesh = Mesh::icosphere (numSubdivisions);
-    this->mesh.bufferData      ();
-    this->mesh.position        (oldPos);
-    this->mesh.scaling         (oldScale);
+    this->mesh.bufferData  ();
     this->self->mainWindow ()->glWidget ()->update ();
     Config::cache <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
 
   void setMeshByInput (const glm::vec3& pos) {
     this->movement.position    (pos);
-    this->mesh.position        (pos);
-    this->meshSphere.center    (pos);
+    this->controlSphere.center (pos);
     this->self->mainWindow ()->glWidget ()->update ();
   }
 
   void setMeshByInput (float radius) {
-    this->mesh.scaling         (glm::vec3 (radius));
-    this->meshSphere.radius    (radius);
+    this->controlSphere.radius (radius);
     this->self->mainWindow ()->glWidget ()->update ();
     Config::cache <float> ("/cache/tool/new-freeform-mesh/radius", radius);
   }
 
   void setMeshByMovement () {
-    this->mesh.position        (this->movement.position ());
-    this->meshSphere.center    (this->movement.position ());
+    this->controlSphere.center (this->movement.position ());
     this->positionEdit->vector (this->movement.position ());
   }
 
+  void fromControlSphere () { 
+    this->mesh.scaling  (glm::vec3 (this->controlSphere.radius ()));
+    this->mesh.position (this->controlSphere.center ());
+  }
+
   void runRender () {
-    this->mesh.render ();
+    this->fromControlSphere ();
+    this->mesh.render       ();
   }
   
   void hover (const glm::ivec2& pos) {
     this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (pos)
-                                                    , this->meshSphere, nullptr));
+                                                    , this->controlSphere, nullptr));
   }
 
   bool runMouseMoveEvent (QMouseEvent* e) {
