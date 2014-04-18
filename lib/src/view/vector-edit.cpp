@@ -8,7 +8,10 @@ struct ViewVectorEdit::Impl {
   glm::vec3       vectorData;
   QLineEdit*      edit [3];
 
-  Impl (ViewVectorEdit* s) : self (s) { 
+  Impl (ViewVectorEdit* s, const glm::vec3& v) 
+    : self       (s) 
+    , vectorData (v)
+  { 
     QVBoxLayout* layout = new QVBoxLayout;
 
     this->edit[0] = new QLineEdit;
@@ -19,9 +22,13 @@ struct ViewVectorEdit::Impl {
     QDoubleValidator* validator1 = new QDoubleValidator (this->edit[1]);
     QDoubleValidator* validator2 = new QDoubleValidator (this->edit[2]);
 
-    this->edit[0]->setValidator    (validator0);
-    this->edit[1]->setValidator    (validator1);
-    this->edit[2]->setValidator    (validator2);
+    this->edit[0]->setValidator (validator0);
+    this->edit[1]->setValidator (validator1);
+    this->edit[2]->setValidator (validator2);
+
+    this->edit[0]->setText      (validator0->locale ().toString (v.x));
+    this->edit[1]->setText      (validator1->locale ().toString (v.y));
+    this->edit[2]->setText      (validator2->locale ().toString (v.z));
 
     layout->setSpacing (0);
     layout->addWidget  (this->edit[0]);
@@ -59,8 +66,8 @@ struct ViewVectorEdit::Impl {
   }
 };
 
-ViewVectorEdit :: ViewVectorEdit (QWidget* p) : QWidget (p) {
-  this->impl = new Impl (this);
+ViewVectorEdit :: ViewVectorEdit (const glm::vec3& v, QWidget* p) : QWidget (p) {
+  this->impl = new Impl (this, v);
 }
 
 DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (ViewVectorEdit) 

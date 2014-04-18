@@ -34,6 +34,10 @@ struct ToolNewFreeformMesh::Impl {
     int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
     float initRadius       = Config::get <float> ("/cache/tool/new-freeform-mesh/radius", 1.0f);
 
+    // initialize movement
+    this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
+                               , this->self->mainWindow ()->glWidget ()->cursorPosition ());
+
     // connect subdivision edit
     this->subdivEdit = this->self->toolOptions ()->add <QSpinBox> 
                         ( QObject::tr ("Subdivisions")
@@ -48,17 +52,17 @@ struct ToolNewFreeformMesh::Impl {
 
     // connect position edit
     this->positionEdit = this->self->toolOptions ()->add <ViewVectorEdit>
-                          (QObject::tr ("Position"), new ViewVectorEdit);
+                          ( QObject::tr ("Position")
+                          , new ViewVectorEdit (this->movement.position ()));
     QObject::connect (this->positionEdit, &ViewVectorEdit::vectorEdited, [this] 
         (const glm::vec3& p) { this->setMeshByInput (p); });
 
     // setup mesh
-    this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
-                               , this->self->mainWindow ()->glWidget ()->cursorPosition ());
-    this->setMeshByInput       (initSubdivisions);
-    this->setMeshByInput       (initRadius);
-    this->setMeshByMovement    ();
-    this->hover                (this->self->mainWindow ()->glWidget ()->cursorPosition ());
+    this->setMeshByInput    (initSubdivisions);
+    this->setMeshByInput    (initRadius);
+    this->setMeshByInput    (this->movement.position ());
+
+    this->hover             (this->self->mainWindow ()->glWidget ()->cursorPosition ());
   }
 
   ~Impl () {
@@ -76,7 +80,6 @@ struct ToolNewFreeformMesh::Impl {
     this->mesh.bufferData      ();
     this->mesh.position        (oldPos);
     this->mesh.scaling         (oldScale);
-    this->subdivEdit->setValue (numSubdivisions);
     this->self->mainWindow ()->glWidget ()->update ();
     Config::cache <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
   }
@@ -85,14 +88,12 @@ struct ToolNewFreeformMesh::Impl {
     this->movement.position    (pos);
     this->mesh.position        (pos);
     this->meshSphere.center    (pos);
-    this->positionEdit->vector (pos);
     this->self->mainWindow ()->glWidget ()->update ();
   }
 
   void setMeshByInput (float radius) {
     this->mesh.scaling         (glm::vec3 (radius));
     this->meshSphere.radius    (radius);
-    this->radiusEdit->setValue (radius);
     this->self->mainWindow ()->glWidget ()->update ();
     Config::cache <float> ("/cache/tool/new-freeform-mesh/radius", radius);
   }
