@@ -28,7 +28,8 @@ struct ToolNewFreeformMesh::Impl {
   QSpinBox*            subdivEdit;
   QDoubleSpinBox*      radiusEdit;
   ViewVectorEdit*      positionEdit;
-  PrimSphere           controlSphere;
+  PrimSphere           meshGeometry;
+  int                  numSubdivisions;
 
   Impl (ToolNewFreeformMesh* s) : self (s) {
     int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
@@ -42,27 +43,27 @@ struct ToolNewFreeformMesh::Impl {
     this->subdivEdit = this->self->toolOptions ()->add <QSpinBox> 
                         ( QObject::tr ("Subdivisions")
                         , ViewUtil::spinBox (1, initSubdivisions, 5));
-    ViewUtil::connect (this->subdivEdit, [this] (int n) { this->setMeshByInput (n); });
+    ViewUtil::connect (this->subdivEdit, [this] (int n) { this->setSubdivision (n); });
 
     // connect radius edit
     this->radiusEdit = this->self->toolOptions ()->add <QDoubleSpinBox>
                         ( QObject::tr ("Radius")
                         , ViewUtil::spinBox (0.001f, initRadius));
-    ViewUtil::connect (this->radiusEdit, [this] (double r) { this->setMeshByInput (float (r)); });
+    ViewUtil::connect (this->radiusEdit, [this] (double r) { this->setRadius (float (r)); });
 
     // connect position edit
     this->positionEdit = this->self->toolOptions ()->add <ViewVectorEdit>
                           ( QObject::tr ("Position")
                           , new ViewVectorEdit (this->movement.position ()));
     QObject::connect (this->positionEdit, &ViewVectorEdit::vectorEdited, [this] 
-        (const glm::vec3& p) { this->setMeshByInput (p); });
+        (const glm::vec3& p) { this->setPosition (p); });
 
     // setup mesh
-    this->setMeshByInput    (initSubdivisions);
-    this->setMeshByInput    (initRadius);
-    this->setMeshByInput    (this->movement.position ());
+    this->setSubdivision (initSubdivisions);
+    this->setRadius      (initRadius);
+    this->setPosition    (this->movement.position ());
 
-    this->hover             (this->self->mainWindow ()->glWidget ()->cursorPosition ());
+    this->hover (this->self->mainWindow ()->glWidget ()->cursorPosition ());
   }
 
   ~Impl () {
@@ -74,33 +75,53 @@ struct ToolNewFreeformMesh::Impl {
     return QObject::tr ("New Freeform Mesh");
   }
 
-  void setMeshByInput (int numSubdivisions) {
-    this->mesh = Mesh::icosphere (numSubdivisions);
-    this->mesh.bufferData  ();
-    this->self->mainWindow ()->glWidget ()->update ();
-    Config::cache <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdivisions);
+  void setSubdivision (int numSubdiv) {
+    if (   numSubdiv >= this->subdivEdit->minimum () 
+        && numSubdiv <= this->subdivEdit->maximum ()) 
+    {
+      this->numSubdivisions = numSubdiv;
+      this->mesh = Mesh::icosphere (numSubdiv);
+      this->mesh.bufferData  ();
+      this->self->mainWindow ()->glWidget ()->update ();
+      Config::cache <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdiv);
+    }
   }
 
-  void setMeshByInput (const glm::vec3& pos) {
-    this->movement.position    (pos);
-    this->controlSphere.center (pos);
+  void setPosition (const glm::vec3& pos) {
+    this->movement.position   (pos);
+    this->meshGeometry.center (pos);
     this->self->mainWindow ()->glWidget ()->update ();
   }
 
-  void setMeshByInput (float radius) {
-    this->controlSphere.radius (radius);
+  void setRadius (float radius) {
+    this->meshGeometry.radius (radius);
     this->self->mainWindow ()->glWidget ()->update ();
     Config::cache <float> ("/cache/tool/new-freeform-mesh/radius", radius);
   }
 
-  void setMeshByMovement () {
-    this->controlSphere.center (this->movement.position ());
-    this->positionEdit->vector (this->movement.position ());
+  void setRadiusByMovement (const glm::ivec2& pos) {
+    glm::vec3 radiusPoint;
+    if (this->movement.onCameraPlane (pos, &radiusPoint)) {
+      float d = glm::distance (radiusPoint, this->movement.position ());
+      this->setRadius (d);
+      this->radiusEdit->setValue (d);
+    }
+  }
+
+  void setSubdivisionByEvent (int value) {
+    this->setSubdivision       (value);
+    this->subdivEdit->setValue (value);
+  }
+
+  void updateDialog () {
+    this->subdivEdit->setValue (this->numSubdivisions);
+    this->radiusEdit->setValue (this->meshGeometry.radius ());
+    this->positionEdit->vector (this->meshGeometry.center ());
   }
 
   void fromControlSphere () { 
-    this->mesh.scaling  (glm::vec3 (this->controlSphere.radius ()));
-    this->mesh.position (this->controlSphere.center ());
+    this->mesh.scaling  (glm::vec3 (this->meshGeometry.radius ()));
+    this->mesh.position (this->meshGeometry.center ());
   }
 
   void runRender () {
@@ -110,24 +131,28 @@ struct ToolNewFreeformMesh::Impl {
   
   void hover (const glm::ivec2& pos) {
     this->self->hover (IntersectionUtil::intersects ( State::camera ().ray (pos)
-                                                    , this->controlSphere, nullptr));
+                                                    , this->meshGeometry, nullptr));
   }
 
   bool runMouseMoveEvent (QMouseEvent* e) {
+    glm::ivec2 pos = ViewUtil::toIVec2 (*e);
     if (this->self->isDraged ()) {
       if (this->movement.byMouseEvent (this->self->mainWindow ()->properties ()->movement (), e)) {
-        this->setMeshByMovement ();
+        this->setPosition  (this->movement.position ());
+        this->updateDialog ();
         return true;
       }
       else if (e->modifiers ().testFlag (Qt::ControlModifier)) {
         glm::vec3 radiusPoint;
-        if (this->movement.onCameraPlane (ViewUtil::toIVec2 (*e), &radiusPoint)) {
-          this->setMeshByInput (glm::distance (radiusPoint, this->movement.position ()));
+        if (this->movement.onCameraPlane (pos, &radiusPoint)) {
+          float d = glm::distance (radiusPoint, this->movement.position ());
+          this->setRadius    (d);
+          this->updateDialog ();
         }
       }
     }
     else {
-      this->hover (ViewUtil::toIVec2 (*e));
+      this->hover (pos);
     }
     return false;
   }
@@ -144,12 +169,13 @@ struct ToolNewFreeformMesh::Impl {
 
   bool runWheelEvent (QWheelEvent* e) {
     if (e->modifiers ().testFlag (Qt::ControlModifier)) {
-      if (e->orientation () == Qt::Vertical) {
-        if (e->delta () > 0)
-          this->setMeshByInput (this->subdivEdit->value () + 1);
-        else if (e->delta () < 0)
-          this->setMeshByInput (this->subdivEdit->value () - 1);
+      if (e->angleDelta ().y () > 0) {
+        this->setSubdivision (this->subdivEdit->value () + 1);
       }
+      else if (e->angleDelta ().y () < 0) {
+        this->setSubdivision (this->subdivEdit->value () - 1);
+      }
+      this->updateDialog ();
       return true;
     }
     return false;

@@ -74,6 +74,7 @@ SOURCES += \
            src/view/properties/movement.cpp \
            src/view/properties/selection.cpp \
            src/view/properties/widget.cpp \
+           src/view/sphere-mesh-menu.cpp \
            src/view/tool-options.cpp \
            src/view/util.cpp \
            src/view/vector-edit.cpp \
@@ -160,6 +161,7 @@ HEADERS += \
            src/view/properties/movement.hpp \
            src/view/properties/selection.hpp \
            src/view/properties/widget.hpp \
+           src/view/sphere-mesh-menu.hpp \
            src/view/tool-options.hpp \
            src/view/tool-menu.hpp \
            src/view/util.hpp \
