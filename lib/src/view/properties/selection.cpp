@@ -44,11 +44,22 @@ struct ViewPropertiesSelection::Impl {
     return false;
   }
 
+  MeshType selected () const {
+    if (this->freeformMeshButton->isChecked ()) {
+      return MeshType::Freeform;
+    }
+    else if (this->sphereMeshButton->isChecked ()) {
+      return MeshType::Sphere;
+    }
+    assert (false);
+  }
+
   bool show (MeshType t) const {
     return this->selected (t) || (! this->hideOthersBox->isChecked ());
   }
 };
 
 DELEGATE_BIG3_SELF (ViewPropertiesSelection)
-DELEGATE1_CONST (bool, ViewPropertiesSelection, selected, MeshType)
-DELEGATE1_CONST (bool, ViewPropertiesSelection, show, MeshType)
+DELEGATE1_CONST (bool    , ViewPropertiesSelection, selected, MeshType)
+DELEGATE_CONST  (MeshType, ViewPropertiesSelection, selected)
+DELEGATE1_CONST (bool    , ViewPropertiesSelection, show, MeshType)

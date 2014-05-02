@@ -11,8 +11,9 @@ class ViewPropertiesSelection : public ViewProperties {
   public:
     DECLARE_BIG3 (ViewPropertiesSelection)
 
-    bool selected (MeshType) const;
-    bool show     (MeshType) const;
+    bool     selected (MeshType) const;
+    MeshType selected () const;
+    bool     show     (MeshType) const;
 
   signals:
     void selectionChanged  (MeshType);

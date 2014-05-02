@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "view/main-window.hpp"
 #include "view/freeform-mesh-menu.hpp"
+#include "view/sphere-mesh-menu.hpp"
 #include "view/properties/widget.hpp"
 #include "view/properties/selection.hpp"
 #include "view/gl-widget.hpp"
@@ -163,11 +164,21 @@ struct ViewGlWidget::Impl {
 
   void contextMenuEvent (QContextMenuEvent* e) {
     State::setTool (nullptr);
-    if (this->mainWindow->properties ()->selection ()->selected (MeshType::Freeform)) {
-      ViewFreeformMeshMenu menu (this->mainWindow, e);
-      menu.exec (QCursor::pos ());
-      this->mainWindow->activateWindow ();
+    switch (this->mainWindow->properties ()->selection ()->selected ()) {
+      case MeshType::Freeform: {
+        ViewFreeformMeshMenu menu (this->mainWindow, e);
+        menu.exec (QCursor::pos ());
+        break;
+      }
+      case MeshType::Sphere: {
+        ViewSphereMeshMenu menu (this->mainWindow, e);
+        menu.exec (QCursor::pos ());
+        break;
+      }
+      default:
+        assert (false);
     }
+    this->mainWindow->activateWindow ();
   }
 };
 
