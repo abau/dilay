@@ -61,9 +61,9 @@ class Tool {
 
 #define DELEGATE1_TOOL(t,t1)                          \
   t :: t ( ViewMainWindow* mW, QContextMenuEvent* mE  \
-         , t1 a1, t2 a2 )                             \
+         , t1 a1 )                                    \
     : Tool (mW, mE, t :: toolName ()) {               \
-        DELEGATE_NEW_IMPL (this,a1,a2)                \
+        DELEGATE_NEW_IMPL (this,a1)                   \
     }                                                 \
   DELEGATE_TOOL_WITHOUT_CONSTRUCTOR( t )
 
