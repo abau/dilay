@@ -72,7 +72,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   static QString toolName () {
-    return QObject::tr ("New Freeform Mesh");
+    return QObject::tr ("New Mesh");
   }
 
   void setSubdivision (int numSubdiv) {
