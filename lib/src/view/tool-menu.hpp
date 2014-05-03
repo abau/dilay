@@ -2,6 +2,7 @@
 #define DILAY_VIEW_TOOL_MENU
 
 #include <QMenu>
+#include <QString>
 #include "state.hpp"
 
 class ViewMainWindow;
@@ -25,8 +26,8 @@ class ViewToolMenu : public QMenu {
   // TODO: replace by variadic template
   template <typename T, typename A1>
   void addAction (const A1& a1) {
-    QAction* a = this->QMenu::addAction (T::toolName ());
-    QObject::connect (a, &QAction::triggered, [this, &a1] () { 
+    QAction* a = this->QMenu::addAction (T::toolName (a1));
+    QObject::connect (a, &QAction::triggered, [this, a1] () { 
         State::setTool (new T (this->mainWindow, this->menuEvent, a1));
     });
   }
