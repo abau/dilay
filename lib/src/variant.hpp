@@ -11,6 +11,25 @@ namespace VariantDetails {
   template <typename ...>
   union VariantUnion;
 
+  // Utility structure to initialize value in a union using its default constructor
+  template <unsigned int, typename, typename ...>
+  struct InitValue;
+
+  template <typename U, typename T, typename ... Ts>
+  struct InitValue <0,U,T,Ts ...> {
+    static void run (VariantUnion <T, Ts ...>* variant) {
+      static_assert (std::is_same <T,U>::value, "variant type mismatch");
+      variant->t = new U ();
+    }
+  };
+
+  template <unsigned int i, typename U, typename T, typename ... Ts>
+  struct InitValue <i,U,T,Ts ...> {
+    static void run (VariantUnion <T,Ts ...>* variant) {
+      InitValue <i-1,U,Ts ...> :: run (&variant->ts);
+    }
+  };
+
   // Utility structure to set value in a union
   template <unsigned int, typename, typename ...>
   struct SetValue;
@@ -86,6 +105,11 @@ namespace VariantDetails {
     }
 
     template <unsigned int i, typename U>
+    void init () {
+      InitValue <i,U,T> :: run (this);
+    }
+
+    template <unsigned int i, typename U>
     void set (const U& u) {
       SetValue <i,U,T> :: run (this, u);
     }
@@ -127,6 +151,11 @@ namespace VariantDetails {
         delete this->t;
       else
         this->ts.release (i-1);
+    }
+
+    template <unsigned int i, typename U>
+    void init () {
+      InitValue <i,U,T,Ts ...> :: run (this);
     }
 
     template <unsigned int i, typename U>
@@ -206,13 +235,23 @@ class Variant {
     }
 
     template <unsigned int i, typename U = VariantDetails::GetType <i,Ts ...> >
+    void initAt () {
+      this->template           resetTo <i>   ();
+      this->_varUnion.template init    <i,U> ();
+    }
+
+    template <typename U>
+    void init () {
+      constexpr bool         found = VariantDetails::GetIndex <0,U,Ts ...>::found;
+      constexpr unsigned int index = VariantDetails::GetIndex <0,U,Ts ...>::index;
+      static_assert (found, "variant type not found");
+      this->template initAt <index,U> ();
+    }
+
+    template <unsigned int i, typename U = VariantDetails::GetType <i,Ts ...> >
     void setAt (const U& u) {
-      if (this->_isSet) {
-        this->release ();
-      }
-      this->_varUnion.template set <i,U> (u);
-      this->_isSet = true;
-      this->_setTo = i;
+      this->template           resetTo <i>   ();
+      this->_varUnion.template set     <i,U> (u);
     }
 
     template <typename U>
@@ -245,6 +284,15 @@ class Variant {
     VariantDetails::VariantUnion <Ts ...> _varUnion;
     bool                                  _isSet;
     unsigned int                          _setTo;
+
+    template <unsigned int i>
+    void resetTo () {
+      if (this->_isSet) {
+        this->release ();
+      }
+      this->_isSet = true;
+      this->_setTo = i;
+    }
 };
 
 #endif
