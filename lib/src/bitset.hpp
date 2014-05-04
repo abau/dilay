@@ -6,7 +6,7 @@
 template <typename T>
 class Bitset {
   public:
-    typedef short Index;
+    typedef unsigned short Index;
 
     Bitset () : _data (0) {}
     Bitset (std::initializer_list <Index> ones) : _data (0) {
