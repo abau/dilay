@@ -15,20 +15,11 @@ class ViewToolMenu : public QMenu {
       , menuEvent  (mE)
       {}
 
-  template <typename T>
-  void addAction () {
-    QAction* a = this->QMenu::addAction (T::toolName ());
-    QObject::connect (a, &QAction::triggered, [this] () { 
-        State::setTool (new T (this->mainWindow, this->menuEvent));
-    });
-  }
-
-  // TODO: replace by variadic template
-  template <typename T, typename A1>
-  void addAction (const A1& a1) {
-    QAction* a = this->QMenu::addAction (T::toolName (a1));
-    QObject::connect (a, &QAction::triggered, [this, a1] () { 
-        State::setTool (new T (this->mainWindow, this->menuEvent, a1));
+  template <typename T, typename ... Args>
+  void addAction (const Args& ... args) {
+    QAction* a = this->QMenu::addAction (T::toolName (args ...));
+    QObject::connect (a, &QAction::triggered, [this, args ...] () { 
+        State::setTool (new T (this->mainWindow, this->menuEvent, args ...));
     });
   }
 
