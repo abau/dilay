@@ -67,7 +67,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   ~Impl () {
-    this->fromControlSphere ();
+    this->fromMeshGeometry ();
     State::history ().add <ActionNewWingedMesh> ()->run (MeshType::Freeform, this->mesh);
   }
 
@@ -119,14 +119,14 @@ struct ToolNewFreeformMesh::Impl {
     this->positionEdit->vector (this->meshGeometry.center ());
   }
 
-  void fromControlSphere () { 
+  void fromMeshGeometry () { 
     this->mesh.scaling  (glm::vec3 (this->meshGeometry.radius ()));
     this->mesh.position (this->meshGeometry.center ());
   }
 
   void runRender () {
-    this->fromControlSphere ();
-    this->mesh.render       ();
+    this->fromMeshGeometry ();
+    this->mesh.render      ();
   }
   
   void hover (const glm::ivec2& pos) {
