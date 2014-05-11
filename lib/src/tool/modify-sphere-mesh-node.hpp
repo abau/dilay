@@ -5,7 +5,7 @@
 
 class ToolModifySphereMeshNode : public Tool {
   public:
-    enum class Mode { NewMesh, NewNode, ModifyNode };
+    enum class Mode { NewMesh, NewNode, MoveNode };
 
     DECLARE_TOOL (ToolModifySphereMeshNode, Mode)
 

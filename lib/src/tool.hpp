@@ -14,17 +14,7 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
 
-    ViewMainWindow*    mainWindow        ();
-    QContextMenuEvent* menuEvent         ();
-    ViewToolOptions*   toolOptions       ();
     void               render            ();
-    bool               isDraged          () const;
-    void               drag              (bool);
-    void               dragIfHovered     ();
-    bool               isHovered         () const;
-    void               hover             (bool);
-    void               hoverIfDraged     ();
-
     void               mouseMoveEvent    (QMouseEvent*);
     void               mousePressEvent   (QMouseEvent*);
     void               mouseReleaseEvent (QMouseEvent*);
@@ -32,6 +22,17 @@ class Tool {
 
   protected:
     Tool ();
+
+    ViewMainWindow*    mainWindow        ();
+    QContextMenuEvent* menuEvent         ();
+    ViewToolOptions*   toolOptions       ();
+
+    bool               isDraged          () const;
+    void               drag              (bool);
+    void               dragIfHovered     ();
+    bool               isHovered         () const;
+    void               hover             (bool);
+    void               hoverIfDraged     ();
 
   private:
     class Impl;
