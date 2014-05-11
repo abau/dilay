@@ -8,7 +8,6 @@
 #include "view/gl-widget.hpp"
 #include "view/tool-options.hpp"
 #include "view/vector-edit.hpp"
-#include "view/properties/widget.hpp"
 #include "view/util.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "mesh-type.hpp"
@@ -31,13 +30,12 @@ struct ToolNewFreeformMesh::Impl {
   PrimSphere           meshGeometry;
   int                  numSubdivisions;
 
-  Impl (ToolNewFreeformMesh* s) : self (s) {
+  Impl (ToolNewFreeformMesh* s) 
+    : self     (s) 
+    , movement (s)
+  {
     int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
     float initRadius       = Config::get <float> ("/cache/tool/new-freeform-mesh/radius", 1.0f);
-
-    // initialize movement
-    this->movement.byScreenPos ( this->self->mainWindow ()->properties ()->movement ()
-                               , this->self->mainWindow ()->glWidget ()->cursorPosition ());
 
     // connect subdivision edit
     this->subdivEdit = this->self->toolOptions ()->add <QSpinBox> 
@@ -137,7 +135,7 @@ struct ToolNewFreeformMesh::Impl {
   bool runMouseMoveEvent (QMouseEvent* e) {
     glm::ivec2 pos = ViewUtil::toIVec2 (*e);
     if (this->self->isDraged ()) {
-      if (this->movement.byMouseEvent (this->self->mainWindow ()->properties ()->movement (), e)) {
+      if (this->movement.byMouseEvent (e)) {
         this->setPosition  (this->movement.position ());
         this->updateDialog ();
         return true;

@@ -5,16 +5,16 @@
 #include "macro.hpp"
 
 class QMouseEvent;
-class ViewPropertiesMovement;
+class Tool;
 
 class ToolMovement {
   public:
-    DECLARE_BIG6 (ToolMovement)
+    DECLARE_BIG6 (ToolMovement, Tool*)
 
     const glm::vec3& position      () const;
           void       position      (const glm::vec3&);
-          bool       byMouseEvent  (ViewPropertiesMovement*, QMouseEvent*);
-          bool       byScreenPos   (ViewPropertiesMovement*, const glm::ivec2&);
+          bool       byMouseEvent  (QMouseEvent*);
+          bool       byScreenPos   ();
           bool       onCameraPlane (const glm::ivec2&, glm::vec3*) const;
 
   private:
