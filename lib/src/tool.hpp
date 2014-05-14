@@ -26,6 +26,7 @@ class Tool {
     ViewMainWindow*    mainWindow        ();
     QContextMenuEvent* menuEvent         ();
     ViewToolOptions*   toolOptions       ();
+    void               update            ();
 
     bool               isDraged          () const;
     void               drag              (bool);

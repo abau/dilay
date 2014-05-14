@@ -80,7 +80,7 @@ struct ToolNewFreeformMesh::Impl {
       this->numSubdivisions = numSubdiv;
       this->mesh = Mesh::icosphere (numSubdiv);
       this->mesh.bufferData  ();
-      this->self->mainWindow ()->glWidget ()->update ();
+      this->self->update     ();
       Config::cache <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdiv);
     }
   }
@@ -88,12 +88,12 @@ struct ToolNewFreeformMesh::Impl {
   void setPosition (const glm::vec3& pos) {
     this->movement.position   (pos);
     this->meshGeometry.center (pos);
-    this->self->mainWindow ()->glWidget ()->update ();
+    this->self->update        ();
   }
 
   void setRadius (float radius) {
     this->meshGeometry.radius (radius);
-    this->self->mainWindow ()->glWidget ()->update ();
+    this->self->update        ();
     Config::cache <float> ("/cache/tool/new-freeform-mesh/radius", radius);
   }
 

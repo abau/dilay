@@ -43,6 +43,34 @@ struct Tool::Impl {
     return this->self->runRender ( ); 
   }
 
+  void mouseMoveEvent (QMouseEvent* e) { 
+    if (this->self->runMouseMoveEvent (e)) {
+      this->update ();
+    }
+  }
+
+  void mousePressEvent (QMouseEvent* e) {
+    if (this->self->runMousePressEvent (e)) {
+      this->update ();
+    }
+  }
+
+  void mouseReleaseEvent (QMouseEvent* e) {
+    if (this->self->runMouseReleaseEvent (e)) {
+      this->update ();
+    }
+  }
+
+  void wheelEvent (QWheelEvent* e) {
+    if (this->self->runWheelEvent (e)) {
+      this->update ();
+    }
+  }
+
+  void update () {
+    this->mainWindow->glWidget ()->update ();
+  }
+
   void drag (bool b) { 
     this->isDraged = b;
 
@@ -80,30 +108,6 @@ struct Tool::Impl {
       this->hover (true);
     }
   }
-
-  void mouseMoveEvent (QMouseEvent* e) { 
-    if (this->self->runMouseMoveEvent (e)) {
-      this->mainWindow->glWidget ()->update ();
-    }
-  }
-
-  void mousePressEvent (QMouseEvent* e) {
-    if (this->self->runMousePressEvent (e)) {
-      this->mainWindow->glWidget ()->update ();
-    }
-  }
-
-  void mouseReleaseEvent (QMouseEvent* e) {
-    if (this->self->runMouseReleaseEvent (e)) {
-      this->mainWindow->glWidget ()->update ();
-    }
-  }
-
-  void wheelEvent (QWheelEvent* e) {
-    if (this->self->runWheelEvent (e)) {
-      this->mainWindow->glWidget ()->update ();
-    }
-  }
 };
 
 DELEGATE3_BIG3_SELF  (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
@@ -112,13 +116,14 @@ GETTER         (ViewMainWindow*   , Tool, mainWindow)
 GETTER         (QContextMenuEvent*, Tool, menuEvent)
 GETTER         (ViewToolOptions*  , Tool, toolOptions)
 DELEGATE       (void              , Tool, render)
+DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent*)
+DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent*)
+DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent*)
+DELEGATE1      (void              , Tool, wheelEvent, QWheelEvent*)
+DELEGATE       (void              , Tool, update)
 GETTER_CONST   (bool              , Tool, isDraged)
 DELEGATE1      (void              , Tool, drag, bool)
 DELEGATE       (void              , Tool, dragIfHovered)
 GETTER_CONST   (bool              , Tool, isHovered)
 DELEGATE1      (void              , Tool, hover, bool)
 DELEGATE       (void              , Tool, hoverIfDraged)
-DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent*)
-DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent*)
-DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent*)
-DELEGATE1      (void              , Tool, wheelEvent, QWheelEvent*)
