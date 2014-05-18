@@ -14,6 +14,9 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
 
+    ViewMainWindow*    mainWindow        ();
+    QContextMenuEvent* menuEvent         ();
+
     void               render            ();
     void               mouseMoveEvent    (QMouseEvent*);
     void               mousePressEvent   (QMouseEvent*);
@@ -23,8 +26,6 @@ class Tool {
   protected:
     Tool ();
 
-    ViewMainWindow*    mainWindow        ();
-    QContextMenuEvent* menuEvent         ();
     ViewToolOptions*   toolOptions       ();
     void               update            ();
 
