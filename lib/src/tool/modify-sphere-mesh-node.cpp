@@ -16,13 +16,15 @@ struct ToolModifySphereMeshNode::Impl {
   ToolMovement                   movement;
   QDoubleSpinBox*                radiusEdit;
   ViewVectorEdit*                positionEdit;
+  ConfigProxy                    config;
 
   Impl (ToolModifySphereMeshNode* s, Mode m) 
     : self     (s) 
     , mode     (m)
     , movement (s)
+    , config   ("/cache/tool/modify-sphere-mesh-node/")
   {
-  //  float initRadius = Config::get <float> ("/cache/tool/modify-sphere-mesh-node/radius", 0.5f);
+  //  float initRadius = this->config.get <float> ("radius", 0.5f);
 
   }
 

@@ -29,13 +29,15 @@ struct ToolNewFreeformMesh::Impl {
   ViewVectorEdit*      positionEdit;
   PrimSphere           meshGeometry;
   int                  numSubdivisions;
+  ConfigProxy          config;
 
   Impl (ToolNewFreeformMesh* s) 
     : self     (s) 
     , movement (s)
+    , config   ("/cache/tool/new-freeform-mesh/")
   {
-    int   initSubdivisions = Config::get <int>   ("/cache/tool/new-freeform-mesh/subdivisions", 2);
-    float initRadius       = Config::get <float> ("/cache/tool/new-freeform-mesh/radius", 1.0f);
+    int   initSubdivisions = this->config.get <int>   ("subdivisions", 2);
+    float initRadius       = this->config.get <float> ("radius", 1.0f);
 
     // connect subdivision edit
     this->subdivEdit = this->self->toolOptions ()->add <QSpinBox> 
@@ -81,7 +83,7 @@ struct ToolNewFreeformMesh::Impl {
       this->mesh = Mesh::icosphere (numSubdiv);
       this->mesh.bufferData  ();
       this->self->update     ();
-      Config::cache <int> ("/cache/tool/new-freeform-mesh/subdivisions", numSubdiv);
+      this->config.cache <int> ("subdivisions", numSubdiv);
     }
   }
 
@@ -94,7 +96,7 @@ struct ToolNewFreeformMesh::Impl {
   void setRadius (float radius) {
     this->meshGeometry.radius (radius);
     this->self->update        ();
-    Config::cache <float> ("/cache/tool/new-freeform-mesh/radius", radius);
+    this->config.cache <float> ("radius", radius);
   }
 
   void setRadiusByMovement (const glm::ivec2& pos) {
