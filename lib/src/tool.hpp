@@ -16,6 +16,7 @@ class Tool {
 
     ViewMainWindow*    mainWindow        ();
     QContextMenuEvent* menuEvent         ();
+    void               updateGlWidget    ();
 
     void               render            ();
     void               mouseMoveEvent    (QMouseEvent*);
@@ -27,7 +28,6 @@ class Tool {
     Tool ();
 
     ViewToolOptions*   toolOptions       ();
-    void               update            ();
 
     bool               isDraged          () const;
     void               drag              (bool);

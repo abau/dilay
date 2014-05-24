@@ -81,21 +81,21 @@ struct ToolNewFreeformMesh::Impl {
     {
       this->numSubdivisions = numSubdiv;
       this->mesh = Mesh::icosphere (numSubdiv);
-      this->mesh.bufferData  ();
-      this->self->update     ();
-      this->config.cache <int> ("subdivisions", numSubdiv);
+      this->mesh.bufferData        ();
+      this->self->updateGlWidget   ();
+      this->config.cache <int>     ("subdivisions", numSubdiv);
     }
   }
 
   void setPosition (const glm::vec3& pos) {
-    this->movement.position   (pos);
-    this->meshGeometry.center (pos);
-    this->self->update        ();
+    this->movement.position    (pos);
+    this->meshGeometry.center  (pos);
+    this->self->updateGlWidget ();
   }
 
   void setRadius (float radius) {
-    this->meshGeometry.radius (radius);
-    this->self->update        ();
+    this->meshGeometry.radius  (radius);
+    this->self->updateGlWidget ();
     this->config.cache <float> ("radius", radius);
   }
 

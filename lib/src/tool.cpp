@@ -45,29 +45,29 @@ struct Tool::Impl {
 
   void mouseMoveEvent (QMouseEvent* e) { 
     if (this->self->runMouseMoveEvent (e)) {
-      this->update ();
+      this->updateGlWidget ();
     }
   }
 
   void mousePressEvent (QMouseEvent* e) {
     if (this->self->runMousePressEvent (e)) {
-      this->update ();
+      this->updateGlWidget ();
     }
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
     if (this->self->runMouseReleaseEvent (e)) {
-      this->update ();
+      this->updateGlWidget ();
     }
   }
 
   void wheelEvent (QWheelEvent* e) {
     if (this->self->runWheelEvent (e)) {
-      this->update ();
+      this->updateGlWidget ();
     }
   }
 
-  void update () {
+  void updateGlWidget () {
     this->mainWindow->glWidget ()->update ();
   }
 
@@ -120,7 +120,7 @@ DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent*)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent*)
 DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent*)
 DELEGATE1      (void              , Tool, wheelEvent, QWheelEvent*)
-DELEGATE       (void              , Tool, update)
+DELEGATE       (void              , Tool, updateGlWidget)
 GETTER_CONST   (bool              , Tool, isDraged)
 DELEGATE1      (void              , Tool, drag, bool)
 DELEGATE       (void              , Tool, dragIfHovered)
