@@ -14,6 +14,8 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
 
+    friend class ToolUtil;
+
     ViewMainWindow*    mainWindow        ();
     QContextMenuEvent* menuEvent         ();
     void               updateGlWidget    ();
