@@ -1,3 +1,4 @@
+#include <utility>
 #include <glm/glm.hpp>
 #include "winged/face-intersection.hpp"
 
@@ -26,7 +27,7 @@ struct WingedFaceIntersection::Impl {
   }
 };
 
-DELEGATE_BIG6_SELF (WingedFaceIntersection,Intersection)
+DELEGATE_BIG6_BASE (WingedFaceIntersection,(),(this),Intersection,())
 DELEGATE4      (void            , WingedFaceIntersection, update, float, const glm::vec3&, WingedMesh&, WingedFace&)
 DELEGATE_CONST (WingedMesh&     , WingedFaceIntersection, mesh)
 DELEGATE_CONST (WingedFace&     , WingedFaceIntersection, face)

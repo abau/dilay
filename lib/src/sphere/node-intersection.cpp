@@ -1,3 +1,4 @@
+#include <utility>
 #include <glm/glm.hpp>
 #include "sphere/node-intersection.hpp"
 
@@ -26,7 +27,7 @@ struct SphereNodeIntersection::Impl {
   }
 };
 
-DELEGATE_BIG6_SELF (SphereNodeIntersection,Intersection)
+DELEGATE_BIG6_BASE (SphereNodeIntersection,(),(this),Intersection,())
 DELEGATE4      (void            , SphereNodeIntersection, update, float, const glm::vec3&, SphereMesh&, SphereMeshNode&)
 DELEGATE_CONST (SphereMesh&     , SphereNodeIntersection, mesh)
 DELEGATE_CONST (SphereMeshNode& , SphereNodeIntersection, node)

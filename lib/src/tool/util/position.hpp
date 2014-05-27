@@ -5,7 +5,7 @@
 
 class ToolUtilPosition : public ToolUtil {
   public:
-    DECLARE_TOOL_UTIL (ToolUtilPosition)
+    DECLARE_BIG3 (ToolUtilPosition,Tool&)
 
   private:
     class Impl;

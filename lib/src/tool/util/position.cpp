@@ -1,3 +1,4 @@
+#include <utility>
 #include "tool/util/position.hpp"
 
 struct ToolUtilPosition::Impl {
@@ -6,4 +7,4 @@ struct ToolUtilPosition::Impl {
   Impl (ToolUtilPosition* s) : self (s) {}
 };
 
-DELEGATE_TOOL_UTIL (ToolUtilPosition)
+DELEGATE_BIG3_BASE (ToolUtilPosition,(Tool& t),(this),ToolUtil,(t))
