@@ -18,11 +18,13 @@ class Intersection {
   public:
     DECLARE_BIG6_VIRTUAL (Intersection)
 
-    bool             update         (float, const glm::vec3&);
     void             reset          ();
     bool             isIntersection () const;
     const glm::vec3& position       () const;
     float            distance       () const;
+
+  protected:
+    bool             update         (float, const glm::vec3&);
 
   private:
     class Impl;
