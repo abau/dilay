@@ -27,27 +27,27 @@ class ConfigProxy {
       assert (p.back () == '/');
     }
 
-    std::string key (const std::string& p) {
+    std::string key (const std::string& p) const {
       return this->prefix + p;
     }
 
     template <class T> 
-    const T& get (const std::string& p) { 
+    const T& get (const std::string& p) const { 
       return Config::get<T> (this->key(p));
     }
 
     template <class T> 
-    const T& get (const std::string& p, const T& v) {
+    const T& get (const std::string& p, const T& v) const {
       return Config::get<T> (this->key (p), v);
     }
 
     template <class T> 
-    void cache (const std::string& p, const T& v) {
+    void cache (const std::string& p, const T& v) const {
       return Config::cache<T> (this->key (p), v);
     }
 
   private:
-    std::string prefix;
+    const std::string prefix;
 };
 
 #endif
