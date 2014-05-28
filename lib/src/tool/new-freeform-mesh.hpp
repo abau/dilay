@@ -5,7 +5,9 @@
 
 class ToolNewFreeformMesh : public Tool {
   public:
-    DECLARE_TOOL (ToolNewFreeformMesh)
+    DECLARE_BIG3 (ToolNewFreeformMesh, ViewMainWindow*, QContextMenuEvent*)
+
+    static QString toolName ();
 
   private:
     class Impl;

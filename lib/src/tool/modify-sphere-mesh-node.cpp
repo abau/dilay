@@ -88,4 +88,6 @@ struct ToolModifySphereMeshNode::Impl {
 
 };
 
-DELEGATE1_TOOL  (ToolModifySphereMeshNode, Mode)
+DELEGATE_BIG3_BASE ( ToolModifySphereMeshNode, (ViewMainWindow* w, QContextMenuEvent* e, Mode m)
+                   , (this,m), Tool, (w,e,toolName (m)))
+DELEGATE1_STATIC (QString, ToolModifySphereMeshNode, toolName, Mode)

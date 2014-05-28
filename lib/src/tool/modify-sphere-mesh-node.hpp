@@ -7,7 +7,9 @@ class ToolModifySphereMeshNode : public Tool {
   public:
     enum class Mode { NewMesh, NewNode, MoveNode };
 
-    DECLARE_TOOL (ToolModifySphereMeshNode, Mode)
+    DECLARE_BIG3 (ToolModifySphereMeshNode, ViewMainWindow*, QContextMenuEvent*, Mode)
+
+    static QString toolName (Mode);
 
   private:
     class Impl;

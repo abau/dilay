@@ -12,8 +12,6 @@ struct Tool::Impl {
   bool               isDraged;
   bool               isHovered;
 
-  Impl () {}
-
   Impl (Tool* s, ViewMainWindow* w, QContextMenuEvent* e, const QString& name) 
     : self        (s) 
     , mainWindow  (w)
@@ -111,7 +109,6 @@ struct Tool::Impl {
 };
 
 DELEGATE3_BIG3_SELF  (Tool, ViewMainWindow*, QContextMenuEvent*, const QString&)
-DELEGATE_CONSTRUCTOR (Tool)
 GETTER         (ViewMainWindow*   , Tool, mainWindow)
 GETTER         (QContextMenuEvent*, Tool, menuEvent)
 GETTER         (ViewToolOptions*  , Tool, toolOptions)

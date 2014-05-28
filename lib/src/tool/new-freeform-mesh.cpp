@@ -182,9 +182,11 @@ struct ToolNewFreeformMesh::Impl {
   }
 };
 
-DELEGATE_TOOL   (ToolNewFreeformMesh)
-DELEGATE        (void, ToolNewFreeformMesh, runRender)
-DELEGATE1       (bool, ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
-DELEGATE1       (bool, ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
-DELEGATE1       (bool, ToolNewFreeformMesh, runMouseReleaseEvent, QMouseEvent*)
+DELEGATE_BIG3_BASE ( ToolNewFreeformMesh, (ViewMainWindow* w, QContextMenuEvent* e)
+                   , (this), Tool, (w, e, toolName ()))
+DELEGATE_STATIC (QString, ToolNewFreeformMesh, toolName)
+DELEGATE        (void   , ToolNewFreeformMesh, runRender)
+DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
+DELEGATE1       (bool   , ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
+DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseReleaseEvent, QMouseEvent*)
 DELEGATE1       (bool, ToolNewFreeformMesh, runWheelEvent, QWheelEvent*)
