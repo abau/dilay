@@ -6,15 +6,17 @@
 
 class QMouseEvent;
 class ToolMovement;
+class ViewVectorEdit;
 
 class ToolUtilPosition : public ToolUtil {
   public:
     DECLARE_BIG3 (ToolUtilPosition, Tool&)
 
-    const ToolMovement& movement          () const;
-    const glm::vec3&    position          () const;
-    void                position          (const glm::vec3& pos);
-    bool                runMouseMoveEvent (QMouseEvent& e);
+    const ViewVectorEdit& vectorEdit        () const;
+    const ToolMovement&   movement          () const;
+    const glm::vec3&      position          () const;
+    void                  position          (const glm::vec3& pos);
+    bool                  runMouseMoveEvent (QMouseEvent& e);
 
   private:
     class Impl;

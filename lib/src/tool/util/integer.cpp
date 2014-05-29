@@ -46,6 +46,7 @@ struct ToolUtilInteger::Impl {
 
 DELEGATE_BIG3_BASE ( ToolUtilInteger,(Tool& t, const std::string& c, int mi, int d, int ma)
                    , (this,c,mi,d,ma),ToolUtil,(t))
-GETTER_CONST (int , ToolUtilInteger, value)
-DELEGATE     (void, ToolUtilInteger, increase)
-DELEGATE     (void, ToolUtilInteger, decrease)
+GETTER_CONST (const QSpinBox& , ToolUtilInteger, valueEdit)
+GETTER_CONST (int             , ToolUtilInteger, value)
+DELEGATE     (void            , ToolUtilInteger, increase)
+DELEGATE     (void            , ToolUtilInteger, decrease)

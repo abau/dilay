@@ -58,6 +58,7 @@ struct ToolUtilRadius::Impl {
 
 DELEGATE_BIG3_BASE ( ToolUtilRadius,(Tool& t, const ConfigProxy& p, const ToolMovement& m)
                    , (this,p,m),ToolUtil,(t))
-DELEGATE_CONST (float, ToolUtilRadius, radius)
-DELEGATE1      (void , ToolUtilRadius, radius, float)
+GETTER_CONST   (const QDoubleSpinBox&, ToolUtilRadius, radiusEdit)
+DELEGATE_CONST (float                , ToolUtilRadius, radius)
+DELEGATE1      (void                 , ToolUtilRadius, radius, float)
 DELEGATE1      (bool , ToolUtilRadius, runMouseMoveEvent, QMouseEvent&)

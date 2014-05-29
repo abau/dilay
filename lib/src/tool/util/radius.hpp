@@ -6,14 +6,16 @@
 class ConfigProxy;
 class ToolMovement;
 class QMouseEvent;
+class QDoubleSpinBox;
 
 class ToolUtilRadius : public ToolUtil {
   public:
     DECLARE_BIG3 (ToolUtilRadius, Tool&, const ConfigProxy&, const ToolMovement&)
 
-    float radius            () const;
-    void  radius            (float);
-    bool  runMouseMoveEvent (QMouseEvent& e);
+    const QDoubleSpinBox& radiusEdit        () const;
+    float                 radius            () const;
+    void                  radius            (float);
+    bool                  runMouseMoveEvent (QMouseEvent& e);
 
   private:
     class Impl;

@@ -45,7 +45,8 @@ struct ToolUtilPosition::Impl {
 };
 
 DELEGATE_BIG3_BASE ( ToolUtilPosition,(Tool& t), (this),ToolUtil,(t))
-GETTER_CONST   (const ToolMovement&, ToolUtilPosition, movement)
-DELEGATE_CONST (const glm::vec3&   , ToolUtilPosition, position)
-DELEGATE1      (void               , ToolUtilPosition, position, const glm::vec3&)
+GETTER_CONST   (const ViewVectorEdit&, ToolUtilPosition, vectorEdit)
+GETTER_CONST   (const ToolMovement&  , ToolUtilPosition, movement)
+DELEGATE_CONST (const glm::vec3&     , ToolUtilPosition, position)
+DELEGATE1      (void                 , ToolUtilPosition, position, const glm::vec3&)
 DELEGATE1      (bool               , ToolUtilPosition, runMouseMoveEvent, QMouseEvent&)

@@ -3,13 +3,16 @@
 
 #include "tool/util.hpp"
 
+class QSpinBox;
+
 class ToolUtilInteger : public ToolUtil {
   public:
     DECLARE_BIG3 (ToolUtilInteger, Tool&, const std::string&, int, int, int)
 
-    int  value    () const;
-    void increase ();
-    void decrease ();
+    const QSpinBox& valueEdit () const;
+    int             value     () const;
+    void            increase  ();
+    void            decrease  ();
 
   private:
     class Impl;
