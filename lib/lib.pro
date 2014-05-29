@@ -64,6 +64,7 @@ SOURCES += \
            src/tool/rotate.cpp \
            src/tool/util.cpp \
            src/tool/util/position.cpp \
+           src/tool/util/radius.cpp \
            src/util.cpp \
            src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
@@ -153,6 +154,7 @@ HEADERS += \
            src/tool/rotate.hpp \
            src/tool/util.hpp \
            src/tool/util/position.hpp \
+           src/tool/util/radius.hpp \
            src/util.hpp \
            src/variant.hpp \
            src/view/freeform-mesh-menu.hpp \

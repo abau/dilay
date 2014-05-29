@@ -26,13 +26,14 @@ class Tool {
     void               mouseReleaseEvent (QMouseEvent&);
     void               wheelEvent        (QWheelEvent&);
 
+    bool               isDraged          () const;
+    bool               isHovered         () const;
+
   protected:
     ViewToolOptions&   toolOptions       ();
 
-    bool               isDraged          () const;
     void               drag              (bool);
     void               dragIfHovered     ();
-    bool               isHovered         () const;
     void               hover             (bool);
     void               hoverIfDraged     ();
 
