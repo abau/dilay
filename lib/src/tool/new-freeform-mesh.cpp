@@ -1,73 +1,53 @@
-#include <glm/glm.hpp>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include "tool/new-freeform-mesh.hpp"
-#include "tool/movement.hpp"
+#include "tool/util/integer.hpp"
+#include "tool/util/position.hpp"
+#include "tool/util/radius.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
-#include "view/tool-options.hpp"
-#include "view/vector-edit.hpp"
 #include "view/util.hpp"
+#include "view/vector-edit.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "mesh-type.hpp"
 #include "mesh.hpp"
 #include "state.hpp"
 #include "history.hpp"
 #include "config.hpp"
-#include "camera.hpp"
 #include "primitive/sphere.hpp"
 #include "primitive/ray.hpp"
 #include "intersection.hpp"
+#include "camera.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
-  Mesh                 mesh;
-  ToolMovement         movement;
-  QSpinBox*            subdivEdit;
-  QDoubleSpinBox*      radiusEdit;
-  ViewVectorEdit*      positionEdit;
-  PrimSphere           meshGeometry;
-  int                  numSubdivisions;
   ConfigProxy          config;
+  ToolUtilInteger      subdivUtil;
+  ToolUtilPosition     posUtil;
+  ToolUtilRadius       radiusUtil;
+  Mesh                 mesh;
+  PrimSphere           meshGeometry;
 
   Impl (ToolNewFreeformMesh* s) 
-    : self     (s) 
-    , movement (s)
-    , config   ("/cache/tool/new-freeform-mesh/")
+    : self       (s) 
+    , config     ("/cache/tool/new-freeform-mesh/")
+    , subdivUtil (*s, QObject::tr ("Subdivisions"), this->config.key ("subdivisions"), 1, 2, 5)
+    , posUtil    (*s)
+    , radiusUtil (*s, this->config, this->posUtil.movement ())
   {
-    int   initSubdivisions = this->config.get <int>   ("subdivisions", 2);
-    float initRadius       = this->config.get <float> ("radius", 1.0f);
+    ViewUtil::connect (this->subdivUtil.valueEdit (), 
+      [this] (int) { this->updateMesh (true); });
 
-    // connect subdivision edit
-    this->subdivEdit = this->self->toolOptions ()->add <QSpinBox> 
-                        ( QObject::tr ("Subdivisions")
-                        , ViewUtil::spinBox (1, initSubdivisions, 5));
-    ViewUtil::connect (this->subdivEdit, [this] (int n) { this->setSubdivision (n); });
+    QObject::connect (&this->posUtil.vectorEdit (), &ViewVectorEdit::vectorEdited,
+      [this] (const glm::vec3&) { this->updateMesh (); });
 
-    // connect radius edit
-    this->radiusEdit = this->self->toolOptions ()->add <QDoubleSpinBox>
-                        ( QObject::tr ("Radius")
-                        , ViewUtil::spinBox (0.001f, initRadius));
-    ViewUtil::connect (this->radiusEdit, [this] (double r) { this->setRadius (float (r)); });
+    ViewUtil::connect (this->radiusUtil.radiusEdit (), 
+      [this] (float) { this->updateMesh (); });
 
-    // connect position edit
-    this->positionEdit = this->self->toolOptions ()->add <ViewVectorEdit>
-                          ( QObject::tr ("Position")
-                          , new ViewVectorEdit (this->movement.position ()));
-    QObject::connect (this->positionEdit, &ViewVectorEdit::vectorEdited, [this] 
-        (const glm::vec3& p) { this->setPosition (p); });
-
-    // setup mesh
-    this->setSubdivision (initSubdivisions);
-    this->setRadius      (initRadius);
-    this->setPosition    (this->movement.position ());
-
-    this->hover (this->self->mainWindow ()->glWidget ()->cursorPosition ());
+    this->updateMesh (true);
+    this->hover      (this->self->mainWindow ().glWidget ().cursorPosition ());
   }
 
   ~Impl () {
-    this->fromMeshGeometry ();
     State::history ().add <ActionNewWingedMesh> ()->run (MeshType::Freeform, this->mesh);
   }
 
@@ -75,58 +55,21 @@ struct ToolNewFreeformMesh::Impl {
     return QObject::tr ("New Mesh");
   }
 
-  void setSubdivision (int numSubdiv) {
-    if (   numSubdiv >= this->subdivEdit->minimum () 
-        && numSubdiv <= this->subdivEdit->maximum ()) 
-    {
-      this->numSubdivisions = numSubdiv;
-      this->mesh = Mesh::icosphere (numSubdiv);
+  void updateMesh (bool updateSubdivision = false) {
+    if (updateSubdivision) {
+      this->mesh = Mesh::icosphere (this->subdivUtil.value ());
       this->mesh.bufferData        ();
       this->self->updateGlWidget   ();
-      this->config.cache <int>     ("subdivisions", numSubdiv);
     }
-  }
-
-  void setPosition (const glm::vec3& pos) {
-    this->movement.position    (pos);
-    this->meshGeometry.center  (pos);
+    this->mesh.position        (this->posUtil.position  ());
+    this->mesh.scaling         (glm::vec3 (this->radiusUtil.radius ()));
+    this->meshGeometry.center  (this->posUtil.position  ());
+    this->meshGeometry.radius  (this->radiusUtil.radius ());
     this->self->updateGlWidget ();
-  }
-
-  void setRadius (float radius) {
-    this->meshGeometry.radius  (radius);
-    this->self->updateGlWidget ();
-    this->config.cache <float> ("radius", radius);
-  }
-
-  void setRadiusByMovement (const glm::ivec2& pos) {
-    glm::vec3 radiusPoint;
-    if (this->movement.onCameraPlane (pos, &radiusPoint)) {
-      float d = glm::distance (radiusPoint, this->movement.position ());
-      this->setRadius (d);
-      this->radiusEdit->setValue (d);
-    }
-  }
-
-  void setSubdivisionByEvent (int value) {
-    this->setSubdivision       (value);
-    this->subdivEdit->setValue (value);
-  }
-
-  void updateDialog () {
-    this->subdivEdit->setValue (this->numSubdivisions);
-    this->radiusEdit->setValue (this->meshGeometry.radius ());
-    this->positionEdit->vector (this->meshGeometry.center ());
-  }
-
-  void fromMeshGeometry () { 
-    this->mesh.scaling  (glm::vec3 (this->meshGeometry.radius ()));
-    this->mesh.position (this->meshGeometry.center ());
   }
 
   void runRender () {
-    this->fromMeshGeometry ();
-    this->mesh.render      ();
+    this->mesh.render ();
   }
   
   void hover (const glm::ivec2& pos) {
@@ -134,59 +77,56 @@ struct ToolNewFreeformMesh::Impl {
                                                     , this->meshGeometry, nullptr));
   }
 
-  bool runMouseMoveEvent (QMouseEvent* e) {
-    glm::ivec2 pos = ViewUtil::toIVec2 (*e);
+  bool runMouseMoveEvent (QMouseEvent& e) {
     if (this->self->isDraged ()) {
-      if (this->movement.byMouseEvent (e)) {
-        this->setPosition  (this->movement.position ());
-        this->updateDialog ();
-        return true;
+      if (e.modifiers ().testFlag (Qt::ControlModifier)) {
+        if (this->radiusUtil.runMouseMoveEvent (e)) {
+          this->updateMesh ();
+          return true;
+        }
       }
-      else if (e->modifiers ().testFlag (Qt::ControlModifier)) {
-        glm::vec3 radiusPoint;
-        if (this->movement.onCameraPlane (pos, &radiusPoint)) {
-          float d = glm::distance (radiusPoint, this->movement.position ());
-          this->setRadius    (d);
-          this->updateDialog ();
+      else {
+        if (this->posUtil.runMouseMoveEvent (e)) {
+          this->updateMesh ();
+          return true;
         }
       }
     }
     else {
-      this->hover (pos);
+      this->hover (ViewUtil::toIVec2 (e));
     }
     return false;
   }
 
-  bool runMousePressEvent (QMouseEvent*) {
+  bool runMousePressEvent (QMouseEvent&) {
     this->self->dragIfHovered ();
     return false;
   }
 
-  bool runMouseReleaseEvent (QMouseEvent*) {
+  bool runMouseReleaseEvent (QMouseEvent&) {
     this->self->hoverIfDraged ();
     return false;
   }
 
-  bool runWheelEvent (QWheelEvent* e) {
-    if (e->modifiers ().testFlag (Qt::ControlModifier)) {
-      if (e->angleDelta ().y () > 0) {
-        this->setSubdivision (this->subdivEdit->value () + 1);
+  bool runWheelEvent (QWheelEvent& e) {
+    if (e.modifiers ().testFlag (Qt::ControlModifier)) {
+      if (e.angleDelta ().y () > 0) {
+        this->subdivUtil.increase ();
       }
-      else if (e->angleDelta ().y () < 0) {
-        this->setSubdivision (this->subdivEdit->value () - 1);
+      else if (e.angleDelta ().y () < 0) {
+        this->subdivUtil.decrease ();
       }
-      this->updateDialog ();
       return true;
     }
     return false;
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolNewFreeformMesh, (ViewMainWindow* w, QContextMenuEvent* e)
+DELEGATE_BIG3_BASE ( ToolNewFreeformMesh, (ViewMainWindow& w, QContextMenuEvent& e)
                    , (this), Tool, (w, e, toolName ()))
 DELEGATE_STATIC (QString, ToolNewFreeformMesh, toolName)
 DELEGATE        (void   , ToolNewFreeformMesh, runRender)
-DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent*)
-DELEGATE1       (bool   , ToolNewFreeformMesh, runMousePressEvent, QMouseEvent*)
-DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseReleaseEvent, QMouseEvent*)
-DELEGATE1       (bool, ToolNewFreeformMesh, runWheelEvent, QWheelEvent*)
+DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent&)
+DELEGATE1       (bool   , ToolNewFreeformMesh, runMousePressEvent, QMouseEvent&)
+DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseReleaseEvent, QMouseEvent&)
+DELEGATE1       (bool, ToolNewFreeformMesh, runWheelEvent, QWheelEvent&)

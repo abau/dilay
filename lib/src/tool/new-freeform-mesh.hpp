@@ -5,7 +5,7 @@
 
 class ToolNewFreeformMesh : public Tool {
   public:
-    DECLARE_BIG3 (ToolNewFreeformMesh, ViewMainWindow*, QContextMenuEvent*)
+    DECLARE_BIG3 (ToolNewFreeformMesh, ViewMainWindow&, QContextMenuEvent&)
 
     static QString toolName ();
 
@@ -14,10 +14,10 @@ class ToolNewFreeformMesh : public Tool {
     Impl* impl;
 
     void runRender            ();
-    bool runMouseMoveEvent    (QMouseEvent*);
-    bool runMousePressEvent   (QMouseEvent*);
-    bool runMouseReleaseEvent (QMouseEvent*);
-    bool runWheelEvent        (QWheelEvent*);
+    bool runMouseMoveEvent    (QMouseEvent&);
+    bool runMousePressEvent   (QMouseEvent&);
+    bool runMouseReleaseEvent (QMouseEvent&);
+    bool runWheelEvent        (QWheelEvent&);
 };
 
 #endif

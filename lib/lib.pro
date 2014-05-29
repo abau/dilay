@@ -60,7 +60,7 @@ SOURCES += \
            src/tool/carve.cpp \
       #    src/tool/modify-sphere-mesh-node.cpp \
            src/tool/movement.cpp \
-      #    src/tool/new-freeform-mesh.cpp \
+           src/tool/new-freeform-mesh.cpp \
            src/tool/rotate.cpp \
            src/tool/util.cpp \
            src/tool/util/integer.cpp \
@@ -151,7 +151,7 @@ HEADERS += \
            src/tool/carve.hpp \
         #  src/tool/modify-sphere-mesh-node.hpp \
            src/tool/movement.hpp \
-        #  src/tool/new-freeform-mesh.hpp \
+           src/tool/new-freeform-mesh.hpp \
            src/tool/rotate.hpp \
            src/tool/util.hpp \
            src/tool/util/integer.hpp \
