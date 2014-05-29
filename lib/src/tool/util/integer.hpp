@@ -4,10 +4,11 @@
 #include "tool/util.hpp"
 
 class QSpinBox;
+class QString;
 
 class ToolUtilInteger : public ToolUtil {
   public:
-    DECLARE_BIG3 (ToolUtilInteger, Tool&, const std::string&, int, int, int)
+    DECLARE_BIG3 (ToolUtilInteger, Tool&, const QString&, const std::string&, int, int, int)
 
     const QSpinBox& valueEdit () const;
     int             value     () const;

@@ -8,14 +8,14 @@
 #include "config.hpp"
 
 struct ToolUtilInteger::Impl {
-  ToolUtilInteger*   self;
-  const std::string& config;
-  const int          min;
-  const int          max;
-  int                value;
-  QSpinBox&          valueEdit;
+  ToolUtilInteger* self;
+  std::string      config;
+  const int        min;
+  const int        max;
+  int              value;
+  QSpinBox&        valueEdit;
 
-  Impl (ToolUtilInteger* s, const std::string& c, int mi, int _default, int ma) 
+  Impl (ToolUtilInteger* s, const QString& l, const std::string& c, int mi, int _default, int ma) 
     : self      (s) 
     , config    (c)
     , min       (mi)
@@ -23,6 +23,7 @@ struct ToolUtilInteger::Impl {
     , value     (glm::clamp (Config::get <int> (c, _default), min, max))
     , valueEdit (ViewUtil::spinBox (min, this->value, max))
   {
+    s->toolOptions ().add <QSpinBox> (l, this->valueEdit);
     ViewUtil::connect (this->valueEdit, [this] (int v) { this->setValue (v,false); });
   }
 
@@ -44,8 +45,9 @@ struct ToolUtilInteger::Impl {
   void decrease () { this->setValue (this->value - 1); }
 };
 
-DELEGATE_BIG3_BASE ( ToolUtilInteger,(Tool& t, const std::string& c, int mi, int d, int ma)
-                   , (this,c,mi,d,ma),ToolUtil,(t))
+DELEGATE_BIG3_BASE ( ToolUtilInteger,( Tool& t, const QString& l, const std::string& c
+                                     , int mi, int d, int ma)
+                   , (this,l,c,mi,d,ma),ToolUtil,(t))
 GETTER_CONST (const QSpinBox& , ToolUtilInteger, valueEdit)
 GETTER_CONST (int             , ToolUtilInteger, value)
 DELEGATE     (void            , ToolUtilInteger, increase)
