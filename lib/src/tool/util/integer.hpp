@@ -7,7 +7,9 @@ class ToolUtilInteger : public ToolUtil {
   public:
     DECLARE_BIG3 (ToolUtilInteger, Tool&, const std::string&, int, int, int)
 
-    int  value () const;
+    int  value    () const;
+    void increase ();
+    void decrease ();
 
   private:
     class Impl;

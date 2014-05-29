@@ -63,6 +63,7 @@ SOURCES += \
       #    src/tool/new-freeform-mesh.cpp \
            src/tool/rotate.cpp \
            src/tool/util.cpp \
+           src/tool/util/integer.cpp \
            src/tool/util/position.cpp \
            src/tool/util/radius.cpp \
            src/util.cpp \
@@ -153,6 +154,7 @@ HEADERS += \
         #  src/tool/new-freeform-mesh.hpp \
            src/tool/rotate.hpp \
            src/tool/util.hpp \
+           src/tool/util/integer.hpp \
            src/tool/util/position.hpp \
            src/tool/util/radius.hpp \
            src/util.hpp \
