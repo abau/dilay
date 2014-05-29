@@ -9,65 +9,65 @@
 #include <QMouseEvent>
 #include "view/util.hpp"
 
-QSpinBox* ViewUtil :: spinBox (int min, int value, int max) {
-  QSpinBox* spinBox = new QSpinBox;
-  spinBox->setRange (min, max);
-  spinBox->setValue (value);
+QSpinBox& ViewUtil :: spinBox (int min, int value, int max) {
+  QSpinBox& spinBox = *new QSpinBox;
+  spinBox.setRange (min, max);
+  spinBox.setValue (value);
   return spinBox;
 }
 
-QDoubleSpinBox* ViewUtil :: spinBox (float min, float value, float max) {
-  QDoubleSpinBox* spinBox = ViewUtil::spinBox (min,value);
-  spinBox->setMaximum (double (max));
+QDoubleSpinBox& ViewUtil :: spinBox (float min, float value, float max) {
+  QDoubleSpinBox& spinBox = ViewUtil::spinBox (min,value);
+  spinBox.setMaximum (double (max));
   return spinBox;
 }
 
-QDoubleSpinBox* ViewUtil :: spinBox (float min, float value) {
-  QDoubleSpinBox* spinBox = ViewUtil::spinBox (value);
-  spinBox->setMinimum (double (min));
+QDoubleSpinBox& ViewUtil :: spinBox (float min, float value) {
+  QDoubleSpinBox& spinBox = ViewUtil::spinBox (value);
+  spinBox.setMinimum (double (min));
   return spinBox;
 }
 
-QDoubleSpinBox* ViewUtil :: spinBox (float value) {
-  QDoubleSpinBox* spinBox = new QDoubleSpinBox;
-  spinBox->setValue      (double (value));
-  spinBox->setRange      (-1000.0, 1000.0);
-  spinBox->setSingleStep (0.1);
-  spinBox->setDecimals   (3);
+QDoubleSpinBox& ViewUtil :: spinBox (float value) {
+  QDoubleSpinBox& spinBox = *new QDoubleSpinBox;
+  spinBox.setValue      (double (value));
+  spinBox.setRange      (-1000.0, 1000.0);
+  spinBox.setSingleStep (0.1);
+  spinBox.setDecimals   (3);
   return spinBox;
 }
 
-QPushButton* ViewUtil :: pushButton (const QString& label, bool ignoreFocus) {
-  QPushButton* button = new QPushButton (label);
+QPushButton& ViewUtil :: pushButton (const QString& label, bool ignoreFocus) {
+  QPushButton& button = *new QPushButton (label);
   if (ignoreFocus) { 
-    button->setFocusPolicy (Qt::NoFocus);
+    button.setFocusPolicy (Qt::NoFocus);
   }
   return button;
 }
 
-QToolButton* ViewUtil :: toolButton (const QString& label, bool ignoreFocus) {
-  QToolButton* button = new QToolButton ();
-  button->setText (label);
+QToolButton& ViewUtil :: toolButton (const QString& label, bool ignoreFocus) {
+  QToolButton& button = *new QToolButton ();
+  button.setText (label);
   if (ignoreFocus) { 
-    button->setFocusPolicy (Qt::NoFocus);
+    button.setFocusPolicy (Qt::NoFocus);
   }
   return button;
 }
 
-QRadioButton* ViewUtil :: radioButton (const QString& label, bool ignoreFocus, bool isChecked) {
-  QRadioButton* button = new QRadioButton (label);
-  button->setChecked (isChecked);
+QRadioButton& ViewUtil :: radioButton (const QString& label, bool ignoreFocus, bool isChecked) {
+  QRadioButton& button = *new QRadioButton (label);
+  button.setChecked (isChecked);
   if (ignoreFocus) { 
-    button->setFocusPolicy (Qt::NoFocus);
+    button.setFocusPolicy (Qt::NoFocus);
   }
   return button;
 }
 
-QCheckBox* ViewUtil :: checkBox (const QString& label, bool ignoreFocus, bool isChecked) {
-  QCheckBox* box = new QCheckBox (label);
-  box->setChecked (isChecked);
+QCheckBox& ViewUtil :: checkBox (const QString& label, bool ignoreFocus, bool isChecked) {
+  QCheckBox& box = *new QCheckBox (label);
+  box.setChecked (isChecked);
   if (ignoreFocus) { 
-    box->setFocusPolicy (Qt::NoFocus);
+    box.setFocusPolicy (Qt::NoFocus);
   }
   return box;
 }
@@ -90,12 +90,12 @@ glm::ivec2 ViewUtil :: toIVec2 (const QMouseEvent& e) {
   return ViewUtil::toIVec2 (e.pos ());
 }
 
-void ViewUtil :: connect (QSpinBox* s, const std::function <void (int)>& f) {
+void ViewUtil :: connect (QSpinBox& s, const std::function <void (int)>& f) {
   void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
-  QObject::connect (s, ptr, f);
+  QObject::connect (&s, ptr, f);
 }
 
-void ViewUtil :: connect (QDoubleSpinBox* s, const std::function <void (double)>& f) {
+void ViewUtil :: connect (QDoubleSpinBox& s, const std::function <void (double)>& f) {
   void (QDoubleSpinBox::* ptr)(double) = &QDoubleSpinBox::valueChanged;
-  QObject::connect (s, ptr, f);
+  QObject::connect (&s, ptr, f);
 }

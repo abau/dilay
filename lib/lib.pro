@@ -58,9 +58,9 @@ SOURCES += \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/carve.cpp \
-           src/tool/modify-sphere-mesh-node.cpp \
+      #    src/tool/modify-sphere-mesh-node.cpp \
            src/tool/movement.cpp \
-           src/tool/new-freeform-mesh.cpp \
+      #    src/tool/new-freeform-mesh.cpp \
            src/tool/rotate.cpp \
            src/tool/util.cpp \
            src/tool/util/position.cpp \
@@ -147,9 +147,9 @@ HEADERS += \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/carve.hpp \
-           src/tool/modify-sphere-mesh-node.hpp \
+        #  src/tool/modify-sphere-mesh-node.hpp \
            src/tool/movement.hpp \
-           src/tool/new-freeform-mesh.hpp \
+        #  src/tool/new-freeform-mesh.hpp \
            src/tool/rotate.hpp \
            src/tool/util.hpp \
            src/tool/util/position.hpp \

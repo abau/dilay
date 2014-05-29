@@ -14,10 +14,10 @@
 #include "view/gl-widget.hpp"
 
 struct ToolMovement::Impl {
-  Tool*     tool;
+  Tool&     tool;
   glm::vec3 position;
 
-  Impl (Tool* t) : tool (t) {
+  Impl (Tool& t) : tool (t) {
     this->byScreenPos ();
   }
 
@@ -66,17 +66,17 @@ struct ToolMovement::Impl {
     return this->moveOnPlane (glm::normalize (State::camera ().toEyePoint ()), p); 
   }
 
-  bool byMouseEvent (QMouseEvent* e) {
-    if (e->buttons () == Qt::LeftButton) {
-      glm::ivec2 p = ViewUtil::toIVec2 (*e);
+  bool byMouseEvent (QMouseEvent& e) {
+    if (e.buttons () == Qt::LeftButton) {
+      glm::ivec2 p = ViewUtil::toIVec2 (e);
 
-      if (e->modifiers ().testFlag (Qt::ShiftModifier)) {
-        ViewPropertiesMovement* properties = this->tool->mainWindow ()->properties ()->movement ();
-        if      (properties->x ()) { return this->moveAlongX (p); }
-        else if (properties->y ()) { return this->moveAlongY (p); }
-        else if (properties->z ()) { return this->moveAlongZ (p); }
+      if (e.modifiers ().testFlag (Qt::ShiftModifier)) {
+        ViewPropertiesMovement& properties = this->tool.mainWindow ().properties ().movement ();
+        if      (properties.x ()) { return this->moveAlongX (p); }
+        else if (properties.y ()) { return this->moveAlongY (p); }
+        else if (properties.z ()) { return this->moveAlongZ (p); }
       }
-      else if (e->modifiers ().testFlag (Qt::NoModifier)) {
+      else if (e.modifiers ().testFlag (Qt::NoModifier)) {
         return this->byScreenPos (p);
       }
     }
@@ -84,26 +84,26 @@ struct ToolMovement::Impl {
   }
 
   bool byScreenPos (const glm::ivec2& p) {
-    ViewPropertiesMovement* properties = this->tool->mainWindow ()->properties ()->movement ();
-    if      (properties->xy     ()) { return this->moveOnXY     (p); }
-    else if (properties->yz     ()) { return this->moveOnYZ     (p); }
-    else if (properties->xz     ()) { return this->moveOnXZ     (p); }
-    else if (properties->camera ()) { return this->moveOnCamera (p); }
+    ViewPropertiesMovement& properties = this->tool.mainWindow ().properties ().movement ();
+    if      (properties.xy     ()) { return this->moveOnXY     (p); }
+    else if (properties.yz     ()) { return this->moveOnYZ     (p); }
+    else if (properties.xz     ()) { return this->moveOnXZ     (p); }
+    else if (properties.camera ()) { return this->moveOnCamera (p); }
     else assert (false);
   }
 
   bool byScreenPos () {
-    return this->byScreenPos (this->tool->mainWindow ()->glWidget ()->cursorPosition ());
+    return this->byScreenPos (this->tool.mainWindow ().glWidget ().cursorPosition ());
   }
 
-  bool onCameraPlane (const glm::ivec2& p, glm::vec3* intersection) const {
-    return this->intersects (glm::normalize (State::camera ().toEyePoint ()), p, *intersection); 
+  bool onCameraPlane (const glm::ivec2& p, glm::vec3& intersection) const {
+    return this->intersects (glm::normalize (State::camera ().toEyePoint ()), p, intersection); 
   }
 };
 
-DELEGATE1_BIG6  (ToolMovement, Tool*)
+DELEGATE1_BIG6  (ToolMovement, Tool&)
 GETTER_CONST    (const glm::vec3&, ToolMovement, position)
 SETTER          (const glm::vec3&, ToolMovement, position)
-DELEGATE1       (bool            , ToolMovement, byMouseEvent, QMouseEvent*)
+DELEGATE1       (bool            , ToolMovement, byMouseEvent, QMouseEvent&)
 DELEGATE        (bool            , ToolMovement, byScreenPos)
-DELEGATE2_CONST (bool            , ToolMovement, onCameraPlane, const glm::ivec2&, glm::vec3*)
+DELEGATE2_CONST (bool            , ToolMovement, onCameraPlane, const glm::ivec2&, glm::vec3&)

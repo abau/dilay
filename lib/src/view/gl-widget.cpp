@@ -21,10 +21,10 @@
 
 struct ViewGlWidget::Impl {
   ViewGlWidget*         self;
-  ViewMainWindow*       mainWindow;
+  ViewMainWindow&       mainWindow;
   Axis                  axis;
 
-  Impl (ViewGlWidget* s, ViewMainWindow* mW) 
+  Impl (ViewGlWidget* s, ViewMainWindow& mW) 
     : self (s)
     , mainWindow (mW) 
   {}
@@ -47,10 +47,10 @@ struct ViewGlWidget::Impl {
 
     Renderer::updateLights (State::camera ());
 
-    QObject::connect ( this->mainWindow->properties ()->selection ()
+    QObject::connect ( &this->mainWindow.properties ().selection ()
                      , &ViewPropertiesSelection::selectionChanged 
                      , [this] () { this->self->update (); });
-    QObject::connect ( this->mainWindow->properties ()->selection ()
+    QObject::connect ( &this->mainWindow.properties ().selection ()
                      , &ViewPropertiesSelection::hideOthersChanged
                      , [this] () { this->self->update (); });
   }
@@ -58,7 +58,7 @@ struct ViewGlWidget::Impl {
   void paintGL () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if (this->mainWindow->properties ()->selection ()->show (MeshType::Freeform)) {
+    if (this->mainWindow.properties ().selection ().show (MeshType::Freeform)) {
       State::scene ().render (MeshType::Freeform);
     }
     if (State::hasTool ()) {
@@ -125,26 +125,26 @@ struct ViewGlWidget::Impl {
       this->self->update ();
     }
     else if (State::hasTool ()) {
-      State::tool ().mouseMoveEvent (e);
+      State::tool ().mouseMoveEvent (*e);
     }
   }
 
   void mousePressEvent (QMouseEvent* e) {
     if (e->buttons () == Qt::LeftButton && State::hasTool ()) {
-      State::tool ().mousePressEvent (e);
+      State::tool ().mousePressEvent (*e);
     }
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
     State::mouseMovement ().invalidate ();
     if (State::hasTool ()) {
-      State::tool ().mouseReleaseEvent (e);
+      State::tool ().mouseReleaseEvent (*e);
     }
   }
 
   void resizeEvent (QResizeEvent* e) {
     State::camera ().updateResolution (glm::uvec2 ( e->size ().width  ()
-                                                    , e->size ().height ()));
+                                                  , e->size ().height ()));
   }
 
   void wheelEvent (QWheelEvent* e) {
@@ -158,37 +158,33 @@ struct ViewGlWidget::Impl {
       this->self->update ();
     }
     else if (State::hasTool ()) {
-      State::tool ().wheelEvent (e);
+      State::tool ().wheelEvent (*e);
     }
   }
 
   void contextMenuEvent (QContextMenuEvent* e) {
     State::setTool (nullptr);
-    switch (this->mainWindow->properties ()->selection ()->selected ()) {
+    switch (this->mainWindow.properties ().selection ().selected ()) {
       case MeshType::Freeform: {
-        ViewFreeformMeshMenu menu (this->mainWindow, e);
+        ViewFreeformMeshMenu menu (this->mainWindow, *e);
         menu.exec (QCursor::pos ());
         break;
       }
       case MeshType::Sphere: {
-        ViewSphereMeshMenu menu (this->mainWindow, e);
+        ViewSphereMeshMenu menu (this->mainWindow, *e);
         menu.exec (QCursor::pos ());
         break;
       }
       default:
         assert (false);
     }
-    this->mainWindow->activateWindow ();
+    this->mainWindow.activateWindow ();
   }
 };
 
-ViewGlWidget :: ViewGlWidget (const QGLFormat& format, ViewMainWindow* mainWindow) 
-  : QGLWidget (format) 
-{ 
-  this->impl = new Impl (this, mainWindow);
-}
-
-DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (ViewGlWidget)
+DELEGATE_CONSTRUCTOR_BASE ( ViewGlWidget, (const QGLFormat& f, ViewMainWindow& w)
+                          , (this,w), QGLWidget, (f))
+DELEGATE_DESTRUCTOR (ViewGlWidget)
 
 DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
 DELEGATE  (void      , ViewGlWidget, initializeGL)

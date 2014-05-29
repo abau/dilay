@@ -9,13 +9,13 @@ class Tool;
 
 class ToolMovement {
   public:
-    DECLARE_BIG6 (ToolMovement, Tool*)
+    DECLARE_BIG6 (ToolMovement, Tool&)
 
     const glm::vec3& position      () const;
           void       position      (const glm::vec3&);
-          bool       byMouseEvent  (QMouseEvent*);
+          bool       byMouseEvent  (QMouseEvent&);
           bool       byScreenPos   ();
-          bool       onCameraPlane (const glm::ivec2&, glm::vec3*) const;
+          bool       onCameraPlane (const glm::ivec2&, glm::vec3&) const;
 
   private:
     class Impl;

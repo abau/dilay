@@ -320,15 +320,6 @@
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
     return Impl :: method (a1,a2,a3,a4,a5); }
 
-#define GETTER_CONST(r,from,member) \
-  r from :: member () const { return this->impl-> member ; }
-
-#define GETTER(r,from,member) \
-  r from :: member () { return this->impl-> member ; }
-
-#define SETTER(t,from,member) \
-  void from :: member (t a) { this->impl-> member = a; }
-
 #define GLOBAL(from) \
   from & from :: global () { static from g; return g; }
 
@@ -369,6 +360,17 @@
 
 #define ID(from) \
   Id from :: id () const { return this->impl->id.id () ; }
+
+// Getters/Setters
+
+#define GETTER_CONST(r,from,member) \
+  r from :: member () const { return this->impl-> member ; }
+
+#define GETTER(r,from,member) \
+  r from :: member () { return this->impl-> member ; }
+
+#define SETTER(t,from,member) \
+  void from :: member (t a) { this->impl-> member = a; }
 
 // Safe references
 
@@ -445,6 +447,14 @@
     return *ptr; }
 
 // Big 3 declarations
+
+#define DECLARE_BIG2(t,...)                   \
+         t             (__VA_ARGS__);         \
+         t             (const t &)  = delete; \
+         t             (      t &&) = delete; \
+  const  t & operator= (const t &)  = delete; \
+  const  t & operator= (      t &&) = delete; \
+       ~ t             ();
 
 #define DECLARE_BIG3(t,...)                   \
          t             (__VA_ARGS__);         \

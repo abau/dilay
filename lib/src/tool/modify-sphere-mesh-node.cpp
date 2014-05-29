@@ -23,13 +23,13 @@ struct ToolModifySphereMeshNode::Impl {
   Impl (ToolModifySphereMeshNode* s, Mode m) 
     : self     (s) 
     , mode     (m)
-    , movement (s)
+    , movement (*s)
     , config   ("/cache/tool/modify-sphere-mesh-node/")
   {
     float initRadius = this->config.get <float> ("radius", 0.5f);
 
     // connect radius edit
-    this->radiusEdit = this->self->toolOptions ()->add <QDoubleSpinBox>
+    this->radiusEdit = this->self->toolOptions ().add <QDoubleSpinBox>
                         ( QObject::tr ("Radius")
                         , ViewUtil::spinBox (0.001f, initRadius));
     ViewUtil::connect (this->radiusEdit, [this] (double r) { this->setRadius (float (r)); });
@@ -88,6 +88,6 @@ struct ToolModifySphereMeshNode::Impl {
 
 };
 
-DELEGATE_BIG3_BASE ( ToolModifySphereMeshNode, (ViewMainWindow* w, QContextMenuEvent* e, Mode m)
+DELEGATE_BIG3_BASE ( ToolModifySphereMeshNode, (ViewMainWindow& w, QContextMenuEvent& e, Mode m)
                    , (this,m), Tool, (w,e,toolName (m)))
 DELEGATE1_STATIC (QString, ToolModifySphereMeshNode, toolName, Mode)

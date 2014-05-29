@@ -11,19 +11,19 @@ class ViewProperties : public QWidget {
     void setLabel (const QString&);
 
     template <typename T>
-    T* add (const QString& label, T* widget) {
-      this->addWidget (label, static_cast <QWidget*> (widget));
+    T& add (const QString& label, T& widget) {
+      this->addWidget (label, static_cast <QWidget&> (widget));
       return widget;
     }
 
     template <typename T>
-    T* add (T* widget) {
-      this->addWidget (static_cast <QWidget*> (widget));
+    T& add (T& widget) {
+      this->addWidget (static_cast <QWidget&> (widget));
       return widget;
     }
 
-    QWidget* addWidget (const QString&, QWidget*);
-    QWidget* addWidget (QWidget*);
+    QWidget& addWidget (const QString&, QWidget&);
+    QWidget& addWidget (QWidget&);
 
   private:
     class Impl;

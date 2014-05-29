@@ -10,15 +10,15 @@ class QMoveEvent;
 
 class ViewToolOptions : public QDialog {
   public:
-    DECLARE_BIG3 (ViewToolOptions, ViewMainWindow*);
+    DECLARE_BIG3 (ViewToolOptions, ViewMainWindow&);
 
     template <typename T>
-    T* add (const QString& label, T* widget) {
-      this->addOption (label, static_cast <QWidget*> (widget) );
+    T& add (const QString& label, T& widget) {
+      this->addOption (label, static_cast <QWidget&> (widget) );
       return widget;
     };
 
-    QWidget* addOption (const QString&, QWidget*);
+    QWidget& addOption (const QString&, QWidget&);
 
   protected:
     void moveEvent (QMoveEvent*);

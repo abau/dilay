@@ -11,7 +11,7 @@ class ViewMainWindow;
 class ViewGlWidget : public QGLWidget {
     Q_OBJECT
   public:
-    DECLARE_BIG3 (ViewGlWidget, const QGLFormat&, ViewMainWindow*)
+    DECLARE_BIG2 (ViewGlWidget, const QGLFormat&, ViewMainWindow&)
 
     glm::ivec2 cursorPosition ();
        

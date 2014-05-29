@@ -10,10 +10,10 @@ class ViewPropertiesWidget;
 
 class ViewMainWidget : public QSplitter {
   public:
-    DECLARE_BIG3 (ViewMainWidget, ViewMainWindow*)
+    DECLARE_BIG3 (ViewMainWidget, ViewMainWindow&)
 
-    ViewGlWidget*         glWidget    ();
-    ViewPropertiesWidget* properties  ();
+    ViewGlWidget&         glWidget    ();
+    ViewPropertiesWidget& properties  ();
 
   private:
     class Impl;

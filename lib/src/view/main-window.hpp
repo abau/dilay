@@ -12,8 +12,8 @@ class ViewMainWindow : public QMainWindow {
   public:
     DECLARE_BIG3 (ViewMainWindow)
 
-    ViewGlWidget*         glWidget    ();
-    ViewPropertiesWidget* properties  ();
+    ViewGlWidget&         glWidget    ();
+    ViewPropertiesWidget& properties  ();
 
   private:
     class Impl;

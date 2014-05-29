@@ -7,10 +7,10 @@ struct ToolUtil::Impl {
 
   Impl (Tool& t) : tool (t) { }
 
-  ViewToolOptions* toolOptions () { return this->tool.toolOptions (); }
+  ViewToolOptions& toolOptions () { return this->tool.toolOptions (); }
 
 };
 
 DELEGATE1_BIG3 (ToolUtil, Tool&)
 GETTER         (Tool&, ToolUtil, tool)
-DELEGATE       (ViewToolOptions*, ToolUtil, toolOptions)
+DELEGATE       (ViewToolOptions&, ToolUtil, toolOptions)

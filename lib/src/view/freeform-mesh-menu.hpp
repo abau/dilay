@@ -5,7 +5,7 @@
 
 class ViewFreeformMeshMenu : public ViewToolMenu {
   public:
-    ViewFreeformMeshMenu (ViewMainWindow*, QContextMenuEvent*);
+    ViewFreeformMeshMenu (ViewMainWindow&, QContextMenuEvent&);
 };
 
 #endif

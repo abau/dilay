@@ -6,19 +6,20 @@
 
 struct ViewPropertiesWidget::Impl {
   ViewPropertiesWidget*    self;
-  ViewPropertiesSelection* selection;
-  ViewPropertiesMovement*  movement;
+  ViewPropertiesSelection& selection;
+  ViewPropertiesMovement&  movement;
 
-  Impl (ViewPropertiesWidget* s) : self (s) {
+  Impl (ViewPropertiesWidget* s) 
+    : self      (s) 
+    , selection (*new ViewPropertiesSelection ())
+    , movement  (*new ViewPropertiesMovement ())
+  {
     QVBoxLayout* layout = new QVBoxLayout;
 
-    this->selection = new ViewPropertiesSelection ();
-    this->movement  = new ViewPropertiesMovement ();
-
     layout->setSpacing (0);
-    layout->addWidget  (this->selection);
+    layout->addWidget  (&this->selection);
     layout->setSpacing (0);
-    layout->addWidget  (this->movement);
+    layout->addWidget  (&this->movement);
     layout->addStretch (1);
 
     this->self->setLayout (layout);
@@ -26,5 +27,5 @@ struct ViewPropertiesWidget::Impl {
 };
 
 DELEGATE_BIG3_SELF (ViewPropertiesWidget)
-GETTER (ViewPropertiesSelection*, ViewPropertiesWidget, selection)
-GETTER (ViewPropertiesMovement* , ViewPropertiesWidget, movement)
+GETTER (ViewPropertiesSelection&, ViewPropertiesWidget, selection)
+GETTER (ViewPropertiesMovement& , ViewPropertiesWidget, movement)

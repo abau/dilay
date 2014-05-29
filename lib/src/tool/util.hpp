@@ -12,7 +12,7 @@ class ToolUtil {
 
   protected:
     Tool&            tool        ();
-    ViewToolOptions* toolOptions ();
+    ViewToolOptions& toolOptions ();
 
   private:
     class Impl;

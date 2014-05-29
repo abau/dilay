@@ -10,7 +10,7 @@ class QContextMenuEvent;
 
 class ViewToolMenu : public QMenu {
   public:
-    ViewToolMenu (ViewMainWindow* mW, QContextMenuEvent* mE)
+    ViewToolMenu (ViewMainWindow& mW, QContextMenuEvent& mE)
       : mainWindow (mW)
       , menuEvent  (mE)
       {}
@@ -24,8 +24,8 @@ class ViewToolMenu : public QMenu {
   }
 
   private:
-    ViewMainWindow*    mainWindow;
-    QContextMenuEvent* menuEvent;
+    ViewMainWindow&    mainWindow;
+    QContextMenuEvent& menuEvent;
 };
 
 #endif
