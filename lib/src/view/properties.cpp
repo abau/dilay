@@ -20,13 +20,13 @@ struct ViewProperties::Impl {
 
     vBoxLayout->setSpacing         (0);
     vBoxLayout->setContentsMargins (0,0,0,0);
-    this->makeHeader               (vBoxLayout);
-    this->makeBody                 (vBoxLayout);
+    this->setupHeader              (vBoxLayout);
+    this->setupBody                (vBoxLayout);
 
     this->self->setLayout (vBoxLayout);
   }
 
-  void makeHeader (QBoxLayout* globalLayout) {
+  void setupHeader (QBoxLayout* globalLayout) {
     QObject::connect (&this->headerButton, &ViewPropertiesButton::expand,   [this] () { 
       this->body.show (); 
     });
@@ -36,7 +36,7 @@ struct ViewProperties::Impl {
     globalLayout->addWidget (&this->headerButton);
   }
 
-  void makeBody (QBoxLayout* globalLayout) {
+  void setupBody (QBoxLayout* globalLayout) {
     this->bodyLayout.setSpacing         (0);
     this->bodyLayout.setContentsMargins (11,0,0,0);
     this->body.setLayout                (&this->bodyLayout);
