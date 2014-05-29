@@ -20,7 +20,7 @@ struct ToolUtilPosition::Impl {
                                            , this->vectorEdit);
 
     QObject::connect (&this->vectorEdit, &ViewVectorEdit::vectorEdited, [this] 
-      (const glm::vec3& p) { this->position (p); });
+      (const glm::vec3& p) { this->position (p, false); });
   }
 
   const glm::vec3& position () const {
