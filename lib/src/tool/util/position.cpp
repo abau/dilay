@@ -20,24 +20,25 @@ struct ToolUtilPosition::Impl {
                                            , this->vectorEdit);
 
     QObject::connect (&this->vectorEdit, &ViewVectorEdit::vectorEdited, [this] 
-      (const glm::vec3& p) { this->movement.position (p); });
+      (const glm::vec3& p) { this->position (p); });
   }
 
   const glm::vec3& position () const {
     return this->movement.position ();
   }
 
-  void position (const glm::vec3& pos) {
+  void position (const glm::vec3& pos, bool updateEdit = true) {
     this->movement.position (pos);
-    this->vectorEdit.vector (pos);
+
+    if (updateEdit) {
+      this->vectorEdit.vector (pos);
+    }
   }
 
   bool runMouseMoveEvent (QMouseEvent& e) {
-    if (this->self->tool ().isDraged ()) {
-      if (this->movement.byMouseEvent (e)) {
-        this->position (this->movement.position ());
-        return true;
-      }
+    if (this->movement.byMouseEvent (e)) {
+      this->position (this->movement.position ());
+      return true;
     }
     return false;
   }

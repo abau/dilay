@@ -1,7 +1,6 @@
 #include <utility>
 #include <glm/glm.hpp>
 #include <QDoubleSpinBox>
-#include <QMouseEvent>
 #include "tool/util/radius.hpp"
 #include "tool.hpp"
 #include "tool/movement.hpp"
@@ -37,20 +36,21 @@ struct ToolUtilRadius::Impl {
   }
 
   void radius (float r, bool updateEdit = true) {
-    this->_radius = r;
-    if (updateEdit) {
-      this->radiusEdit.setValue (r);
+    if (this->_radius != r) {
+      this->_radius = r;
+      if (updateEdit) {
+        this->radiusEdit.setValue (r);
+      }
     }
   }
 
   bool runMouseMoveEvent (QMouseEvent& e) {
-    if (e.modifiers ().testFlag (Qt::ControlModifier)) {
-      glm::ivec2 pos = ViewUtil::toIVec2 (e);
-      glm::vec3 radiusPoint;
-      if (this->movement.onCameraPlane (pos, radiusPoint)) {
-        float d = glm::distance (radiusPoint, this->movement.position ());
-        this->radius            (d);
-      }
+    glm::ivec2 pos = ViewUtil::toIVec2 (e);
+    glm::vec3 radiusPoint;
+    if (this->movement.onCameraPlane (pos, radiusPoint)) {
+      float d = glm::distance (radiusPoint, this->movement.position ());
+      this->radius            (d);
+      return true;
     }
     return false;
   }

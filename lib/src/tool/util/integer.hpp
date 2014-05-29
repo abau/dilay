@@ -1,5 +1,5 @@
-#ifndef DILAY_TOOL_UTIL_RADIUS
-#define DILAY_TOOL_UTIL_RADIUS
+#ifndef DILAY_TOOL_UTIL_INTEGER
+#define DILAY_TOOL_UTIL_INTEGER
 
 #include "tool/util.hpp"
 
