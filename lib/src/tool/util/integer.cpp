@@ -8,12 +8,12 @@
 #include "config.hpp"
 
 struct ToolUtilInteger::Impl {
-  ToolUtilInteger* self;
-  std::string      config;
-  const int        min;
-  const int        max;
-  int              value;
-  QSpinBox&        valueEdit;
+  ToolUtilInteger*  self;
+  const std::string config;
+  const int         min;
+  const int         max;
+  int               value;
+  QSpinBox&         valueEdit;
 
   Impl (ToolUtilInteger* s, const QString& l, const std::string& c, int mi, int _default, int ma) 
     : self      (s) 
