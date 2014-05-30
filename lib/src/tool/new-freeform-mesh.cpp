@@ -82,14 +82,10 @@ struct ToolNewFreeformMesh::Impl {
       if (e.modifiers ().testFlag (Qt::ControlModifier)) {
         if (this->radiusUtil.runMouseMoveEvent (e)) {
           this->updateMesh ();
-          return true;
         }
       }
-      else {
-        if (this->posUtil.runMouseMoveEvent (e)) {
-          this->updateMesh ();
-          return true;
-        }
+      else if (this->posUtil.runMouseMoveEvent (e)) {
+        this->updateMesh ();
       }
     }
     else {
