@@ -5,6 +5,7 @@
 #include <glm/fwd.hpp>
 
 enum class RenderMode;
+class Color;
 
 class Mesh {
   public:
@@ -50,6 +51,8 @@ class Mesh {
     void         position          (const glm::vec3&);
     glm::vec3    position          () const;
     void         rotationMatrix    (const glm::mat4x4&);
+    const Color& color             () const;
+    void         color             (const Color&);
 
     static Mesh  cube              ();
     static Mesh  sphere            (unsigned int, unsigned int);

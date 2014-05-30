@@ -519,6 +519,8 @@ DELEGATE1        (void              , Mesh, translate  , const glm::vec3&)
 DELEGATE1        (void              , Mesh, position   , const glm::vec3&)
 DELEGATE_CONST   (glm::vec3         , Mesh, position)
 SETTER           (const glm::mat4x4&, Mesh, rotationMatrix)
+GETTER_CONST     (const Color&      , Mesh, color)
+SETTER           (const Color&      , Mesh, color)
 
 DELEGATE_STATIC  (Mesh, Mesh, cube)
 DELEGATE2_STATIC (Mesh, Mesh, sphere, unsigned int, unsigned int)
