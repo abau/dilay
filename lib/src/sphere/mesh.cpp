@@ -10,6 +10,8 @@
 #include "primitive/sphere.hpp"
 #include "primitive/ray.hpp"
 #include "sphere/node-intersection.hpp"
+#include "color.hpp"
+#include "config.hpp"
 
 typedef std::unique_ptr <SphereMeshNode::Impl> Child;
 
@@ -69,15 +71,22 @@ struct SphereMeshNode::Impl {
     }
     return sni.isIntersection ();
   }
+
+  static void setupMesh (Mesh& mesh) {
+    mesh = Mesh::icosphere (2);
+    mesh.renderMode (RenderMode::Smooth);
+    mesh.color      (Config::get <Color> ("/editor/color/initial-sphere-mesh"));
+  }
 };
 
 SphereMeshNode :: SphereMeshNode (SphereMeshNode::Impl* i) : impl (i) {}
 
-ID           (SphereMeshNode)
-GETTER_CONST (const glm::vec3&, SphereMeshNode, position)
-SETTER       (const glm::vec3&, SphereMeshNode, position)
-GETTER_CONST (float           , SphereMeshNode, radius)
-SETTER       (float           , SphereMeshNode, radius)
+ID               (SphereMeshNode)
+GETTER_CONST     (const glm::vec3&, SphereMeshNode, position)
+SETTER           (const glm::vec3&, SphereMeshNode, position)
+GETTER_CONST     (float           , SphereMeshNode, radius)
+SETTER           (float           , SphereMeshNode, radius)
+DELEGATE1_STATIC (void            , SphereMeshNode, setupMesh, Mesh&)
 
 struct SphereMesh::Impl {
   SphereMesh*                     self;
@@ -90,10 +99,9 @@ struct SphereMesh::Impl {
 
   Impl (SphereMesh* s, const Id& i) 
     : self (s)
-    , id (i) 
+    , id   (i) 
   {
-    this->mesh = Mesh::icosphere (3);
-    this->mesh.renderMode (RenderMode::Smooth);
+    SphereMeshNode::Impl::setupMesh (this->mesh);
   }
 
   void addNode (SphereMeshNode* parent, const glm::vec3& position) {

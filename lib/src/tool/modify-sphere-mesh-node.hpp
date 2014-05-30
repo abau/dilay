@@ -5,7 +5,7 @@
 
 class ToolModifySphereMeshNode : public Tool {
   public:
-    enum class Mode { NewMesh, NewNode, MoveNode };
+    enum class Mode { NewMesh, NewNode, ModifyNode };
 
     DECLARE_BIG3 (ToolModifySphereMeshNode, ViewMainWindow&, QContextMenuEvent&, Mode)
 
@@ -14,6 +14,9 @@ class ToolModifySphereMeshNode : public Tool {
   private:
     class Impl;
     Impl* impl;
+
+    void runRender            ();
+    bool runMouseMoveEvent    (QMouseEvent&);
 };
 
 #endif

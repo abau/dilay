@@ -7,6 +7,7 @@
 class Id;
 class PrimRay;
 class SphereNodeIntersection;
+class Mesh;
 
 class SphereMeshNode {
   public:
@@ -14,13 +15,15 @@ class SphereMeshNode {
     SphereMeshNode        (Impl*);
     DELETE_COPYMOVEASSIGN (SphereMeshNode)
 
-          Id              id       () const;
-          SphereMeshNode* parent   ();
-    const glm::vec3&      position () const;
-          float           radius   () const;
+           Id              id        () const;
+           SphereMeshNode* parent    ();
+    const  glm::vec3&      position  () const;
+           float           radius    () const;
 
-          void            position (const glm::vec3&);
-          void            radius   (float);
+           void            position  (const glm::vec3&);
+           void            radius    (float);
+
+    static void            setupMesh (Mesh&);
 
   private:
     friend class SphereMesh;
