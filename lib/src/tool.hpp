@@ -43,8 +43,8 @@ class Tool {
 
     virtual void runRender            ()             {}
     virtual bool runMouseMoveEvent    (QMouseEvent&) { return false; }
-    virtual bool runMousePressEvent   (QMouseEvent&) { return false; }
-    virtual bool runMouseReleaseEvent (QMouseEvent&) { return false; }
+    virtual bool runMousePressEvent   (QMouseEvent&) { this->dragIfHovered (); return false; }
+    virtual bool runMouseReleaseEvent (QMouseEvent&) { this->hoverIfDraged (); return false; }
     virtual bool runWheelEvent        (QWheelEvent&) { return false; }
 };
 

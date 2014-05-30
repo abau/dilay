@@ -94,16 +94,6 @@ struct ToolNewFreeformMesh::Impl {
     return false;
   }
 
-  bool runMousePressEvent (QMouseEvent&) {
-    this->self->dragIfHovered ();
-    return false;
-  }
-
-  bool runMouseReleaseEvent (QMouseEvent&) {
-    this->self->hoverIfDraged ();
-    return false;
-  }
-
   bool runWheelEvent (QWheelEvent& e) {
     if (e.modifiers ().testFlag (Qt::ControlModifier)) {
       if (e.angleDelta ().y () > 0) {
@@ -123,6 +113,4 @@ DELEGATE_BIG3_BASE ( ToolNewFreeformMesh, (ViewMainWindow& w, QContextMenuEvent&
 DELEGATE_STATIC (QString, ToolNewFreeformMesh, toolName)
 DELEGATE        (void   , ToolNewFreeformMesh, runRender)
 DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseMoveEvent, QMouseEvent&)
-DELEGATE1       (bool   , ToolNewFreeformMesh, runMousePressEvent, QMouseEvent&)
-DELEGATE1       (bool   , ToolNewFreeformMesh, runMouseReleaseEvent, QMouseEvent&)
-DELEGATE1       (bool, ToolNewFreeformMesh, runWheelEvent, QWheelEvent&)
+DELEGATE1       (bool   , ToolNewFreeformMesh, runWheelEvent, QWheelEvent&)
