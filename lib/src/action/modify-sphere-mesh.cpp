@@ -16,7 +16,7 @@ struct ActionModifySMesh :: Impl {
 
   void setPosition (SphereMeshNode& node, const glm::vec3& pos) {
     this->operation = Operation::SetPosition;
-    this->operandIds.setNode (0, node);
+    this->operandIds.setNode (0, &node);
     this->operandData.set <glm::vec3> ({node.position ()});
     node.position (pos);
   }
@@ -24,9 +24,9 @@ struct ActionModifySMesh :: Impl {
   void toggle (SphereMesh& mesh) {
     switch (this->operation) {
       case Operation::SetPosition: {
-        SphereMeshNode& node = this->operandIds.getSphereMeshNode (mesh, 0);
-        glm::vec3       pos  = node.position ();
-        node.position (this->operandData.get <glm::vec3> ());
+        SphereMeshNode* node = this->operandIds.getSphereMeshNode (mesh, 0);
+        glm::vec3       pos  = node->position ();
+        node->position (this->operandData.get <glm::vec3> ());
         this->operandData.set <glm::vec3> (pos);
       }
       default: assert (false);
