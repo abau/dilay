@@ -23,12 +23,12 @@ struct SphereMeshNode::Impl {
   glm::vec3        position;
   float            radius;
 
-  Impl (const Id& i, Impl* p, const glm::vec3& pos) 
+  Impl (const Id& i, Impl* p, const glm::vec3& pos, float radius) 
     : self       (this) 
     , id         (i)
     , parentImpl (p)
     , position   (pos)
-    , radius     (1.0f)
+    , radius     (radius)
   {}
 
   SphereMeshNode* parent () { 
@@ -38,8 +38,8 @@ struct SphereMeshNode::Impl {
       return nullptr;
   }
 
-  Impl& addChild (const Id& id, const glm::vec3& position) {
-    this->children.emplace_back (new Impl (id, this, position));
+  Impl& addChild (const Id& id, const glm::vec3& pos, float radius) {
+    this->children.emplace_back (new Impl (id, this, pos, radius));
     return *this->children.back ();
   }
 
@@ -104,19 +104,19 @@ struct SphereMesh::Impl {
     SphereMeshNode::Impl::setupMesh (this->mesh);
   }
 
-  void addNode (SphereMeshNode* parent, const glm::vec3& position) {
-    this->addNode (Id (), parent, position);
+  void addNode (SphereMeshNode* parent, const glm::vec3& pos, float radius) {
+    this->addNode (Id (), parent, pos, radius);
   }
 
-  void addNode (const Id& id, SphereMeshNode* parent, const glm::vec3& position) {
+  void addNode (const Id& id, SphereMeshNode* parent, const glm::vec3& pos, float radius) {
     assert (this->idMap.hasElement (id) == false);
     if (parent == nullptr) {
-      assert (this->_root == false);
-      this->_root.reset (new SphereMeshNode::Impl (id, nullptr, position));
+      assert (this->hasRoot () == false);
+      this->_root.reset (new SphereMeshNode::Impl (id, nullptr, pos, radius));
       this->idMap.insert (this->_root->id.id (), *this->_root);
     }
     else {
-      SphereMeshNode::Impl& c = parent->impl->addChild (id, position);
+      SphereMeshNode::Impl& c = parent->impl->addChild (id, pos, radius);
       this->idMap.insert (c.id.id (), c);
     }
   }
@@ -154,18 +154,23 @@ struct SphereMesh::Impl {
   }
 
   SphereMeshNode& root () {
-    assert (this->_root);
+    assert (this->hasRoot ());
     return this->_root->self;
+  }
+
+  bool hasRoot () const {
+    return bool (this->_root);
   }
 };
 
 DELEGATE1_BIG3_SELF       (SphereMesh, const Id&)
 DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 
-ID        (SphereMesh)
-DELEGATE2 (void           , SphereMesh, addNode, SphereMeshNode*, const glm::vec3&)
-DELEGATE3 (void           , SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&)
-DELEGATE  (void           , SphereMesh, render)
-DELEGATE2 (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
-DELEGATE1 (SphereMeshNode&, SphereMesh, node, const Id&)
-DELEGATE  (SphereMeshNode&, SphereMesh, root)
+ID             (SphereMesh)
+DELEGATE3      (void           , SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE4      (void           , SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE       (void           , SphereMesh, render)
+DELEGATE2      (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
+DELEGATE1      (SphereMeshNode&, SphereMesh, node, const Id&)
+DELEGATE       (SphereMeshNode&, SphereMesh, root)
+DELEGATE_CONST (bool           , SphereMesh, hasRoot)
