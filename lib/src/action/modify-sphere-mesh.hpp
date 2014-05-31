@@ -12,7 +12,8 @@ class ActionModifySMesh : public ActionOn <SphereMesh> {
   public: 
     DECLARE_BIG3 (ActionModifySMesh)
 
-    void setPosition (SphereMeshNode&, const glm::vec3&);
+    void newNode    (SphereMesh&, SphereMeshNode*, const glm::vec3&, float);
+    void modifyNode (SphereMeshNode&, const glm::vec3&, float);
 
   private:
     void runUndo (SphereMesh&);

@@ -104,20 +104,22 @@ struct SphereMesh::Impl {
     SphereMeshNode::Impl::setupMesh (this->mesh);
   }
 
-  void addNode (SphereMeshNode* parent, const glm::vec3& pos, float radius) {
-    this->addNode (Id (), parent, pos, radius);
+  SphereMeshNode& addNode (SphereMeshNode* parent, const glm::vec3& pos, float radius) {
+    return this->addNode (Id (), parent, pos, radius);
   }
 
-  void addNode (const Id& id, SphereMeshNode* parent, const glm::vec3& pos, float radius) {
+  SphereMeshNode& addNode (const Id& id, SphereMeshNode* parent, const glm::vec3& pos, float radius) {
     assert (this->idMap.hasElement (id) == false);
     if (parent == nullptr) {
       assert (this->hasRoot () == false);
       this->_root.reset (new SphereMeshNode::Impl (id, nullptr, pos, radius));
       this->idMap.insert (this->_root->id.id (), *this->_root);
+      return this->_root->self;
     }
     else {
       SphereMeshNode::Impl& c = parent->impl->addChild (id, pos, radius);
       this->idMap.insert (c.id.id (), c);
+      return c.self;
     }
   }
 
@@ -167,8 +169,8 @@ DELEGATE1_BIG3_SELF       (SphereMesh, const Id&)
 DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 
 ID             (SphereMesh)
-DELEGATE3      (void           , SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
-DELEGATE4      (void           , SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE3      (SphereMeshNode&, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE4      (SphereMeshNode&, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
 DELEGATE       (void           , SphereMesh, render)
 DELEGATE2      (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
 DELEGATE1      (SphereMeshNode&, SphereMesh, node, const Id&)
