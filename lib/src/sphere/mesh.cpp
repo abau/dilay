@@ -76,6 +76,7 @@ struct SphereMeshNode::Impl {
     mesh = Mesh::icosphere (2);
     mesh.renderMode (RenderMode::Smooth);
     mesh.color      (Config::get <Color> ("/editor/color/initial-sphere-mesh"));
+    mesh.bufferData ();
   }
 };
 
@@ -171,6 +172,7 @@ DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 ID             (SphereMesh)
 DELEGATE3      (SphereMeshNode&, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
 DELEGATE4      (SphereMeshNode&, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE1      (void           , SphereMesh, removeNode, const Id&)
 DELEGATE       (void           , SphereMesh, render)
 DELEGATE2      (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
 DELEGATE1      (SphereMeshNode&, SphereMesh, node, const Id&)

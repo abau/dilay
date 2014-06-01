@@ -61,6 +61,9 @@ struct ViewGlWidget::Impl {
     if (this->mainWindow.properties ().selection ().show (MeshType::Freeform)) {
       State::scene ().render (MeshType::Freeform);
     }
+    if (this->mainWindow.properties ().selection ().show (MeshType::Sphere)) {
+      State::scene ().render (MeshType::Sphere);
+    }
     if (State::hasTool ()) {
       State::tool ().render ();
     }

@@ -16,6 +16,8 @@
 #include "intersection.hpp"
 #include "camera.hpp"
 #include "sphere/mesh.hpp"
+#include "action/new-sphere-mesh.hpp"
+#include "action/modify-sphere-mesh.hpp"
 
 struct ToolModifySphereMeshNode::Impl {
   ToolModifySphereMeshNode*      self;
@@ -41,11 +43,14 @@ struct ToolModifySphereMeshNode::Impl {
 
     SphereMeshNode::setupMesh (this->mesh);
     this->updateMesh          ();
-    this->mesh.bufferData     ();
     this->hover               (this->self->mainWindow ().glWidget ().cursorPosition ());
   }
 
   ~Impl () {
+    if (this->mode == ToolModifySphereMeshNode::Mode::NewMesh) {
+      State::history ().add <ActionNewSphereMesh> ()->run ( this->meshGeometry.center ()
+                                                          , this->meshGeometry.radius ());
+    }
   }
 
   static QString toolName (ToolModifySphereMeshNode::Mode mode) {
