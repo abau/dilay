@@ -311,6 +311,9 @@ struct OctreeNode::Impl {
     else {
       e->second = e->second + 1;
     }
+    for (const Child& c : this->children) {
+      c->updateStatistics (stats);
+    }
   }
 
   void forEachFace (const std::function <void (WingedFace&)>& f) {
