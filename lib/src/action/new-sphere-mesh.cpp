@@ -1,34 +1,31 @@
-#include <glm/glm.hpp>
 #include "action/new-sphere-mesh.hpp"
-#include "state.hpp"
 #include "action/ids.hpp"
+#include "action/modify-sphere-mesh.hpp"
+#include "state.hpp"
 #include "sphere/mesh.hpp"
 #include "scene.hpp"
+#include "id.hpp"
 
 struct ActionNewSphereMesh :: Impl {
-  ActionIds ids;
-  glm::vec3 position;
-  float     radius;
+  ActionIds         ids;
+  ActionModifySMesh addRootAction;
 
-  SphereMesh& run (const glm::vec3& p, float r) {
+  SphereMesh& run (const glm::vec3& pos, float r) {
     SphereMesh& sMesh = State::scene ().newSphereMesh ();
-    sMesh.root ().position (p);
-    sMesh.root ().radius   (r);
-
-    this->ids.setMesh (0, sMesh);
-    this->position = p;
-    this->radius   = r;
+    this->ids.setMesh           (0, sMesh);
+    this->addRootAction.newNode (sMesh, nullptr, pos, r);
     return sMesh;
   }
 
   void runUndo () {
-    State::scene ().removeWingedMesh (this->ids.getIdRef (0));
+    SphereMesh& sMesh = this->ids.getSphereMesh (0);
+    this->addRootAction.undo         (sMesh);
+    State::scene ().removeWingedMesh (sMesh.id ());
   }
 
   void runRedo () {
     SphereMesh& sMesh = State::scene ().newSphereMesh (this->ids.getIdRef (0));
-    sMesh.root ().position (this->position);
-    sMesh.root ().radius   (this->radius);
+    this->addRootAction.redo (sMesh);
   }
 };
 
