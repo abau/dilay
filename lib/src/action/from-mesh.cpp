@@ -112,7 +112,13 @@ struct ActionFromMesh :: Impl {
       this->actions.add <PAModifyWEdge> ()->predecessor (*e3, f, e2);
       this->actions.add <PAModifyWEdge> ()->successor   (*e3, f, e1);
     }
-    w.writeAndBuffer ();
+
+    if (this->self->writeMesh ()) {
+      w.write ();
+    }
+    if (this->self->bufferMesh ()) {
+      w.bufferData ();
+    }
   }
 
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
