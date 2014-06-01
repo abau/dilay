@@ -135,6 +135,7 @@ struct Camera::Impl {
     this->viewRotation = glm::lookAt ( glm::normalize (this->toEyePoint)
                                      , glm::vec3 (0.0f)
                                      , this->up );
+    Renderer::setEyePoint (this->eyePoint ());
   }
 
   glm::vec3 eyePoint () const {

@@ -28,13 +28,15 @@ struct ShaderIds {
   GLuint   mvpId;
   GLuint   colorId;
   GLuint   ambientId;
+  GLuint   eyePointId;
   LightIds lightIds [numLights];
 
   ShaderIds () {
-    this->programId = 0;
-    this->mvpId     = 0;
-    this->colorId   = 0;
-    this->ambientId = 0;
+    this->programId  = 0;
+    this->mvpId      = 0;
+    this->colorId    = 0;
+    this->ambientId  = 0;
+    this->eyePointId = 0;
   }
 };
 
@@ -47,6 +49,7 @@ struct GlobalLightUniforms {
 struct GlobalUniforms {
   GlobalLightUniforms lightUniforms [numLights];
   Color               ambient;
+  glm::vec3           eyePoint;
 };
 
 struct Renderer::Impl {
@@ -94,6 +97,7 @@ struct Renderer::Impl {
         s->mvpId                    = glGetUniformLocation (p, "mvp");
         s->colorId                  = glGetUniformLocation (p, "color");
         s->ambientId                = glGetUniformLocation (p, "ambient");
+        s->eyePointId               = glGetUniformLocation (p, "eyePoint");
         s->lightIds[0].positionId   = glGetUniformLocation (p, "light1Position");
         s->lightIds[0].colorId      = glGetUniformLocation (p, "light1Color");
         s->lightIds[0].irradianceId = glGetUniformLocation (p, "light1Irradiance");
@@ -126,6 +130,9 @@ struct Renderer::Impl {
     OpenGLUtil :: glUniformVec3 
       (this->activeShaderIndex->ambientId, this->globalUniforms.ambient.vec3 ());
 
+    OpenGLUtil :: glUniformVec3 
+      (this->activeShaderIndex->eyePointId, this->globalUniforms.eyePoint);
+
     for (unsigned int i = 0; i < numLights; i++) {
       OpenGLUtil :: glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].positionId
@@ -155,6 +162,10 @@ struct Renderer::Impl {
 
   void setAmbient (const Color& c) {
     this->globalUniforms.ambient = c;
+  }
+
+  void setEyePoint (const glm::vec3& e) {
+    this->globalUniforms.eyePoint = e;
   }
 
   void setLightPosition (unsigned int i, const glm::vec3& p) {
@@ -193,6 +204,7 @@ DELEGATE1_GLOBAL (void,Renderer,setMvp            ,const GLfloat*)
 DELEGATE1_GLOBAL (void,Renderer,setColor3         ,const Color&)
 DELEGATE1_GLOBAL (void,Renderer,setColor4         ,const Color&)
 DELEGATE1_GLOBAL (void,Renderer,setAmbient        ,const Color&)
+DELEGATE1_GLOBAL (void,Renderer,setEyePoint       ,const glm::vec3&)
 DELEGATE2_GLOBAL (void,Renderer,setLightPosition  ,unsigned int, const glm::vec3&)
 DELEGATE2_GLOBAL (void,Renderer,setLightColor     ,unsigned int, const Color&)
 DELEGATE2_GLOBAL (void,Renderer,setLightIrradiance,unsigned int, float)

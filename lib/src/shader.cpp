@@ -66,6 +66,7 @@ const std::string Shader::simpleFragmentShader () {
     ;
 }
 
+/*
 const std::string Shader::flatVertexShader () {
   return
     "#version 120                                                                            \n"
@@ -108,6 +109,56 @@ const std::string Shader::flatFragmentShader () {
     "                                                                                        \n"
     "  vec3  light        = ambient + light1 + light2;                                       \n"
     "  gl_FragColor       = vec4 (color * light, 1.0);                                       \n"
+    "}                                                                                       \n"
+    ;
+}
+*/
+
+const std::string Shader::flatVertexShader () {
+  return
+    "#version 120                                                                            \n"
+    "                                                                                        \n"
+    "uniform   mat4 mvp;                                                                     \n"
+    "attribute vec3 position;                                                                \n"
+    "attribute vec3 normal;                                                                  \n"
+    "                                                                                        \n"
+    "varying   vec3 varPosition;                                                             \n"
+    "varying   vec3 varNormal;                                                               \n"
+    "                                                                                        \n"
+    "void main () {                                                                          \n"
+    "  gl_Position = mvp * vec4 (position,1);                                                \n"
+    "  varPosition = position;                                                               \n"
+    "  varNormal   = normal;                                                                 \n"
+    "}                                                                                       \n"
+    ;
+}
+
+const std::string Shader::flatFragmentShader () {
+  return
+    "#version 120                                                                            \n"
+    "                                                                                        \n"
+    "uniform vec3  color;                                                                    \n"
+    "uniform vec3  ambient;                                                                  \n"
+    "uniform vec3  eyePoint;                                                                 \n"
+    "uniform vec3  light1Position;                                                           \n"
+    "uniform vec3  light1Color;                                                              \n"
+    "uniform float light1Irradiance;                                                         \n"
+    "uniform vec3  light2Position;                                                           \n"
+    "uniform vec3  light2Color;                                                              \n"
+    "uniform float light2Irradiance;                                                         \n"
+    "                                                                                        \n"
+    "varying vec3 varPosition;                                                               \n"
+    "varying vec3 varNormal;                                                                 \n"
+    "                                                                                        \n"
+    "void main () {                                                                          \n"
+    //"  vec3  normal       = normalize(cross(dFdx(varPosition),dFdy(varPosition)));           \n"
+    "  vec3  toE          = normalize (eyePoint - varPosition); \n"
+    "  float f = dot (varNormal, toE); \n"
+    "  if (f < 0.2) { \n"
+    "    gl_FragColor       = vec4 (1.0,0.0,0.0, 1.0); \n"
+    "  } else { \n"
+    "    gl_FragColor       = vec4 (color * vec3 (f), 1.0);                                       \n"
+    "  }                                                                                     \n"
     "}                                                                                       \n"
     ;
 }

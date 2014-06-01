@@ -20,6 +20,7 @@ class Renderer {
     static void setColor3          (const Color&);
     static void setColor4          (const Color&);
     static void setAmbient         (const Color&);
+    static void setEyePoint        (const glm::vec3&);
     static void setLightPosition   (unsigned int, const glm::vec3&);
     static void setLightColor      (unsigned int, const Color&);
     static void setLightIrradiance (unsigned int, float);
