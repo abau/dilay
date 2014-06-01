@@ -11,12 +11,13 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
   public:
     DECLARE_BIG3_VIRTUAL (ActionOnPostProcessedWMesh)
 
+    void writeMesh  (bool);
+    void bufferMesh (bool);
+    bool writeMesh  () const;
+    bool bufferMesh () const;
+
   protected:
     WingedFace& realignFace (WingedMesh&, const WingedFace&);
-    void        writeMesh   (bool);
-    void        bufferMesh  (bool);
-    bool        writeMesh   () const;
-    bool        bufferMesh  () const;
 
   private:
     void runUndo (WingedMesh&);
