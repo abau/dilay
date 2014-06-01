@@ -3,6 +3,7 @@
 
 #include <unordered_set>
 #include <unordered_map>
+#include <functional>
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
