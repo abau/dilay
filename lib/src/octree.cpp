@@ -288,7 +288,7 @@ struct OctreeNode::Impl {
 
   unsigned int numFaces () const { return this->faces.size (); }
 
-  void updateStatistics (OctreeStatistics& stats) {
+  void updateStatistics (OctreeStatistics& stats) const {
     const unsigned int d  = this->depth;
     const unsigned int f  = this->numFaces ();
     stats.numNodes        = stats.numNodes + 1;
