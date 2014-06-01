@@ -15,6 +15,8 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
     WingedFace& realignFace (WingedMesh&, const WingedFace&);
     void        writeMesh   (bool);
     void        bufferMesh  (bool);
+    bool        writeMesh   () const;
+    bool        bufferMesh  () const;
 
   private:
     void runUndo (WingedMesh&);

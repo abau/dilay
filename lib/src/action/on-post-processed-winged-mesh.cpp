@@ -69,9 +69,11 @@ struct ActionOnPostProcessedWMesh :: Impl {
 
 DELEGATE_BIG3 (ActionOnPostProcessedWMesh)
 
-DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, const WingedFace&)
-DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeMesh, bool)
-DELEGATE1 (void       , ActionOnPostProcessedWMesh, bufferMesh, bool)
+DELEGATE2      (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, const WingedFace&)
+DELEGATE1      (void       , ActionOnPostProcessedWMesh, writeMesh, bool)
+DELEGATE1      (void       , ActionOnPostProcessedWMesh, bufferMesh, bool)
+DELEGATE_CONST (bool       , ActionOnPostProcessedWMesh, writeMesh)
+DELEGATE_CONST (bool       , ActionOnPostProcessedWMesh, bufferMesh)
 
 void ActionOnPostProcessedWMesh :: runUndo (WingedMesh& mesh) {
   this->runUndoBeforePostProcessing (mesh);
