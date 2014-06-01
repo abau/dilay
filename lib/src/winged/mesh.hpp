@@ -57,7 +57,6 @@ class WingedMesh {
     void            writeNormals      (); 
     void            write             (); 
     void            bufferData        ();
-    void            writeAndBuffer    ();
     void            render            ();
     void            reset             ();
     void            initOctreeRoot    (const glm::vec3&, float);

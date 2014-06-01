@@ -179,11 +179,6 @@ struct WingedMesh::Impl {
     this->mesh.bufferData   (); 
   }
 
-  void writeAndBuffer () {
-    this->write      ();
-    this->bufferData ();
-  }
-
   void render      () { 
     this->mesh.render   (); 
 #ifdef DILAY_RENDER_OCTREE
@@ -268,7 +263,6 @@ DELEGATE        (void, WingedMesh, writeIndices)
 DELEGATE        (void, WingedMesh, writeNormals)
 DELEGATE        (void, WingedMesh, write)
 DELEGATE        (void, WingedMesh, bufferData)
-DELEGATE        (void, WingedMesh, writeAndBuffer)
 DELEGATE        (void, WingedMesh, render)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, initOctreeRoot, const glm::vec3&, float)
