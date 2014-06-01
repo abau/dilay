@@ -5,6 +5,7 @@ class WingedMesh;
 class WingedFace;
 class WingedEdge;
 class WingedVertex;
+class Octree;
 
 namespace WingedUtil {
   /** `printStatistics (w,b)` prints some statistics about `w`.
@@ -15,6 +16,7 @@ namespace WingedUtil {
   void printStatistics (                     const WingedEdge&);
   void printStatistics (const WingedMesh&  , const WingedFace&  , bool = true);
   void printStatistics (const WingedMesh&  , bool = true);
+  void printStatistics (const Octree&);
 }
 
 #endif

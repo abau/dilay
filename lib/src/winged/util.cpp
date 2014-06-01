@@ -87,8 +87,11 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
       WingedUtil :: printStatistics (mesh,face,printDerived);
     });
   }
-  OctreeStatistics oStats = mesh.octree ().statistics ();
+  WingedUtil::printStatistics (mesh.octree ());
+}
 
+void WingedUtil :: printStatistics (const Octree& octree) {
+  OctreeStatistics oStats = octree.statistics ();
   std::cout << "Octree:"
             << "\n\tnum nodes:\t\t"        << oStats.numNodes
             << "\n\tnum faces:\t\t"        << oStats.numFaces
