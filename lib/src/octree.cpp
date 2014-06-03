@@ -141,7 +141,7 @@ struct OctreeNode::Impl {
 
   bool contains (const glm::vec3& v) {
     const glm::vec3 min = this->center - glm::vec3 ( (this->width * 0.5f)
-                                                   - std::numeric_limits<float>::epsilon());
+                                                   + std::numeric_limits<float>::epsilon());
     const glm::vec3 max = this->center + glm::vec3 ( (this->width * 0.5f)
                                                    + std::numeric_limits<float>::epsilon());
     return glm::all ( glm::lessThanEqual (min, v) )
