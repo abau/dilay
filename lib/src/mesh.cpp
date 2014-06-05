@@ -32,35 +32,42 @@ struct Mesh::Impl {
   GLuint                      normalBufferId;
 
   RenderMode                  renderMode;
+  bool                        selected;
+
+  float                       selectionBrightness;
 
   Impl () { 
-    this->scalingMatrix     = glm::mat4x4 (1.0f);
-    this->rotationMatrix    = glm::mat4x4 (1.0f);
-    this->translationMatrix = glm::mat4x4 (1.0f);
-    this->arrayObjectId     = 0;
-    this->vertexBufferId    = 0;
-    this->indexBufferId     = 0;
-    this->normalBufferId    = 0;
-    this->renderMode        = RenderMode::Flat;
+    this->scalingMatrix       = glm::mat4x4 (1.0f);
+    this->rotationMatrix      = glm::mat4x4 (1.0f);
+    this->translationMatrix   = glm::mat4x4 (1.0f);
+    this->arrayObjectId       = 0;
+    this->vertexBufferId      = 0;
+    this->indexBufferId       = 0;
+    this->normalBufferId      = 0;
+    this->renderMode          = RenderMode::Flat;
+    this->selected            = false;
 
-    this->color             = Config::get <Color> ("/editor/color/initial-mesh");
-    this->wireframeColor    = Config::get <Color> ("/editor/color/initial-mesh-wireframe");
+    this->color               = Config::get <Color> ("/editor/color/mesh");
+    this->wireframeColor      = Config::get <Color> ("/editor/color/mesh-wireframe");
+    this->selectionBrightness = Config::get <float> ("/editor/color/selection-brightness");
   }
 
   Impl (const Impl& source)
-              : scalingMatrix     (source.scalingMatrix)
-              , rotationMatrix    (source.rotationMatrix)
-              , translationMatrix (source.translationMatrix)
-              , vertices          (source.vertices)
-              , indices           (source.indices)
-              , normals           (source.normals)
-              , color             (source.color)
-              , wireframeColor    (source.wireframeColor)
-              , arrayObjectId     (0)
-              , vertexBufferId    (0)
-              , indexBufferId     (0)
-              , normalBufferId    (0)
-              , renderMode        (source.renderMode) 
+              : scalingMatrix       (source.scalingMatrix)
+              , rotationMatrix      (source.rotationMatrix)
+              , translationMatrix   (source.translationMatrix)
+              , vertices            (source.vertices)
+              , indices             (source.indices)
+              , normals             (source.normals)
+              , color               (source.color)
+              , wireframeColor      (source.wireframeColor)
+              , arrayObjectId       (0)
+              , vertexBufferId      (0)
+              , indexBufferId       (0)
+              , normalBufferId      (0)
+              , renderMode          (source.renderMode) 
+              , selected            (source.selected)
+              , selectionBrightness (source.selectionBrightness)
               {}
 
   ~Impl () { this->reset (); }
@@ -215,7 +222,12 @@ struct Mesh::Impl {
 
   void renderSolid () {
     this->renderBegin  ();
-    Renderer :: setColor3 (this->color);
+    if (this->selected) {
+      Renderer :: setColor3 (Color (this->color, this->selectionBrightness));
+    }
+    else {
+      Renderer :: setColor3 (this->color);
+    }
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
     this->renderEnd    ();
   }
@@ -521,6 +533,8 @@ DELEGATE_CONST   (glm::vec3         , Mesh, position)
 SETTER           (const glm::mat4x4&, Mesh, rotationMatrix)
 GETTER_CONST     (const Color&      , Mesh, color)
 SETTER           (const Color&      , Mesh, color)
+GETTER_CONST     (bool              , Mesh, selected)
+SETTER           (bool              , Mesh, selected)
 
 DELEGATE_STATIC  (Mesh, Mesh, cube)
 DELEGATE2_STATIC (Mesh, Mesh, sphere, unsigned int, unsigned int)
