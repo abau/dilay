@@ -48,9 +48,10 @@ Color :: Color (const Color& c, float f)   : Color (c) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Color& c) {
-  os << "Color { red = "   << c.r () 
-     <<       ", green = " << c.g () 
-     <<       ", blue = "  << c.b () 
+  os << "Color { red = "     << c.r       () 
+     <<       ", green = "   << c.g       () 
+     <<       ", blue = "    << c.b       () 
+     <<       ", opacity = " << c.opacity () 
      << "}";
   return os;
 }
