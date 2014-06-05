@@ -18,6 +18,7 @@
 #include "mesh.hpp"
 #include "renderer.hpp"
 #include "color.hpp"
+#include "render-mode.hpp"
 #endif
 
 typedef std::unique_ptr <OctreeNode::Impl> Child;
@@ -44,6 +45,17 @@ class FaceToInsert {
     const glm::vec3    minimum;
 };
 
+/* node indices:
+ *   (-,-,-) -> 0
+ *   (-,-,+) -> 1
+ *   (-,+,-) -> 2
+ *   (-,+,+) -> 3
+ *   (+,-,-) -> 4
+ *   (+,-,+) -> 5
+ *   (+,+,-) -> 6
+ *   (+,+,+) -> 7
+ */
+
 /** Octree node implementation */
 struct OctreeNode::Impl {
   IdObject            id;
@@ -68,6 +80,8 @@ struct OctreeNode::Impl {
     , width  (w)
     , depth  (d)
     , parent (p) {
+
+      static_assert (Impl::relativeMinFaceExtent < 0.5f, "relativeMinFaceExtent must be smaller than 0.5f");
 
 #ifdef DILAY_RENDER_OCTREE
       float q = w * 0.5f;
@@ -100,8 +114,9 @@ struct OctreeNode::Impl {
       this->mesh.addIndex (2); this->mesh.addIndex (0); 
       this->mesh.addIndex (0); this->mesh.addIndex (4); 
 
-      this->mesh.setPosition (this->center);
-      this->mesh.bufferData  ();
+      this->mesh.position   (this->center);
+      this->mesh.renderMode (RenderMode::Wireframe);
+      this->mesh.bufferData ();
 #endif
   }
         Impl            (const Impl&) = delete;
@@ -117,8 +132,7 @@ struct OctreeNode::Impl {
     , parent   (std::move (source.parent))
 #ifdef DILAY_RENDER_OCTREE
     , mesh     (std::move (source.mesh))
-
-  { this->mesh.bufferData  (); }
+  { this->mesh.bufferData (); }
 #else
   {}
 #endif
@@ -139,17 +153,29 @@ struct OctreeNode::Impl {
 #endif
   }
 
-  bool contains (const glm::vec3& v) {
-    const glm::vec3 min = this->center - glm::vec3 ( (this->width * 0.5f)
-                                                   + std::numeric_limits<float>::epsilon());
-    const glm::vec3 max = this->center + glm::vec3 ( (this->width * 0.5f)
-                                                   + std::numeric_limits<float>::epsilon());
+  bool approxContains (const glm::vec3& v) const {
+    const glm::vec3 min = this->center - glm::vec3 (this->width * 0.5f);
+    const glm::vec3 max = this->center + glm::vec3 (this->width * 0.5f);
     return glm::all ( glm::lessThanEqual (min, v) )
        &&  glm::all ( glm::lessThanEqual (v, max) );
   }
 
-  bool contains (const FaceToInsert& f) {
-    return this->contains (f.center) && f.oneDimExtent <= this->width;
+  bool approxContains (const FaceToInsert& f) const {
+    return this->approxContains (f.center) && f.oneDimExtent <= this->width;
+  }
+
+  unsigned int childIndex (const glm::vec3& pos) const {
+    unsigned int index = 0;
+    if (this->center.x < pos.x) {
+      index += 4;
+    }
+    if (this->center.y < pos.y) {
+      index += 2;
+    }
+    if (this->center.z < pos.z) {
+      index += 1;
+    }
+    return index;
   }
 
   void makeChildren () {
@@ -174,23 +200,16 @@ struct OctreeNode::Impl {
   }
 
   WingedFace& insertIntoChild (const FaceToInsert& f) {
-    assert (this->contains (f));
     if (this->children.empty ()) {
       this->makeChildren           ();
       return this->insertIntoChild (f);
     }
     else {
-      for (Child& child : this->children) {
-        if (child->contains (f))
-          return child->insertFace (f);
-      }
-      assert (false);
+      return this->children[this->childIndex (f.center)]->insertFace (f);
     }
   }
 
   WingedFace& insertFace (const FaceToInsert& f) {
-    assert (this->contains (f));
-
     if (f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
       return this->insertIntoChild (f);
     }
@@ -361,7 +380,7 @@ struct Octree::Impl {
 
   WingedFace& insertFace (const FaceToInsert& faceToInsert) {
     assert (this->root);
-    if (this->root->contains (faceToInsert)) {
+    if (this->root->approxContains (faceToInsert)) {
       WingedFace& wingedFace = this->root->insertFace (faceToInsert);
       this->idMap.insert (wingedFace);
       return wingedFace;
