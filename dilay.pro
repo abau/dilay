@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS  = lib app
+SUBDIRS  = lib app test
