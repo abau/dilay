@@ -13,6 +13,9 @@ class Color {
     Color          (const glm::vec3&);
     Color          (const glm::vec4&);
 
+    // copies and scales a color using `scale`
+    Color          (const Color&, float);
+
     float r        () const;
     float g        () const;
     float b        () const;
@@ -22,6 +25,9 @@ class Color {
     void  g        (float);
     void  b        (float);
     void  opacity  (float);
+
+    // `scale` does not scale opacity
+    void  scale    (float);
 
     glm::vec3 vec3 () const;
     glm::vec4 vec4 () const;
