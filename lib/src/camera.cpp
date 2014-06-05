@@ -61,7 +61,8 @@ struct Camera::Impl {
 
   void modelViewProjection (const glm::mat4x4& model) const {
     glm::mat4x4 mvp = this->projection * this->view * model;
-    Renderer :: setMvp (&mvp[0][0]);
+    Renderer :: setMvp   (&mvp  [0][0]);
+    Renderer :: setModel (&model[0][0]);
   }
 
   void rotationProjection () const {

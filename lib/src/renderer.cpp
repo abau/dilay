@@ -26,6 +26,7 @@ struct LightIds {
 struct ShaderIds {
   GLuint   programId;
   GLuint   mvpId;
+  GLuint   modelId;
   GLuint   colorId;
   GLuint   ambientId;
   GLuint   eyePointId;
@@ -34,6 +35,7 @@ struct ShaderIds {
   ShaderIds () {
     this->programId  = 0;
     this->mvpId      = 0;
+    this->modelId    = 0;
     this->colorId    = 0;
     this->ambientId  = 0;
     this->eyePointId = 0;
@@ -95,6 +97,7 @@ struct Renderer::Impl {
         ShaderIds *s                = &this->shaderIds [i];
         GLuint     p                = s->programId;
         s->mvpId                    = glGetUniformLocation (p, "mvp");
+        s->modelId                  = glGetUniformLocation (p, "model");
         s->colorId                  = glGetUniformLocation (p, "color");
         s->ambientId                = glGetUniformLocation (p, "ambient");
         s->eyePointId               = glGetUniformLocation (p, "eyePoint");
@@ -150,6 +153,11 @@ struct Renderer::Impl {
     glUniformMatrix4fv (this->activeShaderIndex->mvpId, 1, GL_FALSE, mvp);
   }
 
+  void setModel (const GLfloat* model) {
+    assert (this->activeShaderIndex);
+    glUniformMatrix4fv (this->activeShaderIndex->modelId, 1, GL_FALSE, model);
+  }
+
   void setColor3 (const Color& c) {
     assert (this->activeShaderIndex);
     OpenGLUtil :: glUniformVec3 (this->activeShaderIndex->colorId, c.vec3 ());
@@ -201,6 +209,7 @@ DELEGATE_GLOBAL  (void,Renderer,initialize)
 DELEGATE_GLOBAL  (void,Renderer,shutdown)
 DELEGATE1_GLOBAL (void,Renderer,setProgram        ,const RenderMode&)
 DELEGATE1_GLOBAL (void,Renderer,setMvp            ,const GLfloat*)
+DELEGATE1_GLOBAL (void,Renderer,setModel          ,const GLfloat*)
 DELEGATE1_GLOBAL (void,Renderer,setColor3         ,const Color&)
 DELEGATE1_GLOBAL (void,Renderer,setColor4         ,const Color&)
 DELEGATE1_GLOBAL (void,Renderer,setAmbient        ,const Color&)

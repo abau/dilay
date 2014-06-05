@@ -66,12 +66,12 @@ const std::string Shader::simpleFragmentShader () {
     ;
 }
 
-/*
 const std::string Shader::flatVertexShader () {
   return
     "#version 120                                                                            \n"
     "                                                                                        \n"
     "uniform   mat4 mvp;                                                                     \n"
+    "uniform   mat4 model;                                                                   \n"
     "attribute vec3 position;                                                                \n"
     "attribute vec3 normal;                                                                  \n"
     "                                                                                        \n"
@@ -79,7 +79,7 @@ const std::string Shader::flatVertexShader () {
     "                                                                                        \n"
     "void main () {                                                                          \n"
     "  gl_Position = mvp * vec4 (position,1);                                                \n"
-    "  varPosition = position;                                                               \n"
+    "  varPosition = vec3 (model * vec4 (position, 1));                                      \n"
     "}                                                                                       \n"
     ;
 }
@@ -112,8 +112,8 @@ const std::string Shader::flatFragmentShader () {
     "}                                                                                       \n"
     ;
 }
-*/
 
+/*
 const std::string Shader::flatVertexShader () {
   return
     "#version 120                                                                            \n"
@@ -127,7 +127,7 @@ const std::string Shader::flatVertexShader () {
     "                                                                                        \n"
     "void main () {                                                                          \n"
     "  gl_Position = mvp * vec4 (position,1);                                                \n"
-    "  varPosition = position;                                                               \n"
+    "  varPosition = vec3 (gl_Position);                                                     \n"
     "  varNormal   = normal;                                                                 \n"
     "}                                                                                       \n"
     ;
@@ -162,3 +162,4 @@ const std::string Shader::flatFragmentShader () {
     "}                                                                                       \n"
     ;
 }
+*/
