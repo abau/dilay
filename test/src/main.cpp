@@ -22,7 +22,7 @@ void octreeTest2 ();
 int main () {
   QCoreApplication::setApplicationName ("dilay");
 
-//  octreeTest1 ();
+  octreeTest1 ();
   octreeTest2 ();
 
   std::cout << "all tests run successfully\n";
@@ -40,8 +40,8 @@ void octreeTest1 () {
   std::uniform_real_distribution <float> scaleD  (0.00001f, 10.0f);
   std::uniform_real_distribution <float> twoPiD  (0.0f, 2.0f * glm::pi<float> ());
 
-  for (unsigned int i = 0; i < 100000; i++) {
-    if (i % 10000 == 0) {
+  for (unsigned int i = 0; i < 10000; i++) {
+    if (i % 1000 == 0) {
       std::cout << "inserted " << i << " faces in octree\n";
     }
     glm::vec3 m1 (-1.0f, 0.0f, 0.0f);
