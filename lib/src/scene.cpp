@@ -85,13 +85,59 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  void unselectAll () {
+  bool unselectAll (WingedMesh* notWM) { return this->unselectAll (notWM  , nullptr); }
+  bool unselectAll (SphereMesh* notSM) { return this->unselectAll (nullptr, notSM  ); }
+  bool unselectAll (                 ) { return this->unselectAll (nullptr, nullptr); }
+
+  bool unselectAll (WingedMesh* notWM, SphereMesh* notSM) {
+    bool update = false;
     for (WingedMesh& m : this->wingedMeshes) {
-      m.selected (false);
+      if (&m != notWM && m.selected ()) {
+        m.selected (false);
+        update = true;
+      }
     }
     for (SphereMesh& m : this->sphereMeshes) {
-      m.selected (false);
+      if (&m != notSM && m.subselected ()) {
+        m.selected (false);
+        update = true;
+      }
     }
+    return update;
+  }
+
+  bool selectIntersection (MeshType t, const PrimRay& ray) {
+    bool update = false;
+
+    if (t == MeshType::Freeform) {
+      WingedFaceIntersection intersection;
+      if (this->intersects (t, ray, intersection)) {
+        update = this->unselectAll (&intersection.mesh ());
+
+        if (intersection.mesh ().selected () == false) {
+          intersection.mesh ().selected (true);
+          update = true;
+        }
+      }
+      else {
+        update = this->unselectAll ();
+      }
+    }
+    else if (t == MeshType::Sphere) {
+      SphereNodeIntersection intersection;
+      if (this->intersects (ray, intersection)) {
+        update = this->unselectAll (&intersection.mesh ());
+
+        if (intersection.mesh ().selected () == false) {
+          intersection.mesh ().selected (true);
+          update = true;
+        }
+      }
+      else {
+        update = this->unselectAll ();
+      }
+    }
+    return update;
   }
 };
 
@@ -111,4 +157,5 @@ DELEGATE1_CONST (const SphereMesh&, Scene, sphereMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, MeshType, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
-DELEGATE        (void             , Scene, unselectAll)
+DELEGATE        (bool             , Scene, unselectAll)
+DELEGATE2       (bool             , Scene, selectIntersection, MeshType, const PrimRay&)

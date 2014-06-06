@@ -15,22 +15,23 @@ class Scene {
     const Scene& operator= (const Scene&) = delete;
          ~Scene            ();
 
-          WingedMesh& newWingedMesh    (MeshType);
-          WingedMesh& newWingedMesh    (MeshType, const Id&);
-          void        removeWingedMesh (const Id&);
-          WingedMesh& wingedMesh       (const Id&);
-    const WingedMesh& wingedMesh       (const Id&) const;
+          WingedMesh& newWingedMesh      (MeshType);
+          WingedMesh& newWingedMesh      (MeshType, const Id&);
+          void        removeWingedMesh   (const Id&);
+          WingedMesh& wingedMesh         (const Id&);
+    const WingedMesh& wingedMesh         (const Id&) const;
 
-          SphereMesh& newSphereMesh    ();
-          SphereMesh& newSphereMesh    (const Id&);
-          void        removeSphereMesh (const Id&);
-          SphereMesh& sphereMesh       (const Id&);
-    const SphereMesh& sphereMesh       (const Id&) const;
+          SphereMesh& newSphereMesh      ();
+          SphereMesh& newSphereMesh      (const Id&);
+          void        removeSphereMesh   (const Id&);
+          SphereMesh& sphereMesh         (const Id&);
+    const SphereMesh& sphereMesh         (const Id&) const;
 
-          void        render           (MeshType);
-          bool        intersects       (MeshType, const PrimRay&, WingedFaceIntersection&);
-          bool        intersects       (const PrimRay&, SphereNodeIntersection&);
-          void        unselectAll      ();
+          void        render             (MeshType);
+          bool        intersects         (MeshType, const PrimRay&, WingedFaceIntersection&);
+          bool        intersects         (const PrimRay&, SphereNodeIntersection&);
+          bool        unselectAll        ();
+          bool        selectIntersection (MeshType, const PrimRay&);
 
   private:
     class Impl;

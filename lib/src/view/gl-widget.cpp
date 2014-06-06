@@ -18,6 +18,7 @@
 #include "scene.hpp"
 #include "axis.hpp"
 #include "mesh-type.hpp"
+#include "primitive/ray.hpp"
 
 struct ViewGlWidget::Impl {
   ViewGlWidget*         self;
@@ -129,6 +130,14 @@ struct ViewGlWidget::Impl {
     }
     else if (State::hasTool ()) {
       State::tool ().mouseMoveEvent (*e);
+    }
+    else {
+      if (State::scene ().selectIntersection 
+            ( this->mainWindow.properties ().selection ().selected ()
+            , State::camera ().ray (ViewUtil::toIVec2 (*e)))) 
+      {
+        this->self->update ();
+      }
     }
   }
 
