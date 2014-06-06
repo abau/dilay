@@ -15,18 +15,19 @@ class SphereMeshNode {
     SphereMeshNode        (Impl*);
     DELETE_COPYMOVEASSIGN (SphereMeshNode)
 
-           Id              id        () const;
-           SphereMeshNode* parent    ();
-    const  glm::vec3&      position  () const;
-           float           radius    () const;
+           Id              id          () const;
+           SphereMeshNode* parent      ();
+    const  glm::vec3&      position    () const;
+           float           radius      () const;
 
-           void            position  (const glm::vec3&);
-           void            radius    (float);
-           bool            selected  () const;
+           void            position    (const glm::vec3&);
+           void            radius      (float);
+           bool            selected    () const;
+           bool            subselected () const;
            // selects recursively if snd argument is true
-           void            selected  (bool, bool);
+           void            selected    (bool, bool);
 
-    static void            setupMesh (Mesh&);
+    static void            setupMesh   (Mesh&);
 
   private:
     friend class SphereMesh;
@@ -38,17 +39,18 @@ class SphereMesh {
     DECLARE_BIG3 (SphereMesh, const Id&)
     SphereMesh   ();
 
-    Id              id         () const;
-    SphereMeshNode& addNode    (SphereMeshNode*, const glm::vec3&, float);
-    SphereMeshNode& addNode    (const Id&, SphereMeshNode*, const glm::vec3&, float);
-    void            removeNode (const Id&);
-    void            render     ();
-    bool            intersects (const PrimRay&, SphereNodeIntersection&);
-    SphereMeshNode& node       (const Id&);
-    SphereMeshNode& root       ();
-    bool            hasRoot    () const;
-    bool            selected   () const;
-    void            selected   (bool);
+    Id              id          () const;
+    SphereMeshNode& addNode     (SphereMeshNode*, const glm::vec3&, float);
+    SphereMeshNode& addNode     (const Id&, SphereMeshNode*, const glm::vec3&, float);
+    void            removeNode  (const Id&);
+    void            render      ();
+    bool            intersects  (const PrimRay&, SphereNodeIntersection&);
+    SphereMeshNode& node        (const Id&);
+    SphereMeshNode& root        ();
+    bool            hasRoot     () const;
+    bool            selected    () const;
+    bool            subselected () const;
+    void            selected    (bool);
 
   private:
     class Impl;

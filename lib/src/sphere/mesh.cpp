@@ -77,6 +77,20 @@ struct SphereMeshNode::Impl {
 
   bool selected () const { return this->_selected; }
 
+  bool subselected () const {
+    if (this->selected ()) {
+      return true;
+    }
+    else {
+      for (const Child& c : this->children) {
+        if (c->subselected ()) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
   void selected (bool value, bool recursively) {
     this->_selected = value;
     if (recursively) {
@@ -102,6 +116,7 @@ SETTER           (const glm::vec3&, SphereMeshNode, position)
 GETTER_CONST     (float           , SphereMeshNode, radius)
 SETTER           (float           , SphereMeshNode, radius)
 DELEGATE_CONST   (bool            , SphereMeshNode, selected)
+DELEGATE_CONST   (bool            , SphereMeshNode, subselected)
 DELEGATE2        (void            , SphereMeshNode, selected, bool, bool)
 DELEGATE1_STATIC (void            , SphereMeshNode, setupMesh, Mesh&)
 
@@ -182,7 +197,15 @@ struct SphereMesh::Impl {
     return bool (this->_root);
   }
 
-  bool selected () const { return this->_selected; }
+  bool selected () const { 
+    assert (this->hasRoot ());
+    return this->_selected; 
+  }
+
+  bool subselected () const {
+    assert (this->hasRoot ());
+    return this->selected () || this->_root->subselected ();
+  }
 
   void selected (bool value) {
     this->_selected = value;
@@ -205,4 +228,5 @@ DELEGATE1      (SphereMeshNode&, SphereMesh, node, const Id&)
 DELEGATE       (SphereMeshNode&, SphereMesh, root)
 DELEGATE_CONST (bool           , SphereMesh, hasRoot)
 DELEGATE_CONST (bool           , SphereMesh, selected)
+DELEGATE_CONST (bool           , SphereMesh, subselected)
 DELEGATE1      (void           , SphereMesh, selected, bool)
