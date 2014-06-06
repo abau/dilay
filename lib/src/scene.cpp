@@ -84,6 +84,15 @@ struct Scene :: Impl {
     }
     return intersection.isIntersection ();
   }
+
+  void unselectAll () {
+    for (WingedMesh& m : this->wingedMeshes) {
+      m.selected (false);
+    }
+    for (SphereMesh& m : this->sphereMeshes) {
+      m.selected (false);
+    }
+  }
 };
 
 DELEGATE_CONSTRUCTOR (Scene)
@@ -102,3 +111,4 @@ DELEGATE1_CONST (const SphereMesh&, Scene, sphereMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, MeshType, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
+DELEGATE        (void             , Scene, unselectAll)

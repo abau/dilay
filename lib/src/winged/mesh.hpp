@@ -65,6 +65,9 @@ class WingedMesh {
     bool            intersects        (const PrimRay&, WingedFaceIntersection&);
     bool            intersects        (const PrimSphere&, std::unordered_set <Id>&);
     bool            intersects        (const PrimSphere&, std::unordered_set <WingedVertex*>&);
+
+    bool            selected          () const;
+    void            selected          (bool);
     
     SAFE_REF1 (WingedVertex, vertexSLOW, unsigned int)
     SAFE_REF1 (WingedEdge  , edgeSLOW  , const Id&)

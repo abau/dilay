@@ -30,6 +30,7 @@ class Scene {
           void        render           (MeshType);
           bool        intersects       (MeshType, const PrimRay&, WingedFaceIntersection&);
           bool        intersects       (const PrimRay&, SphereNodeIntersection&);
+          void        unselectAll      ();
 
   private:
     class Impl;
