@@ -1,6 +1,7 @@
 #ifndef DILAY_TOOL
 #define DILAY_TOOL
 
+#include <glm/fwd.hpp>
 #include "macro.hpp"
 
 class QMouseEvent;
@@ -21,6 +22,7 @@ class Tool {
     void               updateGlWidget     ();
     void               unselectAll        ();
     void               selectIntersection ();
+    void               selectIntersection (const glm::ivec2&);
 
     void               render             ();
     void               mouseMoveEvent     (QMouseEvent&);

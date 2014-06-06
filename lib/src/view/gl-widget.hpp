@@ -15,6 +15,7 @@ class ViewGlWidget : public QGLWidget {
 
     glm::ivec2 cursorPosition     ();
     void       selectIntersection ();
+    void       selectIntersection (const glm::ivec2&);
        
   protected:
     void initializeGL       ();
