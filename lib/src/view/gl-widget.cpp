@@ -38,6 +38,19 @@ struct ViewGlWidget::Impl {
     return ViewUtil::toIVec2 (this->self->mapFromGlobal (QCursor::pos ()));
   }
 
+  void selectIntersection () {
+    this->selectIntersection (this->cursorPosition ());
+  }
+
+  void selectIntersection (const glm::ivec2& pos) {
+    if (State::scene ().selectIntersection 
+          ( this->mainWindow.properties ().selection ().selected ()
+          , State::camera ().ray (pos))) 
+    {
+      this->self->update ();
+    }
+  }
+
   void initializeGL () {
     Renderer::initialize ();
     State   ::initialize ();
@@ -132,12 +145,7 @@ struct ViewGlWidget::Impl {
       State::tool ().mouseMoveEvent (*e);
     }
     else {
-      if (State::scene ().selectIntersection 
-            ( this->mainWindow.properties ().selection ().selected ()
-            , State::camera ().ray (ViewUtil::toIVec2 (*e)))) 
-      {
-        this->self->update ();
-      }
+      this->selectIntersection (ViewUtil::toIVec2 (*e));
     }
   }
 
@@ -199,6 +207,7 @@ DELEGATE_CONSTRUCTOR_BASE ( ViewGlWidget, (const QGLFormat& f, ViewMainWindow& w
 DELEGATE_DESTRUCTOR (ViewGlWidget)
 
 DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
+DELEGATE  (void      , ViewGlWidget, selectIntersection)
 DELEGATE  (void      , ViewGlWidget, initializeGL)
 DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
 DELEGATE  (void      , ViewGlWidget, paintGL)

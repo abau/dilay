@@ -16,27 +16,28 @@ class Tool {
 
     friend class ToolUtil;
 
-    ViewMainWindow&    mainWindow        ();
-    QContextMenuEvent& menuEvent         ();
-    void               updateGlWidget    ();
-    void               unselectAll       ();
+    ViewMainWindow&    mainWindow         ();
+    QContextMenuEvent& menuEvent          ();
+    void               updateGlWidget     ();
+    void               unselectAll        ();
+    void               selectIntersection ();
 
-    void               render            ();
-    void               mouseMoveEvent    (QMouseEvent&);
-    void               mousePressEvent   (QMouseEvent&);
-    void               mouseReleaseEvent (QMouseEvent&);
-    void               wheelEvent        (QWheelEvent&);
+    void               render             ();
+    void               mouseMoveEvent     (QMouseEvent&);
+    void               mousePressEvent    (QMouseEvent&);
+    void               mouseReleaseEvent  (QMouseEvent&);
+    void               wheelEvent         (QWheelEvent&);
 
-    bool               isDraged          () const;
-    bool               isHovered         () const;
+    bool               isDraged           () const;
+    bool               isHovered          () const;
 
   protected:
-    ViewToolOptions&   toolOptions       ();
+    ViewToolOptions&   toolOptions        ();
 
-    void               drag              (bool);
-    void               dragIfHovered     ();
-    void               hover             (bool);
-    void               hoverIfDraged     ();
+    void               drag               (bool);
+    void               dragIfHovered      ();
+    void               hover              (bool);
+    void               hoverIfDraged      ();
 
   private:
     class Impl;

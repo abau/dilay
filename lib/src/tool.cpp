@@ -33,9 +33,10 @@ struct Tool::Impl {
   }
 
   ~Impl () {
-    this->drag  (false);
-    this->hover (false);
-    this->toolOptions.close ();
+    this->drag               (false);
+    this->hover              (false);
+    this->selectIntersection ();
+    this->toolOptions.close  ();
   }
 
   void render () { 
@@ -74,6 +75,10 @@ struct Tool::Impl {
     if (State::scene ().unselectAll ()) {
       this->updateGlWidget ();
     }
+  }
+
+  void selectIntersection () {
+    this->mainWindow.glWidget ().selectIntersection ();
   }
 
   void drag (bool b) { 
@@ -120,6 +125,7 @@ GETTER         (ViewMainWindow&   , Tool, mainWindow)
 GETTER         (QContextMenuEvent&, Tool, menuEvent)
 DELEGATE       (void              , Tool, updateGlWidget)
 DELEGATE       (void              , Tool, unselectAll)
+DELEGATE       (void              , Tool, selectIntersection)
 DELEGATE       (void              , Tool, render)
 DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent&)

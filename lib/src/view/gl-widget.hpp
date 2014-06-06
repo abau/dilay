@@ -13,7 +13,8 @@ class ViewGlWidget : public QGLWidget {
   public:
     DECLARE_BIG2 (ViewGlWidget, const QGLFormat&, ViewMainWindow&)
 
-    glm::ivec2 cursorPosition ();
+    glm::ivec2 cursorPosition     ();
+    void       selectIntersection ();
        
   protected:
     void initializeGL       ();
