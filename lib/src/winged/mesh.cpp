@@ -76,6 +76,17 @@ struct WingedMesh::Impl {
     return this->edges.back ();
   }
 
+  bool hasFreeFirstIndexNumber () const { 
+    return this->freeFirstIndexNumbers.size () > 0;
+  }
+  
+  unsigned int nextFreeFirstIndexNumber () {
+    assert (this->hasFreeFirstIndexNumber ());
+    unsigned int indexNumber = *this->freeFirstIndexNumbers.begin ();
+    this->freeFirstIndexNumbers.erase (this->freeFirstIndexNumbers.begin ());
+    return indexNumber;
+  }
+
   WingedFace& addFace (const WingedFace& f, const PrimTriangle& geometry) {
     unsigned int firstIndexNumber;
     if (this->hasFreeFirstIndexNumber ()) {
@@ -210,17 +221,6 @@ struct WingedMesh::Impl {
 
   bool intersects (const PrimSphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
     return this->octree.intersects (*this->self,sphere,vertices);
-  }
-
-  bool hasFreeFirstIndexNumber () const { 
-    return this->freeFirstIndexNumbers.size () > 0;
-  }
-  
-  unsigned int nextFreeFirstIndexNumber () {
-    assert (this->hasFreeFirstIndexNumber ());
-    unsigned int indexNumber = *this->freeFirstIndexNumbers.begin ();
-    this->freeFirstIndexNumbers.erase (this->freeFirstIndexNumbers.begin ());
-    return indexNumber;
   }
 };
 
