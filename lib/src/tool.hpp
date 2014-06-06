@@ -19,6 +19,7 @@ class Tool {
     ViewMainWindow&    mainWindow        ();
     QContextMenuEvent& menuEvent         ();
     void               updateGlWidget    ();
+    void               unselectAll       ();
 
     void               render            ();
     void               mouseMoveEvent    (QMouseEvent&);

@@ -3,6 +3,7 @@
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
 #include "state.hpp"
+#include "scene.hpp"
 
 struct Tool::Impl {
   Tool*              self;
@@ -69,6 +70,12 @@ struct Tool::Impl {
     this->mainWindow.glWidget ().update ();
   }
 
+  void unselectAll () {
+    if (State::scene ().unselectAll ()) {
+      this->updateGlWidget ();
+    }
+  }
+
   void drag (bool b) { 
     this->isDraged = b;
 
@@ -112,6 +119,7 @@ DELEGATE3_BIG3_SELF  (Tool, ViewMainWindow&, QContextMenuEvent&, const QString&)
 GETTER         (ViewMainWindow&   , Tool, mainWindow)
 GETTER         (QContextMenuEvent&, Tool, menuEvent)
 DELEGATE       (void              , Tool, updateGlWidget)
+DELEGATE       (void              , Tool, unselectAll)
 DELEGATE       (void              , Tool, render)
 DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent&)

@@ -43,8 +43,9 @@ struct ToolNewFreeformMesh::Impl {
     ViewUtil::connect (this->radiusUtil.radiusEdit (), 
       [this] (float) { this->updateMesh (); });
 
-    this->updateMesh (true);
-    this->hover      (this->self->mainWindow ().glWidget ().cursorPosition ());
+    this->updateMesh        (true);
+    this->hover             (this->self->mainWindow ().glWidget ().cursorPosition ());
+    this->self->unselectAll ();
   }
 
   ~Impl () {
@@ -58,6 +59,7 @@ struct ToolNewFreeformMesh::Impl {
   void updateMesh (bool updateSubdivision = false) {
     if (updateSubdivision) {
       this->mesh = Mesh::icosphere (this->subdivUtil.value ());
+      this->mesh.selected          (true);
       this->mesh.bufferData        ();
       this->self->updateGlWidget   ();
     }
