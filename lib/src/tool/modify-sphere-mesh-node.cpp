@@ -20,13 +20,13 @@
 #include "action/modify-sphere-mesh.hpp"
 
 struct ToolModifySphereMeshNode::Impl {
-  ToolModifySphereMeshNode*      self;
-  ToolModifySphereMeshNode::Mode mode;
-  ConfigProxy                    config;
-  ToolUtilPosition               posUtil;
-  ToolUtilRadius                 radiusUtil;
-  Mesh                           mesh;
-  PrimSphere                     meshGeometry;
+  ToolModifySphereMeshNode* self;
+  Mode                      mode;
+  ConfigProxy               config;
+  ToolUtilPosition          posUtil;
+  ToolUtilRadius            radiusUtil;
+  Mesh                      mesh;
+  PrimSphere                meshGeometry;
 
   Impl (ToolModifySphereMeshNode* s, Mode m) 
     : self       (s) 
@@ -47,19 +47,19 @@ struct ToolModifySphereMeshNode::Impl {
   }
 
   ~Impl () {
-    if (this->mode == ToolModifySphereMeshNode::Mode::NewMesh) {
+    if (this->mode == Mode::NewMesh) {
       State::history ().add <ActionNewSphereMesh> ()->run ( this->meshGeometry.center ()
                                                           , this->meshGeometry.radius ());
     }
   }
 
-  static QString toolName (ToolModifySphereMeshNode::Mode mode) {
+  static QString toolName (Mode mode) {
     switch (mode) {
-      case ToolModifySphereMeshNode::Mode::NewMesh:
+      case Mode::NewMesh:
         return QObject::tr ("New Mesh");
-      case ToolModifySphereMeshNode::Mode::NewNode:
+      case Mode::NewNode:
         return QObject::tr ("New Node");
-      case ToolModifySphereMeshNode::Mode::ModifyNode:
+      case Mode::ModifyNode:
         return QObject::tr ("Modify Node");
     }
     assert (false);
