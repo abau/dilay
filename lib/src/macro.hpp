@@ -346,6 +346,17 @@
   r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
     return from :: global ().impl-> method (a1,a2,a3,a4,a5); }
 
+// Getters/Setters
+
+#define GETTER_CONST(r,from,member) \
+  r from :: member () const { return this->impl-> member ; }
+
+#define GETTER(r,from,member) \
+  r from :: member () { return this->impl-> member ; }
+
+#define SETTER(t,from,member) \
+  void from :: member (t a) { this->impl-> member = a; }
+
 #define GETTER_CONST_GLOBAL(r,from,member) \
   r from :: member () const { \
     return from :: global ().impl-> member ; }
@@ -360,17 +371,6 @@
 
 #define ID(from) \
   Id from :: id () const { return this->impl->id.id () ; }
-
-// Getters/Setters
-
-#define GETTER_CONST(r,from,member) \
-  r from :: member () const { return this->impl-> member ; }
-
-#define GETTER(r,from,member) \
-  r from :: member () { return this->impl-> member ; }
-
-#define SETTER(t,from,member) \
-  void from :: member (t a) { this->impl-> member = a; }
 
 // Safe references
 
