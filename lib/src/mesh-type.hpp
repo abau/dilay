@@ -2,6 +2,6 @@
 #define DILAY_MESH_TYPE
 
 enum class MeshType {
-  Freeform, Sphere
+  Freeform, Sphere, SphereNode
 };
 #endif
