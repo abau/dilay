@@ -39,8 +39,6 @@ namespace std {
 // Generates `Id`s
 class IdObject {
   public:    
-    friend class ActionIdState;
-    
     explicit IdObject (const Id& = Id ());
              IdObject (const IdObject&);
              IdObject (const IdObject&&);
