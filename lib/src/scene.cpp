@@ -19,7 +19,6 @@ struct Scene :: Impl {
   IdMapPtr <SphereMesh>  sphereMeshIdMap;
 
   IdSet                  selection;
-  std::unique_ptr <Id>   hoveredPtr;
 
   WingedMesh& newWingedMesh (MeshType t) {
     return this->newWingedMesh (t, Id ());
@@ -140,35 +139,6 @@ struct Scene :: Impl {
       return this->unselectAll ();
     }
   }
-
-  bool isHovered () const { return bool (this->hoveredPtr); }
-
-  const Id& hovered () const {
-    assert (this->isHovered ());
-    return *this->hoveredPtr;
-  }
-
-  bool unhover () {
-    bool update = this->isHovered ();
-    this->hoveredPtr.reset ();
-    return update;
-  }
-
-  bool hoverIntersection (MeshType t, const PrimRay& ray) {
-    Id id = this->intersects (t, ray);
-    if (id.isValid ()) {
-      if (this->hovered () == id) {
-        return false;
-      }
-      else {
-        this->hoveredPtr.reset (new Id (id));
-        return true;
-      }
-    }
-    else {
-      return this->unhover ();
-    }
-  }
 };
 
 DELEGATE_CONSTRUCTOR (Scene)
@@ -191,7 +161,3 @@ DELEGATE2       (Id               , Scene, intersects, MeshType, const PrimRay&)
 GETTER_CONST    (const IdSet&     , Scene, selection)
 DELEGATE        (bool             , Scene, unselectAll)
 DELEGATE2       (bool             , Scene, selectIntersection, MeshType, const PrimRay&)
-DELEGATE_CONST  (bool             , Scene, isHovered)
-DELEGATE_CONST  (const Id&        , Scene, hovered)
-DELEGATE        (bool             , Scene, unhover)
-DELEGATE2       (bool             , Scene, hoverIntersection, MeshType, const PrimRay&)

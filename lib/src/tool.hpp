@@ -23,8 +23,6 @@ class Tool {
     void               unselectAll        ();
     void               selectIntersection ();
     void               selectIntersection (const glm::ivec2&);
-    void               hoverIntersection  ();
-    void               hoverIntersection  (const glm::ivec2&);
 
     void               render             ();
     void               mouseMoveEvent     (QMouseEvent&);

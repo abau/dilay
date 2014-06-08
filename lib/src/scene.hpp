@@ -37,11 +37,6 @@ class Scene {
           bool        unselectAll        ();
           bool        selectIntersection (MeshType, const PrimRay&);
 
-          bool        isHovered          () const;
-    const Id&         hovered            () const;
-          bool        unhover            ();
-          bool        hoverIntersection  (MeshType, const PrimRay&);
-
   private:
     class Impl;
     Impl* impl;

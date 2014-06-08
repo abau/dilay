@@ -85,14 +85,6 @@ struct Tool::Impl {
     this->mainWindow.glWidget ().selectIntersection (pos);
   }
 
-  void hoverIntersection () {
-    this->mainWindow.glWidget ().hoverIntersection ();
-  }
-
-  void hoverIntersection (const glm::ivec2& pos) {
-    this->mainWindow.glWidget ().hoverIntersection (pos);
-  }
-
   void drag (bool b) { 
     this->isDraged = b;
 
@@ -139,8 +131,6 @@ DELEGATE       (void              , Tool, updateGlWidget)
 DELEGATE       (void              , Tool, unselectAll)
 DELEGATE       (void              , Tool, selectIntersection)
 DELEGATE1      (void              , Tool, selectIntersection, const glm::ivec2&)
-DELEGATE       (void              , Tool, hoverIntersection)
-DELEGATE1      (void              , Tool, hoverIntersection, const glm::ivec2&)
 DELEGATE       (void              , Tool, render)
 DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent&)
