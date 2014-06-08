@@ -3,6 +3,7 @@
 #include "scene.hpp"
 #include "macro.hpp"
 #include "id-map.hpp"
+#include "id-set.hpp"
 #include "winged/mesh.hpp"
 #include "primitive/ray.hpp"
 #include "mesh-type.hpp"
@@ -14,8 +15,11 @@ struct Scene :: Impl {
   std::list <WingedMesh> wingedMeshes;
   std::list <SphereMesh> sphereMeshes;
 
-  IdMapPtr <WingedMesh> wingedMeshIdMap;
-  IdMapPtr <SphereMesh> sphereMeshIdMap;
+  IdMapPtr <WingedMesh>  wingedMeshIdMap;
+  IdMapPtr <SphereMesh>  sphereMeshIdMap;
+
+  IdSet                  selection;
+  std::unique_ptr <Id>   hoveredPtr;
 
   WingedMesh& newWingedMesh (MeshType t) {
     return this->newWingedMesh (t, Id ());
@@ -85,59 +89,85 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  bool unselectAll (WingedMesh* notWM) { return this->unselectAll (notWM  , nullptr); }
-  bool unselectAll (SphereMesh* notSM) { return this->unselectAll (nullptr, notSM  ); }
-  bool unselectAll (                 ) { return this->unselectAll (nullptr, nullptr); }
+  Id intersects (MeshType t, const PrimRay& ray) {
+    if (t == MeshType::Freeform) {
+      WingedFaceIntersection intersection;
+      if (this->intersects (t, ray, intersection)) {
+        return intersection.mesh ().id ();
+      }
+    }
+    else if (t == MeshType::Sphere || t == MeshType::SphereNode) {
+      SphereNodeIntersection intersection;
+      if (this->intersects (ray, intersection)) {
+        if (t == MeshType::Sphere) {
+          return intersection.mesh ().id ();
+        }
+        else if (t == MeshType::SphereNode) {
+          return intersection.node ().id ();
+        }
+        assert (false);
+      }
+    }
+    return Id ();
+  }
 
-  bool unselectAll (WingedMesh* notWM, SphereMesh* notSM) {
-    bool update = false;
-    for (WingedMesh& m : this->wingedMeshes) {
-      if (&m != notWM && m.selected ()) {
-        m.selected (false);
-        update = true;
-      }
-    }
-    for (SphereMesh& m : this->sphereMeshes) {
-      if (&m != notSM && m.subselected ()) {
-        m.selected (false);
-        update = true;
-      }
-    }
+  bool unselectAll () {
+    bool update = this->selection.size () > 0;
+    this->selection.reset ();
     return update;
   }
 
   bool selectIntersection (MeshType t, const PrimRay& ray) {
-    bool update = false;
-
-    if (t == MeshType::Freeform) {
-      WingedFaceIntersection intersection;
-      if (this->intersects (t, ray, intersection)) {
-        update = this->unselectAll (&intersection.mesh ());
-
-        if (intersection.mesh ().selected () == false) {
-          intersection.mesh ().selected (true);
-          update = true;
+    Id id = this->intersects (t, ray);
+    if (id.isValid ()) {
+      if (this->selection.has (id)) {
+        if (this->selection.size () > 1) {
+          this->unselectAll ();
+          this->selection.insert (id);
+          return true;
+        }
+        else {
+          return false;
         }
       }
       else {
-        update = this->unselectAll ();
+        this->unselectAll ();
+        this->selection.insert (id);
+        return true;
       }
     }
-    else if (t == MeshType::Sphere) {
-      SphereNodeIntersection intersection;
-      if (this->intersects (ray, intersection)) {
-        update = this->unselectAll (&intersection.mesh ());
+    else {
+      return this->unselectAll ();
+    }
+  }
 
-        if (intersection.mesh ().selected () == false) {
-          intersection.mesh ().selected (true);
-          update = true;
-        }
-      }
-      else {
-        update = this->unselectAll ();
-      }
-    }
+  bool isHovered () const { return bool (this->hoveredPtr); }
+
+  const Id& hovered () const {
+    assert (this->isHovered ());
+    return *this->hoveredPtr;
+  }
+
+  bool unhover () {
+    bool update = this->isHovered ();
+    this->hoveredPtr.reset ();
     return update;
+  }
+
+  bool hoverIntersection (MeshType t, const PrimRay& ray) {
+    Id id = this->intersects (t, ray);
+    if (id.isValid ()) {
+      if (this->hovered () == id) {
+        return false;
+      }
+      else {
+        this->hoveredPtr.reset (new Id (id));
+        return true;
+      }
+    }
+    else {
+      return this->unhover ();
+    }
   }
 };
 
@@ -157,5 +187,11 @@ DELEGATE1_CONST (const SphereMesh&, Scene, sphereMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, MeshType, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
+DELEGATE2       (Id               , Scene, intersects, MeshType, const PrimRay&)
+GETTER_CONST    (const IdSet&     , Scene, selection)
 DELEGATE        (bool             , Scene, unselectAll)
 DELEGATE2       (bool             , Scene, selectIntersection, MeshType, const PrimRay&)
+DELEGATE_CONST  (bool             , Scene, isHovered)
+DELEGATE_CONST  (const Id&        , Scene, hovered)
+DELEGATE        (bool             , Scene, unhover)
+DELEGATE2       (bool             , Scene, hoverIntersection, MeshType, const PrimRay&)

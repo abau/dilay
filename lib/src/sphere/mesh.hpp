@@ -22,10 +22,6 @@ class SphereMeshNode {
 
            void            position    (const glm::vec3&);
            void            radius      (float);
-           bool            selected    () const;
-           bool            subselected () const;
-           // selects recursively if snd argument is true
-           void            selected    (bool, bool);
 
     static void            setupMesh   (Mesh&);
 
@@ -48,9 +44,6 @@ class SphereMesh {
     SphereMeshNode& node        (const Id&);
     SphereMeshNode& root        ();
     bool            hasRoot     () const;
-    bool            selected    () const;
-    bool            subselected () const;
-    void            selected    (bool);
 
   private:
     class Impl;

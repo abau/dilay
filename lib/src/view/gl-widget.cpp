@@ -51,6 +51,19 @@ struct ViewGlWidget::Impl {
     }
   }
 
+  void hoverIntersection () {
+    this->hoverIntersection (this->cursorPosition ());
+  }
+
+  void hoverIntersection (const glm::ivec2& pos) {
+    if (State::scene ().hoverIntersection 
+          ( this->mainWindow.properties ().selection ().selected ()
+          , State::camera ().ray (pos)))
+    {
+      this->self->update ();
+    }
+  }
+
   void initializeGL () {
     Renderer::initialize ();
     State   ::initialize ();
@@ -209,6 +222,8 @@ DELEGATE_DESTRUCTOR (ViewGlWidget)
 DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
 DELEGATE  (void      , ViewGlWidget, selectIntersection)
 DELEGATE1 (void      , ViewGlWidget, selectIntersection, const glm::ivec2&)
+DELEGATE  (void      , ViewGlWidget, hoverIntersection)
+DELEGATE1 (void      , ViewGlWidget, hoverIntersection, const glm::ivec2&)
 DELEGATE  (void      , ViewGlWidget, initializeGL)
 DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
 DELEGATE  (void      , ViewGlWidget, paintGL)

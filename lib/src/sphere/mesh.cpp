@@ -22,7 +22,6 @@ struct SphereMeshNode::Impl {
   std::list<Child> children;
   glm::vec3        position;
   float            radius;
-  bool             _selected;
 
   Impl (const Id& i, Impl* p, const glm::vec3& pos, float radius) 
     : self       (this) 
@@ -30,7 +29,6 @@ struct SphereMeshNode::Impl {
     , parentImpl (p)
     , position   (pos)
     , radius     (radius)
-    , _selected  (false)
   {}
 
   SphereMeshNode* parent () { 
@@ -59,7 +57,6 @@ struct SphereMeshNode::Impl {
   void render (Mesh& mesh) {
     mesh.position (this->position);
     mesh.scaling  (glm::vec3 (this->radius));
-    mesh.selected (this->_selected);
     mesh.render   ();
   }
 
@@ -73,31 +70,6 @@ struct SphereMeshNode::Impl {
       c->intersects (mesh, ray, sni);
     }
     return sni.isIntersection ();
-  }
-
-  bool selected () const { return this->_selected; }
-
-  bool subselected () const {
-    if (this->selected ()) {
-      return true;
-    }
-    else {
-      for (const Child& c : this->children) {
-        if (c->subselected ()) {
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
-  void selected (bool value, bool recursively) {
-    this->_selected = value;
-    if (recursively) {
-      for (Child& c : this->children) {
-        c->selected (value, recursively);
-      }
-    }
   }
 
   static void setupMesh (Mesh& mesh) {
@@ -115,9 +87,6 @@ GETTER_CONST     (const glm::vec3&, SphereMeshNode, position)
 SETTER           (const glm::vec3&, SphereMeshNode, position)
 GETTER_CONST     (float           , SphereMeshNode, radius)
 SETTER           (float           , SphereMeshNode, radius)
-DELEGATE_CONST   (bool            , SphereMeshNode, selected)
-DELEGATE_CONST   (bool            , SphereMeshNode, subselected)
-DELEGATE2        (void            , SphereMeshNode, selected, bool, bool)
 DELEGATE1_STATIC (void            , SphereMeshNode, setupMesh, Mesh&)
 
 struct SphereMesh::Impl {
@@ -126,7 +95,6 @@ struct SphereMesh::Impl {
   Child                           _root;
   IdMapPtr <SphereMeshNode::Impl> idMap;
   Mesh                            mesh;
-  bool                            _selected;
 
   Impl (SphereMesh* s) : Impl (s, Id ()) {}
 
@@ -196,23 +164,6 @@ struct SphereMesh::Impl {
   bool hasRoot () const {
     return bool (this->_root);
   }
-
-  bool selected () const { 
-    assert (this->hasRoot ());
-    return this->_selected; 
-  }
-
-  bool subselected () const {
-    assert (this->hasRoot ());
-    return this->selected () || this->_root->subselected ();
-  }
-
-  void selected (bool value) {
-    this->_selected = value;
-    if (this->_root) {
-      this->_root->selected (value, true);
-    }
-  }
 };
 
 DELEGATE1_BIG3_SELF       (SphereMesh, const Id&)
@@ -227,6 +178,3 @@ DELEGATE2      (bool           , SphereMesh, intersects, const PrimRay&, SphereN
 DELEGATE1      (SphereMeshNode&, SphereMesh, node, const Id&)
 DELEGATE       (SphereMeshNode&, SphereMesh, root)
 DELEGATE_CONST (bool           , SphereMesh, hasRoot)
-DELEGATE_CONST (bool           , SphereMesh, selected)
-DELEGATE_CONST (bool           , SphereMesh, subselected)
-DELEGATE1      (void           , SphereMesh, selected, bool)

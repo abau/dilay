@@ -59,7 +59,6 @@ struct ToolNewFreeformMesh::Impl {
   void updateMesh (bool updateSubdivision = false) {
     if (updateSubdivision) {
       this->mesh = Mesh::icosphere (this->subdivUtil.value ());
-      this->mesh.selected          (true);
       this->mesh.bufferData        ();
       this->self->updateGlWidget   ();
     }

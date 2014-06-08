@@ -53,8 +53,6 @@ class Mesh {
     void         rotationMatrix    (const glm::mat4x4&);
     const Color& color             () const;
     void         color             (const Color&);
-    bool         selected          () const;
-    void         selected          (bool);
 
     static Mesh  cube              ();
     static Mesh  sphere            (unsigned int, unsigned int);

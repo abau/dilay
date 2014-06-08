@@ -32,9 +32,6 @@ struct Mesh::Impl {
   GLuint                      normalBufferId;
 
   RenderMode                  renderMode;
-  bool                        selected;
-
-  float                       selectionBrightness;
 
   Impl () { 
     this->scalingMatrix       = glm::mat4x4 (1.0f);
@@ -45,11 +42,9 @@ struct Mesh::Impl {
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;
     this->renderMode          = RenderMode::Flat;
-    this->selected            = false;
 
     this->color               = Config::get <Color> ("/editor/color/mesh");
     this->wireframeColor      = Config::get <Color> ("/editor/color/mesh-wireframe");
-    this->selectionBrightness = Config::get <float> ("/editor/color/selection-brightness");
   }
 
   Impl (const Impl& source)
@@ -66,8 +61,6 @@ struct Mesh::Impl {
               , indexBufferId       (0)
               , normalBufferId      (0)
               , renderMode          (source.renderMode) 
-              , selected            (source.selected)
-              , selectionBrightness (source.selectionBrightness)
               {}
 
   ~Impl () { this->reset (); }
@@ -221,15 +214,10 @@ struct Mesh::Impl {
   }
 
   void renderSolid () {
-    this->renderBegin  ();
-    if (this->selected) {
-      Renderer :: setColor3 (Color (this->color, this->selectionBrightness));
-    }
-    else {
-      Renderer :: setColor3 (this->color);
-    }
-    glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-    this->renderEnd    ();
+    this->renderBegin     ();
+    Renderer :: setColor3 (this->color);
+    glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+    this->renderEnd       ();
   }
 
   void renderWireframe () {
@@ -533,8 +521,6 @@ DELEGATE_CONST   (glm::vec3         , Mesh, position)
 SETTER           (const glm::mat4x4&, Mesh, rotationMatrix)
 GETTER_CONST     (const Color&      , Mesh, color)
 SETTER           (const Color&      , Mesh, color)
-GETTER_CONST     (bool              , Mesh, selected)
-SETTER           (bool              , Mesh, selected)
 
 DELEGATE_STATIC  (Mesh, Mesh, cube)
 DELEGATE2_STATIC (Mesh, Mesh, sphere, unsigned int, unsigned int)

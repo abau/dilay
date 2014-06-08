@@ -222,10 +222,6 @@ struct WingedMesh::Impl {
   bool intersects (const PrimSphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
     return this->octree.intersects (*this->self,sphere,vertices);
   }
-
-  bool selected (      ) const { return this->mesh.selected ( ); }
-  void selected (bool v)       {        this->mesh.selected (v); }
-    
 };
 
 DELEGATE_BIG3_SELF         (WingedMesh)
@@ -275,5 +271,3 @@ DELEGATE        (void, WingedMesh, toggleRenderMode)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<Id>&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<WingedVertex*>&)
-DELEGATE_CONST  (bool, WingedMesh, selected)
-DELEGATE1       (void, WingedMesh, selected, bool)

@@ -8,6 +8,7 @@ class WingedFaceIntersection;
 enum class MeshType;
 class SphereMesh;
 class SphereNodeIntersection;
+class IdSet;
 
 class Scene {
   public: Scene            ();
@@ -30,8 +31,16 @@ class Scene {
           void        render             (MeshType);
           bool        intersects         (MeshType, const PrimRay&, WingedFaceIntersection&);
           bool        intersects         (const PrimRay&, SphereNodeIntersection&);
+          Id          intersects         (MeshType, const PrimRay&);
+
+    const IdSet&      selection          () const;
           bool        unselectAll        ();
           bool        selectIntersection (MeshType, const PrimRay&);
+
+          bool        isHovered          () const;
+    const Id&         hovered            () const;
+          bool        unhover            ();
+          bool        hoverIntersection  (MeshType, const PrimRay&);
 
   private:
     class Impl;
