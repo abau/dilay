@@ -36,10 +36,10 @@ class Mesh {
     glm::mat4x4  modelMatrix       () const;
     void         fixModelMatrix    ();
     void         renderBegin       ();
+    void         renderEnd         ();
     void         render            ();
     void         renderSolid       ();
     void         renderWireframe   ();
-    void         renderEnd         ();
     void         reset             ();
     void         renderMode        (RenderMode);
     void         toggleRenderMode  ();

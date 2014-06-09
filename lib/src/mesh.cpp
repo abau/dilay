@@ -187,7 +187,10 @@ struct Mesh::Impl {
     glEnableVertexAttribArray  ( OpenGLUtil :: NormalIndex);
     glVertexAttribPointer      ( OpenGLUtil :: NormalIndex
                                , 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindVertexArray (0);
+
+    glBindBuffer               ( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glBindBuffer               ( GL_ARRAY_BUFFER, 0 );
+    glBindVertexArray          ( 0 );
   }
 
   glm::mat4x4 modelMatrix () const {
@@ -202,6 +205,14 @@ struct Mesh::Impl {
     Renderer :: setProgram (this->renderMode);
     this->fixModelMatrix   ();
     glBindVertexArray      (this->arrayObjectId);
+    glBindBuffer           (GL_ARRAY_BUFFER, this->vertexBufferId);
+    glBindBuffer           (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
+  }
+
+  void renderEnd () { 
+    glBindBuffer      (GL_ARRAY_BUFFER, 0);
+    glBindBuffer      (GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray (0); 
   }
 
   void render () {
@@ -234,8 +245,6 @@ struct Mesh::Impl {
     glPolygonMode      (GL_FRONT, GL_FILL);
     this->renderEnd    ();
   }
-
-  void renderEnd () { glBindVertexArray (0); }
 
   void reset () {
     this->scalingMatrix     = glm::mat4x4 (1.0f);
@@ -504,10 +513,10 @@ DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
 DELEGATE         (void              , Mesh, fixModelMatrix)
 DELEGATE         (void              , Mesh, renderBegin)
+DELEGATE         (void              , Mesh, renderEnd)
 DELEGATE         (void              , Mesh, render)
 DELEGATE         (void              , Mesh, renderSolid)
 DELEGATE         (void              , Mesh, renderWireframe)
-DELEGATE         (void              , Mesh, renderEnd)
 DELEGATE         (void              , Mesh, reset)
 SETTER           (RenderMode        , Mesh, renderMode)
 DELEGATE         (void              , Mesh, toggleRenderMode)
