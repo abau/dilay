@@ -57,6 +57,7 @@ class Mesh {
     static Mesh  cube              ();
     static Mesh  sphere            (unsigned int, unsigned int);
     static Mesh  icosphere         (unsigned int);
+    static Mesh  cone              (unsigned int);
 
   private: 
     class Impl;
