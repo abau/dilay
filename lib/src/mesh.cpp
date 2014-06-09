@@ -512,6 +512,44 @@ struct Mesh::Impl {
     m.addIndex (0); m.addIndex (numBaseVertices - 1); m.addIndex (numBaseVertices);
     return m;
   }
+
+  static Mesh cylinder (unsigned int numVertices) {
+    assert (numVertices >= 3);
+
+          Mesh  m;
+    const float c = 2.0f * glm::pi <float> () / float (numVertices);
+
+    for (unsigned int i = 0; i < numVertices; i++) {
+      m.addVertex (glm::vec3 ( glm::sin <float> (float (i) * c)
+                             , -0.5f
+                             , glm::cos <float> (float (i) * c)));
+    }
+    for (unsigned int i = 0; i < numVertices; i++) {
+      m.addVertex (glm::vec3 ( glm::sin <float> (float (i) * c)
+                             , 0.5f
+                             , glm::cos <float> (float (i) * c)));
+    }
+    m.addVertex (glm::vec3 (0.0f, -0.5f, 0.0f));
+    m.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
+
+    for (unsigned int i = 0; i < m.numVertices (); i++) {
+      m.setNormal (i, glm::normalize (m.vertex (i)));
+    }
+
+    for (unsigned int i = 0; i < numVertices - 1; i++) {
+      m.addIndex (i); m.addIndex (i + 1); m.addIndex (i + numVertices); 
+      m.addIndex (i + numVertices + 1); m.addIndex (i + numVertices); m.addIndex (i + 1);
+
+      m.addIndex (i + 1); m.addIndex (i); m.addIndex (2 * numVertices);
+      m.addIndex (i + numVertices); m.addIndex (i + numVertices + 1); m.addIndex ((2 * numVertices) + 1);
+    }
+    m.addIndex (numVertices - 1); m.addIndex (0); m.addIndex ((2 * numVertices) - 1);
+    m.addIndex (numVertices); m.addIndex ((2 * numVertices) - 1); m.addIndex (0);
+
+    m.addIndex (0); m.addIndex (numVertices - 1); m.addIndex (2 * numVertices);
+    m.addIndex ((2 * numVertices) - 1); m.addIndex (numVertices); m.addIndex ((2 * numVertices) + 1);
+    return m;
+  }
 };
 
 DELEGATE_BIG6    (Mesh)
@@ -562,3 +600,4 @@ DELEGATE_STATIC  (Mesh, Mesh, cube)
 DELEGATE2_STATIC (Mesh, Mesh, sphere, unsigned int, unsigned int)
 DELEGATE1_STATIC (Mesh, Mesh, icosphere, unsigned int)
 DELEGATE1_STATIC (Mesh, Mesh, cone, unsigned int)
+DELEGATE1_STATIC (Mesh, Mesh, cylinder, unsigned int)
