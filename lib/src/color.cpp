@@ -1,5 +1,6 @@
 #include <fstream>
 #include <glm/glm.hpp>
+#include <QColor>
 #include "color.hpp"
 
 struct Color::Impl {
@@ -24,6 +25,14 @@ struct Color::Impl {
   glm::vec4 vec4 () const {
     return glm::vec4 (this->r, this->g, this->b, this->opacity);
   }
+
+  QColor qColor () const {
+    return QColor ( glm::min (255, int (255.0f * this->r))
+                  , glm::min (255, int (255.0f * this->g))
+                  , glm::min (255, int (255.0f * this->b))
+                  , glm::min (255, int (255.0f * this->opacity))
+                  );
+  }
 };
 
 DELEGATE4_BIG6 (Color,float,float,float,float)
@@ -38,6 +47,7 @@ SETTER         (float,Color,opacity)
 DELEGATE1      (void ,Color,scale,float)
 DELEGATE_CONST (glm::vec3,Color,vec3)
 DELEGATE_CONST (glm::vec4,Color,vec4)
+DELEGATE_CONST (QColor,Color,qColor)
 
 Color :: Color ()                          : Color (0.0f,0.0f,0.0f,1.0f) {}
 Color :: Color (float r, float g, float b) : Color (r,g,b,1.0f) {}
