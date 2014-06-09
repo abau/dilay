@@ -75,25 +75,31 @@ struct Axis::Impl {
   void render (QPainter& painter) {
     this->coneMesh.rotationMatrix (glm::mat4x4 (1.0f));
 
-    glm::uvec2 resolution = State::camera ().resolution ();
+    QFont        font       = this->makeFont ();
+    QFontMetrics metrics (font); 
+    int          w          = glm::max (metrics.maxWidth (), metrics.height ());
+    glm::uvec2   resolution = State::camera ().resolution ();
     State::camera ().updateResolution (this->axisResolution);
 
-    auto f = [this,&resolution,&painter] (const glm::vec3& p, const QString& l) {
+    auto f = [this,&resolution,&painter,w] (const glm::vec3& p, const QString& l) {
       this->coneMesh.position (p);
 
       glm::ivec2 pos = State::camera ().fromWorld ( glm::vec3 (0.0f)
                                                   , this->coneMesh.modelMatrix ()
                                                   , true);
+      QRect rect ( pos.x - (w / 2)
+                 , resolution.y - this->axisResolution.y + pos.y - (w / 2)
+                 , w, w );
 
-      painter.drawText (pos.x, resolution.y - this->axisResolution.y + pos.y, l);
+      painter.drawText (rect, Qt::AlignCenter, l);
     };
 
     painter.setPen  (this->axisLabelColor.qColor ());
-    painter.setFont (this->makeFont ());
+    painter.setFont (font);
 
-    f (glm::vec3 (0.3f, 0.0f, 0.0f), "X");
-    f (glm::vec3 (0.0f, 0.3f, 0.0f), "Y");
-    f (glm::vec3 (0.0f, 0.0f, 0.3f), "Z");
+    f (glm::vec3 (0.35f, 0.0f , 0.0f ), "X");
+    f (glm::vec3 (0.0f , 0.35f, 0.0f ), "Y");
+    f (glm::vec3 (0.0f , 0.0f , 0.35f), "Z");
 
     State :: camera ().updateResolution (resolution);
   }
