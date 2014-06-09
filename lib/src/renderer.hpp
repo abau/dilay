@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <glm/fwd.hpp>
+#include "macro.hpp"
 
 class Color;
 enum  class RenderMode;
@@ -28,10 +29,7 @@ class Renderer {
     static void updateLights       (const Camera&);
 
   private:
-          Renderer            ();
-          Renderer            (const Renderer&) = delete;
-    const Renderer& operator= (const Renderer&) = delete;
-         ~Renderer            ();
+    DECLARE_BIG3 (Renderer)
 
     class Impl;
     Impl* impl;
