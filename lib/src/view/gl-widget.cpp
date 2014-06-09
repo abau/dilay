@@ -86,7 +86,6 @@ struct ViewGlWidget::Impl {
 
   void resizeGL (int w, int h) {
     State::camera ().updateResolution (glm::uvec2 (w,h));
-    glViewport (0,0,w, h < 1 ? 1 : h );
   }
 
   void keyPressEvent (QKeyEvent* e) {
@@ -162,11 +161,6 @@ struct ViewGlWidget::Impl {
     }
   }
 
-  void resizeEvent (QResizeEvent* e) {
-    State::camera ().updateResolution (glm::uvec2 ( e->size ().width  ()
-                                                  , e->size ().height ()));
-  }
-
   void wheelEvent (QWheelEvent* e) {
     if (e->modifiers ().testFlag (Qt::NoModifier)) {
       if (e->orientation () == Qt::Vertical) {
@@ -216,6 +210,5 @@ DELEGATE1 (void      , ViewGlWidget, keyPressEvent    , QKeyEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mousePressEvent  , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
-DELEGATE1 (void      , ViewGlWidget, resizeEvent      , QResizeEvent*)
 DELEGATE1 (void      , ViewGlWidget, wheelEvent       , QWheelEvent*)
 DELEGATE1 (void      , ViewGlWidget, contextMenuEvent , QContextMenuEvent*)
