@@ -2,13 +2,14 @@
 #define DILAY_RENDER_MODE
 
 enum class RenderMode 
-  { Smooth    = 0 // c.f. numRenderModes
-  , Wireframe = 1
-  , Flat      = 2
+  { SmoothShaded = 0 // c.f. numRenderModes
+  , Wireframe    = 1
+  , FlatShaded   = 2
+  , Color        = 3
   }; 
 
 namespace RenderModeUtil {
-  const unsigned int numRenderModes = 3;
+  const unsigned int numRenderModes = 4;
  
   RenderMode toggle (RenderMode);
 }

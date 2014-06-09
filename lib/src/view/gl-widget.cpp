@@ -28,7 +28,9 @@ struct ViewGlWidget::Impl {
   Impl (ViewGlWidget* s, ViewMainWindow& mW) 
     : self (s)
     , mainWindow (mW) 
-  {}
+  {
+    this->self->setAutoFillBackground (false);
+  }
 
   ~Impl () {
     State::setTool (nullptr);
@@ -69,8 +71,10 @@ struct ViewGlWidget::Impl {
                      , [this] () { this->self->update (); });
   }
 
-  void paintGL () {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  void paintEvent (QPaintEvent*) {
+    this->self->makeCurrent ();
+
+    Renderer::renderInitialize ();
 
     if (this->mainWindow.properties ().selection ().show (MeshType::Freeform)) {
       State::scene ().render (MeshType::Freeform);
@@ -82,6 +86,12 @@ struct ViewGlWidget::Impl {
       State::tool ().render ();
     }
     this->axis.render ();
+
+    QPainter painter (this->self);
+
+    this->axis.render (painter);
+
+    painter.end ();
   }
 
   void resizeGL (int w, int h) {
@@ -205,7 +215,7 @@ DELEGATE  (void      , ViewGlWidget, selectIntersection)
 DELEGATE1 (void      , ViewGlWidget, selectIntersection, const glm::ivec2&)
 DELEGATE  (void      , ViewGlWidget, initializeGL)
 DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
-DELEGATE  (void      , ViewGlWidget, paintGL)
+DELEGATE1 (void      , ViewGlWidget, paintEvent,QPaintEvent*)
 DELEGATE1 (void      , ViewGlWidget, keyPressEvent    , QKeyEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mousePressEvent  , QMouseEvent*)

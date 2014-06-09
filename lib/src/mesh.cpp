@@ -42,7 +42,7 @@ struct Mesh::Impl {
     this->vertexBufferId      = 0;
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;
-    this->renderMode          = RenderMode::Flat;
+    this->renderMode          = RenderMode::FlatShaded;
 
     this->color               = Config::get <Color> ("/editor/color/mesh");
     this->wireframeColor      = Config::get <Color> ("/editor/color/mesh-wireframe");
@@ -198,13 +198,13 @@ struct Mesh::Impl {
     return this->translationMatrix * this->rotationMatrix * this->scalingMatrix;
   }
 
-  void fixModelMatrix () {
-    State::camera ().modelViewProjection (this->modelMatrix ());
+  void setModelMatrix (bool noZoom) {
+    State::camera ().setModelViewProjection (this->modelMatrix (), noZoom);
   }
 
-  void renderBegin () {
+  void renderBegin (bool noZoom) {
     Renderer :: setProgram (this->renderMode);
-    this->fixModelMatrix   ();
+    this->setModelMatrix   (noZoom);
     glBindVertexArray      (this->arrayObjectId);
     glBindBuffer           (GL_ARRAY_BUFFER, this->vertexBufferId);
     glBindBuffer           (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
@@ -216,10 +216,13 @@ struct Mesh::Impl {
     glBindVertexArray (0); 
   }
 
-  void render () {
-    this->renderBegin ();
+  void render (bool noZoom) {
+    this->renderBegin (noZoom);
 
-    if (this->renderMode == RenderMode::Smooth || this->renderMode == RenderMode::Flat) {
+    if (  this->renderMode == RenderMode::SmoothShaded 
+       || this->renderMode == RenderMode::FlatShaded
+       || this->renderMode == RenderMode::Color ) 
+    {
       this->renderSolid ();
     }
     else if (this->renderMode == RenderMode::Wireframe) {
@@ -288,6 +291,18 @@ struct Mesh::Impl {
 
   glm::vec3 position () const {
     return Util::transformPosition (this->modelMatrix (), glm::vec3 (0.0f));
+  }
+
+  void rotationX (float angle) {
+    this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (1.0f,0.0f,0.0f));
+  }
+
+  void rotationY (float angle) {
+    this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (0.0f,1.0f,0.0f));
+  }
+
+  void rotationZ (float angle) {
+    this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (0.0f,0.0f,1.0f));
   }
 
   static Mesh cube () {
@@ -578,10 +593,9 @@ DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
-DELEGATE         (void              , Mesh, fixModelMatrix)
-DELEGATE         (void              , Mesh, renderBegin)
+DELEGATE1        (void              , Mesh, renderBegin, bool)
 DELEGATE         (void              , Mesh, renderEnd)
-DELEGATE         (void              , Mesh, render)
+DELEGATE1        (void              , Mesh, render, bool)
 DELEGATE         (void              , Mesh, renderSolid)
 DELEGATE         (void              , Mesh, renderWireframe)
 DELEGATE         (void              , Mesh, reset)
@@ -595,6 +609,9 @@ DELEGATE1        (void              , Mesh, translate  , const glm::vec3&)
 DELEGATE1        (void              , Mesh, position   , const glm::vec3&)
 DELEGATE_CONST   (glm::vec3         , Mesh, position)
 SETTER           (const glm::mat4x4&, Mesh, rotationMatrix)
+DELEGATE1        (void              , Mesh, rotationX, float)
+DELEGATE1        (void              , Mesh, rotationY, float)
+DELEGATE1        (void              , Mesh, rotationZ, float)
 GETTER_CONST     (const Color&      , Mesh, color)
 SETTER           (const Color&      , Mesh, color)
 

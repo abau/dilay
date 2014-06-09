@@ -14,6 +14,12 @@
       <r type="float">0.8</r> <g type="float">0.8</g> <b type="float">1.0</b>
     </sphere-mesh>
     <selection-brightness type="float">1.1</selection-brightness>
+    <axis type="color">
+      <r type="float">0.3</r> <g type="float">0.3</g> <b type="float">0.4</b>
+    </axis>
+    <axis-label type="color">
+      <r type="float">1.0</r> <g type="float">1.0</g> <b type="float">1.0</b>
+    </axis-label>
   </color>
 
   <light>

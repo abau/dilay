@@ -16,6 +16,7 @@ class Renderer {
 
     static void initialize         ();
     static void shutdown           ();
+    static void renderInitialize   ();
     static void setProgram         (const RenderMode&);
     static void setMvp             (const GLfloat*);
     static void setModel           (const GLfloat*);

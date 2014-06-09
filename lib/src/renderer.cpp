@@ -58,6 +58,7 @@ struct Renderer::Impl {
   ShaderIds      shaderIds [RenderModeUtil :: numRenderModes];
   ShaderIds*     activeShaderIndex;
   GlobalUniforms globalUniforms;
+  Color          clearColor;
 
   Impl () : activeShaderIndex (nullptr) {}
 
@@ -72,15 +73,9 @@ struct Renderer::Impl {
         throw (std::runtime_error (e1 + e2));
       }
 
-      Color color = Config::get<Color> ("/editor/color/background");
-      glClearColor (color.r (), color.g (), color.b (), 0.0f);
-          
-      glDepthFunc (GL_LEQUAL); 
+      this->clearColor = Config::get<Color> ("/editor/color/background");
 
-      glEnable  (GL_CULL_FACE);
-      glEnable  (GL_DEPTH_TEST); 
-
-      this->shaderIds [static_cast <int> (RenderMode::Smooth)].programId =
+      this->shaderIds [static_cast <int> (RenderMode::SmoothShaded)].programId =
         OpenGLUtil :: loadProgram ( Shader::smoothVertexShader   ()
                                   , Shader::smoothFragmentShader ()
                                   );
@@ -88,9 +83,13 @@ struct Renderer::Impl {
         OpenGLUtil :: loadProgram ( Shader::simpleVertexShader   ()
                                   , Shader::simpleFragmentShader ()
                                   );
-      this->shaderIds [static_cast <int> (RenderMode::Flat)].programId =
+      this->shaderIds [static_cast <int> (RenderMode::FlatShaded)].programId =
         OpenGLUtil :: loadProgram ( Shader::flatVertexShader   ()
                                   , Shader::flatFragmentShader ()
+                                  );
+      this->shaderIds [static_cast <int> (RenderMode::Color)].programId =
+        OpenGLUtil :: loadProgram ( Shader::simpleVertexShader   ()
+                                  , Shader::simpleFragmentShader ()
                                   );
 
       for (unsigned int i = 0; i < RenderModeUtil :: numRenderModes; i++) {
@@ -124,6 +123,17 @@ struct Renderer::Impl {
   void shutdown () {
     for (unsigned int rm = 0; rm < RenderModeUtil :: numRenderModes; rm++)
       OpenGLUtil :: safeDeleteProgram (this->shaderIds[rm].programId);
+  }
+
+  void renderInitialize () {
+    glClearColor ( this->clearColor.r ()
+                 , this->clearColor.g ()
+                 , this->clearColor.b (), 0.0f);
+        
+    glDepthFunc (GL_LEQUAL); 
+    glEnable    (GL_CULL_FACE);
+    glEnable    (GL_DEPTH_TEST); 
+    glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   }
 
   void setProgram (const RenderMode& renderMode) {
@@ -207,6 +217,7 @@ DELEGATE_DESTRUCTOR   (Renderer)
 
 DELEGATE_GLOBAL  (void,Renderer,initialize)
 DELEGATE_GLOBAL  (void,Renderer,shutdown)
+DELEGATE_GLOBAL  (void,Renderer,renderInitialize)
 DELEGATE1_GLOBAL (void,Renderer,setProgram        ,const RenderMode&)
 DELEGATE1_GLOBAL (void,Renderer,setMvp            ,const GLfloat*)
 DELEGATE1_GLOBAL (void,Renderer,setModel          ,const GLfloat*)

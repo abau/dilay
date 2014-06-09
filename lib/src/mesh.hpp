@@ -34,10 +34,9 @@ class Mesh {
 
     void         bufferData        ();
     glm::mat4x4  modelMatrix       () const;
-    void         fixModelMatrix    ();
-    void         renderBegin       ();
+    void         renderBegin       (bool = false);
     void         renderEnd         ();
-    void         render            ();
+    void         render            (bool = false);
     void         renderSolid       ();
     void         renderWireframe   ();
     void         reset             ();
@@ -51,6 +50,9 @@ class Mesh {
     void         position          (const glm::vec3&);
     glm::vec3    position          () const;
     void         rotationMatrix    (const glm::mat4x4&);
+    void         rotationX         (float);
+    void         rotationY         (float);
+    void         rotationZ         (float);
     const Color& color             () const;
     void         color             (const Color&);
 

@@ -17,7 +17,7 @@ struct Camera::Impl {
   glm::vec3    right;
   glm::mat4x4  projection;
   glm::mat4x4  view;
-  glm::mat4x4  viewRotation;
+  glm::mat4x4  viewNoZoom;
   glm::uvec2   resolution;
   float        nearClipping;
   float        farClipping;
@@ -59,15 +59,15 @@ struct Camera::Impl {
     this->updateProjection ();
   }
 
-  void modelViewProjection (const glm::mat4x4& model) const {
-    glm::mat4x4 mvp = this->projection * this->view * model;
-    Renderer :: setMvp   (&mvp  [0][0]);
-    Renderer :: setModel (&model[0][0]);
+  glm::mat4x4 modelViewProjection (const glm::mat4x4& model, bool noZoom) const {
+    return noZoom ? this->projection * this->viewNoZoom * model
+                  : this->projection * this->view       * model;
   }
 
-  void rotationProjection () const {
-    glm::mat4x4 mvp = this->projection * this->viewRotation;
-    Renderer :: setMvp (&mvp[0][0]);
+  void setModelViewProjection (const glm::mat4x4& model, bool noZoom) const {
+    glm::mat4x4 mvp = this->modelViewProjection (model, noZoom);
+    Renderer :: setMvp   (&mvp  [0][0]);
+    Renderer :: setModel (&model[0][0]);
   }
 
   void stepAlongGaze (bool forward) {
@@ -100,8 +100,10 @@ struct Camera::Impl {
     return glm::vec4 (0, 0, this->resolution.x, this->resolution.y);
   }
 
-  glm::ivec2 fromWorld (const glm::vec3& p) const {
-    glm::vec3 w = glm::project (p, this->view, this->projection, this->viewport ());
+  glm::ivec2 fromWorld (const glm::vec3& p, const glm::mat4x4& model, bool noZoom) const {
+    glm::mat4x4 mv = noZoom ? this->viewNoZoom * model
+                            : this->view       * model;
+    glm::vec3 w = glm::project (p, mv, this->projection, this->viewport ());
     return glm::ivec2 (int (w.x), int (resolution.y - w.y));
   }
 
@@ -118,24 +120,20 @@ struct Camera::Impl {
     return PrimRay (eye, glm::normalize (w - eye));
   }
 
-  void updateProjection (const glm::uvec2& p, const glm::uvec2& dim) {
-    glViewport (p.x, p.y, dim.x, dim.y);
+  void updateProjection () {
+    glViewport (0, 0, this->resolution.x, this->resolution.y);
     this->projection = glm::perspective ( 
         glm::radians (45.0f)
-      , float (dim.x) / float (dim.y)
+      , float (this->resolution.x) / float (this->resolution.y)
       , this->nearClipping, this->farClipping);
-  }
-
-  void updateProjection () {
-    this->updateProjection (glm::uvec2(0,0),this->resolution);
   }
 
   void updateView () {
     this->view = glm::lookAt ( this->eyePoint (), this->gazePoint, this->up );
 
-    this->viewRotation = glm::lookAt ( glm::normalize (this->toEyePoint)
-                                     , glm::vec3 (0.0f)
-                                     , this->up );
+    this->viewNoZoom = glm::lookAt ( glm::normalize (this->toEyePoint)
+                                   , glm::vec3 (0.0f)
+                                   , this->up );
     Renderer::setEyePoint (this->eyePoint ());
   }
 
@@ -153,18 +151,16 @@ GETTER_CONST    (const glm::vec3&  , Camera, toEyePoint)
 GETTER_CONST    (const glm::vec3&  , Camera, up)
 GETTER_CONST    (const glm::vec3&  , Camera, right)
 GETTER_CONST    (const glm::mat4x4&, Camera, view)
-GETTER_CONST    (const glm::mat4x4&, Camera, viewRotation)
+GETTER_CONST    (const glm::mat4x4&, Camera, viewNoZoom)
 DELEGATE_CONST  (glm::vec3         , Camera, position)
 DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 
-DELEGATE1       (void      , Camera, updateResolution, const glm::uvec2&) 
-DELEGATE1_CONST (void      , Camera, modelViewProjection, const glm::mat4x4&) 
-DELEGATE_CONST  (void      , Camera, rotationProjection) 
-DELEGATE1       (void      , Camera, stepAlongGaze, bool) 
-DELEGATE1       (void      , Camera, verticalRotation, float) 
-DELEGATE1       (void      , Camera, horizontalRotation, float) 
-DELEGATE1_CONST (glm::ivec2, Camera, fromWorld, const glm::vec3&)
-DELEGATE2_CONST (glm::vec3 , Camera, toWorld, const glm::ivec2&, float)
-DELEGATE1_CONST (PrimRay   , Camera, ray, const glm::ivec2&)
-DELEGATE2       (void      , Camera, updateProjection, const glm::uvec2&, const glm::uvec2&)
-DELEGATE        (void      , Camera, updateProjection)
+DELEGATE1       (void       , Camera, updateResolution, const glm::uvec2&) 
+DELEGATE2_CONST (glm::mat4x4, Camera, modelViewProjection, const glm::mat4x4&, bool) 
+DELEGATE2_CONST (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
+DELEGATE1       (void       , Camera, stepAlongGaze, bool) 
+DELEGATE1       (void       , Camera, verticalRotation, float) 
+DELEGATE1       (void       , Camera, horizontalRotation, float) 
+DELEGATE3_CONST (glm::ivec2 , Camera, fromWorld, const glm::vec3&, const glm::mat4x4&, bool)
+DELEGATE2_CONST (glm::vec3  , Camera, toWorld, const glm::ivec2&, float)
+DELEGATE1_CONST (PrimRay    , Camera, ray, const glm::ivec2&)
