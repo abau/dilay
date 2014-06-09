@@ -217,23 +217,26 @@ struct Mesh::Impl {
   }
 
   void render () {
-    if (this->renderMode == RenderMode::Smooth || this->renderMode == RenderMode::Flat)
-      return this->renderSolid ();
-    else if (this->renderMode == RenderMode::Wireframe)
-      return this->renderWireframe ();
-    else
+    this->renderBegin ();
+
+    if (this->renderMode == RenderMode::Smooth || this->renderMode == RenderMode::Flat) {
+      this->renderSolid ();
+    }
+    else if (this->renderMode == RenderMode::Wireframe) {
+      this->renderWireframe ();
+    }
+    else {
       assert (false);
+    }
+    this->renderEnd ();
   }
 
   void renderSolid () {
-    this->renderBegin     ();
     Renderer :: setColor3 (this->color);
     glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
-    this->renderEnd       ();
   }
 
   void renderWireframe () {
-    this->renderBegin  ();
     Renderer :: setColor3 (this->color);
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
@@ -244,7 +247,6 @@ struct Mesh::Impl {
     glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
 
     glPolygonMode      (GL_FRONT, GL_FILL);
-    this->renderEnd    ();
   }
 
   void reset () {
