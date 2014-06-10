@@ -113,6 +113,7 @@ HEADERS += \
            src/config.hpp \
            src/config-conversion.hpp \
            src/cursor.hpp \
+           src/dimension.hpp \
            src/fwd-winged.hpp \
            src/history.hpp \
            src/id.hpp \

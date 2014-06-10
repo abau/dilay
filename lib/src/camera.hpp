@@ -5,6 +5,7 @@
 #include "macro.hpp"
 
 class PrimRay;
+enum class Dimension;
 
 class Camera {
   public:
@@ -32,6 +33,7 @@ class Camera {
     glm::ivec2  fromWorld              (const glm::vec3&, const glm::mat4x4&, bool) const;
     glm::vec3   toWorld                (const glm::ivec2&, float = 0.0f) const;
     PrimRay     ray                    (const glm::ivec2&) const;
+    Dimension   primaryDimension       () const;
 
   private:
     class Impl;

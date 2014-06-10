@@ -7,6 +7,7 @@
 #include "opengl-util.hpp"
 #include "primitive/ray.hpp"
 #include "renderer.hpp"
+#include "dimension.hpp"
 
 struct Camera::Impl {
   float        gazeStepSize;
@@ -140,6 +141,17 @@ struct Camera::Impl {
   glm::vec3 eyePoint () const {
     return this->gazePoint + this->toEyePoint;
   }
+
+  Dimension primaryDimension () const {
+    glm::vec3 t = glm::abs (this->toEyePoint);
+    if (t.x > t.y && t.x > t.z) {
+      return Dimension::X;
+    }
+    else if (t.y > t.z) {
+      return Dimension::Y;
+    }
+    return Dimension::Z;
+  }
 };
 
 DELEGATE_BIG6 (Camera)
@@ -164,3 +176,4 @@ DELEGATE1       (void       , Camera, horizontalRotation, float)
 DELEGATE3_CONST (glm::ivec2 , Camera, fromWorld, const glm::vec3&, const glm::mat4x4&, bool)
 DELEGATE2_CONST (glm::vec3  , Camera, toWorld, const glm::ivec2&, float)
 DELEGATE1_CONST (PrimRay    , Camera, ray, const glm::ivec2&)
+DELEGATE_CONST  (Dimension  , Camera, primaryDimension)
