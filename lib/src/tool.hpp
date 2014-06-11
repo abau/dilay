@@ -5,7 +5,6 @@
 #include "macro.hpp"
 
 class QMouseEvent;
-class QContextMenuEvent;
 class ViewMainWindow;
 class ViewToolOptions;
 class QString;
@@ -13,12 +12,13 @@ class QWheelEvent;
 
 class Tool {
   public:
-    DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow&, QContextMenuEvent&, const QString&)
+    DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow&, const glm::ivec2&, const QString&)
+
+    Tool (ViewMainWindow&, const glm::ivec2&);
 
     friend class ToolUtil;
 
     ViewMainWindow&    mainWindow         ();
-    QContextMenuEvent& menuEvent          ();
     void               updateGlWidget     ();
     void               unselectAll        ();
     void               selectIntersection ();
@@ -30,16 +30,8 @@ class Tool {
     void               mouseReleaseEvent  (QMouseEvent&);
     void               wheelEvent         (QWheelEvent&);
 
-    bool               isDraged           () const;
-    bool               isHovered          () const;
-
   protected:
-    ViewToolOptions&   toolOptions        ();
-
-    void               drag               (bool);
-    void               dragIfHovered      ();
-    void               hover              (bool);
-    void               hoverIfDraged      ();
+    ViewToolOptions*   toolOptions        ();
 
   private:
     class Impl;
@@ -47,8 +39,8 @@ class Tool {
 
     virtual void runRender            ()             {}
     virtual bool runMouseMoveEvent    (QMouseEvent&) { return false; }
-    virtual bool runMousePressEvent   (QMouseEvent&) { this->dragIfHovered (); return false; }
-    virtual bool runMouseReleaseEvent (QMouseEvent&) { this->hoverIfDraged (); return false; }
+    virtual bool runMousePressEvent   (QMouseEvent&) { return false; }
+    virtual bool runMouseReleaseEvent (QMouseEvent&) { return false; }
     virtual bool runWheelEvent        (QWheelEvent&) { return false; }
 };
 

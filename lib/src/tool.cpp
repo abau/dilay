@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 #include "tool.hpp"
 #include "view/tool-options.hpp"
 #include "view/main-window.hpp"
@@ -8,35 +9,37 @@
 struct Tool::Impl {
   Tool*              self;
   ViewMainWindow&    mainWindow;
-  QContextMenuEvent& menuEvent;
-  ViewToolOptions&   toolOptions;
-  bool               isDraged;
-  bool               isHovered;
+  glm::ivec2         clickPosition;
+  ViewToolOptions*   toolOptions;
 
-  Impl (Tool* s, ViewMainWindow& w, QContextMenuEvent& e, const QString& name) 
-    : self        (s) 
-    , mainWindow  (w)
-    , menuEvent   (e)
-    , toolOptions (*new ViewToolOptions (w))
-    , isDraged    (false)
-    , isHovered   (false)
+  Impl (Tool* s, ViewMainWindow& w, const glm::ivec2& p, const QString& name) 
+    : self          (s) 
+    , mainWindow    (w)
+    , clickPosition (p)
+    , toolOptions   (new ViewToolOptions (w))
   {
-    this->toolOptions.setWindowTitle (name);
+    this->toolOptions->setWindowTitle (name);
 
-    QObject::connect ( &this->toolOptions, &ViewToolOptions::accepted
+    QObject::connect ( this->toolOptions, &ViewToolOptions::accepted
                      , [this] () { State::setTool (nullptr); } );
 
-    QObject::connect ( &this->toolOptions, &ViewToolOptions::rejected
+    QObject::connect ( this->toolOptions, &ViewToolOptions::rejected
                      , [this] () { State::setTool (nullptr); } );
 
-    this->toolOptions.show ();
+    this->toolOptions->show ();
   }
 
+  Impl (Tool* s, ViewMainWindow& w, const glm::ivec2& p) 
+    : self          (s) 
+    , mainWindow    (w)
+    , clickPosition (p)
+    , toolOptions   (nullptr)
+  {}
+
   ~Impl () {
-    this->drag               (false);
-    this->hover              (false);
-    this->selectIntersection ();
-    this->toolOptions.close  ();
+    if (this->toolOptions) {
+      this->toolOptions->close  ();
+    }
   }
 
   void render () { 
@@ -84,49 +87,11 @@ struct Tool::Impl {
   void selectIntersection (const glm::ivec2& pos) {
     this->mainWindow.glWidget ().selectIntersection (pos);
   }
-
-  void drag (bool b) { 
-    this->isDraged = b;
-
-    if (this->isDraged) {
-      assert (this->isHovered);
-      this->mainWindow.glWidget ().setCursor (QCursor (Qt::ClosedHandCursor));
-    }
-    else {
-      this->mainWindow.glWidget ().unsetCursor ();
-    }
-  }
-
-  void dragIfHovered () {
-    if (this->isHovered) {
-      this->drag (true);
-    }
-  }
-
-  void hover (bool b) { 
-    assert (! this->isDraged);
-
-    this->isHovered = b;
-
-    if (this->isHovered) {
-      this->mainWindow.glWidget ().setCursor (QCursor (Qt::OpenHandCursor));
-    }
-    else {
-      this->mainWindow.glWidget ().unsetCursor ();
-    }
-  }
-
-  void hoverIfDraged () {
-    if (this->isDraged) {
-      this->drag  (false);
-      this->hover (true);
-    }
-  }
 };
 
-DELEGATE3_BIG3_SELF  (Tool, ViewMainWindow&, QContextMenuEvent&, const QString&)
+DELEGATE3_BIG3_SELF        (Tool, ViewMainWindow&, const glm::ivec2&, const QString&)
+DELEGATE2_CONSTRUCTOR_SELF (Tool, ViewMainWindow&, const glm::ivec2&) 
 GETTER         (ViewMainWindow&   , Tool, mainWindow)
-GETTER         (QContextMenuEvent&, Tool, menuEvent)
 DELEGATE       (void              , Tool, updateGlWidget)
 DELEGATE       (void              , Tool, unselectAll)
 DELEGATE       (void              , Tool, selectIntersection)
@@ -136,10 +101,4 @@ DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, wheelEvent, QWheelEvent&)
-GETTER_CONST   (bool              , Tool, isDraged)
-GETTER_CONST   (bool              , Tool, isHovered)
-GETTER         (ViewToolOptions&  , Tool, toolOptions)
-DELEGATE1      (void              , Tool, drag, bool)
-DELEGATE       (void              , Tool, dragIfHovered)
-DELEGATE1      (void              , Tool, hover, bool)
-DELEGATE       (void              , Tool, hoverIfDraged)
+GETTER         (ViewToolOptions*  , Tool, toolOptions)

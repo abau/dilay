@@ -57,15 +57,7 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
-           src/tool/carve.cpp \
-           src/tool/modify-sphere-mesh-node.cpp \
-           src/tool/movement.cpp \
-           src/tool/new-freeform-mesh.cpp \
            src/tool/rotate.cpp \
-           src/tool/util.cpp \
-           src/tool/util/integer.cpp \
-           src/tool/util/position.cpp \
-           src/tool/util/radius.cpp \
            src/util.cpp \
            src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
@@ -150,15 +142,7 @@ HEADERS += \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
-           src/tool/carve.hpp \
-           src/tool/modify-sphere-mesh-node.hpp \
-           src/tool/movement.hpp \
-           src/tool/new-freeform-mesh.hpp \
            src/tool/rotate.hpp \
-           src/tool/util.hpp \
-           src/tool/util/integer.hpp \
-           src/tool/util/position.hpp \
-           src/tool/util/radius.hpp \
            src/util.hpp \
            src/variant.hpp \
            src/view/freeform-mesh-menu.hpp \
