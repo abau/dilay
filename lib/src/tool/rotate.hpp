@@ -7,6 +7,8 @@ class ToolRotate : public Tool {
   public:
     DECLARE_BIG3 (ToolRotate, ViewMainWindow&, const glm::ivec2&)
 
+    static bool staticWheelEvent (QWheelEvent&);
+
   private:
     class Impl;
     Impl* impl;

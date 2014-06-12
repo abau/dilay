@@ -17,7 +17,6 @@ struct ToolRotate::Impl {
   const glm::vec3   originalToEyepoint;
   const glm::vec3   originalUp;
   const float       rotationFactor;
-  const float       zoomInFactor;
 
   Impl (ToolRotate* s)
     : self               (s)
@@ -26,7 +25,6 @@ struct ToolRotate::Impl {
     , originalToEyepoint (State::camera ().toEyePoint ())
     , originalUp         (State::camera ().up ())
     , rotationFactor     (Config::get <float> ("/editor/camera/rotation-factor"))
-    , zoomInFactor       (Config::get <float> ("/editor/camera/zoom-in-factor"))
   {}
 
   bool runMouseMoveEvent (QMouseEvent& event) {
@@ -64,11 +62,17 @@ struct ToolRotate::Impl {
   }
 
   bool runWheelEvent (QWheelEvent& event) {
+    return staticWheelEvent (event);
+  }
+
+  bool static staticWheelEvent (QWheelEvent& event) {
     if (event.orientation () == Qt::Vertical) {
+      const float zoomInFactor = Config::get <float> ("/editor/camera/zoom-in-factor");
+
       if (event.delta () > 0)
-        State::camera ().stepAlongGaze (this->zoomInFactor);
+        State::camera ().stepAlongGaze (zoomInFactor);
       else if (event.delta () < 0)
-        State::camera ().stepAlongGaze (1.0f / this->zoomInFactor);
+        State::camera ().stepAlongGaze (1.0f / zoomInFactor);
     }
     return true;
   }
@@ -76,6 +80,7 @@ struct ToolRotate::Impl {
 
 DELEGATE_BIG3_BASE ( ToolRotate, (ViewMainWindow& w, const glm::ivec2& p)
                    , (this), Tool, (w,p) )
-DELEGATE1 (bool, ToolRotate, runMouseMoveEvent, QMouseEvent&)
-DELEGATE1 (bool, ToolRotate, runMouseReleaseEvent, QMouseEvent&)
-DELEGATE1 (bool, ToolRotate, runWheelEvent, QWheelEvent&)
+DELEGATE1        (bool, ToolRotate, runMouseMoveEvent, QMouseEvent&)
+DELEGATE1        (bool, ToolRotate, runMouseReleaseEvent, QMouseEvent&)
+DELEGATE1        (bool, ToolRotate, runWheelEvent, QWheelEvent&)
+DELEGATE1_STATIC (bool, ToolRotate, staticWheelEvent, QWheelEvent&)

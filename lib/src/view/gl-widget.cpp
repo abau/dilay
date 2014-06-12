@@ -188,8 +188,10 @@ struct ViewGlWidget::Impl {
     if (this->toolRotate) {
       this->toolRotate->wheelEvent (*e);
     }
-    else if (State::hasTool ()) {
-      State::tool ().wheelEvent (*e);
+    else {
+      if (ToolRotate::staticWheelEvent (*e)) {
+        this->self->update ();
+      }
     }
   }
 
