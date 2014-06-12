@@ -102,8 +102,6 @@ struct Axis::Impl {
   }
 
   void renderGrid () {
-    this->gridMesh.renderBegin (true);
-
     unsigned int numLines = (this->gridResolution - 1) * (this->gridResolution - 1) * 4;
 
     switch (State::camera ().primaryDimension ()) {
@@ -117,6 +115,8 @@ struct Axis::Impl {
         this->gridMesh.rotationMatrix (glm::mat4x4 (1.0f));
         break;
     }
+
+    this->gridMesh.renderBegin (true);
 
     Renderer::setColor3 (this->axisColor);
     glDrawElements (GL_LINES, numLines, GL_UNSIGNED_INT, (GLvoid*)0);
