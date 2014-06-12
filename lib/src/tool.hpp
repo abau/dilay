@@ -19,6 +19,7 @@ class Tool {
     friend class ToolUtil;
 
     ViewMainWindow&    mainWindow         ();
+    const glm::ivec2&  clickPosition      () const;
     void               updateGlWidget     ();
     void               unselectAll        ();
     void               selectIntersection ();

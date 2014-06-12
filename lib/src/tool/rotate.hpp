@@ -1,8 +1,19 @@
 #ifndef DILAY_TOOL_ROTATE
 #define DILAY_TOOL_ROTATE
 
-namespace ToolRotate {
-  void run ();
-}
+#include "tool.hpp"
+
+class ToolRotate : public Tool {
+  public:
+    DECLARE_BIG3 (ToolRotate, ViewMainWindow&, const glm::ivec2&)
+
+  private:
+    class Impl;
+    Impl* impl;
+
+    bool runMouseMoveEvent    (QMouseEvent&);
+    bool runMouseReleaseEvent (QMouseEvent&);
+    bool runWheelEvent        (QWheelEvent&);
+};
 
 #endif

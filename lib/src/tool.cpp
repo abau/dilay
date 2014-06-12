@@ -92,6 +92,7 @@ struct Tool::Impl {
 DELEGATE3_BIG3_SELF        (Tool, ViewMainWindow&, const glm::ivec2&, const QString&)
 DELEGATE2_CONSTRUCTOR_SELF (Tool, ViewMainWindow&, const glm::ivec2&) 
 GETTER         (ViewMainWindow&   , Tool, mainWindow)
+GETTER_CONST   (const glm::ivec2& , Tool, clickPosition)
 DELEGATE       (void              , Tool, updateGlWidget)
 DELEGATE       (void              , Tool, unselectAll)
 DELEGATE       (void              , Tool, selectIntersection)

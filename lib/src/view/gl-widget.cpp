@@ -1,3 +1,4 @@
+#include <memory>
 #include <QApplication>
 #include <QKeyEvent>
 #include <glm/glm.hpp>
@@ -21,9 +22,10 @@
 #include "primitive/ray.hpp"
 
 struct ViewGlWidget::Impl {
-  ViewGlWidget*         self;
-  ViewMainWindow&       mainWindow;
-  Axis                  axis;
+  ViewGlWidget*                self;
+  ViewMainWindow&              mainWindow;
+  Axis                         axis;
+  std::unique_ptr <ToolRotate> toolRotate;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW) 
     : self (s)
@@ -51,6 +53,10 @@ struct ViewGlWidget::Impl {
     {
       this->self->update ();
     }
+  }
+
+  void invalidateToolRotate () {
+    this->toolRotate.reset ();
   }
 
   void initializeGL () {
@@ -146,9 +152,9 @@ struct ViewGlWidget::Impl {
 
   void mouseMoveEvent (QMouseEvent* e) {
     State::mouseMovement ().update (e->pos ());
-    if (e->buttons () == Qt::MiddleButton) {
-      ToolRotate::run ();
-      this->self->update ();
+    
+    if (this->toolRotate) {
+      this->toolRotate->mouseMoveEvent (*e);
     }
     else if (State::hasTool ()) {
       State::tool ().mouseMoveEvent (*e);
@@ -159,33 +165,35 @@ struct ViewGlWidget::Impl {
   }
 
   void mousePressEvent (QMouseEvent* e) {
-    if (e->buttons () == Qt::LeftButton && State::hasTool ()) {
+    if (State::hasTool ()) {
       State::tool ().mousePressEvent (*e);
     }
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
     State::mouseMovement ().invalidate ();
-    if (State::hasTool ()) {
+
+    if (e->button () == Qt::MiddleButton && this->toolRotate == false) {
+      this->toolRotate.reset (new ToolRotate (this->mainWindow, ViewUtil::toIVec2 (*e)));
+    }
+    else if (this->toolRotate) {
+      this->toolRotate->mouseReleaseEvent (*e);
+    }
+    else if (State::hasTool ()) {
       State::tool ().mouseReleaseEvent (*e);
     }
   }
 
   void wheelEvent (QWheelEvent* e) {
-    if (e->modifiers ().testFlag (Qt::NoModifier)) {
-      if (e->orientation () == Qt::Vertical) {
-        if (e->delta () > 0)
-          State::camera ().stepAlongGaze (true);
-        else if (e->delta () < 0)
-          State::camera ().stepAlongGaze (false);
-      }
-      this->self->update ();
+    if (this->toolRotate) {
+      this->toolRotate->wheelEvent (*e);
     }
     else if (State::hasTool ()) {
       State::tool ().wheelEvent (*e);
     }
   }
 
+  /*
   void contextMenuEvent (QContextMenuEvent* e) {
     State::setTool (nullptr);
     switch (this->mainWindow.properties ().selection ().selected ()) {
@@ -204,6 +212,7 @@ struct ViewGlWidget::Impl {
     }
     this->mainWindow.activateWindow ();
   }
+  */
 };
 
 DELEGATE_CONSTRUCTOR_BASE ( ViewGlWidget, (const QGLFormat& f, ViewMainWindow& w)
@@ -213,6 +222,7 @@ DELEGATE_DESTRUCTOR (ViewGlWidget)
 DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
 DELEGATE  (void      , ViewGlWidget, selectIntersection)
 DELEGATE1 (void      , ViewGlWidget, selectIntersection, const glm::ivec2&)
+DELEGATE  (void      , ViewGlWidget, invalidateToolRotate)
 DELEGATE  (void      , ViewGlWidget, initializeGL)
 DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
 DELEGATE1 (void      , ViewGlWidget, paintEvent,QPaintEvent*)
@@ -221,4 +231,4 @@ DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mousePressEvent  , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, wheelEvent       , QWheelEvent*)
-DELEGATE1 (void      , ViewGlWidget, contextMenuEvent , QContextMenuEvent*)
+//DELEGATE1 (void      , ViewGlWidget, contextMenuEvent , QContextMenuEvent*)

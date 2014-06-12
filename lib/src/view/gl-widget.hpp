@@ -13,9 +13,10 @@ class ViewGlWidget : public QGLWidget {
   public:
     DECLARE_BIG2 (ViewGlWidget, const QGLFormat&, ViewMainWindow&)
 
-    glm::ivec2 cursorPosition     ();
-    void       selectIntersection ();
-    void       selectIntersection (const glm::ivec2&);
+    glm::ivec2 cursorPosition       ();
+    void       selectIntersection   ();
+    void       selectIntersection   (const glm::ivec2&);
+    void       invalidateToolRotate ();
        
   protected:
     void initializeGL       ();
@@ -27,7 +28,7 @@ class ViewGlWidget : public QGLWidget {
     void mousePressEvent    (QMouseEvent*);
     void mouseReleaseEvent  (QMouseEvent*);
     void wheelEvent         (QWheelEvent*);
-    void contextMenuEvent   (QContextMenuEvent*);
+    //void contextMenuEvent   (QContextMenuEvent*);
 
   private:
     class Impl;
