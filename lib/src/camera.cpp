@@ -82,24 +82,24 @@ struct Camera::Impl {
     }
   }
 
-  void stepAlongGaze (bool forward) {
+  void stepAlongGaze (float factor) {
     float d = glm::length (this->toEyePoint);
-    if (forward && d > 1.0f)
-      this->toEyePoint *= glm::vec3 (0.5f);
-    else if (!forward)
-      this->toEyePoint *= glm::vec3 (2.0f);
+    if (factor < 1.0f && d > 1.0f)
+      this->toEyePoint *= glm::vec3 (factor);
+    else if (factor > 1.0f)
+      this->toEyePoint *= glm::vec3 (factor);
     this->updateView ();
   }
 
   void verticalRotation (float angle) {
-    glm::quat q       = glm::angleAxis (glm::radians (angle),this->up);
+    glm::quat q       = glm::angleAxis (angle, this->up);
     this->right       = glm::rotate (q, this->right);
     this->toEyePoint  = glm::rotate (q, this->toEyePoint);
     this->updateView ();
   }
 
   void horizontalRotation (float angle) {
-    glm::quat q      = glm::angleAxis (glm::radians (angle),this->right);
+    glm::quat q      = glm::angleAxis (angle, this->right);
     this->toEyePoint = glm::rotate (q, this->toEyePoint);
 
     if (glm::dot ( glm::cross (this->up, this->toEyePoint), this->right ) < 0) {
@@ -183,7 +183,7 @@ DELEGATE1       (void       , Camera, updateResolution, const glm::uvec2&)
 DELEGATE2_CONST (glm::mat4x4, Camera, modelViewProjection, const glm::mat4x4&, bool) 
 DELEGATE2_CONST (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
 DELEGATE3       (void       , Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&);
-DELEGATE1       (void       , Camera, stepAlongGaze, bool) 
+DELEGATE1       (void       , Camera, stepAlongGaze, float) 
 DELEGATE1       (void       , Camera, verticalRotation, float) 
 DELEGATE1       (void       , Camera, horizontalRotation, float) 
 DELEGATE3_CONST (glm::ivec2 , Camera, fromWorld, const glm::vec3&, const glm::mat4x4&, bool)

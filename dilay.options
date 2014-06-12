@@ -22,6 +22,11 @@
     </axis-label>
   </color>
 
+  <camera>
+    <rotation-factor type="float">1.0</rotation-factor>
+    <zoom-in-factor type="float">0.5</zoom-in-factor>
+  </camera>
+
   <light>
     <ambient type="color">
       <r type="float">0.0</r> <g type="float">0.0</g> <b type="float">0.0</b>

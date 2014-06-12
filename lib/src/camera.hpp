@@ -28,7 +28,7 @@ class Camera {
     void        setModelViewProjection (const glm::mat4x4&, bool) const;
 
     void        set                    (const glm::vec3&, const glm::vec3&, const glm::vec3&);
-    void        stepAlongGaze          (bool);
+    void        stepAlongGaze          (float);
     void        verticalRotation       (float);
     void        horizontalRotation     (float);
     glm::ivec2  fromWorld              (const glm::vec3&, const glm::mat4x4&, bool) const;
