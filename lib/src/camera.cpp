@@ -10,6 +10,7 @@
 #include "dimension.hpp"
 
 struct Camera::Impl {
+  Camera*      self;
   float        gazeStepSize;
 
   glm::vec3    gazePoint;
@@ -23,17 +24,17 @@ struct Camera::Impl {
   float        nearClipping;
   float        farClipping;
 
-  Impl () : gazeStepSize (1.0f)
-          , resolution   (1024,800)
-          , nearClipping (0.1f)
-          , farClipping  (1000.0f) {
+  Impl (Camera* s) 
+    : self         (s)
+    , gazeStepSize (1.0f)
+    , resolution   (1024,800)
+    , nearClipping (0.1f)
+    , farClipping  (1000.0f) {
 
-
-    this->gazePoint  = glm::vec3 (0.0f,0.0f,0.0f);
-    this->up         = glm::vec3 (0.0f,1.0f,0.0f);
-    this->toEyePoint = glm::vec3 (3.0f,3.0f,3.0f);
-
-    this->right      = glm::normalize ( glm::cross (this->up, this->toEyePoint) );
+    this->set ( glm::vec3 (0.0f,0.0f,0.0f)
+              , glm::vec3 (3.0f,3.0f,3.0f)
+              , glm::vec3 (0.0f,1.0f,0.0f)
+              , false);
   }
 
   glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
@@ -69,6 +70,16 @@ struct Camera::Impl {
     glm::mat4x4 mvp = this->modelViewProjection (model, noZoom);
     Renderer :: setMvp   (&mvp  [0][0]);
     Renderer :: setModel (&model[0][0]);
+  }
+
+  void set (const glm::vec3& g, const glm::vec3& e, const glm::vec3& u, bool update = true) {
+    this->gazePoint  = g;
+    this->toEyePoint = e;
+    this->up         = u;
+    this->right      = glm::normalize ( glm::cross (this->up, this->toEyePoint) );
+    if (update) {
+      this->updateView ();
+    }
   }
 
   void stepAlongGaze (bool forward) {
@@ -135,7 +146,8 @@ struct Camera::Impl {
     this->viewNoZoom = glm::lookAt ( glm::normalize (this->toEyePoint)
                                    , glm::vec3 (0.0f)
                                    , this->up );
-    Renderer::setEyePoint (this->eyePoint ());
+    Renderer::setEyePoint  (this->eyePoint ());
+    Renderer::updateLights (*this->self);
   }
 
   glm::vec3 eyePoint () const {
@@ -154,7 +166,7 @@ struct Camera::Impl {
   }
 };
 
-DELEGATE_BIG6 (Camera)
+DELEGATE_BIG6_SELF (Camera)
 
 DELEGATE        (void              , Camera, initialize)
 GETTER_CONST    (const glm::uvec2& , Camera, resolution)
@@ -170,6 +182,7 @@ DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 DELEGATE1       (void       , Camera, updateResolution, const glm::uvec2&) 
 DELEGATE2_CONST (glm::mat4x4, Camera, modelViewProjection, const glm::mat4x4&, bool) 
 DELEGATE2_CONST (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
+DELEGATE3       (void       , Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&);
 DELEGATE1       (void       , Camera, stepAlongGaze, bool) 
 DELEGATE1       (void       , Camera, verticalRotation, float) 
 DELEGATE1       (void       , Camera, horizontalRotation, float) 

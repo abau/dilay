@@ -27,6 +27,7 @@ class Camera {
     glm::mat4x4 modelViewProjection    (const glm::mat4x4&, bool) const;
     void        setModelViewProjection (const glm::mat4x4&, bool) const;
 
+    void        set                    (const glm::vec3&, const glm::vec3&, const glm::vec3&);
     void        stepAlongGaze          (bool);
     void        verticalRotation       (float);
     void        horizontalRotation     (float);
