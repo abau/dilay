@@ -14,6 +14,7 @@ class ViewMainWindow : public QMainWindow {
 
     ViewGlWidget&         glWidget    ();
     ViewPropertiesWidget& properties  ();
+    void                  showMessage (const QString&);
 
   private:
     class Impl;
