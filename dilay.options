@@ -24,6 +24,7 @@
 
   <camera>
     <rotation-factor type="float">1.0</rotation-factor>
+    <panning-factor type="float">0.01</panning-factor>
     <zoom-in-factor type="float">0.5</zoom-in-factor>
   </camera>
 

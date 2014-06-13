@@ -17,6 +17,7 @@ struct ToolRotate::Impl {
   const glm::vec3   originalToEyepoint;
   const glm::vec3   originalUp;
   const float       rotationFactor;
+  const float       panningFactor;
 
   Impl (ToolRotate* s)
     : self               (s)
@@ -25,6 +26,7 @@ struct ToolRotate::Impl {
     , originalToEyepoint (State::camera ().toEyePoint ())
     , originalUp         (State::camera ().up ())
     , rotationFactor     (Config::get <float> ("/editor/camera/rotation-factor"))
+    , panningFactor      (Config::get <float> ("/editor/camera/panning-factor"))
   {}
 
   bool runMouseMoveEvent (QMouseEvent& event) {
@@ -33,15 +35,23 @@ struct ToolRotate::Impl {
           glm::ivec2  newPos     = ViewUtil::toIVec2 (event);
           glm::ivec2  delta      = newPos - oldPos;
 
-    if (delta.x != 0) {
-      cam.verticalRotation ( 2.0f * glm::pi <float> () 
-                           * this->rotationFactor
-                           * float (-delta.x) / float (resolution.x));
+    if (event.buttons ().testFlag (Qt::MiddleButton)) {
+      cam.setGaze ( cam.gazePoint () 
+                  + (this->panningFactor * float ( delta.x) * cam.right ())
+                  + (this->panningFactor * float (-delta.y) * cam.up    ())
+                  );
     }
-    if (delta.y != 0) {
-      cam.horizontalRotation ( 2.0f * glm::pi <float> ()
+    else if (event.buttons ().testFlag (Qt::NoButton)) {
+      if (delta.x != 0) {
+        cam.verticalRotation ( 2.0f * glm::pi <float> () 
                              * this->rotationFactor
-                             * float (-delta.y) / float (resolution.y));
+                             * float (-delta.x) / float (resolution.x));
+      }
+      if (delta.y != 0) {
+        cam.horizontalRotation ( 2.0f * glm::pi <float> ()
+                               * this->rotationFactor
+                               * float (-delta.y) / float (resolution.y));
+      }
     }
     this->oldPos = newPos;
     return true;
