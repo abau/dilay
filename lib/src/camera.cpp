@@ -82,6 +82,11 @@ struct Camera::Impl {
     }
   }
 
+  void setGaze (const glm::vec3& g) {
+    this->gazePoint  = g;
+    this->updateView ();
+  }
+
   void stepAlongGaze (float factor) {
     float d = glm::length (this->toEyePoint);
     if (factor < 1.0f && d > 1.0f)
@@ -182,7 +187,8 @@ DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 DELEGATE1       (void       , Camera, updateResolution, const glm::uvec2&) 
 DELEGATE2_CONST (glm::mat4x4, Camera, modelViewProjection, const glm::mat4x4&, bool) 
 DELEGATE2_CONST (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
-DELEGATE3       (void       , Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&);
+DELEGATE3       (void       , Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+DELEGATE1       (void       , Camera, setGaze, const glm::vec3&)
 DELEGATE1       (void       , Camera, stepAlongGaze, float) 
 DELEGATE1       (void       , Camera, verticalRotation, float) 
 DELEGATE1       (void       , Camera, horizontalRotation, float) 
