@@ -1,6 +1,7 @@
 #include <QStatusBar>
 #include "view/main-window.hpp"
 #include "view/main-widget.hpp"
+#include "view/tool-message.hpp"
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
@@ -23,9 +24,14 @@ struct ViewMainWindow :: Impl {
   void showMessage (const QString& message) {
     this->statusBar.showMessage (message);
   }
+
+  void showMessage (const std::initializer_list <ViewToolMessage>& messages) {
+    this->showMessage (ViewToolMessage::message (messages));
+  }
 };
 
 DELEGATE_BIG3_SELF (ViewMainWindow)
 DELEGATE  (ViewGlWidget&        , ViewMainWindow, glWidget)
 DELEGATE  (ViewPropertiesWidget&, ViewMainWindow, properties)
 DELEGATE1 (void                 , ViewMainWindow, showMessage, const QString&)
+DELEGATE1 (void                 , ViewMainWindow, showMessage, const std::initializer_list<ViewToolMessage>&)

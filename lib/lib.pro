@@ -72,6 +72,7 @@ SOURCES += \
            src/view/properties/selection.cpp \
            src/view/properties/widget.cpp \
            src/view/sphere-mesh-menu.cpp \
+           src/view/tool-message.cpp \
            src/view/tool-options.cpp \
            src/view/util.cpp \
            src/view/vector-edit.cpp \
@@ -158,8 +159,9 @@ HEADERS += \
            src/view/properties/selection.hpp \
            src/view/properties/widget.hpp \
            src/view/sphere-mesh-menu.hpp \
-           src/view/tool-options.hpp \
            src/view/tool-menu.hpp \
+           src/view/tool-message.hpp \
+           src/view/tool-options.hpp \
            src/view/util.hpp \
            src/view/vector-edit.hpp \
            src/winged/edge.hpp \
