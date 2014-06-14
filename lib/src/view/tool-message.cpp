@@ -25,11 +25,13 @@ struct ViewToolMessage::Impl {
   }
 
   static QString message (const std::initializer_list <ViewToolMessage>& messages) {
-    QString result;
+          QString      result;
+    const unsigned int numSpaces = 5;
+
     for (const ViewToolMessage& m : messages) {
-      result.append (m.message ()).append ("  ");;
+      result.append (m.message ()).append (QString (" ").repeated (numSpaces));;
     }
-    result.remove (result.size () - 2, 2);
+    result.remove (result.size () - numSpaces, numSpaces);
     return result;
   }
 
