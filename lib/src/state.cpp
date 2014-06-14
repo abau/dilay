@@ -3,7 +3,6 @@
 #include "mesh.hpp"
 #include "camera.hpp"
 #include "history.hpp"
-#include "view/mouse-movement.hpp"
 #include "id.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "scene.hpp"
@@ -13,7 +12,6 @@
 struct State::Impl {
   Camera                 camera;
   History                history;
-  ViewMouseMovement      mouseMovement;
   Scene                  scene;
   std::unique_ptr <Tool> toolPtr;
 
@@ -41,7 +39,6 @@ DELEGATE_BIG3 (State)
 
 GETTER_GLOBAL    (Camera&           , State, camera)
 GETTER_GLOBAL    (History&          , State, history)
-GETTER_GLOBAL    (ViewMouseMovement&, State, mouseMovement)
 GETTER_GLOBAL    (Scene&            , State, scene)
 DELEGATE_GLOBAL  (void              , State, initialize)
 DELEGATE_GLOBAL  (bool              , State, hasTool)

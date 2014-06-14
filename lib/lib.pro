@@ -64,7 +64,6 @@ SOURCES += \
            src/view/light.cpp \
            src/view/main-widget.cpp \
            src/view/main-window.cpp \
-           src/view/mouse-movement.cpp \
            src/view/properties.cpp \
            src/view/properties/button.cpp \
            src/view/properties/camera.cpp \
@@ -151,7 +150,6 @@ HEADERS += \
            src/view/light.hpp \
            src/view/main-widget.hpp \
            src/view/main-window.hpp \
-           src/view/mouse-movement.hpp \
            src/view/properties.hpp \
            src/view/properties/button.hpp \
            src/view/properties/camera.hpp \

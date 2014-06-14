@@ -8,7 +8,6 @@
 #include "view/properties/widget.hpp"
 #include "view/properties/selection.hpp"
 #include "view/gl-widget.hpp"
-#include "view/mouse-movement.hpp"
 #include "view/util.hpp"
 #include "renderer.hpp"
 #include "state.hpp"
@@ -151,8 +150,6 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseMoveEvent (QMouseEvent* e) {
-    State::mouseMovement ().update (e->pos ());
-    
     if (this->toolRotate) {
       this->toolRotate->mouseMoveEvent (*e);
     }
@@ -171,8 +168,6 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    State::mouseMovement ().invalidate ();
-
     if (e->button () == Qt::MiddleButton && this->toolRotate == false) {
       this->toolRotate.reset (new ToolRotate (this->mainWindow, ViewUtil::toIVec2 (*e)));
     }
