@@ -8,6 +8,7 @@
 #include "view/util.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
+#include "view/tool-message.hpp"
 #include "config.hpp"
 
 struct ToolRotate::Impl {
@@ -27,7 +28,18 @@ struct ToolRotate::Impl {
     , originalUp         (State::camera ().up ())
     , rotationFactor     (Config::get <float> ("/editor/camera/rotation-factor"))
     , panningFactor      (Config::get <float> ("/editor/camera/panning-factor"))
-  {}
+  {
+    this->self->mainWindow ().showMessage (this->self->message ());
+  }
+
+  ~Impl () {
+    if (State::hasTool ()) {
+      this->self->mainWindow ().showMessage (State::tool ().message ());
+    }
+    else {
+      this->self->mainWindow ().showDefaultMessage ();
+    }
+  }
 
   bool runMouseMoveEvent (QMouseEvent& event) {
           Camera&     cam        = State::camera ();
@@ -86,11 +98,20 @@ struct ToolRotate::Impl {
     }
     return true;
   }
+
+  QString runMessage () const {
+    return ViewToolMessage::message 
+      ({ ViewToolMessage ("Accept")     .left   () 
+       , ViewToolMessage ("Drag To Pan").middle ()
+       , ViewToolMessage ("Cancel")     .right  ()
+       }); 
+  }
 };
 
 DELEGATE_BIG3_BASE ( ToolRotate, (ViewMainWindow& w, const glm::ivec2& p)
                    , (this), Tool, (w,p) )
-DELEGATE1        (bool, ToolRotate, runMouseMoveEvent, QMouseEvent&)
-DELEGATE1        (bool, ToolRotate, runMouseReleaseEvent, QMouseEvent&)
-DELEGATE1        (bool, ToolRotate, runWheelEvent, QWheelEvent&)
-DELEGATE1_STATIC (bool, ToolRotate, staticWheelEvent, QWheelEvent&)
+DELEGATE1        (bool   , ToolRotate, runMouseMoveEvent, QMouseEvent&)
+DELEGATE1        (bool   , ToolRotate, runMouseReleaseEvent, QMouseEvent&)
+DELEGATE1        (bool   , ToolRotate, runWheelEvent, QWheelEvent&)
+DELEGATE1_STATIC (bool   , ToolRotate, staticWheelEvent, QWheelEvent&)
+DELEGATE_CONST   (QString, ToolRotate, runMessage)

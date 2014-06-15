@@ -13,9 +13,10 @@ class ToolRotate : public Tool {
     class Impl;
     Impl* impl;
 
-    bool runMouseMoveEvent    (QMouseEvent&);
-    bool runMouseReleaseEvent (QMouseEvent&);
-    bool runWheelEvent        (QWheelEvent&);
+    bool    runMouseMoveEvent    (QMouseEvent&);
+    bool    runMouseReleaseEvent (QMouseEvent&);
+    bool    runWheelEvent        (QWheelEvent&);
+    QString runMessage           () const;
 };
 
 #endif

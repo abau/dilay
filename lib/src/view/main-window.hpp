@@ -7,17 +7,16 @@
 
 class ViewGlWidget;
 class ViewPropertiesWidget;
-class ViewToolMessage;
 
 class ViewMainWindow : public QMainWindow {
     Q_OBJECT
   public:
     DECLARE_BIG3 (ViewMainWindow)
 
-    ViewGlWidget&         glWidget    ();
-    ViewPropertiesWidget& properties  ();
-    void                  showMessage (const QString&);
-    void                  showMessage (const std::initializer_list <ViewToolMessage>&);
+    ViewGlWidget&         glWidget           ();
+    ViewPropertiesWidget& properties         ();
+    void                  showMessage        (const QString&);
+    void                  showDefaultMessage ();
 
   private:
     class Impl;

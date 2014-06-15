@@ -16,6 +16,7 @@ struct ViewMainWindow :: Impl {
     this->self->setCentralWidget       (&this->mainWidget);
     this->self->setStatusBar           (&this->statusBar);
     this->statusBar.setSizeGripEnabled (false);
+    this->showDefaultMessage           ();
   }
 
   ViewGlWidget&         glWidget   () { return this->mainWidget.glWidget   (); }
@@ -25,8 +26,12 @@ struct ViewMainWindow :: Impl {
     this->statusBar.showMessage (message);
   }
 
-  void showMessage (const std::initializer_list <ViewToolMessage>& messages) {
-    this->showMessage (ViewToolMessage::message (messages));
+  void showDefaultMessage () {
+    this->showMessage (ViewToolMessage::message 
+        ({ ViewToolMessage (QObject::tr ("Select"))     .left   ()
+         , ViewToolMessage (QObject::tr ("Camera Mode")).middle ()
+         , ViewToolMessage (QObject::tr ("Menu"))       .right  ()
+         }));
   }
 };
 
@@ -34,4 +39,4 @@ DELEGATE_BIG3_SELF (ViewMainWindow)
 DELEGATE  (ViewGlWidget&        , ViewMainWindow, glWidget)
 DELEGATE  (ViewPropertiesWidget&, ViewMainWindow, properties)
 DELEGATE1 (void                 , ViewMainWindow, showMessage, const QString&)
-DELEGATE1 (void                 , ViewMainWindow, showMessage, const std::initializer_list<ViewToolMessage>&)
+DELEGATE  (void                 , ViewMainWindow, showDefaultMessage)

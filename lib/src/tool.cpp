@@ -13,11 +13,9 @@ struct Tool::Impl {
   ViewToolOptions*   toolOptions;
 
   Impl (Tool* s, ViewMainWindow& w, const glm::ivec2& p, const QString& name) 
-    : self          (s) 
-    , mainWindow    (w)
-    , clickPosition (p)
-    , toolOptions   (new ViewToolOptions (w))
+    : Impl (s,w,p)
   {
+    this->toolOptions = new ViewToolOptions (w);
     this->toolOptions->setWindowTitle (name);
 
     QObject::connect ( this->toolOptions, &ViewToolOptions::accepted
@@ -70,6 +68,8 @@ struct Tool::Impl {
     }
   }
 
+  QString message () const { return this->self->runMessage (); }
+
   void updateGlWidget () {
     this->mainWindow.glWidget ().update ();
   }
@@ -102,4 +102,5 @@ DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (void              , Tool, wheelEvent, QWheelEvent&)
+DELEGATE_CONST (QString           , Tool, message)
 GETTER         (ViewToolOptions*  , Tool, toolOptions)

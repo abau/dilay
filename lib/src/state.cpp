@@ -8,6 +8,7 @@
 #include "scene.hpp"
 #include "mesh-type.hpp"
 #include "tool.hpp"
+#include "view/main-window.hpp"
 
 struct State::Impl {
   Camera                 camera;
@@ -30,6 +31,12 @@ struct State::Impl {
   }
 
   void setTool (Tool* tool) { 
+    if (tool) {
+      tool->mainWindow ().showMessage (tool->message ());
+    }
+    else if (toolPtr) {
+      toolPtr->mainWindow ().showDefaultMessage ();
+    }
     this->toolPtr.reset (tool); 
   }
 };

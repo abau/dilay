@@ -2,12 +2,12 @@
 #define DILAY_TOOL
 
 #include <glm/fwd.hpp>
+#include <QString>
 #include "macro.hpp"
 
 class QMouseEvent;
 class ViewMainWindow;
 class ViewToolOptions;
-class QString;
 class QWheelEvent;
 
 class Tool {
@@ -30,6 +30,7 @@ class Tool {
     void               mousePressEvent    (QMouseEvent&);
     void               mouseReleaseEvent  (QMouseEvent&);
     void               wheelEvent         (QWheelEvent&);
+    QString            message            () const;
 
   protected:
     ViewToolOptions*   toolOptions        ();
@@ -38,11 +39,12 @@ class Tool {
     class Impl;
     Impl* impl;
 
-    virtual void runRender            ()             {}
-    virtual bool runMouseMoveEvent    (QMouseEvent&) { return false; }
-    virtual bool runMousePressEvent   (QMouseEvent&) { return false; }
-    virtual bool runMouseReleaseEvent (QMouseEvent&) { return false; }
-    virtual bool runWheelEvent        (QWheelEvent&) { return false; }
+    virtual void    runRender            ()             {}
+    virtual bool    runMouseMoveEvent    (QMouseEvent&) { return false; }
+    virtual bool    runMousePressEvent   (QMouseEvent&) { return false; }
+    virtual bool    runMouseReleaseEvent (QMouseEvent&) { return false; }
+    virtual bool    runWheelEvent        (QWheelEvent&) { return false; }
+    virtual QString runMessage           () const       { return QString (); }
 };
 
 #endif
