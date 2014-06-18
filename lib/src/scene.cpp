@@ -17,7 +17,7 @@ struct Scene :: Impl {
   IdMapPtr <WingedMesh>   wingedMeshIdMap;
   IdMapPtr <SphereMesh>   sphereMeshIdMap;
 
-  std::unordered_set <Id> selection;
+  Selection               selection;
 
   WingedMesh& newWingedMesh (MeshType t) {
     return this->newWingedMesh (t, Id ());
@@ -157,6 +157,6 @@ DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, MeshType, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
 DELEGATE2       (Id               , Scene, intersects, MeshType, const PrimRay&)
-GETTER_CONST    (const std::unordered_set <Id>&, Scene, selection)
+GETTER_CONST    (const Selection& , Scene, selection)
 DELEGATE        (bool             , Scene, unselectAll)
 DELEGATE2       (bool             , Scene, selectIntersection, MeshType, const PrimRay&)

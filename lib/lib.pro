@@ -106,6 +106,7 @@ HEADERS += \
            src/config-conversion.hpp \
            src/cursor.hpp \
            src/dimension.hpp \
+           src/fwd-scene.hpp \
            src/fwd-winged.hpp \
            src/history.hpp \
            src/id.hpp \
