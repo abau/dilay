@@ -20,6 +20,7 @@ typedef std::unordered_map <std::string, Value> ConfigMap;
 struct Config::Impl {
   const std::string optionsFileName;
   const std::string cacheFileName;
+  const std::string optionsRoot;
   const std::string cacheRoot;
 
   std::string optionsFilePath;
@@ -30,8 +31,9 @@ struct Config::Impl {
   Impl () 
     : optionsFileName (QCoreApplication::applicationName ().toStdString () + ".config")
     , cacheFileName   (QCoreApplication::applicationName ().toStdString () + ".cache")
-    , cacheRoot ("cache") {
-    
+    , optionsRoot     ("config")
+    , cacheRoot       ("cache")
+  {
     optionsFilePath = this->getDirectory () + "/" + this->optionsFileName;
     cacheFilePath   = this->getDirectory () + "/" + this->cacheFileName;
 
@@ -41,6 +43,7 @@ struct Config::Impl {
 
   template <class T>
   const T& get (const std::string& path) const {
+    assert (path.find ("/" + this->optionsRoot) == 0);
     ConfigMap::const_iterator value = this->optionsMap.find (path);
 
     if (value == this->optionsMap.end ()) {
@@ -64,7 +67,7 @@ struct Config::Impl {
   void cache (const std::string& path, const T& t) {
     assert (path.find ("/" + this->cacheRoot) == 0);
     Value value;
-    value.set <T>       (t);
+    value.set <T>          (t);
     this->cacheMap.erase   (path);
     this->cacheMap.emplace (path, value);
   }

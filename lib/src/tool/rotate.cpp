@@ -26,8 +26,8 @@ struct ToolRotate::Impl {
     , originalGazepoint  (State::camera ().gazePoint ())
     , originalToEyepoint (State::camera ().toEyePoint ())
     , originalUp         (State::camera ().up ())
-    , rotationFactor     (Config::get <float> ("/editor/camera/rotation-factor"))
-    , panningFactor      (Config::get <float> ("/editor/camera/panning-factor"))
+    , rotationFactor     (Config::get <float> ("/config/editor/camera/rotation-factor"))
+    , panningFactor      (Config::get <float> ("/config/editor/camera/panning-factor"))
   {
     this->self->mainWindow ().showMessage (this->self->message ());
   }
@@ -89,7 +89,7 @@ struct ToolRotate::Impl {
 
   bool static staticWheelEvent (QWheelEvent& event) {
     if (event.orientation () == Qt::Vertical) {
-      const float zoomInFactor = Config::get <float> ("/editor/camera/zoom-in-factor");
+      const float zoomInFactor = Config::get <float> ("/config/editor/camera/zoom-in-factor");
 
       if (event.delta () > 0)
         State::camera ().stepAlongGaze (zoomInFactor);

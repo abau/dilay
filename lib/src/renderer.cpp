@@ -73,7 +73,7 @@ struct Renderer::Impl {
         throw (std::runtime_error (e1 + e2));
       }
 
-      this->clearColor = Config::get<Color> ("/editor/color/background");
+      this->clearColor = Config::get<Color> ("/config/editor/color/background");
 
       this->shaderIds [static_cast <int> (RenderMode::SmoothShaded)].programId =
         OpenGLUtil :: loadProgram ( Shader::smoothVertexShader   ()
@@ -108,13 +108,13 @@ struct Renderer::Impl {
         s->lightIds[1].irradianceId = glGetUniformLocation (p, "light2Irradiance");
       }
 
-      this->setAmbient         (  Config::get<Color>     ("/editor/light/ambient"));
-      this->setLightPosition   (0,Config::get<glm::vec3> ("/editor/light/light1/position"));
-      this->setLightColor      (0,Config::get<Color>     ("/editor/light/light1/color"));
-      this->setLightIrradiance (0,Config::get<float>     ("/editor/light/light1/irradiance"));
-      this->setLightPosition   (1,Config::get<glm::vec3> ("/editor/light/light2/position"));
-      this->setLightColor      (1,Config::get<Color>     ("/editor/light/light2/color"));
-      this->setLightIrradiance (1,Config::get<float>     ("/editor/light/light2/irradiance"));
+      this->setAmbient         (  Config::get<Color>     ("/config/editor/light/ambient"));
+      this->setLightPosition   (0,Config::get<glm::vec3> ("/config/editor/light/light1/position"));
+      this->setLightColor      (0,Config::get<Color>     ("/config/editor/light/light1/color"));
+      this->setLightIrradiance (0,Config::get<float>     ("/config/editor/light/light1/irradiance"));
+      this->setLightPosition   (1,Config::get<glm::vec3> ("/config/editor/light/light2/position"));
+      this->setLightColor      (1,Config::get<Color>     ("/config/editor/light/light2/color"));
+      this->setLightIrradiance (1,Config::get<float>     ("/config/editor/light/light2/irradiance"));
 
       isInitialized = true;
     }
@@ -203,8 +203,8 @@ struct Renderer::Impl {
 
   void updateLights (const Camera& camera) {
     glm::mat3x3 world = glm::mat3x3 (camera.world ());
-    glm::vec3   pos1  = Config::get<glm::vec3> ("/editor/light/light1/position");
-    glm::vec3   pos2  = Config::get<glm::vec3> ("/editor/light/light2/position");
+    glm::vec3   pos1  = Config::get<glm::vec3> ("/config/editor/light/light1/position");
+    glm::vec3   pos2  = Config::get<glm::vec3> ("/config/editor/light/light2/position");
 
     this->setLightPosition (0, world * pos1);
     this->setLightPosition (1, world * pos2);
