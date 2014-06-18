@@ -33,7 +33,7 @@ struct Scene :: Impl {
 
   void removeWingedMesh (const Id& id) {
     assert (this->wingedMeshIdMap.hasElement (id));
-    this->wingedMeshIdMap.erase (id);
+    this->wingedMeshIdMap.remove (id);
     this->wingedMeshes.remove_if ([&id] (WingedMesh& m) { return m.id () == id; });
   }
 
@@ -52,7 +52,7 @@ struct Scene :: Impl {
 
   void removeSphereMesh (const Id& id) {
     assert (this->sphereMeshIdMap.hasElement (id));
-    this->sphereMeshIdMap.erase (id);
+    this->sphereMeshIdMap.remove (id);
     this->sphereMeshes.remove_if ([&id] (SphereMesh& m) { return m.id () == id; });
   }
 

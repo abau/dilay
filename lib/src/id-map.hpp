@@ -18,7 +18,7 @@ class IdMapPtr {
       this->insert (element.id (), element);
     }
 
-    void erase (const Id& id) {
+    void remove (const Id& id) {
       this->map.erase (id.primitive ());
     }
 
@@ -54,7 +54,7 @@ class IdMap {
       return *element;
     }
 
-    void erase (const Id& id) {
+    void remove (const Id& id) {
       this->map.erase (id.primitive ());
     }
 

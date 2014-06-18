@@ -135,7 +135,7 @@ struct SphereMesh::Impl {
     else {
       this->_root.reset (nullptr);
     }
-    this->idMap.erase (id);
+    this->idMap.remove (id);
   }
 
   void render () {
