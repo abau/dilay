@@ -28,7 +28,7 @@ struct Config::Impl {
   ConfigMap   cacheMap;
 
   Impl () 
-    : optionsFileName (QCoreApplication::applicationName ().toStdString () + ".options")
+    : optionsFileName (QCoreApplication::applicationName ().toStdString () + ".config")
     , cacheFileName   (QCoreApplication::applicationName ().toStdString () + ".cache")
     , cacheRoot ("cache") {
     
