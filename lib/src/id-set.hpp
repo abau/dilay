@@ -11,6 +11,10 @@ class IdSet {
       this->set.emplace (id.primitive ());
     }
 
+    void remove (const Id& id) {
+      this->set.erase (id.primitive ());
+    }
+
     bool has (const Id& id) const {
       return this->set.count (id.primitive ()) == 1;
     }
