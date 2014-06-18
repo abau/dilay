@@ -25,8 +25,8 @@ struct Axis::Impl {
     this->axisResolution = glm::uvec2 (200,200);
     this->gridResolution = 6;
 
-    this->axisLabelColor = Config::get <Color> ("/config/editor/color/axis-label");
-    this->axisColor      = Config::get <Color> ("/config/editor/color/axis");
+    this->axisLabelColor = Config::get <Color> ("/config/editor/axis/color/label");
+    this->axisColor      = Config::get <Color> ("/config/editor/axis/color/normal");
 
     this->coneMesh       = Mesh::cone     (10);
     this->cylinderMesh   = Mesh::cylinder (10);

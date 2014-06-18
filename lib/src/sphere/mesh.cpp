@@ -75,7 +75,7 @@ struct SphereMeshNode::Impl {
   static void setupMesh (Mesh& mesh) {
     mesh = Mesh::icosphere (2);
     mesh.renderMode (RenderMode::SmoothShaded);
-    mesh.color      (Config::get <Color> ("/config/editor/color/sphere-mesh"));
+    mesh.color      (Config::get <Color> ("/config/editor/sphere-mesh/color/normal"));
     mesh.bufferData ();
   }
 };

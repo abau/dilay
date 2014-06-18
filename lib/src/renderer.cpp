@@ -73,7 +73,7 @@ struct Renderer::Impl {
         throw (std::runtime_error (e1 + e2));
       }
 
-      this->clearColor = Config::get<Color> ("/config/editor/color/background");
+      this->clearColor = Config::get<Color> ("/config/editor/background");
 
       this->shaderIds [static_cast <int> (RenderMode::SmoothShaded)].programId =
         OpenGLUtil :: loadProgram ( Shader::smoothVertexShader   ()
