@@ -43,7 +43,7 @@ struct SphereMeshNode::Impl {
     return *this->children.back ();
   }
 
-  void removeChild (const Id& childId) {
+  void deleteChild (const Id& childId) {
     for (auto it = this->children.begin (); it != this->children.end (); ++it) {
       Child& c = *it;
       if (c->id == childId) {
@@ -124,13 +124,13 @@ struct SphereMesh::Impl {
     }
   }
 
-  void removeNode (const Id& id) {
+  void deleteNode (const Id& id) {
     assert (this->idMap.hasElement (id));
 
     SphereMeshNode::Impl& node = this->idMap.elementRef (id);
 
     if (node.parentImpl) {
-      node.parentImpl->removeChild (id);
+      node.parentImpl->deleteChild (id);
     }
     else {
       this->_root.reset (nullptr);
@@ -172,7 +172,7 @@ DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 ID             (SphereMesh)
 DELEGATE3      (SphereMeshNode&, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
 DELEGATE4      (SphereMeshNode&, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
-DELEGATE1      (void           , SphereMesh, removeNode, const Id&)
+DELEGATE1      (void           , SphereMesh, deleteNode, const Id&)
 DELEGATE       (void           , SphereMesh, render)
 DELEGATE2      (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
 DELEGATE1      (SphereMeshNode&, SphereMesh, node, const Id&)

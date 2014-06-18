@@ -20,7 +20,7 @@ struct ActionNewSphereMesh :: Impl {
   void runUndo () {
     SphereMesh& sMesh = this->ids.getSphereMesh (0);
     this->addRootAction.undo         (sMesh);
-    State::scene ().removeWingedMesh (sMesh.id ());
+    State::scene ().deleteWingedMesh (sMesh.id ());
   }
 
   void runRedo () {

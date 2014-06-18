@@ -31,7 +31,7 @@ struct Scene :: Impl {
     return this->wingedMeshes.back ();
   }
 
-  void removeWingedMesh (const Id& id) {
+  void deleteWingedMesh (const Id& id) {
     assert (this->wingedMeshIdMap.hasElement (id));
     this->wingedMeshIdMap.remove (id);
     this->wingedMeshes.remove_if ([&id] (WingedMesh& m) { return m.id () == id; });
@@ -50,7 +50,7 @@ struct Scene :: Impl {
     return this->sphereMeshes.back ();
   }
 
-  void removeSphereMesh (const Id& id) {
+  void deleteSphereMesh (const Id& id) {
     assert (this->sphereMeshIdMap.hasElement (id));
     this->sphereMeshIdMap.remove (id);
     this->sphereMeshes.remove_if ([&id] (SphereMesh& m) { return m.id () == id; });
@@ -146,12 +146,12 @@ DELEGATE_DESTRUCTOR  (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)
 DELEGATE2       (WingedMesh&      , Scene, newWingedMesh, MeshType, const Id&)
-DELEGATE1       (void             , Scene, removeWingedMesh, const Id&)
+DELEGATE1       (void             , Scene, deleteWingedMesh, const Id&)
 DELEGATE1       (WingedMesh&      , Scene, wingedMesh, const Id&)
 DELEGATE1_CONST (const WingedMesh&, Scene, wingedMesh, const Id&)
 DELEGATE        (SphereMesh&      , Scene, newSphereMesh)
 DELEGATE1       (SphereMesh&      , Scene, newSphereMesh, const Id&)
-DELEGATE1       (void             , Scene, removeSphereMesh, const Id&)
+DELEGATE1       (void             , Scene, deleteSphereMesh, const Id&)
 DELEGATE1       (SphereMesh&      , Scene, sphereMesh, const Id&)
 DELEGATE1_CONST (const SphereMesh&, Scene, sphereMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)

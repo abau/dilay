@@ -18,13 +18,13 @@ class Scene {
 
           WingedMesh& newWingedMesh      (MeshType);
           WingedMesh& newWingedMesh      (MeshType, const Id&);
-          void        removeWingedMesh   (const Id&);
+          void        deleteWingedMesh   (const Id&);
           WingedMesh& wingedMesh         (const Id&);
     const WingedMesh& wingedMesh         (const Id&) const;
 
           SphereMesh& newSphereMesh      ();
           SphereMesh& newSphereMesh      (const Id&);
-          void        removeSphereMesh   (const Id&);
+          void        deleteSphereMesh   (const Id&);
           SphereMesh& sphereMesh         (const Id&);
     const SphereMesh& sphereMesh         (const Id&) const;
 

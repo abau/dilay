@@ -38,7 +38,7 @@ class SphereMesh {
     Id              id          () const;
     SphereMeshNode& addNode     (SphereMeshNode*, const glm::vec3&, float);
     SphereMeshNode& addNode     (const Id&, SphereMeshNode*, const glm::vec3&, float);
-    void            removeNode  (const Id&);
+    void            deleteNode  (const Id&);
     void            render      ();
     bool            intersects  (const PrimRay&, SphereNodeIntersection&);
     SphereMeshNode& node        (const Id&);
