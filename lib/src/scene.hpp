@@ -1,6 +1,8 @@
 #ifndef DILAY_SCENE
 #define DILAY_SCENE
 
+#include <unordered_set>
+
 class WingedMesh;
 class Id;
 class PrimRay;
@@ -33,7 +35,7 @@ class Scene {
           bool        intersects         (const PrimRay&, SphereNodeIntersection&);
           Id          intersects         (MeshType, const PrimRay&);
 
-    const IdSet&      selection          () const;
+    const std::unordered_set<Id>&      selection          () const;
           bool        unselectAll        ();
           bool        selectIntersection (MeshType, const PrimRay&);
 

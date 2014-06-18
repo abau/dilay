@@ -3,7 +3,6 @@
 #include "scene.hpp"
 #include "macro.hpp"
 #include "id-map.hpp"
-#include "id-set.hpp"
 #include "winged/mesh.hpp"
 #include "primitive/ray.hpp"
 #include "mesh-type.hpp"
@@ -12,13 +11,13 @@
 #include "sphere/node-intersection.hpp"
 
 struct Scene :: Impl {
-  std::list <WingedMesh> wingedMeshes;
-  std::list <SphereMesh> sphereMeshes;
+  std::list <WingedMesh>  wingedMeshes;
+  std::list <SphereMesh>  sphereMeshes;
 
-  IdMapPtr <WingedMesh>  wingedMeshIdMap;
-  IdMapPtr <SphereMesh>  sphereMeshIdMap;
+  IdMapPtr <WingedMesh>   wingedMeshIdMap;
+  IdMapPtr <SphereMesh>   sphereMeshIdMap;
 
-  IdSet                  selection;
+  std::unordered_set <Id> selection;
 
   WingedMesh& newWingedMesh (MeshType t) {
     return this->newWingedMesh (t, Id ());
@@ -112,14 +111,14 @@ struct Scene :: Impl {
 
   bool unselectAll () {
     bool update = this->selection.size () > 0;
-    this->selection.reset ();
+    this->selection.clear ();
     return update;
   }
 
   bool selectIntersection (MeshType t, const PrimRay& ray) {
     Id id = this->intersects (t, ray);
     if (id.isValid ()) {
-      if (this->selection.has (id)) {
+      if (this->selection.count (id) > 0) {
         if (this->selection.size () > 1) {
           this->unselectAll ();
           this->selection.insert (id);
@@ -158,6 +157,6 @@ DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, MeshType, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
 DELEGATE2       (Id               , Scene, intersects, MeshType, const PrimRay&)
-GETTER_CONST    (const IdSet&     , Scene, selection)
+GETTER_CONST    (const std::unordered_set <Id>&, Scene, selection)
 DELEGATE        (bool             , Scene, unselectAll)
 DELEGATE2       (bool             , Scene, selectIntersection, MeshType, const PrimRay&)

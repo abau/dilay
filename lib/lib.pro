@@ -110,7 +110,6 @@ HEADERS += \
            src/history.hpp \
            src/id.hpp \
            src/id-map.hpp \
-           src/id-set.hpp \
            src/intersection.hpp \
            src/iterator.hpp \
            src/macro.hpp \
