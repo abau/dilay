@@ -1,6 +1,7 @@
 #ifndef DILAY_SPHERE_MESH
 #define DILAY_SPHERE_MESH
 
+#include <functional>
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
@@ -24,6 +25,9 @@ class SphereMeshNode {
            void            radius      (float);
 
     static void            setupMesh   (Mesh&);
+
+           void       forEachNode      (const std::function <void (SphereMeshNode&)>&);
+           void       forEachConstNode (const std::function <void (const SphereMeshNode&)>&) const;
 
   private:
     friend class SphereMesh;

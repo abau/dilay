@@ -78,6 +78,20 @@ struct SphereMeshNode::Impl {
     mesh.color      (Config::get <Color> ("/config/editor/sphere-mesh/color/normal"));
     mesh.bufferData ();
   }
+
+  void forEachNode (const std::function <void (SphereMeshNode&)>& f) {
+    f (this->self);
+    for (Child& c : this->children) {
+      c->forEachNode (f);
+    }
+  }
+
+  void forEachConstNode (const std::function <void (const SphereMeshNode&)>& f) const {
+    f (this->self);
+    for (const Child& c : this->children) {
+      c->forEachConstNode (f);
+    }
+  }
 };
 
 SphereMeshNode :: SphereMeshNode (SphereMeshNode::Impl* i) : impl (i) {}
@@ -88,6 +102,8 @@ SETTER           (const glm::vec3&, SphereMeshNode, position)
 GETTER_CONST     (float           , SphereMeshNode, radius)
 SETTER           (float           , SphereMeshNode, radius)
 DELEGATE1_STATIC (void            , SphereMeshNode, setupMesh, Mesh&)
+DELEGATE1        (void            , SphereMeshNode, forEachNode, const std::function <void (SphereMeshNode&)>&)
+DELEGATE1_CONST  (void            , SphereMeshNode, forEachConstNode, const std::function <void (const SphereMeshNode&)>&)
 
 struct SphereMesh::Impl {
   SphereMesh*                     self;
@@ -169,12 +185,12 @@ struct SphereMesh::Impl {
 DELEGATE1_BIG3_SELF       (SphereMesh, const Id&)
 DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 
-ID             (SphereMesh)
-DELEGATE3      (SphereMeshNode&, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
-DELEGATE4      (SphereMeshNode&, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
-DELEGATE1      (void           , SphereMesh, deleteNode, const Id&)
-DELEGATE       (void           , SphereMesh, render)
-DELEGATE2      (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
-DELEGATE1      (SphereMeshNode&, SphereMesh, node, const Id&)
-DELEGATE       (SphereMeshNode&, SphereMesh, root)
-DELEGATE_CONST (bool           , SphereMesh, hasRoot)
+ID              (SphereMesh)
+DELEGATE3       (SphereMeshNode&, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE4       (SphereMeshNode&, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE1       (void           , SphereMesh, deleteNode, const Id&)
+DELEGATE        (void           , SphereMesh, render)
+DELEGATE2       (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
+DELEGATE1       (SphereMeshNode&, SphereMesh, node, const Id&)
+DELEGATE        (SphereMeshNode&, SphereMesh, root)
+DELEGATE_CONST  (bool           , SphereMesh, hasRoot)
