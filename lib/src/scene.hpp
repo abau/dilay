@@ -1,8 +1,6 @@
 #ifndef DILAY_SCENE
 #define DILAY_SCENE
 
-#include "fwd-scene.hpp"
-
 class WingedMesh;
 class Id;
 class PrimRay;
@@ -11,6 +9,8 @@ enum class MeshType;
 class SphereMesh;
 class SphereNodeIntersection;
 class IdSet;
+enum class SelectionMode;
+class Selection;
 
 class Scene {
   public: Scene            ();
@@ -18,26 +18,28 @@ class Scene {
     const Scene& operator= (const Scene&) = delete;
          ~Scene            ();
 
-          WingedMesh& newWingedMesh      (MeshType);
-          WingedMesh& newWingedMesh      (MeshType, const Id&);
-          void        deleteWingedMesh   (const Id&);
-          WingedMesh& wingedMesh         (const Id&);
-    const WingedMesh& wingedMesh         (const Id&) const;
+          WingedMesh&   newWingedMesh       (MeshType);
+          WingedMesh&   newWingedMesh       (MeshType, const Id&);
+          void          deleteWingedMesh    (const Id&);
+          WingedMesh&   wingedMesh          (const Id&);
+    const WingedMesh&   wingedMesh          (const Id&) const;
 
-          SphereMesh& newSphereMesh      ();
-          SphereMesh& newSphereMesh      (const Id&);
-          void        deleteSphereMesh   (const Id&);
-          SphereMesh& sphereMesh         (const Id&);
-    const SphereMesh& sphereMesh         (const Id&) const;
+          SphereMesh&   newSphereMesh       ();
+          SphereMesh&   newSphereMesh       (const Id&);
+          void          deleteSphereMesh    (const Id&);
+          SphereMesh&   sphereMesh          (const Id&);
+    const SphereMesh&   sphereMesh          (const Id&) const;
 
-          void        render             (MeshType);
-          bool        intersects         (MeshType, const PrimRay&, WingedFaceIntersection&);
-          bool        intersects         (const PrimRay&, SphereNodeIntersection&);
-          Id          intersects         (MeshType, const PrimRay&);
+          void          render              (MeshType);
+          bool          intersects          (SelectionMode, const PrimRay&, WingedFaceIntersection&);
+          bool          intersects          (const PrimRay&, WingedFaceIntersection&);
+          bool          intersects          (const PrimRay&, SphereNodeIntersection&);
 
-    const Selection&  selection          () const;
-          bool        unselectAll        ();
-          bool        selectIntersection (MeshType, const PrimRay&);
+          SelectionMode selectionMode       () const;
+          void          changeSelectionType (SelectionMode);
+    const Selection&    selection           () const;
+          void          unselectAll         ();
+          void          selectIntersection  (const PrimRay&);
 
   private:
     class Impl;

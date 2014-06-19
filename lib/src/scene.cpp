@@ -3,12 +3,15 @@
 #include "scene.hpp"
 #include "macro.hpp"
 #include "id-map.hpp"
-#include "winged/mesh.hpp"
 #include "primitive/ray.hpp"
 #include "mesh-type.hpp"
 #include "sphere/mesh.hpp"
+#include "winged/mesh.hpp"
+#include "winged/face.hpp"
 #include "winged/face-intersection.hpp"
 #include "sphere/node-intersection.hpp"
+#include "selection-mode.hpp"
+#include "selection.hpp"
 
 struct Scene :: Impl {
   std::list <WingedMesh>  wingedMeshes;
@@ -18,6 +21,7 @@ struct Scene :: Impl {
   IdMapPtr <SphereMesh>   sphereMeshIdMap;
 
   Selection               selection;
+  SelectionMode           selectionMode;
 
   WingedMesh& newWingedMesh (MeshType t) {
     return this->newWingedMesh (t, Id ());
@@ -71,13 +75,17 @@ struct Scene :: Impl {
     }
   }
 
-  bool intersects (MeshType t, const PrimRay& ray, WingedFaceIntersection& intersection) {
-    if (t == MeshType::Freeform) {
+  bool intersects (SelectionMode t, const PrimRay& ray, WingedFaceIntersection& intersection) {
+    if (t == SelectionMode::Freeform) {
       for (WingedMesh& m : this->wingedMeshes) {
         m.intersects (ray, intersection);
       }
     }
     return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
+    return this->intersects (this->selectionMode, ray, intersection);
   }
 
   bool intersects (const PrimRay& ray, SphereNodeIntersection& intersection) {
@@ -87,55 +95,77 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  Id intersects (MeshType t, const PrimRay& ray) {
-    if (t == MeshType::Freeform) {
-      WingedFaceIntersection intersection;
-      if (this->intersects (t, ray, intersection)) {
-        return intersection.mesh ().id ();
+  std::pair <Id,Id> intersects (const PrimRay& ray) {
+    switch (this->selectionMode) {
+      case SelectionMode::Freeform: {
+        WingedFaceIntersection intersection;
+        if (this->intersects (ray, intersection)) {
+          return std::pair <Id,Id> ( intersection.mesh ().id ()
+                                   , intersection.face ().id () );
+        }
+        break;
+      }
+      case SelectionMode::Sphere:
+      case SelectionMode::SphereNode: {
+        SphereNodeIntersection intersection;
+        if (this->intersects (ray, intersection)) {
+          return std::pair <Id,Id> ( intersection.mesh ().id ()
+                                   , intersection.node ().id () );
+        }
+        break;
       }
     }
-    else if (t == MeshType::Sphere || t == MeshType::SphereNode) {
-      SphereNodeIntersection intersection;
-      if (this->intersects (ray, intersection)) {
-        if (t == MeshType::Sphere) {
-          return intersection.mesh ().id ();
-        }
-        else if (t == MeshType::SphereNode) {
-          return intersection.node ().id ();
-        }
-        assert (false);
-      }
-    }
-    return Id ();
+    return std::pair <Id, Id> ();
   }
 
-  bool unselectAll () {
-    bool update = this->selection.size () > 0;
-    this->selection.clear ();
-    return update;
+  void unselectAll () {
+    this->selection.reset ();
   }
 
-  bool selectIntersection (MeshType t, const PrimRay& ray) {
-    Id id = this->intersects (t, ray);
-    if (id.isValid ()) {
-      if (this->selection.count (id) > 0) {
-        if (this->selection.size () > 1) {
-          this->unselectAll ();
-          this->selection.insert (id);
-          return true;
+  void changeSelectionType (SelectionMode t) {
+    switch (this->selectionMode) {
+      case SelectionMode::Sphere: 
+        if (t == SelectionMode::SphereNode) {
+          const Selection oldSelection = this->selection;
+
+          oldSelection.forEachMajor ([this] (const Id& id) {
+            this->sphereMesh (id).root ().forEachNode (
+              [&id,this] (SphereMeshNode& node) {
+                this->selection.selectMinor (id, node.id ());
+              }
+            );
+          });
         }
         else {
-          return false;
+          this->unselectAll ();
         }
+        break;
+
+      case SelectionMode::SphereNode: 
+        if (t == SelectionMode::Sphere) {
+          this->selection.resetMinors ();
+        }
+        else {
+          this->unselectAll ();
+        }
+        break;
+
+      default:
+        this->unselectAll ();
+        break;
+    }
+    this->selectionMode = t;
+  }
+
+  void selectIntersection (const PrimRay& ray) {
+    std::pair <Id,Id> intersection = this->intersects (ray);
+    if (intersection.first.isValid ()) {
+      if (SelectionModeUtil::isMajor (this->selectionMode)) {
+        this->selection.toggleMajor (intersection.first);
       }
       else {
-        this->unselectAll ();
-        this->selection.insert (id);
-        return true;
+        this->selection.toggleMinor (intersection.first, intersection.second);
       }
-    }
-    else {
-      return this->unselectAll ();
     }
   }
 };
@@ -154,9 +184,11 @@ DELEGATE1       (void             , Scene, deleteSphereMesh, const Id&)
 DELEGATE1       (SphereMesh&      , Scene, sphereMesh, const Id&)
 DELEGATE1_CONST (const SphereMesh&, Scene, sphereMesh, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
-DELEGATE3       (bool             , Scene, intersects, MeshType, const PrimRay&, WingedFaceIntersection&)
+DELEGATE3       (bool             , Scene, intersects, SelectionMode, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
-DELEGATE2       (Id               , Scene, intersects, MeshType, const PrimRay&)
+GETTER_CONST    (SelectionMode    , Scene, selectionMode)
+DELEGATE1       (void             , Scene, changeSelectionType, SelectionMode)
 GETTER_CONST    (const Selection& , Scene, selection)
-DELEGATE        (bool             , Scene, unselectAll)
-DELEGATE2       (bool             , Scene, selectIntersection, MeshType, const PrimRay&)
+DELEGATE        (void             , Scene, unselectAll)
+DELEGATE1       (void             , Scene, selectIntersection, const PrimRay&)

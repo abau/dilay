@@ -45,13 +45,15 @@ struct ViewGlWidget::Impl {
     this->selectIntersection (this->cursorPosition ());
   }
 
-  void selectIntersection (const glm::ivec2& pos) {
+  void selectIntersection (const glm::ivec2& /*pos*/) {
+    /*
     if (State::scene ().selectIntersection 
           ( this->mainWindow.properties ().selection ().selected ()
           , State::camera ().ray (pos))) 
     {
       this->self->update ();
     }
+    */
   }
 
   void invalidateToolRotate () {

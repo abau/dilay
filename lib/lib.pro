@@ -50,6 +50,8 @@ SOURCES += \
            src/renderer.cpp \
            src/render-mode.cpp \
            src/scene.cpp \
+           src/selection.cpp \
+           src/selection-mode.cpp \
            src/shader.cpp \
            src/sphere/node-intersection.cpp \
            src/sphere/mesh.cpp \
@@ -106,7 +108,6 @@ HEADERS += \
            src/config-conversion.hpp \
            src/cursor.hpp \
            src/dimension.hpp \
-           src/fwd-scene.hpp \
            src/fwd-winged.hpp \
            src/history.hpp \
            src/id.hpp \
@@ -135,6 +136,8 @@ HEADERS += \
            src/renderer.hpp \
            src/render-mode.hpp \
            src/scene.hpp \
+           src/selection.hpp \
+           src/selection-mode.hpp \
            src/shader.hpp \
            src/sphere/node-intersection.hpp \
            src/sphere/mesh.hpp \

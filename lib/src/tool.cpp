@@ -75,9 +75,8 @@ struct Tool::Impl {
   }
 
   void unselectAll () {
-    if (State::scene ().unselectAll ()) {
-      this->updateGlWidget ();
-    }
+    State::scene ().unselectAll ();
+    this->updateGlWidget ();
   }
 
   void selectIntersection () {
