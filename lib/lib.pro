@@ -69,7 +69,6 @@ SOURCES += \
            src/view/properties.cpp \
            src/view/properties/button.cpp \
            src/view/properties/camera.cpp \
-           src/view/properties/movement.cpp \
            src/view/properties/selection.cpp \
            src/view/properties/widget.cpp \
            src/view/sphere-mesh-menu.cpp \
@@ -156,7 +155,6 @@ HEADERS += \
            src/view/properties.hpp \
            src/view/properties/button.hpp \
            src/view/properties/camera.hpp \
-           src/view/properties/movement.hpp \
            src/view/properties/selection.hpp \
            src/view/properties/widget.hpp \
            src/view/sphere-mesh-menu.hpp \

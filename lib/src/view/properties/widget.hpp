@@ -5,14 +5,12 @@
 #include "macro.hpp"
 
 class ViewPropertiesSelection;
-class ViewPropertiesMovement;
 
 class ViewPropertiesWidget : public QWidget {
   public:
     DECLARE_BIG3 (ViewPropertiesWidget)
 
     ViewPropertiesSelection& selection ();
-    ViewPropertiesMovement&  movement  ();
 
   private:
     class Impl;
