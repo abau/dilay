@@ -1,4 +1,5 @@
-#include <QStatusBar>
+#include <QToolBar>
+#include <QLabel>
 #include "view/main-window.hpp"
 #include "view/main-widget.hpp"
 #include "view/tool-message.hpp"
@@ -6,16 +7,20 @@
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
   ViewMainWidget& mainWidget;
-  QStatusBar&     statusBar;
+  QToolBar&       statusBar;
+  QLabel&         messageLabel;
 
   Impl (ViewMainWindow* s) 
-    : self       (s) 
-    , mainWidget (*new ViewMainWidget (*this->self))
-    , statusBar  (*new QStatusBar     ())
+    : self         (s) 
+    , mainWidget   (*new ViewMainWidget (*this->self))
+    , statusBar    (*new QToolBar       ())
+    , messageLabel (*new QLabel         ())
   {
     this->self->setCentralWidget       (&this->mainWidget);
-    this->self->setStatusBar           (&this->statusBar);
-    this->statusBar.setSizeGripEnabled (false);
+    this->self->addToolBar             (Qt::BottomToolBarArea, &this->statusBar);
+    this->statusBar.setFloatable       (false);
+    this->statusBar.setMovable         (false);
+    this->statusBar.addWidget          (&this->messageLabel);
     this->showDefaultMessage           ();
   }
 
@@ -23,7 +28,7 @@ struct ViewMainWindow :: Impl {
   ViewPropertiesWidget& properties () { return this->mainWidget.properties (); }
 
   void showMessage (const QString& message) {
-    this->statusBar.showMessage (message);
+    this->messageLabel.setText (message);
   }
 
   void showDefaultMessage () {
