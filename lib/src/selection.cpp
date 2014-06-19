@@ -81,19 +81,32 @@ struct Selection::Impl {
       major.second.clear ();
     }
   }
+
+  unsigned int numMajors () const {
+    return this->selection.size ();
+  }
+
+  unsigned int numMinors () const {
+    unsigned int i = 0;
+
+    this->forEachMinor ([&i] (const Id&, const Id&) { i++; });
+    return i;
+  }
 };
 
 DELEGATE_BIG6 (Selection)
-DELEGATE1       (void, Selection, selectMajor, const Id&)
-DELEGATE2       (void, Selection, selectMinor, const Id&, const Id&)
-DELEGATE1       (void, Selection, unselectMajor, const Id&)
-DELEGATE2       (void, Selection, unselectMinor, const Id&, const Id&)
-DELEGATE1_CONST (bool, Selection, hasMajor, const Id&)
-DELEGATE2_CONST (bool, Selection, hasMinor, const Id&, const Id&)
-DELEGATE1       (void, Selection, toggleMajor, const Id&)
-DELEGATE2       (void, Selection, toggleMinor, const Id&, const Id&)
-DELEGATE1_CONST (void, Selection, forEachMajor, const std::function <void (const Id&)>&)
-DELEGATE1_CONST (void, Selection, forEachMinor, const std::function <void (const Id&, const Id&)>&)
-DELEGATE        (void, Selection, reset)
-DELEGATE        (void, Selection, resetMajors)
-DELEGATE        (void, Selection, resetMinors)
+DELEGATE1       (void        , Selection, selectMajor, const Id&)
+DELEGATE2       (void        , Selection, selectMinor, const Id&, const Id&)
+DELEGATE1       (void        , Selection, unselectMajor, const Id&)
+DELEGATE2       (void        , Selection, unselectMinor, const Id&, const Id&)
+DELEGATE1_CONST (bool        , Selection, hasMajor, const Id&)
+DELEGATE2_CONST (bool        , Selection, hasMinor, const Id&, const Id&)
+DELEGATE1       (void        , Selection, toggleMajor, const Id&)
+DELEGATE2       (void        , Selection, toggleMinor, const Id&, const Id&)
+DELEGATE1_CONST (void        , Selection, forEachMajor, const std::function <void (const Id&)>&)
+DELEGATE1_CONST (void        , Selection, forEachMinor, const std::function <void (const Id&, const Id&)>&)
+DELEGATE        (void        , Selection, reset)
+DELEGATE        (void        , Selection, resetMajors)
+DELEGATE        (void        , Selection, resetMinors)
+DELEGATE_CONST  (unsigned int, Selection, numMajors)
+DELEGATE_CONST  (unsigned int, Selection, numMinors)

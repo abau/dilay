@@ -40,6 +40,7 @@ class Scene {
     const Selection&    selection           () const;
           void          unselectAll         ();
           void          selectIntersection  (const PrimRay&);
+          unsigned int  numSelections       () const;
 
   private:
     class Impl;

@@ -137,6 +137,12 @@ struct Scene :: Impl {
       }
     }
   }
+
+  unsigned int numSelections () const {
+    return SelectionModeUtil::isMajor (this->selectionMode) 
+            ? this->selection.numMajors ()
+            : this->selection.numMinors ();
+  }
 };
 
 DELEGATE_CONSTRUCTOR (Scene)
@@ -161,3 +167,4 @@ DELEGATE1       (void             , Scene, changeSelectionType, SelectionMode)
 GETTER_CONST    (const Selection& , Scene, selection)
 DELEGATE        (void             , Scene, unselectAll)
 DELEGATE1       (void             , Scene, selectIntersection, const PrimRay&)
+DELEGATE_CONST  (unsigned int     , Scene, numSelections)
