@@ -36,7 +36,7 @@ class Scene {
           bool          intersects          (const PrimRay&, SphereNodeIntersection&);
 
           SelectionMode selectionMode       () const;
-          void          changeSelectionType (SelectionMode);
+          void          changeSelectionMode (SelectionMode);
     const Selection&    selection           () const;
           void          unselectAll         ();
           void          selectIntersection  (const PrimRay&);

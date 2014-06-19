@@ -121,7 +121,7 @@ struct Scene :: Impl {
     this->selection.reset ();
   }
 
-  void changeSelectionType (SelectionMode t) {
+  void changeSelectionMode (SelectionMode t) {
     this->unselectAll ();
     this->selectionMode = t;
   }
@@ -163,7 +163,7 @@ DELEGATE3       (bool             , Scene, intersects, SelectionMode, const Prim
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
 GETTER_CONST    (SelectionMode    , Scene, selectionMode)
-DELEGATE1       (void             , Scene, changeSelectionType, SelectionMode)
+DELEGATE1       (void             , Scene, changeSelectionMode, SelectionMode)
 GETTER_CONST    (const Selection& , Scene, selection)
 DELEGATE        (void             , Scene, unselectAll)
 DELEGATE1       (void             , Scene, selectIntersection, const PrimRay&)
