@@ -1,6 +1,5 @@
 #include <QVBoxLayout>
 #include "view/properties/widget.hpp"
-#include "view/properties/camera.hpp"
 #include "view/properties/selection.hpp"
 
 struct ViewPropertiesWidget::Impl {
