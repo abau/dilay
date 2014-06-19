@@ -2,7 +2,7 @@
 #define DILAY_SELECTION_MODE
 
 enum class SelectionMode {
-  Freeform, Sphere, SphereNode
+  Freeform, SphereNode
 };
 
 namespace SelectionModeUtil {

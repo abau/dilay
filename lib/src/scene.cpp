@@ -105,7 +105,6 @@ struct Scene :: Impl {
         }
         break;
       }
-      case SelectionMode::Sphere:
       case SelectionMode::SphereNode: {
         SphereNodeIntersection intersection;
         if (this->intersects (ray, intersection)) {
@@ -123,37 +122,7 @@ struct Scene :: Impl {
   }
 
   void changeSelectionType (SelectionMode t) {
-    switch (this->selectionMode) {
-      case SelectionMode::Sphere: 
-        if (t == SelectionMode::SphereNode) {
-          const Selection oldSelection = this->selection;
-
-          oldSelection.forEachMajor ([this] (const Id& id) {
-            this->sphereMesh (id).root ().forEachNode (
-              [&id,this] (SphereMeshNode& node) {
-                this->selection.selectMinor (id, node.id ());
-              }
-            );
-          });
-        }
-        else {
-          this->unselectAll ();
-        }
-        break;
-
-      case SelectionMode::SphereNode: 
-        if (t == SelectionMode::Sphere) {
-          this->selection.resetMinors ();
-        }
-        else {
-          this->unselectAll ();
-        }
-        break;
-
-      default:
-        this->unselectAll ();
-        break;
-    }
+    this->unselectAll ();
     this->selectionMode = t;
   }
 
