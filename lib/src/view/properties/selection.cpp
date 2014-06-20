@@ -1,66 +1,55 @@
 #include <QRadioButton>
-#include <QCheckBox>
 #include "view/properties/selection.hpp"
 #include "view/util.hpp"
-#include "mesh-type.hpp"
+#include "selection-mode.hpp"
 
 struct ViewPropertiesSelection::Impl {
   ViewPropertiesSelection* self;
   QRadioButton&            freeformMeshButton;
   QRadioButton&            sphereMeshButton;
-  QCheckBox&               hideOthersBox;
+  QRadioButton&            sphereMeshNodeButton;
 
   Impl (ViewPropertiesSelection* s) 
-    : self               (s) 
-    , freeformMeshButton (ViewUtil::radioButton (tr ("Freeform Mesh"), true, true))
-    , sphereMeshButton   (ViewUtil::radioButton (tr ("Sphere Mesh"), true))
-    , hideOthersBox      (ViewUtil::checkBox    (tr ("Hide Others"), true, false))
-    
+    : self                 (s) 
+    , freeformMeshButton   (ViewUtil::radioButton (tr ("Freeform Mesh"), true, true))
+    , sphereMeshButton     (ViewUtil::radioButton (tr ("Sphere Mesh"), true))
+    , sphereMeshNodeButton (ViewUtil::radioButton (tr ("Sphere Mesh Node"), true))
   {
     this->self->setLabel  (tr ("Selection"));
     this->self->addWidget (this->freeformMeshButton);
     this->self->addWidget (this->sphereMeshButton);
-    this->self->addWidget (this->hideOthersBox);
+    this->self->addWidget (this->sphereMeshNodeButton);
 
     QObject::connect (&this->freeformMeshButton, &QRadioButton::toggled, [this] (bool checked) {
       if (checked) {
-        emit this->self->selectionChanged (MeshType::Freeform);
+        emit this->self->selectionModeChanged (SelectionMode::Freeform);
       }
     });
     QObject::connect (&this->sphereMeshButton, &QRadioButton::toggled, [this] (bool checked) {
       if (checked) {
-        emit this->self->selectionChanged (MeshType::Sphere);
+        emit this->self->selectionModeChanged (SelectionMode::Sphere);
       }
     });
-    QObject::connect (&this->hideOthersBox, &QCheckBox::toggled, [this] (bool checked) {
-      emit this->self->hideOthersChanged (checked);
+    QObject::connect (&this->sphereMeshNodeButton, &QRadioButton::toggled, [this] (bool checked) {
+      if (checked) {
+        emit this->self->selectionModeChanged (SelectionMode::SphereNode);
+      }
     });
   }
 
-  bool selected (MeshType t) const {
-    if (  (t == MeshType::Freeform && this->freeformMeshButton.isChecked ())
-       || (t == MeshType::Sphere   && this->sphereMeshButton  .isChecked ())) {
-      return true;
-    }
-    return false;
-  }
-
-  MeshType selected () const {
+  SelectionMode selectionMode () const {
     if (this->freeformMeshButton.isChecked ()) {
-      return MeshType::Freeform;
+      return SelectionMode::Freeform;
     }
     else if (this->sphereMeshButton.isChecked ()) {
-      return MeshType::Sphere;
+      return SelectionMode::Sphere;
+    }
+    else if (this->sphereMeshNodeButton.isChecked ()) {
+      return SelectionMode::SphereNode;
     }
     assert (false);
-  }
-
-  bool show (MeshType t) const {
-    return this->selected (t) || (! this->hideOthersBox.isChecked ());
   }
 };
 
 DELEGATE_BIG3_SELF (ViewPropertiesSelection)
-DELEGATE1_CONST (bool    , ViewPropertiesSelection, selected, MeshType)
-DELEGATE_CONST  (MeshType, ViewPropertiesSelection, selected)
-DELEGATE1_CONST (bool    , ViewPropertiesSelection, show, MeshType)
+DELEGATE_CONST (SelectionMode, ViewPropertiesSelection, selectionMode)

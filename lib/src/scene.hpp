@@ -39,7 +39,7 @@ class Scene {
           void          changeSelectionMode (SelectionMode);
     const Selection&    selection           () const;
           void          unselectAll         ();
-          void          selectIntersection  (const PrimRay&);
+          bool          selectIntersection  (const PrimRay&);
           unsigned int  numSelections       () const;
 
   private:

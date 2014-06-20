@@ -4,20 +4,17 @@
 #include "view/properties.hpp"
 #include "macro.hpp"
 
-enum class MeshType;
+enum class SelectionMode;
 
 class ViewPropertiesSelection : public ViewProperties {
     Q_OBJECT
   public:
     DECLARE_BIG3 (ViewPropertiesSelection)
 
-    bool     selected (MeshType) const;
-    MeshType selected () const;
-    bool     show     (MeshType) const;
+    SelectionMode selectionMode () const;
 
   signals:
-    void selectionChanged  (MeshType);
-    void hideOthersChanged (bool);
+    void selectionModeChanged (SelectionMode);
 
   private:
     class Impl;

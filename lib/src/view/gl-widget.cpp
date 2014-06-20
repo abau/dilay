@@ -45,15 +45,11 @@ struct ViewGlWidget::Impl {
     this->selectIntersection (this->cursorPosition ());
   }
 
-  void selectIntersection (const glm::ivec2& /*pos*/) {
-    /*
-    if (State::scene ().selectIntersection 
-          ( this->mainWindow.properties ().selection ().selected ()
-          , State::camera ().ray (pos))) 
-    {
+  void selectIntersection (const glm::ivec2& pos) {
+    if (State::scene ().selectIntersection (State::camera ().ray (pos))) {
+      this->mainWindow.showNumSelections (State::scene ().numSelections ());
       this->self->update ();
     }
-    */
   }
 
   void invalidateToolRotate () {
@@ -70,12 +66,14 @@ struct ViewGlWidget::Impl {
 
     Renderer::updateLights (State::camera ());
 
-    QObject::connect ( &this->mainWindow.properties ().selection ()
-                     , &ViewPropertiesSelection::selectionChanged 
-                     , [this] () { this->self->update (); });
-    QObject::connect ( &this->mainWindow.properties ().selection ()
-                     , &ViewPropertiesSelection::hideOthersChanged
-                     , [this] () { this->self->update (); });
+    QObject::connect 
+      ( &this->mainWindow.properties ().selection ()
+      , &ViewPropertiesSelection::selectionModeChanged 
+      , [this] (SelectionMode m) { 
+          State::scene ().changeSelectionMode (m);
+          this->mainWindow.showNumSelections (State::scene ().numSelections ());
+          this->self->update (); 
+      });
   }
 
   void paintEvent (QPaintEvent*) {
@@ -83,12 +81,9 @@ struct ViewGlWidget::Impl {
 
     Renderer::renderInitialize ();
 
-    if (this->mainWindow.properties ().selection ().show (MeshType::Freeform)) {
-      State::scene ().render (MeshType::Freeform);
-    }
-    if (this->mainWindow.properties ().selection ().show (MeshType::Sphere)) {
-      State::scene ().render (MeshType::Sphere);
-    }
+    State::scene ().render (MeshType::Freeform);
+    State::scene ().render (MeshType::Sphere);
+
     if (State::hasTool ()) {
       State::tool ().render ();
     }
@@ -158,9 +153,6 @@ struct ViewGlWidget::Impl {
     else if (State::hasTool ()) {
       State::tool ().mouseMoveEvent (*e);
     }
-    else {
-      this->selectIntersection (ViewUtil::toIVec2 (*e));
-    }
   }
 
   void mousePressEvent (QMouseEvent* e) {
@@ -178,6 +170,9 @@ struct ViewGlWidget::Impl {
     }
     else if (State::hasTool ()) {
       State::tool ().mouseReleaseEvent (*e);
+    }
+    else if (e->button () == Qt::LeftButton) {
+      this->selectIntersection (ViewUtil::toIVec2 (*e));
     }
   }
 

@@ -157,7 +157,7 @@ struct Scene :: Impl {
     this->selectionMode = t;
   }
 
-  void selectIntersection (const PrimRay& ray) {
+  bool selectIntersection (const PrimRay& ray) {
     std::pair <Id,Id> intersection = this->intersects (ray);
     if (intersection.first.isValid ()) {
       if (SelectionModeUtil::isMajor (this->selectionMode)) {
@@ -166,7 +166,9 @@ struct Scene :: Impl {
       else {
         this->selection.toggleMinor (intersection.first, intersection.second);
       }
+      return true;
     }
+    return false;
   }
 
   unsigned int numSelections () const {
@@ -197,5 +199,5 @@ GETTER_CONST    (SelectionMode    , Scene, selectionMode)
 DELEGATE1       (void             , Scene, changeSelectionMode, SelectionMode)
 GETTER_CONST    (const Selection& , Scene, selection)
 DELEGATE        (void             , Scene, unselectAll)
-DELEGATE1       (void             , Scene, selectIntersection, const PrimRay&)
+DELEGATE1       (bool             , Scene, selectIntersection, const PrimRay&)
 DELEGATE_CONST  (unsigned int     , Scene, numSelections)
