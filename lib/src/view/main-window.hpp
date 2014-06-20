@@ -17,6 +17,7 @@ class ViewMainWindow : public QMainWindow {
     ViewPropertiesWidget& properties         ();
     void                  showMessage        (const QString&);
     void                  showDefaultMessage ();
+    void                  showNumSelections  (unsigned int);
 
   private:
     class Impl;

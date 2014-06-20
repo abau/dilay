@@ -99,3 +99,11 @@ void ViewUtil :: connect (const QDoubleSpinBox& s, const std::function <void (do
   void (QDoubleSpinBox::* ptr)(double) = &QDoubleSpinBox::valueChanged;
   QObject::connect (&s, ptr, f);
 }
+
+QWidget& ViewUtil :: stretcher (bool horizontal, bool vertical) {
+  assert (horizontal || vertical);
+  QWidget& widget = *new QWidget ();
+  widget.setSizePolicy ( horizontal ? QSizePolicy::Expanding : QSizePolicy::Preferred
+                       , vertical   ? QSizePolicy::Expanding : QSizePolicy::Preferred );
+  return widget;
+}

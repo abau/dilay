@@ -29,6 +29,7 @@ namespace ViewUtil {
   glm::ivec2      toIVec2     (const QMouseEvent&);
   void            connect     (const QSpinBox&, const std::function <void (int)>&);
   void            connect     (const QDoubleSpinBox&, const std::function <void (double)>&);
+  QWidget&        stretcher   (bool, bool);
 };
 
 #endif
