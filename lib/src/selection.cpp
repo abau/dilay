@@ -1,5 +1,4 @@
 #include <unordered_map>
-#include <unordered_set>
 #include "selection.hpp"
 #include "id.hpp"
 
@@ -92,6 +91,14 @@ struct Selection::Impl {
     this->forEachMinor ([&i] (const Id&, const Id&) { i++; });
     return i;
   }
+
+  const Minors* minors (const Id& id) const {
+    auto it = this->selection.find (id);
+    if (it != this->selection.end ()) {
+      return &it->second;
+    }
+    return nullptr;
+  }
 };
 
 DELEGATE_BIG6 (Selection)
@@ -110,3 +117,4 @@ DELEGATE        (void        , Selection, resetMajors)
 DELEGATE        (void        , Selection, resetMinors)
 DELEGATE_CONST  (unsigned int, Selection, numMajors)
 DELEGATE_CONST  (unsigned int, Selection, numMinors)
+DELEGATE1_CONST (const Selection::Minors*, Selection, minors, const Id&)

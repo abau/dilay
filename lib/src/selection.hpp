@@ -2,6 +2,7 @@
 #define DILAY_SELECTION
 
 #include <functional>
+#include <unordered_set>
 #include "macro.hpp"
 
 class Id;
@@ -10,27 +11,32 @@ class Selection {
   public:
     DECLARE_BIG6 (Selection)
 
-    void         selectMajor   (const Id&);
-    void         selectMinor   (const Id&, const Id&);
+    typedef std::unordered_set <Id> Minors;
 
-    void         unselectMajor (const Id&);
-    void         unselectMinor (const Id&, const Id&);
+    void          selectMajor   (const Id&);
+    void          selectMinor   (const Id&, const Id&);
 
-    bool         hasMajor      (const Id&) const;
-    bool         hasMinor      (const Id&, const Id&) const;
+    void          unselectMajor (const Id&);
+    void          unselectMinor (const Id&, const Id&);
 
-    void         toggleMajor   (const Id&);
-    void         toggleMinor   (const Id&, const Id&);
+    bool          hasMajor      (const Id&) const;
+    bool          hasMinor      (const Id&, const Id&) const;
 
-    void         forEachMajor  (const std::function <void (const Id&)>&) const;
-    void         forEachMinor  (const std::function <void (const Id&, const Id&)>&) const;
+    void          toggleMajor   (const Id&);
+    void          toggleMinor   (const Id&, const Id&);
 
-    void         reset         ();
-    void         resetMajors   ();
-    void         resetMinors   ();
+    void          forEachMajor  (const std::function <void (const Id&)>&) const;
+    void          forEachMinor  (const std::function <void (const Id&, const Id&)>&) const;
 
-    unsigned int numMajors     () const;
-    unsigned int numMinors     () const;
+    void          reset         ();
+    void          resetMajors   ();
+    void          resetMinors   ();
+
+    unsigned int  numMajors     () const;
+    unsigned int  numMinors     () const;
+
+    // Returned pointer may become invalid by modifying selection
+    const Minors* minors        (const Id&) const;
 
   private:
     class Impl;
