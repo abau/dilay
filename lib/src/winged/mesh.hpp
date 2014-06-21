@@ -15,6 +15,7 @@ class WingedFace;
 class WingedEdge;
 class Id;
 class PrimSphere;
+class Selection;
 
 class WingedMesh {
   public: 
@@ -57,7 +58,7 @@ class WingedMesh {
     void            writeNormals      (); 
     void            write             (); 
     void            bufferData        ();
-    void            render            ();
+    void            render            (const Selection&);
     void            reset             ();
     void            initOctreeRoot    (const glm::vec3&, float);
     void            toggleRenderMode  ();

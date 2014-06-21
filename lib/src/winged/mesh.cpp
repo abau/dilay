@@ -11,6 +11,8 @@
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "id.hpp"
+#include "selection.hpp"
+#include "config.hpp"
 
 struct WingedMesh::Impl {
   WingedMesh*              self;
@@ -190,7 +192,13 @@ struct WingedMesh::Impl {
     this->mesh.bufferData   (); 
   }
 
-  void render      () { 
+  void render (const Selection& selection) { 
+    if (selection.hasMajor (this->id.id ())) {
+      this->mesh.color (Config::get <Color> ("/config/editor/selection/color"));
+    }
+    else {
+      this->mesh.color (Config::get <Color> ("/config/editor/mesh/color/normal"));
+    }
     this->mesh.render   (); 
 #ifdef DILAY_RENDER_OCTREE
     this->octree.render ();
@@ -263,7 +271,7 @@ DELEGATE        (void, WingedMesh, writeIndices)
 DELEGATE        (void, WingedMesh, writeNormals)
 DELEGATE        (void, WingedMesh, write)
 DELEGATE        (void, WingedMesh, bufferData)
-DELEGATE        (void, WingedMesh, render)
+DELEGATE1       (void, WingedMesh, render, const Selection&)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, initOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)

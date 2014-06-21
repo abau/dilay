@@ -65,7 +65,7 @@ struct Scene :: Impl {
   void render (MeshType t) {
     if (t == MeshType::Freeform) {
       for (WingedMesh& m : this->wingedMeshes) {
-        m.render ();
+        m.render (this->selection);
       }
     }
     else if (t == MeshType::Sphere) {
