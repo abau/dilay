@@ -25,6 +25,10 @@ struct Selection::Impl {
     auto it = this->selection.find (majorId);
     if (it != this->selection.end ()) {
       it->second.erase (minorId);
+
+      if (this->selection.size () == 0) {
+        this->selection.erase (it);
+      }
     }
   }
 
