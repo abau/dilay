@@ -70,7 +70,7 @@ struct Scene :: Impl {
     }
     else if (t == MeshType::Sphere) {
       for (SphereMesh& m : this->sphereMeshes) {
-        m.render ();
+        m.render (this->selection);
       }
     }
   }

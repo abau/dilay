@@ -12,6 +12,7 @@
 #include "sphere/node-intersection.hpp"
 #include "color.hpp"
 #include "config.hpp"
+#include "selection.hpp"
 
 typedef std::unique_ptr <SphereMeshNode::Impl> Child;
 
@@ -54,10 +55,21 @@ struct SphereMeshNode::Impl {
     assert (false);
   }
   
-  void render (Mesh& mesh) {
+  void render (Mesh& mesh, const Selection::Minors* selection) {
     mesh.position (this->position);
     mesh.scaling  (glm::vec3 (this->radius));
-    mesh.render   ();
+
+    if (selection && (selection->size () == 0 || selection->count (this->id.id ()) > 0)) {
+      mesh.color (Config::get <Color> ("/config/editor/selection/color"));
+    }
+    else {
+      mesh.color (Config::get <Color> ("/config/editor/sphere-mesh/color/normal"));
+    }
+    mesh.render ();
+
+    for (Child& c : this->children) {
+      c->render (mesh, selection);
+    }
   }
 
   bool intersects (SphereMesh& mesh, const PrimRay& ray, SphereNodeIntersection& sni) {
@@ -154,9 +166,9 @@ struct SphereMesh::Impl {
     this->idMap.remove (id);
   }
 
-  void render () {
+  void render (const Selection& selection) {
     if (this->_root) {
-      this->_root->render (this->mesh);
+      this->_root->render (this->mesh, selection.minors (this->id.id ()));
     }
   }
 
@@ -189,7 +201,7 @@ ID              (SphereMesh)
 DELEGATE3       (SphereMeshNode&, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
 DELEGATE4       (SphereMeshNode&, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
 DELEGATE1       (void           , SphereMesh, deleteNode, const Id&)
-DELEGATE        (void           , SphereMesh, render)
+DELEGATE1       (void           , SphereMesh, render, const Selection&)
 DELEGATE2       (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
 DELEGATE1       (SphereMeshNode&, SphereMesh, node, const Id&)
 DELEGATE        (SphereMeshNode&, SphereMesh, root)
