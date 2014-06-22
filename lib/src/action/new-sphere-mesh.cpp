@@ -5,6 +5,7 @@
 #include "sphere/mesh.hpp"
 #include "scene.hpp"
 #include "id.hpp"
+#include "mesh-type.hpp"
 
 struct ActionNewSphereMesh :: Impl {
   ActionIds         ids;
@@ -19,8 +20,8 @@ struct ActionNewSphereMesh :: Impl {
 
   void runUndo () {
     SphereMesh& sMesh = this->ids.getSphereMesh (0);
-    this->addRootAction.undo         (sMesh);
-    State::scene ().deleteWingedMesh (sMesh.id ());
+    this->addRootAction.undo   (sMesh);
+    State::scene ().deleteMesh (MeshType::Sphere, sMesh.id ());
   }
 
   void runRedo () {

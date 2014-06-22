@@ -30,6 +30,7 @@ class Scene {
           SphereMesh&   sphereMesh          (const Id&);
     const SphereMesh&   sphereMesh          (const Id&) const;
 
+          void          deleteMesh          (MeshType, const Id&);
           void          render              (MeshType);
           bool          intersects          (SelectionMode, const PrimRay&, WingedFaceIntersection&);
           bool          intersects          (const PrimRay&, WingedFaceIntersection&);

@@ -34,12 +34,6 @@ struct Scene :: Impl {
     return this->wingedMeshes.back ();
   }
 
-  void deleteWingedMesh (const Id& id) {
-    assert (this->wingedMeshIdMap.hasElement (id));
-    this->wingedMeshIdMap.remove (id);
-    this->wingedMeshes.remove_if ([&id] (WingedMesh& m) { return m.id () == id; });
-  }
-
         WingedMesh& wingedMesh (const Id& id)       { return this->wingedMeshIdMap.elementRef (id); }
   const WingedMesh& wingedMesh (const Id& id) const { return this->wingedMeshIdMap.elementRef (id); }
 
@@ -53,15 +47,25 @@ struct Scene :: Impl {
     return this->sphereMeshes.back ();
   }
 
-  void deleteSphereMesh (const Id& id) {
-    assert (this->sphereMeshIdMap.hasElement (id));
-    this->sphereMeshIdMap.remove (id);
-    this->sphereMeshes.remove_if ([&id] (SphereMesh& m) { return m.id () == id; });
-  }
-
         SphereMesh& sphereMesh (const Id& id)       { return this->sphereMeshIdMap.elementRef (id); }
   const SphereMesh& sphereMesh (const Id& id) const { return this->sphereMeshIdMap.elementRef (id); }
 
+  void deleteMesh (MeshType t, const Id& id) {
+    switch (t) {
+      case MeshType::Freeform:
+        assert (this->wingedMeshIdMap.hasElement (id));
+        this->wingedMeshIdMap.remove (id);
+        this->wingedMeshes.remove_if ([&id] (WingedMesh& m) { return m.id () == id; });
+        break;
+
+      case MeshType::Sphere:
+        assert (this->sphereMeshIdMap.hasElement (id));
+        this->sphereMeshIdMap.remove (id);
+        this->sphereMeshes.remove_if ([&id] (SphereMesh& m) { return m.id () == id; });
+        break;
+    }
+  }
+          
   void render (MeshType t) {
     if (t == MeshType::Freeform) {
       for (WingedMesh& m : this->wingedMeshes) {
@@ -183,14 +187,13 @@ DELEGATE_DESTRUCTOR  (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)
 DELEGATE2       (WingedMesh&      , Scene, newWingedMesh, MeshType, const Id&)
-DELEGATE1       (void             , Scene, deleteWingedMesh, const Id&)
 DELEGATE1       (WingedMesh&      , Scene, wingedMesh, const Id&)
 DELEGATE1_CONST (const WingedMesh&, Scene, wingedMesh, const Id&)
 DELEGATE        (SphereMesh&      , Scene, newSphereMesh)
 DELEGATE1       (SphereMesh&      , Scene, newSphereMesh, const Id&)
-DELEGATE1       (void             , Scene, deleteSphereMesh, const Id&)
 DELEGATE1       (SphereMesh&      , Scene, sphereMesh, const Id&)
 DELEGATE1_CONST (const SphereMesh&, Scene, sphereMesh, const Id&)
+DELEGATE2       (void             , Scene, deleteMesh, MeshType, const Id&)
 DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, SelectionMode, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
