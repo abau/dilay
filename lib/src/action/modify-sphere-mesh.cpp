@@ -4,7 +4,7 @@
 #include "action/ids.hpp"
 
 enum class Operation { 
-  NewNode, ModifyNode
+  NewNode, ModifyNode, DeleteNode
 };
 
 struct OperandData {
@@ -33,6 +33,15 @@ struct ActionModifySMesh :: Impl {
     node.radius   (r);
   }
 
+  void deleteNode (SphereMesh& mesh, SphereMeshNode& node) {
+    assert (node.numChildren () == 0);
+    this->operation   = Operation::DeleteNode;
+    this->operandData = {node.position (), node.radius ()};
+    this->operandIds.setNode (0, &node);
+    this->operandIds.setNode (1,  node.parent ());
+    mesh.deleteNode (node);
+  }
+
   void toggle (SphereMesh& mesh) {
     switch (this->operation) {
       case Operation::ModifyNode: {
@@ -54,6 +63,11 @@ struct ActionModifySMesh :: Impl {
       case Operation::NewNode:
         mesh.deleteNode (mesh.node (this->operandIds.getIdRef (0)));
         break;
+      case Operation::DeleteNode:
+        mesh.addNode ( this->operandIds.getIdRef (0)
+                     , this->operandIds.getSphereMeshNode (mesh, 1)
+                     , this->operandData.position, this->operandData.radius);
+        break;
       default:
         this->toggle (mesh);
     }
@@ -61,12 +75,14 @@ struct ActionModifySMesh :: Impl {
 
   void runRedo (SphereMesh& mesh) { 
     switch (this->operation) {
-      case Operation::NewNode: {
+      case Operation::NewNode:
         mesh.addNode ( this->operandIds.getIdRef (0)
                      , this->operandIds.getSphereMeshNode (mesh, 1)
                      , this->operandData.position, this->operandData.radius);
         break;
-      }
+      case Operation::DeleteNode:
+        mesh.deleteNode (mesh.node (this->operandIds.getIdRef (0)));
+        break;
       default:
         this->toggle (mesh);
     }

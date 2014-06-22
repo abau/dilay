@@ -14,6 +14,8 @@ class ActionModifySMesh : public ActionOn <SphereMesh> {
 
     void newNode    (SphereMesh&, SphereMeshNode*, const glm::vec3&, float);
     void modifyNode (SphereMeshNode&, const glm::vec3&, float);
+    // Node to delete must be leaf
+    void deleteNode (SphereMesh&, SphereMeshNode&);
 
   private:
     void runUndo (SphereMesh&);
