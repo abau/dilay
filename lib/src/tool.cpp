@@ -40,6 +40,10 @@ struct Tool::Impl {
     }
   }
 
+  ToolResponse execute () { 
+    return this->self->runExecute ();
+  }
+
   void render () { 
     return this->self->runRender ( ); 
   }
@@ -69,6 +73,7 @@ DELEGATE3_BIG3_SELF        (Tool, ViewMainWindow&, const glm::ivec2&, const QStr
 DELEGATE2_CONSTRUCTOR_SELF (Tool, ViewMainWindow&, const glm::ivec2&) 
 GETTER         (ViewMainWindow&   , Tool, mainWindow)
 GETTER_CONST   (const glm::ivec2& , Tool, clickPosition)
+DELEGATE       (ToolResponse      , Tool, execute)
 DELEGATE       (void              , Tool, render)
 DELEGATE1      (ToolResponse      , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse      , Tool, mousePressEvent, QMouseEvent&)

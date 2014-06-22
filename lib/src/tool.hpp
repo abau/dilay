@@ -25,6 +25,7 @@ class Tool {
     ViewMainWindow&    mainWindow         ();
     const glm::ivec2&  clickPosition      () const;
 
+    ToolResponse       execute            ();
     void               render             ();
     ToolResponse       mouseMoveEvent     (QMouseEvent&);
     ToolResponse       mousePressEvent    (QMouseEvent&);
@@ -39,6 +40,7 @@ class Tool {
     class Impl;
     Impl* impl;
 
+    virtual ToolResponse runExecute           ()             { return ToolResponse::None; }
     virtual void         runRender            ()             {}
     virtual ToolResponse runMouseMoveEvent    (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runMousePressEvent   (QMouseEvent&) { return ToolResponse::None; }
