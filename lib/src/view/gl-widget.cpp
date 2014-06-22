@@ -52,8 +52,23 @@ struct ViewGlWidget::Impl {
     }
   }
 
-  void invalidateToolRotate () {
-    this->toolRotate.reset ();
+  void handleToolRespone (ToolResponse response, bool rotate = false) {
+    switch (response) {
+      case ToolResponse::None:
+        break;
+      case ToolResponse::Redraw:
+        this->self->update ();
+        break;
+      case ToolResponse::Terminate:
+        this->self->update ();
+        if (rotate) {
+          this->toolRotate.reset ();
+        }
+        else {
+          State::setTool (nullptr);
+        }
+        break;
+    }
   }
 
   void initializeGL () {
@@ -148,16 +163,16 @@ struct ViewGlWidget::Impl {
 
   void mouseMoveEvent (QMouseEvent* e) {
     if (this->toolRotate) {
-      this->toolRotate->mouseMoveEvent (*e);
+      this->handleToolRespone (this->toolRotate->mouseMoveEvent (*e), true);
     }
     else if (State::hasTool ()) {
-      State::tool ().mouseMoveEvent (*e);
+      this->handleToolRespone (State::tool ().mouseMoveEvent (*e));
     }
   }
 
   void mousePressEvent (QMouseEvent* e) {
     if (State::hasTool ()) {
-      State::tool ().mousePressEvent (*e);
+      this->handleToolRespone (State::tool ().mousePressEvent (*e));
     }
   }
 
@@ -166,10 +181,10 @@ struct ViewGlWidget::Impl {
       this->toolRotate.reset (new ToolRotate (this->mainWindow, ViewUtil::toIVec2 (*e)));
     }
     else if (this->toolRotate) {
-      this->toolRotate->mouseReleaseEvent (*e);
+      this->handleToolRespone (this->toolRotate->mouseReleaseEvent (*e), true);
     }
     else if (State::hasTool ()) {
-      State::tool ().mouseReleaseEvent (*e);
+      this->handleToolRespone (State::tool ().mouseReleaseEvent (*e));
     }
     else if (e->button () == Qt::LeftButton) {
       this->selectIntersection (ViewUtil::toIVec2 (*e));
@@ -177,14 +192,7 @@ struct ViewGlWidget::Impl {
   }
 
   void wheelEvent (QWheelEvent* e) {
-    if (this->toolRotate) {
-      this->toolRotate->wheelEvent (*e);
-    }
-    else {
-      if (ToolRotate::staticWheelEvent (*e)) {
-        this->self->update ();
-      }
-    }
+    this->handleToolRespone (ToolRotate::staticWheelEvent (*e), true);
   }
 
   /*
@@ -216,7 +224,6 @@ DELEGATE_DESTRUCTOR (ViewGlWidget)
 DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
 DELEGATE  (void      , ViewGlWidget, selectIntersection)
 DELEGATE1 (void      , ViewGlWidget, selectIntersection, const glm::ivec2&)
-DELEGATE  (void      , ViewGlWidget, invalidateToolRotate)
 DELEGATE  (void      , ViewGlWidget, initializeGL)
 DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
 DELEGATE1 (void      , ViewGlWidget, paintEvent,QPaintEvent*)

@@ -44,47 +44,24 @@ struct Tool::Impl {
     return this->self->runRender ( ); 
   }
 
-  void mouseMoveEvent (QMouseEvent& e) { 
-    if (this->self->runMouseMoveEvent (e)) {
-      this->updateGlWidget ();
-    }
+  ToolResponse mouseMoveEvent (QMouseEvent& e) { 
+    return this->self->runMouseMoveEvent (e);
   }
 
-  void mousePressEvent (QMouseEvent& e) {
-    if (this->self->runMousePressEvent (e)) {
-      this->updateGlWidget ();
-    }
+  ToolResponse mousePressEvent (QMouseEvent& e) {
+    return this->self->runMousePressEvent (e);
   }
 
-  void mouseReleaseEvent (QMouseEvent& e) {
-    if (this->self->runMouseReleaseEvent (e)) {
-      this->updateGlWidget ();
-    }
+  ToolResponse mouseReleaseEvent (QMouseEvent& e) {
+    return this->self->runMouseReleaseEvent (e);
   }
 
-  void wheelEvent (QWheelEvent& e) {
-    if (this->self->runWheelEvent (e)) {
-      this->updateGlWidget ();
-    }
+  ToolResponse wheelEvent (QWheelEvent& e) {
+    return this->self->runWheelEvent (e);
   }
 
-  QString message () const { return this->self->runMessage (); }
-
-  void updateGlWidget () {
-    this->mainWindow.glWidget ().update ();
-  }
-
-  void unselectAll () {
-    State::scene ().unselectAll ();
-    this->updateGlWidget ();
-  }
-
-  void selectIntersection () {
-    this->mainWindow.glWidget ().selectIntersection ();
-  }
-
-  void selectIntersection (const glm::ivec2& pos) {
-    this->mainWindow.glWidget ().selectIntersection (pos);
+  QString message () const { 
+    return this->self->runMessage (); 
   }
 };
 
@@ -92,14 +69,10 @@ DELEGATE3_BIG3_SELF        (Tool, ViewMainWindow&, const glm::ivec2&, const QStr
 DELEGATE2_CONSTRUCTOR_SELF (Tool, ViewMainWindow&, const glm::ivec2&) 
 GETTER         (ViewMainWindow&   , Tool, mainWindow)
 GETTER_CONST   (const glm::ivec2& , Tool, clickPosition)
-DELEGATE       (void              , Tool, updateGlWidget)
-DELEGATE       (void              , Tool, unselectAll)
-DELEGATE       (void              , Tool, selectIntersection)
-DELEGATE1      (void              , Tool, selectIntersection, const glm::ivec2&)
 DELEGATE       (void              , Tool, render)
-DELEGATE1      (void              , Tool, mouseMoveEvent, QMouseEvent&)
-DELEGATE1      (void              , Tool, mousePressEvent, QMouseEvent&)
-DELEGATE1      (void              , Tool, mouseReleaseEvent, QMouseEvent&)
-DELEGATE1      (void              , Tool, wheelEvent, QWheelEvent&)
+DELEGATE1      (ToolResponse      , Tool, mouseMoveEvent, QMouseEvent&)
+DELEGATE1      (ToolResponse      , Tool, mousePressEvent, QMouseEvent&)
+DELEGATE1      (ToolResponse      , Tool, mouseReleaseEvent, QMouseEvent&)
+DELEGATE1      (ToolResponse      , Tool, wheelEvent, QWheelEvent&)
 DELEGATE_CONST (QString           , Tool, message)
 GETTER         (ViewToolOptions*  , Tool, toolOptions)

@@ -7,16 +7,15 @@ class ToolRotate : public Tool {
   public:
     DECLARE_BIG3 (ToolRotate, ViewMainWindow&, const glm::ivec2&)
 
-    static bool staticWheelEvent (QWheelEvent&);
+    static ToolResponse staticWheelEvent (QWheelEvent&);
 
   private:
     class Impl;
     Impl* impl;
 
-    bool    runMouseMoveEvent    (QMouseEvent&);
-    bool    runMouseReleaseEvent (QMouseEvent&);
-    bool    runWheelEvent        (QWheelEvent&);
-    QString runMessage           () const;
+    ToolResponse runMouseMoveEvent    (QMouseEvent&);
+    ToolResponse runMouseReleaseEvent (QMouseEvent&);
+    QString      runMessage           () const;
 };
 
 #endif

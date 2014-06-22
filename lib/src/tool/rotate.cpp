@@ -41,7 +41,7 @@ struct ToolRotate::Impl {
     }
   }
 
-  bool runMouseMoveEvent (QMouseEvent& event) {
+  ToolResponse runMouseMoveEvent (QMouseEvent& event) {
           Camera&     cam        = State::camera ();
     const glm::uvec2& resolution = cam.resolution ();
           glm::ivec2  newPos     = ViewUtil::toIVec2 (event);
@@ -66,28 +66,21 @@ struct ToolRotate::Impl {
       }
     }
     this->oldPos = newPos;
-    return true;
+    return ToolResponse::Redraw;
   }
 
-  bool runMouseReleaseEvent (QMouseEvent& event) {
+  ToolResponse runMouseReleaseEvent (QMouseEvent& event) {
     if (event.button () == Qt::LeftButton) {
-      this->self->mainWindow ().glWidget ().invalidateToolRotate ();
-      return false;
+      return ToolResponse::Terminate;
     }
     else if (event.button () == Qt::RightButton) {
       State::camera ().set (this->originalGazepoint, this->originalToEyepoint, this->originalUp);
-      this->self->updateGlWidget ();
-      this->self->mainWindow ().glWidget ().invalidateToolRotate ();
-      return false;
+      return ToolResponse::Terminate;
     }
-    return false;
+    return ToolResponse::None;
   }
 
-  bool runWheelEvent (QWheelEvent& event) {
-    return staticWheelEvent (event);
-  }
-
-  bool static staticWheelEvent (QWheelEvent& event) {
+  static ToolResponse staticWheelEvent (QWheelEvent& event) {
     if (event.orientation () == Qt::Vertical) {
       const float zoomInFactor = Config::get <float> ("/config/editor/camera/zoom-in-factor");
 
@@ -95,8 +88,9 @@ struct ToolRotate::Impl {
         State::camera ().stepAlongGaze (zoomInFactor);
       else if (event.delta () < 0)
         State::camera ().stepAlongGaze (1.0f / zoomInFactor);
+      return ToolResponse::Redraw;
     }
-    return true;
+    return ToolResponse::None;
   }
 
   QString runMessage () const {
@@ -110,8 +104,7 @@ struct ToolRotate::Impl {
 
 DELEGATE_BIG3_BASE ( ToolRotate, (ViewMainWindow& w, const glm::ivec2& p)
                    , (this), Tool, (w,p) )
-DELEGATE1        (bool   , ToolRotate, runMouseMoveEvent, QMouseEvent&)
-DELEGATE1        (bool   , ToolRotate, runMouseReleaseEvent, QMouseEvent&)
-DELEGATE1        (bool   , ToolRotate, runWheelEvent, QWheelEvent&)
-DELEGATE1_STATIC (bool   , ToolRotate, staticWheelEvent, QWheelEvent&)
-DELEGATE_CONST   (QString, ToolRotate, runMessage)
+DELEGATE1        (ToolResponse, ToolRotate, runMouseMoveEvent, QMouseEvent&)
+DELEGATE1        (ToolResponse, ToolRotate, runMouseReleaseEvent, QMouseEvent&)
+DELEGATE1_STATIC (ToolResponse, ToolRotate, staticWheelEvent, QWheelEvent&)
+DELEGATE_CONST   (QString     , ToolRotate, runMessage)

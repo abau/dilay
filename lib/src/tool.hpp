@@ -10,6 +10,10 @@ class ViewMainWindow;
 class ViewToolOptions;
 class QWheelEvent;
 
+enum class ToolResponse {
+  None, Terminate, Redraw
+};
+
 class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow&, const glm::ivec2&, const QString&)
@@ -20,16 +24,12 @@ class Tool {
 
     ViewMainWindow&    mainWindow         ();
     const glm::ivec2&  clickPosition      () const;
-    void               updateGlWidget     ();
-    void               unselectAll        ();
-    void               selectIntersection ();
-    void               selectIntersection (const glm::ivec2&);
 
     void               render             ();
-    void               mouseMoveEvent     (QMouseEvent&);
-    void               mousePressEvent    (QMouseEvent&);
-    void               mouseReleaseEvent  (QMouseEvent&);
-    void               wheelEvent         (QWheelEvent&);
+    ToolResponse       mouseMoveEvent     (QMouseEvent&);
+    ToolResponse       mousePressEvent    (QMouseEvent&);
+    ToolResponse       mouseReleaseEvent  (QMouseEvent&);
+    ToolResponse       wheelEvent         (QWheelEvent&);
     QString            message            () const;
 
   protected:
@@ -39,12 +39,12 @@ class Tool {
     class Impl;
     Impl* impl;
 
-    virtual void    runRender            ()             {}
-    virtual bool    runMouseMoveEvent    (QMouseEvent&) { return false; }
-    virtual bool    runMousePressEvent   (QMouseEvent&) { return false; }
-    virtual bool    runMouseReleaseEvent (QMouseEvent&) { return false; }
-    virtual bool    runWheelEvent        (QWheelEvent&) { return false; }
-    virtual QString runMessage           () const       { return QString (); }
+    virtual void         runRender            ()             {}
+    virtual ToolResponse runMouseMoveEvent    (QMouseEvent&) { return ToolResponse::None; }
+    virtual ToolResponse runMousePressEvent   (QMouseEvent&) { return ToolResponse::None; }
+    virtual ToolResponse runMouseReleaseEvent (QMouseEvent&) { return ToolResponse::None; }
+    virtual ToolResponse runWheelEvent        (QWheelEvent&) { return ToolResponse::None; }
+    virtual QString      runMessage           () const       { return QString (); }
 };
 
 #endif
