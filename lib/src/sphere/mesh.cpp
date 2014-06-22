@@ -88,6 +88,11 @@ struct SphereMeshNode::Impl {
     return this->children.size ();
   }
 
+  SphereMeshNode& firstChild  () {
+    assert (this->numChildren () > 0);
+    return this->children.front ()->self;
+  }
+
   static void setupMesh (Mesh& mesh) {
     mesh = Mesh::icosphere (2);
     mesh.renderMode (RenderMode::SmoothShaded);
@@ -118,6 +123,7 @@ SETTER           (const glm::vec3&, SphereMeshNode, position)
 GETTER_CONST     (float           , SphereMeshNode, radius)
 SETTER           (float           , SphereMeshNode, radius)
 DELEGATE_CONST   (unsigned int    , SphereMeshNode, numChildren)
+DELEGATE         (SphereMeshNode& , SphereMeshNode, firstChild)
 DELEGATE1_STATIC (void            , SphereMeshNode, setupMesh, Mesh&)
 DELEGATE1        (void            , SphereMeshNode, forEachNode, const std::function <void (SphereMeshNode&)>&)
 DELEGATE1_CONST  (void            , SphereMeshNode, forEachConstNode, const std::function <void (const SphereMeshNode&)>&)
