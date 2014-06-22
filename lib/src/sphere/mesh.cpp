@@ -84,6 +84,10 @@ struct SphereMeshNode::Impl {
     return sni.isIntersection ();
   }
 
+  unsigned int numChildren () const {
+    return this->children.size ();
+  }
+
   static void setupMesh (Mesh& mesh) {
     mesh = Mesh::icosphere (2);
     mesh.renderMode (RenderMode::SmoothShaded);
@@ -113,6 +117,7 @@ GETTER_CONST     (const glm::vec3&, SphereMeshNode, position)
 SETTER           (const glm::vec3&, SphereMeshNode, position)
 GETTER_CONST     (float           , SphereMeshNode, radius)
 SETTER           (float           , SphereMeshNode, radius)
+DELEGATE_CONST   (unsigned int    , SphereMeshNode, numChildren)
 DELEGATE1_STATIC (void            , SphereMeshNode, setupMesh, Mesh&)
 DELEGATE1        (void            , SphereMeshNode, forEachNode, const std::function <void (SphereMeshNode&)>&)
 DELEGATE1_CONST  (void            , SphereMeshNode, forEachConstNode, const std::function <void (const SphereMeshNode&)>&)

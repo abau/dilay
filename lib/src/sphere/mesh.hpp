@@ -24,6 +24,7 @@ class SphereMeshNode {
 
            void            position    (const glm::vec3&);
            void            radius      (float);
+           unsigned int    numChildren () const;
 
     static void            setupMesh   (Mesh&);
 
