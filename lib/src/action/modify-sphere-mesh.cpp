@@ -52,7 +52,7 @@ struct ActionModifySMesh :: Impl {
   void runUndo (SphereMesh& mesh) { 
     switch (this->operation) {
       case Operation::NewNode:
-        mesh.deleteNode (this->operandIds.getIdRef (0));
+        mesh.deleteNode (mesh.node (this->operandIds.getIdRef (0)));
         break;
       default:
         this->toggle (mesh);
