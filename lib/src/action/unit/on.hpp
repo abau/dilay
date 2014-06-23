@@ -8,13 +8,15 @@
 template <typename T>
 class ActionUnitOn : public ActionOn <T> {
   public: 
-          ActionUnitOn            () : actions () {}
-          ActionUnitOn            (const ActionUnitOn&) = delete;
-          ActionUnitOn            (ActionUnitOn&& other) 
+          ActionUnitOn () 
+            : actions () {}
+          ActionUnitOn (ActionUnitOn&& other) 
             : actions (std::move (other.actions)) {}
+          ActionUnitOn (const ActionUnitOn&) = delete;
+         ~ActionUnitOn () {}
+
     const ActionUnitOn& operator= (const ActionUnitOn&) = delete;
     const ActionUnitOn& operator= (ActionUnitOn&&)      = delete;
-         ~ActionUnitOn            () {}
 
     typedef std::unique_ptr < ActionOn <T> > ActionPtr;
 
