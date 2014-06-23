@@ -42,7 +42,7 @@ struct ActionFromMesh :: Impl {
           WingedVertex* v1    = vecVertices [index1];
           WingedVertex* v2    = vecVertices [index2];
           WingedEdge& newEdge = this->actions.add <PAModifyWMesh> ()
-                                    ->addEdge (w, WingedEdge ( v1, v2
+                                     .addEdge (w, WingedEdge ( v1, v2
                                                              , &face  , nullptr
                                                              , nullptr, nullptr
                                                              , nullptr, nullptr
@@ -54,17 +54,17 @@ struct ActionFromMesh :: Impl {
           mapEdges.insert (std::pair <uiPair,WingedEdge*> ( uiPair (index1,index2)
                                                           , &newEdge ));
 
-          this->actions.add <PAModifyWVertex> ()->edge (*v1 , &newEdge);
-          this->actions.add <PAModifyWVertex> ()->edge (*v2 , &newEdge);
-          this->actions.add <PAModifyWFace  > ()->edge (face, &newEdge);
+          this->actions.add <PAModifyWVertex> ().edge (*v1 , &newEdge);
+          this->actions.add <PAModifyWVertex> ().edge (*v2 , &newEdge);
+          this->actions.add <PAModifyWFace  > ().edge (face, &newEdge);
 
           return &newEdge;
         }
         else {
           WingedEdge* existingEdge = result->second;
 
-          this->actions.add <PAModifyWEdge> ()->rightFace (*existingEdge, &face);
-          this->actions.add <PAModifyWFace> ()->edge      (face, existingEdge);
+          this->actions.add <PAModifyWEdge> ().rightFace (*existingEdge, &face);
+          this->actions.add <PAModifyWFace> ().edge      (face, existingEdge);
           return existingEdge;
         }
       };
@@ -82,12 +82,12 @@ struct ActionFromMesh :: Impl {
     glm::vec3 delta  =  maxVertex - minVertex;
     float     width  = glm::max (glm::max (delta.x, delta.y), delta.z);
 
-    this->actions.add <PAModifyWMesh> ()->initOctreeRoot (w, center, width);
+    this->actions.add <PAModifyWMesh> ().initOctreeRoot (w, center, width);
 
     // Vertices
     for (unsigned int i = 0; i < m.numVertices (); i++) {
       vecVertices [i] = &this->actions.add<PAModifyWMesh> ()
-                             ->addVertex (w, m.worldVertex (i));
+                              .addVertex (w, m.worldVertex (i));
     }
 
     // Faces & Edges
@@ -97,7 +97,7 @@ struct ActionFromMesh :: Impl {
       unsigned int index3 = m.index (i + 2);
 
       WingedFace& f = this->actions.add<PAModifyWMesh> ()
-                          ->addFace (w, PrimTriangle (w, *vecVertices [index1]
+                           .addFace (w, PrimTriangle (w, *vecVertices [index1]
                                                        , *vecVertices [index2]
                                                        , *vecVertices [index3]
                                                        ));
@@ -105,12 +105,12 @@ struct ActionFromMesh :: Impl {
       WingedEdge* e2 = findOrAddEdge (index2, index3, f);
       WingedEdge* e3 = findOrAddEdge (index3, index1, f);
 
-      this->actions.add <PAModifyWEdge> ()->predecessor (*e1, f, e3);
-      this->actions.add <PAModifyWEdge> ()->successor   (*e1, f, e2);
-      this->actions.add <PAModifyWEdge> ()->predecessor (*e2, f, e1);
-      this->actions.add <PAModifyWEdge> ()->successor   (*e2, f, e3);
-      this->actions.add <PAModifyWEdge> ()->predecessor (*e3, f, e2);
-      this->actions.add <PAModifyWEdge> ()->successor   (*e3, f, e1);
+      this->actions.add <PAModifyWEdge> ().predecessor (*e1, f, e3);
+      this->actions.add <PAModifyWEdge> ().successor   (*e1, f, e2);
+      this->actions.add <PAModifyWEdge> ().predecessor (*e2, f, e1);
+      this->actions.add <PAModifyWEdge> ().successor   (*e2, f, e3);
+      this->actions.add <PAModifyWEdge> ().predecessor (*e3, f, e2);
+      this->actions.add <PAModifyWEdge> ().successor   (*e3, f, e1);
     }
 
     if (this->self->writeMesh ()) {

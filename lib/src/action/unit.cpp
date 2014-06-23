@@ -9,8 +9,8 @@ struct ActionUnit :: Impl {
 
   bool isEmpty () const { return this->actions.empty (); }
 
-  void addAction (Action* action) {
-    this->actions.push_back (ActionPtr (action));
+  void addAction (Action& action) {
+    this->actions.push_back (ActionPtr (&action));
   }
 
   void runUndo () {
@@ -29,6 +29,6 @@ struct ActionUnit :: Impl {
 DELEGATE_BIG3  (ActionUnit)
 
 DELEGATE_CONST (bool, ActionUnit, isEmpty)
-DELEGATE1      (void, ActionUnit, addAction, Action*)
+DELEGATE1      (void, ActionUnit, addAction, Action&)
 DELEGATE       (void, ActionUnit, runUndo)
 DELEGATE       (void, ActionUnit, runRedo)

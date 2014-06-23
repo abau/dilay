@@ -56,7 +56,7 @@ struct ActionCarve::Impl {
         WingedFace* f = mesh.face (id);
         if (f && f->incircleRadius (mesh) > maxIncircleRadius) {
           std::list <Id> affectedFaces;
-          this->actions.add <ActionSubdivide> ()->run (mesh, *f, &affectedFaces);
+          this->actions.add <ActionSubdivide> ().run (mesh, *f, &affectedFaces);
 
           for (Id& id : affectedFaces) {
             WingedFace* affected = mesh.face (id);
@@ -102,13 +102,13 @@ struct ActionCarve::Impl {
     assert (newPositions.size () == vertices.size ());
     auto newPosition = newPositions.begin ();
     for (WingedVertex* v : vertices) {
-      this->actions.add <PAModifyWVertex> ()->move        (mesh,*v,*newPosition);
+      this->actions.add <PAModifyWVertex> ().move (mesh,*v,*newPosition);
       ++newPosition;
     }
 
     // Write normals
     for (WingedVertex* v : vertices) {
-      this->actions.add <PAModifyWVertex> ()->writeNormal (mesh,*v);
+      this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v);
     }
 
     // Realign faces.

@@ -199,7 +199,7 @@ struct ActionSubdivide::Impl {
   }
 
   void subdivideFaces (const SubdivideData& data, FaceSet& faces) {
-    this->actions.add <PADeleteTEdges> ()->run (data.mesh,faces);
+    this->actions.add <PADeleteTEdges> ().run (data.mesh,faces);
 
     std::unordered_set<Id> subdividedEdges;
 
@@ -210,7 +210,7 @@ struct ActionSubdivide::Impl {
         it.next ();
 
         if (subdividedEdges.count (edge.id ()) == 0 && edge.faceGradient () == FaceGradient::None) {
-          WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ()->run 
+          WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ().run 
             ( data.mesh, edge
             , SubdivisionButterfly::subdivideEdge (data.mesh, edge), true);
 
@@ -218,16 +218,16 @@ struct ActionSubdivide::Impl {
           subdividedEdges.insert (newEdge.id ());
         }
       }
-      this->actions.add <PATriangulate6Gon> ()->run (data.mesh, *face, data.affectedFaces);
+      this->actions.add <PATriangulate6Gon> ().run (data.mesh, *face, data.affectedFaces);
     }
   }
 
   void refineBorder (const SubdivideData& data, FaceSet& border) {
-    this->actions.add <PADeleteTEdges> ()->run (data.mesh, border);
+    this->actions.add <PADeleteTEdges> ().run (data.mesh, border);
 
     for (WingedFace* face : border) {
       assert (face->tEdge () == nullptr);
-      this->actions.add <PATriangulateQuad> ()->run (data.mesh, *face, data.affectedFaces);
+      this->actions.add <PATriangulateQuad> ().run (data.mesh, *face, data.affectedFaces);
     }
   }
 

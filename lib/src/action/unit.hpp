@@ -9,8 +9,8 @@ class ActionUnit : public Action {
     DECLARE_BIG3 (ActionUnit)
 
     template <class T>
-    T* add () { 
-      T* action = new T ();
+    T& add () { 
+      T& action = *new T ();
       this->addAction (action); 
       return action; 
     }
@@ -18,7 +18,7 @@ class ActionUnit : public Action {
     bool isEmpty () const;
 
   private:
-    void addAction (Action*);
+    void addAction (Action&);
     void runUndo   ();
     void runRedo   ();
 

@@ -20,8 +20,8 @@ struct PAInsertEdgeVertex :: Impl {
     int eGradient          = e.vertexGradient ();
     int newEVertexGradient = eGradient < 0 ? 1 : eGradient + 1;
 
-    WingedVertex& newV  = this->actions.add <PAModifyWMesh> ()->addVertex (mesh,v);
-    WingedEdge&   newE  = this->actions.add <PAModifyWMesh> ()->addEdge 
+    WingedVertex& newV  = this->actions.add <PAModifyWMesh> ().addVertex (mesh,v);
+    WingedEdge&   newE  = this->actions.add <PAModifyWMesh> ().addEdge 
       (mesh, WingedEdge ( e.vertex1 ()         , &newV
                         , e.leftFace ()        , e.rightFace ()
                         , e.leftPredecessor () , &e
@@ -31,31 +31,31 @@ struct PAInsertEdgeVertex :: Impl {
                         , setGradient ? newEVertexGradient : 0
                         ));
 
-    this->actions.add <PAModifyWEdge> ()->vertex1         (e, &newV);
-    this->actions.add <PAModifyWEdge> ()->successor       (e, e.rightFaceRef (), &newE);
-    this->actions.add <PAModifyWEdge> ()->predecessor     (e, e.leftFaceRef  (), &newE);
-    this->actions.add <PAModifyWEdge> ()->previousSibling (e, &newE);
+    this->actions.add <PAModifyWEdge> ().vertex1         (e, &newV);
+    this->actions.add <PAModifyWEdge> ().successor       (e, e.rightFaceRef (), &newE);
+    this->actions.add <PAModifyWEdge> ().predecessor     (e, e.leftFaceRef  (), &newE);
+    this->actions.add <PAModifyWEdge> ().previousSibling (e, &newE);
 
-    this->actions.add <PAModifyWVertex> ()->edge (newV, &e);
+    this->actions.add <PAModifyWVertex> ().edge (newV, &e);
 
-    this->actions.add <PAModifyWEdge> ()->successor 
+    this->actions.add <PAModifyWEdge> ().successor 
       (newE.leftPredecessorRef (), newE.leftFaceRef (), &newE);
-    this->actions.add <PAModifyWEdge> ()->predecessor 
+    this->actions.add <PAModifyWEdge> ().predecessor 
       (newE.rightSuccessorRef (), newE.rightFaceRef (), &newE);
 
-    this->actions.add <PAModifyWVertex> ()->edge (newE.vertex1Ref  (), &newE);
+    this->actions.add <PAModifyWVertex> ().edge (newE.vertex1Ref  (), &newE);
     
-    this->actions.add <PAModifyWFace> ()->edge (newE.leftFaceRef (), &newE);
+    this->actions.add <PAModifyWFace> ().edge (newE.leftFaceRef (), &newE);
 
     if (newE.previousSibling ()) {
-      this->actions.add <PAModifyWEdge> ()->nextSibling (newE.previousSiblingRef (), &newE);
+      this->actions.add <PAModifyWEdge> ().nextSibling (newE.previousSiblingRef (), &newE);
     }
 
     if (setGradient) {
       if (eGradient < 0)
-        this->actions.add <PAModifyWEdge> ()->vertexGradient (e, eGradient - 1);
+        this->actions.add <PAModifyWEdge> ().vertexGradient (e, eGradient - 1);
       else
-        this->actions.add <PAModifyWEdge> ()->vertexGradient (e, - 1);
+        this->actions.add <PAModifyWEdge> ().vertexGradient (e, - 1);
     }
     return newE;
   }

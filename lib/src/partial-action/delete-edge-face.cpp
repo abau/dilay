@@ -26,34 +26,34 @@ struct PADeleteEdgeFace :: Impl {
     for (auto it = faceToDelete.adjacentEdgeIterator (); it.isValid (); ) {
       WingedEdge& adjacent = it.element ();
       it.next ();
-      actions.add <PAModifyWEdge> ()->face (adjacent, faceToDelete, &remainingFace);
+      actions.add <PAModifyWEdge> ().face (adjacent, faceToDelete, &remainingFace);
     }
 
-    actions.add <PAModifyWEdge> ()->successor 
+    actions.add <PAModifyWEdge> ().successor 
       (edge.leftPredecessorRef (), remainingFace, edge.rightSuccessor ());
-    actions.add <PAModifyWEdge> ()->predecessor 
+    actions.add <PAModifyWEdge> ().predecessor 
       (edge.leftSuccessorRef (), remainingFace, edge.rightPredecessor ());
 
-    actions.add <PAModifyWEdge> ()->successor
+    actions.add <PAModifyWEdge> ().successor
       (edge.rightPredecessorRef (), remainingFace, edge.leftSuccessor ());
-    actions.add <PAModifyWEdge> ()->predecessor 
+    actions.add <PAModifyWEdge> ().predecessor 
       (edge.rightSuccessorRef (), remainingFace, edge.leftPredecessor ());
 
-    actions.add <PAModifyWVertex> ()->edge (edge.vertex1Ref (), edge.leftPredecessor ());
-    actions.add <PAModifyWVertex> ()->edge (edge.vertex2Ref (), edge.leftSuccessor   ());
+    actions.add <PAModifyWVertex> ().edge (edge.vertex1Ref (), edge.leftPredecessor ());
+    actions.add <PAModifyWVertex> ().edge (edge.vertex2Ref (), edge.leftSuccessor   ());
 
     if (edge.previousSibling ())
-      actions.add <PAModifyWEdge> ()->nextSibling (edge.previousSiblingRef (), nullptr);
+      actions.add <PAModifyWEdge> ().nextSibling (edge.previousSiblingRef (), nullptr);
     if (edge.nextSibling ())
-      actions.add <PAModifyWEdge> ()->previousSibling (edge.nextSiblingRef (), nullptr);
+      actions.add <PAModifyWEdge> ().previousSibling (edge.nextSiblingRef (), nullptr);
 
-    actions.add <PAModifyWFace> ()->edge (remainingFace, edge.leftSuccessor ());
+    actions.add <PAModifyWFace> ().edge (remainingFace, edge.leftSuccessor ());
 
-    actions.add <PAModifyWFace> ()->edge       (faceToDelete, nullptr);
-    actions.add <PAModifyWEdge> ()->rightFace  (edge, nullptr);
+    actions.add <PAModifyWFace> ().edge       (faceToDelete, nullptr);
+    actions.add <PAModifyWEdge> ().rightFace  (edge, nullptr);
 
-    actions.add <PAModifyWMesh> ()->deleteEdge (mesh,edge);
-    actions.add <PAModifyWMesh> ()->deleteFace (mesh,faceToDelete,triangle); 
+    actions.add <PAModifyWMesh> ().deleteEdge (mesh,edge);
+    actions.add <PAModifyWMesh> ().deleteFace (mesh,faceToDelete,triangle); 
   }
 
   void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }

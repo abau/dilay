@@ -29,12 +29,12 @@ struct PATriangulate6Gon :: Impl {
     WingedEdge& e45  = f.edgeRef ().successorRef (f,3);
     WingedEdge& e50  = f.edgeRef ().successorRef (f,4);
 
-    this->actions.add <PAModifyWEdge> ()->increaseFaceGradient (e01, f);
-    this->actions.add <PAModifyWEdge> ()->increaseFaceGradient (e12, f);
-    this->actions.add <PAModifyWEdge> ()->increaseFaceGradient (e23, f);
-    this->actions.add <PAModifyWEdge> ()->increaseFaceGradient (e34, f);
-    this->actions.add <PAModifyWEdge> ()->increaseFaceGradient (e45, f);
-    this->actions.add <PAModifyWEdge> ()->increaseFaceGradient (e50, f);
+    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e01, f);
+    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e12, f);
+    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e23, f);
+    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e34, f);
+    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e45, f);
+    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e50, f);
 
     WingedVertex& v0 = e01.firstVertexRef (f);
     WingedVertex& v1 = e12.firstVertexRef (f);
@@ -43,51 +43,51 @@ struct PATriangulate6Gon :: Impl {
     WingedVertex& v4 = e45.firstVertexRef (f);
     WingedVertex& v5 = e50.firstVertexRef (f);
 
-    WingedFace& a = this->actions.add <PAModifyWMesh> ()->addFace
+    WingedFace& a = this->actions.add <PAModifyWMesh> ().addFace
       (mesh, WingedFace (&e01, Id ()), PrimTriangle (mesh,v0,v1,v5));
-    WingedFace& b = this->actions.add <PAModifyWMesh> ()->addFace 
+    WingedFace& b = this->actions.add <PAModifyWMesh> ().addFace 
       (mesh, WingedFace (&e23, Id ()), PrimTriangle (mesh,v1,v2,v3));
-    WingedFace& c = this->actions.add <PAModifyWMesh> ()->addFace
+    WingedFace& c = this->actions.add <PAModifyWMesh> ().addFace
       (mesh, WingedFace (&e45, Id ()), PrimTriangle (mesh,v3,v4,v5));
 
-    WingedEdge& e13 = this->actions.add <PAModifyWMesh> ()->addEdge (mesh, WingedEdge ());
-    WingedEdge& e35 = this->actions.add <PAModifyWMesh> ()->addEdge (mesh, WingedEdge ());
-    WingedEdge& e51 = this->actions.add <PAModifyWMesh> ()->addEdge (mesh, WingedEdge ());
+    WingedEdge& e13 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
+    WingedEdge& e35 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
+    WingedEdge& e51 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
 
-    this->actions.add <PAModifyWEdge> ()->setGeometry (e13,&v1,&v3,&f,&b,&e51,&e35,&e23,&e12);
-    this->actions.add <PAModifyWEdge> ()->setGeometry (e35,&v3,&v5,&f,&c,&e13,&e51,&e45,&e34);
-    this->actions.add <PAModifyWEdge> ()->setGeometry (e51,&v5,&v1,&f,&a,&e35,&e13,&e01,&e50);
+    this->actions.add <PAModifyWEdge> ().setGeometry (e13,&v1,&v3,&f,&b,&e51,&e35,&e23,&e12);
+    this->actions.add <PAModifyWEdge> ().setGeometry (e35,&v3,&v5,&f,&c,&e13,&e51,&e45,&e34);
+    this->actions.add <PAModifyWEdge> ().setGeometry (e51,&v5,&v1,&f,&a,&e35,&e13,&e01,&e50);
 
-    this->actions.add <PAModifyWEdge> ()->face        (e01,f,&a);
-    this->actions.add <PAModifyWEdge> ()->predecessor (e01,a,&e50);
-    this->actions.add <PAModifyWEdge> ()->successor   (e01,a,&e51);
+    this->actions.add <PAModifyWEdge> ().face        (e01,f,&a);
+    this->actions.add <PAModifyWEdge> ().predecessor (e01,a,&e50);
+    this->actions.add <PAModifyWEdge> ().successor   (e01,a,&e51);
 
-    this->actions.add <PAModifyWEdge> ()->face        (e12,f,&b);
-    this->actions.add <PAModifyWEdge> ()->predecessor (e12,b,&e13);
-    this->actions.add <PAModifyWEdge> ()->successor   (e12,b,&e23);
+    this->actions.add <PAModifyWEdge> ().face        (e12,f,&b);
+    this->actions.add <PAModifyWEdge> ().predecessor (e12,b,&e13);
+    this->actions.add <PAModifyWEdge> ().successor   (e12,b,&e23);
 
-    this->actions.add <PAModifyWEdge> ()->face        (e23,f,&b);
-    this->actions.add <PAModifyWEdge> ()->predecessor (e23,b,&e12);
-    this->actions.add <PAModifyWEdge> ()->successor   (e23,b,&e13);
+    this->actions.add <PAModifyWEdge> ().face        (e23,f,&b);
+    this->actions.add <PAModifyWEdge> ().predecessor (e23,b,&e12);
+    this->actions.add <PAModifyWEdge> ().successor   (e23,b,&e13);
 
-    this->actions.add <PAModifyWEdge> ()->face        (e34,f,&c);
-    this->actions.add <PAModifyWEdge> ()->predecessor (e34,c,&e35);
-    this->actions.add <PAModifyWEdge> ()->successor   (e34,c,&e45);
+    this->actions.add <PAModifyWEdge> ().face        (e34,f,&c);
+    this->actions.add <PAModifyWEdge> ().predecessor (e34,c,&e35);
+    this->actions.add <PAModifyWEdge> ().successor   (e34,c,&e45);
 
-    this->actions.add <PAModifyWEdge> ()->face        (e45,f,&c);
-    this->actions.add <PAModifyWEdge> ()->predecessor (e45,c,&e34);
-    this->actions.add <PAModifyWEdge> ()->successor   (e45,c,&e35);
+    this->actions.add <PAModifyWEdge> ().face        (e45,f,&c);
+    this->actions.add <PAModifyWEdge> ().predecessor (e45,c,&e34);
+    this->actions.add <PAModifyWEdge> ().successor   (e45,c,&e35);
 
-    this->actions.add <PAModifyWEdge> ()->face        (e50,f,&a);
-    this->actions.add <PAModifyWEdge> ()->predecessor (e50,a,&e51);
-    this->actions.add <PAModifyWEdge> ()->successor   (e50,a,&e01);
+    this->actions.add <PAModifyWEdge> ().face        (e50,f,&a);
+    this->actions.add <PAModifyWEdge> ().predecessor (e50,a,&e51);
+    this->actions.add <PAModifyWEdge> ().successor   (e50,a,&e01);
 
-    this->actions.add <PAModifyWFace> ()->edge (f,&e13);
+    this->actions.add <PAModifyWFace> ().edge (f,&e13);
 
-    this->actions.add <PAModifyWFace> ()->write (mesh,f);
-    this->actions.add <PAModifyWFace> ()->write (mesh,a);
-    this->actions.add <PAModifyWFace> ()->write (mesh,b);
-    this->actions.add <PAModifyWFace> ()->write (mesh,c);
+    this->actions.add <PAModifyWFace> ().write (mesh,f);
+    this->actions.add <PAModifyWFace> ().write (mesh,a);
+    this->actions.add <PAModifyWFace> ().write (mesh,b);
+    this->actions.add <PAModifyWFace> ().write (mesh,c);
 
     if (affectedFaces) {
       affectedFaces->push_back (f.id ());

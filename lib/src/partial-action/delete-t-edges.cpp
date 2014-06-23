@@ -20,7 +20,7 @@ struct PADeleteTEdges :: Impl {
       if (tEdge && tEdge->isRightFace (*face)) {
         WingedFace& leftFace = tEdge->leftFaceRef ();
 
-        this->actions.add <PADeleteEdgeFace> ()->run (mesh,*tEdge);
+        this->actions.add <PADeleteEdgeFace> ().run (mesh,*tEdge);
         faces.erase (faceIt);
         assert (leftFace.tEdge () == nullptr);
       }

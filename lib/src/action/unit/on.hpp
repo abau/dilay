@@ -19,9 +19,9 @@ class ActionUnitOn : public ActionOn <T> {
     typedef std::unique_ptr < ActionOn <T> > ActionPtr;
 
     template <typename A>
-    A* add () {
-      A* action = new A ();
-      this->actions.push_back (ActionPtr (action));
+    A& add () {
+      A& action = *new A ();
+      this->actions.push_back (ActionPtr (&action));
       return action;
     }
 

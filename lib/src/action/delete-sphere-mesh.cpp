@@ -19,7 +19,7 @@ struct ActionDeleteSMesh::Impl {
 
   void runDeleteNodesRecursive (SphereMesh& mesh, SphereMeshNode& node) {
     if (node.numChildren () == 0) {
-      this->actions.add <ActionModifySMesh> ()->deleteNode (mesh, node);
+      this->actions.add <ActionModifySMesh> ().deleteNode (mesh, node);
     }
     else {
       this->runDeleteNodesRecursive (mesh, node.firstChild ());
