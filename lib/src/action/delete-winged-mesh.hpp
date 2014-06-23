@@ -1,5 +1,5 @@
-#ifndef DILAY_ACTION_DELETE_SPHERE_MESH
-#define DILAY_ACTION_DELETE_SPHERE_MESH
+#ifndef DILAY_ACTION_DELETE_WINGED_MESH
+#define DILAY_ACTION_DELETE_WINGED_MESH
 
 #include "action.hpp"
 #include "macro.hpp"
