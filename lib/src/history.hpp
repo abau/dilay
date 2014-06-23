@@ -12,17 +12,17 @@ class History {
     const History& operator= (const History&) = delete;
          ~History            ();
 
-    template <typename T>
-    T& add () { 
-      T& action = *new T ();
+    template <typename A>
+    A& add () { 
+      A& action = *new A ();
       this->addAction (action); 
       return action; 
     }
 
-    template <typename T>
-    T& add (WingedMesh& mesh) { 
-      T& action = *new T ();
-      this->addAction (*new ActionTransformer (mesh, action));
+    template <typename A, typename T>
+    A& add (T& t) { 
+      A& action = *new A ();
+      this->addAction (*new ActionTransformer (t, action));
       return *action; 
     }
 
