@@ -9,7 +9,7 @@ template <typename T> class ActionOn;
 
 class ActionTransformer : public Action {
   public:
-    DECLARE_BIG3 (ActionTransformer, WingedMesh&, ActionOn <WingedMesh>*);
+    DECLARE_BIG3 (ActionTransformer, WingedMesh&, ActionOn <WingedMesh>&);
 
   private:
     void runUndo ();

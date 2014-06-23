@@ -13,20 +13,20 @@ class History {
          ~History            ();
 
     template <typename T>
-    T* add () { 
-      T* action = new T ();
+    T& add () { 
+      T& action = *new T ();
       this->addAction (action); 
       return action; 
     }
 
     template <typename T>
-    T* add (WingedMesh& mesh) { 
-      T* action = new T ();
-      this->addAction (new ActionTransformer (mesh, action));
-      return action; 
+    T& add (WingedMesh& mesh) { 
+      T& action = *new T ();
+      this->addAction (*new ActionTransformer (mesh, action));
+      return *action; 
     }
 
-    void addAction (Action*);
+    void addAction (Action&);
     void reset     ();
     void undo      ();
     void redo      ();

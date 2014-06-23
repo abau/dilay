@@ -7,10 +7,9 @@ struct ActionTransformer :: Impl {
   ActionIds                               operands;
   std::unique_ptr <ActionOn <WingedMesh>> onWMesh;
 
-  Impl (WingedMesh& mesh, ActionOn <WingedMesh>* action) {
-    assert (action);
+  Impl (WingedMesh& mesh, ActionOn <WingedMesh>& action) {
     this->operands.setMesh (0,mesh);
-    this->onWMesh.reset    (action);
+    this->onWMesh.reset    (&action);
   }
 
   void runUndo () {
@@ -22,7 +21,7 @@ struct ActionTransformer :: Impl {
   }
 };
 
-DELEGATE2_BIG3 (ActionTransformer,WingedMesh&,ActionOn <WingedMesh>*)
+DELEGATE2_BIG3 (ActionTransformer,WingedMesh&,ActionOn <WingedMesh>&)
 
 DELEGATE (void, ActionTransformer, runUndo)
 DELEGATE (void, ActionTransformer, runRedo)
