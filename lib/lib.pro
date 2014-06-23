@@ -11,6 +11,7 @@ CONFIG                 += staticlib
 SOURCES += \
            src/action/carve.cpp \
            src/action/delete-sphere-mesh.cpp \
+           src/action/delete-winged-mesh.cpp \
            src/action/from-mesh.cpp \
            src/action/ids.cpp \
            src/action/modify-sphere-mesh.cpp \
@@ -87,6 +88,7 @@ HEADERS += \
            src/action.hpp \
            src/action/carve.hpp \
            src/action/delete-sphere-mesh.hpp \
+           src/action/delete-winged-mesh.hpp \
            src/action/from-mesh.hpp \
            src/action/ids.hpp \
            src/action/modify-sphere-mesh.hpp \
