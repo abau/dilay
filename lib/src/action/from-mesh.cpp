@@ -22,7 +22,7 @@ struct ActionFromMesh :: Impl {
     self->bufferMesh (true);
   }
 
-  void fromMesh (WingedMesh& w, const Mesh& m) {
+  void run (WingedMesh& w, const Mesh& m) {
     assert (this->actions.isEmpty ());
     assert (w.isEmpty ());
 
@@ -126,6 +126,6 @@ struct ActionFromMesh :: Impl {
 };
 
 DELEGATE_BIG3_SELF (ActionFromMesh)
-DELEGATE2          (void, ActionFromMesh, fromMesh, WingedMesh&, const Mesh&);
+DELEGATE2          (void, ActionFromMesh, run, WingedMesh&, const Mesh&);
 DELEGATE1          (void, ActionFromMesh, runUndoBeforePostProcessing, WingedMesh&)
 DELEGATE1          (void, ActionFromMesh, runRedoBeforePostProcessing, WingedMesh&)

@@ -11,7 +11,7 @@ class ActionFromMesh : public ActionOnPostProcessedWMesh {
   public: 
     DECLARE_BIG3 (ActionFromMesh)
 
-    void fromMesh (WingedMesh&, const Mesh&);
+    void run (WingedMesh&, const Mesh&);
 
   private:
     void runUndoBeforePostProcessing (WingedMesh&);

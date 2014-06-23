@@ -92,7 +92,7 @@ void octreeTest2 () {
     mesh.scaling   (glm::vec3 (r));
 
     WingedMesh wMesh;
-    a.fromMesh (wMesh, mesh);
+    a.run (wMesh, mesh);
   };
 
   std::default_random_engine gen; 
