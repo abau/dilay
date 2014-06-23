@@ -255,6 +255,7 @@ DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm
 GETTER_CONST    (const Vertices&, WingedMesh, vertices)
 GETTER_CONST    (const Edges&   , WingedMesh, edges)
 GETTER_CONST    (const Octree&  , WingedMesh, octree)
+GETTER_CONST    (const Mesh&    , WingedMesh, mesh)
 
 DELEGATE1       (void        , WingedMesh, deleteEdge, const WingedEdge&)
 DELEGATE1       (void        , WingedMesh, deleteFace, const WingedFace&)

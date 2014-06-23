@@ -16,6 +16,7 @@ class WingedEdge;
 class Id;
 class PrimSphere;
 class Selection;
+class Mesh;
 
 class WingedMesh {
   public: 
@@ -41,6 +42,7 @@ class WingedMesh {
     const Vertices& vertices          () const;
     const Edges&    edges             () const;
     const Octree&   octree            () const;
+    const Mesh&     mesh              () const;
 
     void            deleteEdge        (const WingedEdge&);
     void            deleteFace        (const WingedFace&);
