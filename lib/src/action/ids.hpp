@@ -40,6 +40,9 @@ class ActionIds {
     void            setEdge           (unsigned int, const WingedEdge*);
     void            setVertex         (unsigned int, const WingedVertex*);
 
+    template <typename T>
+    T&              getMesh           (unsigned int);
+
     SAFE_REF1 (Id          , getId    , unsigned int)
     SAFE_REF1 (unsigned int, getIndex , unsigned int)
     SAFE_REF2 (WingedFace  , getFace  , WingedMesh&, unsigned int)

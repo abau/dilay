@@ -124,6 +124,12 @@ struct ActionIds :: Impl {
   }
 };
 
+template <> 
+WingedMesh& ActionIds::getMesh <WingedMesh> (unsigned int i) { return this->getWingedMesh (i); }
+
+template <> 
+SphereMesh& ActionIds::getMesh <SphereMesh> (unsigned int i) { return this->getSphereMesh (i); }
+
 DELEGATE_BIG3 (ActionIds)
 
 DELEGATE1 (void           , ActionIds, reserveIds,       unsigned int)
