@@ -9,6 +9,7 @@
 #include "mesh-type.hpp"
 #include "tool.hpp"
 #include "view/main-window.hpp"
+#include "view/gl-widget.hpp"
 
 struct State::Impl {
   Camera                 camera;
@@ -38,6 +39,25 @@ struct State::Impl {
       toolPtr->mainWindow ().showDefaultMessage ();
     }
     this->toolPtr.reset (tool); 
+
+    if (toolPtr) {
+      this->handleToolResponse (toolPtr->execute ());
+    }
+  }
+
+  void handleToolResponse (ToolResponse response) {
+    assert (this->hasTool ());
+    switch (response) {
+      case ToolResponse::None:
+        break;
+      case ToolResponse::Redraw:
+        this->toolPtr->mainWindow ().glWidget ().update ();
+        break;
+      case ToolResponse::Terminate:
+        this->toolPtr->mainWindow ().glWidget ().update ();
+        this->setTool (nullptr);
+        break;
+    }
   }
 };
 
@@ -51,3 +71,4 @@ DELEGATE_GLOBAL  (void              , State, initialize)
 DELEGATE_GLOBAL  (bool              , State, hasTool)
 DELEGATE_GLOBAL  (Tool&             , State, tool)
 DELEGATE1_GLOBAL (void              , State, setTool, Tool*)
+DELEGATE1_GLOBAL (void              , State, handleToolResponse, ToolResponse)

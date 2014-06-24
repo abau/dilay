@@ -5,7 +5,7 @@
 
 class ViewSphereMeshMenu : public ViewToolMenu {
   public:
-    ViewSphereMeshMenu (ViewMainWindow&, QContextMenuEvent&);
+    ViewSphereMeshMenu (ViewMainWindow&, const glm::ivec2&);
 };
 
 #endif

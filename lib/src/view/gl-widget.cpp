@@ -19,6 +19,7 @@
 #include "axis.hpp"
 #include "mesh-type.hpp"
 #include "primitive/ray.hpp"
+#include "selection-mode.hpp"
 
 struct ViewGlWidget::Impl {
   ViewGlWidget*                self;
@@ -52,7 +53,7 @@ struct ViewGlWidget::Impl {
     }
   }
 
-  void handleToolRespone (ToolResponse response, bool rotate = false) {
+  void handleToolRotateResponse (ToolResponse response) {
     switch (response) {
       case ToolResponse::None:
         break;
@@ -61,12 +62,7 @@ struct ViewGlWidget::Impl {
         break;
       case ToolResponse::Terminate:
         this->self->update ();
-        if (rotate) {
-          this->toolRotate.reset ();
-        }
-        else {
-          State::setTool (nullptr);
-        }
+        this->toolRotate.reset ();
         break;
     }
   }
@@ -163,16 +159,16 @@ struct ViewGlWidget::Impl {
 
   void mouseMoveEvent (QMouseEvent* e) {
     if (this->toolRotate) {
-      this->handleToolRespone (this->toolRotate->mouseMoveEvent (*e), true);
+      this->handleToolRotateResponse (this->toolRotate->mouseMoveEvent (*e));
     }
     else if (State::hasTool ()) {
-      this->handleToolRespone (State::tool ().mouseMoveEvent (*e));
+      State::handleToolResponse (State::tool ().mouseMoveEvent (*e));
     }
   }
 
   void mousePressEvent (QMouseEvent* e) {
     if (State::hasTool ()) {
-      this->handleToolRespone (State::tool ().mousePressEvent (*e));
+      State::handleToolResponse (State::tool ().mousePressEvent (*e));
     }
   }
 
@@ -181,18 +177,36 @@ struct ViewGlWidget::Impl {
       this->toolRotate.reset (new ToolRotate (this->mainWindow, ViewUtil::toIVec2 (*e)));
     }
     else if (this->toolRotate) {
-      this->handleToolRespone (this->toolRotate->mouseReleaseEvent (*e), true);
+      this->handleToolRotateResponse (this->toolRotate->mouseReleaseEvent (*e));
     }
     else if (State::hasTool ()) {
-      this->handleToolRespone (State::tool ().mouseReleaseEvent (*e));
+      State::handleToolResponse (State::tool ().mouseReleaseEvent (*e));
     }
     else if (e->button () == Qt::LeftButton) {
       this->selectIntersection (ViewUtil::toIVec2 (*e));
     }
+    else if (e->button () == Qt::RightButton) {
+      glm::ivec2 pos = ViewUtil::toIVec2 (*e);
+
+      switch (State::scene ().selectionMode ()) {
+        case SelectionMode::Freeform: {
+          ViewFreeformMeshMenu menu (this->mainWindow, pos);
+          menu.exec (QCursor::pos ());
+          break;
+        }
+        case SelectionMode::Sphere: {
+          ViewSphereMeshMenu menu (this->mainWindow, pos);
+          menu.exec (QCursor::pos ());
+          break;
+        }
+        default:
+          assert (false);
+      }
+    }
   }
 
   void wheelEvent (QWheelEvent* e) {
-    this->handleToolRespone (ToolRotate::staticWheelEvent (*e), true);
+    this->handleToolRotateResponse (ToolRotate::staticWheelEvent (*e));
   }
 
   /*

@@ -10,19 +10,21 @@ class Id;
 class History;
 class Scene;
 class Tool;
+enum class ToolResponse;
 
 class State {
   public:                                   
-    static State&   global     ();
+    static State&   global             ();
 
-    static Camera&  camera     ();
-    static History& history    ();
-    static Scene&   scene      ();
-    static bool     hasTool    ();
-    static Tool&    tool       ();
-    static void     setTool    (Tool*);
+    static Camera&  camera             ();
+    static History& history            ();
+    static Scene&   scene              ();
+    static bool     hasTool            ();
+    static Tool&    tool               ();
+    static void     setTool            (Tool*);
 
-    static void     initialize ();
+    static void     initialize         ();
+    static void     handleToolResponse (ToolResponse);
   private:
     DECLARE_BIG3 (State)
 
