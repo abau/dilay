@@ -18,8 +18,6 @@ class ActionUnitOn : public ActionOn <T> {
     const ActionUnitOn& operator= (const ActionUnitOn&) = delete;
     const ActionUnitOn& operator= (ActionUnitOn&&)      = delete;
 
-    typedef std::unique_ptr < ActionOn <T> > ActionPtr;
-
     template <typename A>
     A& add () {
       A& action = *new A ();
@@ -43,6 +41,7 @@ class ActionUnitOn : public ActionOn <T> {
       }
     }
 
-    std::list < ActionPtr > actions;
+    typedef std::unique_ptr < ActionOn <T> > ActionPtr;
+    std::list <ActionPtr> actions;
 };
 #endif
