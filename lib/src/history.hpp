@@ -22,7 +22,7 @@ class History {
     template <typename A, typename T>
     A& add (T& t) { 
       A& action = *new A ();
-      this->addAction (*new ActionTransformer (t, action));
+      this->addAction (*new ActionTransformer <T> (t, action));
       return *action; 
     }
 

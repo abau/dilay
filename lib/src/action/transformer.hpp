@@ -1,22 +1,44 @@
 #ifndef DILAY_ACTION_TRANSFORMER
 #define DILAY_ACTION_TRANSFORMER
 
-#include "macro.hpp"
+#include <memory>
 #include "action.hpp"
+#include "action/ids.hpp"
 
-class WingedMesh;
 template <typename T> class ActionOn;
 
+template <typename T>
 class ActionTransformer : public Action {
   public:
-    DECLARE_BIG3 (ActionTransformer, WingedMesh&, ActionOn <WingedMesh>&);
+    ActionTransformer (T& t, ActionOn <T>& a) 
+      : actionPtr (&a) 
+    {
+      this->operands.setMesh (0, t);
+    }
+
+    ActionTransformer (ActionTransformer&& other) 
+      : actionPtr (std::move (other.actionPtr)) 
+      , operands  (std::move (other.operands)) 
+    {}
+
+    ActionTransformer (const ActionTransformer&) = delete;
+
+    virtual ~ActionTransformer () {}
+
+    const ActionTransformer& operator= (const ActionTransformer&) = delete;
+    const ActionTransformer& operator= (ActionTransformer&&)      = delete;
 
   private:
-    void runUndo ();
-    void runRedo ();
+    void runUndo () { 
+      this->actionPtr->undo (this->operands.template getMesh <T> (0));
+    }
 
-    class Impl;
-    Impl* impl;
+    void runRedo () {
+      this->actionPtr->redo (this->operands.template getMesh <T> (0));
+    }
+
+    std::unique_ptr < ActionOn <T> > actionPtr;
+    ActionIds                        operands;
 };
 
 #endif

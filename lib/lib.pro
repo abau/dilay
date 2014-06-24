@@ -19,7 +19,6 @@ SOURCES += \
            src/action/new-sphere-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/subdivide.cpp \
-           src/action/transformer.cpp \
            src/action/unit.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
