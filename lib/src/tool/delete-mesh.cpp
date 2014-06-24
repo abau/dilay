@@ -31,7 +31,11 @@ struct ToolDeleteMesh::Impl {
         this->runExecuteSphereMesh (unit);
         break;
     }
-    State::history ().addAction (unit);
+
+    if (unit.isEmpty () == false) {
+      State::history ().addAction (unit);
+      State::scene   ().unselectAll ();
+    }
     return ToolResponse::Terminate;
   }
 
