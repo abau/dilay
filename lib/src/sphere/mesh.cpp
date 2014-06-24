@@ -118,6 +118,7 @@ struct SphereMeshNode::Impl {
 SphereMeshNode :: SphereMeshNode (SphereMeshNode::Impl* i) : impl (i) {}
 
 ID               (SphereMeshNode)
+DELEGATE         (SphereMeshNode* , SphereMeshNode, parent)
 GETTER_CONST     (const glm::vec3&, SphereMeshNode, position)
 SETTER           (const glm::vec3&, SphereMeshNode, position)
 GETTER_CONST     (float           , SphereMeshNode, radius)

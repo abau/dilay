@@ -93,5 +93,6 @@ DELEGATE_BIG3 (ActionModifySMesh)
 
 DELEGATE4 (void, ActionModifySMesh, newNode   , SphereMesh&, SphereMeshNode*, const glm::vec3&, float)
 DELEGATE3 (void, ActionModifySMesh, modifyNode, SphereMeshNode&, const glm::vec3&, float)
+DELEGATE2 (void, ActionModifySMesh, deleteNode, SphereMesh&, SphereMeshNode&);
 DELEGATE1 (void, ActionModifySMesh, runUndo   , SphereMesh&)
 DELEGATE1 (void, ActionModifySMesh, runRedo   , SphereMesh&)
