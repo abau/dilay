@@ -5,5 +5,5 @@
 ViewFreeformMeshMenu :: ViewFreeformMeshMenu (ViewMainWindow& mW, const glm::ivec2& p)
   : ViewToolMenu (mW,p) 
 {
-//  this->addAction <ToolDeleteMesh> (MeshType::Freeform);
+  this->addAction <ToolDeleteMesh> (MeshType::Freeform);
 }
