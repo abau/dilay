@@ -8,6 +8,7 @@
 #include "view/util.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
+#include "view/tool-menu-parameters.hpp"
 #include "view/tool-message.hpp"
 #include "config.hpp"
 
@@ -22,22 +23,22 @@ struct ToolRotate::Impl {
 
   Impl (ToolRotate* s)
     : self               (s)
-    , oldPos             (s->clickPosition ())
+    , oldPos             (s->menuParameters ().clickPosition ())
     , originalGazepoint  (State::camera ().gazePoint ())
     , originalToEyepoint (State::camera ().toEyePoint ())
     , originalUp         (State::camera ().up ())
     , rotationFactor     (Config::get <float> ("/config/editor/camera/rotation-factor"))
     , panningFactor      (Config::get <float> ("/config/editor/camera/panning-factor"))
   {
-    this->self->mainWindow ().showMessage (this->self->message ());
+    this->self->menuParameters ().mainWindow ().showMessage (this->self->message ());
   }
 
   ~Impl () {
     if (State::hasTool ()) {
-      this->self->mainWindow ().showMessage (State::tool ().message ());
+      this->self->menuParameters ().mainWindow ().showMessage (State::tool ().message ());
     }
     else {
-      this->self->mainWindow ().showDefaultMessage ();
+      this->self->menuParameters ().mainWindow ().showDefaultMessage ();
     }
   }
 
@@ -102,8 +103,8 @@ struct ToolRotate::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolRotate, (ViewMainWindow& w, const glm::ivec2& p)
-                   , (this), Tool, (w,p) )
+DELEGATE_BIG3_BASE ( ToolRotate, (const ViewToolMenuParameters& p)
+                   , (this), Tool, (p) )
 DELEGATE1        (ToolResponse, ToolRotate, runMouseMoveEvent, QMouseEvent&)
 DELEGATE1        (ToolResponse, ToolRotate, runMouseReleaseEvent, QMouseEvent&)
 DELEGATE1_STATIC (ToolResponse, ToolRotate, staticWheelEvent, QWheelEvent&)

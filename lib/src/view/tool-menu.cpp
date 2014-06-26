@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include "view/tool-menu.hpp"
+#include "view/tool-menu-parameters.hpp"
 
 struct ViewToolMenu::Impl {
   ViewToolMenu*    self;
@@ -10,10 +11,12 @@ struct ViewToolMenu::Impl {
     : self         (s)
     , mainWindow   (mW)
     , menuPosition (p)
-    {}
+  {}
 
+  ViewToolMenuParameters menuParameters () const {
+    return ViewToolMenuParameters (this->mainWindow, this->menuPosition);
+  }
 };
 
 DELEGATE2_BIG3_SELF (ViewToolMenu, ViewMainWindow&, const glm::ivec2&)
-GETTER       (ViewMainWindow&  , ViewToolMenu, mainWindow)
-GETTER_CONST (const glm::ivec2&, ViewToolMenu, menuPosition)
+DELEGATE_CONST (ViewToolMenuParameters, ViewToolMenu, menuParameters)

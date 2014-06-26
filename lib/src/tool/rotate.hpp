@@ -5,7 +5,7 @@
 
 class ToolRotate : public Tool {
   public:
-    DECLARE_BIG3 (ToolRotate, ViewMainWindow&, const glm::ivec2&)
+    DECLARE_BIG3 (ToolRotate, const ViewToolMenuParameters&)
 
     static ToolResponse staticWheelEvent (QWheelEvent&);
 

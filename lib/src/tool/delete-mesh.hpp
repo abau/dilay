@@ -7,7 +7,7 @@ enum class MeshType;
 
 class ToolDeleteMesh : public Tool {
   public:
-    DECLARE_BIG3 (ToolDeleteMesh, ViewMainWindow&, const glm::ivec2&, MeshType)
+    DECLARE_BIG3 (ToolDeleteMesh, const ViewToolMenuParameters&, MeshType)
 
     static QString toolName (MeshType);
 

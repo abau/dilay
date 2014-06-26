@@ -74,6 +74,7 @@ SOURCES += \
            src/view/properties/widget.cpp \
            src/view/sphere-mesh-menu.cpp \
            src/view/tool-menu.cpp \
+           src/view/tool-menu-parameters.cpp \
            src/view/tool-message.cpp \
            src/view/tool-parameters.cpp \
            src/view/util.cpp \
@@ -163,6 +164,7 @@ HEADERS += \
            src/view/properties/widget.hpp \
            src/view/sphere-mesh-menu.hpp \
            src/view/tool-menu.hpp \
+           src/view/tool-menu-parameters.hpp \
            src/view/tool-message.hpp \
            src/view/tool-parameters.hpp \
            src/view/util.hpp \

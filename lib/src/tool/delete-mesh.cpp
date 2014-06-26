@@ -58,7 +58,7 @@ struct ToolDeleteMesh::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolDeleteMesh, (ViewMainWindow& w, const glm::ivec2& p, MeshType t)
-                   , (this,t), Tool, (w,p) )
+DELEGATE_BIG3_BASE ( ToolDeleteMesh, (const ViewToolMenuParameters& p, MeshType t)
+                   , (this,t), Tool, (p) )
 DELEGATE1_STATIC (QString     , ToolDeleteMesh, toolName, MeshType)
 DELEGATE         (ToolResponse, ToolDeleteMesh, runExecute)

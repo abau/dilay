@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include "tool.hpp"
+#include "view/tool-menu-parameters.hpp"
 #include "view/tool-parameters.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
@@ -7,15 +8,14 @@
 #include "scene.hpp"
 
 struct Tool::Impl {
-  Tool*               self;
-  ViewMainWindow&     mainWindow;
-  glm::ivec2          clickPosition;
-  ViewToolParameters* toolParameters;
+  Tool*                  self;
+  ViewToolMenuParameters menuParameters;
+  ViewToolParameters*    toolParameters;
 
-  Impl (Tool* s, ViewMainWindow& w, const glm::ivec2& p, const QString& name) 
-    : Impl (s,w,p)
+  Impl (Tool* s, const ViewToolMenuParameters& p, const QString& name) 
+    : Impl (s,p)
   {
-    this->toolParameters = new ViewToolParameters (w);
+    this->toolParameters = new ViewToolParameters (p.mainWindow ());
     this->toolParameters->setWindowTitle (name);
 
     QObject::connect ( this->toolParameters, &ViewToolParameters::accepted
@@ -27,10 +27,9 @@ struct Tool::Impl {
     this->toolParameters->show ();
   }
 
-  Impl (Tool* s, ViewMainWindow& w, const glm::ivec2& p) 
+  Impl (Tool* s, const ViewToolMenuParameters& p) 
     : self           (s) 
-    , mainWindow     (w)
-    , clickPosition  (p)
+    , menuParameters (p)
     , toolParameters (nullptr)
   {}
 
@@ -69,15 +68,14 @@ struct Tool::Impl {
   }
 };
 
-DELEGATE3_BIG3_SELF        (Tool, ViewMainWindow&, const glm::ivec2&, const QString&)
-DELEGATE2_CONSTRUCTOR_SELF (Tool, ViewMainWindow&, const glm::ivec2&) 
-GETTER         (ViewMainWindow&    , Tool, mainWindow)
-GETTER_CONST   (const glm::ivec2&  , Tool, clickPosition)
-DELEGATE       (ToolResponse       , Tool, execute)
-DELEGATE       (void               , Tool, render)
-DELEGATE1      (ToolResponse       , Tool, mouseMoveEvent, QMouseEvent&)
-DELEGATE1      (ToolResponse       , Tool, mousePressEvent, QMouseEvent&)
-DELEGATE1      (ToolResponse       , Tool, mouseReleaseEvent, QMouseEvent&)
-DELEGATE1      (ToolResponse       , Tool, wheelEvent, QWheelEvent&)
-DELEGATE_CONST (QString            , Tool, message)
-GETTER         (ViewToolParameters*, Tool, toolParameters)
+DELEGATE2_BIG3_SELF        (Tool, const ViewToolMenuParameters&, const QString&)
+DELEGATE1_CONSTRUCTOR_SELF (Tool, const ViewToolMenuParameters&) 
+GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
+DELEGATE       (ToolResponse                 , Tool, execute)
+DELEGATE       (void                         , Tool, render)
+DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
+DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEvent&)
+DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
+DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
+DELEGATE_CONST (QString                      , Tool, message)
+GETTER         (ViewToolParameters*          , Tool, toolParameters)

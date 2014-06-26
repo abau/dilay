@@ -9,6 +9,7 @@
 #include "view/properties/selection.hpp"
 #include "view/gl-widget.hpp"
 #include "view/util.hpp"
+#include "view/tool-menu-parameters.hpp"
 #include "renderer.hpp"
 #include "state.hpp"
 #include "camera.hpp"
@@ -174,7 +175,8 @@ struct ViewGlWidget::Impl {
 
   void mouseReleaseEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton && this->toolRotate == false) {
-      this->toolRotate.reset (new ToolRotate (this->mainWindow, ViewUtil::toIVec2 (*e)));
+      ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e));
+      this->toolRotate.reset (new ToolRotate (parameters));
     }
     else if (this->toolRotate) {
       this->handleToolRotateResponse (this->toolRotate->mouseReleaseEvent (*e));

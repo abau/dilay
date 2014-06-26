@@ -10,6 +10,7 @@
 #include "tool.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
+#include "view/tool-menu-parameters.hpp"
 
 struct State::Impl {
   Camera                 camera;
@@ -33,10 +34,10 @@ struct State::Impl {
 
   void setTool (Tool* tool) { 
     if (tool) {
-      tool->mainWindow ().showMessage (tool->message ());
+      tool->menuParameters ().mainWindow ().showMessage (tool->message ());
     }
     else if (toolPtr) {
-      toolPtr->mainWindow ().showDefaultMessage ();
+      toolPtr->menuParameters ().mainWindow ().showDefaultMessage ();
     }
     this->toolPtr.reset (tool); 
 
@@ -51,10 +52,10 @@ struct State::Impl {
       case ToolResponse::None:
         break;
       case ToolResponse::Redraw:
-        this->toolPtr->mainWindow ().glWidget ().update ();
+        this->toolPtr->menuParameters ().mainWindow ().glWidget ().update ();
         break;
       case ToolResponse::Terminate:
-        this->toolPtr->mainWindow ().glWidget ().update ();
+        this->toolPtr->menuParameters ().mainWindow ().glWidget ().update ();
         this->setTool (nullptr);
         break;
     }

@@ -1,13 +1,12 @@
 #ifndef DILAY_TOOL
 #define DILAY_TOOL
 
-#include <glm/fwd.hpp>
 #include <QString>
 #include "macro.hpp"
 
-class QMouseEvent;
-class ViewMainWindow;
+class ViewToolMenuParameters;
 class ViewToolParameters;
+class QMouseEvent;
 class QWheelEvent;
 
 enum class ToolResponse {
@@ -16,25 +15,23 @@ enum class ToolResponse {
 
 class Tool {
   public:
-    DECLARE_BIG3_VIRTUAL (Tool, ViewMainWindow&, const glm::ivec2&, const QString&)
+    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&, const QString&)
 
-    Tool (ViewMainWindow&, const glm::ivec2&);
+    Tool (const ViewToolMenuParameters&);
 
     friend class ToolUtil;
 
-    ViewMainWindow&     mainWindow         ();
-    const glm::ivec2&   clickPosition      () const;
-
-    ToolResponse        execute            ();
-    void                render             ();
-    ToolResponse        mouseMoveEvent     (QMouseEvent&);
-    ToolResponse        mousePressEvent    (QMouseEvent&);
-    ToolResponse        mouseReleaseEvent  (QMouseEvent&);
-    ToolResponse        wheelEvent         (QWheelEvent&);
-    QString             message            () const;
+    const ViewToolMenuParameters& menuParameters     () const;
+    ToolResponse                  execute            ();
+    void                          render             ();
+    ToolResponse                  mouseMoveEvent     (QMouseEvent&);
+    ToolResponse                  mousePressEvent    (QMouseEvent&);
+    ToolResponse                  mouseReleaseEvent  (QMouseEvent&);
+    ToolResponse                  wheelEvent         (QWheelEvent&);
+    QString                       message            () const;
 
   protected:
-    ViewToolParameters* toolParameters     ();
+    ViewToolParameters*           toolParameters     ();
 
   private:
     class Impl;
