@@ -1,5 +1,5 @@
-#ifndef DILAY_VIEW_TOOL_OPTIONS
-#define DILAY_VIEW_TOOL_OPTIONS
+#ifndef DILAY_VIEW_TOOL_PARAMETERS
+#define DILAY_VIEW_TOOL_PARAMETERS
 
 #include <QDialog>
 #include "macro.hpp"
@@ -8,17 +8,17 @@ class ViewMainWindow;
 class QString;
 class QMoveEvent;
 
-class ViewToolOptions : public QDialog {
+class ViewToolParameters : public QDialog {
   public:
-    DECLARE_BIG3 (ViewToolOptions, ViewMainWindow&);
+    DECLARE_BIG3 (ViewToolParameters, ViewMainWindow&);
 
     template <typename T>
     T& add (const QString& label, T& widget) {
-      this->addOption (label, static_cast <QWidget&> (widget) );
+      this->addParameter (label, static_cast <QWidget&> (widget) );
       return widget;
     };
 
-    QWidget& addOption (const QString&, QWidget&);
+    QWidget& addParameter (const QString&, QWidget&);
 
   protected:
     void moveEvent (QMoveEvent*);

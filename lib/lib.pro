@@ -75,7 +75,7 @@ SOURCES += \
            src/view/sphere-mesh-menu.cpp \
            src/view/tool-menu.cpp \
            src/view/tool-message.cpp \
-           src/view/tool-options.cpp \
+           src/view/tool-parameters.cpp \
            src/view/util.cpp \
            src/view/vector-edit.cpp \
            src/winged/edge.cpp \
@@ -164,7 +164,7 @@ HEADERS += \
            src/view/sphere-mesh-menu.hpp \
            src/view/tool-menu.hpp \
            src/view/tool-message.hpp \
-           src/view/tool-options.hpp \
+           src/view/tool-parameters.hpp \
            src/view/util.hpp \
            src/view/vector-edit.hpp \
            src/winged/edge.hpp \

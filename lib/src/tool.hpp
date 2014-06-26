@@ -7,7 +7,7 @@
 
 class QMouseEvent;
 class ViewMainWindow;
-class ViewToolOptions;
+class ViewToolParameters;
 class QWheelEvent;
 
 enum class ToolResponse {
@@ -22,19 +22,19 @@ class Tool {
 
     friend class ToolUtil;
 
-    ViewMainWindow&    mainWindow         ();
-    const glm::ivec2&  clickPosition      () const;
+    ViewMainWindow&     mainWindow         ();
+    const glm::ivec2&   clickPosition      () const;
 
-    ToolResponse       execute            ();
-    void               render             ();
-    ToolResponse       mouseMoveEvent     (QMouseEvent&);
-    ToolResponse       mousePressEvent    (QMouseEvent&);
-    ToolResponse       mouseReleaseEvent  (QMouseEvent&);
-    ToolResponse       wheelEvent         (QWheelEvent&);
-    QString            message            () const;
+    ToolResponse        execute            ();
+    void                render             ();
+    ToolResponse        mouseMoveEvent     (QMouseEvent&);
+    ToolResponse        mousePressEvent    (QMouseEvent&);
+    ToolResponse        mouseReleaseEvent  (QMouseEvent&);
+    ToolResponse        wheelEvent         (QWheelEvent&);
+    QString             message            () const;
 
   protected:
-    ViewToolOptions*   toolOptions        ();
+    ViewToolParameters* toolParameters     ();
 
   private:
     class Impl;

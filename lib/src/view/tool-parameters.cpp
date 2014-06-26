@@ -3,27 +3,27 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QMoveEvent>
-#include "view/tool-options.hpp"
+#include "view/tool-parameters.hpp"
 #include "view/main-window.hpp"
 #include "view/vector-edit.hpp"
 #include "config.hpp"
 #include "view/util.hpp"
 
-struct ViewToolOptions::Impl {
-  ViewToolOptions* self;
-  QVBoxLayout&     vBoxLayout;
-  QGridLayout&     gridLayout;
-  QPushButton&     closeButton;
+struct ViewToolParameters::Impl {
+  ViewToolParameters* self;
+  QVBoxLayout&        vBoxLayout;
+  QGridLayout&        gridLayout;
+  QPushButton&        closeButton;
 
-  Impl (ViewToolOptions* s, ViewMainWindow& p) 
+  Impl (ViewToolParameters* s, ViewMainWindow& p) 
     : self        (s)
     , vBoxLayout  (*new QVBoxLayout)
     , gridLayout  (*new QGridLayout)
     , closeButton (ViewUtil::pushButton (tr("Close"), true))
 
   {
-    glm::ivec2 pos   = Config::get <glm::ivec2> ( "/cache/view/tool-options/position"
-                                                , glm::ivec2 (100, 100) );
+    glm::ivec2 pos = Config::get <glm::ivec2> ( "/cache/view/tool-parameters/position"
+                                              , glm::ivec2 (100, 100) );
 
     this->gridLayout.setColumnStretch (0,0);
     this->gridLayout.setColumnStretch (1,1);
@@ -43,7 +43,7 @@ struct ViewToolOptions::Impl {
                      , [this] () { this->self->accept (); } );
   }
 
-  QWidget& addOption (const QString& label, QWidget& widget) {
+  QWidget& addParameter (const QString& label, QWidget& widget) {
     const int r = this->gridLayout.rowCount ();
     this->gridLayout.addWidget (new QLabel (label), r, 0);
     this->gridLayout.addWidget (&widget           , r, 1);
@@ -51,12 +51,12 @@ struct ViewToolOptions::Impl {
   }
 
   void moveEvent (QMoveEvent* event) {
-    Config::cache <glm::ivec2> ( "/cache/view/tool-options/position"
+    Config::cache <glm::ivec2> ( "/cache/view/tool-parameters/position"
                                , glm::ivec2 (event->pos ().x(), event->pos ().y()) );
   }
 };
 
-DELEGATE1_BIG3_SELF (ViewToolOptions, ViewMainWindow&)
+DELEGATE1_BIG3_SELF (ViewToolParameters, ViewMainWindow&)
 
-DELEGATE2 (QWidget&, ViewToolOptions, addOption, const QString&, QWidget&)
-DELEGATE1 (void    , ViewToolOptions, moveEvent, QMoveEvent*)
+DELEGATE2 (QWidget&, ViewToolParameters, addParameter, const QString&, QWidget&)
+DELEGATE1 (void    , ViewToolParameters, moveEvent, QMoveEvent*)
