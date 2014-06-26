@@ -73,6 +73,7 @@ SOURCES += \
            src/view/properties/selection.cpp \
            src/view/properties/widget.cpp \
            src/view/sphere-mesh-menu.cpp \
+           src/view/tool-menu.cpp \
            src/view/tool-message.cpp \
            src/view/tool-options.cpp \
            src/view/util.cpp \
