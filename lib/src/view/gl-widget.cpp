@@ -175,7 +175,7 @@ struct ViewGlWidget::Impl {
 
   void mouseReleaseEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton && this->toolRotate == false) {
-      ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e));
+      ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e),false);
       this->toolRotate.reset (new ToolRotate (parameters));
     }
     else if (this->toolRotate) {

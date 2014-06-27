@@ -6,13 +6,13 @@
 
 class ViewMainWindow;
 
-
 class ViewToolMenuParameters {
   public:
-    DECLARE_BIG6 (ViewToolMenuParameters, ViewMainWindow&, const glm::ivec2&)
+    DECLARE_BIG6 (ViewToolMenuParameters, ViewMainWindow&, const glm::ivec2&, bool)
 
     ViewMainWindow&     mainWindow    () const;
     const glm::ivec2&   clickPosition () const;
+    bool                rightClick    () const;
 
   private:
     class Impl;

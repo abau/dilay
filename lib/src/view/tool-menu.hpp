@@ -24,6 +24,9 @@ class ViewToolMenu : public QMenu {
       });
     }
 
+  protected:
+    void mouseReleaseEvent (QMouseEvent*);
+
   private:
     class Impl;
     Impl* impl;
