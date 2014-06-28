@@ -37,8 +37,9 @@ QDoubleSpinBox& ViewUtil :: spinBox (float value) {
   return spinBox;
 }
 
-QPushButton& ViewUtil :: pushButton (const QString& label, bool ignoreFocus) {
+QPushButton& ViewUtil :: pushButton (const QString& label, bool ignoreFocus, bool isDefaultButton) {
   QPushButton& button = *new QPushButton (label);
+  button.setDefault (isDefaultButton);
   if (ignoreFocus) { 
     button.setFocusPolicy (Qt::NoFocus);
   }

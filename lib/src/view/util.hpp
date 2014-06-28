@@ -19,7 +19,7 @@ namespace ViewUtil {
   QDoubleSpinBox& spinBox     (float, float, float);
   QDoubleSpinBox& spinBox     (float, float);
   QDoubleSpinBox& spinBox     (float);
-  QPushButton&    pushButton  (const QString&, bool);
+  QPushButton&    pushButton  (const QString&, bool, bool = false);
   QToolButton&    toolButton  (const QString&, bool);
   QRadioButton&   radioButton (const QString&, bool, bool = false);
   QCheckBox&      checkBox    (const QString&, bool, bool = false);
