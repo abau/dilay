@@ -61,6 +61,7 @@ SOURCES += \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/delete-mesh.cpp \
+           src/tool/new-freeform-mesh.cpp \
            src/tool/rotate.cpp \
            src/util.cpp \
            src/view/freeform-mesh-menu.cpp \
@@ -150,6 +151,7 @@ HEADERS += \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/delete-mesh.hpp \
+           src/tool/new-freeform-mesh.hpp \
            src/tool/rotate.hpp \
            src/util.hpp \
            src/variant.hpp \
