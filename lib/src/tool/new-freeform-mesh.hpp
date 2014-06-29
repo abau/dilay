@@ -13,7 +13,9 @@ class ToolNewFreeformMesh : public Tool {
     class Impl;
     Impl* impl;
 
+    void         runRender     ();
     ToolResponse runInitialize ();
+    void         runApply      ();
 };
 
 #endif
