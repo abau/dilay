@@ -204,27 +204,6 @@ struct ViewGlWidget::Impl {
   void wheelEvent (QWheelEvent* e) {
     this->handleToolRotateResponse (ToolRotate::staticWheelEvent (*e));
   }
-
-  /*
-  void contextMenuEvent (QContextMenuEvent* e) {
-    State::setTool (nullptr);
-    switch (this->mainWindow.properties ().selection ().selected ()) {
-      case MeshType::Freeform: {
-        ViewFreeformMeshMenu menu (this->mainWindow, *e);
-        menu.exec (QCursor::pos ());
-        break;
-      }
-      case MeshType::Sphere: {
-        ViewSphereMeshMenu menu (this->mainWindow, *e);
-        menu.exec (QCursor::pos ());
-        break;
-      }
-      default:
-        assert (false);
-    }
-    this->mainWindow.activateWindow ();
-  }
-  */
 };
 
 DELEGATE_CONSTRUCTOR_BASE ( ViewGlWidget, (const QGLFormat& f, ViewMainWindow& w)
@@ -241,4 +220,3 @@ DELEGATE1 (void      , ViewGlWidget, keyPressEvent    , QKeyEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, wheelEvent       , QWheelEvent*)
-//DELEGATE1 (void      , ViewGlWidget, contextMenuEvent , QContextMenuEvent*)

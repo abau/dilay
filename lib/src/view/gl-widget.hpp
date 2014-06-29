@@ -26,7 +26,6 @@ class ViewGlWidget : public QGLWidget {
     void mouseMoveEvent     (QMouseEvent*);
     void mouseReleaseEvent  (QMouseEvent*);
     void wheelEvent         (QWheelEvent*);
-    //void contextMenuEvent   (QContextMenuEvent*);
 
   private:
     class Impl;
