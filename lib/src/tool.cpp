@@ -74,15 +74,6 @@ struct Tool::Impl {
     }
   }
 
-  ToolResponse mousePressEvent (QMouseEvent& e) {
-    if (this->toolParameters && this->toolParameters->isVisible ()) {
-      return ToolResponse::None;
-    }
-    else {
-      return this->self->runMousePressEvent (e);
-    }
-  }
-
   ToolResponse mouseReleaseEvent (QMouseEvent& e) {
     if (this->toolParameters && this->toolParameters->isVisible ()) {
       return ToolResponse::None;
@@ -120,7 +111,6 @@ GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE       (void                         , Tool, render)
 DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
-DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
 DELEGATE_CONST (QString                      , Tool, message)

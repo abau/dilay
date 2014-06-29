@@ -25,7 +25,6 @@ class Tool {
     ToolResponse                  initialize         ();
     void                          render             ();
     ToolResponse                  mouseMoveEvent     (QMouseEvent&);
-    ToolResponse                  mousePressEvent    (QMouseEvent&);
     ToolResponse                  mouseReleaseEvent  (QMouseEvent&);
     ToolResponse                  wheelEvent         (QWheelEvent&);
     QString                       message            () const;
@@ -41,7 +40,6 @@ class Tool {
     virtual ToolResponse runInitialize        ()             { return ToolResponse::None; }
     virtual void         runRender            ()             {}
     virtual ToolResponse runMouseMoveEvent    (QMouseEvent&) { return ToolResponse::None; }
-    virtual ToolResponse runMousePressEvent   (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runMouseReleaseEvent (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runWheelEvent        (QWheelEvent&) { return ToolResponse::None; }
     virtual QString      runMessage           () const       { return QString (); }
