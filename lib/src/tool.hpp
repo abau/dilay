@@ -28,6 +28,7 @@ class Tool {
     ToolResponse                  mouseReleaseEvent  (QMouseEvent&);
     ToolResponse                  wheelEvent         (QWheelEvent&);
     QString                       message            () const;
+    void                          apply              ();
     void                          cancel             ();
 
   protected:
@@ -43,6 +44,7 @@ class Tool {
     virtual ToolResponse runMouseReleaseEvent (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runWheelEvent        (QWheelEvent&) { return ToolResponse::None; }
     virtual QString      runMessage           () const       { return QString (); }
+    virtual void         runApply             ()             {}
     virtual void         runCancel            ()             {}
 };
 

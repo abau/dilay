@@ -24,13 +24,15 @@ struct Tool::Impl {
     QObject::connect ( this->toolParameters, &ViewToolParameters::finished
                      , [this] (int r) { 
                          if (r == ViewToolParameters::Result::Apply) {
+                           this->apply ();
                            this->toolParameters->hide ();
                          }
                          else if (r == ViewToolParameters::Result::ApplyAndClose) {
+                           this->apply    ();
                            State::setTool (nullptr); 
                          }
                          else if (r == ViewToolParameters::Result::Cancel) {
-                           this->cancel ();
+                           this->cancel   ();
                            State::setTool (nullptr); 
                          }
                          else { assert (false); }
@@ -100,6 +102,10 @@ struct Tool::Impl {
     return this->self->runMessage (); 
   }
 
+  void apply () { 
+    return this->self->runApply (); 
+  }
+
   void cancel () { 
     return this->self->runCancel (); 
   }
@@ -114,5 +120,6 @@ DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
 DELEGATE_CONST (QString                      , Tool, message)
+DELEGATE       (void                         , Tool, apply)
 DELEGATE       (void                         , Tool, cancel)
 GETTER         (ViewToolParameters*          , Tool, toolParameters)
