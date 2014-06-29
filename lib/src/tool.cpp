@@ -109,6 +109,10 @@ struct Tool::Impl {
   void cancel () { 
     return this->self->runCancel (); 
   }
+
+  void updateGlWidget () {
+    this->menuParameters.mainWindow ().glWidget ().update ();
+  }
 };
 
 DELEGATE2_BIG3_SELF        (Tool, const ViewToolMenuParameters&, const QString&)
@@ -123,3 +127,4 @@ DELEGATE_CONST (QString                      , Tool, message)
 DELEGATE       (void                         , Tool, apply)
 DELEGATE       (void                         , Tool, cancel)
 GETTER         (ViewToolParameters*          , Tool, toolParameters)
+DELEGATE       (void                         , Tool, updateGlWidget)

@@ -33,6 +33,7 @@ class Tool {
 
   protected:
     ViewToolParameters*           toolParameters     ();
+    void                          updateGlWidget     ();
 
   private:
     class Impl;
