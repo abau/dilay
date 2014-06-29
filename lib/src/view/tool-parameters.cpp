@@ -13,14 +13,19 @@ struct ViewToolParameters::Impl {
   ViewToolParameters* self;
   QVBoxLayout&        vBoxLayout;
   QGridLayout&        gridLayout;
-  QPushButton&        closeButton;
+  QPushButton*        applyButton;
+  QPushButton&        applyAndCloseButton;
 
   Impl (ViewToolParameters* s, ViewMainWindow& p) 
-    : self        (s)
-    , vBoxLayout  (*new QVBoxLayout)
-    , gridLayout  (*new QGridLayout)
-    , closeButton (ViewUtil::pushButton (tr("Close"), true))
+    : Impl (s, p, false) {}
 
+  Impl (ViewToolParameters* s, ViewMainWindow& p, bool alwaysOpen) 
+    : self                (s)
+    , vBoxLayout          (*new QVBoxLayout)
+    , gridLayout          (*new QGridLayout)
+    , applyButton         (alwaysOpen ? nullptr
+                                      : &ViewUtil::pushButton (tr("Apply"), true, true))
+    , applyAndCloseButton (ViewUtil::pushButton (tr("Apply and Close"), true))
   {
     glm::ivec2 pos = Config::get <glm::ivec2> ( "/cache/view/tool-parameters/position"
                                               , glm::ivec2 (100, 100) );
@@ -32,15 +37,21 @@ struct ViewToolParameters::Impl {
     this->self->setLayout             (&this->vBoxLayout);
     this->self->move                  (pos.x, pos.y);
     this->self->setAttribute          (Qt::WA_DeleteOnClose);
-    this->setupDefaultButtons         ();
+    this->setupStandardButtons        ();
   }
   
-  void setupDefaultButtons () {
-    this->closeButton.setDefault (true);
-    this->vBoxLayout.addWidget   (&this->closeButton);
+  void setupStandardButtons () {
+    if (this->applyButton) {
+      this->vBoxLayout.addWidget (this->applyButton);
 
-    QObject::connect ( &this->closeButton, &QPushButton::released
-                     , [this] () { this->self->accept (); } );
+      QObject::connect ( this->applyButton, &QPushButton::released
+                       , [this] () { this->self->done (ViewToolParameters::Result::Apply); });
+    }
+
+    this->vBoxLayout.addWidget (&this->applyAndCloseButton);
+
+    QObject::connect ( &this->applyAndCloseButton, &QPushButton::released
+                     , [this] () { this->self->done (ViewToolParameters::Result::ApplyAndClose); });
   }
 
   QWidget& addParameter (const QString& label, QWidget& widget) {
@@ -56,7 +67,8 @@ struct ViewToolParameters::Impl {
   }
 };
 
-DELEGATE1_BIG3_SELF (ViewToolParameters, ViewMainWindow&)
+DELEGATE1_BIG3_SELF        (ViewToolParameters, ViewMainWindow&)
+DELEGATE2_CONSTRUCTOR_SELF (ViewToolParameters, ViewMainWindow&, bool)
 
 DELEGATE2 (QWidget&, ViewToolParameters, addParameter, const QString&, QWidget&)
 DELEGATE1 (void    , ViewToolParameters, moveEvent, QMoveEvent*)

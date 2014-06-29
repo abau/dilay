@@ -12,6 +12,10 @@ class ViewToolParameters : public QDialog {
   public:
     DECLARE_BIG3 (ViewToolParameters, ViewMainWindow&);
 
+    ViewToolParameters (ViewMainWindow&, bool);
+
+    enum Result : int { Apply, ApplyAndClose };
+
     template <typename T>
     T& add (const QString& label, T& widget) {
       this->addParameter (label, static_cast <QWidget&> (widget) );

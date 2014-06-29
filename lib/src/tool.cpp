@@ -15,16 +15,29 @@ struct Tool::Impl {
   Impl (Tool* s, const ViewToolMenuParameters& p, const QString& name) 
     : Impl (s,p)
   {
-    this->toolParameters = new ViewToolParameters (p.mainWindow ());
+    const bool alwaysOpen = this->menuParameters.rightClick ();
+
+    this->toolParameters = new ViewToolParameters (p.mainWindow (), alwaysOpen);
     this->toolParameters->setWindowTitle (name);
 
-    QObject::connect ( this->toolParameters, &ViewToolParameters::accepted
-                     , [this] () { State::setTool (nullptr); } );
+    QObject::connect ( this->toolParameters, &ViewToolParameters::finished
+                     , [this] (int r) { 
+                         if (r == ViewToolParameters::Result::ApplyAndClose) {
+                           State::setTool (nullptr); 
+                         }
+                         else if (r == ViewToolParameters::Result::Apply) {
+                           this->toolParameters->hide ();
+                         }
+                         else { assert (false); }
+                       }
+                     );
 
     QObject::connect ( this->toolParameters, &ViewToolParameters::rejected
                      , [this] () { State::setTool (nullptr); } );
 
-    this->toolParameters->show ();
+    if (alwaysOpen) {
+      this->toolParameters->show ();
+    }
   }
 
   Impl (Tool* s, const ViewToolMenuParameters& p) 
@@ -48,19 +61,39 @@ struct Tool::Impl {
   }
 
   ToolResponse mouseMoveEvent (QMouseEvent& e) { 
-    return this->self->runMouseMoveEvent (e);
+    if (this->toolParameters && this->toolParameters->isVisible ()) {
+      return ToolResponse::None;
+    }
+    else {
+      return this->self->runMouseMoveEvent (e);
+    }
   }
 
   ToolResponse mousePressEvent (QMouseEvent& e) {
-    return this->self->runMousePressEvent (e);
+    if (this->toolParameters && this->toolParameters->isVisible ()) {
+      return ToolResponse::None;
+    }
+    else {
+      return this->self->runMousePressEvent (e);
+    }
   }
 
   ToolResponse mouseReleaseEvent (QMouseEvent& e) {
-    return this->self->runMouseReleaseEvent (e);
+    if (this->toolParameters && this->toolParameters->isVisible ()) {
+      return ToolResponse::None;
+    }
+    else {
+      return this->self->runMouseReleaseEvent (e);
+    }
   }
 
   ToolResponse wheelEvent (QWheelEvent& e) {
-    return this->self->runWheelEvent (e);
+    if (this->toolParameters && this->toolParameters->isVisible ()) {
+      return ToolResponse::None;
+    }
+    else {
+      return this->self->runWheelEvent (e);
+    }
   }
 
   QString message () const { 
