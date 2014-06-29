@@ -29,6 +29,7 @@ class Tool {
     ToolResponse                  mouseReleaseEvent  (QMouseEvent&);
     ToolResponse                  wheelEvent         (QWheelEvent&);
     QString                       message            () const;
+    void                          cancel             ();
 
   protected:
     ViewToolParameters*           toolParameters     ();
@@ -44,6 +45,7 @@ class Tool {
     virtual ToolResponse runMouseReleaseEvent (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runWheelEvent        (QWheelEvent&) { return ToolResponse::None; }
     virtual QString      runMessage           () const       { return QString (); }
+    virtual void         runCancel            ()             {}
 };
 
 #endif

@@ -14,7 +14,7 @@ class ViewToolParameters : public QDialog {
 
     ViewToolParameters (ViewMainWindow&, bool);
 
-    enum Result : int { Apply, ApplyAndClose };
+    enum Result : int { Apply, ApplyAndClose, Cancel };
 
     template <typename T>
     T& add (const QString& label, T& widget) {

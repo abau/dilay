@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <QMouseEvent>
 #include "tool.hpp"
 #include "view/tool-menu-parameters.hpp"
 #include "view/tool-parameters.hpp"
@@ -22,11 +23,15 @@ struct Tool::Impl {
 
     QObject::connect ( this->toolParameters, &ViewToolParameters::finished
                      , [this] (int r) { 
-                         if (r == ViewToolParameters::Result::ApplyAndClose) {
+                         if (r == ViewToolParameters::Result::Apply) {
+                           this->toolParameters->hide ();
+                         }
+                         else if (r == ViewToolParameters::Result::ApplyAndClose) {
                            State::setTool (nullptr); 
                          }
-                         else if (r == ViewToolParameters::Result::Apply) {
-                           this->toolParameters->hide ();
+                         else if (r == ViewToolParameters::Result::Cancel) {
+                           this->cancel ();
+                           State::setTool (nullptr); 
                          }
                          else { assert (false); }
                        }
@@ -82,6 +87,10 @@ struct Tool::Impl {
     if (this->toolParameters && this->toolParameters->isVisible ()) {
       return ToolResponse::None;
     }
+    else if (e.button () == Qt::RightButton) {
+      this->cancel ();
+      return ToolResponse::Terminate;
+    }
     else {
       return this->self->runMouseReleaseEvent (e);
     }
@@ -99,6 +108,10 @@ struct Tool::Impl {
   QString message () const { 
     return this->self->runMessage (); 
   }
+
+  void cancel () { 
+    return this->self->runCancel (); 
+  }
 };
 
 DELEGATE2_BIG3_SELF        (Tool, const ViewToolMenuParameters&, const QString&)
@@ -111,4 +124,5 @@ DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEven
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
 DELEGATE_CONST (QString                      , Tool, message)
+DELEGATE       (void                         , Tool, cancel)
 GETTER         (ViewToolParameters*          , Tool, toolParameters)

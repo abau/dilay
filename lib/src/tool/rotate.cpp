@@ -74,10 +74,6 @@ struct ToolRotate::Impl {
     if (event.button () == Qt::LeftButton) {
       return ToolResponse::Terminate;
     }
-    else if (event.button () == Qt::RightButton) {
-      State::camera ().set (this->originalGazepoint, this->originalToEyepoint, this->originalUp);
-      return ToolResponse::Terminate;
-    }
     return ToolResponse::None;
   }
 
@@ -101,6 +97,10 @@ struct ToolRotate::Impl {
        , ViewToolMessage ("Cancel")     .right  ()
        }); 
   }
+
+  void runCancel () {
+    State::camera ().set (this->originalGazepoint, this->originalToEyepoint, this->originalUp);
+  }
 };
 
 DELEGATE_BIG3_BASE ( ToolRotate, (const ViewToolMenuParameters& p)
@@ -109,3 +109,4 @@ DELEGATE1        (ToolResponse, ToolRotate, runMouseMoveEvent, QMouseEvent&)
 DELEGATE1        (ToolResponse, ToolRotate, runMouseReleaseEvent, QMouseEvent&)
 DELEGATE1_STATIC (ToolResponse, ToolRotate, staticWheelEvent, QWheelEvent&)
 DELEGATE_CONST   (QString     , ToolRotate, runMessage)
+DELEGATE         (void        , ToolRotate, runCancel)

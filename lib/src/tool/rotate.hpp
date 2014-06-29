@@ -16,6 +16,7 @@ class ToolRotate : public Tool {
     ToolResponse runMouseMoveEvent    (QMouseEvent&);
     ToolResponse runMouseReleaseEvent (QMouseEvent&);
     QString      runMessage           () const;
+    void         runCancel            ();
 };
 
 #endif

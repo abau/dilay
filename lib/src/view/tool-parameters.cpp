@@ -15,6 +15,7 @@ struct ViewToolParameters::Impl {
   QGridLayout&        gridLayout;
   QPushButton*        applyButton;
   QPushButton&        applyAndCloseButton;
+  QPushButton&        cancelButton;
 
   Impl (ViewToolParameters* s, ViewMainWindow& p) 
     : Impl (s, p, false) {}
@@ -26,6 +27,7 @@ struct ViewToolParameters::Impl {
     , applyButton         (alwaysOpen ? nullptr
                                       : &ViewUtil::pushButton (tr("Apply"), true, true))
     , applyAndCloseButton (ViewUtil::pushButton (tr("Apply and Close"), true))
+    , cancelButton        (ViewUtil::pushButton (tr("Cancel"), true))
   {
     glm::ivec2 pos = Config::get <glm::ivec2> ( "/cache/view/tool-parameters/position"
                                               , glm::ivec2 (100, 100) );
@@ -52,6 +54,11 @@ struct ViewToolParameters::Impl {
 
     QObject::connect ( &this->applyAndCloseButton, &QPushButton::released
                      , [this] () { this->self->done (ViewToolParameters::Result::ApplyAndClose); });
+
+    this->vBoxLayout.addWidget (&this->cancelButton);
+
+    QObject::connect ( &this->cancelButton, &QPushButton::released
+                     , [this] () { this->self->done (ViewToolParameters::Result::Cancel); });
   }
 
   QWidget& addParameter (const QString& label, QWidget& widget) {
