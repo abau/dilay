@@ -42,7 +42,7 @@ struct State::Impl {
     this->toolPtr.reset (tool); 
 
     if (toolPtr) {
-      this->handleToolResponse (toolPtr->execute ());
+      this->handleToolResponse (toolPtr->initialize ());
     }
   }
 

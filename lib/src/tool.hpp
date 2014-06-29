@@ -22,7 +22,7 @@ class Tool {
     friend class ToolUtil;
 
     const ViewToolMenuParameters& menuParameters     () const;
-    ToolResponse                  execute            ();
+    ToolResponse                  initialize         ();
     void                          render             ();
     ToolResponse                  mouseMoveEvent     (QMouseEvent&);
     ToolResponse                  mousePressEvent    (QMouseEvent&);
@@ -37,7 +37,7 @@ class Tool {
     class Impl;
     Impl* impl;
 
-    virtual ToolResponse runExecute           ()             { return ToolResponse::None; }
+    virtual ToolResponse runInitialize        ()             { return ToolResponse::None; }
     virtual void         runRender            ()             {}
     virtual ToolResponse runMouseMoveEvent    (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runMousePressEvent   (QMouseEvent&) { return ToolResponse::None; }

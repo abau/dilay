@@ -19,16 +19,16 @@ struct ToolDeleteMesh::Impl {
     return QObject::tr ("Delete Mesh");
   }
 
-  ToolResponse runExecute () {
+  ToolResponse runInitialize () {
     ActionUnit& unit = *new ActionUnit ();
 
     switch (this->meshType) {
       case MeshType::Freeform:
-        this->runExecuteWingedMesh (unit);
+        this->runDeleteWingedMesh (unit);
         break;
 
       case MeshType::Sphere:
-        this->runExecuteSphereMesh (unit);
+        this->runDeleteSphereMesh (unit);
         break;
     }
 
@@ -39,7 +39,7 @@ struct ToolDeleteMesh::Impl {
     return ToolResponse::Terminate;
   }
 
-  void runExecuteWingedMesh (ActionUnit& unit) {
+  void runDeleteWingedMesh (ActionUnit& unit) {
     State::scene ().selection ().forEachMajor ([this,&unit]
       (const Id& id) {
         WingedMesh& mesh = State::scene ().wingedMesh (id);
@@ -48,7 +48,7 @@ struct ToolDeleteMesh::Impl {
     );
   }
 
-  void runExecuteSphereMesh (ActionUnit& unit) {
+  void runDeleteSphereMesh (ActionUnit& unit) {
     State::scene ().selection ().forEachMajor ([&unit]
       (const Id& id) {
         SphereMesh& mesh = State::scene ().sphereMesh (id);
@@ -61,4 +61,4 @@ struct ToolDeleteMesh::Impl {
 DELEGATE_BIG3_BASE ( ToolDeleteMesh, (const ViewToolMenuParameters& p, MeshType t)
                    , (this,t), Tool, (p) )
 DELEGATE1_STATIC (QString     , ToolDeleteMesh, toolName, MeshType)
-DELEGATE         (ToolResponse, ToolDeleteMesh, runExecute)
+DELEGATE         (ToolResponse, ToolDeleteMesh, runInitialize)

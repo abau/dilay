@@ -52,8 +52,8 @@ struct Tool::Impl {
     }
   }
 
-  ToolResponse execute () { 
-    return this->self->runExecute ();
+  ToolResponse initialize () { 
+    return this->self->runInitialize ();
   }
 
   void render () { 
@@ -104,7 +104,7 @@ struct Tool::Impl {
 DELEGATE2_BIG3_SELF        (Tool, const ViewToolMenuParameters&, const QString&)
 DELEGATE1_CONSTRUCTOR_SELF (Tool, const ViewToolMenuParameters&) 
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
-DELEGATE       (ToolResponse                 , Tool, execute)
+DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE       (void                         , Tool, render)
 DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEvent&)
