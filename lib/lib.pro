@@ -29,6 +29,7 @@ SOURCES += \
            src/config.cpp \
            src/config-conversion.cpp \
            src/cursor.cpp \
+           src/dimension.cpp \
            src/history.cpp \
            src/id.cpp \
            src/intersection.cpp \
@@ -62,6 +63,7 @@ SOURCES += \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/delete-mesh.cpp \
+           src/tool/movement.cpp \
            src/tool/new-freeform-mesh.cpp \
            src/tool/new-sphere-mesh.cpp \
            src/tool/rotate.cpp \
@@ -154,6 +156,7 @@ HEADERS += \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/delete-mesh.hpp \
+           src/tool/movement.hpp \
            src/tool/new-freeform-mesh.hpp \
            src/tool/new-sphere-mesh.hpp \
            src/tool/rotate.hpp \

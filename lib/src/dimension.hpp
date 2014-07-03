@@ -3,4 +3,8 @@
 
 enum class Dimension { X, Y, Z };
 
+namespace DimensionUtil {
+  unsigned int index (Dimension);
+}
+
 #endif

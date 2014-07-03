@@ -1,28 +1,25 @@
 #include <glm/glm.hpp>
 #include <QMouseEvent>
 #include "tool/movement.hpp"
-#include "tool.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "state.hpp"
 #include "camera.hpp"
 #include "intersection.hpp"
-#include "view/properties/movement.hpp"
-#include "view/properties/widget.hpp"
+#include "dimension.hpp"
 #include "view/util.hpp"
-#include "view/main-window.hpp"
-#include "view/gl-widget.hpp"
 
 struct ToolMovement::Impl {
-  Tool&     tool;
   glm::vec3 position;
+  Movement  movement;
 
-  Impl (Tool& t) : tool (t) {
-    this->byScreenPos ();
-  }
+  Impl (const glm::vec3& p, Movement m) 
+    : position (p)
+    , movement (m)
+    {}
 
   bool intersects (const glm::vec3& normal, const glm::ivec2& p, glm::vec3& i) const {
-    const PrimRay   ray   = State::camera ().ray (p);
+    const PrimRay   ray = State::camera ().ray (p);
     const PrimPlane plane (this->position, normal);
           float     t;
     
@@ -37,63 +34,67 @@ struct ToolMovement::Impl {
     return this->intersects (normal, p, this->position);
   }
 
-  bool moveOnPlane (unsigned int normalIndex, const glm::ivec2& p) {
+  bool moveOnPlane (Dimension normalDim, const glm::ivec2& p) {
     glm::vec3 normal (0.0f);
-    normal[normalIndex] = 1.0f;
+    normal[DimensionUtil::index (normalDim)] = 1.0f;
     return this->moveOnPlane (normal, p);
   }
 
-  bool moveOnNormal (unsigned int normalIndex, const glm::ivec2& p) {
-    glm::vec3 normal    = State::camera ().toEyePoint ();
-    normal[normalIndex] = 0.0f;
+  bool moveAlong (Dimension axisDim, const glm::ivec2& p) {
+    unsigned int i      = DimensionUtil::index (axisDim);
+    glm::vec3    normal = State::camera ().toEyePoint ();
+    normal[i]           = 0.0f;
 
     glm::vec3 intersection;
     if (this->intersects (glm::normalize (normal), p, intersection)) {
-      this->position[normalIndex] = intersection[normalIndex];
+      this->position[i] = intersection[i];
       return true;
     }
     return false;
   }
 
-  bool moveOnXY     (const glm::ivec2& p) { return this->moveOnPlane  (2, p); }
-  bool moveOnYZ     (const glm::ivec2& p) { return this->moveOnPlane  (0, p); }
-  bool moveOnXZ     (const glm::ivec2& p) { return this->moveOnPlane  (1, p); }
-  bool moveAlongX   (const glm::ivec2& p) { return this->moveOnNormal (0, p); }
-  bool moveAlongY   (const glm::ivec2& p) { return this->moveOnNormal (1, p); }
-  bool moveAlongZ   (const glm::ivec2& p) { return this->moveOnNormal (2, p); }
+  bool moveOnXY     (const glm::ivec2& p) { return this->moveOnPlane (Dimension::Z, p); }
+  bool moveOnYZ     (const glm::ivec2& p) { return this->moveOnPlane (Dimension::X, p); }
+  bool moveOnXZ     (const glm::ivec2& p) { return this->moveOnPlane (Dimension::Y, p); }
+  bool moveAlongX   (const glm::ivec2& p) { return this->moveAlong   (Dimension::X, p); }
+  bool moveAlongY   (const glm::ivec2& p) { return this->moveAlong   (Dimension::Y, p); }
+  bool moveAlongZ   (const glm::ivec2& p) { return this->moveAlong   (Dimension::Z, p); }
 
-  bool moveOnCamera (const glm::ivec2& p) { 
+  bool moveOnCameraPlane (const glm::ivec2& p) { 
     return this->moveOnPlane (glm::normalize (State::camera ().toEyePoint ()), p); 
   }
 
-  bool byMouseEvent (QMouseEvent& e) {
-    if (e.buttons () == Qt::LeftButton) {
-      glm::ivec2 p = ViewUtil::toIVec2 (e);
+  bool moveOnPrimaryPlane (const glm::ivec2& p) {
+    return this->moveOnPlane (State::camera ().primaryDimension (), p);
+  }
 
+  bool byMouseEvent (QMouseEvent& e) {
+    glm::ivec2 p = ViewUtil::toIVec2 (e);
+
+    if (this->movement == Movement::CameraPlane) {
+      return this->moveOnCameraPlane (p);
+    }
+    else if (this->movement == Movement::PrimaryPlane) {
+      return this->moveOnPrimaryPlane (p);
+    }
+    else {
       if (e.modifiers ().testFlag (Qt::ShiftModifier)) {
-        ViewPropertiesMovement& properties = this->tool.mainWindow ().properties ().movement ();
-        if      (properties.x ()) { return this->moveAlongX (p); }
-        else if (properties.y ()) { return this->moveAlongY (p); }
-        else if (properties.z ()) { return this->moveAlongZ (p); }
+        switch (this->movement) {
+          case Movement::X: return this->moveOnYZ (p);
+          case Movement::Y: return this->moveOnXZ (p);
+          case Movement::Z: return this->moveOnXY (p);
+          default:          assert (false);
+        }
       }
-      else if (e.modifiers ().testFlag (Qt::NoModifier)) {
-        return this->byScreenPos (p);
+      else {
+        switch (this->movement) {
+          case Movement::X: return this->moveAlongX (p);
+          case Movement::Y: return this->moveAlongY (p);
+          case Movement::Z: return this->moveAlongZ (p);
+          default:          assert (false);
+        }
       }
     }
-    return false;
-  }
-
-  bool byScreenPos (const glm::ivec2& p) {
-    ViewPropertiesMovement& properties = this->tool.mainWindow ().properties ().movement ();
-    if      (properties.xy     ()) { return this->moveOnXY     (p); }
-    else if (properties.yz     ()) { return this->moveOnYZ     (p); }
-    else if (properties.xz     ()) { return this->moveOnXZ     (p); }
-    else if (properties.camera ()) { return this->moveOnCamera (p); }
-    else assert (false);
-  }
-
-  bool byScreenPos () {
-    return this->byScreenPos (this->tool.mainWindow ().glWidget ().cursorPosition ());
   }
 
   bool onCameraPlane (const glm::ivec2& p, glm::vec3& intersection) const {
@@ -101,9 +102,8 @@ struct ToolMovement::Impl {
   }
 };
 
-DELEGATE1_BIG6  (ToolMovement, Tool&)
+DELEGATE2_BIG6  (ToolMovement, const glm::vec3&, Movement)
 GETTER_CONST    (const glm::vec3&, ToolMovement, position)
 SETTER          (const glm::vec3&, ToolMovement, position)
 DELEGATE1       (bool            , ToolMovement, byMouseEvent, QMouseEvent&)
-DELEGATE        (bool            , ToolMovement, byScreenPos)
 DELEGATE2_CONST (bool            , ToolMovement, onCameraPlane, const glm::ivec2&, glm::vec3&)
