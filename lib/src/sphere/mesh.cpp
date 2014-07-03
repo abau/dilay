@@ -212,17 +212,35 @@ struct SphereMesh::Impl {
   bool hasRoot () const {
     return bool (this->_root);
   }
+
+  const glm::vec3& position () const {
+    assert (this->hasRoot ());
+    return this->_root->position;
+  }
+
+  void position (const glm::vec3& p) {
+    assert (this->hasRoot ());
+    this->translate (p - this->position ());
+  }
+
+  void translate (const glm::vec3& t) {
+    assert (this->hasRoot ());
+    this->_root->translate (t, true);
+  }
 };
 
 DELEGATE1_BIG3_SELF       (SphereMesh, const Id&)
 DELEGATE_CONSTRUCTOR_SELF (SphereMesh)
 
 ID              (SphereMesh)
-DELEGATE3       (SphereMeshNode&, SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
-DELEGATE4       (SphereMeshNode&, SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
-DELEGATE1       (void           , SphereMesh, deleteNode, SphereMeshNode&)
-DELEGATE1       (void           , SphereMesh, render, const Selection&)
-DELEGATE2       (bool           , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
-DELEGATE1       (SphereMeshNode&, SphereMesh, node, const Id&)
-DELEGATE        (SphereMeshNode&, SphereMesh, root)
-DELEGATE_CONST  (bool           , SphereMesh, hasRoot)
+DELEGATE3       (SphereMeshNode& , SphereMesh, addNode, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE4       (SphereMeshNode& , SphereMesh, addNode, const Id&, SphereMeshNode*, const glm::vec3&, float)
+DELEGATE1       (void            , SphereMesh, deleteNode, SphereMeshNode&)
+DELEGATE1       (void            , SphereMesh, render, const Selection&)
+DELEGATE2       (bool            , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
+DELEGATE1       (SphereMeshNode& , SphereMesh, node, const Id&)
+DELEGATE        (SphereMeshNode& , SphereMesh, root)
+DELEGATE_CONST  (bool            , SphereMesh, hasRoot)
+DELEGATE_CONST  (const glm::vec3&, SphereMesh, position)
+DELEGATE1       (void            , SphereMesh, position, const glm::vec3&)
+DELEGATE1       (void            , SphereMesh, translate, const glm::vec3&)

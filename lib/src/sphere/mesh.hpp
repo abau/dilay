@@ -43,15 +43,18 @@ class SphereMesh {
     DECLARE_BIG3 (SphereMesh, const Id&)
     SphereMesh   ();
 
-    Id              id          () const;
-    SphereMeshNode& addNode     (SphereMeshNode*, const glm::vec3&, float);
-    SphereMeshNode& addNode     (const Id&, SphereMeshNode*, const glm::vec3&, float);
-    void            deleteNode  (SphereMeshNode&);
-    void            render      (const Selection&);
-    bool            intersects  (const PrimRay&, SphereNodeIntersection&);
-    SphereMeshNode& node        (const Id&);
-    SphereMeshNode& root        ();
-    bool            hasRoot     () const;
+          Id              id          () const;
+          SphereMeshNode& addNode     (SphereMeshNode*, const glm::vec3&, float);
+          SphereMeshNode& addNode     (const Id&, SphereMeshNode*, const glm::vec3&, float);
+          void            deleteNode  (SphereMeshNode&);
+          void            render      (const Selection&);
+          bool            intersects  (const PrimRay&, SphereNodeIntersection&);
+          SphereMeshNode& node        (const Id&);
+          SphereMeshNode& root        ();
+          bool            hasRoot     () const;
+    const glm::vec3&      position    () const;
+          void            position    (const glm::vec3&);
+          void            translate   (const glm::vec3&);
 
   private:
     class Impl;
