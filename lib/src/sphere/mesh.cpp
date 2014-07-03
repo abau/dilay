@@ -84,6 +84,17 @@ struct SphereMeshNode::Impl {
     return sni.isIntersection ();
   }
 
+  void translate (const glm::vec3& t, bool recursive) {
+    if (recursive) {
+      this->forEachNode ([&t] (SphereMeshNode& n) {
+        n.position (n.position () + t);
+      });
+    }
+    else {
+      this->position = this->position + t;
+    }
+  }
+
   unsigned int numChildren () const {
     return this->children.size ();
   }
@@ -123,6 +134,7 @@ GETTER_CONST     (const glm::vec3&, SphereMeshNode, position)
 SETTER           (const glm::vec3&, SphereMeshNode, position)
 GETTER_CONST     (float           , SphereMeshNode, radius)
 SETTER           (float           , SphereMeshNode, radius)
+DELEGATE2        (void            , SphereMeshNode, translate, const glm::vec3&, bool)
 DELEGATE_CONST   (unsigned int    , SphereMeshNode, numChildren)
 DELEGATE         (SphereMeshNode& , SphereMeshNode, firstChild)
 DELEGATE1_STATIC (void            , SphereMeshNode, setupMesh, Mesh&)
