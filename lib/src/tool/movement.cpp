@@ -41,14 +41,18 @@ struct ToolMovement::Impl {
   }
 
   bool moveAlong (Dimension axisDim, const glm::ivec2& p) {
-    unsigned int i      = DimensionUtil::index (axisDim);
-    glm::vec3    normal = State::camera ().toEyePoint ();
-    normal[i]           = 0.0f;
+    const unsigned int i = DimensionUtil::index (axisDim);
+    const glm::vec3    e = State::camera ().toEyePoint ();
 
-    glm::vec3 intersection;
-    if (this->intersects (glm::normalize (normal), p, intersection)) {
-      this->position[i] = intersection[i];
-      return true;
+    if (glm::dot (DimensionUtil::vector (axisDim), glm::normalize (e)) < 0.9) {
+      glm::vec3 normal    = e;
+                normal[i] = 0.0f;
+      glm::vec3 intersection;
+
+      if (this->intersects (glm::normalize (normal), p, intersection)) {
+        this->position[i] = intersection[i];
+        return true;
+      }
     }
     return false;
   }
