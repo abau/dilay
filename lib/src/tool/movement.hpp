@@ -10,7 +10,9 @@ enum class Movement { X, Y, Z, CameraPlane, PrimaryPlane };
 
 class ToolMovement {
   public:
-    DECLARE_BIG6 (ToolMovement, const glm::vec3&, Movement)
+    DECLARE_BIG6 (ToolMovement, Movement, const glm::vec3&)
+
+    ToolMovement (Movement);
 
     const glm::vec3& position      () const;
           void       position      (const glm::vec3&);

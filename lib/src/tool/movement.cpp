@@ -10,12 +10,17 @@
 #include "view/util.hpp"
 
 struct ToolMovement::Impl {
-  glm::vec3 position;
   Movement  movement;
+  glm::vec3 position;
 
-  Impl (const glm::vec3& p, Movement m) 
-    : position (p)
-    , movement (m)
+  Impl (Movement m, const glm::vec3& p) 
+    : movement (m)
+    , position (p)
+    {}
+
+  Impl (Movement m) 
+    : movement (m)
+    , position (glm::vec3 (0.0f))
     {}
 
   bool intersects (const glm::vec3& normal, const glm::ivec2& p, glm::vec3& i) const {
@@ -106,7 +111,8 @@ struct ToolMovement::Impl {
   }
 };
 
-DELEGATE2_BIG6  (ToolMovement, const glm::vec3&, Movement)
+DELEGATE2_BIG6        (ToolMovement, Movement, const glm::vec3&)
+DELEGATE1_CONSTRUCTOR (ToolMovement, Movement)
 GETTER_CONST    (const glm::vec3&, ToolMovement, position)
 SETTER          (const glm::vec3&, ToolMovement, position)
 DELEGATE1       (bool            , ToolMovement, byMouseEvent, QMouseEvent&)
