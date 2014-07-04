@@ -2,12 +2,12 @@
 #define DILAY_MESH
 
 #include "macro.hpp"
-#include <glm/fwd.hpp>
+#include "translatable.hpp"
 
 enum class RenderMode;
 class Color;
 
-class Mesh {
+class Mesh : public Translatable {
   public:
     /** `bufferData` must be called on the mutated mesh after copy or assignment */
     DECLARE_BIG6 (Mesh)
