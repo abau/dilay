@@ -14,10 +14,12 @@ class ToolMovement {
 
     ToolMovement (Movement);
 
-    const glm::vec3& position      () const;
-          void       position      (const glm::vec3&);
-          bool       byMouseEvent  (QMouseEvent&);
-          bool       onCameraPlane (const glm::ivec2&, glm::vec3&) const;
+    const glm::vec3& originalPosition () const;
+          glm::vec3  delta            () const;
+    const glm::vec3& position         () const;
+          void       position         (const glm::vec3&);
+          bool       byMouseEvent     (QMouseEvent&);
+          bool       onCameraPlane    (const glm::ivec2&, glm::vec3&) const;
 
   private:
     class Impl;

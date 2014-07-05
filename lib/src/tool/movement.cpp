@@ -10,18 +10,23 @@
 #include "view/util.hpp"
 
 struct ToolMovement::Impl {
-  Movement  movement;
-  glm::vec3 position;
+        Movement  movement;
+  const glm::vec3 originalPosition;
+        glm::vec3 position;
 
   Impl (Movement m, const glm::vec3& p) 
-    : movement (m)
-    , position (p)
+    : movement         (m)
+    , originalPosition (p)
+    , position         (p)
     {}
 
   Impl (Movement m) 
-    : movement (m)
-    , position (glm::vec3 (0.0f))
+    : Impl (m, glm::vec3 (0.0f)) 
     {}
+
+  glm::vec3 delta () const {
+    return this->position - this->originalPosition;
+  }
 
   bool intersects (const glm::vec3& normal, const glm::ivec2& p, glm::vec3& i) const {
     const PrimRay   ray = State::camera ().ray (p);
@@ -113,6 +118,8 @@ struct ToolMovement::Impl {
 
 DELEGATE2_BIG6        (ToolMovement, Movement, const glm::vec3&)
 DELEGATE1_CONSTRUCTOR (ToolMovement, Movement)
+GETTER_CONST    (const glm::vec3&, ToolMovement, originalPosition)
+DELEGATE_CONST  (glm::vec3       , ToolMovement, delta)
 GETTER_CONST    (const glm::vec3&, ToolMovement, position)
 SETTER          (const glm::vec3&, ToolMovement, position)
 DELEGATE1       (bool            , ToolMovement, byMouseEvent, QMouseEvent&)
