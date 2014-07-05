@@ -90,13 +90,21 @@ namespace VariantDetails {
     T* t;
 
     VariantUnion () : t (nullptr) {}
-    VariantUnion (const VariantUnion&) = delete;
+    VariantUnion (const VariantUnion&)  = delete;
+    VariantUnion (      VariantUnion&&) = delete;
 
-    const VariantUnion& operator= (const VariantUnion&) = delete;
+    const VariantUnion& operator= (const VariantUnion&)  = delete;
+    const VariantUnion& operator= (      VariantUnion&&) = delete;
 
     void copy (unsigned int i, const VariantUnion& other) {
       assert (i == 0);
       this->t = new T (*other.t);
+    }
+
+    void move (unsigned int i, VariantUnion&& other) {
+      assert (i == 0);
+      this->t = other.t;
+      other.t = nullptr;
     }
 
     void release (unsigned int i) {
@@ -126,6 +134,12 @@ namespace VariantDetails {
       assert (i == 0);
       return branch (*this->t);
     }
+
+    template <typename U>
+    U caseOf (unsigned int i, std::function <U (const T&)> branch) const {
+      assert (i == 0);
+      return branch (*this->t);
+    }
   };
 
   // Case n > 1;
@@ -135,22 +149,38 @@ namespace VariantDetails {
     VariantUnion <Ts ...> ts;
 
     VariantUnion () : t (nullptr) {}
-    VariantUnion (const VariantUnion&) = delete;
+    VariantUnion (const VariantUnion&)  = delete;
+    VariantUnion (      VariantUnion&&) = delete;
 
-    const VariantUnion& operator= (const VariantUnion&) = delete;
+    const VariantUnion& operator= (const VariantUnion&)  = delete;
+    const VariantUnion& operator= (      VariantUnion&&) = delete;
 
     void copy (unsigned int i, const VariantUnion& other) {
-      if (i == 0)
+      if (i == 0) {
         this->t = new T (*other.t);
-      else
+      }
+      else {
         this->ts.copy (i-1, other.ts);
+      }
+    }
+
+    void move (unsigned int i, VariantUnion&& other) {
+      if (i == 0) {
+        this->t = other.t;
+        other.t = nullptr;
+      }
+      else {
+        this->ts.move (i-1, std::move (other.ts));
+      }
     }
 
     void release (unsigned int i) {
-      if (i == 0)
+      if (i == 0) {
         delete this->t;
-      else
+      }
+      else {
         this->ts.release (i-1);
+      }
     }
 
     template <unsigned int i, typename U>
@@ -169,17 +199,31 @@ namespace VariantDetails {
         assert ((std::is_same<U,T>::value));
         return *reinterpret_cast <U*> (this->t);
       }
-      else
+      else {
         return this->ts.template get <U> (i-1);
+      }
     }
 
     template <typename U>
     U caseOf (unsigned int i, std::function <U (T& )>     branch
                             , std::function <U (Ts&)> ... branches) {
-      if (i == 0)
+      if (i == 0) {
         return branch (*this->t);
-      else
+      }
+      else {
         return this->ts.template caseOf (i-1, branches ...);
+      }
+    }
+
+    template <typename U>
+    U caseOf (unsigned int i, std::function <U (const T& )>     branch
+                            , std::function <U (const Ts&)> ... branches) const {
+      if (i == 0) {
+        return branch (*this->t);
+      }
+      else {
+        return this->ts.template caseOf (i-1, branches ...);
+      }
     }
   };
 };
@@ -197,10 +241,23 @@ class Variant {
     Variant (const Variant& other) 
       : _varUnion ()
       , _isSet    (other._isSet)
-      , _setTo    (other._setTo) {
+      , _setTo    (other._setTo) 
+    {
+      if (this->_isSet) {
+        this->_varUnion.copy (this->_setTo, other._varUnion);
+      }
+    }
 
-        if (this->_isSet)
-          this->_varUnion.copy (this->_setTo, other._varUnion);
+    Variant (Variant&& other) 
+      : _varUnion ()
+      , _isSet    (other._isSet)
+      , _setTo    (other._setTo) 
+    {
+      other._isSet = false;
+
+      if (this->_isSet) {
+        this->_varUnion.move (this->_setTo, std::move (other._varUnion));
+      }
     }
 
     const Variant& operator= (const Variant& other) {
@@ -213,6 +270,22 @@ class Variant {
 
       if (this->_isSet) {
         this->_varUnion.copy (this->_setTo, other._varUnion);
+      }
+      return *this;
+    }
+
+    const Variant& operator= (Variant&& other) {
+      if (this == &other) {
+        return *this;
+      }
+      this->release ();
+      this->_isSet = other._isSet;
+      this->_setTo = other._setTo;
+
+      other._isSet = false;
+
+      if (this->_isSet) {
+        this->_varUnion.move (this->_setTo, std::move (other._varUnion));
       }
       return *this;
     }
@@ -270,12 +343,19 @@ class Variant {
         static_assert (found, "variant type not found");
         return this->_setTo == index; 
       }
-      else
+      else {
         return false;
+      }
     }
 
     template <typename U>
     U caseOf (std::function <U (Ts&)> ... branches) {
+      assert (this->_isSet);
+      return this->_varUnion.template caseOf <U> (this->_setTo, branches ...);
+    }
+
+    template <typename U>
+    U caseOf (std::function <U (const Ts&)> ... branches) const {
       assert (this->_isSet);
       return this->_varUnion.template caseOf <U> (this->_setTo, branches ...);
     }
