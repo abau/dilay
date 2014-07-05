@@ -160,7 +160,6 @@ HEADERS += \
            src/tool/new-freeform-mesh.hpp \
            src/tool/new-sphere-mesh.hpp \
            src/tool/rotate.hpp \
-           src/translatable.hpp \
            src/util.hpp \
            src/variant.hpp \
            src/view/freeform-mesh-menu.hpp \
