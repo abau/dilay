@@ -180,6 +180,29 @@ struct Scene :: Impl {
             ? this->selection.numMajors ()
             : this->selection.numMinors ();
   }
+
+  
+  WingedMeshes selectedWingedMeshes (MeshType t) {
+    assert (t == MeshType::Freeform);
+    assert (this->selectionMode == SelectionMode::Freeform);
+
+    WingedMeshes meshes;
+    this->selection.forEachMajor ([this,&meshes] (const Id& id) {
+      meshes.push_back (&this->wingedMesh (id));
+    });
+    return meshes;
+  }
+
+
+  SphereMeshes selectedSphereMeshes () {
+    assert (this->selectionMode == SelectionMode::Sphere);
+
+    SphereMeshes meshes;
+    this->selection.forEachMajor ([this,&meshes] (const Id& id) {
+      meshes.push_back (&this->sphereMesh (id));
+    });
+    return meshes;
+  }
 };
 
 DELEGATE_CONSTRUCTOR (Scene)
@@ -204,3 +227,5 @@ GETTER_CONST    (const Selection& , Scene, selection)
 DELEGATE        (void             , Scene, unselectAll)
 DELEGATE1       (bool             , Scene, selectIntersection, const PrimRay&)
 DELEGATE_CONST  (unsigned int     , Scene, numSelections)
+DELEGATE1       (WingedMeshes     , Scene, selectedWingedMeshes, MeshType)
+DELEGATE        (SphereMeshes     , Scene, selectedSphereMeshes)
