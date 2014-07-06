@@ -21,19 +21,20 @@ class Tool {
 
     friend class ToolUtil;
 
-    const ViewToolMenuParameters& menuParameters     () const;
-    ToolResponse                  initialize         ();
-    void                          render             ();
-    ToolResponse                  mouseMoveEvent     (QMouseEvent&);
-    ToolResponse                  mouseReleaseEvent  (QMouseEvent&);
-    ToolResponse                  wheelEvent         (QWheelEvent&);
-    QString                       message            () const;
-    void                          close              ();
-    void                          cancel             ();
+    const ViewToolMenuParameters& menuParameters       () const;
+    ToolResponse                  initialize           ();
+    void                          render               ();
+    ToolResponse                  mouseMoveEvent       (QMouseEvent&);
+    ToolResponse                  mouseReleaseEvent    (QMouseEvent&);
+    ToolResponse                  wheelEvent           (QWheelEvent&);
+    QString                       message              () const;
+    void                          close                ();
+    void                          cancel               ();
 
   protected:
-    ViewToolParameters*           toolParameters     ();
-    void                          updateGlWidget     ();
+    ViewToolParameters*           toolParameters       ();
+    void                          updateGlWidget       ();
+    ToolResponse                  closeOrCancelOnClick (QMouseEvent&);
 
   private:
     class Impl;

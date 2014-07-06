@@ -112,6 +112,18 @@ struct Tool::Impl {
   void updateGlWidget () {
     this->menuParameters.mainWindow ().glWidget ().update ();
   }
+
+  ToolResponse closeOrCancelOnClick (QMouseEvent& e) {
+    if (e.button () == Qt::LeftButton) {
+      this->close ();
+      return ToolResponse::Terminate;
+    }
+    else if (e.button () == Qt::RightButton) {
+      this->cancel ();
+      return ToolResponse::Terminate;
+    }
+    return ToolResponse::None;
+  }
 };
 
 DELEGATE2_BIG3_SELF        (Tool, const ViewToolMenuParameters&, const QString&)
@@ -127,3 +139,4 @@ DELEGATE       (void                         , Tool, close)
 DELEGATE       (void                         , Tool, cancel)
 GETTER         (ViewToolParameters*          , Tool, toolParameters)
 DELEGATE       (void                         , Tool, updateGlWidget)
+DELEGATE1      (ToolResponse                 , Tool, closeOrCancelOnClick, QMouseEvent&)
