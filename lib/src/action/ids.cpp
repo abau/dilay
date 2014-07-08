@@ -29,6 +29,7 @@ struct ActionIds :: Impl {
   }
 
   void setId (unsigned int i, const Id& id) {
+    assert (i == 0 || this->ids [i-1]);
     this->reserveIds (i + 1);
     this->ids [i].reset (new Id (id));
   }
@@ -43,6 +44,7 @@ struct ActionIds :: Impl {
   }
 
   void setIndex (unsigned int i, unsigned int index) {
+    assert (i == 0 || this->indices [i-1]);
     this->reserveIndices (i + 1);
     this->indices [i].reset (new unsigned int (index));
   }
