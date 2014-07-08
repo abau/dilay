@@ -63,6 +63,7 @@ SOURCES += \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/delete-mesh.cpp \
+           src/tool/move.cpp \
            src/tool/movement.cpp \
            src/tool/new-freeform-mesh.cpp \
            src/tool/new-sphere-mesh.cpp \
@@ -156,6 +157,7 @@ HEADERS += \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/delete-mesh.hpp \
+           src/tool/move.hpp \
            src/tool/movement.hpp \
            src/tool/new-freeform-mesh.hpp \
            src/tool/new-sphere-mesh.hpp \
