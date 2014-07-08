@@ -134,9 +134,6 @@ SphereMesh& ActionIds::getMesh <SphereMesh> (unsigned int i) { return this->getS
 
 DELEGATE_BIG3 (ActionIds)
 
-DELEGATE1 (void           , ActionIds, reserveIds,       unsigned int)
-DELEGATE1 (void           , ActionIds, reserveIndices,   unsigned int)
-DELEGATE2 (void           , ActionIds, reserve,          unsigned int, unsigned int)
 DELEGATE2 (void           , ActionIds, setId,            unsigned int, const Id&)
 DELEGATE2 (void           , ActionIds, setIds,           std::initializer_list <Id>, unsigned int)
 DELEGATE2 (void           , ActionIds, setIndex,         unsigned int, unsigned int)

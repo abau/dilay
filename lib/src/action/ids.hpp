@@ -16,9 +16,6 @@ class ActionIds {
   public: 
     DECLARE_BIG3 (ActionIds)
 
-    void            reserveIds        (unsigned int);
-    void            reserveIndices    (unsigned int);
-    void            reserve           (unsigned int, unsigned int);
     void            setId             (unsigned int, const Id&);
     void            setIds            (std::initializer_list <Id>, unsigned int = 0);
     void            setIndex          (unsigned int, unsigned int);
