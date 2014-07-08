@@ -8,22 +8,35 @@
 struct ActionMove::Impl {
   SelectionMode selection;
   ActionIds     ids;
-  glm::vec3     prevPosition;
+  glm::vec3     delta;
+
+  void translate (const std::list <SphereMesh*>& meshes, const glm::vec3& t) {
+    this->selection = SelectionMode::Sphere;
+    this->delta     = t;
+
+    unsigned int i = 0;
+    for (SphereMesh* m : meshes) {
+      this->ids.setId (i, m->id ());
+      m->translate    (this->delta);
+      i = i + 1;
+    }
+  }
 
   void position (SphereMesh& mesh, const glm::vec3& p) {
     this->selection = SelectionMode::Sphere;
+    this->delta     = p - mesh.position ();
     this->ids.setId (0, mesh.id ());
-    this->prevPosition = mesh.position ();
-    mesh.position (p);
+    mesh.translate  (this->delta);
   }
 
   void toggle () {
+    this->delta = -this->delta;
+
     switch (this->selection) {
       case SelectionMode::Sphere: {
-        SphereMesh& mesh = this->ids.getSphereMesh (0);
-        glm::vec3   p    = mesh.position ();
-        mesh.position (this->prevPosition);
-        this->prevPosition = p;
+        for (unsigned int i = 0; i < this->ids.numIds (); i++) {
+          this->ids.getSphereMesh (i).translate (this->delta);
+        }
         break;
       }
       default:
@@ -36,7 +49,7 @@ struct ActionMove::Impl {
 };
 
 DELEGATE_BIG3 (ActionMove)
-//DELEGATE2 (void, ActionMove, translate, SphereMesh&, const glm::vec3&)
+DELEGATE2 (void, ActionMove, translate, const std::list <SphereMesh*>&, const glm::vec3&)
 DELEGATE2 (void, ActionMove, position , SphereMesh&, const glm::vec3&)
 DELEGATE  (void, ActionMove, runUndo)
 DELEGATE  (void, ActionMove, runRedo)
