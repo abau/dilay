@@ -13,6 +13,8 @@
 #include "selection-mode.hpp"
 #include "selection.hpp"
 
+#include <iostream>
+
 struct Scene :: Impl {
   std::list <WingedMesh>  wingedMeshes;
   std::list <SphereMesh>  sphereMeshes;
@@ -52,16 +54,18 @@ struct Scene :: Impl {
 
   void deleteMesh (MeshType t, const Id& id) {
     switch (t) {
-      case MeshType::Freeform:
-        assert (this->wingedMeshIdMap.hasElement (id));
+      case MeshType::Freeform: {
+        WingedMesh* del = this->wingedMeshIdMap.element (id);
+        assert (del);
+        this->wingedMeshes.remove_if ([del] (WingedMesh& m) { return &m == del; });
         this->wingedMeshIdMap.remove (id);
-        this->wingedMeshes.remove_if ([&id] (WingedMesh& m) { return m.id () == id; });
         break;
-
+      }
       case MeshType::Sphere:
-        assert (this->sphereMeshIdMap.hasElement (id));
+        SphereMesh* del = this->sphereMeshIdMap.element (id);
+        assert (del);
+        this->sphereMeshes.remove_if ([del] (SphereMesh& m) { return &m == del; });
         this->sphereMeshIdMap.remove (id);
-        this->sphereMeshes.remove_if ([&id] (SphereMesh& m) { return m.id () == id; });
         break;
     }
   }
