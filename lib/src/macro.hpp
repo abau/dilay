@@ -244,107 +244,94 @@
   DELEGATE_ASSIGNMENT_OP_SELF(from) \
   DELEGATE_MOVE_ASSIGNMENT_OP_SELF (from)
 
+#define DELEGATE_BASE(r,from,method,ifaceParams,implArgs) \
+  r from :: method ifaceParams { return this->impl-> method implArgs ; }
+
 #define DELEGATE(r,from,method) \
-  r from :: method () { return this->impl-> method (); }
+  DELEGATE_BASE (r,from,method,(),())
 
 #define DELEGATE1(r,from,method,t1) \
-  r from :: method (t1 a1) { \
-    return this->impl-> method (a1); }
+  DELEGATE_BASE (r,from,method,(t1 a1),(a1))
 
 #define DELEGATE2(r,from,method,t1,t2) \
-  r from :: method (t1 a1,t2 a2) { \
-    return this->impl-> method (a1,a2); }
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2),(a1,a2))
 
 #define DELEGATE3(r,from,method,t1,t2,t3) \
-  r from :: method (t1 a1,t2 a2,t3 a3) { \
-    return this->impl-> method (a1,a2,a3); }
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3),(a1,a2,a3))
 
 #define DELEGATE4(r,from,method,t1,t2,t3,t4) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4) { \
-    return this->impl-> method (a1,a2,a3,a4); }
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4),(a1,a2,a3,a4))
 
 #define DELEGATE5(r,from,method,t1,t2,t3,t4,t5) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
-    return this->impl-> method (a1,a2,a3,a4,a5); }
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
+
+#define DELEGATE_BASE_CONST(r,from,method,ifaceParams,implArgs) \
+  r from :: method ifaceParams const { \
+    const Impl * constImpl = this->impl; \
+    return constImpl-> method implArgs ; }
 
 #define DELEGATE_CONST(r,from,method) \
-  r from :: method () const { \
-    const Impl * constImpl = this->impl; \
-    return constImpl-> method (); }
+  DELEGATE_BASE_CONST (r,from,method,(),())
 
 #define DELEGATE1_CONST(r,from,method,t1) \
-  r from :: method (t1 a1) const { \
-    const Impl * constImpl = this->impl; \
-    return constImpl-> method (a1); }
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1),(a1))
 
 #define DELEGATE2_CONST(r,from,method,t1,t2) \
-  r from :: method (t1 a1,t2 a2) const { \
-    const Impl * constImpl = this->impl; \
-    return constImpl-> method (a1,a2); }
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2),(a1,a2))
 
 #define DELEGATE3_CONST(r,from,method,t1,t2,t3) \
-  r from :: method (t1 a1,t2 a2,t3 a3) const { \
-    const Impl * constImpl = this->impl; \
-    return constImpl-> method (a1,a2,a3); }
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3),(a1,a2,a3))
 
 #define DELEGATE4_CONST(r,from,method,t1,t2,t3,t4) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4) const { \
-    const Impl * constImpl = this->impl; \
-    return constImpl-> method (a1,a2,a3,a4); }
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4),(a1,a2,a3,a4))
 
 #define DELEGATE5_CONST(r,from,method,t1,t2,t3,t4,t5) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
-    const Impl * constImpl = this->impl; \
-    return constImpl-> method (a1,a2,a3,a4,a5); }
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
+
+#define DELEGATE_BASE_STATIC(r,from,method,ifaceParams,implArgs) \
+  r from :: method ifaceParams { return Impl :: method implArgs ; }
 
 #define DELEGATE_STATIC(r,from,method) \
-  r from :: method () { return Impl :: method (); }
+  DELEGATE_BASE_STATIC (r,from,method,(),())
 
 #define DELEGATE1_STATIC(r,from,method,t1) \
-  r from :: method (t1 a1) { \
-    return Impl :: method (a1); }
+  DELEGATE_BASE_STATIC (r,from,method,(t1 a1),(a1))
 
 #define DELEGATE2_STATIC(r,from,method,t1,t2) \
-  r from :: method (t1 a1,t2 a2) { \
-    return Impl :: method (a1,a2); }
+  DELEGATE_BASE_STATIC (r,from,method,(t1 a1,t2 a2),(a1,a2))
 
 #define DELEGATE3_STATIC(r,from,method,t1,t2,t3) \
-  r from :: method (t1 a1,t2 a2,t3 a3) { \
-    return Impl :: method (a1,a2,a3); }
+  DELEGATE_BASE_STATIC (r,from,method,(t1 a1,t2 a2,t3 a3),(a1,a2,a3))
 
 #define DELEGATE4_STATIC(r,from,method,t1,t2,t3,t4) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4) { \
-    return Impl :: method (a1,a2,a3,a4); }
+  DELEGATE_BASE_STATIC (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4),(a1,a2,a3,a4))
 
 #define DELEGATE5_STATIC(r,from,method,t1,t2,t3,t4,t5) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
-    return Impl :: method (a1,a2,a3,a4,a5); }
+  DELEGATE_BASE_STATIC (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
 
 #define GLOBAL(from) \
   from & from :: global () { static from g; return g; }
 
+#define DELEGATE_BASE_GLOBAL(r,from,method,ifaceParams,implArgs) \
+  r from :: method ifaceParams { return from :: global ().impl-> method implArgs ; }
+
 #define DELEGATE_GLOBAL(r,from,method) \
-  r from :: method () { return from :: global ().impl-> method (); }
+  DELEGATE_BASE_GLOBAL (r,from,method,(),())
 
 #define DELEGATE1_GLOBAL(r,from,method,t1) \
-  r from :: method (t1 a1) { \
-    return from :: global ().impl-> method (a1); }
+  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1),(a1))
 
 #define DELEGATE2_GLOBAL(r,from,method,t1,t2) \
-  r from :: method (t1 a1,t2 a2) { \
-    return from :: global ().impl-> method (a1,a2); }
+  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2),(a1,a2))
 
 #define DELEGATE3_GLOBAL(r,from,method,t1,t2,t3) \
-  r from :: method (t1 a1,t2 a2,t3 a3) { \
-    return from :: global ().impl-> method (a1,a2,a3); }
+  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3),(a1,a2,a3))
 
 #define DELEGATE4_GLOBAL(r,from,method,t1,t2,t3,t4) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4) { \
-    return from :: global ().impl-> method (a1,a2,a3,a4); }
+  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4),(a1,a2,a3,a4))
 
 #define DELEGATE5_GLOBAL(r,from,method,t1,t2,t3,t4,t5) \
-  r from :: method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { \
-    return from :: global ().impl-> method (a1,a2,a3,a4,a5); }
+  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
 
 // Getters/Setters
 
