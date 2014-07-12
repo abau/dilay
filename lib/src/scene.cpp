@@ -36,6 +36,13 @@ struct Scene :: Impl {
     return this->wingedMeshes.back ();
   }
 
+  WingedMesh& newWingedMesh (MeshType t, WingedMesh&& source) {
+    assert (MeshType::Freeform == t);
+    this->wingedMeshes.emplace_back (std::move (source));
+    this->wingedMeshIdMap.insert (this->wingedMeshes.back ());
+    return this->wingedMeshes.back ();
+  }
+
         WingedMesh& wingedMesh (const Id& id)       { return this->wingedMeshIdMap.elementRef (id); }
   const WingedMesh& wingedMesh (const Id& id) const { return this->wingedMeshIdMap.elementRef (id); }
 
@@ -214,6 +221,7 @@ DELEGATE_DESTRUCTOR  (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)
 DELEGATE2       (WingedMesh&      , Scene, newWingedMesh, MeshType, const Id&)
+DELEGATE_BASE   (WingedMesh&      , Scene, newWingedMesh, (MeshType t, WingedMesh&& m), (t, std::move (m)))
 DELEGATE1       (WingedMesh&      , Scene, wingedMesh, const Id&)
 DELEGATE1_CONST (const WingedMesh&, Scene, wingedMesh, const Id&)
 DELEGATE        (SphereMesh&      , Scene, newSphereMesh)

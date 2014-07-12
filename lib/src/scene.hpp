@@ -25,6 +25,7 @@ class Scene {
 
           WingedMesh&   newWingedMesh        (MeshType);
           WingedMesh&   newWingedMesh        (MeshType, const Id&);
+          WingedMesh&   newWingedMesh        (MeshType, WingedMesh&&);
           WingedMesh&   wingedMesh           (const Id&);
     const WingedMesh&   wingedMesh           (const Id&) const;
 
