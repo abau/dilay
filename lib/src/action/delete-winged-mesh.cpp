@@ -1,6 +1,6 @@
+#include <memory>
 #include "action/delete-winged-mesh.hpp"
 #include "action/ids.hpp"
-#include "action/from-mesh.hpp"
 #include "winged/mesh.hpp"
 #include "state.hpp"
 #include "scene.hpp"
@@ -9,24 +9,24 @@
 #include "id.hpp"
 
 struct ActionDeleteWMesh::Impl {
-  ActionIds ids;
-  Mesh      mesh;
-  MeshType  meshType;
+  ActionIds                    ids;
+  MeshType                     meshType;
+  std::unique_ptr <WingedMesh> mesh;
   
   void deleteMesh (MeshType t, WingedMesh& wMesh) {
     this->ids.setMesh (0, wMesh);
     this->meshType = t;
-    this->mesh     = wMesh.mesh ();
-    State::scene ().deleteMesh (this->meshType, wMesh.id ());
+    this->mesh.reset (new WingedMesh (std::move (wMesh)));
+    State::scene ().deleteMesh (this->meshType, this->ids.getIdRef (0));
   }
 
   void runUndo () {
-    WingedMesh& wMesh = State::scene ().newWingedMesh (this->meshType, this->ids.getIdRef (0));
-    ActionFromMesh fromMesh;
-    fromMesh.run (wMesh, this->mesh);
+    assert (this->mesh);
+    State::scene ().newWingedMesh (this->meshType, std::move (*this->mesh));
   }
     
   void runRedo () {
+    this->mesh.reset (new WingedMesh (std::move (this->ids.getWingedMesh (0))));
     State::scene ().deleteMesh (this->meshType, this->ids.getIdRef (0));
   }
 };
