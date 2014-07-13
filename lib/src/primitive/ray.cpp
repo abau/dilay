@@ -12,12 +12,18 @@ struct PrimRay::Impl {
     , direction (glm::normalize (d)) 
       {}
 
+  Impl (const PrimRay& r, const glm::mat4x4& m) 
+    : Impl ( glm::vec3 (m * glm::vec4 (r.origin (), 1.0f))
+           , glm::vec3 (m * glm::vec4 (r.direction (), 0.0f))
+           ) {}
+
   glm::vec3 pointAt (float t) const {
     return this->origin + (this->direction * glm::vec3 (t));
   }
 };
 
-DELEGATE2_BIG6 (PrimRay,const glm::vec3&,const glm::vec3&)
+DELEGATE2_BIG6        (PrimRay, const glm::vec3&, const glm::vec3&)
+DELEGATE2_CONSTRUCTOR (PrimRay, const PrimRay&, const glm::mat4x4&)
 
 GETTER_CONST    (const glm::vec3&, PrimRay, origin)
 GETTER_CONST    (const glm::vec3&, PrimRay, direction)

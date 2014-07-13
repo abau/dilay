@@ -9,6 +9,8 @@ class PrimRay {
   public:
     DECLARE_BIG6 (PrimRay,const glm::vec3&, const glm::vec3&)
 
+    PrimRay (const PrimRay&, const glm::mat4x4&);
+
     const glm::vec3& origin    () const;
     const glm::vec3& direction () const;
 
