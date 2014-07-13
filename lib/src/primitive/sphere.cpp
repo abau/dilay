@@ -8,9 +8,13 @@ struct PrimSphere::Impl {
   const float     radius;
 
   Impl (const glm::vec3& o, float r) : center (o), radius (r) {}
+
+  Impl (const PrimSphere& s, const glm::mat4x4& m) 
+    : Impl (glm::vec3 (m * glm::vec4 (s.center (), 1.0)), s.radius ()) {}
 };
 
-DELEGATE2_BIG6 (PrimSphere,const glm::vec3&, float)
+DELEGATE2_BIG6        (PrimSphere, const glm::vec3&, float)
+DELEGATE2_CONSTRUCTOR (PrimSphere, const PrimSphere&, const glm::mat4x4&)
 GETTER_CONST   (const glm::vec3&,PrimSphere,center)
 GETTER_CONST   (float           ,PrimSphere,radius)
 
