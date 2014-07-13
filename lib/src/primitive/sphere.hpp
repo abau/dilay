@@ -7,15 +7,11 @@
 
 class PrimSphere {
   public:
-    DECLARE_BIG6 (PrimSphere)
-
-    PrimSphere (const glm::vec3&, float);
+    DECLARE_BIG6 (PrimSphere, const glm::vec3&, float);
 
     const glm::vec3& center () const;
     float            radius () const;
 
-    void             center (const glm::vec3&);
-    void             radius (float);
   private:
     class Impl;
     Impl* impl;
