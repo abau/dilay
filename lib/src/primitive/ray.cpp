@@ -4,8 +4,8 @@
 #include "util.hpp"
 
 struct PrimRay::Impl {
-  glm::vec3 origin;
-  glm::vec3 direction;
+  const glm::vec3 origin;
+  const glm::vec3 direction;
 
   Impl (const glm::vec3& o, const glm::vec3& d) 
     : origin    (o)
