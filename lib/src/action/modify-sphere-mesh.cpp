@@ -18,7 +18,7 @@ struct ActionModifySMesh :: Impl {
   OperandData operandData;
 
   void newNode (SphereMesh& mesh, SphereMeshNode* parent, const glm::vec3& pos, float r) {
-    this->operation      = Operation::ModifyNode;
+    this->operation      = Operation::NewNode;
     SphereMeshNode& node = mesh.addNode (parent, pos, r);
     this->operandData    = {pos, r};
     this->operandIds.setNode (0, &node);
