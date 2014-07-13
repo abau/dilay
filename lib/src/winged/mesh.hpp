@@ -69,6 +69,17 @@ class WingedMesh {
     bool            intersects        (const PrimSphere&, std::unordered_set <Id>&);
     bool            intersects        (const PrimSphere&, std::unordered_set <WingedVertex*>&);
 
+    void            scale             (const glm::vec3&);
+    void            scaling           (const glm::vec3&);
+    glm::vec3       scaling           () const;
+    void            translate         (const glm::vec3&);
+    void            position          (const glm::vec3&);
+    glm::vec3       position          () const;
+    void            rotationMatrix    (const glm::mat4x4&);
+    void            rotationX         (float);
+    void            rotationY         (float);
+    void            rotationZ         (float);
+
     SAFE_REF1 (WingedVertex, vertexSLOW, unsigned int)
     SAFE_REF1 (WingedEdge  , edgeSLOW  , const Id&)
     SAFE_REF1 (WingedFace  , face      , const Id&)
