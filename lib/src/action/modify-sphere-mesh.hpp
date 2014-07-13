@@ -13,7 +13,6 @@ class ActionModifySMesh : public ActionOn <SphereMesh> {
     DECLARE_BIG3 (ActionModifySMesh)
 
     void newNode    (SphereMesh&, SphereMeshNode*, const glm::vec3&, float);
-    void modifyNode (SphereMeshNode&, const glm::vec3&, float);
     // Node to delete must be leaf
     void deleteNode (SphereMesh&, SphereMeshNode&);
 

@@ -4,7 +4,7 @@
 #include "action/ids.hpp"
 
 enum class Operation { 
-  NewNode, ModifyNode, DeleteNode
+  NewNode, DeleteNode
 };
 
 struct OperandData {
@@ -25,14 +25,6 @@ struct ActionModifySMesh :: Impl {
     this->operandIds.setNode (1,  parent);
   }
 
-  void modifyNode (SphereMeshNode& node, const glm::vec3& pos, float r) {
-    this->operation = Operation::ModifyNode;
-    this->operandIds.setNode (0, &node);
-    this->operandData = {node.position (), node.radius ()};
-    node.position (pos);
-    node.radius   (r);
-  }
-
   void deleteNode (SphereMesh& mesh, SphereMeshNode& node) {
     assert (node.numChildren () == 0);
     this->operation   = Operation::DeleteNode;
@@ -40,22 +32,6 @@ struct ActionModifySMesh :: Impl {
     this->operandIds.setNode (0, &node);
     this->operandIds.setNode (1,  node.parent ());
     mesh.deleteNode (node);
-  }
-
-  void toggle (SphereMesh& mesh) {
-    switch (this->operation) {
-      case Operation::ModifyNode: {
-        SphereMeshNode* node = this->operandIds.getSphereMeshNode (mesh, 0);
-        glm::vec3       pos  = node->position ();
-        float           r    = node->radius   ();
-        node->position (this->operandData.position);
-        node->radius   (this->operandData.radius);
-        this->operandData.position = pos;
-        this->operandData.radius   = r;
-        break;
-      }
-      default: assert (false);
-    }
   }
 
   void runUndo (SphereMesh& mesh) { 
@@ -68,8 +44,6 @@ struct ActionModifySMesh :: Impl {
                      , this->operandIds.getSphereMeshNode (mesh, 1)
                      , this->operandData.position, this->operandData.radius);
         break;
-      default:
-        this->toggle (mesh);
     }
   }
 
@@ -83,8 +57,6 @@ struct ActionModifySMesh :: Impl {
       case Operation::DeleteNode:
         mesh.deleteNode (mesh.node (this->operandIds.getIdRef (0)));
         break;
-      default:
-        this->toggle (mesh);
     }
   }
 };
@@ -92,7 +64,6 @@ struct ActionModifySMesh :: Impl {
 DELEGATE_BIG3 (ActionModifySMesh)
 
 DELEGATE4 (void, ActionModifySMesh, newNode   , SphereMesh&, SphereMeshNode*, const glm::vec3&, float)
-DELEGATE3 (void, ActionModifySMesh, modifyNode, SphereMeshNode&, const glm::vec3&, float)
 DELEGATE2 (void, ActionModifySMesh, deleteNode, SphereMesh&, SphereMeshNode&);
 DELEGATE1 (void, ActionModifySMesh, runUndo   , SphereMesh&)
 DELEGATE1 (void, ActionModifySMesh, runRedo   , SphereMesh&)
