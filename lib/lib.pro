@@ -15,6 +15,7 @@ SOURCES += \
            src/action/from-mesh.cpp \
            src/action/ids.cpp \
            src/action/modify-sphere-mesh.cpp \
+           src/action/modify-winged-mesh.cpp \
            src/action/move.cpp \
            src/action/new-winged-mesh.cpp \
            src/action/new-sphere-mesh.cpp \
@@ -100,6 +101,7 @@ HEADERS += \
            src/action/from-mesh.hpp \
            src/action/ids.hpp \
            src/action/modify-sphere-mesh.hpp \
+           src/action/modify-winged-mesh.hpp \
            src/action/move.hpp \
            src/action/new-winged-mesh.hpp \
            src/action/new-sphere-mesh.hpp \
