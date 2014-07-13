@@ -13,7 +13,6 @@ class ActionMove : public Action {
     DECLARE_BIG3 (ActionMove)
 
     void translate (const std::list <SphereMesh*>&, const glm::vec3&);
-    void position  (SphereMesh&, const glm::vec3&);
 
   private:
     void runUndo ();

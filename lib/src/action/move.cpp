@@ -22,13 +22,6 @@ struct ActionMove::Impl {
     }
   }
 
-  void position (SphereMesh& mesh, const glm::vec3& p) {
-    this->selection = SelectionMode::Sphere;
-    this->delta     = p - mesh.position ();
-    this->ids.setId (0, mesh.id ());
-    mesh.translate  (this->delta);
-  }
-
   void toggle () {
     this->delta = -this->delta;
 
@@ -50,6 +43,5 @@ struct ActionMove::Impl {
 
 DELEGATE_BIG3 (ActionMove)
 DELEGATE2 (void, ActionMove, translate, const std::list <SphereMesh*>&, const glm::vec3&)
-DELEGATE2 (void, ActionMove, position , SphereMesh&, const glm::vec3&)
 DELEGATE  (void, ActionMove, runUndo)
 DELEGATE  (void, ActionMove, runRedo)
