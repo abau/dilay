@@ -3,6 +3,7 @@
 #include "action/ids.hpp"
 #include "selection-mode.hpp"
 #include "sphere/mesh.hpp"
+#include "winged/mesh.hpp"
 #include "id.hpp"
 
 struct ActionTranslate::Impl {
@@ -22,6 +23,18 @@ struct ActionTranslate::Impl {
     }
   }
 
+  void translate (const std::list <WingedMesh*>& meshes, const glm::vec3& t) {
+    this->selection = SelectionMode::Freeform;
+    this->delta     = t;
+
+    unsigned int i = 0;
+    for (WingedMesh* m : meshes) {
+      this->ids.setId (i, m->id ());
+      m->translate    (this->delta);
+      i = i + 1;
+    }
+  }
+
   void toggle () {
     this->delta = -this->delta;
 
@@ -29,6 +42,12 @@ struct ActionTranslate::Impl {
       case SelectionMode::Sphere: {
         for (unsigned int i = 0; i < this->ids.numIds (); i++) {
           this->ids.getSphereMesh (i).translate (this->delta);
+        }
+        break;
+      }
+      case SelectionMode::Freeform: {
+        for (unsigned int i = 0; i < this->ids.numIds (); i++) {
+          this->ids.getWingedMesh (i).translate (this->delta);
         }
         break;
       }
@@ -43,5 +62,6 @@ struct ActionTranslate::Impl {
 
 DELEGATE_BIG3 (ActionTranslate)
 DELEGATE2 (void, ActionTranslate, translate, const std::list <SphereMesh*>&, const glm::vec3&)
+DELEGATE2 (void, ActionTranslate, translate, const std::list <WingedMesh*>&, const glm::vec3&)
 DELEGATE  (void, ActionTranslate, runUndo)
 DELEGATE  (void, ActionTranslate, runRedo)
