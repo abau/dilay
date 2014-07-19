@@ -19,7 +19,6 @@ class Mesh {
     unsigned int       sizeOfIndices     () const;
     unsigned int       sizeOfNormals     () const;
     glm::vec3          vertex            (unsigned int) const;
-    glm::vec3          worldVertex       (unsigned int) const;
     unsigned int       index             (unsigned int) const;
     glm::vec3          normal            (unsigned int) const;
     void               allocateIndices   (unsigned int);

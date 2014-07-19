@@ -2,6 +2,7 @@
 #include <map>
 #include <glm/glm.hpp>
 #include "action/from-mesh.hpp"
+#include "action/modify-winged-mesh.hpp"
 #include "winged/mesh.hpp"
 #include "winged/edge.hpp"
 #include "mesh.hpp"
@@ -74,7 +75,7 @@ struct ActionFromMesh :: Impl {
 
     // Octree
     for (unsigned int i = 0; i < m.numVertices (); i++) {
-      glm::vec3 v = m.worldVertex (i);
+      glm::vec3 v = m.vertex (i);
       maxVertex = glm::max (maxVertex, v);
       minVertex = glm::min (minVertex, v);
     }
@@ -87,7 +88,7 @@ struct ActionFromMesh :: Impl {
     // Vertices
     for (unsigned int i = 0; i < m.numVertices (); i++) {
       vecVertices [i] = &this->actions.add<PAModifyWMesh> ()
-                              .addVertex (w, m.worldVertex (i));
+                              .addVertex (w, m.vertex (i));
     }
 
     // Faces & Edges
@@ -112,6 +113,10 @@ struct ActionFromMesh :: Impl {
       this->actions.add <PAModifyWEdge> ().predecessor (*e3, f, e2);
       this->actions.add <PAModifyWEdge> ().successor   (*e3, f, e1);
     }
+
+    this->actions.add <ActionModifyWMesh> ().position       (w, m.position ());
+    this->actions.add <ActionModifyWMesh> ().rotationMatrix (w, m.rotationMatrix ());
+    this->actions.add <ActionModifyWMesh> ().scaling        (w, m.scaling ());
 
     if (this->self->writeMesh ()) {
       w.write ();

@@ -89,10 +89,6 @@ struct Mesh::Impl {
         );
   }
 
-  glm::vec3 worldVertex (unsigned int i) const {
-    return Util::transformPosition (this->modelMatrix (), this->vertex (i));
-  }
-
   unsigned int index (unsigned int i) const { return this->indices [i]; }
 
   glm::vec3 normal (unsigned int i) const {
@@ -577,7 +573,6 @@ DELEGATE_CONST   (unsigned int      , Mesh, sizeOfVertices)
 DELEGATE_CONST   (unsigned int      , Mesh, sizeOfIndices)
 DELEGATE_CONST   (unsigned int      , Mesh, sizeOfNormals)
 DELEGATE1_CONST  (glm::vec3         , Mesh, vertex, unsigned int)
-DELEGATE1_CONST  (glm::vec3         , Mesh, worldVertex, unsigned int)
 DELEGATE1_CONST  (unsigned int      , Mesh, index, unsigned int)
 DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
 
