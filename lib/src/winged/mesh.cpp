@@ -243,16 +243,17 @@ struct WingedMesh::Impl {
   }
 
 
-  void      scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
-  void      scaling        (const glm::vec3& v)   { return this->mesh.scaling (v); }
-  glm::vec3 scaling        () const               { return this->mesh.scaling (); }
-  void      translate      (const glm::vec3& v)   { return this->mesh.translate (v); }
-  void      position       (const glm::vec3& v)   { return this->mesh.position (v); }
-  glm::vec3 position       () const               { return this->mesh.position (); }
-  void      rotationMatrix (const glm::mat4x4& m) { return this->mesh.rotationMatrix (m); }
-  void      rotationX      (float v)              { return this->mesh.rotationX (v); }
-  void      rotationY      (float v)              { return this->mesh.rotationY (v); }
-  void      rotationZ      (float v)              { return this->mesh.rotationZ (v); }
+  void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
+  void               scaling        (const glm::vec3& v)   { return this->mesh.scaling (v); }
+  glm::vec3          scaling        () const               { return this->mesh.scaling (); }
+  void               translate      (const glm::vec3& v)   { return this->mesh.translate (v); }
+  void               position       (const glm::vec3& v)   { return this->mesh.position (v); }
+  glm::vec3          position       () const               { return this->mesh.position (); }
+  void               rotationMatrix (const glm::mat4x4& m) { return this->mesh.rotationMatrix (m); }
+  const glm::mat4x4& rotationMatrix () const               { return this->mesh.rotationMatrix (); }
+  void               rotationX      (float v)              { return this->mesh.rotationX (v); }
+  void               rotationY      (float v)              { return this->mesh.rotationY (v); }
+  void               rotationZ      (float v)              { return this->mesh.rotationZ (v); }
 };
 
 DELEGATE_BIG3_SELF         (WingedMesh)
@@ -304,13 +305,14 @@ DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceInterse
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<Id>&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<WingedVertex*>&)
 
-DELEGATE1       (void     , WingedMesh, scale, const glm::vec3&)
-DELEGATE1       (void     , WingedMesh, scaling, const glm::vec3&)
-DELEGATE_CONST  (glm::vec3, WingedMesh, scaling)
-DELEGATE1       (void     , WingedMesh, translate, const glm::vec3&)
-DELEGATE1       (void     , WingedMesh, position, const glm::vec3&)
-DELEGATE_CONST  (glm::vec3, WingedMesh, position)
-DELEGATE1       (void     , WingedMesh, rotationMatrix, const glm::mat4x4&)
-DELEGATE1       (void     , WingedMesh, rotationX, float)
-DELEGATE1       (void     , WingedMesh, rotationY, float)
+DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
+DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)
+DELEGATE_CONST  (glm::vec3         , WingedMesh, scaling)
+DELEGATE1       (void              , WingedMesh, translate, const glm::vec3&)
+DELEGATE1       (void              , WingedMesh, position, const glm::vec3&)
+DELEGATE_CONST  (glm::vec3         , WingedMesh, position)
+DELEGATE1       (void              , WingedMesh, rotationMatrix, const glm::mat4x4&)
+DELEGATE_CONST  (const glm::mat4x4&, WingedMesh, rotationMatrix)
+DELEGATE1       (void              , WingedMesh, rotationX, float)
+DELEGATE1       (void              , WingedMesh, rotationY, float)
 DELEGATE1       (void     , WingedMesh, rotationZ, float)
