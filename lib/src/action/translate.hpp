@@ -1,5 +1,5 @@
-#ifndef DILAY_ACTION_MOVE
-#define DILAY_ACTION_MOVE
+#ifndef DILAY_ACTION_TRANSLATE
+#define DILAY_ACTION_TRANSLATE
 
 #include <list>
 #include <glm/fwd.hpp>
@@ -8,9 +8,9 @@
 
 class SphereMesh;
 
-class ActionMove : public Action {
+class ActionTranslate : public Action {
   public: 
-    DECLARE_BIG3 (ActionMove)
+    DECLARE_BIG3 (ActionTranslate)
 
     void translate (const std::list <SphereMesh*>&, const glm::vec3&);
 

@@ -1,11 +1,11 @@
 #include <glm/glm.hpp>
-#include "action/move.hpp"
+#include "action/translate.hpp"
 #include "action/ids.hpp"
 #include "selection-mode.hpp"
 #include "sphere/mesh.hpp"
 #include "id.hpp"
 
-struct ActionMove::Impl {
+struct ActionTranslate::Impl {
   SelectionMode selection;
   ActionIds     ids;
   glm::vec3     delta;
@@ -41,7 +41,7 @@ struct ActionMove::Impl {
   void runRedo () { this->toggle (); }
 };
 
-DELEGATE_BIG3 (ActionMove)
-DELEGATE2 (void, ActionMove, translate, const std::list <SphereMesh*>&, const glm::vec3&)
-DELEGATE  (void, ActionMove, runUndo)
-DELEGATE  (void, ActionMove, runRedo)
+DELEGATE_BIG3 (ActionTranslate)
+DELEGATE2 (void, ActionTranslate, translate, const std::list <SphereMesh*>&, const glm::vec3&)
+DELEGATE  (void, ActionTranslate, runUndo)
+DELEGATE  (void, ActionTranslate, runRedo)

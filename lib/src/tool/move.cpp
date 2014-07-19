@@ -10,7 +10,7 @@
 #include "sphere/mesh.hpp"
 #include "selection-mode.hpp"
 #include "selection.hpp"
-#include "action/move.hpp"
+#include "action/translate.hpp"
 
 typedef Variant <const SphereMeshes> Entities;
 
@@ -68,7 +68,7 @@ struct ToolMove::Impl {
 
     this->entities.caseOf <void>
       ( [this] (const SphereMeshes& ms) {
-          State::history ().add <ActionMove> ().translate (ms, this->movement.delta ());
+          State::history ().add <ActionTranslate> ().translate (ms, this->movement.delta ());
         }
       );
   }

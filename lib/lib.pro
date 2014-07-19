@@ -16,11 +16,11 @@ SOURCES += \
            src/action/ids.cpp \
            src/action/modify-sphere-mesh.cpp \
            src/action/modify-winged-mesh.cpp \
-           src/action/move.cpp \
            src/action/new-winged-mesh.cpp \
            src/action/new-sphere-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/subdivide.cpp \
+           src/action/translate.cpp \
            src/action/unit.cpp \
            src/adjacent-iterator.cpp \
            src/axis.cpp \
@@ -102,13 +102,13 @@ HEADERS += \
            src/action/ids.hpp \
            src/action/modify-sphere-mesh.hpp \
            src/action/modify-winged-mesh.hpp \
-           src/action/move.hpp \
            src/action/new-winged-mesh.hpp \
            src/action/new-sphere-mesh.hpp \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/subdivide.hpp \
            src/action/transformer.hpp \
+           src/action/translate.hpp \
            src/action/unit.hpp \
            src/action/unit/on.hpp \
            src/adjacent-iterator.hpp \
