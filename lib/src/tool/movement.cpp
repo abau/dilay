@@ -20,10 +20,6 @@ struct ToolMovement::Impl {
     , position         (p)
     {}
 
-  Impl (Movement m) 
-    : Impl (m, glm::vec3 (0.0f)) 
-    {}
-
   glm::vec3 delta () const {
     return this->position - this->originalPosition;
   }
@@ -117,7 +113,6 @@ struct ToolMovement::Impl {
 };
 
 DELEGATE2_BIG6        (ToolMovement, Movement, const glm::vec3&)
-DELEGATE1_CONSTRUCTOR (ToolMovement, Movement)
 GETTER_CONST    (const glm::vec3&, ToolMovement, originalPosition)
 DELEGATE_CONST  (glm::vec3       , ToolMovement, delta)
 GETTER_CONST    (const glm::vec3&, ToolMovement, position)

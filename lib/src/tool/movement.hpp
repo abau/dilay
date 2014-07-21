@@ -12,8 +12,6 @@ class ToolMovement {
   public:
     DECLARE_BIG6 (ToolMovement, Movement, const glm::vec3&)
 
-    ToolMovement (Movement);
-
     const glm::vec3& originalPosition () const;
           glm::vec3  delta            () const;
     const glm::vec3& position         () const;
