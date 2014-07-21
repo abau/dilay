@@ -6,11 +6,11 @@
 
 class QMouseEvent;
 
-enum class Movement { X, Y, Z, CameraPlane, PrimaryPlane };
+enum class Movement { X, Y, Z, XY, XZ, YZ, CameraPlane, PrimaryPlane };
 
 class ToolMovement {
   public:
-    DECLARE_BIG6 (ToolMovement, Movement, const glm::vec3&)
+    DECLARE_BIG6 (ToolMovement, Movement, const glm::ivec2&)
 
     const glm::vec3& originalPosition () const;
           glm::vec3  delta            () const;

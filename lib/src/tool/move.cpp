@@ -13,6 +13,9 @@
 #include "selection.hpp"
 #include "action/translate.hpp"
 #include "mesh-type.hpp"
+#include "view/tool-menu-parameters.hpp"
+#include "view/main-window.hpp"
+#include "view/gl-widget.hpp"
 
 typedef Variant <const SphereMeshes, const WingedMeshes> Entities;
 
@@ -24,7 +27,7 @@ struct ToolMove::Impl {
   Impl (ToolMove* s, Movement m) 
     : self     (s) 
     , entities (std::move (Impl::getEntities ()))
-    , movement (m, Impl::pointOfAction ())
+    , movement (m, s->menuParameters ().mainWindow ().glWidget ().cursorPosition ())
   {
   }
 
@@ -48,21 +51,6 @@ struct ToolMove::Impl {
         assert (false);
     }
     return entities;
-  }
-
-  glm::vec3 pointOfAction () const {
-    const float     num = float (State::scene ().numSelections ());
-          glm::vec3 poa (0.0f);
-
-    this->entities.caseOf <void>
-      ( [num,&poa] (const SphereMeshes& ms) {
-          for (const SphereMesh* m : ms) { poa += m->position () / num; }
-        }
-      , [num,&poa] (const WingedMeshes& ms) {
-          for (const WingedMesh* m : ms) { poa += m->position () / num; }
-        }
-      );
-    return poa;
   }
 
   void translateSelectionBy (const glm::vec3& t) {
