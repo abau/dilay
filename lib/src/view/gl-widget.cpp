@@ -14,7 +14,7 @@
 #include "state.hpp"
 #include "camera.hpp"
 #include "tool.hpp"
-#include "tool/rotate-camera.hpp"
+#include "tool/move-camera.hpp"
 #include "history.hpp"
 #include "scene.hpp"
 #include "axis.hpp"
@@ -22,13 +22,13 @@
 #include "primitive/ray.hpp"
 #include "selection-mode.hpp"
 
-typedef std::unique_ptr <ToolRotateCamera> RotateCamera;
+typedef std::unique_ptr <ToolMoveCamera> MoveCamera;
 
 struct ViewGlWidget::Impl {
   ViewGlWidget*   self;
   ViewMainWindow& mainWindow;
   Axis            axis;
-  RotateCamera    toolRotateCamera;
+  MoveCamera      toolMoveCamera;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW) 
     : self (s)
@@ -65,7 +65,7 @@ struct ViewGlWidget::Impl {
         break;
       case ToolResponse::Terminate:
         this->self->update ();
-        this->toolRotateCamera.reset ();
+        this->toolMoveCamera.reset ();
         break;
     }
   }
@@ -161,8 +161,8 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseMoveEvent (QMouseEvent* e) {
-    if (this->toolRotateCamera) {
-      this->handleCameraRotation (this->toolRotateCamera->mouseMoveEvent (*e));
+    if (this->toolMoveCamera) {
+      this->handleCameraRotation (this->toolMoveCamera->mouseMoveEvent (*e));
     }
     else if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mouseMoveEvent (*e));
@@ -170,12 +170,12 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    if (e->button () == Qt::MiddleButton && this->toolRotateCamera == false) {
+    if (e->button () == Qt::MiddleButton && this->toolMoveCamera == false) {
       ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e),false);
-      this->toolRotateCamera.reset (new ToolRotateCamera (parameters));
+      this->toolMoveCamera.reset (new ToolMoveCamera (parameters));
     }
-    else if (this->toolRotateCamera) {
-      this->handleCameraRotation (this->toolRotateCamera->mouseReleaseEvent (*e));
+    else if (this->toolMoveCamera) {
+      this->handleCameraRotation (this->toolMoveCamera->mouseReleaseEvent (*e));
     }
     else if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mouseReleaseEvent (*e));
@@ -204,7 +204,7 @@ struct ViewGlWidget::Impl {
   }
 
   void wheelEvent (QWheelEvent* e) {
-    this->handleCameraRotation (ToolRotateCamera::staticWheelEvent (*e));
+    this->handleCameraRotation (ToolMoveCamera::staticWheelEvent (*e));
   }
 };
 

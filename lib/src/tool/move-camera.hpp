@@ -1,11 +1,11 @@
-#ifndef DILAY_TOOL_ROTATE_CAMERA
-#define DILAY_TOOL_ROTATE_CAMERA
+#ifndef DILAY_TOOL_MOVE_CAMERA
+#define DILAY_TOOL_MOVE_CAMERA
 
 #include "tool.hpp"
 
-class ToolRotateCamera : public Tool {
+class ToolMoveCamera : public Tool {
   public:
-    DECLARE_BIG3 (ToolRotateCamera, const ViewToolMenuParameters&)
+    DECLARE_BIG3 (ToolMoveCamera, const ViewToolMenuParameters&)
 
     static ToolResponse staticWheelEvent (QWheelEvent&);
 

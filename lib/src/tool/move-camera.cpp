@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <QWheelEvent>
-#include "tool/rotate-camera.hpp"
+#include "tool/move-camera.hpp"
 #include "renderer.hpp"
 #include "state.hpp"
 #include "camera.hpp"
@@ -12,16 +12,16 @@
 #include "view/tool-message.hpp"
 #include "config.hpp"
 
-struct ToolRotateCamera::Impl {
-        ToolRotateCamera* self;
-        glm::ivec2        oldPos;
-  const glm::vec3         originalGazepoint;
-  const glm::vec3         originalToEyepoint;
-  const glm::vec3         originalUp;
-  const float             rotationFactor;
-  const float             panningFactor;
+struct ToolMoveCamera::Impl {
+        ToolMoveCamera* self;
+        glm::ivec2      oldPos;
+  const glm::vec3       originalGazepoint;
+  const glm::vec3       originalToEyepoint;
+  const glm::vec3       originalUp;
+  const float           rotationFactor;
+  const float           panningFactor;
 
-  Impl (ToolRotateCamera* s)
+  Impl (ToolMoveCamera* s)
     : self               (s)
     , oldPos             (s->menuParameters ().clickPosition ())
     , originalGazepoint  (State::camera ().gazePoint ())
@@ -103,10 +103,10 @@ struct ToolRotateCamera::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolRotateCamera, (const ViewToolMenuParameters& p)
+DELEGATE_BIG3_BASE ( ToolMoveCamera, (const ViewToolMenuParameters& p)
                    , (this), Tool, (p) )
-DELEGATE1        (ToolResponse, ToolRotateCamera, runMouseMoveEvent, QMouseEvent&)
-DELEGATE1        (ToolResponse, ToolRotateCamera, runMouseReleaseEvent, QMouseEvent&)
-DELEGATE1_STATIC (ToolResponse, ToolRotateCamera, staticWheelEvent, QWheelEvent&)
-DELEGATE_CONST   (QString     , ToolRotateCamera, runMessage)
-DELEGATE         (void        , ToolRotateCamera, runCancel)
+DELEGATE1        (ToolResponse, ToolMoveCamera, runMouseMoveEvent, QMouseEvent&)
+DELEGATE1        (ToolResponse, ToolMoveCamera, runMouseReleaseEvent, QMouseEvent&)
+DELEGATE1_STATIC (ToolResponse, ToolMoveCamera, staticWheelEvent, QWheelEvent&)
+DELEGATE_CONST   (QString     , ToolMoveCamera, runMessage)
+DELEGATE         (void        , ToolMoveCamera, runCancel)
