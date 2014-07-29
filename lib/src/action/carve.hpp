@@ -2,6 +2,7 @@
 #define DILAY_ACTION_CARVE
 
 #include <list>
+#include <glm/fwd.hpp>
 #include "action/on-post-processed-winged-mesh.hpp"
 #include "macro.hpp"
 
