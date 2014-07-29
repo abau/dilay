@@ -56,6 +56,22 @@ struct ViewGlWidget::Impl {
     }
   }
 
+  void setToolMoveCamera (ToolMoveCamera& tool) {
+    assert (this->toolMoveCamera == false);
+    this->toolMoveCamera.reset (&tool);
+    this->handleCameraResponse (this->toolMoveCamera->initialize ());
+    this->self->update ();
+  }
+
+  void deleteToolMoveCamera (bool cancel = false) {
+    assert (this->toolMoveCamera);
+    if (cancel) {
+      this->toolMoveCamera->cancel ();
+    }
+    this->toolMoveCamera.reset (nullptr);
+    this->self->update ();
+  }
+
   void handleCameraResponse (ToolResponse response) {
     switch (response) {
       case ToolResponse::None:
@@ -64,8 +80,7 @@ struct ViewGlWidget::Impl {
         this->self->update ();
         break;
       case ToolResponse::Terminate:
-        this->self->update ();
-        this->toolMoveCamera.reset ();
+        this->deleteToolMoveCamera ();
         break;
     }
   }
@@ -115,9 +130,19 @@ struct ViewGlWidget::Impl {
   }
 
   void keyPressEvent (QKeyEvent* e) {
-    if (State::hasTool ()) {
+    if (this->toolMoveCamera) {
       switch (e->key()) {
         case Qt::Key_Escape:
+          this->deleteToolMoveCamera (true);
+          break;
+        default:
+          this->self->QGLWidget::keyPressEvent (e);
+      }
+    }
+    else if (State::hasTool ()) {
+      switch (e->key()) {
+        case Qt::Key_Escape:
+          State::tool    ().cancel ();
           State::setTool (nullptr);
           break;
         default:
@@ -172,10 +197,10 @@ struct ViewGlWidget::Impl {
   void mouseReleaseEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton && this->toolMoveCamera == false) {
       ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e),false);
-      this->toolMoveCamera.reset (new ToolMoveCamera ( parameters
-                                                     , e->modifiers ().testFlag (Qt::ShiftModifier)
-                                                     ));
-      this->handleCameraResponse (this->toolMoveCamera->initialize ());
+      this->setToolMoveCamera (*new ToolMoveCamera 
+          ( parameters
+          , e->modifiers ().testFlag (Qt::ShiftModifier)
+          ));
     }
     else if (this->toolMoveCamera) {
       this->handleCameraResponse (this->toolMoveCamera->mouseReleaseEvent (*e));
