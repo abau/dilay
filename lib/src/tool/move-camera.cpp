@@ -121,10 +121,10 @@ struct ToolMoveCamera::Impl {
 
   QString runMessage () const {
     return ViewToolMessage::message 
-      ({ ViewToolMessage ("Accept")     .left   () 
-       , ViewToolMessage ("Drag To Pan").middle ()
-       , ViewToolMessage ("Gaze")       .middle ().shift ()
-       , ViewToolMessage ("Cancel")     .right  ()
+      ({ ViewToolMessage (QObject::tr ("Accept"))     .left   () 
+       , ViewToolMessage (QObject::tr ("Drag To Pan")).middle ()
+       , ViewToolMessage (QObject::tr ("Gaze"))       .middle ().shift ()
+       , ViewToolMessage (QObject::tr ("Cancel"))     .right  ()
        }); 
   }
 
