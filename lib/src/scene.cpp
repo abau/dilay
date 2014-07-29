@@ -13,8 +13,6 @@
 #include "selection-mode.hpp"
 #include "selection.hpp"
 
-#include <iostream>
-
 struct Scene :: Impl {
   std::list <WingedMesh>  wingedMeshes;
   std::list <SphereMesh>  sphereMeshes;
