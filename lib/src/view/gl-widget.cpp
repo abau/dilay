@@ -56,7 +56,7 @@ struct ViewGlWidget::Impl {
     }
   }
 
-  void handleCameraRotation (ToolResponse response) {
+  void handleCameraResponse (ToolResponse response) {
     switch (response) {
       case ToolResponse::None:
         break;
@@ -162,7 +162,7 @@ struct ViewGlWidget::Impl {
 
   void mouseMoveEvent (QMouseEvent* e) {
     if (this->toolMoveCamera) {
-      this->handleCameraRotation (this->toolMoveCamera->mouseMoveEvent (*e));
+      this->handleCameraResponse (this->toolMoveCamera->mouseMoveEvent (*e));
     }
     else if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mouseMoveEvent (*e));
@@ -175,10 +175,10 @@ struct ViewGlWidget::Impl {
       this->toolMoveCamera.reset (new ToolMoveCamera ( parameters
                                                      , e->modifiers ().testFlag (Qt::ShiftModifier)
                                                      ));
-      this->handleCameraRotation (this->toolMoveCamera->initialize ());
+      this->handleCameraResponse (this->toolMoveCamera->initialize ());
     }
     else if (this->toolMoveCamera) {
-      this->handleCameraRotation (this->toolMoveCamera->mouseReleaseEvent (*e));
+      this->handleCameraResponse (this->toolMoveCamera->mouseReleaseEvent (*e));
     }
     else if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mouseReleaseEvent (*e));
@@ -207,7 +207,7 @@ struct ViewGlWidget::Impl {
   }
 
   void wheelEvent (QWheelEvent* e) {
-    this->handleCameraRotation (ToolMoveCamera::staticWheelEvent (*e));
+    this->handleCameraResponse (ToolMoveCamera::staticWheelEvent (*e));
   }
 };
 
