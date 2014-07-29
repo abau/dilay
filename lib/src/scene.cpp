@@ -108,6 +108,17 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
+  bool intersects (const PrimRay& ray, Intersection& intersection) {
+    WingedFaceIntersection i1;
+    this->intersects (ray, i1);
+
+    SphereNodeIntersection i2;
+    this->intersects (ray, i2);
+
+    intersection = Intersection::min (i1, i2);
+    return intersection.isIntersection ();
+  }
+
   std::pair <Id,Id> intersects (const PrimRay& ray) {
     switch (this->selectionMode) {
       case SelectionMode::Freeform: {
@@ -231,6 +242,7 @@ DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, SelectionMode, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, SphereNodeIntersection&)
+DELEGATE2       (bool             , Scene, intersects, const PrimRay&, Intersection&)
 GETTER_CONST    (SelectionMode    , Scene, selectionMode)
 DELEGATE1       (void             , Scene, changeSelectionMode, SelectionMode)
 GETTER_CONST    (const Selection& , Scene, selection)

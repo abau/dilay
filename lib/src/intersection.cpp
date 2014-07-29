@@ -33,13 +33,23 @@ struct Intersection :: Impl {
   void reset () {
     this->isIntersection = false;
   }
+
+  static Intersection& min (Intersection& a, Intersection& b) {
+    if (a.isIntersection () && (b.isIntersection () == false || a.distance () < b.distance ())) {
+      return a;
+    }
+    else {
+      return b;
+    }
+  }
 };
 
-DELEGATE_BIG6 (Intersection)
-DELEGATE2     (bool            , Intersection, update, float, const glm::vec3&)
-GETTER_CONST  (bool            , Intersection, isIntersection)
-GETTER_CONST  (float           , Intersection, distance)
-GETTER_CONST  (const glm::vec3&, Intersection, position)
+DELEGATE_BIG6    (Intersection)
+DELEGATE2        (bool            , Intersection, update, float, const glm::vec3&)
+GETTER_CONST     (bool            , Intersection, isIntersection)
+GETTER_CONST     (float           , Intersection, distance)
+GETTER_CONST     (const glm::vec3&, Intersection, position)
+DELEGATE2_STATIC (Intersection&   , Intersection, min, Intersection&, Intersection&)
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& vec) {
   return glm::distance (vec,sphere.center ()) <= sphere.radius ();

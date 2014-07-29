@@ -13,6 +13,7 @@ class SphereNodeIntersection;
 class IdSet;
 enum class SelectionMode;
 class Selection;
+class Intersection;
 
 typedef std::list <WingedMesh*> WingedMeshes;
 typedef std::list <SphereMesh*> SphereMeshes;
@@ -39,6 +40,7 @@ class Scene {
           bool          intersects           (SelectionMode, const PrimRay&, WingedFaceIntersection&);
           bool          intersects           (const PrimRay&, WingedFaceIntersection&);
           bool          intersects           (const PrimRay&, SphereNodeIntersection&);
+          bool          intersects           (const PrimRay&, Intersection&);
 
           SelectionMode selectionMode        () const;
           void          changeSelectionMode  (SelectionMode);
