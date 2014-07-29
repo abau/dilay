@@ -5,7 +5,7 @@
 
 class ToolMoveCamera : public Tool {
   public:
-    DECLARE_BIG3 (ToolMoveCamera, const ViewToolMenuParameters&)
+    DECLARE_BIG3 (ToolMoveCamera, const ViewToolMenuParameters&, bool)
 
     static ToolResponse staticWheelEvent (QWheelEvent&);
 
@@ -13,6 +13,7 @@ class ToolMoveCamera : public Tool {
     class Impl;
     Impl* impl;
 
+    ToolResponse runInitialize        ();
     ToolResponse runMouseMoveEvent    (QMouseEvent&);
     ToolResponse runMouseReleaseEvent (QMouseEvent&);
     QString      runMessage           () const;

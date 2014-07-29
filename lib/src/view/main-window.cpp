@@ -41,9 +41,10 @@ struct ViewMainWindow :: Impl {
 
   void showDefaultMessage () {
     this->showMessage (ViewToolMessage::message 
-        ({ ViewToolMessage (QObject::tr ("Select"))     .left   ()
-         , ViewToolMessage (QObject::tr ("Camera Mode")).middle ()
-         , ViewToolMessage (QObject::tr ("Menu"))       .right  ()
+        ({ ViewToolMessage (QObject::tr ("Select"))            .left   ()
+         , ViewToolMessage (QObject::tr ("Camera Mode"))       .middle ()
+         , ViewToolMessage (QObject::tr ("Gaze & Camera Mode")).middle ().shift ()
+         , ViewToolMessage (QObject::tr ("Menu"))              .right  ()
          }));
   }
 

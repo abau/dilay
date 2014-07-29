@@ -172,7 +172,10 @@ struct ViewGlWidget::Impl {
   void mouseReleaseEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton && this->toolMoveCamera == false) {
       ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e),false);
-      this->toolMoveCamera.reset (new ToolMoveCamera (parameters));
+      this->toolMoveCamera.reset (new ToolMoveCamera ( parameters
+                                                     , e->modifiers ().testFlag (Qt::ShiftModifier)
+                                                     ));
+      this->handleCameraRotation (this->toolMoveCamera->initialize ());
     }
     else if (this->toolMoveCamera) {
       this->handleCameraRotation (this->toolMoveCamera->mouseReleaseEvent (*e));

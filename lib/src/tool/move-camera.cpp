@@ -5,12 +5,15 @@
 #include "renderer.hpp"
 #include "state.hpp"
 #include "camera.hpp"
+#include "scene.hpp"
 #include "view/util.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
 #include "view/tool-menu-parameters.hpp"
 #include "view/tool-message.hpp"
 #include "config.hpp"
+#include "intersection.hpp"
+#include "primitive/ray.hpp"
 
 struct ToolMoveCamera::Impl {
         ToolMoveCamera* self;
@@ -20,8 +23,9 @@ struct ToolMoveCamera::Impl {
   const glm::vec3       originalUp;
   const float           rotationFactor;
   const float           panningFactor;
+  const bool            initiallySetGaze;
 
-  Impl (ToolMoveCamera* s)
+  Impl (ToolMoveCamera* s, bool g)
     : self               (s)
     , oldPos             (s->menuParameters ().clickPosition ())
     , originalGazepoint  (State::camera ().gazePoint ())
@@ -29,6 +33,7 @@ struct ToolMoveCamera::Impl {
     , originalUp         (State::camera ().up ())
     , rotationFactor     (Config::get <float> ("/config/editor/camera/rotation-factor"))
     , panningFactor      (Config::get <float> ("/config/editor/camera/panning-factor"))
+    , initiallySetGaze   (g)
   {
     this->self->menuParameters ().mainWindow ().showMessage (this->self->message ());
   }
@@ -39,6 +44,15 @@ struct ToolMoveCamera::Impl {
     }
     else {
       this->self->menuParameters ().mainWindow ().showDefaultMessage ();
+    }
+  }
+
+  ToolResponse runInitialize () {
+    if (this->initiallySetGaze) {
+      return this->setGaze (this->oldPos);
+    }
+    else {
+      return ToolResponse::None;
     }
   }
 
@@ -70,9 +84,24 @@ struct ToolMoveCamera::Impl {
     return ToolResponse::Redraw;
   }
 
+  ToolResponse setGaze (const glm::ivec2& v) {
+    Camera&      cam = State::camera ();
+    Intersection intersection;
+    if (State::scene ().intersects (cam.ray (v), intersection)) {
+      cam.setGaze (intersection.position ());
+      return ToolResponse::Redraw;
+    }
+    return ToolResponse::None;
+  }
+
   ToolResponse runMouseReleaseEvent (QMouseEvent& event) {
     if (event.button () == Qt::LeftButton) {
       return ToolResponse::Terminate;
+    }
+    else if (event.button () == Qt::MiddleButton
+          && event.modifiers ().testFlag (Qt::ShiftModifier)) 
+    {
+      return this->setGaze (ViewUtil::toIVec2 (event));
     }
     return ToolResponse::None;
   }
@@ -94,6 +123,7 @@ struct ToolMoveCamera::Impl {
     return ViewToolMessage::message 
       ({ ViewToolMessage ("Accept")     .left   () 
        , ViewToolMessage ("Drag To Pan").middle ()
+       , ViewToolMessage ("Gaze")       .middle ().shift ()
        , ViewToolMessage ("Cancel")     .right  ()
        }); 
   }
@@ -103,8 +133,9 @@ struct ToolMoveCamera::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolMoveCamera, (const ViewToolMenuParameters& p)
-                   , (this), Tool, (p) )
+DELEGATE_BIG3_BASE ( ToolMoveCamera, (const ViewToolMenuParameters& p, bool g)
+                   , (this,g), Tool, (p) )
+DELEGATE         (ToolResponse, ToolMoveCamera, runInitialize)
 DELEGATE1        (ToolResponse, ToolMoveCamera, runMouseMoveEvent, QMouseEvent&)
 DELEGATE1        (ToolResponse, ToolMoveCamera, runMouseReleaseEvent, QMouseEvent&)
 DELEGATE1_STATIC (ToolResponse, ToolMoveCamera, staticWheelEvent, QWheelEvent&)
