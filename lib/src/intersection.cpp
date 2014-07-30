@@ -62,30 +62,6 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
   return IntersectionUtil :: intersects (sphere, vertex.vertex (mesh));
 }
 
-bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
-                                    , const WingedEdge& edge) {
-  glm::vec3 v1       = edge.vertex1 ()->vertex (mesh);
-  glm::vec3 v2       = edge.vertex2 ()->vertex (mesh);
-  glm::vec3 l        = v2 - v1;
-  float     lsqr     = glm::dot (l,l);
-  float     rsqr     = sphere.radius () * sphere.radius ();
-  glm::vec3 v1o      = v1 - sphere.center ();
-  float     lv1o     = glm::dot (l, v1o);
-  float     radicand = (lv1o * lv1o) - (lsqr * (glm::dot (v1o,v1o) - rsqr));
-
-  if (radicand < 0.0f)
-    return false;
-  else {
-    float d1 = (-lv1o + sqrt (radicand)) / lsqr;
-    float d2 = (-lv1o - sqrt (radicand)) / lsqr;
-
-    if ( (d1 < 0.0f && d2 < 0.0f) || (d1 > 1.0f && d2 > 1.0f) )
-      return false;
-    else 
-      return true;
-  }
-}
-
 // see http://realtimecollisiondetection.net/blog/?p=103
 bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
                                     , const WingedFace& face) {
