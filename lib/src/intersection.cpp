@@ -86,43 +86,54 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
   }
 }
 
+// see http://realtimecollisiondetection.net/blog/?p=103
 bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
                                     , const WingedFace& face) {
-  for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-    if (IntersectionUtil :: intersects (sphere, mesh, it.element ()))
-      return true;
-  }
-  for (ADJACENT_EDGE_ITERATOR (it,face)) {
-    if (IntersectionUtil :: intersects (sphere, mesh, it.element ()))
-      return true;
-  }
+  assert (face.isTriangle ());
 
-  auto sameSide = [] ( const glm::vec3& p1,const glm::vec3& p2
-                     , const glm::vec3& a ,const glm::vec3& b ) {
-    glm::vec3 cross1 = glm::cross (b-a, p1-a);
-    glm::vec3 cross2 = glm::cross (b-a, p2-a);
-    return glm::dot (cross1,cross2) >= 0.0f;
-  };
+  const glm::vec3 A    = face.firstVertex  ().vertex (mesh) - sphere.center ();
+  const glm::vec3 B    = face.secondVertex ().vertex (mesh) - sphere.center ();
+  const glm::vec3 C    = face.thirdVertex  ().vertex (mesh) - sphere.center ();
 
-  glm::vec3 normal   = face.normal (mesh);
-  glm::vec3 toOrigin = sphere.center () - face.edge ()->vertex1 ()->vertex (mesh);
-  float     d        = glm::dot (normal, toOrigin);
-  glm::vec3 onPlane  = sphere.center () - (d * normal);
+  const float     rr   = sphere.radius () * sphere.radius ();
+  const glm::vec3 V    = glm::cross (B-A, C-A);
+  const float     d    = glm::dot   (A, V);
+  const float     e    = glm::dot   (V, V);
 
-  if (d < 0.0f || d > sphere.radius ())
-    return false;
+  const bool      sep1 = d*d > rr * e;
+  const float     aa   = glm::dot (A,A);
+  const float     ab   = glm::dot (A,B);
+  const float     ac   = glm::dot (A,C);
+  const float     bb   = glm::dot (B,B);
+  const float     bc   = glm::dot (B,C);
+  const float     cc   = glm::dot (C,C);
+  const bool      sep2 = (aa > rr) && (ab > aa) && (ac > aa);
+  const bool      sep3 = (bb > rr) && (ab > bb) && (bc > bb);
+  const bool      sep4 = (cc > rr) && (ac > cc) && (bc > cc);
 
-  for (ADJACENT_EDGE_ITERATOR (it,face)) {
-    glm::vec3 other = it.element ().successorRef (face)
-                                   .secondVertexRef (face)
-                                   .vertex (mesh);
-    assert (other != it.element ().vertex1Ref ().vertex (mesh));
-    assert (other != it.element ().vertex2Ref ().vertex (mesh));
-    if (! sameSide (other, onPlane, it.element ().vertex1Ref ().vertex (mesh)
-                                  , it.element ().vertex2Ref ().vertex (mesh)))
-      return false;
-  }
-  return true;
+  const glm::vec3 AB   = B - A;
+  const glm::vec3 BC   = C - B;
+  const glm::vec3 CA   = A - C;
+
+  const float     d1   = ab - aa;
+  const float     d2   = bc - bb;
+  const float     d3   = ac - cc;
+  const float     e1   = glm::dot (AB, AB);
+  const float     e2   = glm::dot (BC, BC);
+  const float     e3   = glm::dot (CA, CA);
+
+  const glm::vec3 Q1   = (A * e1) - (d1 * AB);
+  const glm::vec3 Q2   = (B * e2) - (d2 * BC);
+  const glm::vec3 Q3   = (C * e3) - (d3 * CA);
+  const glm::vec3 QC   = (C * e1) - Q1;
+  const glm::vec3 QA   = (A * e2) - Q2;
+  const glm::vec3 QB   = (B * e3) - Q3;
+
+  const bool      sep5 = (glm::dot (Q1, Q1) > rr * e1 * e1) && (glm::dot (Q1, QC) > 0.0f);
+  const bool      sep6 = (glm::dot (Q2, Q2) > rr * e2 * e2) && (glm::dot (Q2, QA) > 0.0f);
+  const bool      sep7 = (glm::dot (Q3, Q3) > rr * e3 * e3) && (glm::dot (Q3, QB) > 0.0f);
+
+  return (sep1 || sep2 || sep3 || sep4 || sep5 || sep6 || sep7) == false;
 }
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& box) {
