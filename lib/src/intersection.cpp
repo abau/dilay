@@ -75,8 +75,8 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
   const glm::vec3 V    = glm::cross (B-A, C-A);
   const float     d    = glm::dot   (A, V);
   const float     e    = glm::dot   (V, V);
-
   const bool      sep1 = d*d > rr * e;
+
   const float     aa   = glm::dot (A,A);
   const float     ab   = glm::dot (A,B);
   const float     ac   = glm::dot (A,C);
@@ -141,8 +141,9 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& spher
                                                   , 2.0f * glm::dot (d,v)
                                                   , glm::dot (v, v) - r2
                                                   , s1, s2);
-  if (n == 0)
+  if (n == 0) {
     return false;
+  }
   else if (n == 1) {
     if (t) {
       *t = s1;
@@ -171,21 +172,20 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
 
 bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
                                     , glm::vec3* intersection) {
-  glm::vec3 e1 = tri.edge1 ();
-  glm::vec3 e2 = tri.edge2 ();
-
-  glm::vec3 s1  = glm::cross (ray.direction (), e2);
-  float divisor = glm::dot   (s1, e1);
+  const glm::vec3 e1  = tri.edge1 ();
+  const glm::vec3 e2  = tri.edge2 ();
+  const glm::vec3 s1  = glm::cross (ray.direction (), e2);
+  const float divisor = glm::dot   (s1, e1);
 
   if (divisor < std::numeric_limits<float>::epsilon ()) 
     return false;
 
-  float     invDivisor = 1.0f / divisor;
-  glm::vec3 d          = ray.origin () - tri.vertex1 ();
-  glm::vec3 s2         = glm::cross (d,e1);
-  float     b1         = glm::dot (d,s1)                 * invDivisor;
-  float     b2         = glm::dot (ray.direction (), s2) * invDivisor;
-  float     t          = glm::dot (e2, s2)               * invDivisor;
+  const float     invDivisor = 1.0f / divisor;
+  const glm::vec3 d          = ray.origin () - tri.vertex1 ();
+  const glm::vec3 s2         = glm::cross (d,e1);
+  const float     b1         = glm::dot (d,s1)                 * invDivisor;
+  const float     b2         = glm::dot (ray.direction (), s2) * invDivisor;
+  const float     t          = glm::dot (e2, s2)               * invDivisor;
 
   if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) {
     return false;
@@ -199,17 +199,19 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
 }
 
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
-  glm::vec3 invDir  = glm::vec3 (1.0f) / ray.direction ();
-  glm::vec3 lowerTs = (box.minimum () - ray.origin ()) * invDir;
-  glm::vec3 upperTs = (box.maximum () - ray.origin ()) * invDir;
-  glm::vec3 min     = glm::min (lowerTs, upperTs);
-  glm::vec3 max     = glm::max (lowerTs, upperTs);
+  const glm::vec3 invDir  = glm::vec3 (1.0f) / ray.direction ();
+  const glm::vec3 lowerTs = (box.minimum () - ray.origin ()) * invDir;
+  const glm::vec3 upperTs = (box.maximum () - ray.origin ()) * invDir;
+  const glm::vec3 min     = glm::min (lowerTs, upperTs);
+  const glm::vec3 max     = glm::max (lowerTs, upperTs);
 
-  float tMin = glm::max ( glm::max (min.x, min.y), min.z );
-  float tMax = glm::min ( glm::min (max.x, max.y), max.z );
+  const float tMin = glm::max ( glm::max (min.x, min.y), min.z );
+  const float tMax = glm::min ( glm::min (max.x, max.y), max.z );
 
-  if (tMax < 0.0f || tMin > tMax)
+  if (tMax < 0.0f || tMin > tMax) {
     return false;
-  else
+  }
+  else {
     return true;
+  }
 }
