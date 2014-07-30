@@ -42,7 +42,7 @@ class WingedFace {
     glm::vec3              normal          (const WingedMesh&) const;
 
     /** `adjacent (v,b)` returns an adjacent edge with `v` as start or end point.
-     * It's crucial that `v` is acutally a vertex of `this` face.
+     * It's crucial that `v` is actually a vertex of `this` face.
      * If `b` holds, then t-edges are skiped.
      */
     WingedEdge*            adjacent        (const WingedVertex&, bool = false) const;
