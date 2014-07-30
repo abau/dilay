@@ -35,6 +35,10 @@ struct ActionCarve::Impl {
 
     this->subdivideFaces (sphere, mesh, ids, 0.01f);
     this->carveFaces     (sphere, brush,  mesh, ids);
+    this->subdivideFaces (sphere, mesh, ids, 0.01f);
+
+    mesh.write ();
+    mesh.bufferData ();
   }
 
   void subdivideFaces ( const PrimSphere& sphere, WingedMesh& mesh

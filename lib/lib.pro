@@ -63,6 +63,7 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
+           src/tool/carve.cpp \
            src/tool/delete-mesh.cpp \
            src/tool/move.cpp \
            src/tool/movement.cpp \
@@ -158,6 +159,7 @@ HEADERS += \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
+           src/tool/carve.hpp \
            src/tool/delete-mesh.hpp \
            src/tool/move.hpp \
            src/tool/movement.hpp \
