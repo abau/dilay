@@ -52,7 +52,9 @@ GETTER_CONST     (const glm::vec3&, Intersection, position)
 DELEGATE2_STATIC (Intersection&   , Intersection, min, Intersection&, Intersection&)
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& vec) {
-  return glm::distance (vec,sphere.center ()) <= sphere.radius ();
+  const glm::vec3 d = vec - sphere.center ();
+  const float     r = sphere.radius ();
+  return glm::dot (d,d) <= r * r;
 }
 
 bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
