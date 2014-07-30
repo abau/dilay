@@ -47,6 +47,7 @@ SOURCES += \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
            src/primitive/aabox.cpp \
+           src/primitive/capsule.cpp \
            src/primitive/plane.cpp \
            src/primitive/ray.cpp \
            src/primitive/sphere.cpp \
@@ -143,6 +144,7 @@ HEADERS += \
            src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
            src/primitive/aabox.hpp \
+           src/primitive/capsule.hpp \
            src/primitive/plane.hpp \
            src/primitive/ray.hpp \
            src/primitive/sphere.hpp \
