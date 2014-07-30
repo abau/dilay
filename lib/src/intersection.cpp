@@ -208,10 +208,5 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
   const float tMin = glm::max ( glm::max (min.x, min.y), min.z );
   const float tMax = glm::min ( glm::min (max.x, max.y), max.z );
 
-  if (tMax < 0.0f || tMin > tMax) {
-    return false;
-  }
-  else {
-    return true;
-  }
+  return tMax >= 0.0f && tMin <= tMax;
 }
