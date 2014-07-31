@@ -1,4 +1,4 @@
-#include <QObject>
+#include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "tool/carve.hpp"
 #include "state.hpp"
@@ -27,25 +27,30 @@ struct ToolCarve::Impl {
     return QObject::tr ("Carve");
   }
 
-  ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
-    WingedFaceIntersection intersection;
-    Scene&                 scene = State::scene ();
+  ToolResponse runMouseMoveEvent (QMouseEvent& e) {
+    if (e.buttons ().testFlag (Qt::LeftButton)) {
+      WingedFaceIntersection intersection;
+      Scene&                 scene = State::scene ();
 
-    if (scene.intersects (State::camera ().ray (ViewUtil::toIVec2 (e)), intersection)) {
-      if (scene.selection ().hasMajor (intersection.mesh ().id ())) {
-        State::history ().add <ActionCarve, WingedMesh> (intersection.mesh ())
-                         .run ( intersection.mesh     ()
-                              , intersection.position ()
-                              , 0.1f );
+      if (scene.intersects (State::camera ().ray (ViewUtil::toIVec2 (e)), intersection)) {
+        if (scene.selection ().hasMajor (intersection.mesh ().id ())) {
+          State::history ().add <ActionCarve, WingedMesh> (intersection.mesh ())
+                           .run ( intersection.mesh     ()
+                                , intersection.position ()
+                                , 0.1f );
 
-        return ToolResponse::Redraw;
+          return ToolResponse::Redraw;
+        }
       }
+      return ToolResponse::None;
     }
-    return ToolResponse::None;
+    else {
+      return ToolResponse::None;
+    }
   }
 };
 
 DELEGATE_BIG3_BASE ( ToolCarve, (const ViewToolMenuParameters& p)
                    , (this), Tool, (p, toolName ()) )
 DELEGATE_STATIC (QString     , ToolCarve, toolName)
-DELEGATE1       (ToolResponse, ToolCarve, runMouseReleaseEvent, QMouseEvent&)
+DELEGATE1       (ToolResponse, ToolCarve, runMouseMoveEvent, QMouseEvent&)
