@@ -63,21 +63,11 @@ class IdMap {
     }
 
     T& element (const Id& id) {
-      assert (this->hasElement (id));
-      typename InternalMap::iterator result = this->map.find (id.primitive ());
-      if (result == this->map.end ())
-        assert (false);
-      else
-        return *result->second; 
+      return this->elementTemplate <T> (id);
     }
 
     const T& element (const Id& id) const {
-      assert (this->hasElement (id));
-      typename InternalMap::const_iterator result = this->map.find (id.primitive ());
-      if (result == this->map.end ())
-        assert (false);
-      else
-        return *result->second; 
+      return this->elementTemplate <const T> (id);
     }
 
     void         reset ()       {        this->map.clear (); }
@@ -89,6 +79,17 @@ class IdMap {
     Iterator end   () { return this->map.end   (); }
 
   private:
+
+    template <typename U>
+    U& elementTemplate (const Id& id) const {
+      assert (this->hasElement (id));
+      auto result = this->map.find (id.primitive ());
+      if (result == this->map.end ())
+        assert (false);
+      else
+        return *result->second; 
+    }
+
     typedef std::unordered_map <IdPrimitive, std::unique_ptr <T>> InternalMap;
 
     InternalMap map;
