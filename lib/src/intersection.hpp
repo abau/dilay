@@ -22,11 +22,9 @@ class Intersection {
     bool                 isIntersection () const;
     const glm::vec3&     position       () const;
     float                distance       () const;
+    bool                 update         (float, const glm::vec3&);
 
     static Intersection& min            (Intersection&, Intersection&);
-
-  protected:
-    bool                 update         (float, const glm::vec3&);
 
   private:
     class Impl;
