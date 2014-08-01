@@ -142,11 +142,11 @@ DELEGATE1        (void            , SphereMeshNode, forEachNode, const std::func
 DELEGATE1_CONST  (void            , SphereMeshNode, forEachConstNode, const std::function <void (const SphereMeshNode&)>&)
 
 struct SphereMesh::Impl {
-  SphereMesh*                     self;
-  IdObject                        id;
-  Child                           _root;
-  IdMapPtr <SphereMeshNode::Impl> idMap;
-  Mesh                            mesh;
+  SphereMesh*               self;
+  IdObject                  id;
+  Child                     _root;
+  IdMapPtr <SphereMeshNode> idMap;
+  Mesh                      mesh;
 
   Impl (SphereMesh* s) : Impl (s, Id ()) {}
 
@@ -166,12 +166,12 @@ struct SphereMesh::Impl {
     if (parent == nullptr) {
       assert (this->hasRoot () == false);
       this->_root.reset (new SphereMeshNode::Impl (id, nullptr, pos, radius));
-      this->idMap.insert (this->_root->id.id (), *this->_root);
+      this->idMap.insert (this->_root->self);
       return this->_root->self;
     }
     else {
       SphereMeshNode::Impl& c = parent->impl->addChild (id, pos, radius);
-      this->idMap.insert (c.id.id (), c);
+      this->idMap.insert (c.self);
       return c.self;
     }
   }
@@ -183,7 +183,7 @@ struct SphereMesh::Impl {
     else {
       this->_root.reset (nullptr);
     }
-    this->idMap.remove (node.id ());
+    this->idMap.remove (node);
   }
 
   void render (const Selection& selection) {
@@ -201,7 +201,7 @@ struct SphereMesh::Impl {
 
   SphereMeshNode& node (const Id& id) {
     assert (this->idMap.hasElement (id));
-    return this->idMap.elementRef (id).self;
+    return this->idMap.elementRef (id);
   }
 
   SphereMeshNode& root () {

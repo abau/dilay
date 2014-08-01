@@ -9,17 +9,13 @@
 template <class T>
 class IdMapPtr {
   public:
-    void insert (const Id& id, T& element) {
-      assert (this->hasElement (id) == false);
-      this->map.emplace (id.primitive (), &element);
-    }
-
     void insert (T& element) {
-      this->insert (element.id (), element);
+      assert (this->hasElement (element.id ()) == false);
+      this->map.emplace (element.id ().primitive (), &element);
     }
 
-    void remove (const Id& id) {
-      this->map.erase (id.primitive ());
+    void remove (const T& element) {
+      this->map.erase (element.id ().primitive ());
     }
 
     bool hasElement (const Id& id) const {

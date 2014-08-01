@@ -394,7 +394,7 @@ struct Octree::Impl {
   void deleteFace (const WingedFace& face) {
     assert (face.octreeNode ());
     assert (this->hasFace (face.id ())); 
-    this->idMap.remove (face.id ());
+    this->idMap.remove (face);
     face.octreeNodeRef ().impl->deleteFace (face);
     if (this->root->isEmpty ()) {
       this->root.reset ();
