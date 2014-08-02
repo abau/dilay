@@ -52,10 +52,13 @@ class IdMap {
     typedef typename InternalMap::iterator               Iterator;
     typedef typename InternalMap::const_iterator         ConstIterator;
 
+    T& insert (const Id& id, const T& element) {
+      assert (this->hasElement (id) == false);
+      return this->map.insert (std::pair <IdPrimitive,T> (id.primitive (),element)).first->second;
+    }
+
     T& insert (const T& element) {
-      assert (this->hasElement (element->id ()) == false);
-      return this->map.insert (std::pair <IdPrimitive,T> ( element->id ().primitive ()
-                                                         , element)).first->second;
+      return this->insert (element.id (), element);
     }
 
     void remove (const Id& id) {

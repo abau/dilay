@@ -377,7 +377,7 @@ struct Octree::Impl {
     assert (this->root);
     if (this->root->approxContains (faceToInsert)) {
       Faces::iterator it = this->root->insertFace (faceToInsert);
-      this->idMap.insert (it);
+      this->idMap.insert (it->id (), it);
       return *it;
     }
     else {
