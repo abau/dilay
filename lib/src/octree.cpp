@@ -32,8 +32,6 @@ class FaceToInsert {
       , firstIndexNumber (f.firstIndexNumber ())
       , center           (t.center           ())
       , oneDimExtent     (t.oneDimExtent     ())
-      , maximum          (t.maximum          ())
-      , minimum          (t.minimum          ())
       {}
 
     const Id           id;
@@ -41,8 +39,6 @@ class FaceToInsert {
     const unsigned int firstIndexNumber;
     const glm::vec3    center;
     const float        oneDimExtent;
-    const glm::vec3    maximum;
-    const glm::vec3    minimum;
 };
 
 /* node indices:
