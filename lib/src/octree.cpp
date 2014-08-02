@@ -26,19 +26,23 @@ typedef std::unique_ptr <OctreeNode::Impl> Child;
 /** Container for face to insert */
 class FaceToInsert {
   public:
-    FaceToInsert (const WingedFace& f, const PrimTriangle& t)
+    FaceToInsert (const WingedFace& f, const PrimTriangle& t, bool s)
       : id               (f.id               ())
       , edge             (f.edge             ())
       , firstIndexNumber (f.firstIndexNumber ())
+      , primitive        (t)
       , center           (t.center           ())
       , oneDimExtent     (t.oneDimExtent     ())
+      , savePrimitive    (s)
       {}
 
-    const Id           id;
-    WingedEdge* const  edge;
-    const unsigned int firstIndexNumber;
-    const glm::vec3    center;
-    const float        oneDimExtent;
+    const Id            id;
+    WingedEdge* const   edge;
+    const unsigned int  firstIndexNumber;
+    const PrimTriangle& primitive;
+    const glm::vec3     center;
+    const float         oneDimExtent;
+    const bool          savePrimitive;
 };
 
 /* node indices:
@@ -54,14 +58,15 @@ class FaceToInsert {
 
 /** Octree node implementation */
 struct OctreeNode::Impl {
-  IdObject            id;
-  OctreeNode          node;
-  const glm::vec3     center;
-  const float         width;
-  std::vector <Child> children;
-  const int           depth;
-  Faces               faces;
-  OctreeNode::Impl*   parent;
+  IdObject             id;
+  OctreeNode           node;
+  const glm::vec3      center;
+  const float          width;
+  std::vector <Child>  children;
+  const int            depth;
+  Faces                faces;
+  OctreeNode::Impl*    parent;
+  IdMap <PrimTriangle> primitives;
   // cf. move constructor
 
   static constexpr float relativeMinFaceExtent = 0.1f;
@@ -210,6 +215,9 @@ struct OctreeNode::Impl {
       return this->insertIntoChild (f);
     }
     else {
+      if (f.savePrimitive) {
+        this->primitives.insert (f.id, f.primitive);
+      }
       this->faces.emplace_front ( f.edge 
                                 , f.id 
                                 , &this->node
@@ -223,7 +231,8 @@ struct OctreeNode::Impl {
   }
 
   void deleteFace (Faces::iterator& faceIterator) {
-    this->faces.erase (faceIterator);
+    this->faces.erase       (faceIterator);
+    this->primitives.remove (faceIterator->id ());
     if (this->isEmpty () && this->parent) {
       this->parent->childEmptyNotification ();
       // don't call anything after calling childEmptyNotification
@@ -351,10 +360,13 @@ GETTER_CONST   (float, OctreeNode, width)
 struct Octree::Impl {
   Child                   root;
   IdMap <Faces::iterator> idMap;
+  const bool              savePrimitives;
+
+  Impl (bool s) : savePrimitives (s) {}
 
   WingedFace& insertFace (const WingedFace& face, const PrimTriangle& geometry) {
     assert (! this->hasFace (face.id ())); 
-    FaceToInsert faceToInsert (face,geometry);
+    FaceToInsert faceToInsert (face,geometry,this->savePrimitives);
     return this->insertFace (faceToInsert);
   }
 
@@ -363,7 +375,7 @@ struct Octree::Impl {
     assert (face.octreeNode ()); 
     OctreeNode* formerNode = face.octreeNode ();
 
-    FaceToInsert faceToInsert (face,geometry);
+    FaceToInsert faceToInsert (face,geometry,this->savePrimitives);
     this->deleteFace (face);
     WingedFace& newFace = this->insertFace (faceToInsert);
 
@@ -540,7 +552,7 @@ struct Octree::Impl {
   }
 };
 
-DELEGATE_BIG3   (Octree)
+DELEGATE1_BIG3  (Octree,bool)
 DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const PrimTriangle&)
 DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)

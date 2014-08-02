@@ -25,10 +25,15 @@ struct WingedMesh::Impl {
   Octree                   octree;
   std::set  <unsigned int> freeFirstIndexNumbers;
 
-  Impl (WingedMesh* s) : self (s) {}
+  Impl (WingedMesh* s)
+    : self   (s)
+    , octree (false)
+    {}
+
   Impl (WingedMesh* s, const Id& i) 
-    : self (s) 
-    , id   (i)
+    : self   (s)
+    , id     (i)
+    , octree (false)
     {}
 
   glm::vec3    vertex (unsigned int i) const { return this->mesh.vertex (i); }
