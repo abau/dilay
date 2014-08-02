@@ -2,7 +2,6 @@
 #define DILAY_WINGED_FACE
 
 #include <glm/fwd.hpp>
-#include "fwd-winged.hpp"
 #include "macro.hpp"
 #include "id.hpp"
 
@@ -24,13 +23,10 @@ class WingedFace {
     Id                     id               () const { return this->_id.id (); }
     WingedEdge*            edge             () const { return this->_edge; }
     OctreeNode*            octreeNode       () const { return this->_octreeNode; }
-    Faces::iterator        iterator         () const { return this->_iterator; }
     unsigned int           firstIndexNumber () const { return this->_firstIndexNumber; }
 
     void                   edge            (WingedEdge* e) { this->_edge       = e; }
     void                   octreeNode      (OctreeNode* n) { this->_octreeNode = n; }
-    void                   iterator        (const Faces::iterator& i) 
-                                                           { this->_iterator = i; }
     void                   writeIndices    (WingedMesh&, const unsigned int* = nullptr);
     void                   writeNormals    (WingedMesh&);
     void                   write           (WingedMesh&, const unsigned int* = nullptr);
@@ -72,7 +68,6 @@ class WingedFace {
     const IdObject  _id;
     WingedEdge*     _edge;
     OctreeNode*     _octreeNode;
-    Faces::iterator _iterator;
     unsigned int    _firstIndexNumber;
 };
 

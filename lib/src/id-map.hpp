@@ -14,8 +14,12 @@ class IdMapPtr {
       this->map.emplace (element.id ().primitive (), &element);
     }
 
+    void remove (const Id& id) {
+      this->map.erase (id.primitive ());
+    }
+
     void remove (const T& element) {
-      this->map.erase (element.id ().primitive ());
+      return this->remove (element.id ());
     }
 
     bool hasElement (const Id& id) const {
@@ -44,14 +48,22 @@ class IdMapPtr {
 template <class T>
 class IdMap {
   public:
-    T& insert (T* element) {
+    typedef typename std::unordered_map <IdPrimitive, T> InternalMap;
+    typedef typename InternalMap::iterator               Iterator;
+    typedef typename InternalMap::const_iterator         ConstIterator;
+
+    T& insert (const T& element) {
       assert (this->hasElement (element->id ()) == false);
-      this->map.emplace (element->id ().primitive (), std::unique_ptr <T> (element));
-      return *element;
+      return this->map.insert (std::pair <IdPrimitive,T> ( element->id ().primitive ()
+                                                         , element)).first->second;
     }
 
     void remove (const Id& id) {
       this->map.erase (id.primitive ());
+    }
+
+    void remove (const T& element) {
+      return this->remove (element.id ());
     }
 
     bool hasElement (const Id& id) const {
@@ -59,35 +71,35 @@ class IdMap {
     }
 
     T& element (const Id& id) {
-      return this->elementTemplate <T> (id);
+      assert (this->hasElement (id));
+      Iterator result = this->map.find (id.primitive ());
+      if (result == this->map.end ()) {
+        assert (false);
+      }
+      else {
+        return result->second; 
+      }
     }
 
     const T& element (const Id& id) const {
-      return this->elementTemplate <const T> (id);
+      assert (this->hasElement (id));
+      ConstIterator result = this->map.find (id.primitive ());
+      if (result == this->map.end ()) {
+        assert (false);
+      }
+      else {
+        return result->second; 
+      }
     }
 
     void         reset ()       {        this->map.clear (); }
     unsigned int size  () const { return this->map.size  (); }
 
-    typedef typename std::unordered_map <IdPrimitive, std::unique_ptr <T>>::iterator Iterator;
-
-    Iterator begin () { return this->map.begin (); }
-    Iterator end   () { return this->map.end   (); }
+    Iterator iterator (const Id& id) { return this->map.find (id.primitive ()); }
+    Iterator begin    ()             { return this->map.begin (); }
+    Iterator end      ()             { return this->map.end   (); }
 
   private:
-
-    template <typename U>
-    U& elementTemplate (const Id& id) const {
-      assert (this->hasElement (id));
-      auto result = this->map.find (id.primitive ());
-      if (result == this->map.end ())
-        assert (false);
-      else
-        return *result->second; 
-    }
-
-    typedef std::unordered_map <IdPrimitive, std::unique_ptr <T>> InternalMap;
-
     InternalMap map;
 };
 #endif

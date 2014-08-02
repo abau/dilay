@@ -199,7 +199,7 @@ struct OctreeNode::Impl {
     add (this->center + glm::vec3 ( q,  q,  q));
   }
 
-  WingedFace& insertIntoChild (const FaceToInsert& f) {
+  Faces::iterator insertIntoChild (const FaceToInsert& f) {
     if (this->children.empty ()) {
       this->makeChildren           ();
       return this->insertIntoChild (f);
@@ -209,17 +209,16 @@ struct OctreeNode::Impl {
     }
   }
 
-  WingedFace& insertFace (const FaceToInsert& f) {
+  Faces::iterator insertFace (const FaceToInsert& f) {
     if (f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
       return this->insertIntoChild (f);
     }
     else {
-      this->faces.emplace_back ( f.edge 
-                               , f.id 
-                               , &this->node
-                               , f.firstIndexNumber);
-      this->faces.back ().iterator (--this->faces.end ());
-      return this->faces.back ();
+      this->faces.emplace_front ( f.edge 
+                                , f.id 
+                                , &this->node
+                                , f.firstIndexNumber);
+      return this->faces.begin ();
     }
   }
 
@@ -227,8 +226,8 @@ struct OctreeNode::Impl {
     return this->faces.empty () && this->children.empty ();
   }
 
-  void deleteFace (const WingedFace& face) {
-    this->faces.erase (face.iterator ());
+  void deleteFace (Faces::iterator& faceIterator) {
+    this->faces.erase (faceIterator);
     if (this->isEmpty () && this->parent) {
       this->parent->childEmptyNotification ();
       // don't call anything after calling childEmptyNotification
@@ -354,8 +353,8 @@ GETTER_CONST   (float, OctreeNode, width)
 
 /** Octree class */
 struct Octree::Impl {
-  Child root;
-  IdMapPtr <WingedFace> idMap;
+  Child                   root;
+  IdMap <Faces::iterator> idMap;
 
   WingedFace& insertFace (const WingedFace& face, const PrimTriangle& geometry) {
     assert (! this->hasFace (face.id ())); 
@@ -381,9 +380,9 @@ struct Octree::Impl {
   WingedFace& insertFace (const FaceToInsert& faceToInsert) {
     assert (this->root);
     if (this->root->approxContains (faceToInsert)) {
-      WingedFace& wingedFace = this->root->insertFace (faceToInsert);
-      this->idMap.insert (wingedFace);
-      return wingedFace;
+      Faces::iterator it = this->root->insertFace (faceToInsert);
+      this->idMap.insert (it);
+      return *it;
     }
     else {
       this->makeParent (faceToInsert);
@@ -392,10 +391,14 @@ struct Octree::Impl {
   }
 
   void deleteFace (const WingedFace& face) {
+    const Id id = face.id ();
+
     assert (face.octreeNode ());
-    assert (this->hasFace (face.id ())); 
-    this->idMap.remove (face);
-    face.octreeNodeRef ().impl->deleteFace (face);
+    assert (this->hasFace (id)); 
+
+    face.octreeNodeRef ().impl->deleteFace (this->idMap.element (id));
+    this->idMap.remove (id);
+
     if (this->root->isEmpty ()) {
       this->root.reset ();
     }
@@ -407,7 +410,13 @@ struct Octree::Impl {
   bool hasFace (const Id& id) const { return this->idMap.hasElement (id); }
 
   WingedFace* face (const Id& id) {
-    return this->idMap.element (id);
+    auto it = this->idMap.iterator (id);
+    if (it == this->idMap.end ()) {
+      return nullptr;
+    }
+    else {
+      return &*it->second;
+    }
   }
 
   void makeParent (const FaceToInsert& f) {
