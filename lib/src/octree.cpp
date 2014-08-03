@@ -378,10 +378,16 @@ GETTER_CONST   (float, OctreeNode, width)
 /** Octree class */
 struct Octree::Impl {
   Child                   root;
+  glm::vec3               rootPosition;
+  float                   rootWidth;
+  bool                    rootWasSetup;
   IdMap <Faces::iterator> idMap;
   const bool              savePrimitives;
 
-  Impl (bool s) : savePrimitives (s) {}
+  Impl (bool s) 
+    : rootWasSetup   (false)
+    , savePrimitives (s) 
+  {}
 
   WingedFace& insertFace (const WingedFace& face, const PrimTriangle& geometry) {
     assert (! this->hasFace (face.id ())); 
@@ -405,7 +411,10 @@ struct Octree::Impl {
   }
 
   WingedFace& insertFace (const FaceToInsert& faceToInsert) {
-    assert (this->root);
+    if (this->hasRoot () == false) {
+      this->initRoot (faceToInsert);
+    }
+
     if (this->root->approxContains (faceToInsert)) {
       Faces::iterator it = this->root->insertFace (faceToInsert);
       this->idMap.insert (it->id (), it);
@@ -486,7 +495,7 @@ struct Octree::Impl {
 
   void render () { 
 #ifdef DILAY_RENDER_OCTREE
-    if (this->root) 
+    if (this->hasRoot ()) 
       this->root->render ();
 #else
     assert (false && "compiled without rendering support for octrees");
@@ -494,21 +503,21 @@ struct Octree::Impl {
   }
 
   bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
-    if (this->root) {
+    if (this->hasRoot ()) {
       return this->root->intersects (mesh,ray,intersection);
     }
     return false;
   }
 
   bool intersects (const PrimRay& ray, Intersection& intersection) {
-    if (this->root) {
+    if (this->hasRoot ()) {
       return this->root->intersects (ray,intersection);
     }
     return false;
   }
 
   bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, std::unordered_set<Id>& ids) {
-    if (this->root) {
+    if (this->hasRoot ()) {
       return this->root->intersects (mesh,sphere,ids);
     }
     return false;
@@ -516,7 +525,7 @@ struct Octree::Impl {
 
   bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
                   , std::unordered_set<WingedVertex*>& vertices) {
-    if (this->root) {
+    if (this->hasRoot ()) {
       return this->root->intersects (mesh,sphere,vertices);
     }
     return false;
@@ -524,17 +533,30 @@ struct Octree::Impl {
 
   void reset () { 
     this->idMap.reset  ();
-    this->root.release (); 
+    this->root.release ();
+    this->rootWasSetup = false;
   }
 
-  void initRoot (const glm::vec3& center, float width) {
+  void setupRoot (const glm::vec3& position, float width) {
     assert (this->root == false);
-    this->root = Child (new OctreeNode::Impl (center, width, 0, nullptr));
+    this->rootWasSetup = true;
+    this->rootPosition = position;
+    this->rootWidth    = width;
+  }
+
+  void initRoot (const FaceToInsert& faceToInsert) {
+    assert (this->root == false);
+
+    if (this->rootWasSetup == false) {
+      this->rootPosition = faceToInsert.center;
+      this->rootWidth    = faceToInsert.oneDimExtent + std::numeric_limits <float>::epsilon ();
+    }
+    this->root = Child (new OctreeNode::Impl (this->rootPosition, this->rootWidth, 0, nullptr));
   }
 
   void shrinkRoot () {
-    if (this->root && this->root->faces.empty    () == true 
-                   && this->root->children.empty () == false) {
+    if (this->hasRoot () && this->root->faces.empty    () == true 
+                         && this->root->children.empty () == false) {
       int singleNonEmptyChildIndex = -1;
       for (int i = 0; i < 8; i++) {
         const Child& c = this->root->children [i];
@@ -554,6 +576,8 @@ struct Octree::Impl {
     }
   }
 
+  bool hasRoot () const { return bool (this->root); }
+
   unsigned int numFaces () const { return this->idMap.size (); }
 
   OctreeStatistics statistics () const {
@@ -563,7 +587,7 @@ struct Octree::Impl {
                            , 0 
                            , OctreeStatistics::DepthMap ()
                            , OctreeStatistics::DepthMap () };
-    if (this->root) {
+    if (this->hasRoot ()) {
       this->root->updateStatistics (stats);
     }
     assert (stats.numFaces == this->numFaces ());
@@ -571,10 +595,10 @@ struct Octree::Impl {
   }
 
   void forEachFace (const std::function <void (WingedFace&)>& f) {
-    if (this->root) { this->root->forEachFace (f); }
+    if (this->hasRoot ()) { this->root->forEachFace (f); }
   }
   void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
-    if (this->root) { this->root->forEachConstFace (f); }
+    if (this->hasRoot ()) { this->root->forEachConstFace (f); }
   }
 };
 
@@ -590,8 +614,9 @@ DELEGATE2       (bool, Octree, intersects, const PrimRay&, Intersection&)
 DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::unordered_set<Id>&)
 DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
-DELEGATE2       (void, Octree, initRoot, const glm::vec3&, float)
+DELEGATE2       (void, Octree, setupRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)
+DELEGATE_CONST  (bool, Octree, hasRoot)
 DELEGATE_CONST  (unsigned int, Octree, numFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE1       (void            , Octree, forEachFace, const std::function <void (WingedFace&)>&)

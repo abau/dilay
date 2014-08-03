@@ -83,7 +83,7 @@ struct ActionFromMesh :: Impl {
     glm::vec3 delta  =  maxVertex - minVertex;
     float     width  = glm::max (glm::max (delta.x, delta.y), delta.z);
 
-    this->actions.add <PAModifyWMesh> ().initOctreeRoot (w, center, width);
+    this->actions.add <PAModifyWMesh> ().setupOctreeRoot (w, center, width);
 
     // Vertices
     for (unsigned int i = 0; i < m.numVertices (); i++) {

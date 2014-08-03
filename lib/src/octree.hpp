@@ -64,8 +64,9 @@ class Octree {
     bool             intersects  ( const WingedMesh&, const PrimSphere&
                                  , std::unordered_set<WingedVertex*>&);
     void             reset       ();
-    void             initRoot    (const glm::vec3&, float);
+    void             setupRoot   (const glm::vec3&, float);
     void             shrinkRoot  ();
+    bool             hasRoot     () const;
     unsigned int     numFaces    () const;
     OctreeStatistics statistics  () const;
 

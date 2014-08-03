@@ -219,9 +219,9 @@ struct WingedMesh::Impl {
     this->octree  .reset ();
   }
 
-  void initOctreeRoot (const glm::vec3& center, float width) {
+  void setupOctreeRoot (const glm::vec3& center, float width) {
     assert (this->isEmpty ());
-    this->octree.initRoot (center,width);
+    this->octree.setupRoot (center,width);
   }
 
   void toggleRenderMode () { this->mesh.toggleRenderMode (); }
@@ -303,7 +303,7 @@ DELEGATE        (void, WingedMesh, write)
 DELEGATE        (void, WingedMesh, bufferData)
 DELEGATE1       (void, WingedMesh, render, const Selection&)
 DELEGATE        (void, WingedMesh, reset)
-DELEGATE2       (void, WingedMesh, initOctreeRoot, const glm::vec3&, float)
+DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)

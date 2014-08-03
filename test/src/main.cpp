@@ -32,7 +32,7 @@ int main () {
 void octreeTest1 () {
   std::cout << "## octree test 1 #######################\n";
   Octree octree (false);
-  octree.initRoot (glm::vec3 (0.0f), 10.0f);
+  octree.setupRoot (glm::vec3 (0.0f), 10.0f);
        
   std::default_random_engine gen; 
   std::uniform_real_distribution <float> unitD   (0.0f , 1.0f);
