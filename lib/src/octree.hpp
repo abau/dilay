@@ -16,6 +16,7 @@ class PrimRay;
 class WingedFaceIntersection;
 class PrimSphere;
 class Id;
+class Intersection;
 
 struct OctreeStatistics {
   typedef std::unordered_map <int, unsigned int> DepthMap;
@@ -57,6 +58,7 @@ class Octree {
     WingedFace*      face        (const Id&);
     void             render      ();
     bool             intersects  (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
+    bool             intersects  (const PrimRay&, Intersection&);
     bool             intersects  ( const WingedMesh&, const PrimSphere&
                                  , std::unordered_set<Id>&);
     bool             intersects  ( const WingedMesh&, const PrimSphere&

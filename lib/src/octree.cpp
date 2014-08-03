@@ -268,11 +268,30 @@ struct OctreeNode::Impl {
     }
   }
 
+  void facesIntersectRay (const PrimRay& ray, Intersection& intersection) {
+    for (auto& element : this->primitives) {
+      glm::vec3 p;
+
+      if (IntersectionUtil::intersects (ray, element.second, &p)) {
+        intersection.update (glm::distance (ray.origin (), p), p);
+      }
+    }
+  }
+
   bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
     if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
       this->facesIntersectRay (mesh,ray,intersection);
       for (Child& c : this->children) 
         c->intersects (mesh,ray,intersection);
+    }
+    return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, Intersection& intersection) {
+    if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
+      this->facesIntersectRay (ray,intersection);
+      for (Child& c : this->children) 
+        c->intersects (ray,intersection);
     }
     return intersection.isIntersection ();
   }
@@ -481,6 +500,13 @@ struct Octree::Impl {
     return false;
   }
 
+  bool intersects (const PrimRay& ray, Intersection& intersection) {
+    if (this->root) {
+      return this->root->intersects (ray,intersection);
+    }
+    return false;
+  }
+
   bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, std::unordered_set<Id>& ids) {
     if (this->root) {
       return this->root->intersects (mesh,sphere,ids);
@@ -560,6 +586,7 @@ DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool, Octree, intersects, const PrimRay&, Intersection&)
 DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::unordered_set<Id>&)
 DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::unordered_set<WingedVertex*>&)
 DELEGATE        (void, Octree, reset)
