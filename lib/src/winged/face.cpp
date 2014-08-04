@@ -87,18 +87,27 @@ WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex, bool skipTEdges)
   assert (false);
 }
 
-WingedEdge* WingedFace :: longestEdge (const WingedMesh& mesh) const {
-  WingedEdge* longest   = this->edge ();
-  float       maxLength = 0.0f;
+WingedEdge* WingedFace :: longestEdge (const WingedMesh& mesh, float *maxLengthSqr) const {
+  WingedEdge* tmpLongest = this->edge ();
+  float       tmpLength  = 0.0f;
 
   for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    float length = it.element ().length (mesh);
-    if (length > maxLength) {
-      maxLength = length;
-      longest   = &it.element ();
+    float lengthSqr = it.element ().lengthSqr (mesh);
+    if (lengthSqr > tmpLength) {
+      tmpLength  = lengthSqr;
+      tmpLongest = &it.element ();
     }
   }
-  return longest;
+  if (maxLengthSqr) {
+    *maxLengthSqr = tmpLength;
+  }
+  return tmpLongest;
+}
+
+float WingedFace :: longestEdgeLengthSqr (const WingedMesh& mesh) const {
+  float length;
+  this->longestEdge (mesh, &length);
+  return length;
 }
 
 WingedVertex* WingedFace :: tVertex () const {
@@ -118,20 +127,6 @@ WingedEdge* WingedFace :: tEdge () const {
 }
 
 bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
-
-float WingedFace :: incircleRadius  (const WingedMesh& mesh) const {
-  assert (this->isTriangle ());
-  glm::vec3 v1 = this->firstVertex  ().vertex (mesh);
-  glm::vec3 v2 = this->secondVertex ().vertex (mesh);
-  glm::vec3 v3 = this->thirdVertex  ().vertex (mesh);
-
-  const float a = glm::length (v1 - v2);
-  const float b = glm::length (v2 - v3);
-  const float c = glm::length (v3 - v1);
-  const float s = (a + b + c) * 0.5f;
-
-  return glm::sqrt ((s-a) * (s-b) * (s-c) / s);
-}
 
 WingedVertex* WingedFace :: designatedTVertex () const {
   for (ADJACENT_VERTEX_ITERATOR (it,*this)) {

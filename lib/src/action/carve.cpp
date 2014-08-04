@@ -33,23 +33,23 @@ struct ActionCarve::Impl {
 
     mesh.intersects (sphere, ids);
 
-    this->subdivideFaces (sphere, mesh, ids, 0.01f);
+    this->subdivideFaces (sphere, mesh, ids, 0.05f);
     this->carveFaces     (sphere, brush,  mesh, ids);
-    this->subdivideFaces (sphere, mesh, ids, 0.01f);
+    this->subdivideFaces (sphere, mesh, ids, 0.05f);
 
     mesh.write ();
     mesh.bufferData ();
   }
 
   void subdivideFaces ( const PrimSphere& sphere, WingedMesh& mesh
-                      , std::unordered_set <Id>& ids, float maxIncircleRadius) {
+                      , std::unordered_set <Id>& ids, float maxEdgeLength) {
     std::unordered_set <Id> thisIteration = ids;
     std::unordered_set <Id> nextIteration;
 
-    auto checkNextIteration = [&mesh,&nextIteration,maxIncircleRadius,&sphere] 
+    auto checkNextIteration = [&mesh,&nextIteration,maxEdgeLength,&sphere] 
       (const WingedFace& face) -> void {
       if (   nextIteration.count (face.id ()) == 0
-          && face.incircleRadius (mesh) > maxIncircleRadius
+          && face.longestEdgeLengthSqr (mesh) > maxEdgeLength * maxEdgeLength
           && IntersectionUtil::intersects (sphere,mesh,face)) {
         nextIteration.insert (face.id ());
       }
@@ -58,7 +58,7 @@ struct ActionCarve::Impl {
     while (thisIteration.size () > 0) {
       for (const Id& id : thisIteration) {
         WingedFace* f = mesh.face (id);
-        if (f && f->incircleRadius (mesh) > maxIncircleRadius) {
+        if (f && f->longestEdgeLengthSqr (mesh) > maxEdgeLength * maxEdgeLength) {
           std::list <Id> affectedFaces;
           this->actions.add <ActionSubdivide> ().run (mesh, *f, &affectedFaces);
 

@@ -41,12 +41,12 @@ class WingedFace {
      * It's crucial that `v` is actually a vertex of `this` face.
      * If `b` holds, then t-edges are skiped.
      */
-    WingedEdge*            adjacent        (const WingedVertex&, bool = false) const;
-    WingedEdge*            longestEdge     (const WingedMesh&) const;
-    WingedVertex*          tVertex         () const;
-    WingedEdge*            tEdge           () const;
-    bool                   isTriangle      () const;
-    float                  incircleRadius  (const WingedMesh&) const;
+    WingedEdge*            adjacent               (const WingedVertex&, bool = false) const;
+    WingedEdge*            longestEdge            (const WingedMesh&, float*) const;
+    float                  longestEdgeLengthSqr   (const WingedMesh&) const;
+    WingedVertex*          tVertex                () const;
+    WingedEdge*            tEdge                  () const;
+    bool                   isTriangle             () const;
 
     WingedVertex*          designatedTVertex      () const;
     AdjacentEdgeIterator   adjacentEdgeIterator   (bool = false) const;
@@ -60,7 +60,7 @@ class WingedFace {
     SAFE_REF_CONST  (OctreeNode, octreeNode)
     SAFE_REF1_CONST (WingedEdge, adjacent, const WingedVertex&)
     SAFE_REF2_CONST (WingedEdge, adjacent, const WingedVertex&, bool)
-    SAFE_REF1_CONST (WingedEdge, longestEdge, const WingedMesh&)
+    SAFE_REF2_CONST (WingedEdge, longestEdge, const WingedMesh&, float*)
     SAFE_REF_CONST  (WingedVertex, tVertex)
     SAFE_REF_CONST  (WingedEdge, tEdge)
     SAFE_REF_CONST  (WingedVertex, designatedTVertex)
