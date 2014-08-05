@@ -7,14 +7,16 @@
 #include "action/ids.hpp"
 #include "variant.hpp"
 
-enum class Operation 
-  { Vertex1, Vertex2, LeftFace, RightFace
-  , LeftPredecessor, LeftSuccessor, RightPredecessor, RightSuccessor
-  , PreviousSibling, NextSibling
-  , FirstVertex, SecondVertex
-  , Predecessor, Successor
-  , SetGeometry, IsTEdge, FaceGradient, VertexGradient
-  };
+namespace {
+  enum class Operation 
+    { Vertex1, Vertex2, LeftFace, RightFace
+    , LeftPredecessor, LeftSuccessor, RightPredecessor, RightSuccessor
+    , PreviousSibling, NextSibling
+    , FirstVertex, SecondVertex
+    , Predecessor, Successor
+    , SetGeometry, IsTEdge, FaceGradient, VertexGradient
+    };
+};
 
 struct PAModifyWEdge :: Impl {
   Operation                        operation;

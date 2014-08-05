@@ -9,49 +9,51 @@
 #include "camera.hpp"
 #include "shader.hpp"
 
-const unsigned int numLights = 2;
+namespace {
+  const unsigned int numLights = 2;
 
-struct LightIds {
-  GLuint positionId;
-  GLuint colorId;
-  GLuint irradianceId;
+  struct LightIds {
+    GLuint positionId;
+    GLuint colorId;
+    GLuint irradianceId;
 
-  LightIds () {
-    this->positionId   = 0;
-    this->colorId      = 0;
-    this->irradianceId = 0;
-  }
-};
+    LightIds () {
+      this->positionId   = 0;
+      this->colorId      = 0;
+      this->irradianceId = 0;
+    }
+  };
 
-struct ShaderIds {
-  GLuint   programId;
-  GLuint   mvpId;
-  GLuint   modelId;
-  GLuint   colorId;
-  GLuint   ambientId;
-  GLuint   eyePointId;
-  LightIds lightIds [numLights];
+  struct ShaderIds {
+    GLuint   programId;
+    GLuint   mvpId;
+    GLuint   modelId;
+    GLuint   colorId;
+    GLuint   ambientId;
+    GLuint   eyePointId;
+    LightIds lightIds [numLights];
 
-  ShaderIds () {
-    this->programId  = 0;
-    this->mvpId      = 0;
-    this->modelId    = 0;
-    this->colorId    = 0;
-    this->ambientId  = 0;
-    this->eyePointId = 0;
-  }
-};
+    ShaderIds () {
+      this->programId  = 0;
+      this->mvpId      = 0;
+      this->modelId    = 0;
+      this->colorId    = 0;
+      this->ambientId  = 0;
+      this->eyePointId = 0;
+    }
+  };
 
-struct GlobalLightUniforms {
-  glm::vec3 position;
-  Color     color;
-  float     irradiance;
-};
+  struct GlobalLightUniforms {
+    glm::vec3 position;
+    Color     color;
+    float     irradiance;
+  };
 
-struct GlobalUniforms {
-  GlobalLightUniforms lightUniforms [numLights];
-  Color               ambient;
-  glm::vec3           eyePoint;
+  struct GlobalUniforms {
+    GlobalLightUniforms lightUniforms [numLights];
+    Color               ambient;
+    glm::vec3           eyePoint;
+  };
 };
 
 struct Renderer::Impl {

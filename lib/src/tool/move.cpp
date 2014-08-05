@@ -17,7 +17,9 @@
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
 
-typedef Variant <const SphereMeshes, const WingedMeshes> Entities;
+namespace {
+  typedef Variant <const SphereMeshes, const WingedMeshes> Entities;
+};
 
 struct ToolMove::Impl {
   ToolMove*    self;

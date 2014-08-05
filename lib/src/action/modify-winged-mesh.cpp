@@ -3,11 +3,13 @@
 #include "winged/mesh.hpp"
 #include "variant.hpp"
 
-enum class Operation { 
-  Position, RotationMatrix, Scaling
-};
+namespace {
+  enum class Operation { 
+    Position, RotationMatrix, Scaling
+  };
 
-typedef Variant <glm::vec3, glm::mat4x4> OperandData;
+  typedef Variant <glm::vec3, glm::mat4x4> OperandData;
+};
 
 struct ActionModifyWMesh :: Impl {
   Operation   operation;

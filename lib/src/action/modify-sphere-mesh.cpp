@@ -4,16 +4,18 @@
 #include "action/ids.hpp"
 #include "variant.hpp"
 
-enum class Operation { 
-  Position, NewNode, DeleteNode
-};
+namespace {
+  enum class Operation { 
+    Position, NewNode, DeleteNode
+  };
 
-struct NodeData {
-  glm::vec3 position;
-  float     radius;
-};
+  struct NodeData {
+    glm::vec3 position;
+    float     radius;
+  };
 
-typedef Variant <NodeData, glm::vec3> OperandData;
+  typedef Variant <NodeData, glm::vec3> OperandData;
+};
 
 struct ActionModifySMesh :: Impl {
   Operation   operation;

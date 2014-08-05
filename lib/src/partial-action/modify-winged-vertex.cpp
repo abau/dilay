@@ -7,7 +7,9 @@
 #include "state.hpp"
 #include "action/ids.hpp"
 
-enum class Operation { Edge, WriteIndex, WriteNormal, Move };
+namespace {
+  enum class Operation { Edge, WriteIndex, WriteNormal, Move };
+};
 
 struct PAModifyWVertex :: Impl {
   Operation                   operation;

@@ -13,26 +13,28 @@
 #include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
 
-typedef std::unordered_set <WingedFace*> FaceSet;
+namespace {
+  typedef std::unordered_set <WingedFace*> FaceSet;
 
-struct SubdivideData {
-  WingedMesh&     mesh;
-  WingedFace&     selection;
-  std::list <Id>* affectedFaces;
+  struct SubdivideData {
+    WingedMesh&     mesh;
+    WingedFace&     selection;
+    std::list <Id>* affectedFaces;
 
-  SubdivideData (WingedMesh& m, WingedFace& f, std::list <Id>* n) 
-    : mesh           (m)
-    , selection      (refineSelection (f))
-    , affectedFaces  (n)
-  {}
+    SubdivideData (WingedMesh& m, WingedFace& f, std::list <Id>* n) 
+      : mesh           (m)
+      , selection      (refineSelection (f))
+      , affectedFaces  (n)
+    {}
 
-  static WingedFace& refineSelection (WingedFace& selection) {
-    WingedEdge* tEdge = selection.tEdge ();
-    if (tEdge && tEdge->isRightFace (selection))
-      return tEdge->leftFaceRef ();
-    else 
-      return selection;
-  }
+    static WingedFace& refineSelection (WingedFace& selection) {
+      WingedEdge* tEdge = selection.tEdge ();
+      if (tEdge && tEdge->isRightFace (selection))
+        return tEdge->leftFaceRef ();
+      else 
+        return selection;
+    }
+  };
 };
 
 struct ActionSubdivide::Impl {

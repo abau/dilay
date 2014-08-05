@@ -8,7 +8,9 @@
 #include "action/unit/on.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 
-enum class Operation { Edge, Write };
+namespace {
+  enum class Operation { Edge, Write };
+};
 
 struct PAModifyWFace :: Impl {
   Operation                 operation;

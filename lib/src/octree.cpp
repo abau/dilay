@@ -21,29 +21,31 @@
 #include "render-mode.hpp"
 #endif
 
-typedef std::unique_ptr <OctreeNode::Impl> Child;
+namespace {
+  typedef std::unique_ptr <OctreeNode::Impl> Child;
 
-/** Container for face to insert */
-class FaceToInsert {
-  public:
-    FaceToInsert (const WingedFace& f, const PrimTriangle& t, bool s)
-      : id               (f.id               ())
-      , edge             (f.edge             ())
-      , firstIndexNumber (f.firstIndexNumber ())
-      , primitive        (t)
-      , center           (t.center           ())
-      , oneDimExtent     (t.oneDimExtent     ())
-      , savePrimitive    (s)
-      {}
+  /** Container for face to insert */
+  class FaceToInsert {
+    public:
+      FaceToInsert (const WingedFace& f, const PrimTriangle& t, bool s)
+        : id               (f.id               ())
+        , edge             (f.edge             ())
+        , firstIndexNumber (f.firstIndexNumber ())
+        , primitive        (t)
+        , center           (t.center           ())
+        , oneDimExtent     (t.oneDimExtent     ())
+        , savePrimitive    (s)
+        {}
 
-    const Id            id;
-    WingedEdge* const   edge;
-    const unsigned int  firstIndexNumber;
-    const PrimTriangle& primitive;
-    const glm::vec3     center;
-    const float         oneDimExtent;
-    const bool          savePrimitive;
-};
+      const Id            id;
+      WingedEdge* const   edge;
+      const unsigned int  firstIndexNumber;
+      const PrimTriangle& primitive;
+      const glm::vec3     center;
+      const float         oneDimExtent;
+      const bool          savePrimitive;
+  };
+}
 
 /* node indices:
  *   (-,-,-) -> 0

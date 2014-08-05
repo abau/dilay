@@ -2,7 +2,9 @@
 #include <list>
 #include "action/unit.hpp"
 
-typedef std::unique_ptr <Action> ActionPtr;
+namespace {
+  typedef std::unique_ptr <Action> ActionPtr;
+};
 
 struct ActionUnit :: Impl {
   std::list <ActionPtr> actions;

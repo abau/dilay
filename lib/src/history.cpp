@@ -4,10 +4,10 @@
 #include "macro.hpp"
 #include "action.hpp"
 
-typedef std::unique_ptr <Action> ActionPtr;
-typedef std::list <ActionPtr>    Timeline;
-
 struct History::Impl {
+  typedef std::unique_ptr <Action> ActionPtr;
+  typedef std::list <ActionPtr>    Timeline;
+
   Timeline past;
   Timeline future;
 

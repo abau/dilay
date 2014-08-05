@@ -10,27 +10,29 @@
 #include "octree.hpp"
 #include "variant.hpp"
 
-enum class Operation { 
+namespace {
+  enum class Operation { 
     DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex, InitOctreeRoot
-};
+  };
 
-struct EdgeData {
-  bool         isTEdge;
-  FaceGradient faceGradient;
-  int          vertexGradient;
-};
+  struct EdgeData {
+    bool         isTEdge;
+    FaceGradient faceGradient;
+    int          vertexGradient;
+  };
 
-struct FaceData {
-  PrimTriangle triangle;
-};
+  struct FaceData {
+    PrimTriangle triangle;
+  };
 
-struct VertexData {
-  glm::vec3 position;
-};
+  struct VertexData {
+    glm::vec3 position;
+  };
 
-struct OctreeRootData {
-  glm::vec3 position;
-  float     width;
+  struct OctreeRootData {
+    glm::vec3 position;
+    float     width;
+  };
 };
 
 struct PAModifyWMesh :: Impl {

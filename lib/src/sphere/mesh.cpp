@@ -14,7 +14,9 @@
 #include "config.hpp"
 #include "selection.hpp"
 
-typedef std::unique_ptr <SphereMeshNode::Impl> Child;
+namespace {
+  typedef std::unique_ptr <SphereMeshNode::Impl> Child;
+};
 
 struct SphereMeshNode::Impl {
   SphereMeshNode   self;

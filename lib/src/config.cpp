@@ -13,11 +13,10 @@
 #include "color.hpp"
 #include "config-conversion.hpp"
 
-typedef Variant <float,int,glm::vec3,glm::ivec2,Color> Value;
-
-typedef std::unordered_map <std::string, Value> ConfigMap;
-
 struct Config::Impl {
+  typedef Variant <float,int,glm::vec3,glm::ivec2,Color> Value;
+  typedef std::unordered_map <std::string, Value>        ConfigMap;
+
   const std::string optionsFileName;
   const std::string cacheFileName;
   const std::string optionsRoot;

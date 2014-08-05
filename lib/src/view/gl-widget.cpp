@@ -22,9 +22,9 @@
 #include "primitive/ray.hpp"
 #include "selection-mode.hpp"
 
-typedef std::unique_ptr <ToolMoveCamera> MoveCamera;
-
 struct ViewGlWidget::Impl {
+  typedef std::unique_ptr <ToolMoveCamera> MoveCamera;
+
   ViewGlWidget*   self;
   ViewMainWindow& mainWindow;
   Axis            axis;
