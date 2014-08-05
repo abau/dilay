@@ -237,8 +237,8 @@ struct ActionSubdivide::Impl {
     for (WingedFace* f : faces) {
       assert (f->isTriangle ());
       this->self->realignFace (data.mesh, *f);
-     }
-   }
+    }
+  }
 };
 
 DELEGATE_BIG3_SELF (ActionSubdivide)
