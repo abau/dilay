@@ -23,7 +23,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
     WingedFace& realigned = this->runRealignFace (mesh, face, &sameNode);
 
     if (sameNode == false) {
-      this->ids.insert (face.id ());
+      this->ids.insert (realigned.id ());
     }
     return realigned;
   }

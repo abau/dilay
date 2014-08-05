@@ -233,8 +233,8 @@ struct OctreeNode::Impl {
   }
 
   void deleteFace (Faces::iterator& faceIterator) {
-    this->faces.erase       (faceIterator);
     this->primitives.remove (faceIterator->id ());
+    this->faces.erase       (faceIterator);
     if (this->isEmpty () && this->parent) {
       this->parent->childEmptyNotification ();
       // don't call anything after calling childEmptyNotification
