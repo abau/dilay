@@ -44,9 +44,9 @@ void WingedFace :: write (WingedMesh& mesh, const unsigned int *newFIN) {
 PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
 
-  return PrimTriangle ( this->firstVertex  ().vertex (mesh)
-                      , this->secondVertex ().vertex (mesh)
-                      , this->thirdVertex  ().vertex (mesh)
+  return PrimTriangle ( this->firstVertex  ().vector (mesh)
+                      , this->secondVertex ().vector (mesh)
+                      , this->thirdVertex  ().vector (mesh)
                       );
 }
 
@@ -72,9 +72,9 @@ unsigned int WingedFace :: numEdges () const {
 }
 
 glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
-  glm::vec3 v1 = this->_edge->vertex (*this,0)->vertex (mesh);
-  glm::vec3 v2 = this->_edge->vertex (*this,1)->vertex (mesh);
-  glm::vec3 v3 = this->_edge->vertex (*this,2)->vertex (mesh);
+  glm::vec3 v1 = this->_edge->vertex (*this,0)->vector (mesh);
+  glm::vec3 v2 = this->_edge->vertex (*this,1)->vector (mesh);
+  glm::vec3 v3 = this->_edge->vertex (*this,2)->vector (mesh);
 
   return glm::normalize (glm::cross (v2-v1, v3-v2));
 }

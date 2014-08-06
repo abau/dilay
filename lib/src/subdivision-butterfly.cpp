@@ -72,7 +72,7 @@ namespace {
       (const WingedEdge& e, const WingedVertex& o, int vertexGradient) -> glm::vec3 {
 
         if (vertexGradient <= 0) {
-          return o.vertex (mesh);
+          return o.vector (mesh);
         }
         else {
           WingedEdge* sibling = e.adjacentSibling (o);
@@ -102,5 +102,5 @@ glm::vec3 SubdivisionButterfly::subdivideEdge (const WingedMesh& mesh, WingedEdg
   Adjacents     a1            = adjacents (mesh, edge, v1);
   Adjacents     a2            = adjacents (mesh, edge, v2);
 
-  return subdivide (v1.vertex (mesh), a1, v2.vertex (mesh), a2);
+  return subdivide (v1.vector (mesh), a1, v2.vector (mesh), a2);
 }

@@ -59,7 +59,7 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& 
 
 bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
                                     , const WingedVertex& vertex) {
-  return IntersectionUtil :: intersects (sphere, vertex.vertex (mesh));
+  return IntersectionUtil :: intersects (sphere, vertex.vector (mesh));
 }
 
 // see http://realtimecollisiondetection.net/blog/?p=103
@@ -67,9 +67,9 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
                                     , const WingedFace& face) {
   assert (face.isTriangle ());
 
-  const glm::vec3 A    = face.firstVertex  ().vertex (mesh) - sphere.center ();
-  const glm::vec3 B    = face.secondVertex ().vertex (mesh) - sphere.center ();
-  const glm::vec3 C    = face.thirdVertex  ().vertex (mesh) - sphere.center ();
+  const glm::vec3 A    = face.firstVertex  ().vector (mesh) - sphere.center ();
+  const glm::vec3 B    = face.secondVertex ().vector (mesh) - sphere.center ();
+  const glm::vec3 C    = face.thirdVertex  ().vector (mesh) - sphere.center ();
 
   const float     rr   = sphere.radius () * sphere.radius ();
   const glm::vec3 V    = glm::cross (B-A, C-A);

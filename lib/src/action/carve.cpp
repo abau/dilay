@@ -57,7 +57,7 @@ struct CarveCache::Impl {
     auto it = this->vertexCache.find (vertex.index ());
 
     if (it == this->vertexCache.end () || it->second.wasCarved () == false) {
-      VertexData data (vertex.vertex (mesh), vertex.normal (mesh));
+      VertexData data (vertex.vector (mesh), vertex.normal (mesh));
       return this->vertexCache.emplace (vertex.index (), data).first->second;
     }
     else {
@@ -161,9 +161,9 @@ struct ActionCarve::Impl {
   bool isSubdividable (const WingedMesh& mesh, const WingedFace& face) const
   {
     const float       threshold = 0.03f;
-    const glm::vec3   v1        = face.firstVertex ().vertex (mesh);
-    const glm::vec3   v2        = face.secondVertex ().vertex (mesh);
-    const glm::vec3   v3        = face.thirdVertex ().vertex (mesh);
+    const glm::vec3   v1        = face.firstVertex  ().vector (mesh);
+    const glm::vec3   v2        = face.secondVertex ().vector (mesh);
+    const glm::vec3   v3        = face.thirdVertex  ().vector (mesh);
 
     const float maxEdgeLength = glm::max ( glm::distance2 (v1, v2)
                                          , glm::max ( glm::distance2 (v1, v3)

@@ -41,7 +41,7 @@ struct PAModifyWVertex :: Impl {
   void move (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& pos) {
     this->operation = Operation::Move;
     this->operands.setVertex (0, &vertex);
-    this->vec3.reset         (new glm::vec3 (vertex.vertex (mesh)));
+    this->vec3.reset         (new glm::vec3 (vertex.vector (mesh)));
     mesh.setVertex           (vertex.index (), pos);
   }
 
@@ -69,7 +69,7 @@ struct PAModifyWVertex :: Impl {
         break;
       }
       case Operation::Move: {
-        glm::vec3 pos = mesh.vertex (vertex.index ());
+        glm::vec3 pos = mesh.vector (vertex.index ());
         mesh.setVertex   (vertex.index (), *this->vec3);
         this->vec3.reset (new glm::vec3 (pos));
         break;

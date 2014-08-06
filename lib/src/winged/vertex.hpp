@@ -21,7 +21,7 @@ class WingedVertex {
     void         edge        (WingedEdge*);
     unsigned int writeIndex  (WingedMesh&);
     void         writeIndex  (WingedMesh&, unsigned int);
-    glm::vec3    vertex      (const WingedMesh&) const;
+    glm::vec3    vector      (const WingedMesh&) const;
     glm::vec3    normal      (const WingedMesh&) const;
     void         writeNormal (WingedMesh&) const;
     unsigned int valence     () const;

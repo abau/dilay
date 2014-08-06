@@ -112,8 +112,8 @@ void WingedEdge :: successor (const WingedFace& face, WingedEdge* edge) {
 }
 
 glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
-  glm::vec3 a = this->_vertex1->vertex (mesh);
-  glm::vec3 b = this->_vertex2->vertex (mesh);
+  glm::vec3 a = this->_vertex1->vector (mesh);
+  glm::vec3 b = this->_vertex2->vector (mesh);
   return b-a;
 }
 
@@ -142,8 +142,8 @@ WingedVertex* WingedEdge :: vertex (const WingedFace& face,unsigned int index) c
 }
 
 glm::vec3 WingedEdge :: middle (const WingedMesh& mesh) const {
-  return Util :: between ( this->vertex1 ()->vertex (mesh)
-                         , this->vertex2 ()->vertex (mesh));
+  return Util :: between ( this->vertex1 ()->vector (mesh)
+                         , this->vertex2 ()->vector (mesh));
 }
 
 WingedEdge* WingedEdge :: adjacent (const WingedFace& face, const WingedVertex& vertex) 

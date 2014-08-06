@@ -16,7 +16,7 @@ struct PrimTriangle::Impl {
 
   Impl ( const WingedMesh& mesh, const WingedVertex& v1
                , const WingedVertex& v2, const WingedVertex& v3)
-    : Impl (v1.vertex (mesh), v2.vertex (mesh), v3.vertex (mesh)) {}
+    : Impl (v1.vector (mesh), v2.vector (mesh), v3.vector (mesh)) {}
 
   glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
   glm::vec3 edge2 () const { return this->vertex3 - this->vertex1; }

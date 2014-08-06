@@ -36,7 +36,7 @@ struct WingedMesh::Impl {
     , octree (false)
     {}
 
-  glm::vec3    vertex (unsigned int i) const { return this->mesh.vertex (i); }
+  glm::vec3    vector (unsigned int i) const { return this->mesh.vertex (i); }
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
   glm::vec3    normal (unsigned int i) const { return this->mesh.normal (i); }
 
@@ -257,7 +257,7 @@ DELEGATE_BIG3_SELF         (WingedMesh)
 DELEGATE1_CONSTRUCTOR_SELF (WingedMesh,const Id&)
 ID                         (WingedMesh)
 
-DELEGATE1_CONST (glm::vec3      , WingedMesh, vertex, unsigned int)
+DELEGATE1_CONST (glm::vec3      , WingedMesh, vector, unsigned int)
 DELEGATE1_CONST (unsigned int   , WingedMesh, index, unsigned int)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, normal, unsigned int)
 DELEGATE1       (WingedVertex*  , WingedMesh, vertexSLOW, unsigned int)

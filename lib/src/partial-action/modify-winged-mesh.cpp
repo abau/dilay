@@ -86,7 +86,7 @@ struct PAModifyWMesh :: Impl {
   }
 
   void saveVertexOperand (const WingedMesh& mesh, const WingedVertex& vertex) {
-    this->operandData.set <VertexData> (VertexData {vertex.vertex (mesh)});
+    this->operandData.set <VertexData> (VertexData {vertex.vector (mesh)});
   }
 
   WingedVertex& addSavedVertex (WingedMesh& mesh) {

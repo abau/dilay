@@ -18,8 +18,8 @@ void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int indexNumber) {
   mesh.setIndex (indexNumber, this->_index);
 }
 
-glm::vec3 WingedVertex :: vertex (const WingedMesh& mesh) const {
-  return mesh.vertex (this->_index);
+glm::vec3 WingedVertex :: vector (const WingedMesh& mesh) const {
+  return mesh.vector (this->_index);
 }
 
 glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
