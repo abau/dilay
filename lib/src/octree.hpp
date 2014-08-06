@@ -61,8 +61,6 @@ class Octree {
     bool             intersects  (const PrimRay&, Intersection&);
     bool             intersects  ( const WingedMesh&, const PrimSphere&
                                  , std::unordered_set<Id>&);
-    bool             intersects  ( const WingedMesh&, const PrimSphere&
-                                 , std::unordered_set<WingedVertex*>&);
     void             reset       ();
     void             setupRoot   (const glm::vec3&, float);
     void             shrinkRoot  ();

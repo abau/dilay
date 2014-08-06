@@ -240,14 +240,6 @@ struct WingedMesh::Impl {
       , ids);
   }
 
-  bool intersects (const PrimSphere& sphere, std::unordered_set <WingedVertex*>& vertices) {
-    return this->octree.intersects (
-        *this->self
-      , PrimSphere (sphere, glm::affineInverse (this->mesh.modelMatrix ()))
-      , vertices);
-  }
-
-
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
   void               scaling        (const glm::vec3& v)   { return this->mesh.scaling (v); }
   glm::vec3          scaling        () const               { return this->mesh.scaling (); }
@@ -308,7 +300,6 @@ DELEGATE        (void, WingedMesh, toggleRenderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<Id>&)
-DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::unordered_set<WingedVertex*>&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
 DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)

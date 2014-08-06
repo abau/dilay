@@ -67,7 +67,6 @@ class WingedMesh {
     
     bool               intersects        (const PrimRay&, WingedFaceIntersection&);
     bool               intersects        (const PrimSphere&, std::unordered_set <Id>&);
-    bool               intersects        (const PrimSphere&, std::unordered_set <WingedVertex*>&);
 
     void               scale             (const glm::vec3&);
     void               scaling           (const glm::vec3&);
