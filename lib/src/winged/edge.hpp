@@ -34,7 +34,6 @@ class WingedEdge {
     WingedEdge*     previousSibling  () const { return this->_previousSibling; }
     WingedEdge*     nextSibling      () const { return this->_nextSibling; }
     bool            isTEdge          () const { return this->_isTEdge; }
-    Edges::iterator iterator         () const { return this->_iterator; }
     FaceGradient    faceGradient     () const { return this->_faceGradient; }
     int             vertexGradient   () const { return this->_vertexGradient; }
 
@@ -68,8 +67,6 @@ class WingedEdge {
     void            previousSibling  (WingedEdge* e)   { this->_previousSibling  = e; }
     void            nextSibling      (WingedEdge* e)   { this->_nextSibling      = e; }
     void            isTEdge          (bool b)          { this->_isTEdge          = b; }
-    void            iterator         (const Edges::iterator& i)          
-                                                       { this->_iterator         = i; }
     void            faceGradient     (FaceGradient g)  { this->_faceGradient     = g; }
     void            vertexGradient   (int g)           { this->_vertexGradient   = g; }
 
@@ -142,8 +139,6 @@ class WingedEdge {
     /** `_vertexGradient` notes level difference of `_vertex1` and `_vertex2`, where a 
      * negative value indicates that `_vertex1` is of a higher level */
     int             _vertexGradient; 
-
-    Edges::iterator _iterator;
 };
 
 #endif

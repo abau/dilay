@@ -27,9 +27,9 @@ class WingedMesh {
     glm::vec3          vector            (unsigned int) const;
     unsigned int       index             (unsigned int) const;
     glm::vec3          normal            (unsigned int) const;
-    WingedVertex*      vertexSLOW        (unsigned int);
+    WingedVertex*      vertex            (unsigned int);
     WingedVertex&      lastVertex        ();
-    WingedEdge*        edgeSLOW          (const Id&);
+    WingedEdge*        edge              (const Id&);
     WingedFace*        face              (const Id&);
     unsigned int       addIndex          (unsigned int);
     WingedVertex&      addVertex         (const glm::vec3&);
@@ -80,9 +80,9 @@ class WingedMesh {
     void               rotationY         (float);
     void               rotationZ         (float);
 
-    SAFE_REF1 (WingedVertex, vertexSLOW, unsigned int)
-    SAFE_REF1 (WingedEdge  , edgeSLOW  , const Id&)
-    SAFE_REF1 (WingedFace  , face      , const Id&)
+    SAFE_REF1 (WingedVertex, vertex, unsigned int)
+    SAFE_REF1 (WingedEdge  , edge  , const Id&)
+    SAFE_REF1 (WingedFace  , face  , const Id&)
   private:
     class Impl;
     Impl* impl;

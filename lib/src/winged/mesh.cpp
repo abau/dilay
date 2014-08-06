@@ -15,8 +15,11 @@
 #include "id.hpp"
 #include "selection.hpp"
 #include "config.hpp"
+#include "id-map.hpp"
 
 struct WingedMesh::Impl {
+  typedef std::vector <Vertices::iterator> VertexMap;
+
   WingedMesh*              self;
   const IdObject           id;
   Mesh                     mesh;
@@ -24,6 +27,8 @@ struct WingedMesh::Impl {
   Edges                    edges;
   Octree                   octree;
   std::set  <unsigned int> freeFirstIndexNumbers;
+  VertexMap                vertexMap;
+  IdMap <Edges::iterator>  edgeMap;
 
   Impl (WingedMesh* s)
     : self   (s)
@@ -40,12 +45,13 @@ struct WingedMesh::Impl {
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
   glm::vec3    normal (unsigned int i) const { return this->mesh.normal (i); }
 
-  WingedVertex* vertexSLOW (unsigned int i) {
-    for (WingedVertex& v : this->vertices) {
-      if (v.index () == i)
-        return &v;
+  WingedVertex* vertex (unsigned int i) {
+    if (i > this->vertexMap.size ()) {
+      return nullptr;
     }
-    return nullptr;
+    else {
+      return &*this->vertexMap[i];
+    }
   }
 
   WingedVertex& lastVertex () { 
@@ -53,12 +59,14 @@ struct WingedMesh::Impl {
     return this->vertices.back (); 
   }
 
-  WingedEdge* edgeSLOW (const Id& id) {
-    for (WingedEdge& e : this->edges) {
-      if (e.id () == id)
-        return &e;
+  WingedEdge* edge (const Id& id) {
+    auto it = this->edgeMap.iterator (id);
+    if (it == this->edgeMap.end ()) {
+      return nullptr;
     }
-    return nullptr;
+    else {
+      return &*it->second;
+    }
   }
 
   WingedFace* face (const Id& id) { return this->octree.face (id); }
@@ -69,7 +77,8 @@ struct WingedMesh::Impl {
 
   WingedVertex& addVertex (const glm::vec3& v) {
     unsigned int index = this->mesh.addVertex (v);
-    this->vertices.emplace_back (index, nullptr);
+    this->vertices .emplace_back (index, nullptr);
+    this->vertexMap.emplace_back (--this->vertices.end ());
     return this->vertices.back ();
   }
 
@@ -81,7 +90,7 @@ struct WingedMesh::Impl {
                              , e.previousSibling  (), e.nextSibling    ()
                              , e.id (), e.isTEdge (), e.faceGradient   ()
                              , e.vertexGradient   ());
-    this->edges.back ().iterator (--this->edges.end ());
+    this->edgeMap.insert (e.id (), --this->edges.end ());
     return this->edges.back ();
   }
 
@@ -122,7 +131,14 @@ struct WingedMesh::Impl {
     return this->mesh.setNormal (index,n);
   }
 
-  void deleteEdge (const WingedEdge& edge) { this->edges.erase (edge.iterator ()); }
+  void deleteEdge (const WingedEdge& edge) { 
+    Id   id = edge.id ();
+    auto it = this->edgeMap.iterator (id);
+    assert (it != this->edgeMap.end ());
+    this->edges.erase    (it->second); 
+    this->edgeMap.remove (id);
+  }
+
   void deleteFace (const WingedFace& face) { 
     if (face.firstIndexNumber () == this->mesh.numIndices () - 3) {
       this->mesh.popIndices (3);
@@ -134,8 +150,9 @@ struct WingedMesh::Impl {
   }
 
   void popVertex () {
-    this->mesh.popVertex ();
-    this->vertices.pop_back ();
+    this->mesh     .popVertex ();
+    this->vertices .pop_back  ();
+    this->vertexMap.pop_back  ();
   }
 
   WingedFace& realignFace (const WingedFace& face, const PrimTriangle& triangle, bool* sameNode) {
@@ -260,9 +277,9 @@ ID                         (WingedMesh)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vector, unsigned int)
 DELEGATE1_CONST (unsigned int   , WingedMesh, index, unsigned int)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, normal, unsigned int)
-DELEGATE1       (WingedVertex*  , WingedMesh, vertexSLOW, unsigned int)
+DELEGATE1       (WingedVertex*  , WingedMesh, vertex, unsigned int)
 DELEGATE        (WingedVertex&  , WingedMesh, lastVertex)
-DELEGATE1       (WingedEdge*    , WingedMesh, edgeSLOW, const Id&)
+DELEGATE1       (WingedEdge*    , WingedMesh, edge, const Id&)
 DELEGATE1       (WingedFace*    , WingedMesh, face, const Id&)
 
 DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
