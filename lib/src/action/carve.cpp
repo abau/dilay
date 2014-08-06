@@ -107,10 +107,7 @@ struct ActionCarve::Impl {
   ActionCarve*              self;
   ActionUnitOn <WingedMesh> actions;
 
-  Impl (ActionCarve* s) : self (s) {
-    self->writeMesh  (true);
-    self->bufferMesh (true);
-  }
+  Impl (ActionCarve* s) : self (s) {}
 
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
@@ -122,9 +119,10 @@ struct ActionCarve::Impl {
 
     mesh.intersects (sphere, faces);
 
-    this->subdivideFaces (mesh, sphere, brush, faces, *cache.impl);
-    this->cacheFaces     (faces, *cache.impl);
-    this->carveFaces     (mesh, position, brush, faces, *cache.impl);
+    this->subdivideFaces   (mesh, sphere, brush, faces, *cache.impl);
+    this->cacheFaces       (faces, *cache.impl);
+    this->carveFaces       (mesh, position, brush, faces, *cache.impl);
+    this->self->bufferData (mesh);
 
     /*
     // FOR DEBUGGING
@@ -135,9 +133,6 @@ struct ActionCarve::Impl {
       }
     }
     */
-
-    mesh.write ();
-    mesh.bufferData ();
   }
 
   bool isSubdividable ( const WingedMesh& mesh, const glm::vec3& poa, const CarveBrush& brush
@@ -250,7 +245,7 @@ struct ActionCarve::Impl {
   void carveFaces ( WingedMesh& mesh, const glm::vec3& poa, const CarveBrush& brush
                   , const std::vector <WingedFace*>& faces, CarveCache::Impl& cache) 
   {
-    // Compute set of vertices
+    // compute set of vertices
     std::set <WingedVertex*> vertices;
     for (const WingedFace* face : faces) {
       assert (face);
@@ -259,21 +254,22 @@ struct ActionCarve::Impl {
       vertices.insert (&face->thirdVertex  ());
     }
 
-    // Write new positions
+    // write new positions
     for (WingedVertex* v : vertices) {
       const glm::vec3 newPosition = this->carveVertex (poa, brush, cache.cachedVertex (*v));
       this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPosition);
     }
 
-    // Write normals
+    // write normals
     for (WingedVertex* v : vertices) {
       this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v);
     }
 
-    // Realign faces.
+    // write indices and realign faces
     for (WingedFace* face : faces) {
       assert (face);
-      this->self->realignFace (mesh, *face);
+      this->self->writeIndices (mesh, *face);
+      this->self->realignFace  (mesh, *face);
     }
   }
 };

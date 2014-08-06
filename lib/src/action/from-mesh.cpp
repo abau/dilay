@@ -18,10 +18,7 @@ struct ActionFromMesh :: Impl {
   ActionFromMesh*           self;
   ActionUnitOn <WingedMesh> actions;
 
-  Impl (ActionFromMesh* s) : self (s) {
-    self->writeMesh  (true);
-    self->bufferMesh (true);
-  }
+  Impl (ActionFromMesh* s) : self (s) {}
 
   void run (WingedMesh& w, const Mesh& m) {
     assert (this->actions.isEmpty ());
@@ -73,7 +70,7 @@ struct ActionFromMesh :: Impl {
     glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
     glm::vec3 minVertex (std::numeric_limits <float>::max    ());
 
-    // Octree
+    // octree
     for (unsigned int i = 0; i < m.numVertices (); i++) {
       glm::vec3 v = m.vertex (i);
       maxVertex = glm::max (maxVertex, v);
@@ -85,13 +82,13 @@ struct ActionFromMesh :: Impl {
 
     this->actions.add <PAModifyWMesh> ().setupOctreeRoot (w, center, width);
 
-    // Vertices
+    // vertices
     for (unsigned int i = 0; i < m.numVertices (); i++) {
-      vecVertices [i] = &this->actions.add<PAModifyWMesh> ()
-                              .addVertex (w, m.vertex (i));
+      vecVertices[i] = &this->actions.add<PAModifyWMesh> ()
+                                     .addVertex (w, m.vertex (i));
     }
 
-    // Faces & Edges
+    // faces & edges
     for (unsigned int i = 0; i < m.numIndices (); i += 3) {
       unsigned int index1 = m.index (i + 0);
       unsigned int index2 = m.index (i + 1);
@@ -118,12 +115,10 @@ struct ActionFromMesh :: Impl {
     this->actions.add <ActionModifyWMesh> ().rotationMatrix (w, m.rotationMatrix ());
     this->actions.add <ActionModifyWMesh> ().scaling        (w, m.scaling ());
 
-    if (this->self->writeMesh ()) {
-      w.write ();
-    }
-    if (this->self->bufferMesh ()) {
-      w.bufferData ();
-    }
+    // write & buffer
+    this->self->writeAllIndices (w);
+    this->self->writeAllNormals (w);
+    this->self->bufferData      (w);
   }
 
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }

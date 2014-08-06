@@ -23,7 +23,7 @@ int main () {
   QCoreApplication::setApplicationName ("dilay");
 
   octreeTest1 ();
-  octreeTest2 ();
+  //octreeTest2 ();
 
   std::cout << "all tests run successfully\n";
   return 0;
@@ -78,6 +78,7 @@ void octreeTest1 () {
   WingedUtil::printStatistics (octree);
 }
 
+/*
 void octreeTest2 () {
   std::cout << "## octree test 2 #######################\n";
 
@@ -108,3 +109,4 @@ void octreeTest2 () {
 
   f (glm::vec3 (8.85855f,-7.48563f,-1.37292f), 1.311f);
 }
+*/

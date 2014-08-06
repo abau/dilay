@@ -6,18 +6,20 @@
 
 class WingedMesh;
 class WingedFace;
+class WingedVertex;
 
 class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
   public:
     DECLARE_BIG3_VIRTUAL (ActionOnPostProcessedWMesh)
 
-    void writeMesh  (bool);
-    void bufferMesh (bool);
-    bool writeMesh  () const;
-    bool bufferMesh () const;
-
   protected:
-    WingedFace& realignFace (WingedMesh&, const WingedFace&);
+    void        bufferData      (WingedMesh&);
+    WingedFace& realignFace     (WingedMesh&, const WingedFace&);
+    void        writeAllIndices (WingedMesh&);
+    void        writeIndices    (WingedMesh&, WingedFace&);
+    void        writeAllNormals (WingedMesh&);
+    void        writeNormals    (WingedMesh&, WingedFace&);
+    void        writeNormal     (WingedMesh&, WingedVertex&);
 
   private:
     void runUndo (WingedMesh&);

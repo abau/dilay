@@ -56,9 +56,8 @@ class WingedMesh {
     unsigned int       numIndices        () const;
     bool               isEmpty           () const;
 
-    void               writeIndices      (); 
-    void               writeNormals      (); 
-    void               write             (); 
+    void               writeAllIndices   (); 
+    void               writeAllNormals   (); 
     void               bufferData        ();
     void               render            (const Selection&);
     void               reset             ();

@@ -182,8 +182,8 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  void writeIndices () {
-    if (this->freeFirstIndexNumbers.size () > 0) {
+  void writeAllIndices () {
+    if (this->hasFreeFirstIndexNumber ()) {
       unsigned int fin = 0;
       this->mesh.resizeIndices (this->numFaces () * 3);
 
@@ -200,20 +200,15 @@ struct WingedMesh::Impl {
     }
   }
 
-  void writeNormals () {
+  void writeAllNormals () {
     for (WingedVertex& v : this->vertices) {
       v.writeNormal (*this->self);
     }
   }
 
-  void write () {
-    this->writeIndices ();
-    this->writeNormals ();
-  }
-
   void bufferData  () { 
     assert (this->freeFirstIndexNumbers.size () == 0);
-    this->mesh.bufferData   (); 
+    this->mesh.bufferData (); 
   }
 
   void render (const Selection& selection) { 
@@ -306,9 +301,8 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 
-DELEGATE        (void, WingedMesh, writeIndices)
-DELEGATE        (void, WingedMesh, writeNormals)
-DELEGATE        (void, WingedMesh, write)
+DELEGATE        (void, WingedMesh, writeAllIndices)
+DELEGATE        (void, WingedMesh, writeAllNormals)
 DELEGATE        (void, WingedMesh, bufferData)
 DELEGATE1       (void, WingedMesh, render, const Selection&)
 DELEGATE        (void, WingedMesh, reset)
