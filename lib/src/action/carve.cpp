@@ -247,18 +247,10 @@ struct ActionCarve::Impl {
       }
     }
 
-    // Compute new positions
-    std::list <glm::vec3> newPositions;
-    for (WingedVertex* v : vertices) {
-      newPositions.push_back (this->carveVertex (poa, brush, cache.cachedVertex (*v)));
-    }
-
     // Write new positions
-    assert (newPositions.size () == vertices.size ());
-    auto newPosition = newPositions.begin ();
     for (WingedVertex* v : vertices) {
-      this->actions.add <PAModifyWVertex> ().move (mesh,*v,*newPosition);
-      ++newPosition;
+      const glm::vec3 newPosition = this->carveVertex (poa, brush, cache.cachedVertex (*v));
+      this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPosition);
     }
 
     // Write normals
