@@ -17,7 +17,7 @@ class SphereMeshNode {
     SphereMeshNode        (Impl*);
     DELETE_COPYMOVEASSIGN (SphereMeshNode)
 
-           Id              id          () const;
+    const  Id&             id          () const;
            SphereMeshNode* parent      ();
     const  glm::vec3&      position    () const;
            float           radius      () const;
@@ -43,7 +43,7 @@ class SphereMesh {
     DECLARE_BIG3 (SphereMesh, const Id&)
     SphereMesh   ();
 
-          Id              id          () const;
+    const Id&             id          () const;
           SphereMeshNode& addNode     (SphereMeshNode*, const glm::vec3&, float);
           SphereMeshNode& addNode     (const Id&, SphereMeshNode*, const glm::vec3&, float);
           void            deleteNode  (SphereMeshNode&);

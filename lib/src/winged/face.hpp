@@ -20,7 +20,7 @@ class WingedFace {
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
 
-    Id                     id               () const { return this->_id.id (); }
+    const Id&              id               () const { return this->_id.id (); }
     WingedEdge*            edge             () const { return this->_edge; }
     OctreeNode*            octreeNode       () const { return this->_octreeNode; }
     unsigned int           firstIndexNumber () const { return this->_firstIndexNumber; }

@@ -37,7 +37,7 @@ class OctreeNode {
     OctreeNode            (Impl*);
     DELETE_COPYMOVEASSIGN (OctreeNode)
 
-    Id                id         () const;
+    const Id&         id         () const;
     int               depth      () const;
     const glm::vec3&  center     () const;
     float             width      () const;

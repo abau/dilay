@@ -23,7 +23,7 @@ class WingedMesh {
     DECLARE_BIG3 (WingedMesh)
     WingedMesh   (const Id&);
 
-    Id                 id                () const;
+    const Id&          id                () const;
     glm::vec3          vertex            (unsigned int) const;
     unsigned int       index             (unsigned int) const;
     glm::vec3          normal            (unsigned int) const;

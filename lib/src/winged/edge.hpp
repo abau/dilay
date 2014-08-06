@@ -22,7 +22,7 @@ class WingedEdge {
     WingedEdge (const WingedEdge&)  = default;
     WingedEdge (      WingedEdge&&) = default;
 
-    Id              id               () const { return this->_id.id (); }
+    const Id&       id               () const { return this->_id.id (); }
     WingedVertex*   vertex1          () const { return this->_vertex1; }
     WingedVertex*   vertex2          () const { return this->_vertex2; }
     WingedFace*     leftFace         () const { return this->_leftFace; }

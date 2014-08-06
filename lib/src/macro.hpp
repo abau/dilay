@@ -357,7 +357,7 @@
     from :: global ().impl -> member = a; }
 
 #define ID(from) \
-  Id from :: id () const { return this->impl->id.id () ; }
+  const Id& from :: id () const { return this->impl->id.id () ; }
 
 // Safe references
 
