@@ -20,8 +20,8 @@ struct WingedMesh::Impl {
   WingedMesh*              self;
   const IdObject           id;
   Mesh                     mesh;
-  std::list <WingedVertex> vertices;
-  std::list <WingedEdge>   edges;
+  Vertices                 vertices;
+  Edges                    edges;
   Octree                   octree;
   std::set  <unsigned int> freeFirstIndexNumbers;
 
