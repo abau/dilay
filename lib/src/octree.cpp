@@ -298,18 +298,19 @@ struct OctreeNode::Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, std::unordered_set<Id>& ids) {
+  bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
+                  , std::vector <WingedFace*>& iFaces) {
     if (IntersectionUtil :: intersects (sphere, this->looseAABox ())) {
       for (WingedFace& face : this->faces) {
         if (IntersectionUtil :: intersects (sphere, mesh, face)) {
-          ids.insert (face.id ());
+          iFaces.push_back (&face);
         }
       }
       for (Child& c : this->children) {
-        c->intersects (mesh, sphere, ids);
+        c->intersects (mesh, sphere, iFaces);
       }
     }
-    return ids.empty () == false;
+    return iFaces.empty () == false;
   }
 
   unsigned int numFaces () const { return this->faces.size (); }
@@ -500,9 +501,11 @@ struct Octree::Impl {
     return false;
   }
 
-  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, std::unordered_set<Id>& ids) {
+  bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
+                  , std::vector <WingedFace*>& faces) 
+  {
     if (this->hasRoot ()) {
-      return this->root->intersects (mesh,sphere,ids);
+      return this->root->intersects (mesh,sphere,faces);
     }
     return false;
   }
@@ -587,7 +590,7 @@ DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, Octree, intersects, const PrimRay&, Intersection&)
-DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::unordered_set<Id>&)
+DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::vector<WingedFace*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, setupRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)

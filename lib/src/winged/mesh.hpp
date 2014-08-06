@@ -1,7 +1,7 @@
 #ifndef DILAY_WINGED_MESH
 #define DILAY_WINGED_MESH
 
-#include <unordered_set>
+#include <vector>
 #include <glm/fwd.hpp>
 #include "fwd-winged.hpp"
 #include "macro.hpp"
@@ -66,7 +66,7 @@ class WingedMesh {
     void               toggleRenderMode  ();
     
     bool               intersects        (const PrimRay&, WingedFaceIntersection&);
-    bool               intersects        (const PrimSphere&, std::unordered_set <Id>&);
+    bool               intersects        (const PrimSphere&, std::vector <WingedFace*>&);
 
     void               scale             (const glm::vec3&);
     void               scaling           (const glm::vec3&);

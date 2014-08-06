@@ -1,7 +1,7 @@
 #ifndef DILAY_OCTREE
 #define DILAY_OCTREE
 
-#include <unordered_set>
+#include <vector>
 #include <unordered_map>
 #include <functional>
 #include <glm/fwd.hpp>
@@ -60,7 +60,7 @@ class Octree {
     bool             intersects  (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
     bool             intersects  (const PrimRay&, Intersection&);
     bool             intersects  ( const WingedMesh&, const PrimSphere&
-                                 , std::unordered_set<Id>&);
+                                 , std::vector <WingedFace*>&);
     void             reset       ();
     void             setupRoot   (const glm::vec3&, float);
     void             shrinkRoot  ();
