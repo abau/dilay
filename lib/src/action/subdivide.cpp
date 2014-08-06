@@ -17,11 +17,11 @@ namespace {
   typedef std::unordered_set <WingedFace*> FaceSet;
 
   struct SubdivideData {
-    WingedMesh&     mesh;
-    WingedFace&     selection;
-    std::list <Id>* affectedFaces;
+    WingedMesh&       mesh;
+    WingedFace&       selection;
+    std::vector <Id>* affectedFaces;
 
-    SubdivideData (WingedMesh& m, WingedFace& f, std::list <Id>* n) 
+    SubdivideData (WingedMesh& m, WingedFace& f, std::vector <Id>* n) 
       : mesh           (m)
       , selection      (refineSelection (f))
       , affectedFaces  (n)
@@ -46,7 +46,7 @@ struct ActionSubdivide::Impl {
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 
-  void run (WingedMesh& mesh, WingedFace& face, std::list <Id>* affectedFaces) { 
+  void run (WingedMesh& mesh, WingedFace& face, std::vector <Id>* affectedFaces) { 
     assert (this->actions.isEmpty ());
     this->subdivide (SubdivideData (mesh, face, affectedFaces)); 
   }
@@ -242,6 +242,6 @@ struct ActionSubdivide::Impl {
 };
 
 DELEGATE_BIG3_SELF (ActionSubdivide)
-DELEGATE3          (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::list <Id>*)
+DELEGATE3          (void, ActionSubdivide, run, WingedMesh&, WingedFace&, std::vector <Id>*)
 DELEGATE1          (void, ActionSubdivide, runUndoBeforePostProcessing, WingedMesh&)
 DELEGATE1          (void, ActionSubdivide, runRedoBeforePostProcessing, WingedMesh&)

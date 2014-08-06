@@ -1,7 +1,7 @@
 #ifndef DILAY_PARTIAL_ACTION_TRIANGULATE_QUAD
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_QUAD
 
-#include <list>
+#include <vector>
 #include "action/on.hpp"
 #include "macro.hpp"
 
@@ -16,7 +16,7 @@ class PATriangulateQuad : public ActionOn <WingedMesh> {
     /** `run (m,f,a)` triangulates the quad `f` by 
      * inserting an edge from a t-vertex of `f`. 
      * `f` and the new face are inserted into `a`, if `a` is not `nullptr`.*/
-    void run  (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
+    void run  (WingedMesh&, WingedFace&, std::vector <Id>* = nullptr);
 
   private:
     void runUndo (WingedMesh&);

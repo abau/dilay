@@ -12,7 +12,7 @@
 struct PATriangulate6Gon :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void run (WingedMesh& mesh, WingedFace& f, std::list <Id>* affectedFaces) {
+  void run (WingedMesh& mesh, WingedFace& f, std::vector <Id>* affectedFaces) {
     assert (f.numEdges () == 6);
     assert (this->actions.isEmpty ());
 
@@ -103,6 +103,6 @@ struct PATriangulate6Gon :: Impl {
 
 DELEGATE_BIG3 (PATriangulate6Gon)
 
-DELEGATE3 (void,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::list<Id>*)
+DELEGATE3 (void,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::vector<Id>*)
 DELEGATE1 (void,PATriangulate6Gon,runUndo,WingedMesh&)
 DELEGATE1 (void,PATriangulate6Gon,runRedo,WingedMesh&)

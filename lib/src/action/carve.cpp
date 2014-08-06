@@ -205,7 +205,7 @@ struct ActionCarve::Impl {
       for (const Id& id : thisIteration) {
         WingedFace* f = mesh.face (id);
         if (f && this->isSubdividable (mesh, sphere.center (), brush, *f, cache)) {
-          std::list <Id> affectedFaces;
+          std::vector <Id> affectedFaces;
           this->actions.add <ActionSubdivide> ().run (mesh, *f, &affectedFaces);
 
           for (Id& id : affectedFaces) {

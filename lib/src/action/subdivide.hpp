@@ -1,7 +1,7 @@
 #ifndef DILAY_ACTION_SUBDIVIDE
 #define DILAY_ACTION_SUBDIVIDE
 
-#include <list>
+#include <vector>
 #include "action/on-post-processed-winged-mesh.hpp"
 #include "macro.hpp"
 
@@ -13,7 +13,9 @@ class ActionSubdivide : public ActionOnPostProcessedWMesh {
   public: 
     DECLARE_BIG3 (ActionSubdivide)
 
-    void run (WingedMesh&, WingedFace&, std::list <Id>* = nullptr);
+    // Subdivides a mesh's face and returns the IDs of all
+    // affected faces (may contain dublicates).
+    void run (WingedMesh&, WingedFace&, std::vector <Id>* = nullptr);
 
   private:
     void runUndoBeforePostProcessing (WingedMesh&);
