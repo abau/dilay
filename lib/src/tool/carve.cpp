@@ -1,3 +1,4 @@
+#include <unordered_map>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "tool/carve.hpp"
@@ -15,38 +16,71 @@
 #include "id.hpp"
 
 struct ToolCarve::Impl {
-  ToolCarve*   self;
-  WingedMeshes selection;
+  ToolCarve*        self;
+  CarveCache        carveCache;
+  const float       brushWidth;
 
   Impl (ToolCarve* s) 
-    : self (s) 
-    , selection (State::scene ().selectedWingedMeshes (MeshType::Freeform))
+    : self       (s) 
+    , brushWidth (0.1f)
   {}
 
   static QString toolName () {
     return QObject::tr ("Carve");
   }
 
-  ToolResponse runMouseMoveEvent (QMouseEvent& e) {
-    if (e.buttons ().testFlag (Qt::LeftButton)) {
-      WingedFaceIntersection intersection;
-      Scene&                 scene = State::scene ();
+  bool getIntersection (const glm::ivec2& mouse, WingedMesh*& mesh, glm::vec3& position) {
+    PrimRay                ray   = State::camera ().ray (mouse);
+    Scene&                 scene = State::scene ();
+    WingedFaceIntersection wIntersection;
+    Intersection           intersection;
 
-      if (scene.intersects (State::camera ().ray (ViewUtil::toIVec2 (e)), intersection)) {
-        if (scene.selection ().hasMajor (intersection.mesh ().id ())) {
-          State::history ().add <ActionCarve, WingedMesh> (intersection.mesh ())
-                           .run ( intersection.mesh     ()
-                                , intersection.position ()
-                                , 0.1f );
+    bool hasIntersection  = this->carveCache.intersects (ray, intersection);
+    bool hasWIntersection = scene.intersects (ray, wIntersection);
 
-          return ToolResponse::Redraw;
-        }
+    if (hasWIntersection && scene.selection ().hasMajor (wIntersection.mesh ().id ())) {
+      if (hasIntersection) {
+        assert (this->carveCache.meshCache ());     // fix corner cases
+
+        mesh     = this->carveCache.meshCache ();
+        position = intersection.position ();
       }
-      return ToolResponse::None;
+      else {
+        this->carveCache.meshCache (&wIntersection.mesh ());
+        mesh     = &wIntersection.mesh    ();
+        position = wIntersection.position ();
+      }
+      return true;
     }
     else {
-      return ToolResponse::None;
+      return false;
     }
+  }
+
+  ToolResponse runMouseMoveEvent (QMouseEvent& e) {
+    if (e.buttons ().testFlag (Qt::LeftButton)) {
+      glm::vec3   position;
+      WingedMesh* mesh;
+
+      if (this->getIntersection (ViewUtil::toIVec2 (e), mesh, position)) {
+        State::history ().add <ActionCarve, WingedMesh> (*mesh)
+                         .run (*mesh
+                              , position
+                              , this->brushWidth
+                              , this->carveCache
+                              );
+        return ToolResponse::Redraw;
+      }
+    }
+    return ToolResponse::None;
+  }
+
+
+  ToolResponse runMouseReleaseEvent (QMouseEvent& e) { 
+    if (e.button () == Qt::LeftButton) {
+      this->carveCache.reset ();
+    }
+    return ToolResponse::None; 
   }
 };
 
@@ -54,3 +88,4 @@ DELEGATE_BIG3_BASE ( ToolCarve, (const ViewToolMenuParameters& p)
                    , (this), Tool, (p, toolName ()) )
 DELEGATE_STATIC (QString     , ToolCarve, toolName)
 DELEGATE1       (ToolResponse, ToolCarve, runMouseMoveEvent, QMouseEvent&)
+DELEGATE1       (ToolResponse, ToolCarve, runMouseReleaseEvent, QMouseEvent&)
