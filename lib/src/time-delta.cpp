@@ -3,29 +3,51 @@
 #include "time-delta.hpp"
 
 struct TimeDelta :: Impl {
-  const std::clock_t start;
+  const std::clock_t globalStart;
+        std::clock_t localStart;
   const char*        file;
   const int          line;
 
   Impl (const char* f, int l) 
-    : start (std::clock ()) 
-    , file (f)
-    , line (l)
+    : globalStart (std::clock ()) 
+    , localStart  (globalStart) 
+    , file        (f)
+    , line        (l)
     {}
 
   Impl () : Impl (nullptr,0) {}
 
-  void stopAndPrint () {
-    if (this->file == nullptr)
-      std::cout << "delta time: ";
-    else
-      std::cout << "delta time (" << this->file << ":" << this->line << "): ";
-      
-    std::cout << float (std::clock () - this->start) / CLOCKS_PER_SEC
-              << " s\n";
+  void printTime (const char* msg, std::clock_t time) const {
+    std::string buffer ("delta-time");
+
+    if (this->file) {
+      buffer.append ( " (" 
+                    + std::string (this->file) 
+                    + ":" 
+                    + std::to_string (this->line) 
+                    + ")" );
+    }
+
+    if (msg) {
+      buffer.append (" [" + std::string (msg) + "]");
+    }
+
+    buffer.append (": " + std::to_string (float (std::clock () - time) / CLOCKS_PER_SEC) + "s");
+
+    std::cout << buffer << std::endl;
+  }
+
+  void printGlobal (const char* msg) const {
+    this->printTime (msg, this->globalStart);
+  }
+
+  void printLocal (const char* msg) {
+    this->printTime (msg, this->localStart);
+    this->localStart = std::clock ();
   }
 };
 
 DELEGATE_BIG6         (TimeDelta)
 DELEGATE2_CONSTRUCTOR (TimeDelta,const char*,int)
-DELEGATE              (void, TimeDelta, stopAndPrint)
+DELEGATE1_CONST       (void, TimeDelta, printGlobal, const char*)
+DELEGATE1             (void, TimeDelta, printLocal, const char*)
