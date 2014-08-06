@@ -52,6 +52,8 @@ class Scene {
           WingedMeshes  selectedWingedMeshes (MeshType);
           SphereMeshes  selectedSphereMeshes ();
 
+          void          printStatistics      () const;
+
   private:
     class Impl;
     Impl* impl;

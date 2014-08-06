@@ -9,6 +9,7 @@
 #include "winged/mesh.hpp"
 #include "winged/face.hpp"
 #include "winged/face-intersection.hpp"
+#include "winged/util.hpp"
 #include "sphere/node-intersection.hpp"
 #include "selection-mode.hpp"
 #include "selection.hpp"
@@ -223,6 +224,12 @@ struct Scene :: Impl {
     });
     return meshes;
   }
+
+  void printStatistics () const {
+    for (const WingedMesh& m : this->wingedMeshes) {
+      WingedUtil::printStatistics (m);
+    }
+  }
 };
 
 DELEGATE_CONSTRUCTOR (Scene)
@@ -251,3 +258,4 @@ DELEGATE1       (bool             , Scene, selectIntersection, const PrimRay&)
 DELEGATE_CONST  (unsigned int     , Scene, numSelections)
 DELEGATE1       (WingedMeshes     , Scene, selectedWingedMeshes, MeshType)
 DELEGATE        (SphereMeshes     , Scene, selectedSphereMeshes)
+DELEGATE_CONST  (void             , Scene, printStatistics)

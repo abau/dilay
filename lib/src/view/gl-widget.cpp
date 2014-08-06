@@ -159,10 +159,10 @@ struct ViewGlWidget::Impl {
           State :: mesh ().toggleRenderMode ();
           this->update ();
           break;
-        case Qt::Key_I:
-          WingedUtil :: printStatistics (State :: mesh ());
-          break;
           */
+        case Qt::Key_I:
+          State::scene ().printStatistics ();
+          break;
         case Qt::Key_Z:
           if (e->modifiers () == Qt::ControlModifier) {
             State::history ().undo ();
