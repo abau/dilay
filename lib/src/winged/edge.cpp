@@ -193,14 +193,10 @@ WingedEdge* WingedEdge :: adjacentSibling (const WingedVertex& vertex) const {
 
 bool WingedEdge :: gradientAlong (const WingedFace& face) const {
   if (this->isLeftFace (face)) {
-    if (this->faceGradient () == FaceGradient::Left)
-      return true;
-    return false;
+    return this->faceGradient () == FaceGradient::Left;
   }
   else {
-    if (this->faceGradient () == FaceGradient::Right)
-      return true;
-    return false;
+    return this->faceGradient () == FaceGradient::Right;
   }
 }
 
