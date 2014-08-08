@@ -236,11 +236,10 @@ struct ActionCarve::Impl {
       this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v);
     }
 
-    // write indices and realign faces
+    // realign faces
     for (auto it = faces.begin (); it != faces.end (); ++it) {
       WingedFace* face = *it;
       assert (face);
-      this->self->writeIndices (mesh, *face);
       *it = &this->self->realignFace (mesh, *face);
     }
   }

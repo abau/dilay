@@ -116,16 +116,25 @@ struct ActionFromMesh :: Impl {
     this->actions.add <ActionModifyWMesh> ().scaling        (w, m.scaling ());
 
     // write & buffer
-    this->self->writeAllIndices (w);
-    this->self->writeAllNormals (w);
-    this->self->bufferData      (w);
+    w.writeAllIndices ();
+    w.writeAllNormals ();
+    w.bufferData      ();
   }
 
-  void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) { 
+    this->actions.undo (mesh); 
+    mesh.reset ();
+  }
+
+  void runRedo (WingedMesh& mesh) { 
+    this->actions.redo   (mesh); 
+    mesh.writeAllIndices ();
+    mesh.writeAllNormals ();
+    mesh.bufferData      ();
+  }
 };
 
 DELEGATE_BIG3_SELF (ActionFromMesh)
 DELEGATE2          (void, ActionFromMesh, run, WingedMesh&, const Mesh&);
-DELEGATE1          (void, ActionFromMesh, runUndoBeforePostProcessing, WingedMesh&)
-DELEGATE1          (void, ActionFromMesh, runRedoBeforePostProcessing, WingedMesh&)
+DELEGATE1          (void, ActionFromMesh, runUndo, WingedMesh&)
+DELEGATE1          (void, ActionFromMesh, runRedo, WingedMesh&)

@@ -6,7 +6,6 @@
 
 class WingedMesh;
 class WingedFace;
-class WingedVertex;
 
 class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
   public:
@@ -15,11 +14,6 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
   protected:
     void        bufferData      (WingedMesh&);
     WingedFace& realignFace     (WingedMesh&, const WingedFace&);
-    void        writeAllIndices (WingedMesh&);
-    void        writeIndices    (WingedMesh&, WingedFace&);
-    void        writeAllNormals (WingedMesh&);
-    void        writeNormals    (WingedMesh&, WingedFace&);
-    void        writeNormal     (WingedMesh&, WingedVertex&);
 
   private:
     void runUndo (WingedMesh&);
