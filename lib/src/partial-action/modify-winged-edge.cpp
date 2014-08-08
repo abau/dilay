@@ -14,7 +14,7 @@ namespace {
     , PreviousSibling, NextSibling
     , FirstVertex, SecondVertex
     , Predecessor, Successor
-    , SetGeometry, IsTEdge, FaceGradient, VertexGradient
+    , SetGeometry, IsTEdge, FaceGradient
     };
 };
 
@@ -190,13 +190,6 @@ struct PAModifyWEdge :: Impl {
     }
   }
 
-  void vertexGradient (WingedEdge& edge, int g) {
-    this->operation = Operation::VertexGradient;
-    this->operands.setEdge (0, &edge);
-    this->operandData.set <int> (edge.vertexGradient ());
-    edge.vertexGradient (g);
-  }
-
   void toggle (WingedMesh& mesh) { 
     WingedEdge& edge = this->operands.getEdgeRef (mesh,0);
 
@@ -333,12 +326,6 @@ struct PAModifyWEdge :: Impl {
         this->operandData.set <FaceGradient> (gradient);
         break;
       }
-      case Operation::VertexGradient: {
-        int gradient = edge.vertexGradient ();
-        edge.vertexGradient (this->operandData.get <int> ());
-        this->operandData.set <int> (gradient);
-        break;
-      }
       default: assert (false);
     }
   }
@@ -367,7 +354,6 @@ DELEGATE3 (void,PAModifyWEdge,successor       ,WingedEdge&,const WingedFace&,Win
 DELEGATE2 (void,PAModifyWEdge,isTEdge         ,WingedEdge&,bool)
 DELEGATE2 (void,PAModifyWEdge,faceGradient    ,WingedEdge&,FaceGradient)
 DELEGATE2 (void,PAModifyWEdge,increaseFaceGradient,WingedEdge&,const WingedFace&)
-DELEGATE2 (void,PAModifyWEdge,vertexGradient  ,WingedEdge&,int)
 DELEGATE1 (void,PAModifyWEdge,runUndo         ,WingedMesh&)
 DELEGATE1 (void,PAModifyWEdge,runRedo         ,WingedMesh&)
 

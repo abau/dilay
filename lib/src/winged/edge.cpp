@@ -7,7 +7,7 @@
   
 WingedEdge :: WingedEdge () :
   WingedEdge ( nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
-             , nullptr, nullptr, Id (), false, FaceGradient::None, 0) 
+             , nullptr, nullptr, Id (), false, FaceGradient::None) 
   {}
 
 WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
@@ -15,14 +15,13 @@ WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
                          , WingedEdge* leftPred, WingedEdge* leftSucc
                          , WingedEdge* rightPred, WingedEdge* rightSucc
                          , WingedEdge* prevSib, WingedEdge* nextSib
-                         , const Id& id, bool isT, FaceGradient fG, int vG) 
+                         , const Id& id, bool isT, FaceGradient fG) 
                          : _id (id) {
 
   this->setGeometry ( v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc
                     , prevSib, nextSib);
   this->_isTEdge        = isT;
   this->_faceGradient   = fG;
-  this->_vertexGradient = vG;
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
@@ -198,11 +197,4 @@ bool WingedEdge :: gradientAlong (const WingedFace& face) const {
   else {
     return this->faceGradient () == FaceGradient::Right;
   }
-}
-
-int WingedEdge :: gradientAlong (const WingedVertex& vertex) const {
-  if (this->isVertex1 (vertex))
-    return this->_vertexGradient;
-  else
-    return -this->_vertexGradient;
 }

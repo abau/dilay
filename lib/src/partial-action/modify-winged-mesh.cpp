@@ -18,7 +18,6 @@ namespace {
   struct EdgeData {
     bool         isTEdge;
     FaceGradient faceGradient;
-    int          vertexGradient;
   };
 
   struct FaceData {
@@ -55,10 +54,7 @@ struct PAModifyWMesh :: Impl {
     this->operandIds.setVertex (0, edge.vertex1 ());
     this->operandIds.setVertex (1, edge.vertex2 ());
 
-    this->operandData.set <EdgeData> (
-        EdgeData { edge.isTEdge ()
-                 , edge.faceGradient ()
-                 , edge.vertexGradient () });
+    this->operandData.set <EdgeData> (EdgeData { edge.isTEdge () , edge.faceGradient () });
   }
 
   WingedEdge& addSavedEdge (WingedMesh& mesh) {
@@ -70,7 +66,7 @@ struct PAModifyWMesh :: Impl {
                  , this->operandIds.getEdge   (mesh,5), this->operandIds.getEdge   (mesh,6)
                  , this->operandIds.getEdge   (mesh,7), this->operandIds.getEdge   (mesh,8)
                  , this->operandIds.getIdRef  (0)     , data. isTEdge
-                 , data. faceGradient                 , data. vertexGradient));
+                 , data. faceGradient));
   }
 
   void saveFaceOperand (const WingedFace& face, const PrimTriangle& triangle) {

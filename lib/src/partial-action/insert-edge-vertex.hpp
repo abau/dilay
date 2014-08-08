@@ -12,11 +12,10 @@ class PAInsertEdgeVertex : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAInsertEdgeVertex)
 
-    /** `run (m,e,v,g)` inserts a new vertex `v` at edge `e`.
+    /** `run (m,e,v)` inserts a new vertex `v` at edge `e`.
      * The new edge `n` (from the first vertex of `e` to `v`) is returned.
-     * If `g == true` the edge gradients of `e` and `n` are set.
      */
-    WingedEdge& run (WingedMesh&, WingedEdge&, const glm::vec3&, bool = false);
+    WingedEdge& run (WingedMesh&, WingedEdge&, const glm::vec3&);
 
   private:
     void runUndo (WingedMesh&);

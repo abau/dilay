@@ -60,7 +60,6 @@ SOURCES += \
            src/sphere/node-intersection.cpp \
            src/sphere/mesh.cpp \
            src/state.cpp \
-           src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/carve.cpp \
@@ -156,7 +155,6 @@ HEADERS += \
            src/sphere/node-intersection.hpp \
            src/sphere/mesh.hpp \
            src/state.hpp \
-           src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/carve.hpp \

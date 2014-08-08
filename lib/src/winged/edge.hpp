@@ -18,7 +18,7 @@ class WingedEdge {
     WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*  
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*  
                , WingedEdge*, WingedEdge*, const Id&, bool
-               , FaceGradient, int);
+               , FaceGradient);
     WingedEdge (const WingedEdge&)  = default;
     WingedEdge (      WingedEdge&&) = default;
 
@@ -35,7 +35,6 @@ class WingedEdge {
     WingedEdge*     nextSibling      () const { return this->_nextSibling; }
     bool            isTEdge          () const { return this->_isTEdge; }
     FaceGradient    faceGradient     () const { return this->_faceGradient; }
-    int             vertexGradient   () const { return this->_vertexGradient; }
 
     bool            isLeftFace       (const WingedFace&)   const;
     bool            isRightFace      (const WingedFace&)   const;
@@ -68,7 +67,6 @@ class WingedEdge {
     void            nextSibling      (WingedEdge* e)   { this->_nextSibling      = e; }
     void            isTEdge          (bool b)          { this->_isTEdge          = b; }
     void            faceGradient     (FaceGradient g)  { this->_faceGradient     = g; }
-    void            vertexGradient   (int g)           { this->_vertexGradient   = g; }
 
     void            firstVertex      (const WingedFace&, WingedVertex*);
     void            secondVertex     (const WingedFace&, WingedVertex*);
@@ -89,7 +87,6 @@ class WingedEdge {
     bool            isSecondVertex   (const WingedFace&, const WingedVertex&) const;
     WingedEdge*     adjacentSibling  (const WingedVertex&) const;
     bool            gradientAlong    (const WingedFace&) const;
-    int             gradientAlong    (const WingedVertex&) const;
 
     SAFE_REF_CONST  (WingedVertex, vertex1)
     SAFE_REF_CONST  (WingedVertex, vertex2)
@@ -135,10 +132,6 @@ class WingedEdge {
 
     bool            _isTEdge;
     FaceGradient    _faceGradient;
-
-    /** `_vertexGradient` notes level difference of `_vertex1` and `_vertex2`, where a 
-     * negative value indicates that `_vertex1` is of a higher level */
-    int             _vertexGradient; 
 };
 
 #endif

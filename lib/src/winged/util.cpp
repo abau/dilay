@@ -52,8 +52,7 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
     << "\n\tprivious sibling:\t"  << maybeEdgeId    (e.previousSibling  ())   
     <<   "\tnext sibling:\t\t"    << maybeEdgeId    (e.nextSibling      ())
     << "\n\tis T-edge:\t\t"       << e.isTEdge      ()
-    <<   "\tface gradient:\t\t"   << faceGradient   (e.faceGradient     ())
-    << "\n\tvertex gradient:\t"   <<                 e.vertexGradient   ();
+    <<   "\tface gradient:\t\t"   << faceGradient   (e.faceGradient     ());
   std::cout << std::endl;
 }
 

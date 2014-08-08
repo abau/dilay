@@ -47,7 +47,7 @@ struct ActionFromMesh :: Impl {
                                                              , nullptr, nullptr
                                                              , Id ()  , false
                                                              , FaceGradient::None
-                                                             , 0 ));
+                                                             ));
             
           mapEdges.insert (std::pair <uiPair,WingedEdge*> ( uiPair (index1,index2)
                                                           , &newEdge ));

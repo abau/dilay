@@ -11,7 +11,6 @@
 #include "partial-action/delete-t-edges.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
 #include "adjacent-iterator.hpp"
-#include "subdivision-butterfly.hpp"
 
 namespace {
   typedef std::unordered_set <WingedFace*> FaceSet;
@@ -213,8 +212,7 @@ struct ActionSubdivide::Impl {
 
         if (subdividedEdges.count (edge.id ()) == 0 && edge.faceGradient () == FaceGradient::None) {
           WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ().run 
-            ( data.mesh, edge
-            , SubdivisionButterfly::subdivideEdge (data.mesh, edge), true);
+            (data.mesh, edge, this->subdivideEdge (data, edge));
 
           subdividedEdges.insert (edge   .id ());
           subdividedEdges.insert (newEdge.id ());
@@ -222,6 +220,10 @@ struct ActionSubdivide::Impl {
       }
       this->actions.add <PATriangulate6Gon> ().run (data.mesh, *face, data.affectedFaces);
     }
+  }
+
+  glm::vec3 subdivideEdge (const SubdivideData& data, const WingedEdge& edge) {
+    return (edge.vertex1Ref ().vector (data.mesh) + edge.vertex2Ref ().vector (data.mesh)) * 0.5f;
   }
 
   void refineBorder (const SubdivideData& data, FaceSet& border) {
