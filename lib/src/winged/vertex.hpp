@@ -2,6 +2,7 @@
 #define DILAY_WINGED_VERTEX
 
 #include <glm/fwd.hpp>
+#include "macro.hpp"
 
 class AdjacentEdgeIterator;
 class AdjacentVertexIterator;
@@ -34,6 +35,7 @@ class WingedVertex {
     AdjacentVertexIterator  adjacentVertexIterator (WingedEdge&, bool = false) const;
     AdjacentFaceIterator    adjacentFaceIterator   (WingedEdge&) const;
 
+    SAFE_REF_CONST (WingedEdge, edge)
   private:
     const unsigned int          _index;
     WingedEdge*                 _edge;
