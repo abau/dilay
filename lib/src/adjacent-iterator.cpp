@@ -37,8 +37,10 @@ AdjacentEdgeIterator :: AdjacentEdgeIterator ( const WingedVertex& v, WingedEdge
   , _edge        (&e)
   , _skipTEdges  (skipT) {
   
-    while (this->_skipTEdges && this->isValid () && this->element ().isTEdge ()) {
+    if (this->_skipTEdges && this->element ().isTEdge ()) {
       this->next ();
+      assert (! (this->_skipTEdges && this->element ().isTEdge ()));
+      this->_start = &this->element ();
     }
   }
 
