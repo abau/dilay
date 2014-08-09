@@ -127,7 +127,6 @@ HEADERS += \
            src/id.hpp \
            src/id-map.hpp \
            src/intersection.hpp \
-           src/iterator.hpp \
            src/macro.hpp \
            src/mesh.hpp \
            src/mesh-type.hpp \

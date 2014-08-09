@@ -4,9 +4,9 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-class AdjacentEdgeIterator;
-class AdjacentVertexIterator;
-class AdjacentFaceIterator;
+class AdjEdges;
+class AdjVertices;
+class AdjFaces;
 class WingedEdge;
 class WingedMesh;
 
@@ -28,12 +28,12 @@ class WingedVertex {
     unsigned int valence     () const;
     WingedEdge*  tEdge       () const;
 
-    AdjacentEdgeIterator    adjacentEdgeIterator   (bool = false) const;
-    AdjacentVertexIterator  adjacentVertexIterator (bool = false) const;
-    AdjacentFaceIterator    adjacentFaceIterator   () const;
-    AdjacentEdgeIterator    adjacentEdgeIterator   (WingedEdge&, bool = false) const;
-    AdjacentVertexIterator  adjacentVertexIterator (WingedEdge&, bool = false) const;
-    AdjacentFaceIterator    adjacentFaceIterator   (WingedEdge&) const;
+    AdjEdges     adjacentEdges    (WingedEdge&, bool = false) const;
+    AdjEdges     adjacentEdges    (bool = false)              const;
+    AdjVertices  adjacentVertices (WingedEdge&, bool = false) const;
+    AdjVertices  adjacentVertices (bool = false)              const;
+    AdjFaces     adjacentFaces    (WingedEdge&)               const;
+    AdjFaces     adjacentFaces    ()                          const;
 
     SAFE_REF_CONST (WingedEdge, edge)
   private:

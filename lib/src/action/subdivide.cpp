@@ -89,8 +89,8 @@ struct ActionSubdivide::Impl {
     auto hasAtLeast2Neighbours = [&neighbourhood] (WingedFace& face) -> bool {
       unsigned int numNeighbours = 0;
 
-      for (ADJACENT_FACE_ITERATOR (it, face)) {
-        if (neighbourhood.count (&it.element ()) > 0) {
+      for (WingedFace& a : face.adjacentFaces ()) {
+        if (neighbourhood.count (&a) > 0) {
           numNeighbours++;
         }
       }
@@ -100,8 +100,9 @@ struct ActionSubdivide::Impl {
     // checks adjacent faces of a neighbour
     std::function < bool (WingedFace&) > checkAdjacents =
       [&] (WingedFace& neighbour) -> bool {
-        for (auto it = neighbour.adjacentFaceIterator (true); it.isValid (); it.next ()) {
-          WingedFace& face = it.element ();
+        AdjFaces adjacentFaces = neighbour.adjacentFaces (true);
+        for (auto it = adjacentFaces.begin (); it != adjacentFaces.end (); ++it) {
+          WingedFace& face = *it;
           if (neighbourhood.count (&face) == 0) {
             if (face.tEdge () || hasAtLeast2Neighbours (face)) {
               if (it.edge ()->gradientAlong (*it.face ())) {
@@ -153,14 +154,12 @@ struct ActionSubdivide::Impl {
 
     // check levels in one-ring environment
     for (WingedFace* n : neighbourhood) {
-      for (auto vIt = n->adjacentVertexIterator (true); vIt.isValid (); vIt.next ()) {
-        WingedVertex& vertex   = vIt.element ();
+      for (WingedVertex& vertex : n->adjacentVertices (true)) {
         WingedEdge&   start    = n->adjacentRef (vertex,true);
         int           gradient = 0;
 
-        for (auto eIt = vIt.element ().adjacentEdgeIterator (start); eIt.isValid (); eIt.next ()) {
-          WingedEdge& edge = eIt.element ();
-          WingedFace& ccw  = ccwFace (vertex, edge);
+        for (WingedEdge& edge : vertex.adjacentEdges (start)) {
+          WingedFace& ccw = ccwFace (vertex, edge);
 
           if (ccw.id () != n->id ()) {
             gradient = gradient + accountGradient (vertex, edge);
@@ -177,8 +176,9 @@ struct ActionSubdivide::Impl {
     // build border
     border.clear ();
     for (WingedFace* n : neighbourhood) {
-      for (auto it = n->adjacentFaceIterator (true); it.isValid (); it.next ()) {
-        WingedFace& face = it.element ();
+      AdjFaces adjacentFaces = n->adjacentFaces (true);
+      for (auto it = adjacentFaces.begin (); it != adjacentFaces.end (); ++it) {
+        WingedFace& face = *it;
 
         if (neighbourhood.count (&face) == 0) {
           assert (face.tEdge () == nullptr);
@@ -206,10 +206,11 @@ struct ActionSubdivide::Impl {
     std::unordered_set<Id> subdividedEdges;
 
     for (WingedFace* face : faces) {
-      for (auto it = face->adjacentEdgeIterator (); it.isValid (); ) {
-        WingedEdge& edge = it.element ();
+      AdjEdges adjacentEdges = face->adjacentEdges ();
+      for (auto it = adjacentEdges.begin (); it != adjacentEdges.end (); ) {
+        WingedEdge& edge = *it;
         assert (! edge.isTEdge ());
-        it.next ();
+        ++it;
 
         if (subdividedEdges.count (edge.id ()) == 0 && edge.faceGradient () == FaceGradient::None) {
           WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ().run 

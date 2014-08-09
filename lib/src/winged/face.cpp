@@ -24,15 +24,15 @@ void WingedFace :: writeIndices (WingedMesh& mesh, const unsigned int *newFIN) {
     this->_firstIndexNumber = *newFIN;
   }
   unsigned int indexNumber = this->_firstIndexNumber;
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    it.element ().writeIndex (mesh,indexNumber);
+  for (WingedVertex& vertex : this->adjacentVertices ()) {
+    vertex.writeIndex (mesh,indexNumber);
     indexNumber++;
   }
 }
 
 void WingedFace :: writeNormals (WingedMesh& mesh) {
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    it.element ().writeNormal (mesh);
+  for (WingedVertex& vertex : this->adjacentVertices ()) {
+    vertex.writeNormal (mesh);
   }
 }
 
@@ -63,9 +63,10 @@ WingedVertex& WingedFace :: thirdVertex () const {
 }
 
 unsigned int WingedFace :: numEdges () const {
-  unsigned int i = 0;
+  unsigned int i             = 0;
+  AdjEdges     adjacentEdges = this->adjacentEdges ();
 
-  for (ADJACENT_EDGE_ITERATOR(_,*this)) {
+  for (auto it = adjacentEdges.begin (); it != adjacentEdges.end (); ++it) {
     i++;
   }
   return i;
@@ -80,9 +81,9 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
 }
 
 WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex, bool skipTEdges) const {
-  for (auto it = this->adjacentEdgeIterator (skipTEdges); it.isValid (); it.next ()) {
-    if (it.element ().isAdjacent (vertex))
-      return &it.element ();
+  for (WingedEdge& edge : this->adjacentEdges (skipTEdges)) {
+    if (edge.isAdjacent (vertex))
+      return &edge;
   }
   assert (false);
 }
@@ -91,11 +92,11 @@ WingedEdge* WingedFace :: longestEdge (const WingedMesh& mesh, float *maxLengthS
   WingedEdge* tmpLongest = this->edge ();
   float       tmpLength  = 0.0f;
 
-  for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    float lengthSqr = it.element ().lengthSqr (mesh);
+  for (WingedEdge& edge : this->adjacentEdges ()) {
+    float lengthSqr = edge.lengthSqr (mesh);
     if (lengthSqr > tmpLength) {
       tmpLength  = lengthSqr;
-      tmpLongest = &it.element ();
+      tmpLongest = &edge;
     }
   }
   if (maxLengthSqr) {
@@ -111,17 +112,17 @@ float WingedFace :: longestEdgeLengthSqr (const WingedMesh& mesh) const {
 }
 
 WingedVertex* WingedFace :: tVertex () const {
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    if (it.element ().tEdge ())
-      return &it.element ();
+  for (WingedVertex& vertex : this->adjacentVertices ()) {
+    if (vertex.tEdge ())
+      return &vertex;
   }
   return nullptr;
 }
 
 WingedEdge* WingedFace :: tEdge () const {
-  for (ADJACENT_EDGE_ITERATOR (it,*this)) {
-    if (it.element ().isTEdge ())
-      return &it.element ();
+  for (WingedEdge& edge : this->adjacentEdges ()) {
+    if (edge.isTEdge ())
+      return &edge;
   }
   return nullptr;
 }
@@ -129,8 +130,9 @@ WingedEdge* WingedFace :: tEdge () const {
 bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
 
 WingedVertex* WingedFace :: designatedTVertex () const {
-  for (ADJACENT_VERTEX_ITERATOR (it,*this)) {
-    WingedVertex& v  = it.element ();
+  AdjVertices adjacentVertices = this->adjacentVertices ();
+  for (auto it = adjacentVertices.begin (); it != adjacentVertices.end (); ++it) {
+    WingedVertex& v  = *it;
     WingedEdge&   e1 = *it.edge ();
     WingedEdge&   e2 = e1.adjacentRef (*this,v);
     WingedFace&   o1 = e1.otherFaceRef (*this);
@@ -143,24 +145,21 @@ WingedVertex* WingedFace :: designatedTVertex () const {
   assert (false);
 }
 
-AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator (bool skipT) const {
-  return AdjacentEdgeIterator (*this,skipT);
+AdjEdges WingedFace :: adjacentEdges (WingedEdge& e, bool skipT) const {
+  return AdjEdges (*this, e, skipT);
 }
-AdjacentVertexIterator WingedFace :: adjacentVertexIterator (bool skipT) const {
-  return AdjacentVertexIterator (*this,skipT);
+AdjEdges WingedFace :: adjacentEdges (bool skipT) const {
+  return this->adjacentEdges (this->edgeRef (), skipT);
 }
-AdjacentFaceIterator WingedFace :: adjacentFaceIterator (bool skipT) const {
-  return AdjacentFaceIterator (*this,skipT);
+AdjVertices WingedFace :: adjacentVertices (WingedEdge& e, bool skipT) const {
+  return AdjVertices (*this, e, skipT);
 }
-AdjacentEdgeIterator WingedFace :: adjacentEdgeIterator ( WingedEdge& e
-                                                        , bool skipT) const {
-  return AdjacentEdgeIterator (*this,e,skipT);
+AdjVertices WingedFace :: adjacentVertices (bool skipT) const {
+  return this->adjacentVertices (this->edgeRef (), skipT);
 }
-AdjacentVertexIterator WingedFace :: adjacentVertexIterator ( WingedEdge& e
-                                                            , bool skipT) const {
-  return AdjacentVertexIterator (*this,e,skipT);
+AdjFaces WingedFace :: adjacentFaces (WingedEdge& e, bool skipT) const {
+  return AdjFaces (*this, e, skipT);
 }
-AdjacentFaceIterator WingedFace :: adjacentFaceIterator ( WingedEdge& e
-                                                        , bool skipT) const {
-  return AdjacentFaceIterator (*this,e,skipT);
+AdjFaces WingedFace :: adjacentFaces (bool skipT) const {
+  return this->adjacentFaces (this->edgeRef (), skipT);
 }

@@ -31,13 +31,13 @@ struct PAModifyWFace :: Impl {
 
     // write indices
     unsigned int indexNumber = face.firstIndexNumber ();
-    for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-      this->actions.add <PAModifyWVertex> ().writeIndex (mesh, it.element (), indexNumber);
+    for (WingedVertex& a : face.adjacentVertices ()) {
+      this->actions.add <PAModifyWVertex> ().writeIndex (mesh, a, indexNumber);
       indexNumber++;
     }
     // write normals
-    for (ADJACENT_VERTEX_ITERATOR (it,face)) {
-      this->actions.add <PAModifyWVertex> ().writeNormal (mesh, it.element ());
+    for (WingedVertex& a : face.adjacentVertices ()) {
+      this->actions.add <PAModifyWVertex> ().writeNormal (mesh, a);
     }
   }
 

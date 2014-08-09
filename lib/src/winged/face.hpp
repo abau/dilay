@@ -5,9 +5,9 @@
 #include "macro.hpp"
 #include "id.hpp"
 
-class AdjacentEdgeIterator;
-class AdjacentVertexIterator;
-class AdjacentFaceIterator;
+class AdjEdges;
+class AdjVertices;
+class AdjFaces;
 class PrimTriangle;
 class OctreeNode;
 class WingedEdge;
@@ -49,12 +49,12 @@ class WingedFace {
     bool                   isTriangle             () const;
 
     WingedVertex*          designatedTVertex      () const;
-    AdjacentEdgeIterator   adjacentEdgeIterator   (bool = false) const;
-    AdjacentVertexIterator adjacentVertexIterator (bool = false) const;
-    AdjacentFaceIterator   adjacentFaceIterator   (bool = false) const;
-    AdjacentEdgeIterator   adjacentEdgeIterator   (WingedEdge&, bool = false) const;
-    AdjacentVertexIterator adjacentVertexIterator (WingedEdge&, bool = false) const;
-    AdjacentFaceIterator   adjacentFaceIterator   (WingedEdge&, bool = false) const;
+    AdjEdges               adjacentEdges          (WingedEdge&, bool = false) const;
+    AdjEdges               adjacentEdges          (bool = false)              const;
+    AdjVertices            adjacentVertices       (WingedEdge&, bool = false) const;
+    AdjVertices            adjacentVertices       (bool = false)              const;
+    AdjFaces               adjacentFaces          (WingedEdge&, bool = false) const;
+    AdjFaces               adjacentFaces          (bool = false)              const;
 
     SAFE_REF_CONST  (WingedEdge, edge)
     SAFE_REF_CONST  (OctreeNode, octreeNode)

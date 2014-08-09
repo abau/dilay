@@ -6,56 +6,45 @@
 #include "winged/mesh.hpp"
 #include "id.hpp"
 
-AdjacentEdgeIterator :: AdjacentEdgeIterator (const WingedFace& f, bool skipT) 
-  : AdjacentEdgeIterator (f, f.edgeRef (), skipT) {} 
-
-AdjacentEdgeIterator :: AdjacentEdgeIterator ( const WingedFace& f, WingedEdge& e
-                                             , bool skipT) 
-  : _isValid     (true)
-  , _face        (&f)
-  , _vertex      (nullptr)
-  , _start       (&e)
-  , _edge        (&e)
-  , _skipTEdges  (skipT) {
-
-    if (this->_skipTEdges && this->element ().isTEdge ()) {
-      this->next ();
-      assert (! (this->_skipTEdges && this->element ().isTEdge ()));
-      this->_start = &this->element ();
-    }
-  }
-
-AdjacentEdgeIterator :: AdjacentEdgeIterator (const WingedVertex& v, bool skipT) 
-  : AdjacentEdgeIterator (v, *v.edge (), skipT) {}
-
-AdjacentEdgeIterator :: AdjacentEdgeIterator ( const WingedVertex& v, WingedEdge& e
-                                             , bool skipT) 
-  : _isValid     (true)
-  , _face        (nullptr)
-  , _vertex      (&v)
-  , _start       (&e)
-  , _edge        (&e)
-  , _skipTEdges  (skipT) {
-  
-    if (this->_skipTEdges && this->element ().isTEdge ()) {
-      this->next ();
-      assert (! (this->_skipTEdges && this->element ().isTEdge ()));
-      this->_start = &this->element ();
-    }
-  }
-
-WingedEdge& AdjacentEdgeIterator :: element () const {
-  assert (this->isValid ());
-  return *this->_edge;
+AdjEdges::Iterator :: Iterator (const WingedFace& f, WingedEdge& e, bool s, bool i) 
+  : _edge      (&e)
+  , start      (&e)
+  , skipTEdges (s)
+  , isEnd      (i)
+  , _face      (&f)
+  , _vertex    (nullptr)
+{
+  this->skipTEdgeStart ();
 }
 
-void AdjacentEdgeIterator :: next () {
-  assert (this->isValid ());
+AdjEdges::Iterator :: Iterator (const WingedVertex& v, WingedEdge& e, bool s, bool i) 
+  : _edge      (&e)
+  , start      (&e)
+  , skipTEdges (s)
+  , isEnd      (i)
+  , _face      (nullptr)
+  , _vertex    (&v)
+{
+  this->skipTEdgeStart ();
+}
 
+bool AdjEdges::Iterator::invalidTEdge () const {
+  return this->skipTEdges && this->_edge->isTEdge ();
+}
+
+void AdjEdges::Iterator::skipTEdgeStart () { 
+  if (this->invalidTEdge ()) {
+    this->operator++ ();
+    assert (this->invalidTEdge () == false);
+    this->start = this->_edge;
+  }
+}
+
+AdjEdges::Iterator& AdjEdges::Iterator::operator++ () { 
   if (this->_face) {
     this->_edge = this->_edge->successor (*this->_face);
 
-    if (this->_skipTEdges && this->_edge->isTEdge ()) {
+    if (this->invalidTEdge ()) {
       this->_face = this->_edge->otherFace (*this->_face);
       this->_edge = this->_edge->successor (*this->_face);
     }
@@ -65,70 +54,79 @@ void AdjacentEdgeIterator :: next () {
                 ? this->_edge->leftPredecessor  ()
                 : this->_edge->rightPredecessor ();
 
-    if (this->_skipTEdges && this->_edge->isTEdge ()) {
+    if (this->invalidTEdge ()) {
       this->_edge = this->_edge->isVertex1        (*this->_vertex) 
                   ? this->_edge->leftPredecessor  ()
                   : this->_edge->rightPredecessor ();
     }
   }
-  assert (! (this->_skipTEdges && this->_edge->isTEdge ()));
-  if (this->_edge == this->_start)
-    this->_isValid = false;
-}
 
-std::list <WingedEdge*> AdjacentEdgeIterator :: collect () {
-  std::list <WingedEdge*> l;
-  while (this->isValid ()) {
-    l.push_back (&this->element ());
-    this->next ();
+  assert (this->invalidTEdge () == false);
+  if (this->_edge == this->start) {
+    this->isEnd = true;
   }
-  return l;
+  return *this; 
 }
 
-AdjacentVertexIterator :: AdjacentVertexIterator (const WingedFace& f, bool skipT)
-  : _edgeIterator (f,skipT) {}
-AdjacentVertexIterator :: AdjacentVertexIterator ( const WingedFace& f, WingedEdge& e
-                                                 , bool skipT)
-  : _edgeIterator (f,e,skipT) {}
-AdjacentVertexIterator :: AdjacentVertexIterator (const WingedVertex& v, bool skipT)
-  : _edgeIterator (v,skipT) {}
-AdjacentVertexIterator :: AdjacentVertexIterator ( const WingedVertex& v, WingedEdge& e
-                                                 , bool skipT)
-  : _edgeIterator (v,e,skipT) {}
+WingedEdge& AdjEdges::Iterator::operator* () const {
+  assert (this->isEnd == false);
+  return *this->_edge;
+}
 
-WingedVertex& AdjacentVertexIterator :: element () const {
-  WingedEdge& edge = this->_edgeIterator.element ();
-  if (this->_edgeIterator.face ())
-    return edge.firstVertexRef (*this->_edgeIterator.face ());
+bool AdjEdges::Iterator::operator!= (const AdjEdges::Iterator& o) const {
+  return this->isEnd != o.isEnd || this->_edge != o._edge;
+}
+
+AdjEdges :: AdjEdges (const WingedFace& f, WingedEdge& e, bool s)
+  : itBegin (f,e,s,false)
+  , itEnd   (f,e,s,true)
+  {}
+
+AdjEdges :: AdjEdges (const WingedVertex& v, WingedEdge& e, bool s)
+  : itBegin (v,e,s,false)
+  , itEnd   (v,e,s,true)
+  {}
+
+std::vector <WingedEdge*> AdjEdges :: collect () {
+  std::vector <WingedEdge*> v;
+  for (WingedEdge& e : *this) {
+    v.push_back (&e);
+  }
+  return v;
+}
+
+WingedVertex& AdjVertices::Iterator::operator* () const {
+  WingedEdge& edge = *this->eIt;
+  if (this->eIt.face ())
+    return edge.firstVertexRef (*this->eIt.face ());
   else
-    return edge.otherVertexRef (*this->_edgeIterator.vertex ());
+    return edge.otherVertexRef (*this->eIt.vertex ());
 }
 
-std::list <WingedVertex*> AdjacentVertexIterator :: collect () {
-  std::list <WingedVertex*> l;
-  while (this->isValid ()) {
-    l.push_back (&this->element ());
-    this->next ();
+AdjVertices :: AdjVertices (const WingedFace& f, WingedEdge& e, bool s) 
+  : itBegin (f,e,s,false)
+  , itEnd   (f,e,s,true)
+  {}
+
+AdjVertices :: AdjVertices (const WingedVertex& v, WingedEdge& e, bool s)
+  : itBegin (v,e,s,false)
+  , itEnd   (v,e,s,true)
+  {}
+
+std::vector <WingedVertex*> AdjVertices :: collect () {
+  std::vector <WingedVertex*> v;
+  for (WingedVertex& e : *this) {
+    v.push_back (&e);
   }
-  return l;
+  return v;
 }
 
-AdjacentFaceIterator :: AdjacentFaceIterator (const WingedFace& f, bool skipT)
-  : _edgeIterator (f,skipT) {}
-AdjacentFaceIterator :: AdjacentFaceIterator ( const WingedFace& f, WingedEdge& e
-                                             , bool skipT)
-  : _edgeIterator (f,e,skipT) {}
-AdjacentFaceIterator :: AdjacentFaceIterator (const WingedVertex& v)
-  : _edgeIterator (v) {}
-AdjacentFaceIterator :: AdjacentFaceIterator (const WingedVertex& v, WingedEdge& e)
-  : _edgeIterator (v,e) {}
-
-WingedFace& AdjacentFaceIterator :: element () const {
-  WingedEdge& edge = this->_edgeIterator.element ();
-  if (this->_edgeIterator.face ()) {
-    return edge.otherFaceRef (*this->_edgeIterator.face ());
+WingedFace& AdjFaces::Iterator::operator* () const {
+  WingedEdge& edge = *this->eIt;
+  if (this->eIt.face ()) {
+    return edge.otherFaceRef (*this->eIt.face ());
   }
-  else if (edge.isVertex1 (*this->_edgeIterator.vertex ())) {
+  else if (edge.isVertex1 (*this->eIt.vertex ())) {
     return edge.rightFaceRef ();
   }
   else {
@@ -136,20 +134,20 @@ WingedFace& AdjacentFaceIterator :: element () const {
   }
 }
 
-std::list <WingedFace*> AdjacentFaceIterator :: collect () {
-  std::list <WingedFace*> l;
-  while (this->isValid ()) {
-    l.push_back (&this->element ());
-    this->next ();
-  }
-  return l;
-}
+AdjFaces :: AdjFaces (const WingedFace& f, WingedEdge& e, bool s) 
+  : itBegin (f,e,s,false)
+  , itEnd   (f,e,s,true)
+  {}
 
-std::list <Id> AdjacentFaceIterator :: collectIds () {
-  std::list <Id> l;
-  while (this->isValid ()) {
-    l.push_back (this->element ().id ());
-    this->next ();
+AdjFaces :: AdjFaces (const WingedVertex& v, WingedEdge& e, bool s)
+  : itBegin (v,e,s,false)
+  , itEnd   (v,e,s,true)
+  {}
+
+std::vector <WingedFace*> AdjFaces :: collect () {
+  std::vector <WingedFace*> v;
+  for (WingedFace& e : *this) {
+    v.push_back (&e);
   }
-  return l;
+  return v;
 }

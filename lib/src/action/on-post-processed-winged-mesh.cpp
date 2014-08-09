@@ -45,7 +45,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
 
   WingedFace& runRealignFace (WingedMesh& mesh, const WingedFace& face, bool* sameNode = nullptr) {
     PrimTriangle faceTriangle (face.triangle (mesh));
-    std::list <WingedEdge*> adjacents = face.adjacentEdgeIterator ().collect ();
+    std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
 
     for (WingedEdge* e : adjacents) {
       e->face (face,nullptr);

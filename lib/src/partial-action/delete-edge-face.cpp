@@ -23,10 +23,8 @@ struct PADeleteEdgeFace :: Impl {
 
     assert (faceToDelete.octreeNode ());
 
-    for (auto it = faceToDelete.adjacentEdgeIterator (); it.isValid (); ) {
-      WingedEdge& adjacent = it.element ();
-      it.next ();
-      actions.add <PAModifyWEdge> ().face (adjacent, faceToDelete, &remainingFace);
+    for (WingedEdge* adjacent : faceToDelete.adjacentEdges ().collect ()) {
+      actions.add <PAModifyWEdge> ().face (*adjacent, faceToDelete, &remainingFace);
     }
 
     actions.add <PAModifyWEdge> ().successor 
