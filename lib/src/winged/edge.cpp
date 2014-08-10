@@ -4,22 +4,21 @@
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "../util.hpp"
+#include "adjacent-iterator.hpp"
   
 WingedEdge :: WingedEdge () :
   WingedEdge ( nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
-             , nullptr, nullptr, Id (), false, FaceGradient::None) 
+             , Id (), false, FaceGradient::None) 
   {}
 
 WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
                          , WingedFace* left, WingedFace* right
                          , WingedEdge* leftPred, WingedEdge* leftSucc
                          , WingedEdge* rightPred, WingedEdge* rightSucc
-                         , WingedEdge* prevSib, WingedEdge* nextSib
                          , const Id& id, bool isT, FaceGradient fG) 
                          : _id (id) {
 
-  this->setGeometry ( v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc
-                    , prevSib, nextSib);
+  this->setGeometry (v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc);
   this->_isTEdge        = isT;
   this->_faceGradient   = fG;
 }
@@ -71,8 +70,7 @@ WingedVertex* WingedEdge :: otherVertex (const WingedVertex& vertex) const {
 void WingedEdge :: setGeometry ( WingedVertex* v1, WingedVertex* v2
                                , WingedFace* left, WingedFace* right
                                , WingedEdge* leftPred , WingedEdge* leftSucc
-                               , WingedEdge* rightPred, WingedEdge* rightSucc
-                               , WingedEdge* prevSib, WingedEdge* nextSib) {
+                               , WingedEdge* rightPred, WingedEdge* rightSucc) {
   this->vertex1          (v1);
   this->vertex2          (v2);
   this->leftFace         (left);
@@ -81,8 +79,6 @@ void WingedEdge :: setGeometry ( WingedVertex* v1, WingedVertex* v2
   this->leftSuccessor    (leftSucc);
   this->rightPredecessor (rightPred);
   this->rightSuccessor   (rightSucc);
-  this->previousSibling  (prevSib);
-  this->nextSibling      (nextSib);
 }
 
 void WingedEdge :: firstVertex (const WingedFace& face, WingedVertex* vertex) {
@@ -114,6 +110,11 @@ glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
   glm::vec3 a = this->_vertex1->vector (mesh);
   glm::vec3 b = this->_vertex2->vector (mesh);
   return b-a;
+}
+
+glm::vec3 WingedEdge :: vector (const WingedMesh& mesh, const WingedVertex& vertex) const {
+  return this->isVertex1 (vertex) ?  this->vector (mesh)
+                                  : -this->vector (mesh);
 }
 
 float WingedEdge :: length (const WingedMesh& mesh) const {
@@ -183,11 +184,19 @@ bool WingedEdge :: isSecondVertex ( const WingedFace& face
   return ! this->isFirstVertex (face,vertex);
 }
 
-WingedEdge* WingedEdge :: adjacentSibling (const WingedVertex& vertex) const {
-  if (this->isVertex1 (vertex))
-    return this->previousSibling ();
-  else
-    return this->nextSibling ();
+WingedEdge* WingedEdge :: adjacentSibling (const WingedMesh& mesh, const WingedVertex& vertex) const {
+  const glm::vec3   thisV = glm::normalize (this->vector (mesh, vertex));
+        WingedEdge* edge  = nullptr;
+        float       dot   = -0.5f;
+
+  for (WingedEdge& e : vertex.adjacentEdges (true)) {
+    const float d = glm::dot (thisV, glm::normalize (e.vector (mesh, vertex)));
+    if (d < dot) {
+      edge = &e;
+      dot  = d;
+    }
+  }
+  return edge;
 }
 
 bool WingedEdge :: gradientAlong (const WingedFace& face) const {

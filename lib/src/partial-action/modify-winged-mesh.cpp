@@ -48,8 +48,6 @@ struct PAModifyWMesh :: Impl {
     this->operandIds.setEdge (4, edge.leftSuccessor ());
     this->operandIds.setEdge (5, edge.rightPredecessor ());
     this->operandIds.setEdge (6, edge.rightSuccessor ());
-    this->operandIds.setEdge (7, edge.previousSibling ());
-    this->operandIds.setEdge (8, edge.nextSibling ());
 
     this->operandIds.setVertex (0, edge.vertex1 ());
     this->operandIds.setVertex (1, edge.vertex2 ());
@@ -64,7 +62,6 @@ struct PAModifyWMesh :: Impl {
                  , this->operandIds.getFace   (mesh,1), this->operandIds.getFace   (mesh,2)
                  , this->operandIds.getEdge   (mesh,3), this->operandIds.getEdge   (mesh,4)
                  , this->operandIds.getEdge   (mesh,5), this->operandIds.getEdge   (mesh,6)
-                 , this->operandIds.getEdge   (mesh,7), this->operandIds.getEdge   (mesh,8)
                  , this->operandIds.getIdRef  (0)     , data. isTEdge
                  , data. faceGradient));
   }

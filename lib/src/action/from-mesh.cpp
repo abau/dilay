@@ -44,7 +44,6 @@ struct ActionFromMesh :: Impl {
                                                              , &face  , nullptr
                                                              , nullptr, nullptr
                                                              , nullptr, nullptr
-                                                             , nullptr, nullptr
                                                              , Id ()  , false
                                                              , FaceGradient::None
                                                              ));

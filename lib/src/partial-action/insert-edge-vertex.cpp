@@ -24,14 +24,12 @@ struct PAInsertEdgeVertex :: Impl {
                         , e.leftFace ()        , e.rightFace ()
                         , e.leftPredecessor () , &e
                         , &e                   , e.rightSuccessor ()
-                        , e.previousSibling () , &e
                         , Id (), e.isTEdge (), e.faceGradient ()
                         ));
 
     this->actions.add <PAModifyWEdge> ().vertex1         (e, &newV);
     this->actions.add <PAModifyWEdge> ().successor       (e, e.rightFaceRef (), &newE);
     this->actions.add <PAModifyWEdge> ().predecessor     (e, e.leftFaceRef  (), &newE);
-    this->actions.add <PAModifyWEdge> ().previousSibling (e, &newE);
 
     this->actions.add <PAModifyWVertex> ().edge (newV, &e);
 
@@ -44,9 +42,6 @@ struct PAInsertEdgeVertex :: Impl {
     
     this->actions.add <PAModifyWFace> ().edge (newE.leftFaceRef (), &newE);
 
-    if (newE.previousSibling ()) {
-      this->actions.add <PAModifyWEdge> ().nextSibling (newE.previousSiblingRef (), &newE);
-    }
     return newE;
   }
 

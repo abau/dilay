@@ -40,11 +40,6 @@ struct PADeleteEdgeFace :: Impl {
     actions.add <PAModifyWVertex> ().edge (edge.vertex1Ref (), edge.leftPredecessor ());
     actions.add <PAModifyWVertex> ().edge (edge.vertex2Ref (), edge.leftSuccessor   ());
 
-    if (edge.previousSibling ())
-      actions.add <PAModifyWEdge> ().nextSibling (edge.previousSiblingRef (), nullptr);
-    if (edge.nextSibling ())
-      actions.add <PAModifyWEdge> ().previousSibling (edge.nextSiblingRef (), nullptr);
-
     actions.add <PAModifyWFace> ().edge (remainingFace, edge.leftSuccessor ());
 
     actions.add <PAModifyWFace> ().edge       (faceToDelete, nullptr);

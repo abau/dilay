@@ -11,7 +11,6 @@ namespace {
   enum class Operation 
     { Vertex1, Vertex2, LeftFace, RightFace
     , LeftPredecessor, LeftSuccessor, RightPredecessor, RightSuccessor
-    , PreviousSibling, NextSibling
     , FirstVertex, SecondVertex
     , Predecessor, Successor
     , SetGeometry, IsTEdge, FaceGradient
@@ -79,20 +78,6 @@ struct PAModifyWEdge :: Impl {
     edge.rightSuccessor (e);
   }
 
-  void previousSibling (WingedEdge& edge, WingedEdge* e) {
-    this->operation = Operation::PreviousSibling;
-    this->operands.setEdge (0, &edge);
-    this->operands.setEdge (1, edge.previousSibling ());
-    edge.previousSibling (e);
-  }
-
-  void nextSibling (WingedEdge& edge, WingedEdge* e) {
-    this->operation = Operation::NextSibling;
-    this->operands.setEdge (0, &edge);
-    this->operands.setEdge (1, edge.nextSibling ());
-    edge.nextSibling   (e);
-  }
-
   void firstVertex (WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
     this->operation = Operation::FirstVertex;
     this->operands.setIds    ({edge.id (), f.id ()});
@@ -134,8 +119,7 @@ struct PAModifyWEdge :: Impl {
                    , WingedVertex* v1, WingedVertex* v2
                    , WingedFace* lF, WingedFace* rF
                    , WingedEdge* lP, WingedEdge* lS
-                   , WingedEdge* rP, WingedEdge* rS
-                   , WingedEdge* p, WingedEdge* n) {
+                   , WingedEdge* rP, WingedEdge* rS) {
     this->operation = Operation::SetGeometry;
     this->operands.setVertex (0,  edge.vertex1          ());
     this->operands.setVertex (1,  edge.vertex2          ());
@@ -147,10 +131,8 @@ struct PAModifyWEdge :: Impl {
     this->operands.setEdge   (4,  edge.leftSuccessor    ());
     this->operands.setEdge   (5,  edge.rightPredecessor ());
     this->operands.setEdge   (6,  edge.rightSuccessor   ());
-    this->operands.setEdge   (7,  edge.previousSibling  ());
-    this->operands.setEdge   (8,  edge.nextSibling      ());
 
-    edge.setGeometry (v1,v2,lF,rF,lP,lS,rP,rS,p,n);
+    edge.setGeometry (v1,v2,lF,rF,lP,lS,rP,rS);
   }
 
   void isTEdge (WingedEdge& edge, bool value) {
@@ -242,18 +224,6 @@ struct PAModifyWEdge :: Impl {
         this->operands.setEdge (1,e);
         break;
       }
-      case Operation::PreviousSibling: {
-        WingedEdge* e = edge.previousSibling ();
-        edge.previousSibling (this->operands.getEdge (mesh,1));
-        this->operands.setEdge (1,e);
-        break;
-      }
-      case Operation::NextSibling: {
-        WingedEdge* e = edge.nextSibling ();
-        edge.nextSibling (this->operands.getEdge (mesh,1));
-        this->operands.setEdge (1,e);
-        break;
-      }
       case Operation::FirstVertex: {
         WingedFace*   f = this->operands.getFace (mesh,1);
         WingedVertex* v = edge.firstVertex (*f);
@@ -291,15 +261,12 @@ struct PAModifyWEdge :: Impl {
         WingedEdge*   lS = edge.leftSuccessor    ();
         WingedEdge*   rP = edge.rightPredecessor ();
         WingedEdge*   rS = edge.rightSuccessor   ();
-        WingedEdge*   p  = edge.previousSibling  ();
-        WingedEdge*   n  = edge.nextSibling      ();
 
         edge.setGeometry 
           ( this->operands.getVertex (mesh,0),  this->operands.getVertex (mesh,1)
           , this->operands.getFace   (mesh,1),  this->operands.getFace   (mesh,2)
           , this->operands.getEdge   (mesh,3),  this->operands.getEdge   (mesh,4)
-          , this->operands.getEdge   (mesh,5),  this->operands.getEdge   (mesh,6)
-          , this->operands.getEdge   (mesh,7), this->operands.getEdge    (mesh,8));
+          , this->operands.getEdge   (mesh,5),  this->operands.getEdge   (mesh,6));
 
         this->operands.setVertex (0, v1);
         this->operands.setVertex (1, v2);
@@ -310,8 +277,6 @@ struct PAModifyWEdge :: Impl {
         this->operands.setEdge   (4, lS);
         this->operands.setEdge   (5, rP);
         this->operands.setEdge   (6, rS);
-        this->operands.setEdge   (7, p );
-        this->operands.setEdge   (8, n );
         break;
       }
       case Operation::IsTEdge: {
@@ -344,8 +309,6 @@ DELEGATE2 (void,PAModifyWEdge,leftPredecessor ,WingedEdge&,WingedEdge*)
 DELEGATE2 (void,PAModifyWEdge,leftSuccessor   ,WingedEdge&,WingedEdge*)
 DELEGATE2 (void,PAModifyWEdge,rightPredecessor,WingedEdge&,WingedEdge*)
 DELEGATE2 (void,PAModifyWEdge,rightSuccessor  ,WingedEdge&,WingedEdge*)
-DELEGATE2 (void,PAModifyWEdge,previousSibling ,WingedEdge&,WingedEdge*)
-DELEGATE2 (void,PAModifyWEdge,nextSibling     ,WingedEdge&,WingedEdge*)
 DELEGATE3 (void,PAModifyWEdge,firstVertex     ,WingedEdge&,const WingedFace&,WingedVertex*)
 DELEGATE3 (void,PAModifyWEdge,secondVertex    ,WingedEdge&,const WingedFace&,WingedVertex*)
 DELEGATE3 (void,PAModifyWEdge,face            ,WingedEdge&,const WingedFace&,WingedFace*)
@@ -360,6 +323,6 @@ DELEGATE1 (void,PAModifyWEdge,runRedo         ,WingedMesh&)
 void PAModifyWEdge::setGeometry 
   ( WingedEdge& edge, WingedVertex* v1, WingedVertex* v2
   , WingedFace* lF, WingedFace* rF, WingedEdge* lP, WingedEdge* lS
-  , WingedEdge* rP, WingedEdge* rS, WingedEdge* p, WingedEdge* n) {
-    this->impl->setGeometry (edge,v1,v2,lF,rF,lP,lS,rP,rS,p,n);
+  , WingedEdge* rP, WingedEdge* rS) {
+    this->impl->setGeometry (edge,v1,v2,lF,rF,lP,lS,rP,rS);
 }

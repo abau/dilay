@@ -71,7 +71,7 @@ namespace {
     std::function < glm::vec3 (const WingedEdge&, const WingedVertex&, float) > traverse =
       [&mesh, &traverse, edgeLength] 
       (const WingedEdge& e, const WingedVertex& o, float oLength) -> glm::vec3 {
-        WingedEdge* sibling = e.adjacentSibling (o);
+        WingedEdge* sibling = e.adjacentSibling (mesh, o);
 
         if (sibling) {
           const float sLength = oLength + glm::length (sibling->vector (mesh));

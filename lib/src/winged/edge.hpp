@@ -17,8 +17,7 @@ class WingedEdge {
     WingedEdge ();
     WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*  
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*  
-               , WingedEdge*, WingedEdge*, const Id&, bool
-               , FaceGradient);
+               , const Id&, bool, FaceGradient);
     WingedEdge (const WingedEdge&)  = default;
     WingedEdge (      WingedEdge&&) = default;
 
@@ -31,8 +30,6 @@ class WingedEdge {
     WingedEdge*     leftSuccessor    () const { return this->_leftSuccessor; }
     WingedEdge*     rightPredecessor () const { return this->_rightPredecessor; }
     WingedEdge*     rightSuccessor   () const { return this->_rightSuccessor; }
-    WingedEdge*     previousSibling  () const { return this->_previousSibling; }
-    WingedEdge*     nextSibling      () const { return this->_nextSibling; }
     bool            isTEdge          () const { return this->_isTEdge; }
     FaceGradient    faceGradient     () const { return this->_faceGradient; }
 
@@ -51,9 +48,7 @@ class WingedEdge {
     void            setGeometry      ( WingedVertex*, WingedVertex*
                                      , WingedFace*, WingedFace*
                                      , WingedEdge*, WingedEdge*
-                                     , WingedEdge*, WingedEdge*
-                                     , WingedEdge* = nullptr
-                                     , WingedEdge* = nullptr);
+                                     , WingedEdge*, WingedEdge* );
 
     void            vertex1          (WingedVertex* v) { this->_vertex1          = v; }
     void            vertex2          (WingedVertex* v) { this->_vertex2          = v; }
@@ -63,8 +58,6 @@ class WingedEdge {
     void            leftSuccessor    (WingedEdge* e)   { this->_leftSuccessor    = e; }
     void            rightPredecessor (WingedEdge* e)   { this->_rightPredecessor = e; }
     void            rightSuccessor   (WingedEdge* e)   { this->_rightSuccessor   = e; }
-    void            previousSibling  (WingedEdge* e)   { this->_previousSibling  = e; }
-    void            nextSibling      (WingedEdge* e)   { this->_nextSibling      = e; }
     void            isTEdge          (bool b)          { this->_isTEdge          = b; }
     void            faceGradient     (FaceGradient g)  { this->_faceGradient     = g; }
 
@@ -75,6 +68,7 @@ class WingedEdge {
     void            successor        (const WingedFace&, WingedEdge*);
 
     glm::vec3       vector           (const WingedMesh&) const;
+    glm::vec3       vector           (const WingedMesh&, const WingedVertex&) const;
     float           length           (const WingedMesh&) const;
     float           lengthSqr        (const WingedMesh&) const;
     WingedEdge*     successor        (const WingedFace&, unsigned int) const;
@@ -85,7 +79,7 @@ class WingedEdge {
     bool            isAdjacent       (const WingedVertex&) const;
     bool            isFirstVertex    (const WingedFace&, const WingedVertex&) const;
     bool            isSecondVertex   (const WingedFace&, const WingedVertex&) const;
-    WingedEdge*     adjacentSibling  (const WingedVertex&) const;
+    WingedEdge*     adjacentSibling  (const WingedMesh&, const WingedVertex&) const;
     bool            gradientAlong    (const WingedFace&) const;
 
     SAFE_REF_CONST  (WingedVertex, vertex1)
@@ -96,8 +90,6 @@ class WingedEdge {
     SAFE_REF_CONST  (WingedEdge  , leftSuccessor)
     SAFE_REF_CONST  (WingedEdge  , rightPredecessor)
     SAFE_REF_CONST  (WingedEdge  , rightSuccessor)
-    SAFE_REF_CONST  (WingedEdge  , previousSibling)
-    SAFE_REF_CONST  (WingedEdge  , nextSibling)
 
     SAFE_REF1_CONST (WingedVertex, firstVertex, const WingedFace&)
     SAFE_REF1_CONST (WingedVertex, secondVertex, const WingedFace&)
@@ -110,7 +102,6 @@ class WingedEdge {
     SAFE_REF2_CONST (WingedEdge  , predecessor, const WingedFace&, unsigned int)
     SAFE_REF2_CONST (WingedVertex, vertex, const WingedFace&, unsigned int)
     SAFE_REF2_CONST (WingedEdge  , adjacent, const WingedFace&, const WingedVertex&)
-    SAFE_REF1_CONST (WingedEdge  , adjacentSibling, const WingedVertex&)
 
   private:
     const IdObject  _id;
@@ -126,9 +117,6 @@ class WingedEdge {
 
     WingedEdge*     _rightPredecessor;
     WingedEdge*     _rightSuccessor;
-
-    WingedEdge*     _previousSibling;
-    WingedEdge*     _nextSibling;
 
     bool            _isTEdge;
     FaceGradient    _faceGradient;
