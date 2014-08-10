@@ -274,7 +274,10 @@ struct Mesh::Impl {
   }
 
   glm::vec3 scaling () const {
-    return glm::vec3 (this->scalingMatrix * glm::vec4 (1.0f));
+    return glm::vec3 ( this->scalingMatrix[0][0]
+                     , this->scalingMatrix[1][1]
+                     , this->scalingMatrix[2][2]
+                     );
   }
 
   void translate (const glm::vec3& v) {
@@ -286,7 +289,10 @@ struct Mesh::Impl {
   }
 
   glm::vec3 position () const {
-    return Util::transformPosition (this->modelMatrix (), glm::vec3 (0.0f));
+    return glm::vec3 ( this->translationMatrix[3][0]
+                     , this->translationMatrix[3][1]
+                     , this->translationMatrix[3][2]
+                     );
   }
 
   void rotationX (float angle) {
