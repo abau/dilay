@@ -14,7 +14,7 @@ class PAModifyWVertex : public ActionOn <WingedMesh> {
 
     void edge        (WingedVertex&, WingedEdge*);
     void writeIndex  (WingedMesh&, WingedVertex&, unsigned int);
-    void writeNormal (WingedMesh&, WingedVertex&);
+    void writeNormal (WingedMesh&, WingedVertex&, const glm::vec3&);
     void move        (WingedMesh&, WingedVertex&, const glm::vec3&);
 
   private:

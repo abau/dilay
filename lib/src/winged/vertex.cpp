@@ -22,7 +22,11 @@ glm::vec3 WingedVertex :: vector (const WingedMesh& mesh) const {
   return mesh.vector (this->_index);
 }
 
-glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
+glm::vec3 WingedVertex :: savedNormal (const WingedMesh& mesh) const {
+  return mesh.normal (this->_index);
+}
+
+glm::vec3 WingedVertex :: interpolatedNormal (const WingedMesh& mesh) const {
   glm::vec3 normal = glm::vec3 (0.0f,0.0f,0.0f);
 
   for (WingedFace& f : this->adjacentFaces ()) {
@@ -31,8 +35,8 @@ glm::vec3 WingedVertex :: normal (const WingedMesh& mesh) const {
   return glm::normalize (normal);
 }
 
-void WingedVertex :: writeNormal (WingedMesh& mesh) const {
-  mesh.setNormal (this->_index, this->normal (mesh));
+void WingedVertex :: writeNormal (WingedMesh& mesh, const glm::vec3& normal) {
+  mesh.setNormal (this->_index, normal);
 }
 
 unsigned int WingedVertex :: valence () const {

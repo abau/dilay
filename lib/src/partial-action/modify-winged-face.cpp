@@ -9,7 +9,7 @@
 #include "partial-action/modify-winged-vertex.hpp"
 
 namespace {
-  enum class Operation { Edge, Write };
+  enum class Operation { Edge, WriteIndices };
 };
 
 struct PAModifyWFace :: Impl {
@@ -24,20 +24,15 @@ struct PAModifyWFace :: Impl {
     face.edge (e);
   }
 
-  void write (WingedMesh& mesh, WingedFace& face) {
+  void writeIndices (WingedMesh& mesh, WingedFace& face) {
     assert (face.isTriangle ());
     assert (this->actions.isEmpty ());
-    this->operation = Operation::Write;
+    this->operation = Operation::WriteIndices;
 
-    // write indices
     unsigned int indexNumber = face.firstIndexNumber ();
     for (WingedVertex& a : face.adjacentVertices ()) {
       this->actions.add <PAModifyWVertex> ().writeIndex (mesh, a, indexNumber);
       indexNumber++;
-    }
-    // write normals
-    for (WingedVertex& a : face.adjacentVertices ()) {
-      this->actions.add <PAModifyWVertex> ().writeNormal (mesh, a);
     }
   }
 
@@ -57,7 +52,7 @@ struct PAModifyWFace :: Impl {
 
   void runUndo (WingedMesh& mesh) { 
     switch (this->operation) {
-      case Operation::Write: {
+      case Operation::WriteIndices: {
         this->actions.undo (mesh);
         break;
       }
@@ -70,7 +65,7 @@ struct PAModifyWFace :: Impl {
 
   void runRedo (WingedMesh& mesh) { 
     switch (this->operation) {
-      case Operation::Write: {
+      case Operation::WriteIndices: {
         this->actions.redo (mesh);
         break;
       }
@@ -85,6 +80,6 @@ struct PAModifyWFace :: Impl {
 DELEGATE_BIG3 (PAModifyWFace)
 
 DELEGATE2 (void,PAModifyWFace,edge ,WingedFace&,WingedEdge*)
-DELEGATE2 (void,PAModifyWFace,write,WingedMesh&,WingedFace&)
+DELEGATE2 (void,PAModifyWFace,writeIndices,WingedMesh&,WingedFace&)
 DELEGATE1 (void,PAModifyWFace,runUndo ,WingedMesh&)
 DELEGATE1 (void,PAModifyWFace,runRedo ,WingedMesh&)

@@ -12,8 +12,8 @@ class PAModifyWFace : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAModifyWFace)
 
-    void edge  (WingedFace&, WingedEdge*);
-    void write (WingedMesh&, WingedFace&);
+    void edge         (WingedFace&, WingedEdge*);
+    void writeIndices (WingedMesh&, WingedFace&);
 
   private:
     void runUndo (WingedMesh&);

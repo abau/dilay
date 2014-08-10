@@ -9,8 +9,8 @@
 #include "bitset.hpp"
 
 struct ActionOnPostProcessedWMesh :: Impl {
-  std::unordered_set <Id>           realignIds;
-  Bitset <char>                     flags;
+  std::unordered_set <Id> realignIds;
+  Bitset <char>           flags;
 
   Impl () {
     this->doBufferData (false);

@@ -42,8 +42,8 @@ struct PATriangulateQuad :: Impl {
                                , counterpart, edge.successorRef   (face));
     }
     this->actions.add <PAModifyWEdge> ().isTEdge (*newEdge, true);
-    this->actions.add <PAModifyWFace> ().write   (mesh, *newFace);
-    this->actions.add <PAModifyWFace> ().write   (mesh, face);
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh, *newFace);
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh, face);
 
     if (affectedFaces) {
       affectedFaces->push_back (face.    id ());

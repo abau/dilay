@@ -115,9 +115,9 @@ struct ActionFromMesh :: Impl {
     this->actions.add <ActionModifyWMesh> ().scaling        (w, m.scaling ());
 
     // write & buffer
-    w.writeAllIndices ();
-    w.writeAllNormals ();
-    w.bufferData      ();
+    w.writeAllIndices             ();
+    w.writeAllInterpolatedNormals ();
+    w.bufferData                  ();
   }
 
   void runUndo (WingedMesh& mesh) { 
@@ -126,10 +126,10 @@ struct ActionFromMesh :: Impl {
   }
 
   void runRedo (WingedMesh& mesh) { 
-    this->actions.redo   (mesh); 
-    mesh.writeAllIndices ();
-    mesh.writeAllNormals ();
-    mesh.bufferData      ();
+    this->actions.redo               (mesh); 
+    mesh.writeAllIndices             ();
+    mesh.writeAllInterpolatedNormals ();
+    mesh.bufferData                  ();
   }
 };
 

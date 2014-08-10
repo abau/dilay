@@ -57,7 +57,7 @@ struct CarveCache::Impl {
     auto it = this->vertexCache.find (vertex.index ());
 
     if (it == this->vertexCache.end () || it->second.wasCarved () == false) {
-      VertexData data (vertex.vector (mesh), vertex.normal (mesh));
+      VertexData data (vertex.vector (mesh), vertex.interpolatedNormal (mesh));
       return this->vertexCache.emplace (vertex.index (), data).first->second;
     }
     else {
@@ -233,7 +233,7 @@ struct ActionCarve::Impl {
 
     // write normals
     for (WingedVertex* v : vertices) {
-      this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v);
+      this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v, v->interpolatedNormal (mesh));
     }
 
     // realign faces

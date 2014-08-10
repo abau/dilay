@@ -84,10 +84,10 @@ struct PATriangulate6Gon :: Impl {
 
     this->actions.add <PAModifyWFace> ().edge (f,&e13);
 
-    this->actions.add <PAModifyWFace> ().write (mesh,f);
-    this->actions.add <PAModifyWFace> ().write (mesh,a);
-    this->actions.add <PAModifyWFace> ().write (mesh,b);
-    this->actions.add <PAModifyWFace> ().write (mesh,c);
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh,f);
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh,a);
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh,b);
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh,c);
 
     if (affectedFaces) {
       affectedFaces->push_back (f.id ());

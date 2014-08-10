@@ -30,17 +30,6 @@ void WingedFace :: writeIndices (WingedMesh& mesh, const unsigned int *newFIN) {
   }
 }
 
-void WingedFace :: writeNormals (WingedMesh& mesh) {
-  for (WingedVertex& vertex : this->adjacentVertices ()) {
-    vertex.writeNormal (mesh);
-  }
-}
-
-void WingedFace :: write (WingedMesh& mesh, const unsigned int *newFIN) {
-  this->writeIndices (mesh, newFIN);
-  this->writeNormals (mesh);
-}
-
 PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
 

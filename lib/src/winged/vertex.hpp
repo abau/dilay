@@ -16,17 +16,18 @@ class WingedVertex {
     WingedVertex (const WingedVertex&)  = default;
     WingedVertex (      WingedVertex&&) = default;
 
-    unsigned int index       () const { return this->_index; }
-    WingedEdge*  edge        () const { return this->_edge;  }
+    unsigned int index              () const { return this->_index; }
+    WingedEdge*  edge               () const { return this->_edge;  }
 
-    void         edge        (WingedEdge*);
-    unsigned int writeIndex  (WingedMesh&);
-    void         writeIndex  (WingedMesh&, unsigned int);
-    glm::vec3    vector      (const WingedMesh&) const;
-    glm::vec3    normal      (const WingedMesh&) const;
-    void         writeNormal (WingedMesh&) const;
-    unsigned int valence     () const;
-    WingedEdge*  tEdge       () const;
+    void         edge               (WingedEdge*);
+    unsigned int writeIndex         (WingedMesh&);
+    void         writeIndex         (WingedMesh&, unsigned int);
+    glm::vec3    vector             (const WingedMesh&) const;
+    glm::vec3    savedNormal        (const WingedMesh&) const;
+    glm::vec3    interpolatedNormal (const WingedMesh&) const;
+    void         writeNormal        (WingedMesh&, const glm::vec3&);
+    unsigned int valence            () const;
+    WingedEdge*  tEdge              () const;
 
     AdjEdges     adjacentEdges    (WingedEdge&, bool = false) const;
     AdjEdges     adjacentEdges    (bool = false)              const;

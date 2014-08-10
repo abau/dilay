@@ -1,4 +1,3 @@
-#include <glm/glm.hpp>
 #include "partial-action/insert-edge-vertex.hpp"
 #include "winged/vertex.hpp"
 #include "winged/edge.hpp"
