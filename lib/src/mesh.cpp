@@ -194,6 +194,12 @@ struct Mesh::Impl {
     return this->translationMatrix * this->rotationMatrix * this->scalingMatrix;
   }
 
+  glm::mat4x4 worldMatrix () const {
+     return glm::translate (glm::mat4x4 (1.0f), - this->position ())
+          * glm::transpose (this->rotationMatrix)
+          * glm::scale     (glm::mat4x4 (1.0f), 1.0f / this->scaling ());
+  }
+
   void setModelMatrix (bool noZoom) {
     State::camera ().setModelViewProjection (this->modelMatrix (), noZoom);
   }
@@ -594,6 +600,7 @@ DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
+DELEGATE_CONST   (glm::mat4x4       , Mesh, worldMatrix)
 DELEGATE1        (void              , Mesh, renderBegin, bool)
 DELEGATE         (void              , Mesh, renderEnd)
 DELEGATE1        (void              , Mesh, render, bool)

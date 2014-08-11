@@ -33,6 +33,7 @@ class Mesh {
 
     void               bufferData        ();
     glm::mat4x4        modelMatrix       () const;
+    glm::mat4x4        worldMatrix       () const;
     void               renderBegin       (bool = false);
     void               renderEnd         ();
     void               render            (bool = false);

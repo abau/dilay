@@ -1,5 +1,4 @@
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
 #include <set>
 #include "winged/vertex.hpp"
 #include "winged/edge.hpp"
@@ -239,14 +238,14 @@ struct WingedMesh::Impl {
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
     return this->octree.intersects ( 
         *this->self
-       , PrimRay (ray, glm::affineInverse (this->mesh.modelMatrix ()))
+       , PrimRay (ray, this->mesh.worldMatrix ())
        , intersection);
   }
 
   bool intersects (const PrimSphere& sphere, std::vector <WingedFace*>& faces) {
     return this->octree.intersects (
         *this->self
-      , PrimSphere (sphere, glm::affineInverse (this->mesh.modelMatrix ()))
+      , PrimSphere (sphere, this->mesh.worldMatrix ())
       , faces);
   }
 
