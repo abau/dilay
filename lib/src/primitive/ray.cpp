@@ -13,8 +13,8 @@ struct PrimRay::Impl {
       {}
 
   Impl (const PrimRay& r, const glm::mat4x4& m) 
-    : Impl ( glm::vec3 (m * glm::vec4 (r.origin (), 1.0f))
-           , glm::vec3 (m * glm::vec4 (r.direction (), 0.0f))
+    : Impl ( Util::transformPosition  (m, r.origin    ())
+           , Util::transformDirection (m, r.direction ())
            ) {}
 
   glm::vec3 pointAt (float t) const {

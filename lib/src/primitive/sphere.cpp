@@ -10,7 +10,7 @@ struct PrimSphere::Impl {
   Impl (const glm::vec3& o, float r) : center (o), radius (r) {}
 
   Impl (const PrimSphere& s, const glm::mat4x4& m) 
-    : Impl (glm::vec3 (m * glm::vec4 (s.center (), 1.0)), s.radius ()) {}
+    : Impl (Util::transformPosition (m, s.center ()), s.radius ()) {}
 };
 
 DELEGATE2_BIG6        (PrimSphere, const glm::vec3&, float)
