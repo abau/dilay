@@ -126,13 +126,14 @@ struct OctreeNode::Impl {
   const Impl& operator= (const Impl&) = delete;
 
   Impl (Impl&& source) 
-    : node     (std::move (this))
-    , center   (std::move (source.center))
-    , width    (std::move (source.width))
-    , children (std::move (source.children))
-    , depth    (std::move (source.depth))
-    , faces    (std::move (source.faces))
-    , parent   (std::move (source.parent))
+    : node       (std::move (this))
+    , center     (std::move (source.center))
+    , width      (std::move (source.width))
+    , children   (std::move (source.children))
+    , depth      (std::move (source.depth))
+    , faces      (std::move (source.faces))
+    , parent     (std::move (source.parent))
+    , primitives (std::move (source.primitives))
 #ifdef DILAY_RENDER_OCTREE
     , mesh     (std::move (source.mesh))
   { this->mesh.bufferData (); }
