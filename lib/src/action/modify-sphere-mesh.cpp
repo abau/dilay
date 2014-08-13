@@ -6,7 +6,7 @@
 
 namespace {
   enum class Operation { 
-    Position, NewNode, DeleteNode
+    NewNode, DeleteNode
   };
 
   struct NodeData {
@@ -21,12 +21,6 @@ struct ActionModifySMesh :: Impl {
   Operation   operation;
   ActionIds   operandIds;
   OperandData operandData;
-
-  void position (SphereMesh& mesh, const glm::vec3& pos) {
-    this->operation      = Operation::Position;
-    this->operandData.set <glm::vec3> (mesh.position ());
-    mesh.position (pos);
-  }
 
   void newNode (SphereMesh& mesh, SphereMeshNode* parent, const glm::vec3& pos, float r) {
     this->operation      = Operation::NewNode;
@@ -45,19 +39,6 @@ struct ActionModifySMesh :: Impl {
     mesh.deleteNode (node);
   }
 
-  void toggle (SphereMesh& mesh) {
-    switch (this->operation) {
-      case Operation::Position: {
-        glm::vec3 pos = mesh.position ();
-        mesh.position (this->operandData.get <glm::vec3> ());
-        this->operandData.set <glm::vec3> (pos);
-        break;
-      }
-      default:
-        assert (false);
-    }
-  }
-
   void runUndo (SphereMesh& mesh) { 
     switch (this->operation) {
       case Operation::NewNode:
@@ -69,8 +50,6 @@ struct ActionModifySMesh :: Impl {
                      , this->operandData.get <NodeData> ().position
                      , this->operandData.get <NodeData> ().radius);
         break;
-      default:
-        this->toggle (mesh);
     }
   }
 
@@ -85,15 +64,12 @@ struct ActionModifySMesh :: Impl {
       case Operation::DeleteNode:
         mesh.deleteNode (mesh.node (this->operandIds.getIdRef (0)));
         break;
-      default:
-        this->toggle (mesh);
     }
   }
 };
 
 DELEGATE_BIG3 (ActionModifySMesh)
 
-DELEGATE2 (void, ActionModifySMesh, position  , SphereMesh&, const glm::vec3&)
 DELEGATE4 (void, ActionModifySMesh, newNode   , SphereMesh&, SphereMeshNode*, const glm::vec3&, float)
 DELEGATE2 (void, ActionModifySMesh, deleteNode, SphereMesh&, SphereMeshNode&);
 DELEGATE1 (void, ActionModifySMesh, runUndo   , SphereMesh&)
