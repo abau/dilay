@@ -98,9 +98,13 @@ class IdMap {
     void         reset ()       {        this->map.clear (); }
     unsigned int size  () const { return this->map.size  (); }
 
-    Iterator iterator (const Id& id) { return this->map.find (id.primitive ()); }
-    Iterator begin    ()             { return this->map.begin (); }
-    Iterator end      ()             { return this->map.end   (); }
+    Iterator      iterator (const Id& id) { return this->map.find (id.primitive ()); }
+    Iterator      begin    ()             { return this->map.begin (); }
+    Iterator      end      ()             { return this->map.end   (); }
+
+    ConstIterator iterator (const Id& id) const { return this->map.find (id.primitive ()); }
+    ConstIterator begin    ()             const { return this->map.begin (); }
+    ConstIterator end      ()             const { return this->map.end   (); }
 
   private:
     InternalMap map;
