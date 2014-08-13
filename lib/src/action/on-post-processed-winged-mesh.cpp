@@ -2,10 +2,8 @@
 #include "action/on-post-processed-winged-mesh.hpp"
 #include "id.hpp"
 #include "winged/face.hpp"
-#include "winged/edge.hpp"
 #include "winged/mesh.hpp"
 #include "primitive/triangle.hpp"
-#include "adjacent-iterator.hpp"
 #include "bitset.hpp"
 
 struct ActionOnPostProcessedWMesh :: Impl {
@@ -26,7 +24,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
 
   WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face) {
     bool        sameNode  = false;
-    WingedFace& realigned = this->runRealignFace (mesh, face, &sameNode);
+    WingedFace& realigned = mesh.realignFace (face, face.triangle (mesh), &sameNode);
 
     if (sameNode == false) {
       this->realignIds.insert (realigned.id ());
@@ -38,30 +36,9 @@ struct ActionOnPostProcessedWMesh :: Impl {
     for (const Id& id : this->realignIds) {
       WingedFace* face = mesh.face (id);
       if (face) {
-        this->runRealignFace (mesh, *face);
+        mesh.realignFace (*face, face->triangle (mesh), nullptr);
       }
     }
-  }
-
-  WingedFace& runRealignFace (WingedMesh& mesh, const WingedFace& face, bool* sameNode = nullptr) {
-    PrimTriangle faceTriangle (face.triangle (mesh));
-    std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
-
-    for (WingedEdge* e : adjacents) {
-      e->face (face,nullptr);
-    }
-
-    WingedFace& newFace = mesh.realignFace (face, faceTriangle, sameNode);
-
-    for (WingedEdge* e : adjacents) {
-      if (e->leftFace () == nullptr)
-        e->leftFace (&newFace);
-      else if (e->rightFace () == nullptr)
-        e->rightFace (&newFace);
-      else
-        assert (false);
-    }
-    return newFace;
   }
 
   void postProcess (WingedMesh& mesh) {

@@ -9,6 +9,7 @@
 #include "primitive/triangle.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
+#include "primitive/triangle.hpp"
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "id.hpp"
@@ -153,7 +154,23 @@ struct WingedMesh::Impl {
   }
 
   WingedFace& realignFace (const WingedFace& face, const PrimTriangle& triangle, bool* sameNode) {
-    return this->octree.realignFace (face, triangle, sameNode);
+    std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
+
+    for (WingedEdge* e : adjacents) {
+      e->face (face,nullptr);
+    }
+
+    WingedFace& newFace = this->octree.realignFace (face, triangle, sameNode);
+
+    for (WingedEdge* e : adjacents) {
+      if (e->leftFace () == nullptr)
+        e->leftFace (&newFace);
+      else if (e->rightFace () == nullptr)
+        e->rightFace (&newFace);
+      else
+        assert (false);
+    }
+    return newFace;
   }
 
   unsigned int numVertices () const { 
