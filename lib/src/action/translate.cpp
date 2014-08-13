@@ -31,6 +31,7 @@ struct ActionTranslate::Impl {
     for (WingedMesh* m : meshes) {
       this->ids.setId (i, m->id ());
       m->translate    (this->delta);
+      m->normalize    ();
       i = i + 1;
     }
   }
@@ -47,7 +48,9 @@ struct ActionTranslate::Impl {
       }
       case SelectionMode::Freeform: {
         for (unsigned int i = 0; i < this->ids.numIds (); i++) {
-          this->ids.getWingedMesh (i).translate (this->delta);
+          WingedMesh& mesh = this->ids.getWingedMesh (i);
+          mesh.translate (this->delta);
+          mesh.normalize ();
         }
         break;
       }

@@ -16,6 +16,7 @@
 #include "selection.hpp"
 #include "config.hpp"
 #include "id-map.hpp"
+#include "../util.hpp"
 
 struct WingedMesh::Impl {
   typedef std::vector <Vertices::iterator> VertexMap;
@@ -153,14 +154,18 @@ struct WingedMesh::Impl {
     this->vertexMap.pop_back  ();
   }
 
-  WingedFace& realignFace (const WingedFace& face, const PrimTriangle& triangle, bool* sameNode) {
+  WingedFace& realignFace ( const WingedFace& face, const PrimTriangle& triangle
+                          , bool* sameNode, Octree* newOctree = nullptr ) 
+  {
     std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
 
     for (WingedEdge* e : adjacents) {
       e->face (face,nullptr);
     }
 
-    WingedFace& newFace = this->octree.realignFace (face, triangle, sameNode);
+    WingedFace& newFace = bool (newOctree) 
+                        ? newOctree -> insertFace  (face, triangle)
+                        : this->octree.realignFace (face, triangle, sameNode);
 
     for (WingedEdge* e : adjacents) {
       if (e->leftFace () == nullptr)
@@ -253,17 +258,11 @@ struct WingedMesh::Impl {
   void toggleRenderMode () { this->mesh.toggleRenderMode (); }
 
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
-    return this->octree.intersects ( 
-        *this->self
-       , PrimRay (ray, this->mesh.worldMatrix ())
-       , intersection);
+    return this->octree.intersects (*this->self, ray, intersection);
   }
 
   bool intersects (const PrimSphere& sphere, std::vector <WingedFace*>& faces) {
-    return this->octree.intersects (
-        *this->self
-      , PrimSphere (sphere, this->mesh.worldMatrix ())
-      , faces);
+    return this->octree.intersects (*this->self, sphere, faces);
   }
 
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
@@ -277,6 +276,34 @@ struct WingedMesh::Impl {
   void               rotationX      (float v)              { return this->mesh.rotationX (v); }
   void               rotationY      (float v)              { return this->mesh.rotationY (v); }
   void               rotationZ      (float v)              { return this->mesh.rotationZ (v); }
+
+  void normalize () {
+    glm::mat4x4 model = this->mesh.modelMatrix ();
+    glm::vec3   maxVertex (std::numeric_limits <float>::lowest ());
+    glm::vec3   minVertex (std::numeric_limits <float>::max    ());
+
+    for (unsigned int i = 0; i < this->numVertices (); ++i) {
+      const glm::vec3 v = Util::transformPosition  (model, this->vector (i));
+            maxVertex   = glm::max (maxVertex, v);
+            minVertex   = glm::min (minVertex, v);
+
+      this->setVertex (i, v);
+      this->setNormal (i, Util::transformDirection (model, this->normal (i)));
+    }
+
+    Octree newOctree (false);
+
+    this->octree.forEachFace ([&newOctree,this] (WingedFace& face) { 
+      this->realignFace (face, face.triangle (*this->self), nullptr, &newOctree);
+    });
+
+    this->octree = std::move (newOctree);
+
+    this->mesh.position       (glm::vec3 (0.0f));
+    this->mesh.scaling        (glm::vec3 (1.0f));
+    this->mesh.rotationMatrix (glm::mat4x4 (1.0f));
+    this->mesh.bufferData     ();
+  }
 };
 
 DELEGATE_BIG3_SELF         (WingedMesh)
@@ -336,4 +363,5 @@ DELEGATE1       (void              , WingedMesh, rotationMatrix, const glm::mat4
 DELEGATE_CONST  (const glm::mat4x4&, WingedMesh, rotationMatrix)
 DELEGATE1       (void              , WingedMesh, rotationX, float)
 DELEGATE1       (void              , WingedMesh, rotationY, float)
-DELEGATE1       (void     , WingedMesh, rotationZ, float)
+DELEGATE1       (void              , WingedMesh, rotationZ, float)
+DELEGATE        (void              , WingedMesh, normalize)

@@ -9,8 +9,6 @@ class PrimSphere {
   public:
     DECLARE_BIG6 (PrimSphere, const glm::vec3&, float);
 
-    PrimSphere (const PrimSphere&, const glm::mat4x4&);
-
     const glm::vec3& center () const;
     float            radius () const;
 

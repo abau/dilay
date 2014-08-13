@@ -577,7 +577,7 @@ struct Octree::Impl {
   }
 };
 
-DELEGATE1_BIG3  (Octree,bool)
+DELEGATE1_BIG4  (Octree,bool)
 DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const PrimTriangle&)
 DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)

@@ -78,6 +78,7 @@ class WingedMesh {
     void               rotationX         (float);
     void               rotationY         (float);
     void               rotationZ         (float);
+    void               normalize         ();
 
     SAFE_REF1 (WingedVertex, vertex, unsigned int)
     SAFE_REF1 (WingedEdge  , edge  , const Id&)
