@@ -343,15 +343,6 @@ struct OctreeNode::Impl {
       c->updateStatistics (stats);
     }
   }
-
-  void forEachFace (const std::function <void (WingedFace&)>& f) {
-    for (WingedFace& face : this->faces) { f (face); }
-    for (Child& c : this->children)      { c->forEachFace (f);    }
-  }
-  void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
-    for (const WingedFace& face : this->faces) { f (face); }
-    for (const Child& c : this->children)      { c->forEachConstFace (f); }
-  }
 };
 
 OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
@@ -575,10 +566,14 @@ struct Octree::Impl {
   }
 
   void forEachFace (const std::function <void (WingedFace&)>& f) {
-    if (this->hasRoot ()) { this->root->forEachFace (f); }
+    for (auto& pair : this->idMap) {
+      f (*pair.second);
+    }
   }
   void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
-    if (this->hasRoot ()) { this->root->forEachConstFace (f); }
+    for (const auto& pair : this->idMap) {
+      f (*pair.second);
+    }
   }
 };
 
