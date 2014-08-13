@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-// Delegators
+// delegators
 
 #define DELEGATE_COPY_CONSTRUCTOR(from) \
   from :: from (const from & a1) { this->impl = new Impl (*a1.impl); }
@@ -81,17 +81,23 @@
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
+#define DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from) \
   DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
+#define DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
+
+#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_COPY_CONSTRUCTOR(from) \
+  DELEGATE_ASSIGNMENT_OP(from) \
+
+#define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
   DELEGATE_ASSIGNMENT_OP_SELF(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
 #define DELEGATE_NEW_IMPL(...) \
   this->impl = new Impl (__VA_ARGS__);
@@ -134,115 +140,6 @@
 
 #define DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
   from :: from params : base baseArgs { DELEGATE_NEW_IMPL fromArgs }
-
-#define DELEGATE_BIG3(from) \
-  DELEGATE_CONSTRUCTOR(from) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE1_BIG3(from,t1) \
-  DELEGATE1_CONSTRUCTOR(from,t1) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE2_BIG3(from,t1,t2) \
-  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE3_BIG3(from,t1,t2,t3) \
-  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE4_BIG3(from,t1,t2,t3,t4) \
-  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE5_BIG3(from,t1,t2,t3,t4,t5) \
-  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE_BIG3_SELF(from) \
-  DELEGATE_CONSTRUCTOR_SELF(from) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE1_BIG3_SELF(from,t1) \
-  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE2_BIG3_SELF(from,t1,t2) \
-  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE3_BIG3_SELF(from,t1,t2,t3) \
-  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE4_BIG3_SELF(from,t1,t2,t3,t4) \
-  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE5_BIG3_SELF(from,t1,t2,t3,t4,t5) \
-  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
-  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE_BIG3_BASE(from,params,fromArgs,base,baseArgs) \
-  DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base)
-
-#define DELEGATE_BIG6(from) \
-  DELEGATE_CONSTRUCTOR(from) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE1_BIG6(from,t1) \
-  DELEGATE1_CONSTRUCTOR(from,t1) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE2_BIG6(from,t1,t2) \
-  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE3_BIG6(from,t1,t2,t3) \
-  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE4_BIG6(from,t1,t2,t3,t4) \
-  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE5_BIG6(from,t1,t2,t3,t4,t5) \
-  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
-
-#define DELEGATE_BIG6_SELF(from) \
-  DELEGATE_CONSTRUCTOR_SELF(from) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE1_BIG6_SELF(from,t1) \
-  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE2_BIG6_SELF(from,t1,t2) \
-  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE3_BIG6_SELF(from,t1,t2,t3) \
-  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE4_BIG6_SELF(from,t1,t2,t3,t4) \
-  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE5_BIG6_SELF(from,t1,t2,t3,t4,t5) \
-  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
-  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
-
-#define DELEGATE_BIG6_BASE(from,params,fromArgs,base,baseArgs) \
-  DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
-  DELEGATE_DESTRUCTOR(from) \
-  DELEGATE_COPY_CONSTRUCTOR_BASE(from,base) \
-  DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
-  DELEGATE_ASSIGNMENT_OP_SELF(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP_SELF (from)
 
 #define DELEGATE_BASE(r,from,method,ifaceParams,implArgs) \
   r from :: method ifaceParams { return this->impl-> method implArgs ; }
@@ -333,7 +230,176 @@
 #define DELEGATE5_GLOBAL(r,from,method,t1,t2,t3,t4,t5) \
   DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
 
-// Getters/Setters
+// big 3 delegators
+
+#define DELEGATE_BIG3(from) \
+  DELEGATE_CONSTRUCTOR(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE1_BIG3(from,t1) \
+  DELEGATE1_CONSTRUCTOR(from,t1) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE2_BIG3(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE3_BIG3(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE4_BIG3(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE5_BIG3(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG3_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE1_BIG3_SELF(from,t1) \
+  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE2_BIG3_SELF(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE3_BIG3_SELF(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE4_BIG3_SELF(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE5_BIG3_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE_BIG3_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base)
+
+// big 4 delegators
+
+#define DELEGATE_BIG4(from) \
+  DELEGATE_CONSTRUCTOR(from) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE1_BIG4(from,t1) \
+  DELEGATE1_CONSTRUCTOR(from,t1) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE2_BIG4(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE3_BIG4(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE4_BIG4(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE5_BIG4(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG4_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE1_BIG4_SELF(from,t1) \
+  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE2_BIG4_SELF(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE3_BIG4_SELF(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE4_BIG4_SELF(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE5_BIG4_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE_BIG4_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF (from)
+
+// big 6 delegators
+
+#define DELEGATE_BIG6(from) \
+  DELEGATE_CONSTRUCTOR(from) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE1_BIG6(from,t1) \
+  DELEGATE1_CONSTRUCTOR(from,t1) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE2_BIG6(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE3_BIG6(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE4_BIG6(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE5_BIG6(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG6_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE1_BIG6_SELF(from,t1) \
+  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE2_BIG6_SELF(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE3_BIG6_SELF(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE4_BIG6_SELF(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE5_BIG6_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE_BIG6_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_COPY_CONSTRUCTOR_BASE(from,base) \
+  DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
+  DELEGATE_ASSIGNMENT_OP_SELF(from) \
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF (from)
+
+// getters/setters
 
 #define GETTER_CONST(r,from,member) \
   r from :: member () const { return this->impl-> member ; }
@@ -359,7 +425,7 @@
 #define ID(from) \
   const Id& from :: id () const { return this->impl->id.id () ; }
 
-// Safe references
+// safe references
 
 #define SAFE_REF(r,method) \
   r & method ## Ref () { \
@@ -433,7 +499,7 @@
     assert (ptr); \
     return *ptr; }
 
-// Big 3 declarations
+// big 2 declarations
 
 #define DECLARE_BIG2(t,...)                   \
          t             (__VA_ARGS__);         \
@@ -442,6 +508,16 @@
   const  t & operator= (const t &)  = delete; \
   const  t & operator= (      t &&) = delete; \
        ~ t             ();
+
+#define DECLARE_BIG2_VIRTUAL(t,...)                   \
+                 t             (__VA_ARGS__);         \
+                 t             (const t &)  = delete; \
+                 t             (      t &&) = delete; \
+          const  t & operator= (const t &)  = delete; \
+          const  t & operator= (      t &&) = delete; \
+  virtual      ~ t             ();
+
+// big 3 declarations
 
 #define DECLARE_BIG3(t,...)                   \
          t             (__VA_ARGS__);         \
@@ -459,7 +535,25 @@
           const  t & operator= (      t &&) = delete; \
   virtual      ~ t             ();
 
-// Big 6 declarations
+// big 4 declarations
+
+#define DECLARE_BIG4(t,...)                   \
+         t             (__VA_ARGS__);         \
+         t             (const t &)  = delete; \
+         t             (      t &&);          \
+  const  t & operator= (const t &)  = delete; \
+  const  t & operator= (      t &&);          \
+       ~ t             ();
+
+#define DECLARE_BIG4_VIRTUAL(t,...)                   \
+                 t             (__VA_ARGS__);         \
+                 t             (const t &)  = delete; \
+                 t             (      t &&);          \
+          const  t & operator= (const t &)  = delete; \
+          const  t & operator= (      t &&);          \
+  virtual      ~ t             ();
+
+// big 6 declarations
 
 #define DECLARE_BIG6(t,...)              \
          t             (__VA_ARGS__);    \
@@ -476,6 +570,8 @@
           const  t & operator= (const t &);      \
           const  t & operator= (      t &&);     \
   virtual      ~ t             ();
+
+// miscellaneous
 
 #define DELETE_COPYMOVEASSIGN(t)              \
          t             (const t &)  = delete; \
