@@ -58,7 +58,7 @@ struct PAModifyWVertex :: Impl {
       case Operation::WriteIndex: {
         unsigned int index       = this->operands.getIndexRef (1);
         unsigned int vertexIndex = mesh.index (index);
-        vertex.writeIndex (mesh, index);
+        mesh.setIndex (index, this->operands.getIndexRef (2));
         this->operands.setIndex (2,vertexIndex);
         break;
       }
