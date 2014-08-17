@@ -27,7 +27,7 @@ struct WingedMesh::Impl {
   Vertices                 vertices;
   Edges                    edges;
   Octree                   octree;
-  std::set  <unsigned int> freeFirstIndexNumbers;
+  std::set  <unsigned int> freeFaceIndices;
   VertexMap                vertexMap;
   IdMap <Edges::iterator>  edgeMap;
 
@@ -93,29 +93,21 @@ struct WingedMesh::Impl {
     return this->edges.back ();
   }
 
-  bool hasFreeFirstIndexNumber () const { 
-    return this->freeFirstIndexNumbers.size () > 0;
+  bool hasFreeFaceIndex () const { 
+    return this->freeFaceIndices.size () > 0;
   }
   
-  unsigned int nextFreeFirstIndexNumber () {
-    assert (this->hasFreeFirstIndexNumber ());
-    unsigned int indexNumber = *this->freeFirstIndexNumbers.begin ();
-    this->freeFirstIndexNumbers.erase (this->freeFirstIndexNumbers.begin ());
-    return indexNumber;
-  }
-
   WingedFace& addFace (const WingedFace& f, const PrimTriangle& geometry) {
-    unsigned int firstIndexNumber;
-    if (this->hasFreeFirstIndexNumber ()) {
-      firstIndexNumber = this->nextFreeFirstIndexNumber ();
+    unsigned int faceIndex;
+    if (this->hasFreeFaceIndex ()) {
+      faceIndex = *this->freeFaceIndices.begin ();
+      this->freeFaceIndices.erase (this->freeFaceIndices.begin ());
     }
     else {
-      firstIndexNumber = this->mesh.numIndices ();
+      faceIndex = this->mesh.numIndices ();
       this->mesh.allocateIndices (3);
     }
-    return this->octree.insertFace 
-      ( WingedFace (f.edge (), f.id (), nullptr, firstIndexNumber)
-      , geometry);
+    return this->octree.insertFace (WingedFace (f.edge (), f.id (), nullptr, faceIndex), geometry);
   }
 
   void setIndex (unsigned int indexNumber, unsigned int index) { 
@@ -139,11 +131,11 @@ struct WingedMesh::Impl {
   }
 
   void deleteFace (const WingedFace& face) { 
-    if (face.firstIndexNumber () == this->mesh.numIndices () - 3) {
+    if (face.index () == this->mesh.numIndices () - 3) {
       this->mesh.popIndices (3);
     }
     else {
-      this->freeFirstIndexNumbers.insert (face.firstIndexNumber ());
+      this->freeFaceIndices.insert (face.index ());
     }
     this->octree.deleteFace (face); 
   }
@@ -202,7 +194,7 @@ struct WingedMesh::Impl {
   }
 
   void writeAllIndices () {
-    if (this->hasFreeFirstIndexNumber ()) {
+    if (this->hasFreeFaceIndex ()) {
       unsigned int fin = 0;
       this->mesh.resizeIndices (this->numFaces () * 3);
 
@@ -210,7 +202,7 @@ struct WingedMesh::Impl {
         face.writeIndices (*this->self, &fin);
         fin = fin + 3;
       });
-      this->freeFirstIndexNumbers.clear ();
+      this->freeFaceIndices.clear ();
     }
     else {
       this->octree.forEachFace ([this] (WingedFace& face) {
@@ -226,7 +218,7 @@ struct WingedMesh::Impl {
   }
 
   void bufferData  () { 
-    assert (this->freeFirstIndexNumbers.size () == 0);
+    assert (this->hasFreeFaceIndex () == false);
     this->mesh.bufferData (); 
   }
 

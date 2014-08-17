@@ -20,10 +20,10 @@ class WingedFace {
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
 
-    const Id&              id               () const { return this->_id.id (); }
-    WingedEdge*            edge             () const { return this->_edge; }
-    OctreeNode*            octreeNode       () const { return this->_octreeNode; }
-    unsigned int           firstIndexNumber () const { return this->_firstIndexNumber; }
+    const Id&              id              () const { return this->_id.id (); }
+    WingedEdge*            edge            () const { return this->_edge; }
+    OctreeNode*            octreeNode      () const { return this->_octreeNode; }
+    unsigned int           index           () const { return this->_index; }
 
     void                   edge            (WingedEdge* e) { this->_edge       = e; }
     void                   octreeNode      (OctreeNode* n) { this->_octreeNode = n; }
@@ -66,7 +66,7 @@ class WingedFace {
     const IdObject  _id;
     WingedEdge*     _edge;
     OctreeNode*     _octreeNode;
-    unsigned int    _firstIndexNumber;
+    unsigned int    _index;
 };
 
 #endif

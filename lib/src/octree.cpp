@@ -28,18 +28,18 @@ namespace {
   class FaceToInsert {
     public:
       FaceToInsert (const WingedFace& f, const PrimTriangle& t, bool s)
-        : id               (f.id               ())
-        , edge             (f.edge             ())
-        , firstIndexNumber (f.firstIndexNumber ())
+        : id               (f.id           ())
+        , edge             (f.edge         ())
+        , faceIndex        (f.index        ())
         , primitive        (t)
-        , center           (t.center           ())
-        , oneDimExtent     (t.oneDimExtent     ())
+        , center           (t.center       ())
+        , oneDimExtent     (t.oneDimExtent ())
         , savePrimitive    (s)
         {}
 
       const Id            id;
       WingedEdge* const   edge;
-      const unsigned int  firstIndexNumber;
+      const unsigned int  faceIndex;
       const PrimTriangle& primitive;
       const glm::vec3     center;
       const float         oneDimExtent;
@@ -224,7 +224,7 @@ struct OctreeNode::Impl {
       this->faces.emplace_front ( f.edge 
                                 , f.id 
                                 , &this->node
-                                , f.firstIndexNumber);
+                                , f.faceIndex);
       return this->faces.begin ();
     }
   }

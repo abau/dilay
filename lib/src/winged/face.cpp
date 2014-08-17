@@ -11,22 +11,22 @@
 
 WingedFace :: WingedFace () : WingedFace (nullptr, Id (), nullptr, 0) {}
 
-WingedFace :: WingedFace (WingedEdge* e, const Id& id, OctreeNode* n, unsigned int fin)
-  : _id               (id)
-  , _edge             (e)
-  , _octreeNode       (n) 
-  , _firstIndexNumber (fin)
+WingedFace :: WingedFace (WingedEdge* e, const Id& id, OctreeNode* n, unsigned int i)
+  : _id         (id)
+  , _edge       (e)
+  , _octreeNode (n) 
+  , _index      (i)
   {}
 
-void WingedFace :: writeIndices (WingedMesh& mesh, const unsigned int *newFIN) {
+void WingedFace :: writeIndices (WingedMesh& mesh, const unsigned int *newIndex) {
   assert (this->isTriangle ());
-  if (newFIN) {
-    this->_firstIndexNumber = *newFIN;
+  if (newIndex) {
+    this->_index = *newIndex;
   }
-  unsigned int indexNumber = this->_firstIndexNumber;
+  unsigned int index = this->_index;
   for (WingedVertex& vertex : this->adjacentVertices ()) {
-    vertex.writeIndex (mesh,indexNumber);
-    indexNumber++;
+    vertex.writeIndex (mesh,index);
+    index++;
   }
 }
 

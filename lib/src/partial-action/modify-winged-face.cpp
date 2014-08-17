@@ -26,13 +26,12 @@ struct PAModifyWFace :: Impl {
 
   void writeIndices (WingedMesh& mesh, WingedFace& face) {
     assert (face.isTriangle ());
-    assert (this->actions.isEmpty ());
     this->operation = Operation::WriteIndices;
 
-    unsigned int indexNumber = face.firstIndexNumber ();
+    unsigned int index = face.index ();
     for (WingedVertex& a : face.adjacentVertices ()) {
-      this->actions.add <PAModifyWVertex> ().writeIndex (mesh, a, indexNumber);
-      indexNumber++;
+      this->actions.add <PAModifyWVertex> ().writeIndex (mesh, a, index);
+      index++;
     }
   }
 

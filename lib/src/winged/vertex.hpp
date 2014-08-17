@@ -20,7 +20,6 @@ class WingedVertex {
     WingedEdge*  edge               () const { return this->_edge;  }
 
     void         edge               (WingedEdge*);
-    unsigned int writeIndex         (WingedMesh&);
     void         writeIndex         (WingedMesh&, unsigned int);
     glm::vec3    vector             (const WingedMesh&) const;
     glm::vec3    savedNormal        (const WingedMesh&) const;
@@ -38,8 +37,8 @@ class WingedVertex {
 
     SAFE_REF_CONST (WingedEdge, edge)
   private:
-    const unsigned int          _index;
-    WingedEdge*                 _edge;
+    const unsigned int _index;
+    WingedEdge*        _edge;
 };
 
 #endif

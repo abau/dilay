@@ -23,12 +23,12 @@ struct PAModifyWVertex :: Impl {
     vertex.edge              (e);
   }
 
-  void writeIndex (WingedMesh& mesh, WingedVertex& vertex, unsigned int indexNumber) {
+  void writeIndex (WingedMesh& mesh, WingedVertex& vertex, unsigned int index) {
     this->operation = Operation::WriteIndex;
     this->operands.setVertex (0, &vertex);
-    this->operands.setIndex  (1, indexNumber);
-    this->operands.setIndex  (2, mesh.index (indexNumber));
-    vertex.writeIndex        (mesh, indexNumber);
+    this->operands.setIndex  (1, index);
+    this->operands.setIndex  (2, mesh.index (index));
+    vertex.writeIndex        (mesh, index);
   }
 
   void writeNormal (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& normal) {
@@ -56,10 +56,10 @@ struct PAModifyWVertex :: Impl {
         break;
       }
       case Operation::WriteIndex: {
-        unsigned int indexNumber = this->operands.getIndexRef (1);
-        unsigned int index       = mesh.index (indexNumber);
-        vertex.writeIndex (mesh, indexNumber);
-        this->operands.setIndex (2,index);
+        unsigned int index       = this->operands.getIndexRef (1);
+        unsigned int vertexIndex = mesh.index (index);
+        vertex.writeIndex (mesh, index);
+        this->operands.setIndex (2,vertexIndex);
         break;
       }
       case Operation::WriteNormal: {

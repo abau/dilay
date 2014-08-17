@@ -10,12 +10,8 @@ WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e)
 
 void WingedVertex :: edge (WingedEdge* e) { this->_edge = e; }
 
-unsigned int WingedVertex :: writeIndex (WingedMesh& mesh) {
-  return mesh.addIndex (this->_index);
-}
-
-void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int indexNumber) {
-  mesh.setIndex (indexNumber, this->_index);
+void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int faceIndex) {
+  mesh.setIndex (faceIndex, this->_index);
 }
 
 glm::vec3 WingedVertex :: vector (const WingedMesh& mesh) const {

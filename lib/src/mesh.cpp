@@ -115,9 +115,9 @@ struct Mesh::Impl {
     return this->numVertices () - 1;
   }
 
-  void setIndex (unsigned int indexNumber, unsigned int index) {
-    assert (indexNumber < this->indices.size ());
-    this->indices[indexNumber] = index;
+  void setIndex (unsigned int index, unsigned int vertexIndex) {
+    assert (index < this->indices.size ());
+    this->indices[index] = vertexIndex;
   }
 
   void setVertex (unsigned int i, const glm::vec3& v) {
