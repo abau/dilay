@@ -200,8 +200,6 @@ struct WingedMesh::Impl {
   void writeAllIndices () {
     if (this->hasFreeFaceIndex ()) {
       unsigned int fin = 0;
-      this->mesh.resizeIndices (this->numFaces () * 3);
-
       this->octree.forEachFace ([this,&fin] (WingedFace& face) {
         face.index        (fin);
         face.writeIndices (*this->self);

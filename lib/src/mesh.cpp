@@ -591,7 +591,6 @@ DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::
 DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)
 DELEGATE         (void              , Mesh, popVertex)
 DELEGATE1        (void              , Mesh, allocateIndices, unsigned int)
-DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
