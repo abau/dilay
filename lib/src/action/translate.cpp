@@ -32,6 +32,7 @@ struct ActionTranslate::Impl {
       this->ids.setId (i, m->id ());
       m->translate    (this->delta);
       m->normalize    ();
+      m->bufferData   ();
       i = i + 1;
     }
   }
@@ -49,8 +50,9 @@ struct ActionTranslate::Impl {
       case SelectionMode::Freeform: {
         for (unsigned int i = 0; i < this->ids.numIds (); i++) {
           WingedMesh& mesh = this->ids.getWingedMesh (i);
-          mesh.translate (this->delta);
-          mesh.normalize ();
+          mesh.translate  (this->delta);
+          mesh.normalize  ();
+          mesh.bufferData ();
         }
         break;
       }

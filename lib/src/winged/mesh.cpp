@@ -300,10 +300,9 @@ struct WingedMesh::Impl {
 
     this->octree = std::move (newOctree);
 
-    this->mesh.position       (glm::vec3 (0.0f));
-    this->mesh.scaling        (glm::vec3 (1.0f));
+    this->mesh.position       (glm::vec3   (0.0f));
+    this->mesh.scaling        (glm::vec3   (1.0f));
     this->mesh.rotationMatrix (glm::mat4x4 (1.0f));
-    this->mesh.bufferData     ();
   }
 };
 
