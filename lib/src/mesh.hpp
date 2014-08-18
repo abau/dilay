@@ -28,7 +28,6 @@ class Mesh {
     void               setVertex         (unsigned int, const glm::vec3&);
     void               setNormal         (unsigned int, const glm::vec3&);
     void               popVertex         ();
-    void               popIndices        (unsigned int);
     void               resizeIndices     (unsigned int);
 
     void               bufferData        ();

@@ -9,7 +9,10 @@
 #include "primitive/triangle.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace () : WingedFace (nullptr, Id (), nullptr, 0) {}
+WingedFace :: WingedFace () : WingedFace (nullptr, Id ()) {}
+
+WingedFace :: WingedFace (WingedEdge* e, const Id& id)
+  : WingedFace (e, id, nullptr, std::numeric_limits <unsigned int>::max ()) {}
 
 WingedFace :: WingedFace (WingedEdge* e, const Id& id, OctreeNode* n, unsigned int i)
   : _id         (id)
@@ -18,11 +21,9 @@ WingedFace :: WingedFace (WingedEdge* e, const Id& id, OctreeNode* n, unsigned i
   , _index      (i)
   {}
 
-void WingedFace :: writeIndices (WingedMesh& mesh, const unsigned int *newIndex) {
+void WingedFace :: writeIndices (WingedMesh& mesh) {
   assert (this->isTriangle ());
-  if (newIndex) {
-    this->_index = *newIndex;
-  }
+
   unsigned int index = this->_index;
   for (WingedVertex& vertex : this->adjacentVertices ()) {
     vertex.writeIndex (mesh,index);

@@ -66,16 +66,31 @@ struct PAModifyWMesh :: Impl {
                  , data. faceGradient));
   }
 
-  void saveFaceOperand (const WingedFace& face, const PrimTriangle& triangle) {
+  void saveFaceOperand (const WingedFace& face, const PrimTriangle& triangle, bool hasIndex) {
     this->operandIds.setFace     (0, &face);
-    this->operandIds.setEdge     (1, face.edge ());
+    this->operandIds.setEdge     (1, face.edge  ());
+    if (hasIndex) {
+      this->operandIds.setIndex  (0, face.index ());
+    }
     this->operandData.set <FaceData> (FaceData {triangle});
   }
   
   WingedFace& addSavedFace (WingedMesh& mesh) {
-    return mesh.addFace ( 
-        WingedFace (this->operandIds.getEdge (mesh,1), this->operandIds.getIdRef (0))
-      , this->operandData.get <FaceData> ().triangle);
+    if (this->operandIds.numIndices () > 0) {
+      return mesh.addFace ( 
+          WingedFace ( this->operandIds.getEdge (mesh,1), this->operandIds.getIdRef (0)
+                     , nullptr, this->operandIds.getIndexRef (0) )
+        , this->operandData.get <FaceData> ().triangle
+        , true
+        );
+    }
+    else {
+      return mesh.addFace ( 
+          WingedFace (this->operandIds.getEdge (mesh,1), this->operandIds.getIdRef (0))
+        , this->operandData.get <FaceData> ().triangle
+        , false
+        );
+    }
   }
 
   void saveVertexOperand (const WingedMesh& mesh, const WingedVertex& vertex) {
@@ -98,7 +113,7 @@ struct PAModifyWMesh :: Impl {
 
   void deleteFace (WingedMesh& mesh, const WingedFace& face, const PrimTriangle& t) {
     this->operation = Operation::DeleteFace;
-    this->saveFaceOperand (face, t);
+    this->saveFaceOperand (face, t, true);
     mesh.deleteFace (face);
   }
 
@@ -124,8 +139,8 @@ struct PAModifyWMesh :: Impl {
 
   WingedFace& addFace (WingedMesh& mesh, const WingedFace& face, const PrimTriangle& t) {
     this->operation = Operation::AddFace;
-    this->saveFaceOperand (face, t);
-    return mesh.addFace (face, t);
+    this->saveFaceOperand (face, t, false);
+    return mesh.addFace   (face, t, false);
   }
 
   WingedVertex& addVertex (WingedMesh& mesh, const glm::vec3& vector) {

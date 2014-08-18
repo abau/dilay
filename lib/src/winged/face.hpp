@@ -16,7 +16,8 @@ class WingedVertex;
 class WingedFace {
   public:                      
     WingedFace ();
-    WingedFace (WingedEdge*, const Id&, OctreeNode* = nullptr, unsigned int = 0);
+    WingedFace (WingedEdge*, const Id&);
+    WingedFace (WingedEdge*, const Id&, OctreeNode*, unsigned int);
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
 
@@ -25,9 +26,10 @@ class WingedFace {
     OctreeNode*            octreeNode      () const { return this->_octreeNode; }
     unsigned int           index           () const { return this->_index; }
 
-    void                   edge            (WingedEdge* e) { this->_edge       = e; }
-    void                   octreeNode      (OctreeNode* n) { this->_octreeNode = n; }
-    void                   writeIndices    (WingedMesh&, const unsigned int* = nullptr);
+    void                   edge            (WingedEdge*  e) { this->_edge       = e; }
+    void                   octreeNode      (OctreeNode*  n) { this->_octreeNode = n; }
+    void                   index           (unsigned int i) { this->_index      = i; }
+    void                   writeIndices    (WingedMesh&);
     PrimTriangle           triangle        (const WingedMesh&) const;
     WingedVertex&          firstVertex     () const;
     WingedVertex&          secondVertex    () const;

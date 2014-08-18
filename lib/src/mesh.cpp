@@ -143,10 +143,6 @@ struct Mesh::Impl {
     this->normals .pop_back ();
   }
 
-  void popIndices (unsigned int i) {
-    this->resizeIndices (this->indices.size () - i);
-  }
-
   void allocateIndices (unsigned int i) { 
     this->resizeIndices (this->indices.size () + i);
   }
@@ -594,7 +590,6 @@ DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int
 DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)
 DELEGATE         (void              , Mesh, popVertex)
-DELEGATE1        (void              , Mesh, popIndices, unsigned int)
 DELEGATE1        (void              , Mesh, allocateIndices, unsigned int)
 DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 
