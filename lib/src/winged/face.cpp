@@ -24,11 +24,9 @@ WingedFace :: WingedFace (WingedEdge* e, const Id& id, OctreeNode* n, unsigned i
 void WingedFace :: writeIndices (WingedMesh& mesh) {
   assert (this->isTriangle ());
 
-  unsigned int index = this->_index;
-  for (WingedVertex& vertex : this->adjacentVertices ()) {
-    vertex.writeIndex (mesh,index);
-    index++;
-  }
+  this->firstVertex  ().writeIndex (mesh, this->_index + 0);
+  this->secondVertex ().writeIndex (mesh, this->_index + 1);
+  this->thirdVertex  ().writeIndex (mesh, this->_index + 2);
 }
 
 PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
