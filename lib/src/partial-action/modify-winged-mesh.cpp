@@ -12,7 +12,7 @@
 
 namespace {
   enum class Operation { 
-    DeleteEdge, DeleteFace, PopVertex, AddEdge, AddFace, AddVertex, InitOctreeRoot
+    DeleteEdge, DeleteFace, DeleteVertex, AddEdge, AddFace, AddVertex, InitOctreeRoot
   };
 
   struct EdgeData {
@@ -93,12 +93,14 @@ struct PAModifyWMesh :: Impl {
     }
   }
 
-  void saveVertexOperand (const WingedMesh& mesh, const WingedVertex& vertex) {
-    this->operandData.set <VertexData> (VertexData {vertex.vector (mesh)});
+  void saveVertexOperand (const WingedVertex& vertex, const glm::vec3& position) {
+    this->operandIds.setIndex (0, vertex.index ());
+    this->operandData.set <VertexData> (VertexData { position });
   }
 
   WingedVertex& addSavedVertex (WingedMesh& mesh) {
-    return mesh.addVertex (this->operandData.get <VertexData> ().position);
+    return mesh.addVertex ( this->operandData.get <VertexData> ().position
+                          , this->operandIds.getIndexRef (0) );
   }
 
   void deleteEdge (WingedMesh& mesh, const WingedEdge& edge) {
@@ -117,10 +119,10 @@ struct PAModifyWMesh :: Impl {
     mesh.deleteFace (face);
   }
 
-  void popVertex (WingedMesh& mesh) {
-    this->operation = Operation::PopVertex;
-    this->saveVertexOperand (mesh,mesh.lastVertex ());
-    mesh.popVertex ();
+  void deleteVertex (WingedMesh& mesh, const WingedVertex& vertex) {
+    this->operation = Operation::DeleteVertex;
+    this->saveVertexOperand (vertex, vertex.vector (mesh));
+    mesh.deleteVertex (vertex);
   }
 
   WingedEdge& addEdge (WingedMesh& mesh, const WingedEdge& edge) {
@@ -145,8 +147,9 @@ struct PAModifyWMesh :: Impl {
 
   WingedVertex& addVertex (WingedMesh& mesh, const glm::vec3& vector) {
     this->operation = Operation::AddVertex;
-    this->operandData.set <VertexData> (VertexData {vector});
-    return mesh.addVertex (vector);
+    WingedVertex& vertex = mesh.addVertex (vector);
+    this->saveVertexOperand (vertex, vector);
+    return vertex;
   }
 
   void setupOctreeRoot (WingedMesh& mesh, const glm::vec3& pos, float width) {
@@ -166,7 +169,7 @@ struct PAModifyWMesh :: Impl {
         this->addSavedFace (mesh);
         break;
       }
-      case Operation::PopVertex: {
+      case Operation::DeleteVertex: {
         this->addSavedVertex (mesh);
         break;
       }
@@ -179,7 +182,7 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::AddVertex: {
-        mesh.popVertex ();
+        mesh.deleteVertex (*this->operandIds.getVertex (mesh,0));
         break;
       }
       case Operation::InitOctreeRoot: {
@@ -200,8 +203,8 @@ struct PAModifyWMesh :: Impl {
         mesh.deleteFace (*this->operandIds.getFace (mesh,0));
         break;
       }
-      case Operation::PopVertex: {
-        mesh.popVertex ();
+      case Operation::DeleteVertex: {
+        mesh.deleteVertex (*this->operandIds.getVertex (mesh,0));
         break;
       }
       case Operation::AddEdge: {
@@ -232,7 +235,7 @@ DELEGATE_BIG3 (PAModifyWMesh)
 
 DELEGATE2 (void         ,PAModifyWMesh,deleteEdge     ,WingedMesh&,const WingedEdge&)
 DELEGATE3 (void         ,PAModifyWMesh,deleteFace     ,WingedMesh&,const WingedFace&,const PrimTriangle&)
-DELEGATE1 (void         ,PAModifyWMesh,popVertex      ,WingedMesh&)
+DELEGATE2 (void         ,PAModifyWMesh,deleteVertex   ,WingedMesh&,const WingedVertex&)
 DELEGATE2 (WingedEdge&  ,PAModifyWMesh,addEdge        ,WingedMesh&,const WingedEdge&)
 DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace        ,WingedMesh&,const WingedFace&)
 DELEGATE2 (WingedFace&  ,PAModifyWMesh,addFace        ,WingedMesh&,const PrimTriangle&)

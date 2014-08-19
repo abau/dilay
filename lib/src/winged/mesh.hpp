@@ -28,11 +28,11 @@ class WingedMesh {
     unsigned int       index              (unsigned int) const;
     glm::vec3          normal             (unsigned int) const;
     WingedVertex*      vertex             (unsigned int);
-    WingedVertex&      lastVertex         ();
     WingedEdge*        edge               (const Id&);
     WingedFace*        face               (const Id&);
     unsigned int       addIndex           (unsigned int);
     WingedVertex&      addVertex          (const glm::vec3&);
+    WingedVertex&      addVertex          (const glm::vec3&, unsigned int);
     WingedEdge&        addEdge            (const WingedEdge&);
     WingedFace&        addFace            (const WingedFace&, const PrimTriangle&, bool);
     void               setIndex           (unsigned int, unsigned int);
@@ -46,7 +46,7 @@ class WingedMesh {
 
     void               deleteEdge         (const WingedEdge&);
     void               deleteFace         (const WingedFace&);
-    void               popVertex          ();
+    void               deleteVertex       (const WingedVertex&);
 
     WingedFace&        realignFace        (const WingedFace&, const PrimTriangle&, bool* = nullptr);
 
