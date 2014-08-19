@@ -5,11 +5,13 @@
 
 class CarveBrush {
   public:
-    DECLARE_BIG6 (CarveBrush, float, float)
+    DECLARE_BIG6 (CarveBrush, float, float, float)
 
-    float y      (float) const;
-    float width  ()      const;
-    float height ()      const;
+    float y       (float) const;
+    float width   ()      const;
+    float height  ()      const;
+    float detail  ()      const;
+
   private:
     class Impl;
     Impl* impl;

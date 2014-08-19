@@ -14,15 +14,16 @@
 #include "primitive/ray.hpp"
 #include "selection.hpp"
 #include "id.hpp"
+#include "carve-brush.hpp"
 
 struct ToolCarve::Impl {
   ToolCarve*        self;
   CarveCache        carveCache;
-  const float       brushWidth;
+  CarveBrush        brush;
 
   Impl (ToolCarve* s) 
-    : self       (s) 
-    , brushWidth (0.1f)
+    : self  (s) 
+    , brush (0.1f, 0.01f, 0.03f)
   {}
 
   static QString toolName () {
@@ -32,23 +33,23 @@ struct ToolCarve::Impl {
   bool getIntersection (const glm::ivec2& mouse, WingedMesh*& mesh, glm::vec3& position) {
     PrimRay                ray   = State::camera ().ray (mouse);
     Scene&                 scene = State::scene ();
-    WingedFaceIntersection wIntersection;
-    Intersection           intersection;
+    WingedFaceIntersection sceneIntersection;
+    Intersection           cacheIntersection;
 
-    bool hasIntersection  = this->carveCache.intersects (ray, intersection);
-    bool hasWIntersection = scene.intersects (ray, wIntersection);
+    bool isCacheIntersection  = this->carveCache.intersects (ray, cacheIntersection);
+    bool isSceneIntersection = scene.intersects (ray, sceneIntersection);
 
-    if (hasWIntersection && scene.selection ().hasMajor (wIntersection.mesh ().id ())) {
-      if (hasIntersection) {
-        assert (this->carveCache.meshCache ());     // fix corner cases
+    if (isSceneIntersection && scene.selection ().hasMajor (sceneIntersection.mesh ().id ())) {
+      if (isCacheIntersection) {
+        assert (this->carveCache.meshCache ());     // fix corner cases (other meshes)
 
         mesh     = this->carveCache.meshCache ();
-        position = intersection.position ();
+        position = cacheIntersection.position ();
       }
       else {
-        this->carveCache.meshCache (&wIntersection.mesh ());
-        mesh     = &wIntersection.mesh    ();
-        position = wIntersection.position ();
+        this->carveCache.meshCache (&sceneIntersection.mesh ());
+        mesh     = &sceneIntersection.mesh    ();
+        position = sceneIntersection.position ();
       }
       return true;
     }
@@ -66,7 +67,7 @@ struct ToolCarve::Impl {
         State::history ().add <ActionCarve, WingedMesh> (*mesh)
                          .run (*mesh
                               , position
-                              , this->brushWidth
+                              , this->brush
                               , this->carveCache
                               );
         return ToolResponse::Redraw;

@@ -9,6 +9,7 @@ class Id;
 class WingedMesh;
 class PrimRay;
 class Intersection;
+class CarveBrush;
 
 class CarveCache {
   public: 
@@ -30,7 +31,7 @@ class ActionCarve : public ActionOnPostProcessedWMesh {
   public: 
     DECLARE_BIG3 (ActionCarve)
 
-    void run (WingedMesh&, const glm::vec3&, float, CarveCache&);
+    void run (WingedMesh&, const glm::vec3&, const CarveBrush&, CarveCache&);
 
   private:
     void runUndoBeforePostProcessing (WingedMesh&);
