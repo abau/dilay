@@ -8,20 +8,21 @@ struct PrimTriangle::Impl {
   const glm::vec3 vertex1;
   const glm::vec3 vertex2;
   const glm::vec3 vertex3;
+  const glm::vec3 normal;
 
   Impl (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
-    : vertex1 (v1), vertex2 (v2), vertex3 (v3) {}
+    : vertex1 (v1)
+    , vertex2 (v2)
+    , vertex3 (v3) 
+    , normal  (glm::normalize (glm::cross (this->edge1 (), this->edge2 ())))
+  {}
 
   Impl ( const WingedMesh& mesh, const WingedVertex& v1
-               , const WingedVertex& v2, const WingedVertex& v3)
+       , const WingedVertex& v2, const WingedVertex& v3)
     : Impl (v1.vector (mesh), v2.vector (mesh), v3.vector (mesh)) {}
 
   glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
-  glm::vec3 edge2 () const { return this->vertex3 - this->vertex1; }
-
-  glm::vec3 normal () const { 
-    return glm::cross (this->edge1 (), this->edge2 ());
-  }
+  glm::vec3 edge2 () const { return this->vertex3 - this->vertex2; }
 
   glm::vec3 center () const {
     return (this->vertex1 + this->vertex2 + this->vertex3) / glm::vec3 (3.0f);
@@ -51,10 +52,10 @@ DELEGATE4_CONSTRUCTOR  (PrimTriangle, const WingedMesh&, const WingedVertex&, co
 GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex1)
 GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex2)
 GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex3)
+GETTER_CONST    (const glm::vec3&  , PrimTriangle, normal)
 
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, edge1)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, edge2)
-DELEGATE_CONST  (glm::vec3         , PrimTriangle, normal)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, center)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, minimum)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, maximum)
