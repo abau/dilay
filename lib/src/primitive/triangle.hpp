@@ -10,18 +10,13 @@ class WingedVertex;
 
 class PrimTriangle {
   public:
-    DECLARE_BIG6 (PrimTriangle)
-    PrimTriangle ( const glm::vec3&, const glm::vec3&, const glm::vec3&);
+    DECLARE_BIG6 (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&);
     PrimTriangle ( const WingedMesh&, const WingedVertex&
                  , const WingedVertex&, const WingedVertex&);
 
     const glm::vec3&  vertex1      () const;
     const glm::vec3&  vertex2      () const;
     const glm::vec3&  vertex3      () const;
-
-    void              vertex1      (const glm::vec3&);
-    void              vertex2      (const glm::vec3&);
-    void              vertex3      (const glm::vec3&);
 
     glm::vec3         edge1        () const;
     glm::vec3         edge2        () const;
