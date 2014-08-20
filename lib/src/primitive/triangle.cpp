@@ -17,10 +17,10 @@ struct PrimTriangle::Impl {
     : Impl (v1.vector (mesh), v2.vector (mesh), v3.vector (mesh)) {}
 
   glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
-  glm::vec3 edge2 () const { return this->vertex3 - this->vertex1; }
+  glm::vec3 edge2 () const { return this->vertex3 - this->vertex2; }
 
   glm::vec3 normal () const { 
-    return glm::cross (this->edge1 (), this->edge2 ());
+    return glm::normalize (glm::cross (this->edge1 (), this->edge2 ()));
   }
 
   glm::vec3 center () const {
