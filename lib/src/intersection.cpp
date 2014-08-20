@@ -51,6 +51,7 @@ DELEGATE3        (bool            , Intersection, update, float, const glm::vec3
 GETTER_CONST     (bool            , Intersection, isIntersection)
 GETTER_CONST     (float           , Intersection, distance)
 GETTER_CONST     (const glm::vec3&, Intersection, position)
+GETTER_CONST     (const glm::vec3&, Intersection, normal)
 DELEGATE2_STATIC (Intersection&   , Intersection, min, Intersection&, Intersection&)
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& vec) {
