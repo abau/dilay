@@ -263,10 +263,10 @@ struct OctreeNode::Impl {
   void facesIntersectRay (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
     for (WingedFace& face : this->faces) {
       PrimTriangle triangle = face.triangle (mesh);
-      glm::vec3 p;
+      glm::vec3    p;
 
       if (IntersectionUtil::intersects (ray, triangle, &p)) {
-        intersection.update (glm::distance (ray.origin (), p), p, mesh, face);
+        intersection.update (glm::distance (ray.origin (), p), p, triangle.normal (), mesh, face);
       }
     }
   }
@@ -276,7 +276,7 @@ struct OctreeNode::Impl {
       glm::vec3 p;
 
       if (IntersectionUtil::intersects (ray, element.second, &p)) {
-        intersection.update (glm::distance (ray.origin (), p), p);
+        intersection.update (glm::distance (ray.origin (), p), p, element.second.normal ());
       }
     }
   }

@@ -21,8 +21,9 @@ class Intersection {
     void                 reset          ();
     bool                 isIntersection () const;
     const glm::vec3&     position       () const;
+    const glm::vec3&     normal         () const;
     float                distance       () const;
-    bool                 update         (float, const glm::vec3&);
+    bool                 update         (float, const glm::vec3&, const glm::vec3&);
 
     static Intersection& min            (Intersection&, Intersection&);
 

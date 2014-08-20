@@ -9,10 +9,12 @@ struct SphereNodeIntersection::Impl {
 
   Impl (SphereNodeIntersection* s) : self (s) {}
 
-  void update (float d, const glm::vec3& p, SphereMesh& m, SphereMeshNode& n) {
-    if (this->self->Intersection::update (d,p)) {
-      this->_mesh = &m;
-      this->_node = &n;
+  void update ( float d, const glm::vec3& p, const glm::vec3& n
+              , SphereMesh& mesh, SphereMeshNode& node) 
+  {
+    if (this->self->Intersection::update (d,p,n)) {
+      this->_mesh = &mesh;
+      this->_node = &node;
     }
   }
 
@@ -28,6 +30,6 @@ struct SphereNodeIntersection::Impl {
 };
 
 DELEGATE_BIG6_BASE (SphereNodeIntersection,(),(this),Intersection,())
-DELEGATE4      (void            , SphereNodeIntersection, update, float, const glm::vec3&, SphereMesh&, SphereMeshNode&)
+DELEGATE5      (void            , SphereNodeIntersection, update, float, const glm::vec3&, const glm::vec3&, SphereMesh&, SphereMeshNode&)
 DELEGATE_CONST (SphereMesh&     , SphereNodeIntersection, mesh)
 DELEGATE_CONST (SphereMeshNode& , SphereNodeIntersection, node)

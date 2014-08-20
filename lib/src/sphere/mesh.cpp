@@ -78,7 +78,9 @@ struct SphereMeshNode::Impl {
     float t;
     if (IntersectionUtil::intersects (ray, PrimSphere (this->position, this->radius), &t)) {
       const glm::vec3 p = ray.pointAt (t);
-      sni.update (glm::distance (ray.origin (), p), p, mesh, this->self);
+      sni.update ( glm::distance  (ray.origin (), p), p
+                 , glm::normalize (p - this->position)
+                 , mesh, this->self);
     }
     for (Child& c : this->children) {
       c->intersects (mesh, ray, sni);

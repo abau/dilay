@@ -17,14 +17,16 @@ struct Intersection :: Impl {
   bool      isIntersection;
   float     distance;
   glm::vec3 position;
+  glm::vec3 normal;
 
   Impl () : isIntersection (false) {}
 
-  bool update (float d, const glm::vec3& p) {
+  bool update (float d, const glm::vec3& p, const glm::vec3& n) {
     if (this->isIntersection == false || d < this->distance) {
       this->isIntersection = true;
       this->distance       = d;
       this->position       = p;
+      this->normal         = n;
       return true;
     }
     return false;
@@ -45,7 +47,7 @@ struct Intersection :: Impl {
 };
 
 DELEGATE_BIG6    (Intersection)
-DELEGATE2        (bool            , Intersection, update, float, const glm::vec3&)
+DELEGATE3        (bool            , Intersection, update, float, const glm::vec3&, const glm::vec3&)
 GETTER_CONST     (bool            , Intersection, isIntersection)
 GETTER_CONST     (float           , Intersection, distance)
 GETTER_CONST     (const glm::vec3&, Intersection, position)

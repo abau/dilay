@@ -13,7 +13,8 @@ class WingedFaceIntersection : public Intersection {
 
     WingedMesh& mesh   () const;
     WingedFace& face   () const;
-    void        update (float, const glm::vec3&, WingedMesh&, WingedFace&);
+    void        update ( float, const glm::vec3&, const glm::vec3&
+                       , WingedMesh&, WingedFace& );
 
   private:
     class Impl;

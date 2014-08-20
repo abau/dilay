@@ -13,7 +13,8 @@ class SphereNodeIntersection : public Intersection {
 
     SphereMesh&      mesh           () const;
     SphereMeshNode&  node           () const;
-    void             update         (float, const glm::vec3&, SphereMesh&, SphereMeshNode&);
+    void             update         ( float, const glm::vec3&, const glm::vec3&
+                                    , SphereMesh&, SphereMeshNode& );
 
   private:
     class Impl;
