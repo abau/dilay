@@ -503,8 +503,8 @@ struct Octree::Impl {
   }
 
   void reset () { 
-    this->idMap.reset  ();
-    this->root.release ();
+    this->idMap.reset ();
+    this->root .reset ();
     this->rootWasSetup = false;
   }
 
