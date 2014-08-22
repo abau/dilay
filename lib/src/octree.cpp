@@ -78,12 +78,12 @@ struct OctreeNode::Impl {
 #endif
 
   Impl (const glm::vec3& c, float w, int d, Impl* p) 
-    : node (this)
+    : node   (this)
     , center (c)
     , width  (w)
     , depth  (d)
-    , parent (p) {
-
+    , parent (p) 
+  {
       static_assert (Impl::relativeMinFaceExtent < 0.5f, "relativeMinFaceExtent must be smaller than 0.5f");
 
 #ifdef DILAY_RENDER_OCTREE
