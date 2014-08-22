@@ -27,7 +27,7 @@ namespace {
   /** Container for face to insert */
   class FaceToInsert {
     public:
-      FaceToInsert (const WingedFace& f, const PrimTriangle& t, bool s)
+      FaceToInsert (const WingedFace& f, const PrimTriangle& t, bool s, bool i)
         : id               (f.id           ())
         , edge             (f.edge         ())
         , faceIndex        (f.index        ())
@@ -35,6 +35,7 @@ namespace {
         , center           (t.center       ())
         , oneDimExtent     (t.oneDimExtent ())
         , savePrimitive    (s)
+        , isInterim        (i)
         {}
 
       const Id            id;
@@ -44,6 +45,7 @@ namespace {
       const glm::vec3     center;
       const float         oneDimExtent;
       const bool          savePrimitive;
+      const bool          isInterim;
   };
 }
 
@@ -204,6 +206,7 @@ struct OctreeNode::Impl {
   }
 
   Faces::iterator insertIntoChild (const FaceToInsert& f) {
+    assert (f.isInterim == false);
     if (this->children.empty ()) {
       this->makeChildren           ();
       return this->insertIntoChild (f);
@@ -214,7 +217,9 @@ struct OctreeNode::Impl {
   }
 
   Faces::iterator insertFace (const FaceToInsert& f) {
-    if (f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
+    assert (f.isInterim == false);
+
+    if (f.isInterim == false && f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
       return this->insertIntoChild (f);
     }
     else {
@@ -360,15 +365,18 @@ struct Octree::Impl {
   bool                    rootWasSetup;
   IdMap <Faces::iterator> idMap;
   const bool              savePrimitives;
+  Child                   interim;
+  bool                    saveAsInterim;
 
   Impl (bool s) 
     : rootWasSetup   (false)
     , savePrimitives (s) 
+    , saveAsInterim  (false)
   {}
 
   WingedFace& insertFace (const WingedFace& face, const PrimTriangle& geometry) {
     assert (! this->hasFace (face.id ())); 
-    FaceToInsert faceToInsert (face,geometry,this->savePrimitives);
+    FaceToInsert faceToInsert (face,geometry,this->savePrimitives,this->saveAsInterim);
     return this->insertFace (faceToInsert);
   }
 
@@ -377,7 +385,7 @@ struct Octree::Impl {
     assert (face.octreeNode ()); 
     OctreeNode* formerNode = face.octreeNode ();
 
-    FaceToInsert faceToInsert (face,geometry,this->savePrimitives);
+    FaceToInsert faceToInsert (face,geometry,this->savePrimitives, false);
     this->deleteFace (face);
     WingedFace& newFace = this->insertFace (faceToInsert);
 
@@ -388,29 +396,43 @@ struct Octree::Impl {
   }
 
   WingedFace& insertFace (const FaceToInsert& faceToInsert) {
-    if (this->hasRoot () == false) {
-      this->initRoot (faceToInsert);
-    }
-
-    if (this->root->approxContains (faceToInsert)) {
-      Faces::iterator it = this->root->insertFace (faceToInsert);
+    if (faceToInsert.isInterim) {
+      if (this->interim) {
+        this->interim = Child (new OctreeNode::Impl (glm::vec3 (0.0f), 0.0f, 0, nullptr));
+      }
+      Faces::iterator it = this->interim->insertFace (faceToInsert);
       this->idMap.insert (it->id (), it);
       return *it;
     }
     else {
-      this->makeParent (faceToInsert);
-      return this->insertFace (faceToInsert);
+      if (this->hasRoot () == false) {
+        this->initRoot (faceToInsert);
+      }
+      if (this->root->approxContains (faceToInsert)) {
+        Faces::iterator it = this->root->insertFace (faceToInsert);
+        this->idMap.insert (it->id (), it);
+        return *it;
+      }
+      else {
+        this->makeParent (faceToInsert);
+        return this->insertFace (faceToInsert);
+      }
     }
   }
 
   void deleteFace (const WingedFace& face) {
     const Id id = face.id ();
 
+    assert (this->hasRoot   ()); 
+    assert (this->hasFace   (id)); 
     assert (face.octreeNode ());
-    assert (this->hasFace (id)); 
 
     face.octreeNodeRef ().impl->deleteFace (this->idMap.element (id));
     this->idMap.remove (id);
+
+    if (this->interim && this->interim->isEmpty ()) {
+      this->interim.reset ();
+    }
 
     if (this->root->isEmpty ()) {
       this->root.reset ();
@@ -434,6 +456,7 @@ struct Octree::Impl {
 
   void makeParent (const FaceToInsert& f) {
     assert (this->root);
+    assert (f.isInterim == false);
 
     glm::vec3 parentCenter;
     glm::vec3 rootCenter    = this->root->center;
@@ -503,8 +526,9 @@ struct Octree::Impl {
   }
 
   void reset () { 
-    this->idMap.reset ();
-    this->root .reset ();
+    this->idMap  .reset ();
+    this->root   .reset ();
+    this->interim.reset ();
     this->rootWasSetup = false;
   }
 
@@ -517,6 +541,7 @@ struct Octree::Impl {
 
   void initRoot (const FaceToInsert& faceToInsert) {
     assert (this->root == false);
+    assert (faceToInsert.isInterim == false);
 
     if (this->rootWasSetup == false) {
       this->rootPosition = faceToInsert.center;
@@ -565,6 +590,16 @@ struct Octree::Impl {
     return stats;
   }
 
+  bool hasInterims () const {
+    if (this->interim) {
+      assert (this->interim->isEmpty () == false);
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   void forEachFace (const std::function <void (WingedFace&)>& f) {
     for (auto& pair : this->idMap) {
       f (*pair.second);
@@ -579,6 +614,8 @@ struct Octree::Impl {
 
 DELEGATE1_BIG4  (Octree,bool)
 DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const PrimTriangle&)
+GETTER_CONST    (bool        , Octree, saveAsInterim)
+SETTER          (bool        , Octree, saveAsInterim)
 DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
 DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
@@ -593,5 +630,6 @@ DELEGATE        (void, Octree, shrinkRoot)
 DELEGATE_CONST  (bool, Octree, hasRoot)
 DELEGATE_CONST  (unsigned int, Octree, numFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
+DELEGATE_CONST  (bool            , Octree, hasInterims)
 DELEGATE1       (void            , Octree, forEachFace, const std::function <void (WingedFace&)>&)
 DELEGATE1_CONST (void            , Octree, forEachConstFace, const std::function <void (const WingedFace&)>&)

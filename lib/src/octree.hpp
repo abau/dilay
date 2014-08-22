@@ -51,25 +51,28 @@ class Octree {
   public: 
     DECLARE_BIG4 (Octree,bool)
 
-    WingedFace&      insertFace  (const WingedFace&, const PrimTriangle&);
-    WingedFace&      realignFace (const WingedFace&, const PrimTriangle&, bool* = nullptr);
-    void             deleteFace  (const WingedFace&);
-    bool             hasFace     (const Id&) const;
-    WingedFace*      face        (const Id&);
-    void             render      ();
-    bool             intersects  (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
-    bool             intersects  (const PrimRay&, Intersection&);
-    bool             intersects  ( const WingedMesh&, const PrimSphere&
-                                 , std::vector <WingedFace*>&);
-    void             reset       ();
-    void             setupRoot   (const glm::vec3&, float);
-    void             shrinkRoot  ();
-    bool             hasRoot     () const;
-    unsigned int     numFaces    () const;
-    OctreeStatistics statistics  () const;
+    WingedFace&      insertFace    (const WingedFace&, const PrimTriangle&);
+    bool             saveAsInterim () const;
+    void             saveAsInterim (bool);
+    WingedFace&      realignFace   (const WingedFace&, const PrimTriangle&, bool* = nullptr);
+    void             deleteFace    (const WingedFace&);
+    bool             hasFace       (const Id&) const;
+    WingedFace*      face          (const Id&);
+    void             render        ();
+    bool             intersects    (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
+    bool             intersects    (const PrimRay&, Intersection&);
+    bool             intersects    ( const WingedMesh&, const PrimSphere&
+                                   , std::vector <WingedFace*>&);
+    void             reset         ();
+    void             setupRoot     (const glm::vec3&, float);
+    void             shrinkRoot    ();
+    bool             hasRoot       () const;
+    unsigned int     numFaces      () const;
+    OctreeStatistics statistics    () const;
+    bool             hasInterims   () const;
 
-    void        forEachFace      (const std::function <void (WingedFace&)>&);
-    void        forEachConstFace (const std::function <void (const WingedFace&)>&) const;
+    void        forEachFace         (const std::function <void (WingedFace&)>&);
+    void        forEachConstFace    (const std::function <void (const WingedFace&)>&) const;
 
     SAFE_REF1 (WingedFace,face,const Id&)
 

@@ -5,6 +5,7 @@
 #include "winged/mesh.hpp"
 #include "primitive/triangle.hpp"
 #include "bitset.hpp"
+#include "octree.hpp"
 
 struct ActionOnPostProcessedWMesh :: Impl {
   std::unordered_set <Id> realignIds;
@@ -43,6 +44,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
 
   void postProcess (WingedMesh& mesh) {
     this->realignStoredFaces (mesh);
+    assert (mesh.octree ().hasInterims () == false);
 
     if (this->doBufferData ()) {
       mesh.bufferData ();
