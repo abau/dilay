@@ -92,6 +92,7 @@ void WingedUtil :: printStatistics (const Octree& octree) {
   std::cout << "Octree:"
             << "\n\tnum nodes:\t\t"        << oStats.numNodes
             << "\n\tnum faces:\t\t"        << oStats.numFaces
+            << "\n\tnum interim faces:\t"  << oStats.numInterimFaces
             << "\n\tmax faces per node:\t" << oStats.maxFacesPerNode
             << "\n\tmin depth:\t\t"        << oStats.minDepth
             << "\n\tmax depth:\t\t"        << oStats.maxDepth

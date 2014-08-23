@@ -23,6 +23,7 @@ struct OctreeStatistics {
 
   unsigned int numNodes;
   unsigned int numFaces;
+  unsigned int numInterimFaces;
   int          minDepth;
   int          maxDepth;
   unsigned int maxFacesPerNode;

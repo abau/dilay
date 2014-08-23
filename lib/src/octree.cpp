@@ -217,8 +217,6 @@ struct OctreeNode::Impl {
   }
 
   Faces::iterator insertFace (const FaceToInsert& f) {
-    assert (f.isInterim == false);
-
     if (f.isInterim == false && f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
       return this->insertIntoChild (f);
     }
@@ -397,7 +395,7 @@ struct Octree::Impl {
 
   WingedFace& insertFace (const FaceToInsert& faceToInsert) {
     if (faceToInsert.isInterim) {
-      if (this->interim) {
+      if (this->interim == false) {
         this->interim = Child (new OctreeNode::Impl (glm::vec3 (0.0f), 0.0f, 0, nullptr));
       }
       Faces::iterator it = this->interim->insertFace (faceToInsert);
@@ -423,7 +421,6 @@ struct Octree::Impl {
   void deleteFace (const WingedFace& face) {
     const Id id = face.id ();
 
-    assert (this->hasRoot   ()); 
     assert (this->hasFace   (id)); 
     assert (face.octreeNode ());
 
@@ -434,11 +431,13 @@ struct Octree::Impl {
       this->interim.reset ();
     }
 
-    if (this->root->isEmpty ()) {
-      this->root.reset ();
-    }
-    else {
-      this->shrinkRoot ();
+    if (this->hasRoot ()) {
+      if (this->root->isEmpty ()) {
+        this->root.reset ();
+      }
+      else {
+        this->shrinkRoot ();
+      }
     }
   }
 
@@ -577,7 +576,11 @@ struct Octree::Impl {
   unsigned int numFaces () const { return this->idMap.size (); }
 
   OctreeStatistics statistics () const {
+    const unsigned int numInterimFaces = bool (this->interim) 
+                                       ? this->interim->numFaces () 
+                                       : 0;
     OctreeStatistics stats { 0, 0
+                           , numInterimFaces
                            , std::numeric_limits <int>::max ()
                            , std::numeric_limits <int>::min ()
                            , 0 
@@ -586,7 +589,7 @@ struct Octree::Impl {
     if (this->hasRoot ()) {
       this->root->updateStatistics (stats);
     }
-    assert (stats.numFaces == this->numFaces ());
+    assert (stats.numFaces + numInterimFaces == this->numFaces ());
     return stats;
   }
 
