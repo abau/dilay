@@ -121,7 +121,6 @@ struct ActionCarve::Impl {
     this->subdivideFaces   (mesh, sphere, faces, brush, *cache.impl);
     this->cacheFaces       (faces, *cache.impl);
     this->carveFaces       (mesh, position, faces, brush, *cache.impl);
-    this->subdivideFaces   (mesh, sphere, faces, brush, *cache.impl);
     this->self->bufferData (mesh);
   }
 
