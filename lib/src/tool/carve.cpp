@@ -65,11 +65,7 @@ struct ToolCarve::Impl {
 
       if (this->getIntersection (ViewUtil::toIVec2 (e), mesh, position)) {
         State::history ().add <ActionCarve, WingedMesh> (*mesh)
-                         .run (*mesh
-                              , position
-                              , this->brush
-                              , this->carveCache
-                              );
+                         .run (*mesh, position, this->brush, this->carveCache);
         return ToolResponse::Redraw;
       }
     }

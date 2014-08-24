@@ -112,25 +112,32 @@ struct ActionCarve::Impl {
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 
-  void run (WingedMesh& mesh, const glm::vec3& position, const CarveBrush& brush, CarveCache& cache) { 
+  void run ( WingedMesh& mesh, const glm::vec3& position
+           , const CarveBrush& brush, CarveCache& cache) 
+  { 
     std::vector <WingedFace*> faces;
     PrimSphere                sphere (position, brush.width ());
+    CarveCache::Impl&         ccImpl = *cache.impl;
 
     mesh.intersects (sphere, faces);
 
-    this->subdivideFaces   (mesh, sphere, faces, brush, *cache.impl);
-    this->cacheFaces       (faces, *cache.impl);
-    this->carveFaces       (mesh, position, faces, brush, *cache.impl);
+    this->subdivideFaces (
+          mesh, sphere, faces
+        , [this,&brush,&ccImpl] (const WingedMesh& m, const WingedFace& f) {
+            return this->isSubdividable (m, f, brush, ccImpl);
+    });
+    this->cacheFaces (faces, ccImpl);
+    this->carveFaces (
+          mesh, faces
+        , [this,&position,&brush,&ccImpl] (const WingedVertex& v) {
+            return this->carveVertex (position, brush, ccImpl.cachedVertex (v));
+    });
     this->self->bufferData (mesh);
   }
 
-  bool isSubdividable ( const WingedMesh& mesh, const WingedFace& face
-                      , const CarveBrush& brush, CarveCache::Impl& cache) 
+  bool isSubdividable ( const CarveBrush& brush, const glm::vec3& v1
+                      , const glm::vec3& v2, const glm::vec3& v3 ) const
   {
-    const glm::vec3& v1 = cache.cacheVertex (mesh, face.firstVertex  ()).position;
-    const glm::vec3& v2 = cache.cacheVertex (mesh, face.secondVertex ()).position;
-    const glm::vec3& v3 = cache.cacheVertex (mesh, face.thirdVertex  ()).position;
-
     const float maxEdgeLength = glm::max ( glm::distance2 (v1, v2)
                                          , glm::max ( glm::distance2 (v1, v3)
                                                     , glm::distance2 (v2, v3)));
@@ -138,9 +145,18 @@ struct ActionCarve::Impl {
     return maxEdgeLength > brush.detail () * brush.detail ();
   }
 
-  void subdivideFaces ( WingedMesh& mesh, const PrimSphere& sphere
-                      , std::vector <WingedFace*>& faces
-                      , const CarveBrush& brush, CarveCache::Impl& cache)
+  bool isSubdividable ( const WingedMesh& mesh, const WingedFace& face
+                      , const CarveBrush& brush, CarveCache::Impl& cache) const
+  {
+    return this->isSubdividable 
+      (brush, cache.cacheVertex (mesh, face.firstVertex  ()).position
+            , cache.cacheVertex (mesh, face.secondVertex ()).position
+            , cache.cacheVertex (mesh, face.thirdVertex  ()).position);
+  }
+
+  void subdivideFaces 
+    ( WingedMesh& mesh, const PrimSphere& sphere, std::vector <WingedFace*>& faces
+    , const std::function <bool (const WingedMesh&, const WingedFace&)>& isSubdividable )
   {
     std::unordered_set <Id> thisIteration;
     std::unordered_set <Id> nextIteration;
@@ -148,7 +164,7 @@ struct ActionCarve::Impl {
 
     auto checkNextIteration = [&] (const WingedFace& face) -> void {
       if ( nextIteration.count (face.id ()) == 0 
-        && this->isSubdividable (mesh, face, brush, cache)
+        && isSubdividable (mesh, face)
         && IntersectionUtil::intersects (sphere,mesh,face)) 
       {
         nextIteration.insert (face.id ());
@@ -166,7 +182,7 @@ struct ActionCarve::Impl {
     while (thisIteration.size () > 0) {
       for (const Id& id : thisIteration) {
         WingedFace* f = mesh.face (id);
-        if (f && this->isSubdividable (mesh, *f, brush, cache)) {
+        if (f && isSubdividable (mesh, *f)) {
           std::vector <Id> tmpAffected;
           this->actions.add <ActionSubdivide> ().run (mesh, *f, &tmpAffected);
 
@@ -193,7 +209,7 @@ struct ActionCarve::Impl {
     }
   }
 
-  void cacheFaces (const std::vector <WingedFace*>& faces, CarveCache::Impl& cache) {
+  void cacheFaces (const std::vector <WingedFace*>& faces, CarveCache::Impl& cache) const {
     for (WingedFace* face : faces) {
       assert (face);
       cache.cacheFace (*face);
@@ -207,8 +223,8 @@ struct ActionCarve::Impl {
     return vd.position + (vd.normal * vd.getDelta ());
   }
 
-  void carveFaces ( WingedMesh& mesh, const glm::vec3& poa, std::vector <WingedFace*>& faces
-                  , const CarveBrush& brush, CarveCache::Impl& cache) 
+  void carveFaces ( WingedMesh& mesh, std::vector <WingedFace*>& faces
+                  , const std::function <glm::vec3 (const WingedVertex&)>& carve ) 
   {
     // compute set of vertices
     std::set <WingedVertex*> vertices;
@@ -221,7 +237,7 @@ struct ActionCarve::Impl {
 
     // write new positions
     for (WingedVertex* v : vertices) {
-      const glm::vec3 newPos = this->carveVertex (poa, brush, cache.cachedVertex (*v));
+      const glm::vec3 newPos = carve (*v);
 
       this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
     }
