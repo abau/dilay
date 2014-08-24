@@ -119,8 +119,8 @@ struct ActionCarve::Impl {
     PrimSphere                sphere (position, brush.width ());
     CarveCache::Impl&         ccImpl = *cache.impl;
 
-    mesh.intersects (sphere, faces);
-
+    mesh.intersects      (sphere, faces);
+    mesh.addInterimFaces (true);
     this->subdivideFaces (
           mesh, sphere, faces
         , [this,&brush,&ccImpl] (const WingedMesh& m, const WingedFace& f) {
@@ -132,26 +132,22 @@ struct ActionCarve::Impl {
         , [this,&position,&brush,&ccImpl] (const WingedVertex& v) {
             return this->carveVertex (position, brush, ccImpl.cachedVertex (v));
     });
+    mesh.addInterimFaces   (false);
     this->self->bufferData (mesh);
   }
 
-  bool isSubdividable ( const CarveBrush& brush, const glm::vec3& v1
-                      , const glm::vec3& v2, const glm::vec3& v3 ) const
+  bool isSubdividable ( const WingedMesh& mesh, const WingedFace& face
+                      , const CarveBrush& brush, CarveCache::Impl& cache ) const
   {
+    const glm::vec3 v1 = cache.cacheVertex (mesh, face.firstVertex  ()).position;
+    const glm::vec3 v2 = cache.cacheVertex (mesh, face.secondVertex ()).position;
+    const glm::vec3 v3 = cache.cacheVertex (mesh, face.thirdVertex  ()).position;
+
     const float maxEdgeLength = glm::max ( glm::distance2 (v1, v2)
                                          , glm::max ( glm::distance2 (v1, v3)
                                                     , glm::distance2 (v2, v3)));
 
     return maxEdgeLength > brush.detail () * brush.detail ();
-  }
-
-  bool isSubdividable ( const WingedMesh& mesh, const WingedFace& face
-                      , const CarveBrush& brush, CarveCache::Impl& cache) const
-  {
-    return this->isSubdividable 
-      (brush, cache.cacheVertex (mesh, face.firstVertex  ()).position
-            , cache.cacheVertex (mesh, face.secondVertex ()).position
-            , cache.cacheVertex (mesh, face.thirdVertex  ()).position);
   }
 
   void subdivideFaces 
@@ -216,7 +212,9 @@ struct ActionCarve::Impl {
     }
   }
 
-  glm::vec3 carveVertex (const glm::vec3& poa, const CarveBrush& brush, VertexData& vd) const {
+  glm::vec3 carveVertex ( const glm::vec3& poa, const CarveBrush& brush
+                        , VertexData& vd) const 
+  {
     const float delta = brush.y (glm::distance <float> (vd.position, poa));
 
     vd.setDelta (glm::max (vd.getDelta (), delta));
