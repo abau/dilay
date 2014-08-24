@@ -112,36 +112,43 @@ struct ActionCarve::Impl {
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 
-  void run ( WingedMesh& mesh, const glm::vec3& position
+  void run ( WingedMesh& mesh, const glm::vec3& poa
            , const CarveBrush& brush, CarveCache& cache) 
   { 
     std::vector <WingedFace*> faces;
-    PrimSphere                sphere (position, brush.width ());
+    PrimSphere                sphere (poa, brush.width ());
     CarveCache::Impl&         ccImpl = *cache.impl;
 
     mesh.intersects      (sphere, faces);
     mesh.addInterimFaces (true);
     this->subdivideFaces (
           mesh, sphere, faces
-        , [this,&brush,&ccImpl] (const WingedMesh& m, const WingedFace& f) {
-            return this->isSubdividable (m, f, brush, ccImpl);
+        , [this,&poa,&brush,&ccImpl] (const WingedMesh& m, const WingedFace& f) {
+            return this->isSubdividable (m, f, poa, brush, ccImpl);
     });
     this->cacheFaces (faces, ccImpl);
     this->carveFaces (
           mesh, faces
-        , [this,&position,&brush,&ccImpl] (const WingedVertex& v) {
-            return this->carveVertex (position, brush, ccImpl.cachedVertex (v));
+        , [this,&poa,&brush,&ccImpl] (const WingedVertex& v) {
+            return this->carveVertex (poa, brush, ccImpl.cachedVertex (v));
     });
     mesh.addInterimFaces   (false);
     this->self->bufferData (mesh);
   }
 
   bool isSubdividable ( const WingedMesh& mesh, const WingedFace& face
-                      , const CarveBrush& brush, CarveCache::Impl& cache ) const
+                      , const glm::vec3& poa, const CarveBrush& brush
+                      , CarveCache::Impl& cache ) const
   {
-    const glm::vec3 v1 = cache.cacheVertex (mesh, face.firstVertex  ()).position;
-    const glm::vec3 v2 = cache.cacheVertex (mesh, face.secondVertex ()).position;
-    const glm::vec3 v3 = cache.cacheVertex (mesh, face.thirdVertex  ()).position;
+    const glm::vec3 v1 = this->carvedVertex 
+                           ( poa, brush
+                           , cache.cacheVertex (mesh, face.firstVertex ()) );
+    const glm::vec3 v2 = this->carvedVertex 
+                           ( poa, brush
+                           , cache.cacheVertex (mesh, face.secondVertex ()) );
+    const glm::vec3 v3 = this->carvedVertex 
+                           ( poa, brush
+                           , cache.cacheVertex (mesh, face.thirdVertex ()) );
 
     const float maxEdgeLength = glm::max ( glm::distance2 (v1, v2)
                                          , glm::max ( glm::distance2 (v1, v3)
@@ -210,6 +217,14 @@ struct ActionCarve::Impl {
       assert (face);
       cache.cacheFace (*face);
     }
+  }
+
+  glm::vec3 carvedVertex ( const glm::vec3& poa, const CarveBrush& brush
+                         , const VertexData& vd) const 
+  {
+    const float delta = glm::max ( vd.getDelta ()
+                                 , brush.y (glm::distance <float> (vd.position, poa)) );
+    return vd.position + (vd.normal * delta);
   }
 
   glm::vec3 carveVertex ( const glm::vec3& poa, const CarveBrush& brush
