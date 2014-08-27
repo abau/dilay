@@ -1,7 +1,6 @@
 #ifndef DILAY_ACTION_CARVE
 #define DILAY_ACTION_CARVE
 
-#include <glm/fwd.hpp>
 #include "action/on-post-processed-winged-mesh.hpp"
 #include "macro.hpp"
 
@@ -16,8 +15,6 @@ class CarveCache {
     DECLARE_BIG3 (CarveCache)
 
     bool        intersects (const PrimRay&, Intersection&);
-    WingedMesh* meshCache  ();
-    void        meshCache  (WingedMesh*);
     void        reset      ();
 
   private:
@@ -31,7 +28,7 @@ class ActionCarve : public ActionOnPostProcessedWMesh {
   public: 
     DECLARE_BIG3 (ActionCarve)
 
-    void run (WingedMesh&, const glm::vec3&, const CarveBrush&, CarveCache&);
+    void run (const CarveBrush&, CarveCache&);
 
   private:
     void runUndoBeforePostProcessing (WingedMesh&);

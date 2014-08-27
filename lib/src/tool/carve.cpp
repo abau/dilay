@@ -23,14 +23,14 @@ struct ToolCarve::Impl {
 
   Impl (ToolCarve* s) 
     : self  (s) 
-    , brush (0.1f, 0.01f, 0.03f)
+    , brush (0.1f, 0.01f, 0.03f, 0.1f)
   {}
 
   static QString toolName () {
     return QObject::tr ("Carve");
   }
 
-  bool getIntersection (const glm::ivec2& mouse, WingedMesh*& mesh, glm::vec3& position) {
+  bool updateBrush (const glm::ivec2& mouse) {
     PrimRay                ray   = State::camera ().ray (mouse);
     Scene&                 scene = State::scene ();
     WingedFaceIntersection sceneIntersection;
@@ -41,17 +41,15 @@ struct ToolCarve::Impl {
 
     if (isSceneIntersection && scene.selection ().hasMajor (sceneIntersection.mesh ().id ())) {
       if (isCacheIntersection) {
-        assert (this->carveCache.meshCache ());     // fix corner cases (other meshes)
+        // TODO: fix corner cases (other meshes)
 
-        mesh     = this->carveCache.meshCache ();
-        position = cacheIntersection.position ();
+        return this->brush.updatePosition ( this->brush.mesh ()
+                                          , cacheIntersection.position () );
       }
       else {
-        this->carveCache.meshCache (&sceneIntersection.mesh ());
-        mesh     = &sceneIntersection.mesh    ();
-        position = sceneIntersection.position ();
+        return this->brush.updatePosition ( sceneIntersection.mesh     ()
+                                          , sceneIntersection.position () );
       }
-      return true;
     }
     else {
       return false;
@@ -60,18 +58,14 @@ struct ToolCarve::Impl {
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     if (e.buttons ().testFlag (Qt::LeftButton)) {
-      glm::vec3   position;
-      WingedMesh* mesh;
-
-      if (this->getIntersection (ViewUtil::toIVec2 (e), mesh, position)) {
-        State::history ().add <ActionCarve, WingedMesh> (*mesh)
-                         .run (*mesh, position, this->brush, this->carveCache);
+      if (this->updateBrush (ViewUtil::toIVec2 (e))) {
+        State::history ().add <ActionCarve, WingedMesh> (this->brush.mesh ())
+                         .run (this->brush, this->carveCache);
         return ToolResponse::Redraw;
       }
     }
     return ToolResponse::None;
   }
-
 
   ToolResponse runMouseReleaseEvent (QMouseEvent& e) { 
     if (e.button () == Qt::LeftButton) {
