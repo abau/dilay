@@ -30,11 +30,52 @@ struct ActionCarve::Impl {
     WingedMesh&               mesh = brush.mesh ();
 
     mesh.intersects        (sphere, faces);
-    mesh.addInterimFaces   (true);
-    this->subdivideFaces   (brush, sphere, faces);
     this->carveFaces       (brush, faces);
-    mesh.addInterimFaces   (false);
+    this->subdivideFaces   (brush, sphere, faces);
+    this->finalize         (mesh, faces);
     this->self->bufferData (mesh);
+  }
+
+  glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
+                        , const glm::vec3& pos) const 
+  {
+    const float delta = brush.y (glm::distance <float> (pos, brush.position ()));
+    return pos + (normal * delta);
+  }
+
+  void carveFaces (CarveBrush brush, std::vector <WingedFace*>& faces) {
+    WingedMesh& mesh = brush.mesh ();
+
+    // compute set of vertices
+    std::set <WingedVertex*> vertices;
+    for (const WingedFace* face : faces) {
+      assert (face);
+      vertices.insert (&face->firstVertex  ());
+      vertices.insert (&face->secondVertex ());
+      vertices.insert (&face->thirdVertex  ());
+    }
+
+    // get average normal & maximum width
+    glm::vec3 avgNormal (0.0f);
+    float     maxWidth = 0.0f;
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 p         = v->vector             (mesh);
+      const glm::vec3 n         = v->interpolatedNormal (mesh);
+                      avgNormal = avgNormal + n;
+                      maxWidth  = glm::max ( maxWidth
+                                           , glm::distance2 (p, brush.position ()) );
+    }
+    avgNormal = avgNormal / float (vertices.size ());
+    maxWidth  = glm::sqrt (maxWidth);
+
+    brush.width (glm::min (maxWidth, brush.width ()));
+
+    // write new positions
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 newPos = this->carveVertex (brush, avgNormal, v->vector (mesh));
+
+      this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
+    }
   }
 
   bool isSubdividable (const CarveBrush& brush, const WingedFace& face) const
@@ -105,16 +146,7 @@ struct ActionCarve::Impl {
     }
   }
 
-  glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
-                        , const glm::vec3& pos) const 
-  {
-    const float delta = brush.y (glm::distance <float> (pos, brush.position ()));
-    return pos + (normal * delta);
-  }
-
-  void carveFaces (CarveBrush brush, std::vector <WingedFace*>& faces) {
-    WingedMesh& mesh = brush.mesh ();
-
+  void finalize (WingedMesh& mesh, std::vector <WingedFace*>& faces) {
     // compute set of vertices
     std::set <WingedVertex*> vertices;
     for (const WingedFace* face : faces) {
@@ -124,39 +156,9 @@ struct ActionCarve::Impl {
       vertices.insert (&face->thirdVertex  ());
     }
 
-    // write normals & get maximum width
-    glm::vec3 avgNormal (0.0f);
-    float     maxWidth = 0.0f;
-    for (WingedVertex* v : vertices) {
-      const glm::vec3 p         = v->vector             (mesh);
-      const glm::vec3 n         = v->interpolatedNormal (mesh);
-                      avgNormal = avgNormal + n;
-                      maxWidth  = glm::max ( maxWidth
-                                           , glm::distance2 (p, brush.position ()) );
-      this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v, n);
-    }
-    avgNormal = avgNormal / float (vertices.size ());
-    maxWidth  = glm::sqrt (maxWidth);
-
-    brush.width (glm::min (maxWidth, brush.width ()));
-
-    // write new positions
-    for (WingedVertex* v : vertices) {
-      const glm::vec3 newPos = this->carveVertex (brush, avgNormal, v->vector (mesh));
-
-      this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
-    }
-
     // write normals
     for (WingedVertex* v : vertices) {
       this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v, v->interpolatedNormal (mesh));
-    }
-
-    // realign faces
-    for (auto it = faces.begin (); it != faces.end (); ++it) {
-      WingedFace* face = *it;
-      assert (face);
-      *it = &this->self->realignFace (mesh, *face);
     }
   }
 };
