@@ -5,13 +5,13 @@
 
 struct CarveBrush :: Impl {
 
-  const float falloff;
-  const float domain;
-  const float width;
-  const float height;
-  const float detail;
-  const float stepWidth;
+  const float  falloff;
+  const float  domain;
 
+  float        width;
+  float        height;
+  float        detail;
+  float        stepWidth;
   bool         hasPosition;
   glm::vec3    lastPosition;
   glm::vec3   _position;
@@ -79,3 +79,7 @@ GETTER_CONST    (const glm::vec3& , CarveBrush, lastPosition)
 DELEGATE_CONST  (const glm::vec3& , CarveBrush, position)
 DELEGATE_CONST  (WingedMesh&      , CarveBrush, mesh)
 DELEGATE2       (bool             , CarveBrush, updatePosition, WingedMesh&, const glm::vec3&)
+SETTER          (float            , CarveBrush, width)
+SETTER          (float            , CarveBrush, height)
+SETTER          (float            , CarveBrush, detail)
+SETTER          (float            , CarveBrush, stepWidth)

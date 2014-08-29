@@ -21,6 +21,10 @@ class CarveBrush {
     WingedMesh&      mesh         ()      const;
 
     bool             updatePosition (WingedMesh&, const glm::vec3&);
+    void             width          (float);
+    void             height         (float);
+    void             detail         (float);
+    void             stepWidth      (float);
 
   private:
     class Impl;
