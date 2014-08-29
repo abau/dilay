@@ -27,20 +27,12 @@ struct ActionCarve::Impl {
   void run (const CarveBrush& brush) { 
     std::vector <WingedFace*> faces;
     PrimSphere                sphere (brush.position (), brush.width ());
-    WingedMesh&               mesh   = brush.mesh ();
+    WingedMesh&               mesh = brush.mesh ();
 
-    mesh.intersects      (sphere, faces);
-    mesh.addInterimFaces (true);
-    this->subdivideFaces (
-          mesh, sphere, faces
-        , [this,&brush] (const WingedFace& f) { return this->isSubdividable (brush, f); });
-
-    this->carveFaces (
-          mesh, faces
-        , [this,&brush] (const glm::vec3& n, const glm::vec3& p) { 
-            return this->carveVertex (brush, n, p); 
-          });
-
+    mesh.intersects        (sphere, faces);
+    mesh.addInterimFaces   (true);
+    this->subdivideFaces   (brush, sphere, faces);
+    this->carveFaces       (brush, faces);
     mesh.addInterimFaces   (false);
     this->self->bufferData (mesh);
   }
@@ -58,17 +50,17 @@ struct ActionCarve::Impl {
     return maxEdgeLength > brush.detail () * brush.detail ();
   }
 
-  void subdivideFaces 
-    ( WingedMesh& mesh, const PrimSphere& sphere, std::vector <WingedFace*>& faces
-    , const std::function <bool (const WingedFace&)>& isSubdividable )
+  void subdivideFaces ( const CarveBrush& brush, const PrimSphere& sphere
+                      , std::vector <WingedFace*>& faces ) 
   {
+    WingedMesh&             mesh = brush.mesh ();
     std::unordered_set <Id> thisIteration;
     std::unordered_set <Id> nextIteration;
     std::unordered_set <Id> affectedFaces;
 
     auto checkNextIteration = [&] (const WingedFace& face) -> void {
       if ( nextIteration.count (face.id ()) == 0 
-        && isSubdividable (face)
+        && this->isSubdividable (brush, face)
         && IntersectionUtil::intersects (sphere,mesh,face)) 
       {
         nextIteration.insert (face.id ());
@@ -86,7 +78,7 @@ struct ActionCarve::Impl {
     while (thisIteration.size () > 0) {
       for (const Id& id : thisIteration) {
         WingedFace* f = mesh.face (id);
-        if (f && isSubdividable (*f)) {
+        if (f && this->isSubdividable (brush, *f)) {
           std::vector <Id> tmpAffected;
           this->actions.add <ActionSubdivide> ().run (mesh, *f, &tmpAffected);
 
@@ -120,9 +112,9 @@ struct ActionCarve::Impl {
     return pos + (normal * delta);
   }
 
-  void carveFaces ( WingedMesh& mesh, std::vector <WingedFace*>& faces
-                  , const std::function <glm::vec3 (const glm::vec3&, const glm::vec3&)>& carve ) 
-  {
+  void carveFaces (const CarveBrush& brush, std::vector <WingedFace*>& faces) {
+    WingedMesh& mesh = brush.mesh ();
+
     // compute set of vertices
     std::set <WingedVertex*> vertices;
     for (const WingedFace* face : faces) {
@@ -143,7 +135,7 @@ struct ActionCarve::Impl {
 
     // write new positions
     for (WingedVertex* v : vertices) {
-      const glm::vec3 newPos = carve (avgNormal, v->vector (mesh));
+      const glm::vec3 newPos = this->carveVertex (brush, avgNormal, v->vector (mesh));
 
       this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
     }
