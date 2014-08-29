@@ -1,6 +1,5 @@
 #define GLM_FORCE_RADIANS
 #include <unordered_set>
-#include <unordered_map>
 #include <set>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
@@ -10,94 +9,11 @@
 #include "action/subdivide.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/sphere.hpp"
-#include "primitive/triangle.hpp"
 #include "carve-brush.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
-#include "adjacent-iterator.hpp"
 #include "intersection.hpp"
-#include "octree.hpp"
-
-namespace {
-  class VertexData {
-    public: 
-      VertexData (const glm::vec3& p, const glm::vec3& n)
-        : position (p)
-        , normal   (n)
-        , carved   (false)
-        , delta    (0.0f)
-        {}
-
-      const glm::vec3 position;
-      const glm::vec3 normal;
-
-      bool  wasCarved () const { return this->carved; }
-      float getDelta  () const { return this->delta;  }
-
-      void  setDelta (float d) { 
-        this->delta = d;
-        this->carved = true;
-      }
-
-    private:
-      bool  carved;
-      float delta;
-  };
-};
-
-struct CarveCache::Impl {
-  std::unordered_map <unsigned int,VertexData> vertexCache;
-  Octree                                       faceCache;                   
-
-  Impl () : faceCache (true) {}
-
-  VertexData& cacheVertex (const WingedMesh& mesh, const WingedVertex& vertex) {
-    auto it = this->vertexCache.find (vertex.index ());
-
-    if (it == this->vertexCache.end () || it->second.wasCarved () == false) {
-      VertexData data (vertex.vector (mesh), vertex.interpolatedNormal (mesh));
-      return this->vertexCache.emplace (vertex.index (), data).first->second;
-    }
-    else {
-      return it->second;
-    }
-  }
-
-  void cacheFace (const WingedFace& face) {
-    if (this->faceCache.hasFace (face.id ()) == false) {
-      PrimTriangle triangle ( this->cachedVertex (face.firstVertex  ()).position
-                            , this->cachedVertex (face.secondVertex ()).position
-                            , this->cachedVertex (face.thirdVertex  ()).position
-                            );
-      this->faceCache.insertFace (face, triangle);
-    }
-  }
-
-  VertexData& cachedVertex (const WingedVertex& vertex) {
-    auto it = this->vertexCache.find (vertex.index ());
-
-    if (it == this->vertexCache.end ()) {
-      assert (false);
-    }
-    else {
-      return it->second;
-    }
-  }
-
-  bool intersects (const PrimRay& ray, Intersection& intersection) {
-    return this->faceCache.intersects (ray, intersection);
-  }
-
-  void reset () {
-    this->vertexCache.clear ();
-    this->faceCache  .reset ();
-  }
-};
-
-DELEGATE_BIG3 (CarveCache)
-DELEGATE2     (bool, CarveCache, intersects, const PrimRay&, Intersection&)
-DELEGATE      (void, CarveCache, reset)
 
 struct ActionCarve::Impl {
   ActionCarve*              self;
@@ -108,35 +24,32 @@ struct ActionCarve::Impl {
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 
-  void run (const CarveBrush& brush, CarveCache& cache) { 
+  void run (const CarveBrush& brush) { 
     std::vector <WingedFace*> faces;
     PrimSphere                sphere (brush.position (), brush.width ());
     WingedMesh&               mesh   = brush.mesh ();
-    CarveCache::Impl&         ccImpl = *cache.impl;
 
     mesh.intersects      (sphere, faces);
     mesh.addInterimFaces (true);
     this->subdivideFaces (
           mesh, sphere, faces
-        , [this,&brush,&ccImpl] (const WingedFace& f) {
-            return this->isSubdividable (brush, ccImpl, f);
-    });
-    this->cacheFaces (faces, ccImpl);
+        , [this,&brush] (const WingedFace& f) { return this->isSubdividable (brush, f); });
+
     this->carveFaces (
           mesh, faces
-        , [this,&brush,&ccImpl] (const WingedVertex& v) {
-            return this->carveVertex (brush, ccImpl.cachedVertex (v));
-    });
+        , [this,&brush] (const glm::vec3& n, const glm::vec3& p) { 
+            return this->carveVertex (brush, n, p); 
+          });
+
     mesh.addInterimFaces   (false);
     this->self->bufferData (mesh);
   }
 
-  bool isSubdividable ( const CarveBrush& brush, CarveCache::Impl& cache
-                      , const WingedFace& face ) const
+  bool isSubdividable (const CarveBrush& brush, const WingedFace& face) const
   {
-    const glm::vec3 v1 = cache.cacheVertex (brush.mesh (), face.firstVertex  ()).position;
-    const glm::vec3 v2 = cache.cacheVertex (brush.mesh (), face.secondVertex ()).position;
-    const glm::vec3 v3 = cache.cacheVertex (brush.mesh (), face.thirdVertex  ()).position;
+    const glm::vec3 v1 = face.firstVertex  ().vector (brush.mesh ());
+    const glm::vec3 v2 = face.secondVertex ().vector (brush.mesh ());
+    const glm::vec3 v3 = face.thirdVertex  ().vector (brush.mesh ());
 
     const float maxEdgeLength = glm::max ( glm::distance2 (v1, v2)
                                          , glm::max ( glm::distance2 (v1, v3)
@@ -200,22 +113,15 @@ struct ActionCarve::Impl {
     }
   }
 
-  void cacheFaces (const std::vector <WingedFace*>& faces, CarveCache::Impl& cache) const {
-    for (WingedFace* face : faces) {
-      assert (face);
-      cache.cacheFace (*face);
-    }
-  }
-
-  glm::vec3 carveVertex (const CarveBrush& brush, VertexData& vd) const {
-    const float delta = brush.y (glm::distance <float> (vd.position, brush.position ()));
-
-    vd.setDelta (glm::max (vd.getDelta (), delta));
-    return vd.position + (vd.normal * vd.getDelta ());
+  glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
+                        , const glm::vec3& pos) const 
+  {
+    const float delta = brush.y (glm::distance <float> (pos, brush.position ()));
+    return pos + (normal * delta);
   }
 
   void carveFaces ( WingedMesh& mesh, std::vector <WingedFace*>& faces
-                  , const std::function <glm::vec3 (const WingedVertex&)>& carve ) 
+                  , const std::function <glm::vec3 (const glm::vec3&, const glm::vec3&)>& carve ) 
   {
     // compute set of vertices
     std::set <WingedVertex*> vertices;
@@ -226,9 +132,18 @@ struct ActionCarve::Impl {
       vertices.insert (&face->thirdVertex  ());
     }
 
+    // write normals
+    glm::vec3 avgNormal (0.0f);
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 n         = v->interpolatedNormal (mesh);
+                      avgNormal = avgNormal + n;
+      this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v, n);
+    }
+    avgNormal = avgNormal / float (vertices.size ());
+
     // write new positions
     for (WingedVertex* v : vertices) {
-      const glm::vec3 newPos = carve (*v);
+      const glm::vec3 newPos = carve (avgNormal, v->vector (mesh));
 
       this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
     }
@@ -248,6 +163,6 @@ struct ActionCarve::Impl {
 };
 
 DELEGATE_BIG3_SELF (ActionCarve)
-DELEGATE2          (void, ActionCarve, run, const CarveBrush&, CarveCache&)
+DELEGATE1          (void, ActionCarve, run, const CarveBrush&)
 DELEGATE1          (void, ActionCarve, runUndoBeforePostProcessing, WingedMesh&)
 DELEGATE1          (void, ActionCarve, runRedoBeforePostProcessing, WingedMesh&)

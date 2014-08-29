@@ -14,7 +14,6 @@ class ToolCarve : public Tool {
     Impl* impl;
 
     ToolResponse runMouseMoveEvent    (QMouseEvent&);
-    ToolResponse runMouseReleaseEvent (QMouseEvent&);
 };
 
 #endif

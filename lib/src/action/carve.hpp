@@ -4,31 +4,14 @@
 #include "action/on-post-processed-winged-mesh.hpp"
 #include "macro.hpp"
 
-class Id;
 class WingedMesh;
-class PrimRay;
-class Intersection;
 class CarveBrush;
-
-class CarveCache {
-  public: 
-    DECLARE_BIG3 (CarveCache)
-
-    bool        intersects (const PrimRay&, Intersection&);
-    void        reset      ();
-
-  private:
-    friend class ActionCarve;
-
-    class Impl;
-    Impl* impl;
-};
 
 class ActionCarve : public ActionOnPostProcessedWMesh {
   public: 
     DECLARE_BIG3 (ActionCarve)
 
-    void run (const CarveBrush&, CarveCache&);
+    void run (const CarveBrush&);
 
   private:
     void runUndoBeforePostProcessing (WingedMesh&);
