@@ -112,7 +112,7 @@ struct ActionCarve::Impl {
     return pos + (normal * delta);
   }
 
-  void carveFaces (const CarveBrush& brush, std::vector <WingedFace*>& faces) {
+  void carveFaces (CarveBrush brush, std::vector <WingedFace*>& faces) {
     WingedMesh& mesh = brush.mesh ();
 
     // compute set of vertices
@@ -124,14 +124,21 @@ struct ActionCarve::Impl {
       vertices.insert (&face->thirdVertex  ());
     }
 
-    // write normals
+    // write normals & get maximum width
     glm::vec3 avgNormal (0.0f);
+    float     maxWidth = 0.0f;
     for (WingedVertex* v : vertices) {
+      const glm::vec3 p         = v->vector             (mesh);
       const glm::vec3 n         = v->interpolatedNormal (mesh);
                       avgNormal = avgNormal + n;
+                      maxWidth  = glm::max ( maxWidth
+                                           , glm::distance2 (p, brush.position ()) );
       this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v, n);
     }
     avgNormal = avgNormal / float (vertices.size ());
+    maxWidth  = glm::sqrt (maxWidth);
+
+    brush.width (glm::min (maxWidth, brush.width ()));
 
     // write new positions
     for (WingedVertex* v : vertices) {
