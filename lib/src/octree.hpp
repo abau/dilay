@@ -23,7 +23,6 @@ struct OctreeStatistics {
 
   unsigned int numNodes;
   unsigned int numFaces;
-  unsigned int numInterimFaces;
   int          minDepth;
   int          maxDepth;
   unsigned int maxFacesPerNode;
@@ -50,11 +49,9 @@ class OctreeNode {
 
 class Octree { 
   public: 
-    DECLARE_BIG4 (Octree,bool)
+    DECLARE_BIG4 (Octree)
 
     WingedFace&      insertFace    (const WingedFace&, const PrimTriangle&);
-    bool             saveAsInterim () const;
-    void             saveAsInterim (bool);
     WingedFace&      realignFace   (const WingedFace&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace    (const WingedFace&);
     bool             hasFace       (const Id&) const;
@@ -70,7 +67,6 @@ class Octree {
     bool             hasRoot       () const;
     unsigned int     numFaces      () const;
     OctreeStatistics statistics    () const;
-    bool             hasInterims   () const;
 
     void        forEachFace         (const std::function <void (WingedFace&)>&);
     void        forEachConstFace    (const std::function <void (const WingedFace&)>&) const;

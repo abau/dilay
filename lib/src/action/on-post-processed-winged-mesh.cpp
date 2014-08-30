@@ -44,7 +44,6 @@ struct ActionOnPostProcessedWMesh :: Impl {
 
   void postProcess (WingedMesh& mesh) {
     this->realignStoredFaces (mesh);
-    assert (mesh.octree ().hasInterims () == false);
 
     if (this->doBufferData ()) {
       mesh.bufferData ();

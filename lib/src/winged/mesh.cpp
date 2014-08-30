@@ -34,13 +34,11 @@ struct WingedMesh::Impl {
 
   Impl (WingedMesh* s)
     : self   (s)
-    , octree (false)
     {}
 
   Impl (WingedMesh* s, const Id& i) 
     : self   (s)
     , id     (i)
-    , octree (false)
     {}
 
   glm::vec3    vector (unsigned int i) const { return this->mesh.vertex (i); }
@@ -136,10 +134,6 @@ struct WingedMesh::Impl {
       this->mesh.allocateIndices (3);
     }
     return this->octree.insertFace (WingedFace (f.edge (), f.id (), nullptr, faceIndex), geometry);
-  }
-
-  void addInterimFaces (bool value) {
-    this->octree.saveAsInterim (value);
   }
 
   void setIndex (unsigned int indexNumber, unsigned int index) { 
@@ -320,7 +314,7 @@ struct WingedMesh::Impl {
       this->setNormal (i, Util::transformDirection (model, this->normal (i)));
     }
 
-    Octree newOctree (false);
+    Octree newOctree;
 
     this->octree.forEachFace ([&newOctree,this] (WingedFace& face) { 
       this->realignFace (face, face.triangle (*this->self), nullptr, &newOctree);
@@ -350,7 +344,6 @@ DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
 DELEGATE3       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const PrimTriangle&, bool)
-DELEGATE1       (void           , WingedMesh, addInterimFaces, bool)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
