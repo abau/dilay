@@ -109,7 +109,7 @@ struct WingedMesh::Impl {
                              , e.leftFace         (), e.rightFace      ()
                              , e.leftPredecessor  (), e.leftSuccessor  ()
                              , e.rightPredecessor (), e.rightSuccessor ()
-                             , e.id (), e.isTEdge (), e.faceGradient   ());
+                             , e.id () );
     this->edgeMap.insert (e.id (), --this->edges.end ());
     return this->edges.back ();
   }

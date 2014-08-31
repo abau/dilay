@@ -23,8 +23,7 @@ struct PAInsertEdgeVertex :: Impl {
                         , e.leftFace ()        , e.rightFace ()
                         , e.leftPredecessor () , &e
                         , &e                   , e.rightSuccessor ()
-                        , Id (), e.isTEdge (), e.faceGradient ()
-                        ));
+                        , Id () ));
 
     this->actions.add <PAModifyWEdge> ().vertex1         (e, &newV);
     this->actions.add <PAModifyWEdge> ().successor       (e, e.rightFaceRef (), &newE);

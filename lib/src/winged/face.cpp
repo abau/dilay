@@ -68,8 +68,8 @@ glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
   return glm::normalize (glm::cross (v2-v1, v3-v2));
 }
 
-WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex, bool skipTEdges) const {
-  for (WingedEdge& edge : this->adjacentEdges (skipTEdges)) {
+WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex) const {
+  for (WingedEdge& edge : this->adjacentEdges ()) {
     if (edge.isAdjacent (vertex))
       return &edge;
   }
@@ -99,55 +99,23 @@ float WingedFace :: longestEdgeLengthSqr (const WingedMesh& mesh) const {
   return length;
 }
 
-WingedVertex* WingedFace :: tVertex () const {
-  for (WingedVertex& vertex : this->adjacentVertices ()) {
-    if (vertex.tEdge ())
-      return &vertex;
-  }
-  return nullptr;
-}
-
-WingedEdge* WingedFace :: tEdge () const {
-  for (WingedEdge& edge : this->adjacentEdges ()) {
-    if (edge.isTEdge ())
-      return &edge;
-  }
-  return nullptr;
-}
-
 bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
 
-WingedVertex* WingedFace :: designatedTVertex () const {
-  AdjVertices adjacentVertices = this->adjacentVertices ();
-  for (auto it = adjacentVertices.begin (); it != adjacentVertices.end (); ++it) {
-    WingedVertex& v  = *it;
-    WingedEdge&   e1 = *it.edge ();
-    WingedEdge&   e2 = e1.adjacentRef (*this,v);
-    WingedFace&   o1 = e1.otherFaceRef (*this);
-    WingedFace&   o2 = e2.otherFaceRef (*this);
-
-    if (e1.gradientAlong (o1) && e2.gradientAlong (o2)) {
-      return &v;
-    }
-  }
-  assert (false);
+AdjEdges WingedFace :: adjacentEdges (WingedEdge& e) const {
+  return AdjEdges (*this, e);
 }
-
-AdjEdges WingedFace :: adjacentEdges (WingedEdge& e, bool skipT) const {
-  return AdjEdges (*this, e, skipT);
+AdjEdges WingedFace :: adjacentEdges () const {
+  return this->adjacentEdges (this->edgeRef ());
 }
-AdjEdges WingedFace :: adjacentEdges (bool skipT) const {
-  return this->adjacentEdges (this->edgeRef (), skipT);
+AdjVertices WingedFace :: adjacentVertices (WingedEdge& e) const {
+  return AdjVertices (*this, e);
 }
-AdjVertices WingedFace :: adjacentVertices (WingedEdge& e, bool skipT) const {
-  return AdjVertices (*this, e, skipT);
+AdjVertices WingedFace :: adjacentVertices () const {
+  return this->adjacentVertices (this->edgeRef ());
 }
-AdjVertices WingedFace :: adjacentVertices (bool skipT) const {
-  return this->adjacentVertices (this->edgeRef (), skipT);
+AdjFaces WingedFace :: adjacentFaces (WingedEdge& e) const {
+  return AdjFaces (*this, e);
 }
-AdjFaces WingedFace :: adjacentFaces (WingedEdge& e, bool skipT) const {
-  return AdjFaces (*this, e, skipT);
-}
-AdjFaces WingedFace :: adjacentFaces (bool skipT) const {
-  return this->adjacentFaces (this->edgeRef (), skipT);
+AdjFaces WingedFace :: adjacentFaces () const {
+  return this->adjacentFaces (this->edgeRef ());
 }

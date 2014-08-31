@@ -15,11 +15,6 @@ namespace {
     DeleteEdge, DeleteFace, DeleteVertex, AddEdge, AddFace, AddVertex, InitOctreeRoot
   };
 
-  struct EdgeData {
-    bool         isTEdge;
-    FaceGradient faceGradient;
-  };
-
   struct FaceData {
     PrimTriangle triangle;
   };
@@ -38,7 +33,7 @@ struct PAModifyWMesh :: Impl {
   Operation operation;
   ActionIds operandIds;
 
-  Variant <EdgeData, FaceData, VertexData, OctreeRootData> operandData;
+  Variant <FaceData, VertexData, OctreeRootData> operandData;
 
   void saveEdgeOperand (const WingedEdge& edge) {
     this->operandIds.setEdge (0, &edge);
@@ -51,19 +46,15 @@ struct PAModifyWMesh :: Impl {
 
     this->operandIds.setVertex (0, edge.vertex1 ());
     this->operandIds.setVertex (1, edge.vertex2 ());
-
-    this->operandData.set <EdgeData> (EdgeData { edge.isTEdge () , edge.faceGradient () });
   }
 
   WingedEdge& addSavedEdge (WingedMesh& mesh) {
-    EdgeData& data = this->operandData.get <EdgeData> ();
     return mesh.addEdge (
       WingedEdge ( this->operandIds.getVertex (mesh,0), this->operandIds.getVertex (mesh,1)
                  , this->operandIds.getFace   (mesh,1), this->operandIds.getFace   (mesh,2)
                  , this->operandIds.getEdge   (mesh,3), this->operandIds.getEdge   (mesh,4)
                  , this->operandIds.getEdge   (mesh,5), this->operandIds.getEdge   (mesh,6)
-                 , this->operandIds.getIdRef  (0)     , data. isTEdge
-                 , data. faceGradient));
+                 , this->operandIds.getIdRef  (0) ));
   }
 
   void saveFaceOperand (const WingedFace& face, const PrimTriangle& triangle, bool hasIndex) {

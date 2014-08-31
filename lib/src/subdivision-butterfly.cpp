@@ -88,7 +88,7 @@ namespace {
     };
 
     Adjacents adjacents;
-    for (WingedEdge& e : vertex.adjacentEdges (edge,true)) {
+    for (WingedEdge& e : vertex.adjacentEdges (edge)) {
       WingedVertex& a = e.otherVertexRef (vertex);
 
       adjacents.push_back (traverse (e, a, glm::length (e.vector (mesh))));

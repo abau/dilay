@@ -26,14 +26,13 @@ class WingedVertex {
     glm::vec3    interpolatedNormal (const WingedMesh&) const;
     void         writeNormal        (WingedMesh&, const glm::vec3&);
     unsigned int valence            () const;
-    WingedEdge*  tEdge              () const;
 
-    AdjEdges     adjacentEdges    (WingedEdge&, bool = false) const;
-    AdjEdges     adjacentEdges    (bool = false)              const;
-    AdjVertices  adjacentVertices (WingedEdge&, bool = false) const;
-    AdjVertices  adjacentVertices (bool = false)              const;
-    AdjFaces     adjacentFaces    (WingedEdge&)               const;
-    AdjFaces     adjacentFaces    ()                          const;
+    AdjEdges     adjacentEdges    (WingedEdge&) const;
+    AdjEdges     adjacentEdges    ()            const;
+    AdjVertices  adjacentVertices (WingedEdge&) const;
+    AdjVertices  adjacentVertices ()            const;
+    AdjFaces     adjacentFaces    (WingedEdge&) const;
+    AdjFaces     adjacentFaces    ()            const;
 
     SAFE_REF_CONST (WingedEdge, edge)
   private:

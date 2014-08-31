@@ -29,13 +29,6 @@ struct PATriangulate6Gon :: Impl {
     WingedEdge& e45  = f.edgeRef ().successorRef (f,3);
     WingedEdge& e50  = f.edgeRef ().successorRef (f,4);
 
-    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e01, f);
-    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e12, f);
-    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e23, f);
-    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e34, f);
-    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e45, f);
-    this->actions.add <PAModifyWEdge> ().increaseFaceGradient (e50, f);
-
     WingedVertex& v0 = e01.firstVertexRef (f);
     WingedVertex& v1 = e12.firstVertexRef (f);
     WingedVertex& v2 = e23.firstVertexRef (f);

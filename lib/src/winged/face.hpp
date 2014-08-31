@@ -39,31 +39,23 @@ class WingedFace {
 
     /** `adjacent (v,b)` returns an adjacent edge with `v` as start or end point.
      * It's crucial that `v` is actually a vertex of `this` face.
-     * If `b` holds, then t-edges are skiped.
      */
-    WingedEdge*            adjacent               (const WingedVertex&, bool = false) const;
+    WingedEdge*            adjacent               (const WingedVertex&) const;
     WingedEdge*            longestEdge            (const WingedMesh&, float*) const;
     float                  longestEdgeLengthSqr   (const WingedMesh&) const;
-    WingedVertex*          tVertex                () const;
-    WingedEdge*            tEdge                  () const;
     bool                   isTriangle             () const;
 
-    WingedVertex*          designatedTVertex      () const;
-    AdjEdges               adjacentEdges          (WingedEdge&, bool = false) const;
-    AdjEdges               adjacentEdges          (bool = false)              const;
-    AdjVertices            adjacentVertices       (WingedEdge&, bool = false) const;
-    AdjVertices            adjacentVertices       (bool = false)              const;
-    AdjFaces               adjacentFaces          (WingedEdge&, bool = false) const;
-    AdjFaces               adjacentFaces          (bool = false)              const;
+    AdjEdges               adjacentEdges          (WingedEdge&) const;
+    AdjEdges               adjacentEdges          ()            const;
+    AdjVertices            adjacentVertices       (WingedEdge&) const;
+    AdjVertices            adjacentVertices       ()            const;
+    AdjFaces               adjacentFaces          (WingedEdge&) const;
+    AdjFaces               adjacentFaces          ()            const;
 
     SAFE_REF_CONST  (WingedEdge, edge)
     SAFE_REF_CONST  (OctreeNode, octreeNode)
     SAFE_REF1_CONST (WingedEdge, adjacent, const WingedVertex&)
-    SAFE_REF2_CONST (WingedEdge, adjacent, const WingedVertex&, bool)
     SAFE_REF2_CONST (WingedEdge, longestEdge, const WingedMesh&, float*)
-    SAFE_REF_CONST  (WingedVertex, tVertex)
-    SAFE_REF_CONST  (WingedEdge, tEdge)
-    SAFE_REF_CONST  (WingedVertex, designatedTVertex)
   private:
     const IdObject  _id;
     WingedEdge*     _edge;

@@ -10,14 +10,12 @@ class WingedVertex;
 class WingedFace;
 class WingedMesh;
 
-enum class FaceGradient : char { None, Left, Right };
-
 class WingedEdge {
   public:
     WingedEdge ();
     WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*  
                , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*  
-               , const Id&, bool, FaceGradient);
+               , const Id& );
     WingedEdge (const WingedEdge&)  = default;
     WingedEdge (      WingedEdge&&) = default;
 
@@ -30,8 +28,6 @@ class WingedEdge {
     WingedEdge*     leftSuccessor    () const { return this->_leftSuccessor; }
     WingedEdge*     rightPredecessor () const { return this->_rightPredecessor; }
     WingedEdge*     rightSuccessor   () const { return this->_rightSuccessor; }
-    bool            isTEdge          () const { return this->_isTEdge; }
-    FaceGradient    faceGradient     () const { return this->_faceGradient; }
 
     bool            isLeftFace       (const WingedFace&)   const;
     bool            isRightFace      (const WingedFace&)   const;
@@ -58,8 +54,6 @@ class WingedEdge {
     void            leftSuccessor    (WingedEdge* e)   { this->_leftSuccessor    = e; }
     void            rightPredecessor (WingedEdge* e)   { this->_rightPredecessor = e; }
     void            rightSuccessor   (WingedEdge* e)   { this->_rightSuccessor   = e; }
-    void            isTEdge          (bool b)          { this->_isTEdge          = b; }
-    void            faceGradient     (FaceGradient g)  { this->_faceGradient     = g; }
 
     void            firstVertex      (const WingedFace&, WingedVertex*);
     void            secondVertex     (const WingedFace&, WingedVertex*);
@@ -117,9 +111,6 @@ class WingedEdge {
 
     WingedEdge*     _rightPredecessor;
     WingedEdge*     _rightSuccessor;
-
-    bool            _isTEdge;
-    FaceGradient    _faceGradient;
 };
 
 #endif

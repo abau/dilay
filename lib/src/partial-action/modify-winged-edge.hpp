@@ -30,10 +30,6 @@ class PAModifyWEdge : public ActionOn <WingedMesh> {
     void setGeometry          ( WingedEdge&, WingedVertex*, WingedVertex*
                               , WingedFace*, WingedFace*, WingedEdge*, WingedEdge*
                               , WingedEdge*, WingedEdge*);
-    void isTEdge              (WingedEdge&, bool);
-    void faceGradient         (WingedEdge&, FaceGradient);
-    void increaseFaceGradient (WingedEdge&, const WingedFace&);
-
   private:
     void runUndo (WingedMesh&);
     void runRedo (WingedMesh&);

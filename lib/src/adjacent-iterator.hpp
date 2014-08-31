@@ -13,8 +13,8 @@ class AdjEdges {
   public:
     class Iterator {
       public:
-        Iterator (const WingedFace&  , WingedEdge&, bool, bool);
-        Iterator (const WingedVertex&, WingedEdge&, bool, bool);
+        Iterator (const WingedFace&  , WingedEdge&, bool);
+        Iterator (const WingedVertex&, WingedEdge&, bool);
 
         Iterator&   operator++ ();
         bool        operator!= (const Iterator&) const;
@@ -25,21 +25,17 @@ class AdjEdges {
         const WingedVertex* vertex () const { return this->_vertex; }
 
       private:
-        bool  invalidTEdge   () const;
-        void  skipTEdgeStart ();
-
               WingedEdge*   _edge;
               WingedEdge*   start;
-        const bool          skipTEdges;
               bool          isEnd;
         const WingedFace*   _face;
         const WingedVertex* _vertex;
     };
 
     /** It's crucial that the edge is adjacent to the face */
-    AdjEdges (const WingedFace&  , WingedEdge&, bool = false);
+    AdjEdges (const WingedFace&  , WingedEdge&);
     /** It's crucial that the edge is adjacent to the vertex */
-    AdjEdges (const WingedVertex&, WingedEdge&, bool = false);
+    AdjEdges (const WingedVertex&, WingedEdge&);
 
     Iterator begin () const { return this->itBegin; }
     Iterator end   () const { return this->itEnd  ; }
@@ -56,8 +52,8 @@ class AdjVertices {
   public:
     class Iterator {
       public:
-        Iterator (const WingedFace&   f, WingedEdge& e, bool s, bool i) : eIt (f,e,s,i) {}
-        Iterator (const WingedVertex& v, WingedEdge& e, bool s, bool i) : eIt (v,e,s,i) {}
+        Iterator (const WingedFace&   f, WingedEdge& e, bool i) : eIt (f,e,i) {}
+        Iterator (const WingedVertex& v, WingedEdge& e, bool i) : eIt (v,e,i) {}
 
         Iterator&     operator++ ()                        { ++this->eIt; return *this; }
         bool          operator!= (const Iterator& o) const { return this->eIt != o.eIt; }
@@ -72,9 +68,9 @@ class AdjVertices {
     };
 
     /** It's crucial that the edge is adjacent to the face */
-    AdjVertices (const WingedFace&  , WingedEdge&, bool = false); 
+    AdjVertices (const WingedFace&  , WingedEdge&); 
     /** It's crucial that the edge is adjacent to the vertex */
-    AdjVertices (const WingedVertex&, WingedEdge&, bool = false); 
+    AdjVertices (const WingedVertex&, WingedEdge&); 
 
     Iterator begin () const { return this->itBegin; }
     Iterator end   () const { return this->itEnd  ; }
@@ -91,8 +87,8 @@ class AdjFaces {
   public:
     class Iterator {
       public:
-        Iterator (const WingedFace&   f, WingedEdge& e, bool s, bool i) : eIt (f,e,s,i) {}
-        Iterator (const WingedVertex& v, WingedEdge& e, bool s, bool i) : eIt (v,e,s,i) {}
+        Iterator (const WingedFace&   f, WingedEdge& e, bool i) : eIt (f,e,i) {}
+        Iterator (const WingedVertex& v, WingedEdge& e, bool i) : eIt (v,e,i) {}
 
         Iterator&     operator++ ()                        { ++this->eIt; return *this; }
         bool          operator!= (const Iterator& o) const { return this->eIt != o.eIt; }
@@ -107,9 +103,9 @@ class AdjFaces {
     };
 
     /** It's crucial that the edge is adjacent to the face */
-    AdjFaces (const WingedFace&  , WingedEdge&, bool = false); 
+    AdjFaces (const WingedFace&  , WingedEdge&); 
     /** It's crucial that the edge is adjacent to the vertex */
-    AdjFaces (const WingedVertex&, WingedEdge&, bool = false); 
+    AdjFaces (const WingedVertex&, WingedEdge&); 
 
     Iterator begin () const { return this->itBegin; }
     Iterator end   () const { return this->itEnd  ; }
