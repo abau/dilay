@@ -7,14 +7,14 @@
 #include "adjacent-iterator.hpp"
   
 WingedEdge :: WingedEdge () :
-  WingedEdge (nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, Id ()) 
+  WingedEdge (Id (), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr) 
   {}
 
-WingedEdge :: WingedEdge ( WingedVertex* v1, WingedVertex* v2
+WingedEdge :: WingedEdge ( const Id& id
+                         , WingedVertex* v1, WingedVertex* v2
                          , WingedFace* left, WingedFace* right
                          , WingedEdge* leftPred, WingedEdge* leftSucc
-                         , WingedEdge* rightPred, WingedEdge* rightSucc
-                         , const Id& id) 
+                         , WingedEdge* rightPred, WingedEdge* rightSucc )
                          : _id (id) 
 {
   this->setGeometry (v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc);

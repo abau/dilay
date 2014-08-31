@@ -19,11 +19,11 @@ struct PAInsertEdgeVertex :: Impl {
 
     WingedVertex& newV  = this->actions.add <PAModifyWMesh> ().addVertex (mesh,v);
     WingedEdge&   newE  = this->actions.add <PAModifyWMesh> ().addEdge 
-      (mesh, WingedEdge ( e.vertex1 ()         , &newV
+      (mesh, WingedEdge ( Id ()
+                        , e.vertex1 ()         , &newV
                         , e.leftFace ()        , e.rightFace ()
                         , e.leftPredecessor () , &e
-                        , &e                   , e.rightSuccessor ()
-                        , Id () ));
+                        , &e                   , e.rightSuccessor () ));
 
     this->actions.add <PAModifyWEdge> ().vertex1         (e, &newV);
     this->actions.add <PAModifyWEdge> ().successor       (e, e.rightFaceRef (), &newE);

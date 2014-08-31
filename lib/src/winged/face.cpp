@@ -9,12 +9,12 @@
 #include "primitive/triangle.hpp"
 #include "octree.hpp"
 
-WingedFace :: WingedFace () : WingedFace (nullptr, Id ()) {}
+WingedFace :: WingedFace () : WingedFace (Id (), nullptr) {}
 
-WingedFace :: WingedFace (WingedEdge* e, const Id& id)
-  : WingedFace (e, id, nullptr, std::numeric_limits <unsigned int>::max ()) {}
+WingedFace :: WingedFace (const Id& id, WingedEdge* e)
+  : WingedFace (id, e, nullptr, std::numeric_limits <unsigned int>::max ()) {}
 
-WingedFace :: WingedFace (WingedEdge* e, const Id& id, OctreeNode* n, unsigned int i)
+WingedFace :: WingedFace (const Id& id, WingedEdge* e, OctreeNode* n, unsigned int i)
   : _id         (id)
   , _edge       (e)
   , _octreeNode (n) 

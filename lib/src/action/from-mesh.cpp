@@ -40,11 +40,11 @@ struct ActionFromMesh :: Impl {
           WingedVertex* v1    = vecVertices [index1];
           WingedVertex* v2    = vecVertices [index2];
           WingedEdge& newEdge = this->actions.add <PAModifyWMesh> ()
-                                     .addEdge (w, WingedEdge ( v1, v2
+                                     .addEdge (w, WingedEdge ( Id ()
+                                                             , v1, v2
                                                              , &face  , nullptr
                                                              , nullptr, nullptr
-                                                             , nullptr, nullptr
-                                                             , Id () ));
+                                                             , nullptr, nullptr ));
             
           mapEdges.insert (std::pair <uiPair,WingedEdge*> ( uiPair (index1,index2)
                                                           , &newEdge ));

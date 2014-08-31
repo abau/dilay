@@ -105,11 +105,11 @@ struct WingedMesh::Impl {
   }
 
   WingedEdge& addEdge (const WingedEdge& e) {
-    this->edges.emplace_back ( e.vertex1          (), e.vertex2        ()
+    this->edges.emplace_back ( e.id ()
+                             , e.vertex1          (), e.vertex2        ()
                              , e.leftFace         (), e.rightFace      ()
                              , e.leftPredecessor  (), e.leftSuccessor  ()
-                             , e.rightPredecessor (), e.rightSuccessor ()
-                             , e.id () );
+                             , e.rightPredecessor (), e.rightSuccessor () );
     this->edgeMap.insert (e.id (), --this->edges.end ());
     return this->edges.back ();
   }
@@ -133,7 +133,7 @@ struct WingedMesh::Impl {
       faceIndex = this->mesh.numIndices ();
       this->mesh.allocateIndices (3);
     }
-    return this->octree.insertFace (WingedFace (f.edge (), f.id (), nullptr, faceIndex), geometry);
+    return this->octree.insertFace (WingedFace (f.id (), f.edge (), nullptr, faceIndex), geometry);
   }
 
   void setIndex (unsigned int indexNumber, unsigned int index) { 

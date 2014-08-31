@@ -13,9 +13,8 @@ class WingedMesh;
 class WingedEdge {
   public:
     WingedEdge ();
-    WingedEdge ( WingedVertex*, WingedVertex*, WingedFace*, WingedFace*  
-               , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge*  
-               , const Id& );
+    WingedEdge ( const Id&, WingedVertex*, WingedVertex*, WingedFace*, WingedFace*  
+               , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge* );
     WingedEdge (const WingedEdge&)  = default;
     WingedEdge (      WingedEdge&&) = default;
 

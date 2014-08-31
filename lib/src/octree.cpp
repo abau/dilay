@@ -216,8 +216,8 @@ struct OctreeNode::Impl {
       return this->insertIntoChild (f);
     }
     else {
-      this->faces.emplace_front ( f.edge 
-                                , f.id 
+      this->faces.emplace_front ( f.id
+                                , f.edge
                                 , &this->node
                                 , f.faceIndex);
       return this->faces.begin ();
