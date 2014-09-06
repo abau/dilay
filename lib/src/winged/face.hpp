@@ -12,6 +12,7 @@ class PrimTriangle;
 class OctreeNode;
 class WingedEdge;
 class WingedVertex;
+class WingedMesh;
 
 class WingedFace {
   public:                      
