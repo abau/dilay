@@ -1,8 +1,5 @@
-#include <algorithm>
 #include <glm/glm.hpp>
-#include <limits>
 #include "adjacent-iterator.hpp"
-#include "octree.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
