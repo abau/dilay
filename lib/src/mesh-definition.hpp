@@ -9,7 +9,8 @@ class MeshDefinition {
     DECLARE_BIG6 (MeshDefinition)
 
     unsigned int     addVertex   (const glm::vec3&);
-    unsigned int     addFace     (unsigned int, unsigned int, unsigned int);
+    void             addFace     (unsigned int, unsigned int, unsigned int);
+    void             addFace     (unsigned int, unsigned int, unsigned int, unsigned int);
     unsigned int     numVertices () const;
     unsigned int     numFace3    () const;
     const glm::vec3& vertex      (unsigned int) const;

@@ -18,9 +18,13 @@ struct MeshDefinition::Impl {
     return this->numVertices () - 1;
   }
 
-  unsigned int addFace (unsigned int i1, unsigned int i2, unsigned int i3) {
+  void addFace (unsigned int i1, unsigned int i2, unsigned int i3) {
     this->indices3.push_back (Indices3 (i1,i2,i3));
-    return this->numFace3 () - 1;
+  }
+
+  void addFace (unsigned int i1, unsigned int i2, unsigned int i3, unsigned int i4) {
+    this->indices3.push_back (Indices3 (i1,i2,i3));
+    this->indices3.push_back (Indices3 (i4,i1,i3));
   }
 
   unsigned int numVertices () const {
@@ -56,23 +60,12 @@ struct MeshDefinition::Impl {
     m.addVertex ( glm::vec3 (+d, +d, -d) );
     m.addVertex ( glm::vec3 (+d, +d, +d) );
 
-    m.addFace (0, 1, 2);
-    m.addFace (3, 2, 1);
-
-    m.addFace (1, 5, 3);
-    m.addFace (7, 3, 5);
-
-    m.addFace (5, 4, 7);
-    m.addFace (6, 7, 4);
-
-    m.addFace (4, 0, 6);
-    m.addFace (2, 6, 0);
-
-    m.addFace (3, 7, 2);
-    m.addFace (6, 2, 7);
-
-    m.addFace (0, 4, 1);
-    m.addFace (5, 1, 4);
+    m.addFace (0, 1, 3, 2);
+    m.addFace (1, 5, 7, 3);
+    m.addFace (5, 4, 6, 7);
+    m.addFace (4, 0, 2, 6);
+    m.addFace (3, 7, 6, 2);
+    m.addFace (0, 4, 5, 1);
     return m;
   }
 
@@ -109,11 +102,8 @@ struct MeshDefinition::Impl {
       for (unsigned int s = 0; s < sectors; s++) {
         m.addFace ( (sectors * r) + s
                   , (sectors * (r+1)) + s
-                  , (sectors * r) + ((s+1) % sectors));
-
-        m.addFace ( (sectors * (r+1)) + ((s+1) % sectors)
-                  , (sectors * r) + ((s+1) % sectors)
-                  , (sectors * (r+1)) + s);
+                  , (sectors * (r+1)) + ((s+1) % sectors) 
+                  , (sectors * r) + ((s+1) % sectors) );
       }
     }
 
@@ -272,14 +262,12 @@ struct MeshDefinition::Impl {
     m.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
 
     for (unsigned int i = 0; i < numVertices - 1; i++) {
-      m.addFace (i, i + 1, i + numVertices); 
-      m.addFace (i + numVertices + 1, i + numVertices, i + 1);
+      m.addFace (i, i + 1, i + numVertices + 1, i + numVertices);
 
       m.addFace (i + 1, i, 2 * numVertices);
       m.addFace (i + numVertices, i + numVertices + 1, (2 * numVertices) + 1);
     }
-    m.addFace (numVertices - 1, 0, (2 * numVertices) - 1);
-    m.addFace (numVertices, (2 * numVertices) - 1, 0);
+    m.addFace (numVertices - 1, 0, numVertices, (2 * numVertices) - 1);
 
     m.addFace (0, numVertices - 1, 2 * numVertices);
     m.addFace ((2 * numVertices) - 1, numVertices, (2 * numVertices) + 1);
@@ -290,7 +278,8 @@ struct MeshDefinition::Impl {
 
 DELEGATE_BIG6   (MeshDefinition)
 DELEGATE1       (unsigned int, MeshDefinition, addVertex, const glm::vec3&)
-DELEGATE3       (unsigned int, MeshDefinition, addFace, unsigned int, unsigned int, unsigned int)
+DELEGATE3       (void        , MeshDefinition, addFace, unsigned int, unsigned int, unsigned int)
+DELEGATE4       (void        , MeshDefinition, addFace, unsigned int, unsigned int, unsigned int, unsigned int)
 DELEGATE_CONST  (unsigned int, MeshDefinition, numVertices)
 DELEGATE_CONST  (unsigned int, MeshDefinition, numFace3)
 DELEGATE1_CONST (const glm::vec3&, MeshDefinition, vertex, unsigned int)
