@@ -1,7 +1,7 @@
 #include <QRadioButton>
+#include "selection-mode.hpp"
 #include "view/properties/selection.hpp"
 #include "view/util.hpp"
-#include "selection-mode.hpp"
 
 struct ViewPropertiesSelection::Impl {
   ViewPropertiesSelection* self;

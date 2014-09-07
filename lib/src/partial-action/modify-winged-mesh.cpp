@@ -1,14 +1,14 @@
 #include <glm/glm.hpp>
+#include "action/ids.hpp"
+#include "octree.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
+#include "primitive/triangle.hpp"
+#include "state.hpp"
+#include "variant.hpp"
+#include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "winged/edge.hpp"
 #include "winged/vertex.hpp"
-#include "state.hpp"
-#include "action/ids.hpp"
-#include "primitive/triangle.hpp"
-#include "octree.hpp"
-#include "variant.hpp"
 
 namespace {
   enum class Operation { 

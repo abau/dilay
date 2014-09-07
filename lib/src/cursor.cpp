@@ -1,12 +1,12 @@
 #define GLM_FORCE_RADIANS
-#include <limits>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <limits>
+#include "color.hpp"
 #include "cursor.hpp"
 #include "mesh.hpp"
-#include "renderer.hpp"
-#include "color.hpp"
 #include "render-mode.hpp"
+#include "renderer.hpp"
 
 struct Cursor::Impl {
   Mesh          mesh;

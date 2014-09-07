@@ -1,6 +1,6 @@
-#include <QVBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
+#include <QVBoxLayout>
 #include "view/properties.hpp"
 #include "view/properties/button.hpp"
 

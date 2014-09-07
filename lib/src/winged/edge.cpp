@@ -1,10 +1,10 @@
 #include <glm/glm.hpp>
-#include "winged/vertex.hpp"
+#include "../util.hpp"
+#include "adjacent-iterator.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "../util.hpp"
-#include "adjacent-iterator.hpp"
+#include "winged/vertex.hpp"
   
 WingedEdge :: WingedEdge () :
   WingedEdge (Id (), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr) 

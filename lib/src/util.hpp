@@ -1,9 +1,9 @@
 #ifndef DILAY_UTIL
 #define DILAY_UTIL
 
-#include <iosfwd>
-#include <initializer_list>
 #include <glm/fwd.hpp>
+#include <initializer_list>
+#include <iosfwd>
 
 std::ostream& operator<<(std::ostream&, const glm::ivec2&);
 std::ostream& operator<<(std::ostream&, const glm::uvec2&);

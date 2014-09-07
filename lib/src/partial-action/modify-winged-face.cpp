@@ -1,12 +1,12 @@
+#include "action/ids.hpp"
+#include "action/unit/on.hpp"
+#include "adjacent-iterator.hpp"
 #include "partial-action/modify-winged-face.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
+#include "state.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "state.hpp"
-#include "action/ids.hpp"
-#include "adjacent-iterator.hpp"
-#include "action/unit/on.hpp"
-#include "partial-action/modify-winged-vertex.hpp"
 
 namespace {
   enum class Operation { Edge, WriteIndices };

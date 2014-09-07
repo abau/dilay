@@ -1,9 +1,9 @@
 #include <glm/glm.hpp>
-#include "winged/mesh.hpp"
-#include "winged/face.hpp"
-#include "winged/edge.hpp"
-#include "winged/vertex.hpp"
 #include "adjacent-iterator.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "winged/vertex.hpp"
 
 WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e) 
   : _index (i), _edge (e) {}

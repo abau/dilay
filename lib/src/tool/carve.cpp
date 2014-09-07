@@ -1,20 +1,20 @@
-#include <unordered_map>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "tool/carve.hpp"
-#include "state.hpp"
-#include "scene.hpp"
-#include "camera.hpp"
-#include "history.hpp"
-#include "mesh-type.hpp"
+#include <unordered_map>
 #include "action/carve.hpp"
-#include "winged/mesh.hpp"
-#include "winged/face-intersection.hpp"
-#include "view/util.hpp"
-#include "primitive/ray.hpp"
-#include "selection.hpp"
-#include "id.hpp"
+#include "camera.hpp"
 #include "carve-brush.hpp"
+#include "history.hpp"
+#include "id.hpp"
+#include "mesh-type.hpp"
+#include "primitive/ray.hpp"
+#include "scene.hpp"
+#include "selection.hpp"
+#include "state.hpp"
+#include "tool/carve.hpp"
+#include "view/util.hpp"
+#include "winged/face-intersection.hpp"
+#include "winged/mesh.hpp"
 
 struct ToolCarve::Impl {
   ToolCarve*        self;

@@ -1,13 +1,13 @@
+#include "action/unit/on.hpp"
+#include "partial-action/modify-winged-edge.hpp"
+#include "partial-action/modify-winged-face.hpp"
+#include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
-#include "winged/vertex.hpp"
+#include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "action/unit/on.hpp"
-#include "partial-action/modify-winged-mesh.hpp"
-#include "partial-action/modify-winged-edge.hpp"
-#include "partial-action/modify-winged-face.hpp"
-#include "primitive/triangle.hpp"
+#include "winged/vertex.hpp"
 
 struct PATriangulate6Gon :: Impl {
   ActionUnitOn <WingedMesh> actions;

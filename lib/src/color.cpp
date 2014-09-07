@@ -1,6 +1,6 @@
+#include <QColor>
 #include <fstream>
 #include <glm/glm.hpp>
-#include <QColor>
 #include "color.hpp"
 
 struct Color::Impl {

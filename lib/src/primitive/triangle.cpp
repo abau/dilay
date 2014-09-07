@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include "primitive/triangle.hpp"
-#include "util.hpp"
 #include "ray.hpp"
+#include "util.hpp"
 #include "winged/vertex.hpp"
 
 struct PrimTriangle::Impl {

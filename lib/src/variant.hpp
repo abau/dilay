@@ -2,8 +2,8 @@
 #define VARIANT_35425680_d10a_41c7_b91e_2e48cfe545da
 
 #include <cassert>
-#include <type_traits>
 #include <functional>
+#include <type_traits>
 
 // `VariantDetails` encapsulates internal details of the variant implementation
 namespace VariantDetails {

@@ -1,5 +1,5 @@
-#include "view/main-widget.hpp"
 #include "view/gl-widget.hpp"
+#include "view/main-widget.hpp"
 #include "view/properties/widget.hpp"
 
 struct ViewMainWidget :: Impl {

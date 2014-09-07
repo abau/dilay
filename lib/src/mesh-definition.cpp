@@ -1,9 +1,9 @@
-#include <vector>
-#include <unordered_map>
-#include <tuple>
 #include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <tuple>
+#include <unordered_map>
+#include <vector>
 #include "mesh-definition.hpp"
 #include "util.hpp"
 

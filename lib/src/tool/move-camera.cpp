@@ -1,19 +1,19 @@
+#include <QWheelEvent>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <QWheelEvent>
-#include "tool/move-camera.hpp"
-#include "renderer.hpp"
-#include "state.hpp"
 #include "camera.hpp"
-#include "scene.hpp"
-#include "view/util.hpp"
-#include "view/main-window.hpp"
-#include "view/gl-widget.hpp"
-#include "view/tool-menu-parameters.hpp"
-#include "view/tool-message.hpp"
 #include "config.hpp"
 #include "intersection.hpp"
 #include "primitive/ray.hpp"
+#include "renderer.hpp"
+#include "scene.hpp"
+#include "state.hpp"
+#include "tool/move-camera.hpp"
+#include "view/gl-widget.hpp"
+#include "view/main-window.hpp"
+#include "view/tool-menu-parameters.hpp"
+#include "view/tool-message.hpp"
+#include "view/util.hpp"
 
 struct ToolMoveCamera::Impl {
         ToolMoveCamera* self;

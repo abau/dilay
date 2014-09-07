@@ -1,12 +1,12 @@
 #include "action/delete-sphere-mesh.hpp"
+#include "action/ids.hpp"
 #include "action/modify-sphere-mesh.hpp"
 #include "action/unit/on.hpp"
-#include "action/ids.hpp"
+#include "id.hpp"
+#include "mesh-type.hpp"
+#include "scene.hpp"
 #include "sphere/mesh.hpp"
 #include "state.hpp"
-#include "scene.hpp"
-#include "mesh-type.hpp"
-#include "id.hpp"
 
 struct ActionDeleteSMesh::Impl {
   ActionUnitOn <SphereMesh> actions;

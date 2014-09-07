@@ -1,21 +1,21 @@
-#include <map>
-#include <limits>
 #include <glm/glm.hpp>
-#include "action/new-winged-mesh.hpp"
-#include "state.hpp"
+#include <limits>
+#include <map>
 #include "action/ids.hpp"
+#include "action/new-winged-mesh.hpp"
 #include "action/unit/on.hpp"
-#include "winged/mesh.hpp"
-#include "winged/edge.hpp"
-#include "scene.hpp"
-#include "mesh-type.hpp"
-#include "partial-action/modify-winged-mesh.hpp"
-#include "partial-action/modify-winged-edge.hpp"
-#include "partial-action/modify-winged-vertex.hpp"
-#include "partial-action/modify-winged-face.hpp"
-#include "primitive/triangle.hpp"
 #include "id.hpp"
 #include "mesh-definition.hpp"
+#include "mesh-type.hpp"
+#include "partial-action/modify-winged-edge.hpp"
+#include "partial-action/modify-winged-face.hpp"
+#include "partial-action/modify-winged-mesh.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
+#include "primitive/triangle.hpp"
+#include "scene.hpp"
+#include "state.hpp"
+#include "winged/edge.hpp"
+#include "winged/mesh.hpp"
 
 struct ActionNewWingedMesh :: Impl {
   ActionUnitOn <WingedMesh> actions;

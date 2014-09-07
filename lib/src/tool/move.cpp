@@ -1,21 +1,21 @@
-#include <list>
 #include <QObject>
 #include <glm/glm.hpp>
+#include <list>
+#include "action/translate.hpp"
+#include "history.hpp"
+#include "mesh-type.hpp"
+#include "scene.hpp"
+#include "selection-mode.hpp"
+#include "selection.hpp"
+#include "sphere/mesh.hpp"
+#include "state.hpp"
 #include "tool/move.hpp"
 #include "tool/movement.hpp"
 #include "variant.hpp"
-#include "scene.hpp"
-#include "state.hpp"
-#include "history.hpp"
-#include "sphere/mesh.hpp"
-#include "winged/mesh.hpp"
-#include "selection-mode.hpp"
-#include "selection.hpp"
-#include "action/translate.hpp"
-#include "mesh-type.hpp"
-#include "view/tool-menu-parameters.hpp"
-#include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
+#include "view/main-window.hpp"
+#include "view/tool-menu-parameters.hpp"
+#include "winged/mesh.hpp"
 
 namespace {
   typedef Variant <const SphereMeshes, const WingedMeshes> Entities;

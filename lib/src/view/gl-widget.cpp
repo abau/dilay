@@ -1,26 +1,26 @@
-#include <memory>
 #include <QApplication>
 #include <QKeyEvent>
 #include <glm/glm.hpp>
-#include "view/main-window.hpp"
-#include "view/freeform-mesh-menu.hpp"
-#include "view/sphere-mesh-menu.hpp"
-#include "view/properties/widget.hpp"
-#include "view/properties/selection.hpp"
-#include "view/gl-widget.hpp"
-#include "view/util.hpp"
-#include "view/tool-menu-parameters.hpp"
-#include "renderer.hpp"
-#include "state.hpp"
-#include "camera.hpp"
-#include "tool.hpp"
-#include "tool/move-camera.hpp"
-#include "history.hpp"
-#include "scene.hpp"
+#include <memory>
 #include "axis.hpp"
+#include "camera.hpp"
+#include "history.hpp"
 #include "mesh-type.hpp"
 #include "primitive/ray.hpp"
+#include "renderer.hpp"
+#include "scene.hpp"
 #include "selection-mode.hpp"
+#include "state.hpp"
+#include "tool.hpp"
+#include "tool/move-camera.hpp"
+#include "view/freeform-mesh-menu.hpp"
+#include "view/gl-widget.hpp"
+#include "view/main-window.hpp"
+#include "view/properties/selection.hpp"
+#include "view/properties/widget.hpp"
+#include "view/sphere-mesh-menu.hpp"
+#include "view/tool-menu-parameters.hpp"
+#include "view/util.hpp"
 
 struct ViewGlWidget::Impl {
   typedef std::unique_ptr <ToolMoveCamera> MoveCamera;

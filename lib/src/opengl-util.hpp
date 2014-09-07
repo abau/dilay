@@ -2,9 +2,10 @@
 #define DILAY_OPENGL_UTIL
 
 #include <GL/glew.h>
+// after glew:
 #include <GL/gl.h>
-#include <string>
 #include <glm/fwd.hpp>
+#include <string>
 
 namespace OpenGLUtil {
   enum VertexAttributIndex { PositionIndex = 0

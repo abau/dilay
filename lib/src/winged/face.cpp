@@ -1,13 +1,13 @@
-#include <limits>
 #include <algorithm>
 #include <glm/glm.hpp>
-#include "winged/vertex.hpp"
+#include <limits>
+#include "adjacent-iterator.hpp"
+#include "octree.hpp"
+#include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "adjacent-iterator.hpp"
-#include "primitive/triangle.hpp"
-#include "octree.hpp"
+#include "winged/vertex.hpp"
 
 WingedFace :: WingedFace () : WingedFace (Id (), nullptr) {}
 

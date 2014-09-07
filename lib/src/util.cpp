@@ -1,6 +1,6 @@
 #include <fstream>
-#include <sstream>
 #include <glm/glm.hpp>
+#include <sstream>
 #include "util.hpp"
 
 std::ostream& operator<<(std::ostream& os, const glm::ivec2& v) {

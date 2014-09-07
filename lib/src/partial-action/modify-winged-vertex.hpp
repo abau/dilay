@@ -1,6 +1,7 @@
 #ifndef DILAY_PARTIAL_ACTION_MODIFY_WINGED_VERTEX
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_VERTEX
 
+#include <glm/fwd.hpp>
 #include "action/on.hpp"
 #include "macro.hpp"
 

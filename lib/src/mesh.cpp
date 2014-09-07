@@ -1,16 +1,16 @@
 #define GLM_FORCE_RADIANS
-#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "mesh.hpp"
-#include "opengl-util.hpp"
-#include "renderer.hpp"
-#include "render-mode.hpp"
-#include "color.hpp"
-#include "state.hpp"
+#include <vector>
 #include "camera.hpp"
+#include "color.hpp"
 #include "config.hpp"
 #include "mesh-definition.hpp"
+#include "mesh.hpp"
+#include "opengl-util.hpp"
+#include "render-mode.hpp"
+#include "renderer.hpp"
+#include "state.hpp"
 
 struct Mesh::Impl {
   // cf. copy-constructor, reset

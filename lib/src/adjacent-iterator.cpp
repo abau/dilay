@@ -1,10 +1,10 @@
 #include <cassert>
 #include "adjacent-iterator.hpp"
-#include "winged/vertex.hpp"
+#include "id.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "id.hpp"
+#include "winged/vertex.hpp"
 
 AdjEdges::Iterator :: Iterator (const WingedFace& f, WingedEdge& e, bool i) 
   : _edge      (&e)

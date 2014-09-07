@@ -1,13 +1,13 @@
 #include <QObject>
-#include "tool/delete-mesh.hpp"
-#include "mesh-type.hpp"
-#include "action/unit.hpp"
-#include "action/delete-winged-mesh.hpp"
 #include "action/delete-sphere-mesh.hpp"
-#include "state.hpp"
+#include "action/delete-winged-mesh.hpp"
+#include "action/unit.hpp"
 #include "history.hpp"
+#include "mesh-type.hpp"
 #include "scene.hpp"
 #include "selection.hpp"
+#include "state.hpp"
+#include "tool/delete-mesh.hpp"
 
 struct ToolDeleteMesh::Impl {
   ToolDeleteMesh* self;

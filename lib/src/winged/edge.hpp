@@ -3,8 +3,8 @@
 
 #include <glm/fwd.hpp>
 #include "fwd-winged.hpp"
-#include "macro.hpp"
 #include "id.hpp"
+#include "macro.hpp"
 
 class WingedVertex;
 class WingedFace;

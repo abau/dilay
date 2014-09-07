@@ -1,8 +1,8 @@
 #ifndef DILAY_SPHERE_NODE_INTERSECTION
 #define DILAY_SPHERE_NODE_INTERSECTION
 
-#include "macro.hpp"
 #include "intersection.hpp"
+#include "macro.hpp"
 
 class SphereMesh;
 class SphereMeshNode;

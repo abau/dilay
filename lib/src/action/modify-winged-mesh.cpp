@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include "action/modify-winged-mesh.hpp"
-#include "winged/mesh.hpp"
 #include "variant.hpp"
+#include "winged/mesh.hpp"
 
 namespace {
   enum class Operation { 

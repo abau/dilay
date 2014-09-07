@@ -1,7 +1,7 @@
-#include <QToolBar>
 #include <QLabel>
-#include "view/main-window.hpp"
+#include <QToolBar>
 #include "view/main-widget.hpp"
+#include "view/main-window.hpp"
 #include "view/tool-message.hpp"
 #include "view/util.hpp"
 

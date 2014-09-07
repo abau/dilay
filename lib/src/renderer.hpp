@@ -2,6 +2,7 @@
 #define DILAY_RENDERER
 
 #include <GL/glew.h>
+// after glew:
 #include <GL/gl.h>
 #include <glm/fwd.hpp>
 #include "macro.hpp"

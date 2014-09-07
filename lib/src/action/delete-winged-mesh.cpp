@@ -1,12 +1,12 @@
 #include <memory>
 #include "action/delete-winged-mesh.hpp"
 #include "action/ids.hpp"
-#include "winged/mesh.hpp"
-#include "state.hpp"
-#include "scene.hpp"
+#include "id.hpp"
 #include "mesh-type.hpp"
 #include "mesh.hpp"
-#include "id.hpp"
+#include "scene.hpp"
+#include "state.hpp"
+#include "winged/mesh.hpp"
 
 struct ActionDeleteWMesh::Impl {
   ActionIds                    ids;

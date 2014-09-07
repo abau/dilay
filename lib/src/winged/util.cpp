@@ -1,12 +1,12 @@
-#include <iostream>
 #include <glm/glm.hpp>
-#include "winged/util.hpp"
-#include "winged/mesh.hpp"
-#include "winged/edge.hpp"
-#include "winged/face.hpp"
-#include "winged/vertex.hpp"
+#include <iostream>
 #include "../util.hpp"
 #include "octree.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "winged/util.hpp"
+#include "winged/vertex.hpp"
 
 void WingedUtil :: printStatistics (const WingedMesh& mesh, const WingedVertex& v) {
   std::cout   << "Vertex "               << v.index       () 

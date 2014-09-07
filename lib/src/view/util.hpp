@@ -1,8 +1,8 @@
 #ifndef VIEW_UTIL
 #define VIEW_UTIL
 
-#include <glm/fwd.hpp>
 #include <functional>
+#include <glm/fwd.hpp>
 
 class QSpinBox;
 class QDoubleSpinBox;

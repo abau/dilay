@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
+#include "action/ids.hpp"
 #include "action/modify-sphere-mesh.hpp"
 #include "sphere/mesh.hpp"
-#include "action/ids.hpp"
 #include "variant.hpp"
 
 namespace {

@@ -1,6 +1,6 @@
 #include <glm/glm.hpp>
-#include "view/light.hpp"
 #include "color.hpp"
+#include "view/light.hpp"
 
 struct ViewLight::Impl {
   glm::vec3 position;

@@ -1,8 +1,8 @@
 #ifndef DILAY_ACTION_TRANSLATE
 #define DILAY_ACTION_TRANSLATE
 
-#include <list>
 #include <glm/fwd.hpp>
+#include <list>
 #include "action.hpp"
 #include "macro.hpp"
 

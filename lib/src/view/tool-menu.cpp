@@ -1,7 +1,7 @@
-#include <glm/glm.hpp>
 #include <QMouseEvent>
-#include "view/tool-menu.hpp"
+#include <glm/glm.hpp>
 #include "view/tool-menu-parameters.hpp"
+#include "view/tool-menu.hpp"
 
 struct ViewToolMenu::Impl {
   ViewToolMenu*    self;

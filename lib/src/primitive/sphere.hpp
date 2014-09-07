@@ -1,8 +1,8 @@
 #ifndef DILAY_PRIMITIVE_SPHERE
 #define DILAY_PRIMITIVE_SPHERE
 
-#include <iosfwd>
 #include <glm/fwd.hpp>
+#include <iosfwd>
 #include "macro.hpp"
 
 class PrimSphere {

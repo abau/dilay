@@ -1,11 +1,11 @@
-#include "action/new-sphere-mesh.hpp"
 #include "action/ids.hpp"
 #include "action/modify-sphere-mesh.hpp"
-#include "state.hpp"
-#include "sphere/mesh.hpp"
-#include "scene.hpp"
+#include "action/new-sphere-mesh.hpp"
 #include "id.hpp"
 #include "mesh-type.hpp"
+#include "scene.hpp"
+#include "sphere/mesh.hpp"
+#include "state.hpp"
 
 struct ActionNewSphereMesh :: Impl {
   ActionIds         ids;

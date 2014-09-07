@@ -1,8 +1,8 @@
 #ifndef DILAY_VIEW_VECTOR_EDIT
 #define DILAY_VIEW_VECTOR_EDIT
 
-#include <glm/glm.hpp>
 #include <QWidget>
+#include <glm/glm.hpp>
 #include "macro.hpp"
 
 class ViewVectorEdit : public QWidget {

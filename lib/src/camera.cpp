@@ -1,13 +1,13 @@
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_major_storage.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "camera.hpp"
+#include "dimension.hpp"
 #include "opengl-util.hpp"
 #include "primitive/ray.hpp"
 #include "renderer.hpp"
-#include "dimension.hpp"
 
 struct Camera::Impl {
   Camera*      self;

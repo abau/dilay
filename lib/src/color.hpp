@@ -1,8 +1,8 @@
 #ifndef DILAY_COLOR
 #define DILAY_COLOR
 
-#include <iosfwd>
 #include <glm/fwd.hpp>
+#include <iosfwd>
 #include "macro.hpp"
 
 class QColor;

@@ -1,5 +1,5 @@
-#include <sstream>
 #include <glm/glm.hpp>
+#include <sstream>
 #include "primitive/ray.hpp"
 #include "util.hpp"
 

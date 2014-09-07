@@ -1,8 +1,8 @@
 #ifndef DILAY_VIEW_TOOL_MESSAGE
 #define DILAY_VIEW_TOOL_MESSAGE
 
-#include "macro.hpp"
 #include <initializer_list>
+#include "macro.hpp"
 
 class QString;
 

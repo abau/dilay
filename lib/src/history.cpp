@@ -1,8 +1,8 @@
 #include <list>
 #include <memory>
+#include "action.hpp"
 #include "history.hpp"
 #include "macro.hpp"
-#include "action.hpp"
 
 struct History::Impl {
   typedef std::unique_ptr <Action> ActionPtr;

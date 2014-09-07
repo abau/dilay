@@ -2,6 +2,7 @@
 #define DILAY_VIEW_GL_WIDGET
 
 #include <GL/glew.h>
+// after glew:
 #include <QGLWidget>
 #include <glm/fwd.hpp>
 #include "macro.hpp"

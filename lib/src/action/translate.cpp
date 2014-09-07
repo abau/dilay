@@ -1,10 +1,10 @@
 #include <glm/glm.hpp>
-#include "action/translate.hpp"
 #include "action/ids.hpp"
+#include "action/translate.hpp"
+#include "id.hpp"
 #include "selection-mode.hpp"
 #include "sphere/mesh.hpp"
 #include "winged/mesh.hpp"
-#include "id.hpp"
 
 struct ActionTranslate::Impl {
   SelectionMode selection;

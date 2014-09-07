@@ -1,8 +1,8 @@
 #ifndef DILAY_PRIMITIVE_PLANE
 #define DILAY_PRIMITIVE_PLANE
 
-#include "macro.hpp"
 #include <glm/fwd.hpp>
+#include "macro.hpp"
 
 class PrimPlane {
   public:

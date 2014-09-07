@@ -1,17 +1,17 @@
-#include <limits>
 #include <glm/glm.hpp>
+#include <limits>
+#include "adjacent-iterator.hpp"
 #include "intersection.hpp"
-#include "winged/vertex.hpp"
+#include "primitive/aabox.hpp"
+#include "primitive/plane.hpp"
+#include "primitive/ray.hpp"
+#include "primitive/sphere.hpp"
+#include "primitive/triangle.hpp"
+#include "util.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "primitive/sphere.hpp"
-#include "adjacent-iterator.hpp"
-#include "primitive/ray.hpp"
-#include "util.hpp"
-#include "primitive/plane.hpp"
-#include "primitive/triangle.hpp"
-#include "primitive/aabox.hpp"
+#include "winged/vertex.hpp"
 
 struct Intersection :: Impl {
   bool      isIntersection;

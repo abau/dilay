@@ -1,8 +1,8 @@
-#include <iostream>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <stdexcept>
-#include "opengl-util.hpp"
 #include "macro.hpp"
+#include "opengl-util.hpp"
 
 namespace OpenGLUtil {
 

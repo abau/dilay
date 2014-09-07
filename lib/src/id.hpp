@@ -1,8 +1,8 @@
 #ifndef DILAY_ID
 #define DILAY_ID
 
-#include <iosfwd>
 #include <functional>
+#include <iosfwd>
 
 typedef unsigned int IdPrimitive;
 

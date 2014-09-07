@@ -1,19 +1,19 @@
-#include <memory>
-#include <list>
 #include <glm/glm.hpp>
-#include "sphere/mesh.hpp"
-#include "id.hpp"
-#include "id-map.hpp"
+#include <list>
+#include <memory>
 #include "../mesh.hpp"
-#include "render-mode.hpp"
-#include "intersection.hpp"
-#include "primitive/sphere.hpp"
-#include "primitive/ray.hpp"
-#include "sphere/node-intersection.hpp"
 #include "color.hpp"
 #include "config.hpp"
-#include "selection.hpp"
+#include "id-map.hpp"
+#include "id.hpp"
+#include "intersection.hpp"
 #include "mesh-definition.hpp"
+#include "primitive/ray.hpp"
+#include "primitive/sphere.hpp"
+#include "render-mode.hpp"
+#include "selection.hpp"
+#include "sphere/mesh.hpp"
+#include "sphere/node-intersection.hpp"
 
 namespace {
   typedef std::unique_ptr <SphereMeshNode::Impl> Child;

@@ -1,10 +1,10 @@
 #ifndef DILAY_ID_MAP
 #define DILAY_ID_MAP
 
-#include <unordered_map>
 #include <memory>
-#include "macro.hpp"
+#include <unordered_map>
 #include "id.hpp"
+#include "macro.hpp"
 
 template <class T>
 class IdMapPtr {

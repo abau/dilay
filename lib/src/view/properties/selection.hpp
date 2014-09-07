@@ -1,8 +1,8 @@
 #ifndef DILAY_VIEW_PROPERTIES_SELECTION
 #define DILAY_VIEW_PROPERTIES_SELECTION
 
-#include "view/properties.hpp"
 #include "macro.hpp"
+#include "view/properties.hpp"
 
 enum class SelectionMode;
 

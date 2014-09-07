@@ -1,13 +1,13 @@
+#include "action/unit/on.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
-#include "winged/vertex.hpp"
+#include "partial-action/modify-winged-edge.hpp"
+#include "partial-action/modify-winged-face.hpp"
+#include "partial-action/modify-winged-mesh.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "action/unit/on.hpp"
-#include "partial-action/modify-winged-mesh.hpp"
-#include "partial-action/modify-winged-edge.hpp"
-#include "partial-action/modify-winged-face.hpp"
-#include "partial-action/modify-winged-vertex.hpp"
+#include "winged/vertex.hpp"
 
 struct PAInsertEdgeVertex :: Impl {
   ActionUnitOn <WingedMesh> actions;

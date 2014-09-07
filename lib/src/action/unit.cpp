@@ -1,5 +1,5 @@
-#include <memory>
 #include <list>
+#include <memory>
 #include "action/unit.hpp"
 
 namespace {

@@ -1,24 +1,24 @@
 #include <glm/glm.hpp>
-#include <vector>
-#include <memory>
 #include <limits>
+#include <memory>
+#include <vector>
+#include "adjacent-iterator.hpp"
+#include "fwd-winged.hpp"
+#include "id-map.hpp"
+#include "intersection.hpp"
 #include "octree.hpp"
+#include "primitive/aabox.hpp"
+#include "primitive/ray.hpp"
+#include "primitive/triangle.hpp"
+#include "winged/face-intersection.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
-#include "primitive/triangle.hpp"
-#include "primitive/ray.hpp"
-#include "intersection.hpp"
-#include "fwd-winged.hpp"
-#include "adjacent-iterator.hpp"
-#include "id-map.hpp"
-#include "winged/face-intersection.hpp"
-#include "primitive/aabox.hpp"
 
 #ifdef DILAY_RENDER_OCTREE
-#include "mesh.hpp"
-#include "renderer.hpp"
 #include "color.hpp"
+#include "mesh.hpp"
 #include "render-mode.hpp"
+#include "renderer.hpp"
 #endif
 
 namespace {

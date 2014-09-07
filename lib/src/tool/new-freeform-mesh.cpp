@@ -1,15 +1,15 @@
 #include <QSpinBox>
-#include "tool/new-freeform-mesh.hpp"
+#include "action/new-winged-mesh.hpp"
 #include "config.hpp"
-#include "view/util.hpp"
-#include "view/tool-parameters.hpp"
-#include "view/tool-menu-parameters.hpp"
+#include "history.hpp"
+#include "mesh-definition.hpp"
+#include "mesh-type.hpp"
 #include "mesh.hpp"
 #include "state.hpp"
-#include "history.hpp"
-#include "action/new-winged-mesh.hpp"
-#include "mesh-type.hpp"
-#include "mesh-definition.hpp"
+#include "tool/new-freeform-mesh.hpp"
+#include "view/tool-menu-parameters.hpp"
+#include "view/tool-parameters.hpp"
+#include "view/util.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;

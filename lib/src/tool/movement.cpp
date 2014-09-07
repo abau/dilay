@@ -1,12 +1,12 @@
-#include <glm/glm.hpp>
 #include <QMouseEvent>
-#include "tool/movement.hpp"
+#include <glm/glm.hpp>
+#include "camera.hpp"
+#include "dimension.hpp"
+#include "intersection.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "state.hpp"
-#include "camera.hpp"
-#include "intersection.hpp"
-#include "dimension.hpp"
+#include "tool/movement.hpp"
 #include "view/util.hpp"
 
 struct ToolMovement::Impl {

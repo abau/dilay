@@ -1,5 +1,5 @@
-#include <utility>
 #include <glm/glm.hpp>
+#include <utility>
 #include "sphere/node-intersection.hpp"
 
 struct SphereNodeIntersection::Impl {

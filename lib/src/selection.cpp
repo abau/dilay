@@ -1,6 +1,6 @@
 #include <unordered_map>
-#include "selection.hpp"
 #include "id.hpp"
+#include "selection.hpp"
 
 struct Selection::Impl {
   std::unordered_map <Id, std::unordered_set <Id>> selection;

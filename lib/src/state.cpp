@@ -1,15 +1,15 @@
 #include <memory>
-#include "state.hpp"
-#include "mesh-definition.hpp"
+#include "action/new-winged-mesh.hpp"
 #include "camera.hpp"
 #include "history.hpp"
 #include "id.hpp"
-#include "action/new-winged-mesh.hpp"
-#include "scene.hpp"
+#include "mesh-definition.hpp"
 #include "mesh-type.hpp"
+#include "scene.hpp"
+#include "state.hpp"
 #include "tool.hpp"
-#include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
+#include "view/main-window.hpp"
 #include "view/tool-menu-parameters.hpp"
 
 struct State::Impl {

@@ -1,8 +1,8 @@
 #ifndef DILAY_VIEW_TOOL_MENU
 #define DILAY_VIEW_TOOL_MENU
 
-#include <glm/fwd.hpp>
 #include <QMenu>
+#include <glm/fwd.hpp>
 #include "state.hpp"
 #include "view/tool-menu-parameters.hpp"
 

@@ -1,9 +1,9 @@
-#include <glm/glm.hpp>
 #include <QObject>
-#include "tool/new-sphere-mesh.hpp"
-#include "state.hpp"
-#include "history.hpp"
+#include <glm/glm.hpp>
 #include "action/new-sphere-mesh.hpp"
+#include "history.hpp"
+#include "state.hpp"
+#include "tool/new-sphere-mesh.hpp"
 
 struct ToolNewSphereMesh::Impl {
   ToolNewSphereMesh* self;

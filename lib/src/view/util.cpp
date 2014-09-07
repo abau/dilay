@@ -1,12 +1,12 @@
-#include <limits>
-#include <glm/glm.hpp>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QPushButton>
-#include <QToolButton>
-#include <QRadioButton>
 #include <QCheckBox>
+#include <QDoubleSpinBox>
 #include <QMouseEvent>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSpinBox>
+#include <QToolButton>
+#include <glm/glm.hpp>
+#include <limits>
 #include "view/util.hpp"
 
 QSpinBox& ViewUtil :: spinBox (int min, int value, int max) {

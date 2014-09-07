@@ -1,12 +1,12 @@
-#include <vector>
 #include <functional>
 #include <glm/glm.hpp>
+#include <vector>
+#include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
-#include "winged/vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "adjacent-iterator.hpp"
+#include "winged/vertex.hpp"
 
 namespace {
   typedef std::vector <glm::vec3> Adjacents;

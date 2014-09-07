@@ -1,8 +1,8 @@
 #ifndef DILAY_PRIMITIVE_RAY
 #define DILAY_PRIMITIVE_RAY
 
-#include <iosfwd>
 #include <glm/fwd.hpp>
+#include <iosfwd>
 #include "macro.hpp"
 
 class PrimRay {

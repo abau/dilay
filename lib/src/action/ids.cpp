@@ -2,13 +2,13 @@
 #include <vector>
 #include "action/ids.hpp"
 #include "id.hpp"
-#include "state.hpp"
-#include "winged/mesh.hpp"
-#include "winged/face.hpp"
-#include "winged/edge.hpp"
-#include "winged/vertex.hpp"
 #include "scene.hpp"
 #include "sphere/mesh.hpp"
+#include "state.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "winged/vertex.hpp"
 
 struct ActionIds :: Impl {
   std::vector <std::unique_ptr <Id>>           ids;

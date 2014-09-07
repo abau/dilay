@@ -2,8 +2,8 @@
 #define DILAY_WINGED_FACE
 
 #include <glm/fwd.hpp>
-#include "macro.hpp"
 #include "id.hpp"
+#include "macro.hpp"
 
 class AdjEdges;
 class AdjVertices;

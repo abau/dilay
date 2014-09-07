@@ -1,18 +1,18 @@
-#include <list>
 #include <algorithm>
-#include "scene.hpp"
-#include "macro.hpp"
+#include <list>
 #include "id-map.hpp"
-#include "primitive/ray.hpp"
+#include "macro.hpp"
 #include "mesh-type.hpp"
-#include "sphere/mesh.hpp"
-#include "winged/mesh.hpp"
-#include "winged/face.hpp"
-#include "winged/face-intersection.hpp"
-#include "winged/util.hpp"
-#include "sphere/node-intersection.hpp"
+#include "primitive/ray.hpp"
+#include "scene.hpp"
 #include "selection-mode.hpp"
 #include "selection.hpp"
+#include "sphere/mesh.hpp"
+#include "sphere/node-intersection.hpp"
+#include "winged/face-intersection.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "winged/util.hpp"
 
 struct Scene :: Impl {
   std::list <WingedMesh>  wingedMeshes;

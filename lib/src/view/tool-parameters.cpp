@@ -1,13 +1,13 @@
-#include <glm/glm.hpp>
 #include <QGridLayout>
 #include <QLabel>
-#include <QPushButton>
 #include <QMoveEvent>
-#include "view/tool-parameters.hpp"
-#include "view/main-window.hpp"
-#include "view/vector-edit.hpp"
+#include <QPushButton>
+#include <glm/glm.hpp>
 #include "config.hpp"
+#include "view/main-window.hpp"
+#include "view/tool-parameters.hpp"
 #include "view/util.hpp"
+#include "view/vector-edit.hpp"
 
 struct ViewToolParameters::Impl {
   ViewToolParameters* self;

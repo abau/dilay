@@ -1,12 +1,12 @@
-#include <glm/glm.hpp>
 #include <QMouseEvent>
+#include <glm/glm.hpp>
+#include "scene.hpp"
+#include "state.hpp"
 #include "tool.hpp"
+#include "view/gl-widget.hpp"
+#include "view/main-window.hpp"
 #include "view/tool-menu-parameters.hpp"
 #include "view/tool-parameters.hpp"
-#include "view/main-window.hpp"
-#include "view/gl-widget.hpp"
-#include "state.hpp"
-#include "scene.hpp"
 
 struct Tool::Impl {
   Tool*                  self;

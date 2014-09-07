@@ -1,9 +1,9 @@
 #ifndef DILAY_ACTION_UNIT_ON
 #define DILAY_ACTION_UNIT_ON
 
+#include <functional>
 #include <list>
 #include <memory>
-#include <functional>
 #include "action/on.hpp"
 
 template <typename T>

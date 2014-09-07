@@ -1,11 +1,11 @@
-#include <memory>
 #include <glm/glm.hpp>
-#include "partial-action/modify-winged-vertex.hpp"
-#include "winged/edge.hpp"
-#include "winged/vertex.hpp"
-#include "winged/mesh.hpp"
-#include "state.hpp"
+#include <memory>
 #include "action/ids.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
+#include "state.hpp"
+#include "winged/edge.hpp"
+#include "winged/mesh.hpp"
+#include "winged/vertex.hpp"
 
 namespace {
   enum class Operation { Edge, WriteIndex, WriteNormal, Move };

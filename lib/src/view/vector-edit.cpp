@@ -1,6 +1,6 @@
-#include <QVBoxLayout>
-#include <QLineEdit>
 #include <QDoubleValidator>
+#include <QLineEdit>
+#include <QVBoxLayout>
 #include "view/vector-edit.hpp"
 
 struct ViewVectorEdit::Impl {

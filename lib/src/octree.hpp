@@ -1,10 +1,10 @@
 #ifndef DILAY_OCTREE
 #define DILAY_OCTREE
 
-#include <vector>
-#include <unordered_map>
 #include <functional>
 #include <glm/fwd.hpp>
+#include <unordered_map>
+#include <vector>
 #include "macro.hpp"
 
 class WingedFace;

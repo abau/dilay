@@ -1,5 +1,5 @@
-#include <utility>
 #include <glm/glm.hpp>
+#include <utility>
 #include "winged/face-intersection.hpp"
 
 struct WingedFaceIntersection::Impl {

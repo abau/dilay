@@ -1,11 +1,11 @@
 #include <unordered_set>
 #include "action/on-post-processed-winged-mesh.hpp"
+#include "bitset.hpp"
 #include "id.hpp"
+#include "octree.hpp"
+#include "primitive/triangle.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "primitive/triangle.hpp"
-#include "bitset.hpp"
-#include "octree.hpp"
 
 struct ActionOnPostProcessedWMesh :: Impl {
   std::unordered_set <Id> realignIds;

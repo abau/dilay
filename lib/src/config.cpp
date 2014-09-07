@@ -1,17 +1,17 @@
-#include <glm/glm.hpp>
-#include <unordered_map>
-#include <algorithm>
+#include <QCoreApplication>
+#include <QDir>
 #include <QDomNode>
 #include <QFile>
-#include <QTextStream>
-#include <QDir>
 #include <QStandardPaths>
-#include <QCoreApplication>
+#include <QTextStream>
+#include <algorithm>
+#include <glm/glm.hpp>
+#include <unordered_map>
+#include "color.hpp"
+#include "config-conversion.hpp"
 #include "config.hpp"
 #include "macro.hpp"
 #include "variant.hpp"
-#include "color.hpp"
-#include "config-conversion.hpp"
 
 struct Config::Impl {
   typedef Variant <float,int,glm::vec3,glm::ivec2,Color> Value;

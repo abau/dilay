@@ -1,8 +1,8 @@
 #ifndef DILAY_WINGED_FACE_INTERSECTION
 #define DILAY_WINGED_FACE_INTERSECTION
 
-#include "macro.hpp"
 #include "intersection.hpp"
+#include "macro.hpp"
 
 class WingedFace;
 class WingedMesh;

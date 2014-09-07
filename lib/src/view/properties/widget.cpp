@@ -1,6 +1,6 @@
 #include <QVBoxLayout>
-#include "view/properties/widget.hpp"
 #include "view/properties/selection.hpp"
+#include "view/properties/widget.hpp"
 
 struct ViewPropertiesWidget::Impl {
   ViewPropertiesWidget*    self;

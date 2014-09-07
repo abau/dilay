@@ -1,7 +1,7 @@
-#include <glm/glm.hpp>
 #include <QDomElement>
-#include "config-conversion.hpp"
+#include <glm/glm.hpp>
 #include "color.hpp"
+#include "config-conversion.hpp"
 
 bool ConfigConversion :: fromDomElement (QDomElement e, float& v) {
   assert (e.attributeNode ("type").value () == "float");

@@ -1,8 +1,8 @@
 #ifndef DILAY_MESH
 #define DILAY_MESH
 
-#include "macro.hpp"
 #include <glm/fwd.hpp>
+#include "macro.hpp"
 
 enum class RenderMode;
 class Color;

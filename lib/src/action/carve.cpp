@@ -1,19 +1,19 @@
 #define GLM_FORCE_RADIANS
-#include <unordered_set>
-#include <set>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
+#include <set>
+#include <unordered_set>
 #include "action/carve.hpp"
-#include "id.hpp"
-#include "action/unit/on.hpp"
 #include "action/subdivide.hpp"
+#include "action/unit/on.hpp"
+#include "carve-brush.hpp"
+#include "id.hpp"
+#include "intersection.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/sphere.hpp"
-#include "carve-brush.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
-#include "intersection.hpp"
 
 struct ActionCarve::Impl {
   ActionCarve*              self;
