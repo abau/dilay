@@ -232,8 +232,7 @@ struct Scene :: Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (Scene)
-DELEGATE_DESTRUCTOR  (Scene)
+DELEGATE_BIG2 (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)
 DELEGATE2       (WingedMesh&      , Scene, newWingedMesh, MeshType, const Id&)

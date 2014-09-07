@@ -230,6 +230,60 @@
 #define DELEGATE5_GLOBAL(r,from,method,t1,t2,t3,t4,t5) \
   DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
 
+// big 2 delegators
+
+#define DELEGATE_BIG2(from) \
+  DELEGATE_CONSTRUCTOR(from) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE1_BIG2(from,t1) \
+  DELEGATE1_CONSTRUCTOR(from,t1) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE2_BIG2(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE3_BIG2(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE4_BIG2(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE5_BIG2(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE_BIG2_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE1_BIG2_SELF(from,t1) \
+  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE2_BIG2_SELF(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE3_BIG2_SELF(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE4_BIG2_SELF(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE5_BIG2_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE_DESTRUCTOR(from)
+
+#define DELEGATE_BIG2_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_DESTRUCTOR(from)
+
 // big 3 delegators
 
 #define DELEGATE_BIG3(from) \

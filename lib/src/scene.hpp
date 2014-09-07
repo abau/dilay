@@ -2,6 +2,7 @@
 #define DILAY_SCENE
 
 #include <list>
+#include "macro.hpp"
 
 class WingedMesh;
 class Id;
@@ -19,10 +20,8 @@ typedef std::list <WingedMesh*> WingedMeshes;
 typedef std::list <SphereMesh*> SphereMeshes;
 
 class Scene {
-  public: Scene            ();
-          Scene            (const Scene&) = delete;
-    const Scene& operator= (const Scene&) = delete;
-         ~Scene            ();
+  public: 
+    DECLARE_BIG2 (Scene)
 
           WingedMesh&   newWingedMesh        (MeshType);
           WingedMesh&   newWingedMesh        (MeshType, const Id&);
