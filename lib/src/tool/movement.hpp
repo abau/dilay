@@ -20,8 +20,7 @@ class ToolMovement {
           bool       onCameraPlane    (const glm::ivec2&, glm::vec3&) const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

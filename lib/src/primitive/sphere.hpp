@@ -13,8 +13,7 @@ class PrimSphere {
     float            radius () const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 std::ostream& operator<<(std::ostream&, const PrimSphere&);

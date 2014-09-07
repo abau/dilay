@@ -30,7 +30,6 @@ class ActionUnit : public Action {
     void runUndo   ();
     void runRedo   ();
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 #endif

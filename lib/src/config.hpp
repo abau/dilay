@@ -17,8 +17,7 @@ class Config {
   private:
     DECLARE_BIG3 (Config)
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 class ConfigProxy {

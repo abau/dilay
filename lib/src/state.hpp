@@ -28,7 +28,6 @@ class State {
   private:
     DECLARE_BIG3 (State)
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 #endif

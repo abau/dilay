@@ -15,8 +15,7 @@ class PrimRay {
           glm::vec3  pointAt   (float) const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 std::ostream& operator<<(std::ostream&, const PrimRay&);

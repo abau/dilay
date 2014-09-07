@@ -13,8 +13,7 @@ class ViewPropertiesWidget : public QWidget {
     ViewPropertiesSelection& selection ();
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

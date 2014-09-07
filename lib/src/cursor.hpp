@@ -18,8 +18,7 @@ class Cursor {
     float radius             () const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

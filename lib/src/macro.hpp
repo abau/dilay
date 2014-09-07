@@ -633,4 +633,8 @@
   const  t & operator= (const t &)  = delete; \
   const  t & operator= (      t &&) = delete;
 
+#define IMPLEMENTATION  \
+  class Impl; \
+  Impl* impl;
+
 #endif

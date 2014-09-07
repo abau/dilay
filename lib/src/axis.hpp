@@ -14,8 +14,7 @@ class Axis {
     void  render     (QPainter&);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

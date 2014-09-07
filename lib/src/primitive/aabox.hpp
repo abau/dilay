@@ -31,8 +31,7 @@ class PrimAABox {
           void       position (const glm::vec3&);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

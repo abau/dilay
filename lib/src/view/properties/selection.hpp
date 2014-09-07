@@ -17,8 +17,7 @@ class ViewPropertiesSelection : public ViewProperties {
     void selectionModeChanged (SelectionMode);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

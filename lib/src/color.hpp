@@ -36,8 +36,7 @@ class Color {
     QColor    qColor () const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 std::ostream& operator<<(std::ostream&, const Color&);

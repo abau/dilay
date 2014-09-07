@@ -20,7 +20,6 @@ class ViewMainWindow : public QMainWindow {
     void                  showNumSelections  (unsigned int);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 #endif

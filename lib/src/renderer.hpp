@@ -32,8 +32,7 @@ class Renderer {
   private:
     DECLARE_BIG3 (Renderer)
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

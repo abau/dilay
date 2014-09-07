@@ -31,8 +31,7 @@ class History {
     void undo      ();
     void redo      ();
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

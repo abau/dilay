@@ -21,8 +21,7 @@ class ActionSubdivide : public ActionOnPostProcessedWMesh {
     void runUndoBeforePostProcessing (WingedMesh&);
     void runRedoBeforePostProcessing (WingedMesh&);
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

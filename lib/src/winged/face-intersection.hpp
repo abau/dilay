@@ -17,8 +17,7 @@ class WingedFaceIntersection : public Intersection {
                        , WingedMesh&, WingedFace& );
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

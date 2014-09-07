@@ -27,8 +27,7 @@ class CarveBrush {
     void             stepWidth      (float);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

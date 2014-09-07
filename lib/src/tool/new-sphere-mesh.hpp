@@ -10,8 +10,7 @@ class ToolNewSphereMesh : public Tool {
     static QString toolName ();
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 
     ToolResponse runInitialize ();
 };

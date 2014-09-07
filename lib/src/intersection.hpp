@@ -28,8 +28,7 @@ class Intersection {
     static Intersection& min            (Intersection&, Intersection&);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 namespace IntersectionUtil {

@@ -20,8 +20,7 @@ class ActionModifySMesh : public ActionOn <SphereMesh> {
     void runUndo (SphereMesh&);
     void runRedo (SphereMesh&);
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

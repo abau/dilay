@@ -17,8 +17,7 @@ class SphereNodeIntersection : public Intersection {
                                     , SphereMesh&, SphereMeshNode& );
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

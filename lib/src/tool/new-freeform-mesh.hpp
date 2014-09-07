@@ -10,8 +10,7 @@ class ToolNewFreeformMesh : public Tool {
     static QString toolName ();
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 
     void         runRender     ();
     ToolResponse runInitialize ();

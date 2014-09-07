@@ -28,8 +28,7 @@ class ViewGlWidget : public QGLWidget {
     void wheelEvent         (QWheelEvent*);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

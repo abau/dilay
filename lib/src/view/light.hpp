@@ -18,8 +18,7 @@ class ViewLight {
     void color      (const Color&);
     void irradiance (float);
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

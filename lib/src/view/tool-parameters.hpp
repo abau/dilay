@@ -28,8 +28,7 @@ class ViewToolParameters : public QDialog {
     void moveEvent (QMoveEvent*);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

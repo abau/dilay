@@ -22,8 +22,7 @@ class ViewToolMessage {
     ViewToolMessage& alt    ();
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

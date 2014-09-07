@@ -26,8 +26,7 @@ class ViewProperties : public QWidget {
     QWidget& addWidget (QWidget&);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

@@ -39,8 +39,7 @@ class Selection {
     const Minors* minors        (const Id&) const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

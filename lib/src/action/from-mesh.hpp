@@ -17,8 +17,7 @@ class ActionFromMesh : public ActionOn <WingedMesh> {
     void runUndo (WingedMesh&);
     void runRedo (WingedMesh&);
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

@@ -12,8 +12,7 @@ class ToolDeleteMesh : public Tool {
     static QString toolName (MeshType);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 
     ToolResponse runInitialize ();
 };

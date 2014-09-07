@@ -22,8 +22,7 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
     virtual void runUndoBeforePostProcessing (WingedMesh&) = 0;
     virtual void runRedoBeforePostProcessing (WingedMesh&) = 0;
 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

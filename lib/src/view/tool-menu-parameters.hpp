@@ -15,8 +15,7 @@ class ViewToolMenuParameters {
     bool                rightClick    () const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

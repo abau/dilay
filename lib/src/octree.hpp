@@ -74,8 +74,7 @@ class Octree {
     SAFE_REF1 (WingedFace,face,const Id&)
 
   private:
-    class Impl; 
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

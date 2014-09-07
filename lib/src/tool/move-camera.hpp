@@ -10,8 +10,7 @@ class ToolMoveCamera : public Tool {
     static ToolResponse staticWheelEvent (QWheelEvent&);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 
     ToolResponse runInitialize        ();
     ToolResponse runMouseMoveEvent    (QMouseEvent&);

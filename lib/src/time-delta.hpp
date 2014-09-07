@@ -14,8 +14,7 @@ class TimeDelta {
     void printLocal  (const char* = nullptr);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

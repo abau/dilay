@@ -28,8 +28,7 @@ class PrimTriangle {
     float             oneDimExtent () const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

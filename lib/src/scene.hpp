@@ -54,8 +54,7 @@ class Scene {
           void          printStatistics      () const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

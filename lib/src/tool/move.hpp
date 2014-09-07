@@ -12,8 +12,7 @@ class ToolMove : public Tool {
     static QString toolName (Movement);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 
     void         runClose             ();
     void         runCancel            ();

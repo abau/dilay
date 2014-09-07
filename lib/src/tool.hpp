@@ -37,8 +37,7 @@ class Tool {
     ToolResponse                  closeOrCancelOnClick (QMouseEvent&);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 
     virtual ToolResponse runInitialize        ()             { return ToolResponse::None; }
     virtual void         runRender            ()             {}

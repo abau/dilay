@@ -38,8 +38,7 @@ class Camera {
     Dimension   primaryDimension       () const;
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

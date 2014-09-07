@@ -61,8 +61,7 @@ class Mesh {
     static Mesh        cylinder          (unsigned int);
 
   private: 
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif 

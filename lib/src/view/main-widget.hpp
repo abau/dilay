@@ -16,8 +16,7 @@ class ViewMainWidget : public QSplitter {
     ViewPropertiesWidget& properties  ();
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif

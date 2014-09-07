@@ -28,8 +28,7 @@ class ViewToolMenu : public QMenu {
     void mouseReleaseEvent (QMouseEvent*);
 
   private:
-    class Impl;
-    Impl* impl;
+    IMPLEMENTATION
 };
 
 #endif
