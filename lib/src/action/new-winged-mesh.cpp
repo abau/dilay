@@ -131,6 +131,10 @@ struct ActionNewWingedMesh :: Impl {
   void runRedo () {
     WingedMesh& mesh = State::scene ().newWingedMesh (this->meshType, this->ids.getIdRef (0));
     this->actions.redo (mesh);
+
+    mesh.writeAllIndices             ();
+    mesh.writeAllInterpolatedNormals ();
+    mesh.bufferData                  ();
   }
 };
 
