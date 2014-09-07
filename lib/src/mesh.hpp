@@ -6,11 +6,14 @@
 
 enum class RenderMode;
 class Color;
+class MeshDefinition;
 
 class Mesh {
   public:
     /** `bufferData` must be called on the mutated mesh after copy or assignment */
     DECLARE_BIG6 (Mesh)
+
+    Mesh (const MeshDefinition&);
 
     unsigned int       numVertices       () const;
     unsigned int       numIndices        () const;
@@ -53,12 +56,6 @@ class Mesh {
     void               rotationZ         (float);
     const Color&       color             () const;
     void               color             (const Color&);
-
-    static Mesh        cube              ();
-    static Mesh        sphere            (unsigned int, unsigned int);
-    static Mesh        icosphere         (unsigned int);
-    static Mesh        cone              (unsigned int);
-    static Mesh        cylinder          (unsigned int);
 
   private: 
     IMPLEMENTATION

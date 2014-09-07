@@ -13,7 +13,6 @@
 #include "winged/util.hpp"
 #include "winged/mesh.hpp"
 #include "util.hpp"
-#include "action/from-mesh.hpp"
 #include "mesh.hpp"
 
 void octreeTest1 ();

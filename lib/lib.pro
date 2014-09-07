@@ -12,7 +12,6 @@ SOURCES += \
            src/action/carve.cpp \
            src/action/delete-sphere-mesh.cpp \
            src/action/delete-winged-mesh.cpp \
-           src/action/from-mesh.cpp \
            src/action/ids.cpp \
            src/action/modify-sphere-mesh.cpp \
            src/action/modify-winged-mesh.cpp \
@@ -35,6 +34,7 @@ SOURCES += \
            src/id.cpp \
            src/intersection.cpp \
            src/mesh.cpp \
+           src/mesh-definition.cpp \
            src/octree.cpp \
            src/opengl-util.cpp \
            src/partial-action/delete-edge-face.cpp \
@@ -97,7 +97,6 @@ HEADERS += \
            src/action/carve.hpp \
            src/action/delete-sphere-mesh.hpp \
            src/action/delete-winged-mesh.hpp \
-           src/action/from-mesh.hpp \
            src/action/ids.hpp \
            src/action/modify-sphere-mesh.hpp \
            src/action/modify-winged-mesh.hpp \
@@ -127,6 +126,7 @@ HEADERS += \
            src/intersection.hpp \
            src/macro.hpp \
            src/mesh.hpp \
+           src/mesh-definition.hpp \
            src/mesh-type.hpp \
            src/octree.hpp \
            src/opengl-util.hpp \

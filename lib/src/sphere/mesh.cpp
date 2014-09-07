@@ -13,6 +13,7 @@
 #include "color.hpp"
 #include "config.hpp"
 #include "selection.hpp"
+#include "mesh-definition.hpp"
 
 namespace {
   typedef std::unique_ptr <SphereMeshNode::Impl> Child;
@@ -109,7 +110,7 @@ struct SphereMeshNode::Impl {
   }
 
   static void setupMesh (Mesh& mesh) {
-    mesh = Mesh::icosphere (2);
+    mesh = Mesh (MeshDefinition::icosphere (2));
     mesh.renderMode (RenderMode::SmoothShaded);
     mesh.color      (Config::get <Color> ("/config/editor/sphere-mesh/color/normal"));
     mesh.bufferData ();

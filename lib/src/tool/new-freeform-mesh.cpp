@@ -9,10 +9,12 @@
 #include "history.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "mesh-type.hpp"
+#include "mesh-definition.hpp"
 
 struct ToolNewFreeformMesh::Impl {
   ToolNewFreeformMesh* self;
   QSpinBox&            subdivEdit;
+  MeshDefinition       definition;
   Mesh                 mesh;
 
   Impl (ToolNewFreeformMesh* s) 
@@ -32,9 +34,10 @@ struct ToolNewFreeformMesh::Impl {
 
   void updateMesh () {
     const int numSubdiv = this->subdivEdit.value ();
-    this->mesh = Mesh::icosphere (numSubdiv);
-    this->mesh.bufferData        ();
-    Config::cache <int> ("/cache/tool/new-freeform-mesh/subdiv", numSubdiv);
+    this->definition    = MeshDefinition::icosphere (numSubdiv);
+    this->mesh          = Mesh (this->definition);
+    this->mesh.bufferData ();
+    Config::cache <int>   ("/cache/tool/new-freeform-mesh/subdiv", numSubdiv);
   }
 
   void runRender () {
@@ -56,7 +59,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void runApply () {
-    State::history ().add <ActionNewWingedMesh> ().run (MeshType::Freeform, this->mesh);
+    State::history ().add <ActionNewWingedMesh> ().run (MeshType::Freeform, this->definition);
   }
 };
 

@@ -11,6 +11,7 @@
 #include "render-mode.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
+#include "mesh-definition.hpp"
 
 struct Axis::Impl {
   Mesh         coneMesh;
@@ -28,8 +29,8 @@ struct Axis::Impl {
     this->axisLabelColor = Config::get <Color> ("/config/editor/axis/color/label");
     this->axisColor      = Config::get <Color> ("/config/editor/axis/color/normal");
 
-    this->coneMesh       = Mesh::cone     (10);
-    this->cylinderMesh   = Mesh::cylinder (10);
+    this->coneMesh       = Mesh (MeshDefinition::cone     (10));
+    this->cylinderMesh   = Mesh (MeshDefinition::cylinder (10));
 
     this->cylinderMesh.scaling    (glm::vec3 (0.01f, 0.3f , 0.01f));
     this->cylinderMesh.renderMode (RenderMode::Color);
