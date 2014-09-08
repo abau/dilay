@@ -49,7 +49,7 @@ class OctreeNode {
 
 class Octree { 
   public: 
-    DECLARE_BIG4 (Octree)
+    DECLARE_BIG4MOVE (Octree)
 
     WingedFace&      insertFace    (const WingedFace&, const PrimTriangle&);
     WingedFace&      realignFace   (const WingedFace&, const PrimTriangle&, bool* = nullptr);

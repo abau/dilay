@@ -81,23 +81,33 @@
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from) \
+#define DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
-#define DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from) \
+#define DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
+#define DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_COPY_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_COPY_CONSTRUCTOR_SELF(from)
+
 #define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_MOVE_ASSIGNMENT_OP(from) \
   DELEGATE_COPY_CONSTRUCTOR(from) \
-  DELEGATE_ASSIGNMENT_OP(from) \
+  DELEGATE_ASSIGNMENT_OP(from) 
 
 #define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from) \
   DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
-  DELEGATE_ASSIGNMENT_OP_SELF(from) \
+  DELEGATE_ASSIGNMENT_OP_SELF(from)
 
 #define DELEGATE_NEW_IMPL(...) \
   this->impl = new Impl (__VA_ARGS__);
@@ -339,61 +349,117 @@
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base)
 
-// big 4 delegators
+// big 4 (move) delegators
 
-#define DELEGATE_BIG4(from) \
+#define DELEGATE_BIG4MOVE(from) \
   DELEGATE_CONSTRUCTOR(from) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from)
 
-#define DELEGATE1_BIG4(from,t1) \
+#define DELEGATE1_BIG4MOVE(from,t1) \
   DELEGATE1_CONSTRUCTOR(from,t1) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from)
 
-#define DELEGATE2_BIG4(from,t1,t2) \
+#define DELEGATE2_BIG4MOVE(from,t1,t2) \
   DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from)
 
-#define DELEGATE3_BIG4(from,t1,t2,t3) \
+#define DELEGATE3_BIG4MOVE(from,t1,t2,t3) \
   DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from)
 
-#define DELEGATE4_BIG4(from,t1,t2,t3,t4) \
+#define DELEGATE4_BIG4MOVE(from,t1,t2,t3,t4) \
   DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from)
 
-#define DELEGATE5_BIG4(from,t1,t2,t3,t4,t5) \
+#define DELEGATE5_BIG4MOVE(from,t1,t2,t3,t4,t5) \
   DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from)
 
-#define DELEGATE_BIG4_SELF(from) \
+#define DELEGATE_BIG4MOVE_SELF(from) \
   DELEGATE_CONSTRUCTOR_SELF(from) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE1_BIG4_SELF(from,t1) \
+#define DELEGATE1_BIG4MOVE_SELF(from,t1) \
   DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE2_BIG4_SELF(from,t1,t2) \
+#define DELEGATE2_BIG4MOVE_SELF(from,t1,t2) \
   DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE3_BIG4_SELF(from,t1,t2,t3) \
+#define DELEGATE3_BIG4MOVE_SELF(from,t1,t2,t3) \
   DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE4_BIG4_SELF(from,t1,t2,t3,t4) \
+#define DELEGATE4_BIG4MOVE_SELF(from,t1,t2,t3,t4) \
   DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE5_BIG4_SELF(from,t1,t2,t3,t4,t5) \
+#define DELEGATE5_BIG4MOVE_SELF(from,t1,t2,t3,t4,t5) \
   DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
-  DELEGATE_BIG4_WITHOUT_CONSTRUCTOR_SELF(from)
+  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from)
 
-#define DELEGATE_BIG4_BASE(from,params,fromArgs,base,baseArgs) \
+#define DELEGATE_BIG4MOVE_BASE(from,params,fromArgs,base,baseArgs) \
   DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
   DELEGATE_MOVE_ASSIGNMENT_OP_SELF (from)
+
+// big 4 (copy) delegators
+
+#define DELEGATE_BIG4COPY(from) \
+  DELEGATE_CONSTRUCTOR(from) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE1_BIG4COPY(from,t1) \
+  DELEGATE1_CONSTRUCTOR(from,t1) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE2_BIG4COPY(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR(from,t1,t2) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE3_BIG4COPY(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE4_BIG4COPY(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE5_BIG4COPY(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from)
+
+#define DELEGATE_BIG4COPY_SELF(from) \
+  DELEGATE_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE1_BIG4COPY_SELF(from,t1) \
+  DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE2_BIG4COPY_SELF(from,t1,t2) \
+  DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE3_BIG4COPY_SELF(from,t1,t2,t3) \
+  DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE4_BIG4COPY_SELF(from,t1,t2,t3,t4) \
+  DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE5_BIG4COPY_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
+  DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from)
+
+#define DELEGATE_BIG4COPY_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
+  DELEGATE_DESTRUCTOR(from) \
+  DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
+  DELEGATE_COPY_CONSTRUCTOR_BASE(from,base)
 
 // big 6 delegators
 
@@ -589,9 +655,9 @@
           const  t & operator= (      t &&) = delete; \
   virtual      ~ t             ();
 
-// big 4 declarations
+// big 4 (move) declarations
 
-#define DECLARE_BIG4(t,...)                   \
+#define DECLARE_BIG4MOVE(t,...)               \
          t             (__VA_ARGS__);         \
          t             (const t &)  = delete; \
          t             (      t &&);          \
@@ -599,12 +665,30 @@
   const  t & operator= (      t &&);          \
        ~ t             ();
 
-#define DECLARE_BIG4_VIRTUAL(t,...)                   \
+#define DECLARE_BIG4MOVE_VIRTUAL(t,...)               \
                  t             (__VA_ARGS__);         \
                  t             (const t &)  = delete; \
                  t             (      t &&);          \
           const  t & operator= (const t &)  = delete; \
           const  t & operator= (      t &&);          \
+  virtual      ~ t             ();
+
+// big 4 (copy) declarations
+
+#define DECLARE_BIG4COPY(t,...)               \
+         t             (__VA_ARGS__);         \
+         t             (const t &);           \
+         t             (      t &&);          \
+  const  t & operator= (const t &)  = delete; \
+  const  t & operator= (      t &&) = delete; \
+       ~ t             ();
+
+#define DECLARE_BIG4COPY_VIRTUAL(t,...)               \
+                 t             (__VA_ARGS__);         \
+                 t             (const t &);           \
+                 t             (      t &&);          \
+          const  t & operator= (const t &)  = delete; \
+          const  t & operator= (      t &&) = delete; \
   virtual      ~ t             ();
 
 // big 6 declarations
