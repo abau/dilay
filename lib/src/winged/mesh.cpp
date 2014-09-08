@@ -47,23 +47,14 @@ struct WingedMesh::Impl {
 
   WingedVertex* vertex (unsigned int i) {
     assert (this->freeVertexIndices.count (i) == 0);
-
-    if (i > this->vertexMap.size ()) {
-      return nullptr;
-    }
-    else {
-      return &*this->vertexMap[i];
-    }
+    return i > this->vertexMap.size () ? nullptr
+                                       : &*this->vertexMap[i];
   }
 
   WingedEdge* edge (const Id& id) {
     auto it = this->edgeMap.iterator (id);
-    if (it == this->edgeMap.end ()) {
-      return nullptr;
-    }
-    else {
-      return &*it->second;
-    }
+    return it == this->edgeMap.end () ? nullptr
+                                      : &*it->second;
   }
 
   WingedFace* face (const Id& id) { return this->octree.face (id); }
