@@ -13,10 +13,11 @@ class PAModifyWVertex : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAModifyWVertex)
 
-    void edge        (WingedVertex&, WingedEdge*);
-    void writeIndex  (WingedMesh&, WingedVertex&, unsigned int);
-    void writeNormal (WingedMesh&, WingedVertex&, const glm::vec3&);
-    void move        (WingedMesh&, WingedVertex&, const glm::vec3&);
+    void edge                    (WingedVertex&, WingedEdge*);
+    void writeIndex              (WingedMesh&, WingedVertex&, unsigned int);
+    void writeNormal             (WingedMesh&, WingedVertex&, const glm::vec3&);
+    void writeInterpolatedNormal (WingedMesh&, WingedVertex&);
+    void move                    (WingedMesh&, WingedVertex&, const glm::vec3&);
 
   private:
     void runUndo (WingedMesh&);

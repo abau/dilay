@@ -158,7 +158,7 @@ struct ActionCarve::Impl {
 
     // write normals
     for (WingedVertex* v : vertices) {
-      this->actions.add <PAModifyWVertex> ().writeNormal (mesh,*v, v->interpolatedNormal (mesh));
+      this->actions.add <PAModifyWVertex> ().writeInterpolatedNormal (mesh,*v);
     }
   }
 };
