@@ -18,8 +18,6 @@ class PrimTriangle {
     const glm::vec3&  vertex2      () const;
     const glm::vec3&  vertex3      () const;
 
-    glm::vec3         edge1        () const;
-    glm::vec3         edge2        () const;
     glm::vec3         normal       () const;
     glm::vec3         center       () const;
     glm::vec3         minimum      () const;

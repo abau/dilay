@@ -16,11 +16,9 @@ struct PrimTriangle::Impl {
                , const WingedVertex& v2, const WingedVertex& v3)
     : Impl (v1.vector (mesh), v2.vector (mesh), v3.vector (mesh)) {}
 
-  glm::vec3 edge1 () const { return this->vertex2 - this->vertex1; }
-  glm::vec3 edge2 () const { return this->vertex3 - this->vertex2; }
-
   glm::vec3 normal () const { 
-    return glm::normalize (glm::cross (this->edge1 (), this->edge2 ()));
+    return glm::normalize (glm::cross ( this->vertex2 - this->vertex1
+                                      , this->vertex3 - this->vertex2 ));
   }
 
   glm::vec3 center () const {
@@ -52,8 +50,6 @@ GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex1)
 GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex2)
 GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex3)
 
-DELEGATE_CONST  (glm::vec3         , PrimTriangle, edge1)
-DELEGATE_CONST  (glm::vec3         , PrimTriangle, edge2)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, normal)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, center)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, minimum)
