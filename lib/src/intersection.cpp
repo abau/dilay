@@ -173,29 +173,29 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
   return true;
 }
 
+// see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
                                     , glm::vec3* intersection) {
-  const glm::vec3 e1  = tri.edge1 ();
-  const glm::vec3 e2  = tri.edge2 ();
-  const glm::vec3 s1  = glm::cross (ray.direction (), e2);
-  const float divisor = glm::dot   (s1, e1);
+  const glm::vec3 e1 = tri.vertex2 () - tri.vertex1 ();
+  const glm::vec3 e2 = tri.vertex3 () - tri.vertex1 ();
+  const glm::vec3 s1 = glm::cross (ray.direction (), e2);
+  const float det    = glm::dot   (s1, e1);
 
-  if (divisor < std::numeric_limits<float>::epsilon ()) 
+  if (det < std::numeric_limits<float>::epsilon ()) 
     return false;
 
-  const float     invDivisor = 1.0f / divisor;
   const glm::vec3 d          = ray.origin () - tri.vertex1 ();
   const glm::vec3 s2         = glm::cross (d,e1);
-  const float     b1         = glm::dot (d,s1)                 * invDivisor;
-  const float     b2         = glm::dot (ray.direction (), s2) * invDivisor;
-  const float     t          = glm::dot (e2, s2)               * invDivisor;
+  const float     b1         = glm::dot (d,s1);
+  const float     b2         = glm::dot (ray.direction (), s2);
+  const float     t          = glm::dot (e2, s2);
 
-  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) {
+  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > det || t < 0.0f) {
     return false;
   }
   else {
     if (intersection) {
-      *intersection = ray.pointAt (t);
+      *intersection = ray.pointAt (t / det);
     }
     return true;
   }
