@@ -4,9 +4,9 @@
 
 struct ViewToolMessage::Impl {
   ViewToolMessage* self;
-  const QString      action;
-        QString      mouseButton;
-        QString      modifier;
+  const QString    action;
+        QString    mouseButton;
+        QString    modifier;
 
   Impl (ViewToolMessage* s, const QString& a)
     : self        (s)
@@ -66,7 +66,7 @@ struct ViewToolMessage::Impl {
   }
 };
 
-DELEGATE1_BIG6_SELF (ViewToolMessage, const QString&)
+DELEGATE1_BIG4COPY_SELF (ViewToolMessage, const QString&)
 
 DELEGATE_CONST   (QString         , ViewToolMessage, message)
 DELEGATE1_STATIC (QString         , ViewToolMessage, message, const std::initializer_list<ViewToolMessage>&)

@@ -47,7 +47,7 @@ struct TimeDelta :: Impl {
   }
 };
 
-DELEGATE_BIG6         (TimeDelta)
+DELEGATE_BIG4COPY     (TimeDelta)
 DELEGATE2_CONSTRUCTOR (TimeDelta,const char*,int)
 DELEGATE1_CONST       (void, TimeDelta, printGlobal, const char*)
 DELEGATE1             (void, TimeDelta, printLocal, const char*)

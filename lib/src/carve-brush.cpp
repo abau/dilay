@@ -5,8 +5,8 @@
 
 struct CarveBrush :: Impl {
 
-  const float  falloff;
-  const float  domain;
+  static constexpr float falloff = 1.3f;
+  static constexpr float domain  = 2.0f;
 
   float        width;
   float        height;
@@ -18,9 +18,7 @@ struct CarveBrush :: Impl {
   WingedMesh* _mesh;
 
   Impl (float w, float h, float d, float s) 
-    : falloff     (1.3f)
-    , domain      (2.0f)
-    , width       (w)
+    : width       (w)
     , height      (h)
     , detail      (d)
     , stepWidth   (width * s)
@@ -31,8 +29,8 @@ struct CarveBrush :: Impl {
     if (x >= this->width)
       return 0.0f;
     else {
-      float normX = (x * this->domain) / this->width;
-      return glm::exp <float> (- this->falloff * normX * normX * normX * normX) * this->height;
+      float normX = (x * Impl::domain) / this->width;
+      return glm::exp <float> (- Impl::falloff * normX * normX * normX * normX) * this->height;
     }
   }
 

@@ -7,7 +7,7 @@
 
 class TimeDelta {
   public: 
-    DECLARE_BIG6 (TimeDelta)
+    DECLARE_BIG4COPY (TimeDelta)
     TimeDelta    (const char*,int);
 
     void printGlobal (const char* = nullptr) const;

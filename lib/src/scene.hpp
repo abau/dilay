@@ -21,7 +21,7 @@ typedef std::list <SphereMesh*> SphereMeshes;
 
 class Scene {
   public: 
-    DECLARE_BIG2 (Scene)
+    DECLARE_BIG3 (Scene)
 
           WingedMesh&   newWingedMesh        (MeshType);
           WingedMesh&   newWingedMesh        (MeshType, const Id&);

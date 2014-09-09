@@ -232,7 +232,7 @@ struct Scene :: Impl {
   }
 };
 
-DELEGATE_BIG2 (Scene)
+DELEGATE_BIG3 (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)
 DELEGATE2       (WingedMesh&      , Scene, newWingedMesh, MeshType, const Id&)

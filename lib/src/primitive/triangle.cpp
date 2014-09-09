@@ -45,7 +45,7 @@ struct PrimTriangle::Impl {
   }
 };
 
-DELEGATE3_BIG6         (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+DELEGATE3_BIG4COPY     (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE4_CONSTRUCTOR  (PrimTriangle, const WingedMesh&, const WingedVertex&, const WingedVertex&, const WingedVertex&)
 
 GETTER_CONST    (const glm::vec3&  , PrimTriangle, vertex1)

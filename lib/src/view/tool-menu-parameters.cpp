@@ -13,7 +13,7 @@ struct ViewToolMenuParameters::Impl {
   {}
 };
 
-DELEGATE3_BIG6 (ViewToolMenuParameters, ViewMainWindow&, const glm::ivec2&, bool)
+DELEGATE3_BIG4COPY (ViewToolMenuParameters, ViewMainWindow&, const glm::ivec2&, bool)
 GETTER_CONST (ViewMainWindow&  , ViewToolMenuParameters, mainWindow)
 GETTER_CONST (const glm::ivec2&, ViewToolMenuParameters, clickPosition)
 GETTER_CONST (bool             , ViewToolMenuParameters, rightClick)

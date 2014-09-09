@@ -8,7 +8,7 @@ class QString;
 
 class ViewToolMessage {
   public:
-    DECLARE_BIG6 (ViewToolMessage, const QString&)
+    DECLARE_BIG4COPY (ViewToolMessage, const QString&)
 
            QString   message () const;
     static QString   message (const std::initializer_list <ViewToolMessage>&);

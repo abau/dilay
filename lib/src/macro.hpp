@@ -2,76 +2,44 @@
 #define DILAY_MACRO
 
 #include <cassert>
+#include <memory>
 
 // delegators
 
 #define DELEGATE_COPY_CONSTRUCTOR(from) \
-  from :: from (const from & a1) { this->impl = new Impl (*a1.impl); }
+  from :: from (const from & a1) : impl (new Impl (*a1.impl)) {}
 
 #define DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
-  from :: from (const from & a1) { \
-    this->impl       = new Impl (*a1.impl); \
+  from :: from (const from & a1) : impl (new Impl (*a1.impl)) { \
     this->impl->self = this; }
 
 #define DELEGATE_COPY_CONSTRUCTOR_BASE(from,base) \
-  from :: from (const from & a1) : base (a1) { \
-    this->impl       = new Impl (*a1.impl); \
+  from :: from (const from & a1) : base (a1), impl (new Impl (*a1.impl)) { \
     this->impl->self = this; }
 
 #define DELEGATE_MOVE_CONSTRUCTOR(from) \
-  from :: from (from && a1) { \
-    this->impl = a1.impl; \
-    a1.impl    = nullptr; }
+  from :: from (from && a1) : impl (new Impl (std::move (*a1.impl))) {}
 
 #define DELEGATE_MOVE_CONSTRUCTOR_SELF(from) \
-  from :: from (from && a1) { \
-    this->impl       = a1.impl; \
-    this->impl->self = this; \
-    a1.impl          = nullptr; }
+  from :: from (from && a1) : impl (new Impl (std::move (*a1.impl))) { \
+    this->impl->self = this; }
 
 #define DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
-  from :: from (from && a1) : base (std::forward < base > (a1)) { \
-    this->impl       = a1.impl; \
-    this->impl->self = this; \
-    a1.impl          = nullptr; }
+  from :: from (from && a1) : base (std::forward < base > (a1)) \
+                            , impl (new Impl (std::move (*a1.impl))) \
+    { this->impl->self = this; }
 
 #define DELEGATE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (const from & source) { \
-    if (this == &source) return *this; \
-    from tmp (source); \
-    Impl * tmpImpl = tmp.impl; \
-    tmp.impl       = this->impl; \
-    this->impl     = tmpImpl; \
-    return *this; }
-
-#define DELEGATE_ASSIGNMENT_OP_SELF(from) \
-  const from & from :: operator= (const from & source) { \
-    if (this == &source) return *this; \
-    from tmp (source); \
-    Impl * tmpImpl   = tmp.impl; \
-    tmp.impl         = this->impl; \
-    this->impl       = tmpImpl; \
-    this->impl->self = this; \
+    this->impl->operator= (*source.impl); \
     return *this; }
 
 #define DELEGATE_MOVE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (from && source) { \
-    if (this == &source) return *this; \
-    Impl * tmpImpl = source.impl; \
-    source.impl    = this->impl; \
-    this->impl     = tmpImpl; \
+    this->impl->operator= (std::move (*source.impl)); \
     return *this; }
 
-#define DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from) \
-  const from & from :: operator= (from && source) { \
-    if (this == &source) return *this; \
-    Impl * tmpImpl   = source.impl; \
-    source.impl      = this->impl; \
-    this->impl       = tmpImpl; \
-    this->impl->self = this; \
-    return *this; }
-
-#define DELEGATE_DESTRUCTOR(from) from :: ~ from () { delete this->impl; }
+#define DELEGATE_DESTRUCTOR(from) from :: ~ from () {}
 
 #define DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_DESTRUCTOR(from) \
@@ -87,14 +55,14 @@
 
 #define DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
 #define DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from) \
-  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR(from)
 
 #define DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from) \
+  DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_COPY_CONSTRUCTOR_SELF(from)
 
 #define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR(from) \
@@ -105,51 +73,48 @@
 
 #define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from) \
+  DELEGATE_MOVE_ASSIGNMENT_OP(from) \
   DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
-  DELEGATE_ASSIGNMENT_OP_SELF(from)
-
-#define DELEGATE_NEW_IMPL(...) \
-  this->impl = new Impl (__VA_ARGS__);
+  DELEGATE_ASSIGNMENT_OP(from)
 
 #define DELEGATE_CONSTRUCTOR(from) \
-  from :: from () { DELEGATE_NEW_IMPL () }
+  from :: from () : impl (new Impl ()) {}
 
 #define DELEGATE1_CONSTRUCTOR(from,t1) \
-  from :: from (t1 a1) { DELEGATE_NEW_IMPL (a1) }
+  from :: from (t1 a1) : impl (new Impl (a1)) {}
 
 #define DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  from :: from (t1 a1,t2 a2) { DELEGATE_NEW_IMPL (a1,a2) }
+  from :: from (t1 a1,t2 a2) : impl (new Impl (a1,a2)) {}
 
 #define DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  from :: from (t1 a1,t2 a2,t3 a3) { DELEGATE_NEW_IMPL (a1,a2,a3) }
+  from :: from (t1 a1,t2 a2,t3 a3) : impl (new Impl (a1,a2,a3)) {}
 
 #define DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { DELEGATE_NEW_IMPL (a1,a2,a3,a4) }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) : impl (new Impl (a1,a2,a3,a4)) {}
 
 #define DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { DELEGATE_NEW_IMPL (a1,a2,a3,a4,a5) }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) : impl (new Impl (a1,a2,a3,a4,a5)) {}
 
 #define DELEGATE_CONSTRUCTOR_SELF(from) \
-  from :: from () { DELEGATE_NEW_IMPL (this) }
+  from :: from () : impl (new Impl (this)) {}
 
 #define DELEGATE1_CONSTRUCTOR_SELF(from,t1) \
-  from :: from (t1 a1) { DELEGATE_NEW_IMPL (this,a1) }
+  from :: from (t1 a1) : impl (new Impl (this,a1)) {}
 
 #define DELEGATE2_CONSTRUCTOR_SELF(from,t1,t2) \
-  from :: from (t1 a1,t2 a2) { DELEGATE_NEW_IMPL (this,a1,a2) }
+  from :: from (t1 a1,t2 a2) : impl (new Impl (this,a1,a2)) {}
 
 #define DELEGATE3_CONSTRUCTOR_SELF(from,t1,t2,t3) \
-  from :: from (t1 a1,t2 a2,t3 a3) { DELEGATE_NEW_IMPL (this,a1,a2,a3) }
+  from :: from (t1 a1,t2 a2,t3 a3) : impl (new Impl (this,a1,a2,a3)) {}
 
 #define DELEGATE4_CONSTRUCTOR_SELF(from,t1,t2,t3,t4) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) { DELEGATE_NEW_IMPL (this,a1,a2,a3,a4) }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) : impl (new Impl (this,a1,a2,a3,a4)) {}
 
 #define DELEGATE5_CONSTRUCTOR_SELF(from,t1,t2,t3,t4,t5) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { DELEGATE_NEW_IMPL (this,a1,a2,a3,a4,a5) }
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) : impl (new Impl (this,a1,a2,a3,a4,a5)) {}
 
 #define DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
-  from :: from params : base baseArgs { DELEGATE_NEW_IMPL fromArgs }
+  from :: from params : base baseArgs, impl (new Impl fromArgs ) {}
 
 #define DELEGATE_BASE(r,from,method,ifaceParams,implArgs) \
   r from :: method ifaceParams { return this->impl-> method implArgs ; }
@@ -173,9 +138,7 @@
   DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
 
 #define DELEGATE_BASE_CONST(r,from,method,ifaceParams,implArgs) \
-  r from :: method ifaceParams const { \
-    const Impl * constImpl = this->impl; \
-    return constImpl-> method implArgs ; }
+  r from :: method ifaceParams const { return this->impl-> method implArgs ; }
 
 #define DELEGATE_CONST(r,from,method) \
   DELEGATE_BASE_CONST (r,from,method,(),())
@@ -403,7 +366,7 @@
   DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
-  DELEGATE_MOVE_ASSIGNMENT_OP_SELF (from)
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
 // big 4 (copy) delegators
 
@@ -516,8 +479,8 @@
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_COPY_CONSTRUCTOR_BASE(from,base) \
   DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
-  DELEGATE_ASSIGNMENT_OP_SELF(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP_SELF (from)
+  DELEGATE_ASSIGNMENT_OP(from) \
+  DELEGATE_MOVE_ASSIGNMENT_OP(from)
 
 // getters/setters
 
@@ -717,8 +680,14 @@
   const  t & operator= (const t &)  = delete; \
   const  t & operator= (      t &&) = delete;
 
+#define DEFAULT_COPYMOVEASSIGN(t)              \
+         t             (const t &)  = default; \
+         t             (      t &&) = default; \
+  const  t & operator= (const t &)  = default; \
+  const  t & operator= (      t &&) = default;
+
 #define IMPLEMENTATION  \
   class Impl; \
-  Impl* impl;
+  std::unique_ptr <Impl> impl;
 
 #endif

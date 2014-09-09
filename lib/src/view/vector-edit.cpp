@@ -66,12 +66,7 @@ struct ViewVectorEdit::Impl {
   }
 };
 
-ViewVectorEdit :: ViewVectorEdit (const glm::vec3& v, QWidget* p) : QWidget (p) {
-  this->impl = new Impl (this, v);
-}
-
-DELEGATE_BIG3_WITHOUT_CONSTRUCTOR (ViewVectorEdit) 
-
+DELEGATE_BIG2_BASE (ViewVectorEdit,(const glm::vec3& v, QWidget* p),(this,v),QWidget,(p))
 DELEGATE1 (void, ViewVectorEdit, vector, const glm::vec3&)
 DELEGATE1 (void, ViewVectorEdit, x     , float)
 DELEGATE1 (void, ViewVectorEdit, y     , float)

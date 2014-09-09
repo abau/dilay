@@ -33,8 +33,7 @@ struct History::Impl {
   }
 };
 
-DELEGATE_CONSTRUCTOR (History)
-DELEGATE_DESTRUCTOR  (History)
+DELEGATE_BIG3 (History)
 DELEGATE1 (void, History, addAction, Action&)
 DELEGATE  (void, History, undo)
 DELEGATE  (void, History, redo)

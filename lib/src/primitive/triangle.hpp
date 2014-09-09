@@ -10,7 +10,7 @@ class WingedVertex;
 
 class PrimTriangle {
   public:
-    DECLARE_BIG6 (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&);
+    DECLARE_BIG4COPY (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&);
     PrimTriangle ( const WingedMesh&, const WingedVertex&
                  , const WingedVertex&, const WingedVertex&);
 

@@ -7,10 +7,8 @@ class Action;
 class WingedMesh;
 
 class History {
-  public: History            ();
-          History            (const History&) = delete;
-    const History& operator= (const History&) = delete;
-         ~History            ();
+  public: 
+    DECLARE_BIG3 (History)
 
     template <typename A>
     A& add () { 
