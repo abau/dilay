@@ -5,7 +5,6 @@
 #include "adjacent-iterator.hpp"
 #include "fwd-winged.hpp"
 #include "id-map.hpp"
-#include "intersection.hpp"
 #include "octree.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/ray.hpp"
@@ -31,7 +30,6 @@ namespace {
         : id               (f.id           ())
         , edge             (f.edge         ())
         , faceIndex        (f.index        ())
-        , primitive        (t)
         , center           (t.center       ())
         , oneDimExtent     (t.oneDimExtent ())
         {}
@@ -39,7 +37,6 @@ namespace {
       const Id            id;
       WingedEdge* const   edge;
       const unsigned int  faceIndex;
-      const PrimTriangle& primitive;
       const glm::vec3     center;
       const float         oneDimExtent;
   };
@@ -66,7 +63,6 @@ struct OctreeNode::Impl {
   const int            depth;
   Faces                faces;
   OctreeNode::Impl*    parent;
-  IdMap <PrimTriangle> primitives;
   // cf. move constructor
 
   static constexpr float relativeMinFaceExtent = 0.1f;
@@ -131,7 +127,6 @@ struct OctreeNode::Impl {
     , depth      (std::move (source.depth))
     , faces      (std::move (source.faces))
     , parent     (std::move (source.parent))
-    , primitives (std::move (source.primitives))
 #ifdef DILAY_RENDER_OCTREE
     , mesh     (std::move (source.mesh))
   { this->mesh.bufferData (); }
@@ -229,8 +224,7 @@ struct OctreeNode::Impl {
   }
 
   void deleteFace (Faces::iterator& faceIterator) {
-    this->primitives.remove (faceIterator->id ());
-    this->faces.erase       (faceIterator);
+    this->faces.erase (faceIterator);
     if (this->isEmpty () && this->parent) {
       this->parent->childEmptyNotification ();
       // don't call anything after calling childEmptyNotification
@@ -266,30 +260,11 @@ struct OctreeNode::Impl {
     }
   }
 
-  void facesIntersectRay (const PrimRay& ray, Intersection& intersection) {
-    for (auto& element : this->primitives) {
-      glm::vec3 p;
-
-      if (IntersectionUtil::intersects (ray, element.second, &p)) {
-        intersection.update (glm::distance (ray.origin (), p), p, element.second.normal ());
-      }
-    }
-  }
-
   bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
     if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
       this->facesIntersectRay (mesh,ray,intersection);
       for (Child& c : this->children) 
         c->intersects (mesh,ray,intersection);
-    }
-    return intersection.isIntersection ();
-  }
-
-  bool intersects (const PrimRay& ray, Intersection& intersection) {
-    if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
-      this->facesIntersectRay (ray,intersection);
-      for (Child& c : this->children) 
-        c->intersects (ray,intersection);
     }
     return intersection.isIntersection ();
   }
@@ -478,13 +453,6 @@ struct Octree::Impl {
     return false;
   }
 
-  bool intersects (const PrimRay& ray, Intersection& intersection) {
-    if (this->hasRoot ()) {
-      return this->root->intersects (ray,intersection);
-    }
-    return false;
-  }
-
   bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
                   , std::vector <WingedFace*>& faces) 
   {
@@ -578,7 +546,6 @@ DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
-DELEGATE2       (bool, Octree, intersects, const PrimRay&, Intersection&)
 DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::vector<WingedFace*>&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, setupRoot, const glm::vec3&, float)
