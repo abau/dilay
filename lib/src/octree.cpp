@@ -26,17 +26,13 @@ namespace {
   /** Container for face to insert */
   class FaceToInsert {
     public:
-      FaceToInsert (const WingedFace& f, const PrimTriangle& t)
-        : id               (f.id           ())
-        , edge             (f.edge         ())
-        , faceIndex        (f.index        ())
-        , center           (t.center       ())
-        , oneDimExtent     (t.oneDimExtent ())
+      FaceToInsert (WingedFace&& f, const PrimTriangle& t)
+        : face         (std::move     (f))
+        , center       (t.center       ())
+        , oneDimExtent (t.oneDimExtent ())
         {}
 
-      const Id            id;
-      WingedEdge* const   edge;
-      const unsigned int  faceIndex;
+      WingedFace&&        face;
       const glm::vec3     center;
       const float         oneDimExtent;
   };
@@ -211,11 +207,9 @@ struct OctreeNode::Impl {
       return this->insertIntoChild (f);
     }
     else {
-      this->faces.emplace_front ( f.id
-                                , f.edge
-                                , &this->node
-                                , f.faceIndex);
-      return this->faces.begin ();
+      this->faces.emplace_front       (std::move (f.face));
+      this->faces.front ().octreeNode (&this->node);
+      return this->faces.begin        ();
     }
   }
 
@@ -332,19 +326,19 @@ struct Octree::Impl {
 
   Impl () : rootWasSetup (false) {}
 
-  WingedFace& insertFace (const WingedFace& face, const PrimTriangle& geometry) {
+  WingedFace& insertFace (WingedFace&& face, const PrimTriangle& geometry) {
     assert (! this->hasFace (face.id ())); 
-    FaceToInsert faceToInsert (face,geometry);
-    return this->insertFace (faceToInsert);
+    FaceToInsert faceToInsert (std::move (face), geometry);
+    return this->insertFace   (faceToInsert);
   }
 
-  WingedFace& realignFace (const WingedFace& face, const PrimTriangle& geometry, bool* sameNode) {
+  WingedFace& realignFace (WingedFace&& face, const PrimTriangle& geometry, bool* sameNode) {
     assert (this->hasFace   (face.id ())); 
     assert (face.octreeNode ()); 
     OctreeNode* formerNode = face.octreeNode ();
 
-    FaceToInsert faceToInsert (face,geometry);
-    this->deleteFace (face);
+    FaceToInsert faceToInsert (std::move (face),geometry);
+    this->deleteFace (faceToInsert.face);
     WingedFace& newFace = this->insertFace (faceToInsert);
 
     if (sameNode) {
@@ -539,8 +533,8 @@ struct Octree::Impl {
 
 DELEGATE_BIG4MOVE (Octree)
 
-DELEGATE2       (WingedFace& , Octree, insertFace, const WingedFace&, const PrimTriangle&)
-DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const PrimTriangle&, bool*)
+DELEGATE2       (WingedFace& , Octree, insertFace, WingedFace&&, const PrimTriangle&)
+DELEGATE3       (WingedFace& , Octree, realignFace, WingedFace&&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
 DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)

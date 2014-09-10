@@ -50,8 +50,8 @@ class Octree {
   public: 
     DECLARE_BIG4MOVE (Octree)
 
-    WingedFace&      insertFace    (const WingedFace&, const PrimTriangle&);
-    WingedFace&      realignFace   (const WingedFace&, const PrimTriangle&, bool* = nullptr);
+    WingedFace&      insertFace    (WingedFace&&, const PrimTriangle&);
+    WingedFace&      realignFace   (WingedFace&&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace    (const WingedFace&);
     bool             hasFace       (const Id&) const;
     WingedFace*      face          (const Id&);

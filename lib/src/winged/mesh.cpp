@@ -95,12 +95,8 @@ struct WingedMesh::Impl {
     return this->vertices.back ();
   }
 
-  WingedEdge& addEdge (const WingedEdge& e) {
-    this->edges.emplace_back ( e.id ()
-                             , e.vertex1          (), e.vertex2        ()
-                             , e.leftFace         (), e.rightFace      ()
-                             , e.leftPredecessor  (), e.leftSuccessor  ()
-                             , e.rightPredecessor (), e.rightSuccessor () );
+  WingedEdge& addEdge (WingedEdge&& e) {
+    this->edges.push_back (std::move (e));
     this->edgeMap.insert (e.id (), --this->edges.end ());
     return this->edges.back ();
   }
@@ -109,12 +105,12 @@ struct WingedMesh::Impl {
     return ! this->freeFaceIndices.empty ();
   }
   
-  WingedFace& addFace (const WingedFace& f, const PrimTriangle& geometry, bool hasFaceIndex) {
+  WingedFace& addFace (WingedFace&& face, const PrimTriangle& geometry, bool hasFaceIndex) {
     unsigned int faceIndex;
     if (hasFaceIndex) {
-      assert (this->freeFaceIndices.count (f.index ()) > 0);
-      faceIndex = f.index ();
-      this->freeFaceIndices.erase (f.index ());
+      assert (this->freeFaceIndices.count (face.index ()) > 0);
+      faceIndex = face.index ();
+      this->freeFaceIndices.erase (face.index ());
     }
     else if (this->hasFreeFaceIndex ()) {
       faceIndex = *this->freeFaceIndices.begin ();
@@ -124,7 +120,8 @@ struct WingedMesh::Impl {
       faceIndex = this->mesh.numIndices ();
       this->mesh.allocateIndices (3);
     }
-    return this->octree.insertFace (WingedFace (f.id (), f.edge (), nullptr, faceIndex), geometry);
+    face.index (faceIndex);
+    return this->octree.insertFace (std::move (face), geometry);
   }
 
   void setIndex (unsigned int indexNumber, unsigned int index) { 
@@ -159,7 +156,7 @@ struct WingedMesh::Impl {
     this->vertices.erase (this->vertexMap [vertex.index ()]);
   }
 
-  WingedFace& realignFace ( const WingedFace& face, const PrimTriangle& triangle
+  WingedFace& realignFace ( WingedFace&& face, const PrimTriangle& triangle
                           , bool* sameNode, Octree* newOctree = nullptr ) 
   {
     std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
@@ -169,8 +166,8 @@ struct WingedMesh::Impl {
     }
 
     WingedFace& newFace = bool (newOctree) 
-                        ? newOctree -> insertFace  (face, triangle)
-                        : this->octree.realignFace (face, triangle, sameNode);
+                        ? newOctree -> insertFace  (std::move (face), triangle)
+                        : this->octree.realignFace (std::move (face), triangle, sameNode);
 
     for (WingedEdge* e : adjacents) {
       if (e->leftFace () == nullptr)
@@ -308,7 +305,7 @@ struct WingedMesh::Impl {
     Octree newOctree;
 
     this->octree.forEachFace ([&newOctree,this] (WingedFace& face) { 
-      this->realignFace (face, face.triangle (*this->self), nullptr, &newOctree);
+      this->realignFace (std::move (face), face.triangle (*this->self), nullptr, &newOctree);
     });
 
     this->octree = std::move (newOctree);
@@ -333,8 +330,8 @@ DELEGATE1       (WingedFace*    , WingedMesh, face, const Id&)
 DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
-DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const WingedEdge&)
-DELEGATE3       (WingedFace&    , WingedMesh, addFace, const WingedFace&, const PrimTriangle&, bool)
+DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, WingedEdge&&)
+DELEGATE3       (WingedFace&    , WingedMesh, addFace, WingedFace&&, const PrimTriangle&, bool)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
@@ -347,7 +344,7 @@ GETTER_CONST    (const Mesh&    , WingedMesh, mesh)
 DELEGATE1       (void        , WingedMesh, deleteEdge, const WingedEdge&)
 DELEGATE1       (void        , WingedMesh, deleteFace, const WingedFace&)
 DELEGATE1       (void        , WingedMesh, deleteVertex, const WingedVertex&)
-DELEGATE3       (WingedFace& , WingedMesh, realignFace, const WingedFace&, const PrimTriangle&, bool*)
+DELEGATE3       (WingedFace& , WingedMesh, realignFace, WingedFace&&, const PrimTriangle&, bool*)
  
 DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)

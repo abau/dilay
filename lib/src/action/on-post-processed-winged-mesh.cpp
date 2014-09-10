@@ -23,10 +23,11 @@ struct ActionOnPostProcessedWMesh :: Impl {
     mesh.bufferData ();
   }
 
-  WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face) {
+  WingedFace& realignFace (WingedMesh& mesh, WingedFace&& face) {
     bool        sameNode  = false;
-    WingedFace& realigned = mesh.realignFace (face, face.triangle (mesh), &sameNode);
-
+    WingedFace& realigned = mesh.realignFace ( std::move (face)
+                                             , face.triangle (mesh)
+                                             , &sameNode );
     if (sameNode == false) {
       this->realignIds.insert (realigned.id ());
     }
@@ -37,7 +38,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
     for (const Id& id : this->realignIds) {
       WingedFace* face = mesh.face (id);
       if (face) {
-        mesh.realignFace (*face, face->triangle (mesh), nullptr);
+        mesh.realignFace (std::move (*face), face->triangle (mesh), nullptr);
       }
     }
   }
@@ -54,7 +55,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
 DELEGATE_BIG3 (ActionOnPostProcessedWMesh)
 
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, bufferData, WingedMesh&)
-DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, const WingedFace&)
+DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, WingedFace&&)
 
 void ActionOnPostProcessedWMesh :: runUndo (WingedMesh& mesh) {
   this->runUndoBeforePostProcessing (mesh);
