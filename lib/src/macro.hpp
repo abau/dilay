@@ -123,19 +123,29 @@
   DELEGATE_BASE (r,from,method,(),())
 
 #define DELEGATE1(r,from,method,t1) \
-  DELEGATE_BASE (r,from,method,(t1 a1),(a1))
+  DELEGATE_BASE (r,from,method,(t1 a1),( std::forward<t1>(a1) ))
 
 #define DELEGATE2(r,from,method,t1,t2) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2),(a1,a2))
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2), ( std::forward<t1>(a1) \
+                                              , std::forward<t2>(a2) ))
 
 #define DELEGATE3(r,from,method,t1,t2,t3) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3),(a1,a2,a3))
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3), ( std::forward<t1>(a1) \
+                                                    , std::forward<t2>(a2) \
+                                                    , std::forward<t3>(a3) ))
 
 #define DELEGATE4(r,from,method,t1,t2,t3,t4) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4),(a1,a2,a3,a4))
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4), ( std::forward<t1>(a1) \
+                                                          , std::forward<t2>(a2) \
+                                                          , std::forward<t3>(a3) \
+                                                          , std::forward<t4>(a4) ))
 
 #define DELEGATE5(r,from,method,t1,t2,t3,t4,t5) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
+  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5), ( std::forward<t1>(a1) \
+                                                                , std::forward<t2>(a2) \
+                                                                , std::forward<t3>(a3) \
+                                                                , std::forward<t4>(a4) \
+                                                                , std::forward<t5>(a5) ))
 
 #define DELEGATE_BASE_CONST(r,from,method,ifaceParams,implArgs) \
   r from :: method ifaceParams const { return this->impl-> method implArgs ; }
@@ -144,19 +154,29 @@
   DELEGATE_BASE_CONST (r,from,method,(),())
 
 #define DELEGATE1_CONST(r,from,method,t1) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1),(a1))
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1), ( std::forward<t1>(a1) ))
 
 #define DELEGATE2_CONST(r,from,method,t1,t2) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2),(a1,a2))
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2), ( std::forward<t1>(a1) \
+                                                    , std::forward<t2>(a2) ))
 
 #define DELEGATE3_CONST(r,from,method,t1,t2,t3) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3),(a1,a2,a3))
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3), ( std::forward<t1>(a1) \
+                                                          , std::forward<t2>(a2) \
+                                                          , std::forward<t3>(a3) ))
 
 #define DELEGATE4_CONST(r,from,method,t1,t2,t3,t4) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4),(a1,a2,a3,a4))
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4), ( std::forward<t1>(a1) \
+                                                                , std::forward<t2>(a2) \
+                                                                , std::forward<t3>(a3) \
+                                                                , std::forward<t4>(a4) ))
 
 #define DELEGATE5_CONST(r,from,method,t1,t2,t3,t4,t5) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
+  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5), ( std::forward<t1>(a1) \
+                                                                      , std::forward<t2>(a2) \
+                                                                      , std::forward<t3>(a3) \
+                                                                      , std::forward<t4>(a4) \
+                                                                      , std::forward<t5>(a5) ))
 
 #define DELEGATE_BASE_STATIC(r,from,method,ifaceParams,implArgs) \
   r from :: method ifaceParams { return Impl :: method implArgs ; }
