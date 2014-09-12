@@ -91,23 +91,23 @@ struct PAModifyWMesh :: Impl {
                           , this->operandIds.getIndexRef (0) );
   }
 
-  void deleteEdge (WingedMesh& mesh, const WingedEdge& edge) {
+  void deleteEdge (WingedMesh& mesh, WingedEdge& edge) {
     this->operation = Operation::DeleteEdge;
     this->saveEdgeOperand (edge);
     mesh.deleteEdge (edge);
   }
 
-  void deleteFace (WingedMesh& mesh, const WingedFace& face) {
+  void deleteFace (WingedMesh& mesh, WingedFace& face) {
     this->deleteFace (mesh, face, face.triangle (mesh));
   }
 
-  void deleteFace (WingedMesh& mesh, const WingedFace& face, const PrimTriangle& t) {
+  void deleteFace (WingedMesh& mesh, WingedFace& face, const PrimTriangle& t) {
     this->operation = Operation::DeleteFace;
     this->saveFaceOperand (face, t, true);
     mesh.deleteFace (face);
   }
 
-  void deleteVertex (WingedMesh& mesh, const WingedVertex& vertex) {
+  void deleteVertex (WingedMesh& mesh, WingedVertex& vertex) {
     this->operation = Operation::DeleteVertex;
     this->saveVertexOperand (vertex, vertex.vector (mesh));
     mesh.deleteVertex (vertex);
@@ -221,9 +221,9 @@ struct PAModifyWMesh :: Impl {
 
 DELEGATE_BIG3 (PAModifyWMesh)
 
-DELEGATE2 (void         , PAModifyWMesh, deleteEdge     , WingedMesh&, const WingedEdge&)
-DELEGATE3 (void         , PAModifyWMesh, deleteFace     , WingedMesh&, const WingedFace&, const PrimTriangle&)
-DELEGATE2 (void         , PAModifyWMesh, deleteVertex   , WingedMesh&, const WingedVertex&)
+DELEGATE2 (void         , PAModifyWMesh, deleteEdge     , WingedMesh&, WingedEdge&)
+DELEGATE3 (void         , PAModifyWMesh, deleteFace     , WingedMesh&, WingedFace&, const PrimTriangle&)
+DELEGATE2 (void         , PAModifyWMesh, deleteVertex   , WingedMesh&, WingedVertex&)
 DELEGATE2 (WingedEdge&  , PAModifyWMesh, addEdge        , WingedMesh&, WingedEdge&&)
 DELEGATE2 (WingedFace&  , PAModifyWMesh, addFace        , WingedMesh&, WingedFace&&)
 DELEGATE2 (WingedFace&  , PAModifyWMesh, addFace        , WingedMesh&, const PrimTriangle&)

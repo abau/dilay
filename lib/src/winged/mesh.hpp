@@ -45,9 +45,9 @@ class WingedMesh {
     const Octree&      octree             () const;
     const Mesh&        mesh               () const;
 
-    void               deleteEdge         (const WingedEdge&);
-    void               deleteFace         (const WingedFace&);
-    void               deleteVertex       (const WingedVertex&);
+    void               deleteEdge         (WingedEdge&);
+    void               deleteFace         (WingedFace&);
+    void               deleteVertex       (WingedVertex&);
 
     WingedFace&        realignFace        (WingedFace&&, const PrimTriangle&, bool* = nullptr);
 

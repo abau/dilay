@@ -140,7 +140,7 @@ struct WingedMesh::Impl {
     return this->mesh.setNormal (index,n);
   }
 
-  void deleteEdge (const WingedEdge& edge) { 
+  void deleteEdge (WingedEdge& edge) { 
     Id   id = edge.id ();
     auto it = this->edgeMap.iterator (id);
     assert (it != this->edgeMap.end ());
@@ -148,12 +148,12 @@ struct WingedMesh::Impl {
     this->edgeMap.remove (id);
   }
 
-  void deleteFace (const WingedFace& face) { 
+  void deleteFace (WingedFace& face) { 
     this->freeFaceIndices.insert (face.index ());
     this->octree.deleteFace      (face); 
   }
 
-  void deleteVertex (const WingedVertex& vertex) {
+  void deleteVertex (WingedVertex& vertex) {
     this->freeVertexIndices.insert (vertex.index ());
     this->vertices.erase (this->vertexMap [vertex.index ()]);
   }
@@ -344,9 +344,9 @@ GETTER_CONST    (const Edges&   , WingedMesh, edges)
 GETTER_CONST    (const Octree&  , WingedMesh, octree)
 GETTER_CONST    (const Mesh&    , WingedMesh, mesh)
 
-DELEGATE1       (void        , WingedMesh, deleteEdge, const WingedEdge&)
-DELEGATE1       (void        , WingedMesh, deleteFace, const WingedFace&)
-DELEGATE1       (void        , WingedMesh, deleteVertex, const WingedVertex&)
+DELEGATE1       (void        , WingedMesh, deleteEdge, WingedEdge&)
+DELEGATE1       (void        , WingedMesh, deleteFace, WingedFace&)
+DELEGATE1       (void        , WingedMesh, deleteVertex, WingedVertex&)
 DELEGATE3       (WingedFace& , WingedMesh, realignFace, WingedFace&&, const PrimTriangle&, bool*)
  
 DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
