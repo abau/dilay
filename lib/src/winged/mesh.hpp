@@ -1,8 +1,8 @@
 #ifndef DILAY_WINGED_MESH
 #define DILAY_WINGED_MESH
 
-#include <vector>
 #include <glm/fwd.hpp>
+#include <vector>
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 

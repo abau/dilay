@@ -1,22 +1,22 @@
 #include <glm/glm.hpp>
 #include <set>
-#include "winged/vertex.hpp"
-#include "winged/edge.hpp"
-#include "winged/face.hpp"
-#include "winged/mesh.hpp"
 #include "../mesh.hpp"
+#include "../util.hpp"
+#include "adjacent-iterator.hpp"
+#include "config.hpp"
+#include "id-map.hpp"
+#include "id.hpp"
 #include "intersection.hpp"
-#include "primitive/triangle.hpp"
+#include "octree.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
-#include "adjacent-iterator.hpp"
-#include "octree.hpp"
-#include "id.hpp"
+#include "primitive/triangle.hpp"
 #include "selection.hpp"
-#include "config.hpp"
-#include "id-map.hpp"
-#include "../util.hpp"
+#include "winged/edge.hpp"
+#include "winged/face.hpp"
+#include "winged/mesh.hpp"
+#include "winged/vertex.hpp"
 
 struct WingedMesh::Impl {
   typedef std::vector <Vertices::iterator> VertexMap;
