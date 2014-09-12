@@ -34,7 +34,8 @@ class WingedMesh {
     WingedVertex&      addVertex          (const glm::vec3&);
     WingedVertex&      addVertex          (const glm::vec3&, unsigned int);
     WingedEdge&        addEdge            (WingedEdge&&);
-    WingedFace&        addFace            (WingedFace&&, const PrimTriangle&, bool);
+    WingedFace&        addFace            (WingedFace&&, const PrimTriangle&);
+    WingedFace&        addFace            (WingedFace&&, const PrimTriangle&, unsigned int);
     void               setIndex           (unsigned int, unsigned int);
     void               setVertex          (unsigned int, const glm::vec3&);
     void               setNormal          (unsigned int, const glm::vec3&);

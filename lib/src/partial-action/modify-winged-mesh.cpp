@@ -57,30 +57,27 @@ struct PAModifyWMesh :: Impl {
                  , this->operandIds.getEdge   (mesh,5), this->operandIds.getEdge   (mesh,6) ));
   }
 
-  void saveFaceOperand (const WingedFace& face, const PrimTriangle& triangle, bool hasIndex) {
+  void saveFaceOperand (const WingedFace& face, const PrimTriangle& triangle, bool saveIndex) {
     this->operandIds.setFace     (0, &face);
     this->operandIds.setEdge     (1, face.edge  ());
-    if (hasIndex) {
+    if (saveIndex) {
       this->operandIds.setIndex  (0, face.index ());
     }
     this->operandData.set <FaceData> (FaceData {triangle});
   }
   
   WingedFace& addSavedFace (WingedMesh& mesh) {
+    WingedFace  face ( this->operandIds.getIdRef (0)
+                     , this->operandIds.getEdge (mesh,1) );
+
     if (this->operandIds.numIndices () > 0) {
-      return mesh.addFace ( 
-          WingedFace ( this->operandIds.getIdRef (0), this->operandIds.getEdge (mesh,1)
-                     , nullptr, this->operandIds.getIndexRef (0) )
-        , this->operandData.get <FaceData> ().triangle
-        , true
-        );
+      return mesh.addFace ( std::move (face)
+                          , this->operandData.get <FaceData> ().triangle
+                          , this->operandIds.getIndexRef (0) );
     }
     else {
-      return mesh.addFace ( 
-          WingedFace (this->operandIds.getIdRef (0), this->operandIds.getEdge (mesh,1))
-        , this->operandData.get <FaceData> ().triangle
-        , false
-        );
+      return mesh.addFace ( std::move (face)
+                          , this->operandData.get <FaceData> ().triangle );
     }
   }
 
@@ -133,7 +130,7 @@ struct PAModifyWMesh :: Impl {
   WingedFace& addFace (WingedMesh& mesh, WingedFace&& face, const PrimTriangle& t) {
     this->operation = Operation::AddFace;
     this->saveFaceOperand (           face , t, false);
-    return mesh.addFace   (std::move (face), t, false);
+    return mesh.addFace   (std::move (face), t);
   }
 
   WingedVertex& addVertex (WingedMesh& mesh, const glm::vec3& vector) {

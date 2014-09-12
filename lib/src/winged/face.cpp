@@ -9,13 +9,10 @@
 WingedFace :: WingedFace () : WingedFace (Id (), nullptr) {}
 
 WingedFace :: WingedFace (const Id& id, WingedEdge* e)
-  : WingedFace (id, e, nullptr, std::numeric_limits <unsigned int>::max ()) {}
-
-WingedFace :: WingedFace (const Id& id, WingedEdge* e, OctreeNode* n, unsigned int i)
   : _id         (id)
   , _edge       (e)
-  , _octreeNode (n) 
-  , _index      (i)
+  , _octreeNode (nullptr) 
+  , _index      (std::numeric_limits <unsigned int>::max ())
   {}
 
 void WingedFace :: writeIndices (WingedMesh& mesh) {

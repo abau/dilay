@@ -18,7 +18,6 @@ class WingedFace {
   public:                      
     WingedFace ();
     WingedFace (const Id&, WingedEdge*);
-    WingedFace (const Id&, WingedEdge*, OctreeNode*, unsigned int);
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
 

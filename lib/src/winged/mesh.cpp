@@ -105,22 +105,24 @@ struct WingedMesh::Impl {
     return ! this->freeFaceIndices.empty ();
   }
   
-  WingedFace& addFace (WingedFace&& face, const PrimTriangle& geometry, bool hasFaceIndex) {
+  WingedFace& addFace (WingedFace&& face, const PrimTriangle& geometry) {
     unsigned int faceIndex;
-    if (hasFaceIndex) {
-      assert (this->freeFaceIndices.count (face.index ()) > 0);
-      faceIndex = face.index ();
-      this->freeFaceIndices.erase (face.index ());
-    }
-    else if (this->hasFreeFaceIndex ()) {
+    if (this->hasFreeFaceIndex ()) {
       faceIndex = *this->freeFaceIndices.begin ();
-      this->freeFaceIndices.erase (this->freeFaceIndices.begin ());
     }
     else {
       faceIndex = this->mesh.numIndices ();
-      this->mesh.allocateIndices (3);
+      this->mesh.allocateIndices   (3);
+      this->freeFaceIndices.insert (faceIndex);
     }
-    face.index (faceIndex);
+    return this->addFace (std::move (face), geometry, faceIndex);
+  }
+
+  WingedFace& addFace (WingedFace&& face, const PrimTriangle& geometry, unsigned int faceIndex) {
+    assert (this->freeFaceIndices.count (faceIndex) > 0);
+
+    this->freeFaceIndices.erase (faceIndex);
+    face.index                  (faceIndex);
     return this->octree.insertFace (std::move (face), geometry);
   }
 
@@ -331,7 +333,8 @@ DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, WingedEdge&&)
-DELEGATE3       (WingedFace&    , WingedMesh, addFace, WingedFace&&, const PrimTriangle&, bool)
+DELEGATE2       (WingedFace&    , WingedMesh, addFace, WingedFace&&, const PrimTriangle&)
+DELEGATE3       (WingedFace&    , WingedMesh, addFace, WingedFace&&, const PrimTriangle&, unsigned int)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
