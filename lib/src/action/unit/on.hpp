@@ -9,10 +9,8 @@
 template <typename T>
 class ActionUnitOn : public ActionOn <T> {
   public: 
-          ActionUnitOn () 
-            : actions () {}
-          ActionUnitOn (ActionUnitOn&& other) 
-            : actions (std::move (other.actions)) {}
+          ActionUnitOn () : actions () {}
+          ActionUnitOn (ActionUnitOn&& other) : actions (std::move (other.actions)) {}
           ActionUnitOn (const ActionUnitOn&) = delete;
          ~ActionUnitOn () {}
 
