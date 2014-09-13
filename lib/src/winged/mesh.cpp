@@ -162,19 +162,16 @@ struct WingedMesh::Impl {
                           , bool* sameNode, Octree* newOctree = nullptr ) 
   {
     std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
-
-    for (WingedEdge* e : adjacents) {
-      e->face (face,nullptr);
-    }
+    WingedFace*               oldFace   = &face;
 
     WingedFace& newFace = bool (newOctree) 
                         ? newOctree -> insertFace  (std::move (face), triangle)
                         : this->octree.realignFace (std::move (face), triangle, sameNode);
 
     for (WingedEdge* e : adjacents) {
-      if (e->leftFace () == nullptr)
+      if (e->leftFace () == oldFace)
         e->leftFace (&newFace);
-      else if (e->rightFace () == nullptr)
+      else if (e->rightFace () == oldFace)
         e->rightFace (&newFace);
       else
         assert (false);
