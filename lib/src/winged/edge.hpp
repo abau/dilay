@@ -73,7 +73,6 @@ class WingedEdge {
     bool            isFirstVertex    (const WingedFace&, const WingedVertex&) const;
     bool            isSecondVertex   (const WingedFace&, const WingedVertex&) const;
     WingedEdge*     adjacentSibling  (const WingedMesh&, const WingedVertex&) const;
-    bool            gradientAlong    (const WingedFace&) const;
 
     SAFE_REF_CONST  (WingedVertex, vertex1)
     SAFE_REF_CONST  (WingedVertex, vertex2)
