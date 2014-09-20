@@ -1,7 +1,6 @@
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include <set>
 #include <unordered_set>
 #include "action/carve.hpp"
 #include "action/subdivide.hpp"
@@ -43,11 +42,11 @@ struct ActionCarve::Impl {
     return pos + (normal * delta);
   }
 
-  void carveFaces (CarveBrush brush, std::vector <WingedFace*>& faces) {
+  void carveFaces (CarveBrush brush, const std::vector <WingedFace*>& faces) {
     WingedMesh& mesh = brush.mesh ();
 
     // compute set of vertices
-    std::set <WingedVertex*> vertices;
+    std::unordered_set <WingedVertex*> vertices;
     for (const WingedFace* face : faces) {
       assert (face);
       vertices.insert (&face->firstVertex  ());
@@ -148,7 +147,7 @@ struct ActionCarve::Impl {
 
   void finalize (WingedMesh& mesh, std::vector <WingedFace*>& faces) {
     // compute set of vertices
-    std::set <WingedVertex*> vertices;
+    std::unordered_set <WingedVertex*> vertices;
     for (const WingedFace* face : faces) {
       assert (face);
       vertices.insert (&face->firstVertex  ());
