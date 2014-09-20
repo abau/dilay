@@ -115,6 +115,21 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
   return (sep1 || sep2 || sep3 || sep4 || sep5 || sep6 || sep7) == false;
 }
 
+bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
+                                    , const WingedEdge& edge ) 
+{
+  float t;
+  const PrimRay ray (edge.vertex1Ref ().vector (mesh), edge.vertex2Ref ().vector (mesh)
+                                                     - edge.vertex1Ref ().vector (mesh));
+
+  if (IntersectionUtil::intersects (ray, sphere, &t)) {
+    return t <= 1.0f;
+  }
+  else {
+    return false;
+  }
+}
+
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& box) {
   const glm::vec3  c   = sphere.center ();
   const glm::vec3& min = box.minimum ();
