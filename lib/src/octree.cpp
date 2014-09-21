@@ -32,9 +32,9 @@ namespace {
         , oneDimExtent (t.oneDimExtent ())
         {}
 
-      WingedFace&&        face;
-      const glm::vec3     center;
-      const float         oneDimExtent;
+      WingedFace      face;
+      const glm::vec3 center;
+      const float     oneDimExtent;
   };
 }
 
@@ -192,7 +192,7 @@ struct OctreeNode::Impl {
     add (this->center + glm::vec3 ( q,  q,  q));
   }
 
-  Faces::iterator insertIntoChild (const FaceToInsert& f) {
+  Faces::iterator insertIntoChild (FaceToInsert& f) {
     if (this->children.empty ()) {
       this->makeChildren           ();
       return this->insertIntoChild (f);
@@ -202,7 +202,7 @@ struct OctreeNode::Impl {
     }
   }
 
-  Faces::iterator insertFace (const FaceToInsert& f) {
+  Faces::iterator insertFace (FaceToInsert& f) {
     if (f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
       return this->insertIntoChild (f);
     }
@@ -347,7 +347,7 @@ struct Octree::Impl {
     return newFace;
   }
 
-  WingedFace& insertFace (const FaceToInsert& faceToInsert) {
+  WingedFace& insertFace (FaceToInsert& faceToInsert) {
     if (this->hasRoot () == false) {
       this->initRoot (faceToInsert);
     }
