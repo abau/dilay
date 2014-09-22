@@ -12,7 +12,7 @@ class ToolCarve : public Tool {
   private:
     IMPLEMENTATION
 
-    ToolResponse runMouseMoveEvent    (QMouseEvent&);
+    ToolResponse runMouseReleaseEvent    (QMouseEvent&);
 };
 
 #endif

@@ -45,8 +45,8 @@ struct ToolCarve::Impl {
     }
   }
 
-  ToolResponse runMouseMoveEvent (QMouseEvent& e) {
-    if (e.buttons ().testFlag (Qt::LeftButton)) {
+  ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
+    if (e.button () == Qt::LeftButton) {
       if (this->updateBrush (ViewUtil::toIVec2 (e))) {
         State::history ().add <ActionCarve, WingedMesh> (this->brush.mesh ())
                          .run (this->brush);
@@ -60,4 +60,4 @@ struct ToolCarve::Impl {
 DELEGATE_BIG3_BASE ( ToolCarve, (const ViewToolMenuParameters& p)
                    , (this), Tool, (p, toolName ()) )
 DELEGATE_STATIC (QString     , ToolCarve, toolName)
-DELEGATE1       (ToolResponse, ToolCarve, runMouseMoveEvent, QMouseEvent&)
+DELEGATE1       (ToolResponse, ToolCarve, runMouseReleaseEvent, QMouseEvent&)

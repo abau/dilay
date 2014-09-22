@@ -38,7 +38,8 @@ struct PAInsertEdgeVertex :: Impl {
 
     this->actions.add <PAModifyWVertex> ().edge (newE.vertex1Ref  (), &newE);
     
-    this->actions.add <PAModifyWFace> ().edge (newE.leftFaceRef (), &newE);
+    this->actions.add <PAModifyWFace> ().edge (newE.leftFaceRef  (), &newE);
+    this->actions.add <PAModifyWFace> ().edge (   e.rightFaceRef (), &e);
 
     return newE;
   }

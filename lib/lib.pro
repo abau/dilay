@@ -44,6 +44,7 @@ SOURCES += \
            src/partial-action/modify-winged-mesh.cpp \
            src/partial-action/modify-winged-vertex.cpp \
            src/partial-action/triangulate-6-gon.cpp \
+           src/partial-action/triangulate-quad.cpp \
            src/primitive/aabox.cpp \
            src/primitive/plane.cpp \
            src/primitive/ray.cpp \
@@ -137,6 +138,7 @@ HEADERS += \
            src/partial-action/modify-winged-mesh.hpp \
            src/partial-action/modify-winged-vertex.hpp \
            src/partial-action/triangulate-6-gon.hpp \
+           src/partial-action/triangulate-quad.hpp \
            src/primitive/aabox.hpp \
            src/primitive/plane.hpp \
            src/primitive/ray.hpp \

@@ -29,7 +29,7 @@ struct ActionCarve::Impl {
     WingedMesh&               mesh = brush.mesh ();
 
     mesh.intersects        (sphere, faces);
-    this->carveFaces       (brush, faces);
+    //this->carveFaces       (brush, faces);
     this->subdivideFaces   (brush, sphere, faces);
     this->finalize         (mesh, faces);
     this->self->bufferData (mesh);
@@ -77,17 +77,8 @@ struct ActionCarve::Impl {
     }
   }
 
-  bool isSubdividable (const CarveBrush& brush, const WingedFace& face) const
-  {
-    const glm::vec3 v1 = face.firstVertex  ().vector (brush.mesh ());
-    const glm::vec3 v2 = face.secondVertex ().vector (brush.mesh ());
-    const glm::vec3 v3 = face.thirdVertex  ().vector (brush.mesh ());
-
-    const float maxEdgeLength = glm::max ( glm::distance2 (v1, v2)
-                                         , glm::max ( glm::distance2 (v1, v3)
-                                                    , glm::distance2 (v2, v3)));
-
-    return maxEdgeLength > brush.detail () * brush.detail ();
+  bool isSubdividable (const CarveBrush& brush, const WingedFace& face) const {
+    return face.incircleRadiusSqr (brush.mesh ()) > brush.detail () * brush.detail ();
   }
 
   void subdivideFaces ( const CarveBrush& brush, const PrimSphere& sphere
@@ -110,26 +101,20 @@ struct ActionCarve::Impl {
     // initialize first iteration
     for (WingedFace* face : faces) {
       assert (face);
-      thisIteration.insert (face->id ());
       affectedFaces.insert (face->id ());
+      checkNextIteration   (*face);
     }
+    thisIteration = nextIteration;
+    nextIteration.clear ();
 
     // iterate
     while (thisIteration.size () > 0) {
-      for (const Id& id : thisIteration) {
-        WingedFace* f = mesh.face (id);
-        if (f && this->isSubdividable (brush, *f)) {
-          std::vector <Id> tmpAffected;
-          this->actions.add <ActionSubdivide> ().run (mesh, *f, &tmpAffected);
+      std::vector <Id> tmpAffected;
+      this->actions.add <ActionSubdivide> ().run (mesh, thisIteration, &tmpAffected);
 
-          for (const Id& id : tmpAffected) {
-            WingedFace* affected = mesh.face (id);
-            if (affected) {
-              checkNextIteration   (*affected);
-              affectedFaces.insert (id);
-            }
-          }
-        }
+      for (const Id& id : tmpAffected) {
+        checkNextIteration   (mesh.faceRef (id));
+        affectedFaces.insert (id);
       }
       thisIteration = nextIteration;
       nextIteration.clear ();
@@ -138,10 +123,7 @@ struct ActionCarve::Impl {
     // collect affected faces
     faces.clear ();
     for (const Id& id : affectedFaces) {
-      WingedFace* affected = mesh.face (id);
-      if (affected) {
-        faces.push_back (affected);
-      }
+      faces.push_back (&mesh.faceRef (id));
     }
   }
 

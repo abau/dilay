@@ -95,6 +95,18 @@ float WingedFace :: longestEdgeLengthSqr (const WingedMesh& mesh) const {
 
 bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
 
+float WingedFace :: incircleRadiusSqr (const WingedMesh& mesh) const {
+  assert (this->isTriangle ());
+  const glm::vec3 v1 = this->firstVertex  ().vector (mesh);
+  const glm::vec3 v2 = this->secondVertex ().vector (mesh);
+  const glm::vec3 v3 = this->thirdVertex  ().vector (mesh);
+  const float     a  = glm::distance (v1,v2);
+  const float     b  = glm::distance (v2,v3);
+  const float     c  = glm::distance (v1,v3);
+  const float     s  = 0.5f * (a + b + c);
+  return (s-a) * (s-b) * (s-c) / s;
+}
+
 AdjEdges WingedFace :: adjacentEdges (WingedEdge& e) const {
   return AdjEdges (*this, e);
 }

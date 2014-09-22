@@ -44,6 +44,7 @@ class WingedFace {
     WingedEdge*            longestEdge            (const WingedMesh&, float*) const;
     float                  longestEdgeLengthSqr   (const WingedMesh&) const;
     bool                   isTriangle             () const;
+    float                  incircleRadiusSqr      (const WingedMesh& mesh) const;
 
     AdjEdges               adjacentEdges          (WingedEdge&) const;
     AdjEdges               adjacentEdges          ()            const;
