@@ -11,7 +11,9 @@
 struct PATriangulateQuad :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void run (WingedMesh& mesh, WingedFace& face, std::vector <Id>* affectedFaces) {
+  WingedEdge& run ( WingedMesh& mesh, WingedFace& face
+                  , std::unordered_set <WingedFace*>* affectedFaces ) 
+  {
     assert (face.numEdges () == 4);
 
     WingedEdge&   edge        = face.edgeRef ();
@@ -23,22 +25,23 @@ struct PATriangulateQuad :: Impl {
 
     WingedFace& newFace = this->actions.add <PAModifyWMesh> ().addFace (mesh, newLeftGeometry);
 
-    splitFaceWith ( mesh, newFace, face
-                  , edge, edge.predecessorRef (face)
-                  , counterpart, edge.successorRef (face) );
+    WingedEdge& newEdge = splitFaceWith ( mesh, newFace, face
+                                        , edge, edge.predecessorRef (face)
+                                        , counterpart, edge.successorRef (face) );
 
     this->actions.add <PAModifyWFace> ().writeIndices (mesh, newFace);
     this->actions.add <PAModifyWFace> ().writeIndices (mesh, face);
 
     if (affectedFaces) {
-      affectedFaces->push_back (face   .id ());
-      affectedFaces->push_back (newFace.id ());
+      affectedFaces->insert (&face);
+      affectedFaces->insert (&newFace);
     }
+    return newEdge;
   }
 
-  void splitFaceWith ( WingedMesh& mesh , WingedFace& newLeft, WingedFace& faceToSplit
-                                        , WingedEdge& leftPred,  WingedEdge& leftSucc
-                                        , WingedEdge& rightPred, WingedEdge& rightSucc) 
+  WingedEdge& splitFaceWith ( WingedMesh& mesh , WingedFace& newLeft, WingedFace& faceToSplit
+                            , WingedEdge& leftPred,  WingedEdge& leftSucc
+                            , WingedEdge& rightPred, WingedEdge& rightSucc) 
   {
     WingedEdge& splitAlong = this->actions.add <PAModifyWMesh> ()
                                           .addEdge (mesh, WingedEdge ());
@@ -72,6 +75,8 @@ struct PATriangulateQuad :: Impl {
 
     this->actions.add <PAModifyWEdge> ().predecessor (rightSucc, faceToSplit, &splitAlong);
     this->actions.add <PAModifyWEdge> ().successor   (rightSucc, faceToSplit, &rightPred);
+
+    return splitAlong;
   }
 
   void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
@@ -80,6 +85,6 @@ struct PATriangulateQuad :: Impl {
 
 DELEGATE_BIG3 (PATriangulateQuad)
 
-DELEGATE3 (void,PATriangulateQuad,run,WingedMesh&,WingedFace&,std::vector <Id>*)
-DELEGATE1 (void,PATriangulateQuad,runUndo,WingedMesh&)
-DELEGATE1 (void,PATriangulateQuad,runRedo,WingedMesh&)
+DELEGATE3 (WingedEdge&, PATriangulateQuad, run, WingedMesh&, WingedFace&, std::unordered_set <WingedFace*>*)
+DELEGATE1 (void, PATriangulateQuad, runUndo, WingedMesh&)
+DELEGATE1 (void, PATriangulateQuad, runRedo, WingedMesh&)

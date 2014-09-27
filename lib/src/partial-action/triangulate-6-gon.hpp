@@ -1,13 +1,12 @@
 #ifndef DILAY_PARTIAL_ACTION_TRIANGULATE_6_GON
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_6_GON
 
-#include <vector>
+#include <unordered_set>
 #include "action/on.hpp"
 #include "macro.hpp"
 
-class WingedFace;
 class WingedMesh;
-class Id;
+class WingedFace;
 
 class PATriangulate6Gon : public ActionOn <WingedMesh> {
   public: 
@@ -19,7 +18,7 @@ class PATriangulate6Gon : public ActionOn <WingedMesh> {
    * The new faces are adjacent to `f`.
    * `f` and the new faces are added to `n` if `n` is not `nullptr`.
    */
-    void run  (WingedMesh&, WingedFace&, std::vector <Id>* = nullptr);
+    void run (WingedMesh&, WingedFace&, std::unordered_set <WingedFace*>* = nullptr);
 
   private:
     void runUndo (WingedMesh&);

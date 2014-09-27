@@ -2,23 +2,22 @@
 #define DILAY_ACTION_SUBDIVIDE
 
 #include <unordered_set>
-#include <vector>
-#include "action/on-post-processed-winged-mesh.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
-class WingedEdge;
 class WingedMesh;
-class Id;
+class WingedFace;
 
-class ActionSubdivide : public ActionOnPostProcessedWMesh {
+class ActionSubdivide : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (ActionSubdivide)
 
-    void run (WingedMesh&, const std::unordered_set <Id>&, std::vector <Id>*);
+    void run (WingedMesh&, const std::unordered_set <WingedFace*>&
+                         ,       std::unordered_set <WingedFace*>&);
 
   private:
-    void runUndoBeforePostProcessing (WingedMesh&);
-    void runRedoBeforePostProcessing (WingedMesh&);
+    void runUndo (WingedMesh&);
+    void runRedo (WingedMesh&);
 
     IMPLEMENTATION
 };

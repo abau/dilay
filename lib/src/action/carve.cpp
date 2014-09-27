@@ -84,57 +84,57 @@ struct ActionCarve::Impl {
   void subdivideFaces ( const CarveBrush& brush, const PrimSphere& sphere
                       , std::vector <WingedFace*>& faces ) 
   {
-    WingedMesh&             mesh = brush.mesh ();
-    std::unordered_set <Id> thisIteration;
-    std::unordered_set <Id> nextIteration;
-    std::unordered_set <Id> affectedFaces;
+    typedef std::unordered_set <WingedFace*> FaceSet;
 
-    auto checkNextIteration = [&] (const WingedFace& face) -> void {
-      if ( nextIteration.count (face.id ()) == 0 
-        && this->isSubdividable (brush, face)
-        && IntersectionUtil::intersects (sphere,mesh,face)) 
+    WingedMesh& mesh = brush.mesh ();
+    FaceSet     nextIteration;
+    FaceSet     affectedFaces;
+
+    auto checkNextIteration = [&] (WingedFace& face) -> void {
+      if ( nextIteration.count (&face) == 0 
+        && IntersectionUtil::intersects (sphere,mesh,face)
+        && this->isSubdividable (brush, face) )
       {
-        nextIteration.insert (face.id ());
+        nextIteration.insert (&face);
       }
     };
 
     // initialize first iteration
-    for (WingedFace* face : faces) {
-      assert (face);
-      affectedFaces.insert (face->id ());
-      checkNextIteration   (*face);
+    affectedFaces.insert (faces.begin (), faces.end ());
+    for (WingedFace* f : faces) {
+      assert (f);
+      checkNextIteration   (*f);
     }
-    thisIteration = nextIteration;
-    nextIteration.clear ();
 
     // iterate
-    while (thisIteration.size () > 0) {
-      std::vector <Id> tmpAffected;
-      this->actions.add <ActionSubdivide> ().run (mesh, thisIteration, &tmpAffected);
+    while (nextIteration.size () > 0) {
+      FaceSet tmpAffected;
+      this->actions.add <ActionSubdivide> ().run (mesh, nextIteration, tmpAffected);
 
-      for (const Id& id : tmpAffected) {
-        checkNextIteration   (mesh.faceRef (id));
-        affectedFaces.insert (id);
-      }
-      thisIteration = nextIteration;
       nextIteration.clear ();
+
+      for (WingedFace* face : tmpAffected) {
+        assert (face);
+        checkNextIteration   (*face);
+        affectedFaces.insert ( face);
+      }
     }
 
     // collect affected faces
-    faces.clear ();
-    for (const Id& id : affectedFaces) {
-      faces.push_back (&mesh.faceRef (id));
-    }
+    faces.clear  ();
+    faces.insert (faces.end (), affectedFaces.begin (), affectedFaces.end ());
   }
 
   void finalize (WingedMesh& mesh, std::vector <WingedFace*>& faces) {
-    // compute set of vertices
+    // compute set of vertices & realign
     std::unordered_set <WingedVertex*> vertices;
-    for (const WingedFace* face : faces) {
+    for (WingedFace* face : faces) {
       assert (face);
       vertices.insert (&face->firstVertex  ());
       vertices.insert (&face->secondVertex ());
       vertices.insert (&face->thirdVertex  ());
+
+      this->self->realignFace (mesh, std::move (*face));
     }
 
     // write normals

@@ -12,10 +12,15 @@
 struct PATriangulate6Gon :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void run (WingedMesh& mesh, WingedFace& f, std::vector <Id>* affectedFaces) {
-    assert (f.numEdges () == 6);
-    assert (this->actions.isEmpty ());
+  void run (WingedMesh& mesh, WingedFace& f, std::unordered_set <WingedFace*>* affectedFaces) {
+    this->run (mesh, f, nullptr, nullptr, affectedFaces);
+  }
 
+  void run ( WingedMesh& mesh, WingedFace& f
+           , WingedFace* reuseFace, WingedEdge* reuseEdge
+           , std::unordered_set <WingedFace*>* affectedFaces ) 
+  {
+    assert (f.numEdges () == 6);
     /*     4
      *    /c\
      *   5---3
@@ -36,14 +41,20 @@ struct PATriangulate6Gon :: Impl {
     WingedVertex& v4 = e45.firstVertexRef (f);
     WingedVertex& v5 = e50.firstVertexRef (f);
 
-    WingedFace& a = this->actions.add <PAModifyWMesh> ().addFace
-      (mesh, WingedFace (Id (), &e01), PrimTriangle (mesh,v0,v1,v5));
+    WingedFace& a = bool (reuseFace)
+                  ? *reuseFace
+                  : this->actions.add <PAModifyWMesh> ().addFace 
+                    (mesh, WingedFace (Id (), &e01), PrimTriangle (mesh,v0,v1,v5));
+    if (reuseFace) {
+      this->actions.add <PAModifyWFace> ().edge (a, &e01);
+    }
     WingedFace& b = this->actions.add <PAModifyWMesh> ().addFace 
       (mesh, WingedFace (Id (), &e23), PrimTriangle (mesh,v1,v2,v3));
     WingedFace& c = this->actions.add <PAModifyWMesh> ().addFace
       (mesh, WingedFace (Id (), &e45), PrimTriangle (mesh,v3,v4,v5));
 
-    WingedEdge& e13 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
+    WingedEdge& e13 = reuseEdge ? *reuseEdge
+                    : this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
     WingedEdge& e35 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
     WingedEdge& e51 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
 
@@ -83,10 +94,10 @@ struct PATriangulate6Gon :: Impl {
     this->actions.add <PAModifyWFace> ().writeIndices (mesh,c);
 
     if (affectedFaces) {
-      affectedFaces->push_back (f.id ());
-      affectedFaces->push_back (a.id ());
-      affectedFaces->push_back (b.id ());
-      affectedFaces->push_back (c.id ());
+      affectedFaces->insert (&f);
+      affectedFaces->insert (&a);
+      affectedFaces->insert (&b);
+      affectedFaces->insert (&c);
     }
   }
 
@@ -96,6 +107,6 @@ struct PATriangulate6Gon :: Impl {
 
 DELEGATE_BIG3 (PATriangulate6Gon)
 
-DELEGATE3 (void,PATriangulate6Gon,run,WingedMesh&,WingedFace&,std::vector<Id>*)
-DELEGATE1 (void,PATriangulate6Gon,runUndo,WingedMesh&)
-DELEGATE1 (void,PATriangulate6Gon,runRedo,WingedMesh&)
+DELEGATE3 (void, PATriangulate6Gon, run, WingedMesh&, WingedFace&, std::unordered_set <WingedFace*>*)
+DELEGATE1 (void, PATriangulate6Gon, runUndo, WingedMesh&)
+DELEGATE1 (void, PATriangulate6Gon, runRedo, WingedMesh&)
