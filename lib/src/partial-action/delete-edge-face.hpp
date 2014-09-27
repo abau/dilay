@@ -11,9 +11,11 @@ class PADeleteEdgeFace : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PADeleteEdgeFace)
 
-    /** `run (m,e)` deletes edge `e` and its _right_ face of mesh `m`. 
-     * Note that other parts of the program depend on this behaviour. */
-    void run (WingedMesh&, WingedEdge&);
+    // `deleteEdgeFace (m,e)` deletes edge `e` and its _right_ face of mesh `m`. 
+    void deleteEdgeFace (WingedMesh&, WingedEdge&);
+
+    // `dissolveEdgeFace (e)` dissolves edge `e` and its _right_ face without deleting them.
+    void dissolveEdgeFace (WingedEdge&);
 
   private:
     void runUndo (WingedMesh&);

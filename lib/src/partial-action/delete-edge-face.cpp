@@ -14,12 +14,21 @@
 struct PADeleteEdgeFace :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void run (WingedMesh& mesh, WingedEdge& edge) {
+  void deleteEdgeFace (WingedMesh& mesh, WingedEdge& edge) {
+    WingedFace&  faceToDelete = *edge.rightFace ();
+    PrimTriangle triangle     = faceToDelete.triangle (mesh);
+
+    this->dissolveEdgeFace (edge);
+
+    actions.add <PAModifyWMesh> ().deleteEdge (mesh,edge);
+    actions.add <PAModifyWMesh> ().deleteFace (mesh,faceToDelete,triangle); 
+  }
+
+  void dissolveEdgeFace (WingedEdge& edge) {
     assert (this->actions.isEmpty ());
 
     WingedFace&  faceToDelete  = *edge.rightFace ();
     WingedFace&  remainingFace = *edge.leftFace ();
-    PrimTriangle triangle      = faceToDelete.triangle (mesh);
 
     assert (faceToDelete.octreeNode ());
 
@@ -41,12 +50,6 @@ struct PADeleteEdgeFace :: Impl {
     actions.add <PAModifyWVertex> ().edge (edge.vertex2Ref (), edge.leftSuccessor   ());
 
     actions.add <PAModifyWFace> ().edge (remainingFace, edge.leftSuccessor ());
-
-    actions.add <PAModifyWFace> ().edge       (faceToDelete, nullptr);
-    actions.add <PAModifyWEdge> ().rightFace  (edge, nullptr);
-
-    actions.add <PAModifyWMesh> ().deleteEdge (mesh,edge);
-    actions.add <PAModifyWMesh> ().deleteFace (mesh,faceToDelete,triangle); 
   }
 
   void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
@@ -55,7 +58,7 @@ struct PADeleteEdgeFace :: Impl {
 
 DELEGATE_BIG3 (PADeleteEdgeFace)
 
-DELEGATE2 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&)
+DELEGATE2 (void,PADeleteEdgeFace,deleteEdgeFace,WingedMesh&,WingedEdge&)
+DELEGATE1 (void,PADeleteEdgeFace,dissolveEdgeFace,WingedEdge&)
 DELEGATE1 (void,PADeleteEdgeFace,runUndo,WingedMesh&)
 DELEGATE1 (void,PADeleteEdgeFace,runRedo,WingedMesh&)
-
