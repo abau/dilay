@@ -10,6 +10,7 @@
 #include "partial-action/triangulate-quad.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
+#include "subdivision-butterfly.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/face-intersection.hpp"
@@ -135,7 +136,7 @@ struct ActionSubdivide::Impl {
     auto subdivideEdge = [&] (WingedEdge& edge) -> void {
       if (subdividedEdges.count (edge.id ()) == 0) {
         WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ().run 
-          (data.mesh, edge, edge.middle (data.mesh));
+          (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
 
         subdividedEdges.insert (edge   .id ());
         subdividedEdges.insert (newEdge.id ());
