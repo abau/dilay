@@ -61,7 +61,8 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& 
 }
 
 bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
-                                    , const WingedVertex& vertex) {
+                                    , const WingedVertex& vertex) 
+{
   return IntersectionUtil :: intersects (sphere, vertex.vector (mesh));
 }
 
@@ -121,13 +122,9 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
   float t;
   const PrimRay ray (edge.vertex1Ref ().vector (mesh), edge.vertex2Ref ().vector (mesh)
                                                      - edge.vertex1Ref ().vector (mesh));
-
-  if (IntersectionUtil::intersects (ray, sphere, &t)) {
-    return t <= 1.0f;
-  }
-  else {
-    return false;
-  }
+  return IntersectionUtil::intersects (ray, sphere, &t)
+       ? t <= 1.0f
+       : false;
 }
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& box) {
@@ -190,27 +187,30 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
 
 // see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
-                                    , glm::vec3* intersection) {
+                                    , glm::vec3* intersection) 
+{
   const glm::vec3 e1 = tri.vertex2 () - tri.vertex1 ();
   const glm::vec3 e2 = tri.vertex3 () - tri.vertex1 ();
   const glm::vec3 s1 = glm::cross (ray.direction (), e2);
   const float det    = glm::dot   (s1, e1);
+  const float invDet = 1.0f / det;
 
-  if (det < std::numeric_limits<float>::epsilon ()) 
+  if ( det > - std::numeric_limits<float>::epsilon () 
+    && det <   std::numeric_limits<float>::epsilon () ) {
     return false;
+  }
+  const glm::vec3 d  = ray.origin () - tri.vertex1 ();
+  const glm::vec3 s2 = glm::cross (d,e1);
+  const float     b1 = glm::dot (d,s1) * invDet;
+  const float     b2 = glm::dot (ray.direction (), s2) * invDet;
+  const float     t  = glm::dot (e2, s2) * invDet;
 
-  const glm::vec3 d          = ray.origin () - tri.vertex1 ();
-  const glm::vec3 s2         = glm::cross (d,e1);
-  const float     b1         = glm::dot (d,s1);
-  const float     b2         = glm::dot (ray.direction (), s2);
-  const float     t          = glm::dot (e2, s2);
-
-  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > det || t < 0.0f) {
+  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) {
     return false;
   }
   else {
     if (intersection) {
-      *intersection = ray.pointAt (t / det);
+      *intersection = ray.pointAt (t);
     }
     return true;
   }
