@@ -38,6 +38,7 @@ SOURCES += \
            src/octree.cpp \
            src/opengl-util.cpp \
            src/partial-action/delete-edge-face.cpp \
+           src/partial-action/flip-edge.cpp \
            src/partial-action/insert-edge-vertex.cpp \
            src/partial-action/modify-winged-edge.cpp \
            src/partial-action/modify-winged-face.cpp \
@@ -132,6 +133,7 @@ HEADERS += \
            src/octree.hpp \
            src/opengl-util.hpp \
            src/partial-action/delete-edge-face.hpp \
+           src/partial-action/flip-edge.hpp \
            src/partial-action/insert-edge-vertex.hpp \
            src/partial-action/modify-winged-edge.hpp \
            src/partial-action/modify-winged-face.hpp \

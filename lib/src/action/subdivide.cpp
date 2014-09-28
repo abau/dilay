@@ -3,6 +3,7 @@
 #include "action/subdivide.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
+#include "partial-action/flip-edge.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
@@ -54,6 +55,7 @@ struct ActionSubdivide::Impl {
     this->oneRingBorder        (neighbourhood, border);
     this->subdivideFaces       (data, neighbourhood);
     this->refineBorder         (data, border);
+    //this->relaxByEdgeFlip      (data, 3);
     this->smoothAffectedFaces  (data);
   }
 
@@ -218,36 +220,19 @@ struct ActionSubdivide::Impl {
       this->actions.add <PAModifyWVertex> ().move (data.mesh, *posIt.first, newPos);
     }
   }
-
   /*
-  void relaxByEdgeFlip (FaceSet& faces, int threshold) {
-    for (WingedFace* f : faces) {
-      for (WingedEdge* e : f->adjacentEdges ().collect ()) {
-        this->relaxByEdgeFlip (*e, threshold);
-      }
-    }
-  }
-
   void relaxByEdgeFlip (const SubdivideData& data, int threshold) {
-    for (const Id& id : *data.affectedFaces) {
-      WingedFace& f = data.mesh.faceRef (id);
-
-      for (WingedEdge* e : f.adjacentEdges ().collect ()) {
-        this->relaxByEdgeFlip (*e, threshold);
+    FaceSet affectedFaces;
+    for (WingedFace* f : data.affectedFaces) {
+      for (WingedEdge* e : f->adjacentEdges ().collect ()) {
+        if (this->relaxiationIndex (*e) >= threshold) {
+          affectedFaces.insert (e->leftFace  ());
+          affectedFaces.insert (e->rightFace ());
+          actions.add <PAFlipEdge> ().run (*e);
+        }
       }
-
     }
-  }
-
-  void relaxByEdgeFlip (WingedEdge& edge, int threshold) {
-    if (this->relaxiationIndex (edge) >= threshold) {
-      actions.add <PAFlipEdge> ().run (edge);
-
-      this->relaxByEdgeFlip (edge.leftPredecessorRef  (), threshold);
-      this->relaxByEdgeFlip (edge.leftSuccessorRef    (), threshold);
-      this->relaxByEdgeFlip (edge.rightPredecessorRef (), threshold);
-      this->relaxByEdgeFlip (edge.rightSuccessorRef   (), threshold);
-    }
+    data.affectedFaces.insert (affectedFaces.begin (), affectedFaces.end ());
   }
 
   int relaxiationIndex (const WingedEdge& edge) const {
