@@ -4,10 +4,14 @@
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
 #include "partial-action/triangulate-quad.hpp"
+#include "primitive/ray.hpp"
+#include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
+#include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
@@ -152,38 +156,66 @@ struct ActionSubdivide::Impl {
   }
 
   void smoothAffectedFaces (const SubdivideData& data) {
-    std::unordered_map <WingedVertex*,glm::vec3> oldPositions;
-    std::unordered_set <WingedVertex*>           smoothed;
+    std::unordered_map <WingedVertex*,glm::vec3> positions;
+    std::unordered_map <WingedVertex*,glm::vec3> deltas;
 
-    auto getPos = [&data,&oldPositions] (WingedVertex& v) {
-      auto it = oldPositions.find (&v);
-      if (it == oldPositions.end ()) {
-        const glm::vec3 p = v.vector (data.mesh);
-        oldPositions.emplace (&v, p);
-        return p;
-      }
-      else {
-        return it->second;
-      }
-    };
-
+    // initialize positions
     for (WingedFace* face : data.affectedFaces) {
       assert (face->isTriangle ());
-
       for (WingedVertex& v : face->adjacentVertices ()) {
-        if (smoothed.count (&v) == 0) {
-          const glm::vec3    oldPos  (getPos (v));
+        if (positions.count (&v) == 0) {
+          positions.emplace (&v, v.vector (data.mesh));
+        }
+      }
+    }
+    // compute deltas
+    for (WingedFace* face : data.affectedFaces) {
+      for (WingedVertex& v : face->adjacentVertices ()) {
+        if (deltas.count (&v) == 0) {
+          const glm::vec3    p       (positions.find (&v)->second);
                 glm::vec3    delta   (0.0f);
                 unsigned int valence (0);
 
           for (WingedEdge& e : v.adjacentEdges ()) {
-            delta += getPos (e.otherVertexRef (v)) - oldPos;
+            WingedVertex&   otherV  = e.otherVertexRef (v);
+            auto            otherIt = positions.find (&otherV);
+            const glm::vec3 otherP  = otherIt == positions.end ()
+                                    ? otherV.vector (data.mesh)
+                                    : otherIt->second;
+            delta += otherP - p;
             valence++;
           }
-          data.mesh.setVertex (v.index (), oldPos + (delta / float (valence)));
-          smoothed.insert (&v);
+          deltas.emplace (&v, delta / float (valence));
         }
       }
+    }
+    // update positions
+    for (auto deltaIt : deltas) {
+      auto posIt = positions.find (deltaIt.first);
+      assert (posIt != positions.end ());
+
+      const glm::vec3 newPos = posIt->second + deltaIt.second;
+      positions.erase (posIt);
+      positions.emplace (deltaIt.first, newPos);
+    }
+    // displace in normal direction
+    for (auto posIt : positions) {
+      WingedVertex& v         (*posIt.first);
+      glm::vec3     newNormal (0.0f);
+      unsigned int  valence   (0);
+
+      for (WingedFace& f : v.adjacentFaces ()) {
+        newNormal += f.triangle (data.mesh).normal ();
+        valence++;
+      }
+      newNormal *= 1.0f / float (valence);
+
+      WingedFaceIntersection intersection;
+      const glm::vec3& newPos = data.mesh.intersects (PrimRay (posIt.second, newNormal), intersection)
+                              ? intersection.position ()
+                              : posIt.second;
+
+      this->actions.add <PAModifyWVertex> ().move (data.mesh, *posIt.first, newPos);
     }
   }
 
