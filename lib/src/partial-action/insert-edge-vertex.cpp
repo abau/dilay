@@ -50,6 +50,6 @@ struct PAInsertEdgeVertex :: Impl {
 
 DELEGATE_BIG3 (PAInsertEdgeVertex)
 
-DELEGATE3 (WingedEdge&,PAInsertEdgeVertex,run,WingedMesh&,WingedEdge&,const glm::vec3&)
-DELEGATE1 (void,PAInsertEdgeVertex,runUndo,WingedMesh&)
-DELEGATE1 (void,PAInsertEdgeVertex,runRedo,WingedMesh&)
+DELEGATE3 (WingedEdge&, PAInsertEdgeVertex, run, WingedMesh&, WingedEdge&, const glm::vec3&)
+DELEGATE1 (void       , PAInsertEdgeVertex, runUndo, WingedMesh&)
+DELEGATE1 (void       , PAInsertEdgeVertex, runRedo, WingedMesh&)
