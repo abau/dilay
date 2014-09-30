@@ -6,6 +6,7 @@
 #include "partial-action/flip-edge.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
+#include "partial-action/triangulate-5-gon.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
 #include "partial-action/triangulate-quad.hpp"
 #include "primitive/ray.hpp"
@@ -19,17 +20,17 @@
 
 namespace {
   typedef std::unordered_set <WingedFace*> FaceSet;
+  typedef std::unordered_set <WingedEdge*> EdgeSet;
 
   struct SubdivideData {
-          WingedMesh&                       mesh;
-    const std::unordered_set <WingedFace*>& selection;
-          std::unordered_set <WingedFace*>& affectedFaces;
+          WingedMesh& mesh;
+    const EdgeSet&    selection;
+          FaceSet&    affectedFaces;
 
-    SubdivideData (WingedMesh& m, const std::unordered_set <WingedFace*>& s
-                                ,       std::unordered_set <WingedFace*>& a) 
-      : mesh           (m)
-      , selection      (s)
-      , affectedFaces  (a)
+    SubdivideData (WingedMesh& m, const EdgeSet& s, FaceSet& a) 
+      : mesh          (m)
+      , selection     (s)
+      , affectedFaces (a)
     {}
   };
 };
@@ -40,54 +41,45 @@ struct ActionSubdivide::Impl {
   void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
-  void run ( WingedMesh& mesh, const std::unordered_set <WingedFace*>& selection
-                             ,       std::unordered_set <WingedFace*>& affected ) 
-  {
-    this->subdivide (SubdivideData (mesh, selection, affected));
+  static void extendDomain (std::vector <WingedFace*>& domain) {
+    std::unordered_set <WingedFace*> domainSet (domain.begin (), domain.end ());
+    domain.clear ();
+
+    Impl::addOneRing            (domainSet);
+    Impl::addOneRing            (domainSet);
+    Impl::extendToNeighbourhood (domainSet);
+
+    domain.insert (domain.end (), domainSet.begin (), domainSet.end ());
   }
 
-  void subdivide (const SubdivideData& data) {
-    FaceSet neighbourhood, border;
-    neighbourhood.insert (data.selection.begin (), data.selection.end ());
-
-    this->addOneRing           (neighbourhood);
-    this->addOneRing           (neighbourhood);
-    this->extendNeighbourhood  (neighbourhood);
-    this->oneRingBorder        (neighbourhood, border);
-    this->subdivideFaces       (data, neighbourhood);
-    this->refineBorder         (data, border);
-    //this->relaxByEdgeFlip      (data, 3);
-    this->smoothAffectedFaces  (data);
-  }
-
-  void addOneRing (FaceSet& neighbourhood) {
+  static void addOneRing (FaceSet& domain) {
     FaceSet oneRing;
-    for (WingedFace* n : neighbourhood) {
-      for (WingedFace& face : n->adjacentFaces ()) {
-        if (neighbourhood.count (&face) == 0) {
-          oneRing.insert (&face);
+    for (WingedFace* d : domain) {
+      for (WingedFace& f : d->adjacentFaces ()) {
+        if (domain.count (&f) == 0) {
+          oneRing.insert (&f);
         }
       }
     }
-    neighbourhood.insert (oneRing.begin (), oneRing.end ());
+    domain.insert (oneRing.begin (), oneRing.end ());
   }
 
-  void extendNeighbourhood (FaceSet& neighbourhood) {
-    FaceSet extendedNeighbourhood;
+  static void extendToNeighbourhood (FaceSet& domain) {
+    FaceSet extendedDomain;
 
-    auto isInNeighbourhood = [&] (WingedFace& face) -> bool {
-      return neighbourhood.count (&face) > 0 || extendedNeighbourhood.count (&face) > 0;
+    auto isInDomain = [&] (WingedFace& face) -> bool {
+      return domain.count (&face) > 0 || extendedDomain.count (&face) > 0;
     };
 
-    auto hasAtLeast2Neighbours = [&] (WingedFace& face) -> bool {
-      unsigned int numNeighbours = 0;
+    auto hasAtLeast2NeighboursInDomain = [&] (WingedFace& face) -> bool {
+      unsigned int numInDomain = 0;
 
       for (WingedFace& a : face.adjacentFaces ()) {
-        if (isInNeighbourhood (a)) {
-          numNeighbours++;
+        if (isInDomain (a)) {
+          numInDomain++;
         }
       }
-      return numNeighbours >= 2;
+      return numInDomain >= 2;
     };
 
     auto hasPoleVertex = [] (WingedFace& face) -> bool {
@@ -100,61 +92,63 @@ struct ActionSubdivide::Impl {
     };
 
     auto extendTo = [&] (WingedFace& face) -> bool {
-      return hasAtLeast2Neighbours (face) || hasPoleVertex (face);
+      return hasAtLeast2NeighboursInDomain (face) || hasPoleVertex (face);
     };
 
-    // checks adjacent faces of a neighbour
-    std::function <void (WingedFace&)> checkAdjacents = [&] (WingedFace& neighbour) -> void {
-      for (WingedFace& face : neighbour.adjacentFaces ()) {
-        if (isInNeighbourhood (face) == false && extendTo (face)) {
-          extendedNeighbourhood.insert (&face);
-          checkAdjacents (face);
+    std::function <void (WingedFace&)> checkAdjacents = [&] (WingedFace& face) -> void {
+      for (WingedFace& a : face.adjacentFaces ()) {
+        if (isInDomain (a) == false && extendTo (a)) {
+          extendedDomain.insert (&a);
+          checkAdjacents        (a);
         }
       }
     };
 
-    for (WingedFace* f : neighbourhood) {
+    for (WingedFace* f : domain) {
       checkAdjacents (*f);
     }
-    neighbourhood.insert (extendedNeighbourhood.begin (), extendedNeighbourhood.end ());
+    domain.insert (extendedDomain.begin (), extendedDomain.end ());
   }
 
-  void oneRingBorder (const FaceSet& neighbourhood, FaceSet& border) {
-    border.clear ();
-    for (WingedFace* n : neighbourhood) {
-      for (WingedFace& f : n->adjacentFaces ()) {
-        if (neighbourhood.count (&f) == 0) {
-          border.insert (&f);
-        }
-      }
+  void run ( WingedMesh& mesh, const std::unordered_set <WingedEdge*>& selection
+                             ,       std::unordered_set <WingedFace*>& affected ) 
+  {
+    SubdivideData data         (mesh, selection, affected);
+    this->subdivideEdges       (data);
+    this->triangulateFaces     (data);
+    this->relaxByEdgeFlip      (data, 4);
+    this->relaxByEdgeFlip      (data, 3);
+    this->smoothAffectedFaces  (data);
+  }
+
+  void subdivideEdges (const SubdivideData& data) {
+    for (WingedEdge* e : data.selection) {
+      this->actions.add <PAInsertEdgeVertex> ()
+                   .run (data.mesh, *e, SubdivisionButterfly::subdivideEdge (data.mesh, *e));
     }
   }
 
-  void subdivideFaces (const SubdivideData& data, const FaceSet& faces) {
-    std::unordered_set<Id> subdividedEdges;
-
-    auto subdivideEdge = [&] (WingedEdge& edge) -> void {
-      if (subdividedEdges.count (edge.id ()) == 0) {
-        WingedEdge& newEdge = this->actions.add <PAInsertEdgeVertex> ().run 
-          (data.mesh, edge, SubdivisionButterfly::subdivideEdge (data.mesh, edge));
-
-        subdividedEdges.insert (edge   .id ());
-        subdividedEdges.insert (newEdge.id ());
-      }
-    };
-
-    for (WingedFace* face : faces) {
-      for (WingedEdge* edge : face->adjacentEdges ().collect ()) {
-        subdivideEdge (*edge);
-      }
-      this->actions.add <PATriangulate6Gon> ().run (data.mesh, *face, &data.affectedFaces);
+  void triangulateFaces (const SubdivideData& data) {
+    for (WingedEdge* e : data.selection) {
+      this->triangulateFace (data, e->leftFaceRef  ());
+      this->triangulateFace (data, e->rightFaceRef ());
     }
   }
 
-  void refineBorder (const SubdivideData& data, const FaceSet& border) {
-    for (WingedFace* face : border) {
-      this->actions.add <PATriangulateQuad> ()
-                   .run (data.mesh, *face, &data.affectedFaces);
+  void triangulateFace (const SubdivideData& data, WingedFace& face) {
+    switch (face.numEdges ()) {
+      case 3: break;
+      case 4: this->actions.add <PATriangulateQuad> ()
+                           .run (data.mesh, face, &data.affectedFaces);
+              break;
+      case 5: this->actions.add <PATriangulate5Gon> ()
+                           .run (data.mesh, face, &data.affectedFaces);
+              break;
+      case 6: this->actions.add <PATriangulate6Gon> ()
+                           .run (data.mesh, face, &data.affectedFaces);
+              break;
+      default: 
+              assert (false);
     }
   }
 
@@ -221,7 +215,7 @@ struct ActionSubdivide::Impl {
       this->actions.add <PAModifyWVertex> ().move (data.mesh, *posIt.first, newPos);
     }
   }
-  /*
+
   void relaxByEdgeFlip (const SubdivideData& data, int threshold) {
     FaceSet affectedFaces;
     for (WingedFace* f : data.affectedFaces) {
@@ -245,10 +239,10 @@ struct ActionSubdivide::Impl {
          - int (edge.vertexRef (edge.leftFaceRef  (), 2).valence ())
          - int (edge.vertexRef (edge.rightFaceRef (), 2).valence ());
   }
-  */
 };
 
 DELEGATE_BIG3 (ActionSubdivide)
-DELEGATE3     (void, ActionSubdivide, run, WingedMesh&, const std::unordered_set<WingedFace*>&, std::unordered_set<WingedFace*>&)
-DELEGATE1     (void, ActionSubdivide, runUndo, WingedMesh&)
-DELEGATE1     (void, ActionSubdivide, runRedo, WingedMesh&)
+DELEGATE1_STATIC (void, ActionSubdivide, extendDomain, std::vector<WingedFace*>&)
+DELEGATE3 (void, ActionSubdivide, run, WingedMesh&, const std::unordered_set<WingedEdge*>&, std::unordered_set<WingedFace*>&)
+DELEGATE1 (void, ActionSubdivide, runUndo, WingedMesh&)
+DELEGATE1 (void, ActionSubdivide, runRedo, WingedMesh&)

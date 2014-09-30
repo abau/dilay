@@ -39,11 +39,13 @@ SOURCES += \
            src/opengl-util.cpp \
            src/partial-action/delete-edge-face.cpp \
            src/partial-action/flip-edge.cpp \
+           src/partial-action/insert-edge-face.cpp \
            src/partial-action/insert-edge-vertex.cpp \
            src/partial-action/modify-winged-edge.cpp \
            src/partial-action/modify-winged-face.cpp \
            src/partial-action/modify-winged-mesh.cpp \
            src/partial-action/modify-winged-vertex.cpp \
+           src/partial-action/triangulate-5-gon.cpp \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
            src/primitive/aabox.cpp \
@@ -134,11 +136,13 @@ HEADERS += \
            src/opengl-util.hpp \
            src/partial-action/delete-edge-face.hpp \
            src/partial-action/flip-edge.hpp \
+           src/partial-action/insert-edge-face.hpp \
            src/partial-action/insert-edge-vertex.hpp \
            src/partial-action/modify-winged-edge.hpp \
            src/partial-action/modify-winged-face.hpp \
            src/partial-action/modify-winged-mesh.hpp \
            src/partial-action/modify-winged-vertex.hpp \
+           src/partial-action/triangulate-5-gon.hpp \
            src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
            src/primitive/aabox.hpp \
