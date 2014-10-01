@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <sstream>
 #include "primitive/triangle.hpp"
 #include "ray.hpp"
 #include "util.hpp"
@@ -56,3 +57,11 @@ DELEGATE_CONST  (glm::vec3         , PrimTriangle, minimum)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, maximum)
 DELEGATE_CONST  (float             , PrimTriangle, extent)
 DELEGATE_CONST  (float             , PrimTriangle, oneDimExtent)
+
+std::ostream& operator<<(std::ostream& os, const PrimTriangle& triangle) {
+  os << "PrimTriangle { " << triangle.vertex1 ()
+                  << ", " << triangle.vertex2 ()
+                  << ", " << triangle.vertex3 ()
+                  << " }";
+  return os;
+}

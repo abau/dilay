@@ -1,6 +1,7 @@
 #ifndef DILAY_PRIMITIVE_TRIANGLE
 #define DILAY_PRIMITIVE_TRIANGLE
 
+#include <iosfwd>
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
@@ -28,5 +29,7 @@ class PrimTriangle {
   private:
     IMPLEMENTATION
 };
+
+std::ostream& operator<<(std::ostream&, const PrimTriangle&);
 
 #endif
