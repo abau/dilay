@@ -7,7 +7,6 @@
 
 struct PATriangulateQuad :: Impl {
   ActionUnitOn <WingedMesh> actions;
-  PAInsertEdgeFace action;
 
   WingedEdge& run ( WingedMesh& mesh, WingedFace& face
                   , std::unordered_set <WingedFace*>* affectedFaces ) 
@@ -26,8 +25,8 @@ struct PATriangulateQuad :: Impl {
     return newEdge;
   }
 
-  void runUndo (WingedMesh& mesh) { this->action.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->action.redo (mesh); }
+  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 };
 
 DELEGATE_BIG3 (PATriangulateQuad)
