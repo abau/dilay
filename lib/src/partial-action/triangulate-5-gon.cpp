@@ -17,7 +17,7 @@ struct PATriangulate5Gon :: Impl {
     this->actions.add <PAModifyWFace> ().writeIndices (mesh, newEdge.leftFaceRef  ());
 
     if (affectedFaces) {
-      affectedFaces->insert (newEdge.leftFace  ());
+      affectedFaces->insert (newEdge.leftFace ());
     }
     this->actions.add <PATriangulateQuad> ().run (mesh, newEdge.rightFaceRef (), affectedFaces);
   }

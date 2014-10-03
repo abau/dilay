@@ -35,9 +35,6 @@ struct ActionCarve::Impl {
     //this->carveFaces              (brush, domain);
     this->subdivideEdges          (brush, sphere, domain);
     this->finalize                (mesh, domain);
-
-    mesh.writeAllIndices ();
-
     this->self->bufferData        (mesh);
   }
 

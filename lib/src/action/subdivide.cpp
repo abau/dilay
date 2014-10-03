@@ -19,8 +19,9 @@
 #include "winged/vertex.hpp"
 
 namespace {
-  typedef std::unordered_set <WingedFace*> FaceSet;
-  typedef std::unordered_set <WingedEdge*> EdgeSet;
+  typedef std::unordered_set <WingedFace*>   FaceSet;
+  typedef std::unordered_set <WingedEdge*>   EdgeSet;
+  typedef std::unordered_set <WingedVertex*> VertexSet;
 
   struct SubdivideData {
           WingedMesh& mesh;
@@ -113,33 +114,35 @@ struct ActionSubdivide::Impl {
   void run ( WingedMesh& mesh, const std::unordered_set <WingedEdge*>& selection
                              ,       std::unordered_set <WingedFace*>& affected ) 
   {
-    SubdivideData data         (mesh, selection, affected);
-    this->subdivideEdges       (data);
-    this->triangulateFaces     (data);
-    this->relaxByEdgeFlip      (data, 4);
-    this->relaxByEdgeFlip      (data, 3);
-    this->smoothAffectedFaces  (data);
+    EdgeSet tEdges;
+
+    SubdivideData data        (mesh, selection, affected);
+    this->subdivideEdges      (data);
+    this->triangulateFaces    (data, tEdges);
+    this->relaxByEdgeFlip     (data, tEdges);
+    this->smoothAffectedFaces (data);
   }
 
   void subdivideEdges (const SubdivideData& data) {
     for (WingedEdge* e : data.selection) {
       this->actions.add <PAInsertEdgeVertex> ()
-                   .run (data.mesh, *e, SubdivisionButterfly::subdivideEdge (data.mesh, *e));
+                   .run (data.mesh, *e, e->middle (data.mesh));
+      //SubdivisionButterfly::subdivideEdge (data.mesh, *e));
     }
   }
 
-  void triangulateFaces (const SubdivideData& data) {
+  void triangulateFaces (const SubdivideData& data, EdgeSet& tEdges) {
     for (WingedEdge* e : data.selection) {
-      this->triangulateFace (data, e->leftFaceRef  ());
-      this->triangulateFace (data, e->rightFaceRef ());
+      this->triangulateFace (data, tEdges, e->leftFaceRef  ());
+      this->triangulateFace (data, tEdges, e->rightFaceRef ());
     }
   }
 
-  void triangulateFace (const SubdivideData& data, WingedFace& face) {
+  void triangulateFace (const SubdivideData& data, EdgeSet& tEdges, WingedFace& face) {
     switch (face.numEdges ()) {
       case 3: break;
-      case 4: this->actions.add <PATriangulateQuad> ()
-                           .run (data.mesh, face, &data.affectedFaces);
+      case 4: tEdges.insert (&this->actions.add <PATriangulateQuad> ()
+                                           .run (data.mesh, face, &data.affectedFaces));
               break;
       case 5: this->actions.add <PATriangulate5Gon> ()
                            .run (data.mesh, face, &data.affectedFaces);
@@ -153,87 +156,103 @@ struct ActionSubdivide::Impl {
   }
 
   void smoothAffectedFaces (const SubdivideData& data) {
-    std::unordered_map <WingedVertex*,glm::vec3> positions;
-    std::unordered_map <WingedVertex*,glm::vec3> deltas;
+    std::unordered_set <WingedVertex*> vertices;
 
-    // initialize positions
     for (WingedFace* face : data.affectedFaces) {
       assert (face->isTriangle ());
       for (WingedVertex& v : face->adjacentVertices ()) {
-        if (positions.count (&v) == 0) {
-          positions.emplace (&v, v.vector (data.mesh));
-        }
+        vertices.insert (&v);
       }
     }
+
+    std::unordered_map <WingedVertex*,glm::vec3> deltas;
     // compute deltas
-    for (WingedFace* face : data.affectedFaces) {
-      for (WingedVertex& v : face->adjacentVertices ()) {
-        if (deltas.count (&v) == 0) {
-          const glm::vec3    p       (positions.find (&v)->second);
-                glm::vec3    delta   (0.0f);
-                unsigned int valence (0);
+    for (WingedVertex* v : vertices) {
+      const glm::vec3     p       (v->vector (data.mesh));
+            glm::vec3     delta   (0.0f);
+            unsigned int  valence (0);
 
-          for (WingedEdge& e : v.adjacentEdges ()) {
-            WingedVertex&   otherV  = e.otherVertexRef (v);
-            auto            otherIt = positions.find (&otherV);
-            const glm::vec3 otherP  = otherIt == positions.end ()
-                                    ? otherV.vector (data.mesh)
-                                    : otherIt->second;
-            delta += otherP - p;
-            valence++;
-          }
-          deltas.emplace (&v, delta / float (valence));
-        }
-      }
-    }
-    // update positions
-    for (auto deltaIt : deltas) {
-      auto posIt = positions.find (deltaIt.first);
-      assert (posIt != positions.end ());
-
-      const glm::vec3 newPos = posIt->second + deltaIt.second;
-      positions.erase (posIt);
-      positions.emplace (deltaIt.first, newPos);
-    }
-    // displace in normal direction
-    for (auto posIt : positions) {
-      WingedVertex& v         (*posIt.first);
-      glm::vec3     newNormal (0.0f);
-      unsigned int  valence   (0);
-
-      for (WingedFace& f : v.adjacentFaces ()) {
-        newNormal += f.triangle (data.mesh).normal ();
+      for (WingedEdge& e : v->adjacentEdges ()) {
+        delta += e.otherVertexRef (*v).vector (data.mesh) - p;
         valence++;
       }
-      newNormal *= 1.0f / float (valence);
+      deltas.emplace (v, delta / float (valence));
+    }
 
-      WingedFaceIntersection intersection;
-      const glm::vec3& newPos = data.mesh.intersects (PrimRay (posIt.second, newNormal), intersection)
-                              ? intersection.position ()
-                              : posIt.second;
+    std::unordered_map <WingedVertex*,glm::vec3> positions;
 
-      this->actions.add <PAModifyWVertex> ().move (data.mesh, *posIt.first, newPos);
+    for (auto deltaIt : deltas) {
+      WingedVertex& v (*deltaIt.first);
+      glm::vec3     normal  (0.0f);
+      unsigned int  valence (0);
+
+      for (WingedFace& f : v.adjacentFaces ()) {
+        normal += f.triangle (data.mesh).normal ();
+        valence++;
+      }
+      normal *= 1.0f / float (valence);
+
+      const glm::vec3 p     (v.vector (data.mesh));
+      const glm::vec3 delta (deltaIt.second);
+            float     dot   (glm::dot (normal, delta));
+
+      positions.emplace (&v, (p + delta) - (normal * dot));
+    }
+    for (auto it : positions) {
+      this->actions.add <PAModifyWVertex> ().move (data.mesh, *it.first, it.second);
     }
   }
 
-  void relaxByEdgeFlip (const SubdivideData& data, int threshold) {
+  void relaxByEdgeFlip (const SubdivideData& data, EdgeSet& tEdges) {
+    VertexSet vertices;
+    for (WingedEdge* edge : data.selection) {
+      assert (edge->leftFaceRef  ().numEdges () == 3);
+      assert (edge->rightFaceRef ().numEdges () == 3);
+
+      vertices.insert (edge->vertex1 ());
+    }
+    this->relaxByEdgeFlip (data, tEdges, vertices, 4);
+    this->relaxByEdgeFlip (data, tEdges, vertices, 3);
+  }
+
+  void relaxByEdgeFlip ( const SubdivideData& data, const EdgeSet& tEdges
+                       , const VertexSet& vertices, int threshold) 
+  {
+    auto relaxEdge = [this,&tEdges,&vertices,threshold] (WingedEdge& e) -> int {
+      const int     rI = this->relaxiationIndex (e);
+      WingedVertex* v1 = e.vertex (e.leftFaceRef  (), 2);
+      WingedVertex* v2 = e.vertex (e.rightFaceRef (), 2);
+
+      return (rI >= threshold) 
+          && (vertices.count (v1) + vertices.count (v2) == 1) 
+          && (vertices.count (e.vertex1 ()) + vertices.count (e.vertex2 ()) == 1) 
+          && (tEdges.count (&e) == 0)
+          ?  rI : 0;
+    };
+
     FaceSet affectedFaces;
     for (WingedFace* f : data.affectedFaces) {
-      for (WingedEdge* e : f->adjacentEdges ().collect ()) {
-        if (this->relaxiationIndex (*e) >= threshold) {
-          affectedFaces.insert (e->leftFace  ());
-          affectedFaces.insert (e->rightFace ());
-          actions.add <PAFlipEdge> ().run (*e);
+      int         maxRelaxiationIndex = 0;
+      WingedEdge* edgeToRelax         = nullptr;
+
+      for (WingedEdge& e : f->adjacentEdges ()) {
+        const int rI = relaxEdge (e);
+        if (rI > maxRelaxiationIndex) {
+          maxRelaxiationIndex = rI;
+          edgeToRelax         = &e;
         }
+      }
+      if (maxRelaxiationIndex >= threshold) {
+        assert (edgeToRelax);
+        affectedFaces.insert (edgeToRelax->leftFace  ());
+        affectedFaces.insert (edgeToRelax->rightFace ());
+        actions.add <PAFlipEdge> ().run (data.mesh, *edgeToRelax);
       }
     }
     data.affectedFaces.insert (affectedFaces.begin (), affectedFaces.end ());
   }
 
   int relaxiationIndex (const WingedEdge& edge) const {
-    assert (edge.leftFaceRef  ().numEdges () == 3);
-    assert (edge.rightFaceRef ().numEdges () == 3);
-
     return int (edge.vertex1Ref ().valence ())
          + int (edge.vertex2Ref ().valence ())
          - int (edge.vertexRef (edge.leftFaceRef  (), 2).valence ())

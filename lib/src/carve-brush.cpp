@@ -5,9 +5,6 @@
 
 struct CarveBrush :: Impl {
 
-  static constexpr float falloff = 1.3f;
-  static constexpr float domain  = 2.0f;
-
   float        width;
   float        height;
   float        detail;
@@ -29,7 +26,7 @@ struct CarveBrush :: Impl {
     if (x >= this->width)
       return 0.0f;
     else {
-      const float n     = 6.0f;
+      const float n     = 4.0f;
       const float normX = x / this->width;
       return this->height * (((n-1.0f) * glm::pow (normX, n)) - (n * glm::pow (normX, n-1.0f)) + 1.0f);
     }

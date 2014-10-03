@@ -22,7 +22,7 @@ struct ToolCarve::Impl {
 
   Impl (ToolCarve* s) 
     : self  (s) 
-    , brush (0.1f, 0.005f, 0.03f, 0.1f)
+    , brush (0.1f, 0.005f, 0.03f, 0.2f)
   {}
 
   static QString toolName () {
@@ -45,6 +45,10 @@ struct ToolCarve::Impl {
     }
   }
 
+  /*
+  ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
+    if (e.button () == Qt::LeftButton) {
+    */
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     if (e.buttons ().testFlag (Qt::LeftButton)) {
       if (this->updateBrush (ViewUtil::toIVec2 (e))) {
@@ -60,4 +64,5 @@ struct ToolCarve::Impl {
 DELEGATE_BIG3_BASE ( ToolCarve, (const ViewToolMenuParameters& p)
                    , (this), Tool, (p, toolName ()) )
 DELEGATE_STATIC (QString     , ToolCarve, toolName)
+//DELEGATE1       (ToolResponse, ToolCarve, runMouseReleaseEvent, QMouseEvent&)
 DELEGATE1       (ToolResponse, ToolCarve, runMouseMoveEvent, QMouseEvent&)

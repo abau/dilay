@@ -11,7 +11,7 @@ class PAFlipEdge : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAFlipEdge)
 
-    void run (WingedEdge&);
+    void run (WingedMesh&, WingedEdge&);
 
   private:
     void runUndo (WingedMesh&);

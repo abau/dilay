@@ -9,7 +9,7 @@
 struct PAFlipEdge :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void run (WingedEdge& edge) {
+  void run (WingedMesh& mesh, WingedEdge& edge) {
     assert (edge.leftFaceRef  ().numEdges () == 3);
     assert (edge.rightFaceRef ().numEdges () == 3);
 
@@ -45,6 +45,9 @@ struct PAFlipEdge :: Impl {
 
     this->actions.add <PAModifyWEdge> ().setGeometry (edge, v4, v3, lf, rf, rs, lp, ls, rp);
 
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh, edge.leftFaceRef  ());
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh, edge.rightFaceRef ());
+
     assert (edge.leftFaceRef  ().numEdges () == 3);
     assert (edge.rightFaceRef ().numEdges () == 3);
   }
@@ -55,6 +58,6 @@ struct PAFlipEdge :: Impl {
 
 DELEGATE_BIG3 (PAFlipEdge)
 
-DELEGATE1 (void,PAFlipEdge,run,WingedEdge&)
-DELEGATE1 (void,PAFlipEdge,runUndo,WingedMesh&)
-DELEGATE1 (void,PAFlipEdge,runRedo,WingedMesh&)
+DELEGATE2 (void, PAFlipEdge, run, WingedMesh&, WingedEdge&)
+DELEGATE1 (void, PAFlipEdge, runUndo, WingedMesh&)
+DELEGATE1 (void, PAFlipEdge, runRedo, WingedMesh&)

@@ -16,7 +16,7 @@ struct PATriangulateQuad :: Impl {
     WingedEdge& newEdge = this->actions.add <PAInsertEdgeFace> ().run (mesh, face);
 
     this->actions.add <PAModifyWFace> ().writeIndices (mesh, newEdge.leftFaceRef  ());
-    this->actions.add <PAModifyWFace> ().writeIndices (mesh, newEdge.rightFaceRef  ());
+    this->actions.add <PAModifyWFace> ().writeIndices (mesh, newEdge.rightFaceRef ());
 
     if (affectedFaces) {
       affectedFaces->insert (newEdge.leftFace  ());
