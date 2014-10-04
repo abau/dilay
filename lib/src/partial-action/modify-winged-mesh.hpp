@@ -16,6 +16,7 @@ class PAModifyWMesh : public ActionOn <WingedMesh> {
     DECLARE_BIG3 (PAModifyWMesh)
 
     void          deleteEdge      (WingedMesh&, WingedEdge&);
+    void          deleteFace      (WingedMesh&, WingedFace&);
     void          deleteFace      (WingedMesh&, WingedFace&, const PrimTriangle&);
     void          deleteVertex    (WingedMesh&, WingedVertex&);
     WingedEdge&   addEdge         (WingedMesh&, WingedEdge&&);

@@ -222,6 +222,7 @@ struct PAModifyWMesh :: Impl {
 DELEGATE_BIG3 (PAModifyWMesh)
 
 DELEGATE2 (void         , PAModifyWMesh, deleteEdge     , WingedMesh&, WingedEdge&)
+DELEGATE2 (void         , PAModifyWMesh, deleteFace     , WingedMesh&, WingedFace&)
 DELEGATE3 (void         , PAModifyWMesh, deleteFace     , WingedMesh&, WingedFace&, const PrimTriangle&)
 DELEGATE2 (void         , PAModifyWMesh, deleteVertex   , WingedMesh&, WingedVertex&)
 DELEGATE2 (WingedEdge&  , PAModifyWMesh, addEdge        , WingedMesh&, WingedEdge&&)
