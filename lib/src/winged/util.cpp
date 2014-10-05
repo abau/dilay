@@ -18,16 +18,16 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, const WingedVertex& 
 
 void WingedUtil :: printStatistics (const WingedEdge& e) {
   auto maybeEdgeId = [] (WingedEdge* edge) {
-    if (edge) return std::to_string (edge->id ().primitive ());
-    else      return std::string ("NULL");
+    return bool (edge) ? std::to_string (edge->id ().primitive ())
+                       : std::string ("NULL");
   };
   auto maybeFaceId = [] (WingedFace* face) {
-    if (face) return std::to_string (face->id ().primitive ());
-    else      return std::string ("NULL");
+    return bool (face) ? std::to_string (face->id ().primitive ())
+                       : std::string ("NULL");
   };
   auto maybeIndex = [] (WingedVertex* vertex) {
-    if (vertex) return std::to_string (vertex->index ());
-    else        return std::string ("NULL");
+    return bool (vertex) ? std::to_string (vertex->index ())
+                         : std::string ("NULL");
   };
 
   std::cout << "Edge " << e.id () 
@@ -43,10 +43,15 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
 }
 
 void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
-                                   , bool printDerived) {
+                                   , bool printDerived) 
+{
+  auto maybeNodeId = [] (OctreeNode* node) {
+    return bool (node) ? std::to_string (node->id ().primitive ())
+                       : std::string ("NULL");
+  };
   std::cout   << "Face "                << f.id () 
               << "\n\tedge:\t\t\t"      << f.edgeRef ().id ()
-              << "\n\toctree node:\t\t" << f.octreeNode ()
+              << "\n\toctree node:\t\t" << maybeNodeId (f.octreeNode ())
               << "\n\tindex:\t\t\t"     << f.index ();
   if (printDerived) {
     std::cout << "\n\tnormal:\t\t\t"    << f.normal  (mesh);
