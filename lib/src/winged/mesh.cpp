@@ -207,20 +207,9 @@ struct WingedMesh::Impl {
   }
 
   void writeAllIndices () {
-    if (this->hasFreeFaceIndex ()) {
-      unsigned int fin = 0;
-      this->octree.forEachFace ([this,&fin] (WingedFace& face) {
-        face.index        (fin);
-        face.writeIndices (*this->self);
-        fin = fin + 3;
-      });
-      this->freeFaceIndices.clear ();
-    }
-    else {
-      this->octree.forEachFace ([this] (WingedFace& face) {
-        face.writeIndices (*this->self);
-      });
-    }
+    this->octree.forEachFace ([this] (WingedFace& face) {
+      face.writeIndices (*this->self);
+    });
   }
 
   void writeAllInterpolatedNormals () {
@@ -230,12 +219,17 @@ struct WingedMesh::Impl {
   }
 
   void bufferData  () { 
-    for (unsigned int i : this->freeFaceIndices) {
-      this->mesh.setIndex (i + 0, this->mesh.index (0));
-      this->mesh.setIndex (i + 1, this->mesh.index (1));
-      this->mesh.setIndex (i + 2, this->mesh.index (2));
+    if (this->numFaces () > 0) {
+      if (this->freeFaceIndices.empty () == false) {
+        unsigned int idx = this->octree.someFaceRef ().index ();
+        for (unsigned int i : this->freeFaceIndices) {
+          this->mesh.setIndex (i + 0, idx + 0);
+          this->mesh.setIndex (i + 1, idx + 1);
+          this->mesh.setIndex (i + 2, idx + 2);
+        }
+      }
+      this->mesh.bufferData (); 
     }
-    this->mesh.bufferData (); 
   }
 
   void render (const Selection& selection) { 

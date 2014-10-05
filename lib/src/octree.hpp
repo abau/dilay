@@ -65,11 +65,13 @@ class Octree {
     bool             hasRoot       () const;
     unsigned int     numFaces      () const;
     OctreeStatistics statistics    () const;
+    WingedFace*      someFace      ();
 
-    void        forEachFace         (const std::function <void (WingedFace&)>&);
-    void        forEachConstFace    (const std::function <void (const WingedFace&)>&) const;
+    void        forEachFace        (const std::function <void (WingedFace&)>&);
+    void        forEachConstFace   (const std::function <void (const WingedFace&)>&) const;
 
     SAFE_REF1 (WingedFace,face,const Id&)
+    SAFE_REF  (WingedFace,someFace)
 
   private:
     IMPLEMENTATION

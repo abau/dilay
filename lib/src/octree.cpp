@@ -519,6 +519,12 @@ struct Octree::Impl {
     return stats;
   }
 
+  WingedFace* someFace () {
+    return this->numFaces () > 0
+         ? &*(this->idMap.begin ()->second)
+         : nullptr;
+  }
+
   void forEachFace (const std::function <void (WingedFace&)>& f) {
     for (auto& pair : this->idMap) {
       f (*pair.second);
@@ -547,5 +553,6 @@ DELEGATE        (void, Octree, shrinkRoot)
 DELEGATE_CONST  (bool, Octree, hasRoot)
 DELEGATE_CONST  (unsigned int, Octree, numFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
-DELEGATE1       (void            , Octree, forEachFace, const std::function <void (WingedFace&)>&)
-DELEGATE1_CONST (void            , Octree, forEachConstFace, const std::function <void (const WingedFace&)>&)
+DELEGATE        (WingedFace* , Octree, someFace)
+DELEGATE1       (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
+DELEGATE1_CONST (void        , Octree, forEachConstFace, const std::function <void (const WingedFace&)>&)
