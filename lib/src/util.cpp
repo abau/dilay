@@ -47,8 +47,7 @@ std::string Util :: readFile (const std::string& filePath) {
   return content;
 }
 
-unsigned int Util :: solveQuadraticEq ( float a, float b, float c
-                                      , float& s1, float& s2) {
+unsigned int Util :: solveQuadraticEq (float a, float b, float c, float& s1, float& s2) {
   const float radicand = (b*b) - (4.0f * a * c);
   const float eps      = std::numeric_limits<float>::epsilon();
 
