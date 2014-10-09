@@ -176,7 +176,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& spher
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane, float* t) {
   const float d = glm::dot (ray.direction (), plane.normal ());
 
-  if (d > - std::numeric_limits<float>::epsilon ()) {
+  if (d > - Util::epsilon ()) {
     return false;
   }
   if (t) {
@@ -195,8 +195,7 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
   const float det    = glm::dot   (s1, e1);
   const float invDet = 1.0f / det;
 
-  if ( det > - std::numeric_limits<float>::epsilon () 
-    && det <   std::numeric_limits<float>::epsilon () ) {
+  if (det > - Util::epsilon () && det < Util::epsilon ()) {
     return false;
   }
   const glm::vec3 d  = ray.origin () - tri.vertex1 ();

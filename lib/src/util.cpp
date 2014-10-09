@@ -71,3 +71,7 @@ unsigned int Util :: solveQuadraticEq (float a, float b, float c, float& s1, flo
     return 1;
   }
 }
+
+float Util :: epsilon () {
+  return 0.0001f;
+}

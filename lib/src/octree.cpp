@@ -9,6 +9,7 @@
 #include "primitive/aabox.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
+#include "util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
@@ -474,7 +475,7 @@ struct Octree::Impl {
 
     if (this->rootWasSetup == false) {
       this->rootPosition = faceToInsert.center;
-      this->rootWidth    = faceToInsert.oneDimExtent + std::numeric_limits <float>::epsilon ();
+      this->rootWidth    = faceToInsert.oneDimExtent + Util::epsilon ();
     }
     this->root = Child (new OctreeNode::Impl (this->rootPosition, this->rootWidth, 0, nullptr));
   }

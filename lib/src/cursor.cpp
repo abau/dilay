@@ -7,6 +7,7 @@
 #include "mesh.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
+#include "util.hpp"
 
 struct Cursor::Impl {
   Mesh          mesh;
@@ -44,7 +45,7 @@ struct Cursor::Impl {
 
   void normal (const glm::vec3& v) {
     const float d   = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
-    const float eps = std::numeric_limits<float>::epsilon ();
+    const float eps = Util::epsilon ();
     if (d >= 1.0f - eps || d <= -1.0f + eps) {
       this->mesh.rotationMatrix (glm::mat4(1.0f));
     }
