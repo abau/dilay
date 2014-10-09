@@ -1,4 +1,3 @@
-#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include <unordered_set>
