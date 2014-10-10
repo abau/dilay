@@ -22,6 +22,7 @@ struct OctreeStatistics {
 
   unsigned int numNodes;
   unsigned int numFaces;
+  unsigned int numDegeneratedFaces;
   int          minDepth;
   int          maxDepth;
   unsigned int maxFacesPerNode;
@@ -50,25 +51,26 @@ class Octree {
   public: 
     DECLARE_BIG4MOVE (Octree)
 
-    WingedFace&      insertFace    (WingedFace&&, const PrimTriangle&);
-    WingedFace&      realignFace   (WingedFace&&, const PrimTriangle&, bool* = nullptr);
-    void             deleteFace    (const WingedFace&);
-    bool             hasFace       (const Id&) const;
-    WingedFace*      face          (const Id&);
-    void             render        ();
-    bool             intersects    (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
-    bool             intersects    ( const WingedMesh&, const PrimSphere&
-                                   , std::vector <WingedFace*>&);
-    void             reset         ();
-    void             setupRoot     (const glm::vec3&, float);
-    void             shrinkRoot    ();
-    bool             hasRoot       () const;
-    unsigned int     numFaces      () const;
-    OctreeStatistics statistics    () const;
-    WingedFace*      someFace      ();
+    WingedFace&      insertFace          (WingedFace&&, const PrimTriangle&);
+    WingedFace&      realignFace         (WingedFace&&, const PrimTriangle&, bool* = nullptr);
+    void             deleteFace          (const WingedFace&);
+    bool             hasFace             (const Id&) const;
+    WingedFace*      face                (const Id&);
+    void             render              ();
+    bool             intersects          (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
+    bool             intersects          ( const WingedMesh&, const PrimSphere&
+                                         , std::vector <WingedFace*>&);
+    void             reset               ();
+    void             setupRoot           (const glm::vec3&, float);
+    void             shrinkRoot          ();
+    bool             hasRoot             () const;
+    unsigned int     numFaces            () const;
+    unsigned int     numDegeneratedFaces () const;
+    OctreeStatistics statistics          () const;
+    WingedFace*      someFace            ();
 
-    void        forEachFace        (const std::function <void (WingedFace&)>&);
-    void        forEachConstFace   (const std::function <void (const WingedFace&)>&) const;
+    void        forEachFace              (const std::function <void (WingedFace&)>&);
+    void        forEachConstFace         (const std::function <void (const WingedFace&)>&) const;
 
     SAFE_REF1 (WingedFace,face,const Id&)
     SAFE_REF  (WingedFace,someFace)

@@ -28,16 +28,16 @@ namespace {
   class FaceToInsert {
     public:
       FaceToInsert (WingedFace&& f, const PrimTriangle& t)
-        : face         (std::move     (f))
-        , center       (t.center       ())
-        , oneDimExtent (t.oneDimExtent ())
-      {
-        assert (t.isDegenerated () == false);
-      }
+        : face          (std::move       (f))
+        , center        (t.center        ())
+        , oneDimExtent  (t.oneDimExtent  ())
+        , isDegenerated (t.isDegenerated ())
+      {}
 
       WingedFace      face;
       const glm::vec3 center;
       const float     oneDimExtent;
+      const bool      isDegenerated;
   };
 }
 
@@ -62,6 +62,7 @@ struct OctreeNode::Impl {
   const int            depth;
   Faces                faces;
   OctreeNode::Impl*    parent;
+  const bool           storeDegenerated;
   // cf. move constructor
 
   static constexpr float relativeMinFaceExtent = 0.1f;
@@ -70,12 +71,22 @@ struct OctreeNode::Impl {
   Mesh mesh;
 #endif
 
+  Impl () 
+    : node             (this)
+    , center           (glm::vec3 (0.0f))
+    , width            (0.0f)
+    , depth            (0)
+    , parent           (nullptr) 
+    , storeDegenerated (true) 
+  {}
+
   Impl (const glm::vec3& c, float w, int d, Impl* p) 
-    : node   (this)
-    , center (c)
-    , width  (w)
-    , depth  (d)
-    , parent (p) 
+    : node             (this)
+    , center           (c)
+    , width            (w)
+    , depth            (d)
+    , parent           (p) 
+    , storeDegenerated (false) 
   {
       static_assert (Impl::relativeMinFaceExtent < 0.5f, "relativeMinFaceExtent must be smaller than 0.5f");
 
@@ -119,21 +130,23 @@ struct OctreeNode::Impl {
   const Impl& operator= (const Impl&) = delete;
 
   Impl (Impl&& source) 
-    : node       (std::move (this))
-    , center     (std::move (source.center))
-    , width      (std::move (source.width))
-    , children   (std::move (source.children))
-    , depth      (std::move (source.depth))
-    , faces      (std::move (source.faces))
-    , parent     (std::move (source.parent))
+    : node             (std::move (this))
+    , center           (std::move (source.center))
+    , width            (std::move (source.width))
+    , children         (std::move (source.children))
+    , depth            (std::move (source.depth))
+    , faces            (std::move (source.faces))
+    , parent           (std::move (source.parent))
+    , storeDegenerated (std::move (source.storeDegenerated))
 #ifdef DILAY_RENDER_OCTREE
-    , mesh     (std::move (source.mesh))
+    , mesh             (std::move (source.mesh))
   { this->mesh.bufferData (); }
 #else
   {}
 #endif
 
   void render () {
+    assert (this->storeDegenerated == false);
 #ifdef DILAY_RENDER_OCTREE
     this->mesh.renderBegin ();
     glDisable (GL_DEPTH_TEST);
@@ -150,6 +163,7 @@ struct OctreeNode::Impl {
   }
 
   bool approxContains (const glm::vec3& v) const {
+    assert (this->storeDegenerated == false);
     const glm::vec3 min = this->center - glm::vec3 (this->width * 0.5f);
     const glm::vec3 max = this->center + glm::vec3 (this->width * 0.5f);
     return glm::all ( glm::lessThanEqual (min, v) )
@@ -157,10 +171,12 @@ struct OctreeNode::Impl {
   }
 
   bool approxContains (const FaceToInsert& f) const {
+    assert (this->storeDegenerated == false);
     return this->approxContains (f.center) && f.oneDimExtent <= this->width;
   }
 
   unsigned int childIndex (const glm::vec3& pos) const {
+    assert (this->storeDegenerated == false);
     unsigned int index = 0;
     if (this->center.x < pos.x) {
       index += 4;
@@ -175,6 +191,7 @@ struct OctreeNode::Impl {
   }
 
   void makeChildren () {
+    assert (this->storeDegenerated == false);
     assert (this->children.size () == 0);
     float q          = this->width * 0.25f;
     float childWidth = this->width * 0.5f;
@@ -196,6 +213,7 @@ struct OctreeNode::Impl {
   }
 
   Faces::iterator insertIntoChild (FaceToInsert& f) {
+    assert (this->storeDegenerated == false);
     if (this->children.empty ()) {
       this->makeChildren           ();
       return this->insertIntoChild (f);
@@ -206,10 +224,12 @@ struct OctreeNode::Impl {
   }
 
   Faces::iterator insertFace (FaceToInsert& f) {
-    if (f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
+    if (f.isDegenerated == false && f.oneDimExtent <= this->width * Impl::relativeMinFaceExtent) {
       return this->insertIntoChild (f);
     }
     else {
+      assert (f.isDegenerated == this->storeDegenerated);
+
       this->faces.emplace_front       (std::move (f.face));
       this->faces.front ().octreeNode (&this->node);
       return this->faces.begin        ();
@@ -242,11 +262,13 @@ struct OctreeNode::Impl {
   }
 
   PrimAABox looseAABox () const {
+    assert (this->storeDegenerated == false);
     const float looseWidth = this->width * 2.0f;
     return PrimAABox (this->center, looseWidth, looseWidth, looseWidth);
   }
 
   void facesIntersectRay (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
+    assert (this->storeDegenerated == false);
     for (WingedFace& face : this->faces) {
       PrimTriangle triangle = face.triangle (mesh);
       glm::vec3    p;
@@ -258,6 +280,7 @@ struct OctreeNode::Impl {
   }
 
   bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
+    assert (this->storeDegenerated == false);
     if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
       this->facesIntersectRay (mesh,ray,intersection);
       for (Child& c : this->children) 
@@ -267,7 +290,9 @@ struct OctreeNode::Impl {
   }
 
   bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
-                  , std::vector <WingedFace*>& iFaces) {
+                  , std::vector <WingedFace*>& iFaces) 
+  {
+    assert (this->storeDegenerated == false);
     if (IntersectionUtil :: intersects (sphere, this->looseAABox ())) {
       for (WingedFace& face : this->faces) {
         if (IntersectionUtil :: intersects (sphere, mesh, face)) {
@@ -284,30 +309,37 @@ struct OctreeNode::Impl {
   unsigned int numFaces () const { return this->faces.size (); }
 
   void updateStatistics (OctreeStatistics& stats) const {
-    const unsigned int d  = this->depth;
     const unsigned int f  = this->numFaces ();
     stats.numNodes        = stats.numNodes + 1;
     stats.numFaces        = stats.numFaces + f;
-    stats.minDepth        = std::min <int> (stats.minDepth, d);
-    stats.maxDepth        = std::max <int> (stats.maxDepth, d);
-    stats.maxFacesPerNode = std::max <int> (stats.maxFacesPerNode, f);
 
-    OctreeStatistics::DepthMap::iterator e = stats.numFacesPerDepth.find (d);
-    if (e == stats.numFacesPerDepth.end ()) {
-      stats.numFacesPerDepth.emplace (d, f);
+    if (this->storeDegenerated) {
+      assert (stats.numDegeneratedFaces == 0);
+      stats.numDegeneratedFaces = f;
     }
     else {
-      e->second = e->second + f;
-    }
-    e = stats.numNodesPerDepth.find (d);
-    if (e == stats.numNodesPerDepth.end ()) {
-      stats.numNodesPerDepth.emplace (d, 1);
-    }
-    else {
-      e->second = e->second + 1;
-    }
-    for (const Child& c : this->children) {
-      c->updateStatistics (stats);
+      const unsigned int d  = this->depth;
+      stats.minDepth        = std::min <int> (stats.minDepth, d);
+      stats.maxDepth        = std::max <int> (stats.maxDepth, d);
+      stats.maxFacesPerNode = std::max <int> (stats.maxFacesPerNode, f);
+
+      OctreeStatistics::DepthMap::iterator e = stats.numFacesPerDepth.find (d);
+      if (e == stats.numFacesPerDepth.end ()) {
+        stats.numFacesPerDepth.emplace (d, f);
+      }
+      else {
+        e->second = e->second + f;
+      }
+      e = stats.numNodesPerDepth.find (d);
+      if (e == stats.numNodesPerDepth.end ()) {
+        stats.numNodesPerDepth.emplace (d, 1);
+      }
+      else {
+        e->second = e->second + 1;
+      }
+      for (const Child& c : this->children) {
+        c->updateStatistics (stats);
+      }
     }
   }
 };
@@ -322,12 +354,24 @@ GETTER_CONST   (float, OctreeNode, width)
 /** Octree class */
 struct Octree::Impl {
   Child                   root;
+  Child                   degeneratedFaces;
   glm::vec3               rootPosition;
   float                   rootWidth;
   bool                    rootWasSetup;
   IdMap <Faces::iterator> idMap;
 
   Impl () : rootWasSetup (false) {}
+
+  void initRoot (const FaceToInsert& faceToInsert) {
+    assert (this->root == false);
+    assert (faceToInsert.isDegenerated == false);
+
+    if (this->rootWasSetup == false) {
+      this->rootPosition = faceToInsert.center;
+      this->rootWidth    = faceToInsert.oneDimExtent + Util::epsilon ();
+    }
+    this->root = Child (new OctreeNode::Impl (this->rootPosition, this->rootWidth, 0, nullptr));
+  }
 
   WingedFace& insertFace (WingedFace&& face, const PrimTriangle& geometry) {
     assert (! this->hasFace (face.id ())); 
@@ -351,17 +395,27 @@ struct Octree::Impl {
   }
 
   WingedFace& insertFace (FaceToInsert& faceToInsert) {
-    if (this->hasRoot () == false) {
-      this->initRoot (faceToInsert);
-    }
-    if (this->root->approxContains (faceToInsert)) {
-      Faces::iterator it = this->root->insertFace (faceToInsert);
+    if (faceToInsert.isDegenerated) {
+      if (this->degeneratedFaces == false) {
+        this->degeneratedFaces = Child (new OctreeNode::Impl ());
+      }
+      Faces::iterator it = this->degeneratedFaces->insertFace (faceToInsert);
       this->idMap.insert (it->id (), it);
       return *it;
     }
     else {
-      this->makeParent (faceToInsert);
-      return this->insertFace (faceToInsert);
+      if (this->hasRoot () == false) {
+        this->initRoot (faceToInsert);
+      }
+      if (this->root->approxContains (faceToInsert)) {
+        Faces::iterator it = this->root->insertFace (faceToInsert);
+        this->idMap.insert (it->id (), it);
+        return *it;
+      }
+      else {
+        this->makeParent (faceToInsert);
+        return this->insertFace (faceToInsert);
+      }
     }
   }
 
@@ -398,6 +452,7 @@ struct Octree::Impl {
 
   void makeParent (const FaceToInsert& f) {
     assert (this->root);
+    assert (f.isDegenerated == false);
 
     glm::vec3 parentCenter;
     glm::vec3 rootCenter    = this->root->center;
@@ -460,8 +515,9 @@ struct Octree::Impl {
   }
 
   void reset () { 
-    this->idMap  .reset ();
-    this->root   .reset ();
+    this->idMap           .reset ();
+    this->root            .reset ();
+    this->degeneratedFaces.reset ();
     this->rootWasSetup = false;
   }
 
@@ -470,16 +526,6 @@ struct Octree::Impl {
     this->rootWasSetup = true;
     this->rootPosition = position;
     this->rootWidth    = width;
-  }
-
-  void initRoot (const FaceToInsert& faceToInsert) {
-    assert (this->root == false);
-
-    if (this->rootWasSetup == false) {
-      this->rootPosition = faceToInsert.center;
-      this->rootWidth    = faceToInsert.oneDimExtent + Util::epsilon ();
-    }
-    this->root = Child (new OctreeNode::Impl (this->rootPosition, this->rootWidth, 0, nullptr));
   }
 
   void shrinkRoot () {
@@ -508,8 +554,13 @@ struct Octree::Impl {
 
   unsigned int numFaces () const { return this->idMap.size (); }
 
+  unsigned int numDegeneratedFaces () const { 
+    return this->degeneratedFaces ? this->degeneratedFaces->faces.size ()
+                                  : 0;
+  }
+
   OctreeStatistics statistics () const {
-    OctreeStatistics stats { 0, 0
+    OctreeStatistics stats { 0, 0, 0
                            , std::numeric_limits <int>::max ()
                            , std::numeric_limits <int>::min ()
                            , 0 
@@ -517,6 +568,9 @@ struct Octree::Impl {
                            , OctreeStatistics::DepthMap () };
     if (this->hasRoot ()) {
       this->root->updateStatistics (stats);
+    }
+    if (this->degeneratedFaces) {
+      this->degeneratedFaces->updateStatistics (stats);
     }
     assert (stats.numFaces == this->numFaces ());
     return stats;
@@ -555,6 +609,7 @@ DELEGATE2       (void, Octree, setupRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)
 DELEGATE_CONST  (bool, Octree, hasRoot)
 DELEGATE_CONST  (unsigned int, Octree, numFaces)
+DELEGATE_CONST  (unsigned int, Octree, numDegeneratedFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE        (WingedFace* , Octree, someFace)
 DELEGATE1       (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
