@@ -1,4 +1,6 @@
 #include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
+#include <glm/gtx/norm.hpp>
 #include <sstream>
 #include "primitive/triangle.hpp"
 #include "ray.hpp"
@@ -42,6 +44,16 @@ struct PrimTriangle::Impl {
     glm::vec3 delta = this->maximum () - this->minimum ();
     return glm::max ( glm::max (delta.x, delta.y), delta.z );
   }
+
+  bool isDegenerated () const {
+    const float d1 = glm::distance2 (this->vertex1, this->vertex2);
+    const float d2 = glm::distance2 (this->vertex2, this->vertex3);
+    const float d3 = glm::distance2 (this->vertex1, this->vertex3);
+
+    return glm::epsilonEqual (d1, d2 + d3, Util::epsilon ())
+        || glm::epsilonEqual (d2, d1 + d3, Util::epsilon ())
+        || glm::epsilonEqual (d3, d1 + d2, Util::epsilon ());
+  }
 };
 
 DELEGATE3_BIG4COPY     (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
@@ -57,6 +69,7 @@ DELEGATE_CONST  (glm::vec3         , PrimTriangle, minimum)
 DELEGATE_CONST  (glm::vec3         , PrimTriangle, maximum)
 DELEGATE_CONST  (float             , PrimTriangle, extent)
 DELEGATE_CONST  (float             , PrimTriangle, oneDimExtent)
+DELEGATE_CONST  (bool              , PrimTriangle, isDegenerated)
 
 std::ostream& operator<<(std::ostream& os, const PrimTriangle& triangle) {
   os << "PrimTriangle { " << triangle.vertex1 ()

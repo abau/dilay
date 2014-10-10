@@ -31,7 +31,9 @@ namespace {
         : face         (std::move     (f))
         , center       (t.center       ())
         , oneDimExtent (t.oneDimExtent ())
-        {}
+      {
+        assert (t.isDegenerated () == false);
+      }
 
       WingedFace      face;
       const glm::vec3 center;
