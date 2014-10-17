@@ -8,7 +8,7 @@ class Cursor {
   public: 
     DECLARE_BIG6 (Cursor)
 
-    void  initialize         ();
+    void  setGeometry        (float);
     void  position           (const glm::vec3&);
     void  normal             (const glm::vec3&);
     void  render             ();

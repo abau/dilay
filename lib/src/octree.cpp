@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "adjacent-iterator.hpp"
+#include "affected-faces.hpp"
 #include "fwd-winged.hpp"
 #include "id-map.hpp"
 #include "octree.hpp"
@@ -283,27 +284,29 @@ struct OctreeNode::Impl {
     assert (this->storeDegenerated == false);
     if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
       this->facesIntersectRay (mesh,ray,intersection);
-      for (Child& c : this->children) 
+      for (Child& c : this->children) {
         c->intersects (mesh,ray,intersection);
+      }
     }
     return intersection.isIntersection ();
   }
 
-  bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
-                  , std::vector <WingedFace*>& iFaces) 
-  {
+  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, AffectedFaces& afFaces) {
     assert (this->storeDegenerated == false);
+    bool hasIntersection = false;
     if (IntersectionUtil :: intersects (sphere, this->looseAABox ())) {
       for (WingedFace& face : this->faces) {
         if (IntersectionUtil :: intersects (sphere, mesh, face)) {
-          iFaces.push_back (&face);
+          afFaces.insert (face);
+          hasIntersection = true;
         }
       }
+      afFaces.commit ();
       for (Child& c : this->children) {
-        c->intersects (mesh, sphere, iFaces);
+        hasIntersection = c->intersects (mesh, sphere, afFaces) || hasIntersection;
       }
     }
-    return iFaces.empty () == false;
+    return hasIntersection;
   }
 
   unsigned int numFaces () const { return this->faces.size (); }
@@ -505,9 +508,7 @@ struct Octree::Impl {
     return false;
   }
 
-  bool intersects ( const WingedMesh& mesh, const PrimSphere& sphere
-                  , std::vector <WingedFace*>& faces) 
-  {
+  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, AffectedFaces& faces) {
     if (this->hasRoot ()) {
       return this->root->intersects (mesh,sphere,faces);
     }
@@ -582,14 +583,16 @@ struct Octree::Impl {
          : nullptr;
   }
 
-  void forEachFace (const std::function <void (WingedFace&)>& f) {
+  void forEachFace (const std::function <void (WingedFace&)>& f) const {
     for (auto& pair : this->idMap) {
       f (*pair.second);
     }
   }
-  void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
-    for (const auto& pair : this->idMap) {
-      f (*pair.second);
+  void forEachDegeneratedFace (const std::function <void (WingedFace&)>& f) const {
+    if (this->degeneratedFaces) {
+      for (WingedFace& face : this->degeneratedFaces->faces) {
+        f (face);
+      }
     }
   }
 };
@@ -603,7 +606,7 @@ DELEGATE1_CONST (bool        , Octree, hasFace, const Id&)
 DELEGATE1       (WingedFace* , Octree, face, const Id&)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
-DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, std::vector<WingedFace*>&)
+DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, AffectedFaces&)
 DELEGATE        (void, Octree, reset)
 DELEGATE2       (void, Octree, setupRoot, const glm::vec3&, float)
 DELEGATE        (void, Octree, shrinkRoot)
@@ -612,5 +615,5 @@ DELEGATE_CONST  (unsigned int, Octree, numFaces)
 DELEGATE_CONST  (unsigned int, Octree, numDegeneratedFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE        (WingedFace* , Octree, someFace)
-DELEGATE1       (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
-DELEGATE1_CONST (void        , Octree, forEachConstFace, const std::function <void (const WingedFace&)>&)
+DELEGATE1_CONST (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
+DELEGATE1_CONST (void        , Octree, forEachDegeneratedFace, const std::function <void (WingedFace&)>&)

@@ -1,12 +1,12 @@
 #ifndef DILAY_PARTIAL_ACTION_TRIANGULATE_QUAD
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_QUAD
 
-#include <unordered_set>
 #include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedFace;
+class AffectedFaces;
 
 class PATriangulateQuad : public ActionOn <WingedMesh> {
   public: 
@@ -16,7 +16,7 @@ class PATriangulateQuad : public ActionOn <WingedMesh> {
      * `f.edge ()->secondVertex (f)`.
      * `f` and the new face are added to `n` if `n` is not `nullptr`.
      */
-    WingedEdge& run (WingedMesh&, WingedFace&, std::unordered_set <WingedFace*>*);
+    WingedEdge& run (WingedMesh&, WingedFace&, AffectedFaces*);
 
   private:
     void runUndo (WingedMesh&);

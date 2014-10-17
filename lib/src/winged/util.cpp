@@ -75,7 +75,7 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
     for (const WingedEdge& e : mesh.edges ())
       WingedUtil :: printStatistics (e);
 
-    mesh.octree ().forEachConstFace ([&mesh,printDerived] (const WingedFace& face) {
+    mesh.octree ().forEachFace ([&mesh,printDerived] (const WingedFace& face) {
       WingedUtil :: printStatistics (mesh,face,printDerived);
     });
   }

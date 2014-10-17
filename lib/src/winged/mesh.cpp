@@ -265,7 +265,7 @@ struct WingedMesh::Impl {
     return this->octree.intersects (*this->self, ray, intersection);
   }
 
-  bool intersects (const PrimSphere& sphere, std::vector <WingedFace*>& faces) {
+  bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
     return this->octree.intersects (*this->self, sphere, faces);
   }
 
@@ -356,7 +356,7 @@ DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
-DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, std::vector<WingedFace*>&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
 DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)

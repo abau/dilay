@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
-#include <glm/gtx/norm.hpp>
 #include <sstream>
 #include "primitive/triangle.hpp"
 #include "ray.hpp"
@@ -20,6 +19,7 @@ struct PrimTriangle::Impl {
     : Impl (v1.vector (mesh), v2.vector (mesh), v3.vector (mesh)) {}
 
   glm::vec3 normal () const { 
+    assert (this->isDegenerated () == false);
     return glm::normalize (glm::cross ( this->vertex2 - this->vertex1
                                       , this->vertex3 - this->vertex2 ));
   }
@@ -46,9 +46,9 @@ struct PrimTriangle::Impl {
   }
 
   bool isDegenerated () const {
-    const float d1 = glm::distance2 (this->vertex1, this->vertex2);
-    const float d2 = glm::distance2 (this->vertex2, this->vertex3);
-    const float d3 = glm::distance2 (this->vertex1, this->vertex3);
+    const float d1 = glm::distance (this->vertex1, this->vertex2);
+    const float d2 = glm::distance (this->vertex2, this->vertex3);
+    const float d3 = glm::distance (this->vertex1, this->vertex3);
 
     return glm::epsilonEqual (d1, d2 + d3, Util::epsilon ())
         || glm::epsilonEqual (d2, d1 + d3, Util::epsilon ())

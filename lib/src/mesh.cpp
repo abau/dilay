@@ -10,6 +10,7 @@
 #include "render-mode.hpp"
 #include "renderer.hpp"
 #include "state.hpp"
+#include "util.hpp"
 
 struct Mesh::Impl {
   // cf. copy-constructor, reset
@@ -93,15 +94,20 @@ struct Mesh::Impl {
   }
 
   glm::vec3 vertex (unsigned int i) const {
+    assert (i < this->numVertices ());
     return glm::vec3 ( this->vertices [(3 * i) + 0]
                      , this->vertices [(3 * i) + 1]
                      , this->vertices [(3 * i) + 2]
         );
   }
 
-  unsigned int index (unsigned int i) const { return this->indices [i]; }
+  unsigned int index (unsigned int i) const { 
+    assert (i < this->indices.size ());
+    return this->indices [i]; 
+  }
 
   glm::vec3 normal (unsigned int i) const {
+    assert (i < this->numNormals ());
     return glm::vec3 ( this->normals [(3 * i) + 0]
                      , this->normals [(3 * i) + 1]
                      , this->normals [(3 * i) + 2]
@@ -114,6 +120,8 @@ struct Mesh::Impl {
   }
 
   unsigned int addVertex (const glm::vec3& v) { 
+    assert (Util::isNaN (v) == false);
+
     this->vertices.push_back (v.x);
     this->vertices.push_back (v.y);
     this->vertices.push_back (v.z);
@@ -132,6 +140,8 @@ struct Mesh::Impl {
 
   void setVertex (unsigned int i, const glm::vec3& v) {
     assert (i < this->numVertices ());
+    assert (Util::isNaN (v) == false);
+
     this->vertices [(3*i) + 0] = v.x;
     this->vertices [(3*i) + 1] = v.y;
     this->vertices [(3*i) + 2] = v.z;
@@ -139,6 +149,8 @@ struct Mesh::Impl {
 
   void setNormal (unsigned int i, const glm::vec3& n) {
     assert (i < this->numNormals ());
+    assert (Util::isNaN (n) == false);
+
     this->normals [(3*i) + 0] = n.x;
     this->normals [(3*i) + 1] = n.y;
     this->normals [(3*i) + 2] = n.z;

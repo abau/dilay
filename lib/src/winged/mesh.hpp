@@ -2,7 +2,6 @@
 #define DILAY_WINGED_MESH
 
 #include <glm/fwd.hpp>
-#include <vector>
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 
@@ -17,6 +16,7 @@ class Id;
 class PrimSphere;
 class Selection;
 class Mesh;
+class AffectedFaces;
 
 class WingedMesh {
   public: 
@@ -67,7 +67,7 @@ class WingedMesh {
     void               toggleRenderMode   ();
     
     bool               intersects         (const PrimRay&, WingedFaceIntersection&);
-    bool               intersects         (const PrimSphere&, std::vector <WingedFace*>&);
+    bool               intersects         (const PrimSphere&, AffectedFaces&);
 
     void               scale              (const glm::vec3&);
     void               scaling            (const glm::vec3&);

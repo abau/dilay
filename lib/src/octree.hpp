@@ -4,7 +4,6 @@
 #include <functional>
 #include <glm/fwd.hpp>
 #include <unordered_map>
-#include <vector>
 #include "macro.hpp"
 
 class WingedFace;
@@ -16,6 +15,7 @@ class PrimRay;
 class WingedFaceIntersection;
 class PrimSphere;
 class Id;
+class AffectedFaces;
 
 struct OctreeStatistics {
   typedef std::unordered_map <int, unsigned int> DepthMap;
@@ -58,8 +58,7 @@ class Octree {
     WingedFace*      face                (const Id&);
     void             render              ();
     bool             intersects          (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
-    bool             intersects          ( const WingedMesh&, const PrimSphere&
-                                         , std::vector <WingedFace*>&);
+    bool             intersects          (const WingedMesh&, const PrimSphere&, AffectedFaces&);
     void             reset               ();
     void             setupRoot           (const glm::vec3&, float);
     void             shrinkRoot          ();
@@ -69,8 +68,8 @@ class Octree {
     OctreeStatistics statistics          () const;
     WingedFace*      someFace            ();
 
-    void        forEachFace              (const std::function <void (WingedFace&)>&);
-    void        forEachConstFace         (const std::function <void (const WingedFace&)>&) const;
+    void        forEachFace              (const std::function <void (WingedFace&)>&) const;
+    void        forEachDegeneratedFace   (const std::function <void (WingedFace&)>&) const;
 
     SAFE_REF1 (WingedFace,face,const Id&)
     SAFE_REF  (WingedFace,someFace)

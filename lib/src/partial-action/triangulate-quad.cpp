@@ -1,4 +1,5 @@
 #include "action/unit/on.hpp"
+#include "affected-faces.hpp"
 #include "partial-action/insert-edge-face.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/triangulate-quad.hpp"
@@ -8,9 +9,7 @@
 struct PATriangulateQuad :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  WingedEdge& run ( WingedMesh& mesh, WingedFace& face
-                  , std::unordered_set <WingedFace*>* affectedFaces ) 
-  {
+  WingedEdge& run (WingedMesh& mesh, WingedFace& face, AffectedFaces* affectedFaces) {
     assert (face.numEdges () == 4);
 
     WingedEdge& newEdge = this->actions.add <PAInsertEdgeFace> ().run (mesh, face);
@@ -19,8 +18,8 @@ struct PATriangulateQuad :: Impl {
     this->actions.add <PAModifyWFace> ().writeIndices (mesh, newEdge.rightFaceRef ());
 
     if (affectedFaces) {
-      affectedFaces->insert (newEdge.leftFace  ());
-      affectedFaces->insert (newEdge.rightFace ());
+      affectedFaces->insert (newEdge.leftFaceRef  ());
+      affectedFaces->insert (newEdge.rightFaceRef ());
     }
     return newEdge;
   }
@@ -31,6 +30,6 @@ struct PATriangulateQuad :: Impl {
 
 DELEGATE_BIG3 (PATriangulateQuad)
 
-DELEGATE3 (WingedEdge&, PATriangulateQuad, run, WingedMesh&, WingedFace&, std::unordered_set <WingedFace*>*)
+DELEGATE3 (WingedEdge&, PATriangulateQuad, run, WingedMesh&, WingedFace&, AffectedFaces*)
 DELEGATE1 (void, PATriangulateQuad, runUndo, WingedMesh&)
 DELEGATE1 (void, PATriangulateQuad, runRedo, WingedMesh&)

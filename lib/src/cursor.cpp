@@ -16,12 +16,13 @@ struct Cursor::Impl {
 
   Impl () : radius (0.2f), sectors (20), _isEnabled (false) {}
 
-  void initialize () {
+  void setGeometry (float r) {
     assert (this->sectors > 2);
     float sectorStep = 2.0f * M_PI / float (this->sectors);
     float theta      = 0.0f;
 
     this->mesh.reset ();
+    this->radius = r;
 
     for (unsigned int s = 0; s < this->sectors; s++) {
       float x = this->radius * sin (theta);
@@ -77,7 +78,7 @@ struct Cursor::Impl {
 
 DELEGATE_BIG6 (Cursor)
 
-DELEGATE        (void,  Cursor, initialize)
+DELEGATE1       (void,  Cursor, setGeometry, float)
 DELEGATE1       (void,  Cursor, position, const glm::vec3&)
 DELEGATE1       (void,  Cursor, normal, const glm::vec3&)
 DELEGATE        (void,  Cursor, render)
