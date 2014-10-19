@@ -49,19 +49,18 @@ std::string Util :: readFile (const std::string& filePath) {
 
 unsigned int Util :: solveQuadraticEq (float a, float b, float c, float& s1, float& s2) {
   const float radicand = (b*b) - (4.0f * a * c);
-  const float eps      = std::numeric_limits<float>::epsilon();
 
-  if (radicand < eps)
+  if (radicand < Util::epsilon ())
     return 0;
 
   const float root = glm::sqrt (radicand);
 
-  if (b < - eps) {
+  if (b < - Util::epsilon ()) {
     s1 = (-b + root) / (2.0f * a);
     s2 = (2.0f * c)  / (-b + root);
     return 2;
   }
-  else if (b > eps) {
+  else if (b > Util::epsilon ()) {
     s1 = (-b - root) / (2.0f * a);
     s2 = (2.0f * c)  / (-b - root);
     return 2;
