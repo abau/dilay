@@ -46,6 +46,10 @@ struct PrimTriangle::Impl {
     return PrimTriangle::isDegenerated (this->vertex1, this->vertex2, this->vertex3);
   }
 
+  float incircleRadiusSqr () const { 
+    return PrimTriangle::incircleRadiusSqr (this->vertex1, this->vertex2, this->vertex3);
+  }
+
   static glm::vec3 normal (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) { 
     assert (PrimTriangle::isDegenerated (v1,v2,v3) == false);
     return glm::normalize (glm::cross (v2 - v1, v3 - v2));
@@ -81,6 +85,16 @@ struct PrimTriangle::Impl {
         || glm::epsilonEqual (d2, d1 + d3, Util::epsilon ())
         || glm::epsilonEqual (d3, d1 + d2, Util::epsilon ());
   }
+
+  static float incircleRadiusSqr (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) {
+    assert (PrimTriangle::isDegenerated (v1,v2,v3) == false);
+
+    const float a = glm::distance (v1,v2);
+    const float b = glm::distance (v2,v3);
+    const float c = glm::distance (v1,v3);
+    const float s = 0.5f * (a + b + c);
+    return (s-a) * (s-b) * (s-c) / s;
+  }
 };
 
 DELEGATE3_BIG4COPY     (PrimTriangle, const glm::vec3&, const glm::vec3&, const glm::vec3&)
@@ -97,6 +111,7 @@ DELEGATE_CONST   (glm::vec3         , PrimTriangle, maximum)
 DELEGATE_CONST   (float             , PrimTriangle, extent)
 DELEGATE_CONST   (float             , PrimTriangle, oneDimExtent)
 DELEGATE_CONST   (bool              , PrimTriangle, isDegenerated)
+DELEGATE_CONST   (float             , PrimTriangle, incircleRadiusSqr)
 
 DELEGATE3_STATIC (glm::vec3         , PrimTriangle, normal, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE3_STATIC (glm::vec3         , PrimTriangle, center, const glm::vec3&, const glm::vec3&, const glm::vec3&)
@@ -105,6 +120,7 @@ DELEGATE3_STATIC (glm::vec3         , PrimTriangle, maximum, const glm::vec3&, c
 DELEGATE3_STATIC (float             , PrimTriangle, extent, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE3_STATIC (float             , PrimTriangle, oneDimExtent, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE3_STATIC (bool              , PrimTriangle, isDegenerated, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+DELEGATE3_STATIC (float             , PrimTriangle, incircleRadiusSqr, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 
 std::ostream& operator<<(std::ostream& os, const PrimTriangle& triangle) {
   os << "PrimTriangle { " << triangle.vertex1 ()
