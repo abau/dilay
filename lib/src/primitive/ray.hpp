@@ -7,8 +7,11 @@
 
 class PrimRay {
   public:
-    DECLARE_BIG4COPY (PrimRay,const glm::vec3&, const glm::vec3&)
+    DECLARE_BIG4COPY (PrimRay, bool, const glm::vec3&, const glm::vec3&)
 
+    PrimRay (const glm::vec3&, const glm::vec3&);
+
+          bool       isLine    () const;
     const glm::vec3& origin    () const;
     const glm::vec3& direction () const;
 

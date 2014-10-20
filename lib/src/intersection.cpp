@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
 #include <limits>
 #include "adjacent-iterator.hpp"
 #include "intersection.hpp"
@@ -53,6 +54,15 @@ GETTER_CONST     (float           , Intersection, distance)
 GETTER_CONST     (const glm::vec3&, Intersection, position)
 GETTER_CONST     (const glm::vec3&, Intersection, normal)
 DELEGATE2_STATIC (Intersection&   , Intersection, min, Intersection&, Intersection&)
+
+namespace {
+  template <typename T>
+  void writeIfNotNull (T* ptr, T value) {
+    if (ptr) {
+      *ptr = value;
+    }
+  }
+}
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& vec) {
   const glm::vec3 d = vec - sphere.center ();
@@ -156,33 +166,52 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& spher
                                                   , 2.0f * glm::dot (d,v)
                                                   , glm::dot (v, v) - r2
                                                   , s1, s2);
-  if (n == 0) {
-    return false;
-  }
-  else if (n == 1) {
-    if (t) {
-      *t = s1;
+  switch (n) {
+    case 0:
+      return false;
+
+    case 1:
+      if (s1 >= 0.0f || ray.isLine ()) {
+        writeIfNotNull (t, s1);
+        return true;
+      }
+      else {
+        return false;
+      }
+    case 2: {
+      const float sMin = glm::min (s1,s2);
+      const float sMax = glm::max (s1,s2);
+
+      if (sMin >= 0.0f) {
+        writeIfNotNull (t, sMin);
+        return true;
+      }
+      else if (sMax >= 0.0f || ray.isLine ()) {
+        writeIfNotNull (t, sMax);
+        return true;
+      }
+      return false;
     }
-    return true;
-  }
-  else {
-    if (t) {
-      *t = glm::min (s1,s2);
-    }
-    return true;
+    default:
+      assert (false);
   }
 }
 
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane, float* t) {
   const float d = glm::dot (ray.direction (), plane.normal ());
 
-  if (d > - Util::epsilon ()) {
+  if (glm::epsilonEqual (d, 0.0f, Util::epsilon ())) {
     return false;
   }
-  if (t) {
-    *t = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
+  const float s = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
+
+  if (s >= 0.0f || ray.isLine ()) {
+    writeIfNotNull (t, s);
+    return true;
   }
-  return true;
+  else {
+    return false;
+  }
 }
 
 // see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
@@ -195,7 +224,7 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
   const float det    = glm::dot   (s1, e1);
   const float invDet = 1.0f / det;
 
-  if (det > - Util::epsilon () && det < Util::epsilon ()) {
+  if (glm::epsilonEqual (det, 0.0f, Util::epsilon ())) {
     return false;
   }
   const glm::vec3 d  = ray.origin () - tri.vertex1 ();
@@ -204,13 +233,11 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
   const float     b2 = glm::dot (ray.direction (), s2) * invDet;
   const float     t  = glm::dot (e2, s2) * invDet;
 
-  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || t < 0.0f) {
+  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || (t < 0.0f && ray.isLine () == false)) {
     return false;
   }
   else {
-    if (intersection) {
-      *intersection = ray.pointAt (t);
-    }
+    writeIfNotNull (intersection, ray.pointAt (t));
     return true;
   }
 }
@@ -225,5 +252,5 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
   const float tMin = glm::max ( glm::max (min.x, min.y), min.z );
   const float tMax = glm::min ( glm::min (max.x, max.y), max.z );
 
-  return tMax >= 0.0f && tMin <= tMax;
+  return (tMax >= 0.0f || ray.isLine ()) && tMin <= tMax;
 }

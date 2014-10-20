@@ -4,20 +4,27 @@
 #include "util.hpp"
 
 struct PrimRay::Impl {
+  const bool      isLine;
   const glm::vec3 origin;
   const glm::vec3 direction;
 
-  Impl (const glm::vec3& o, const glm::vec3& d) 
-    : origin    (o)
+  Impl (bool l, const glm::vec3& o, const glm::vec3& d) 
+    : isLine    (l)
+    , origin    (o)
     , direction (glm::normalize (d)) 
-      {}
+  {}
+
+  Impl (const glm::vec3& o, const glm::vec3& d) : Impl (false, o, d) {}
 
   glm::vec3 pointAt (float t) const {
+    assert (t >= 0.0f || this->isLine);
     return this->origin + (this->direction * glm::vec3 (t));
   }
 };
 
-DELEGATE2_BIG4COPY (PrimRay, const glm::vec3&, const glm::vec3&)
+DELEGATE3_BIG4COPY    (PrimRay, bool, const glm::vec3&, const glm::vec3&)
+DELEGATE2_CONSTRUCTOR (PrimRay, const glm::vec3&, const glm::vec3&)
+GETTER_CONST    (bool            , PrimRay, isLine)
 GETTER_CONST    (const glm::vec3&, PrimRay, origin)
 GETTER_CONST    (const glm::vec3&, PrimRay, direction)
 DELEGATE1_CONST (glm::vec3       , PrimRay, pointAt, float)

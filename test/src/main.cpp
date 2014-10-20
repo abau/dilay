@@ -6,7 +6,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <QCoreApplication>
+#include "intersection.hpp"
 #include "octree.hpp"
+#include "primitive/aabox.hpp"
+#include "primitive/plane.hpp"
+#include "primitive/ray.hpp"
+#include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/face.hpp"
 #include "winged/util.hpp"
@@ -14,18 +19,84 @@
 #include "util.hpp"
 #include "mesh.hpp"
 
+void intersectionTest ();
 void octreeTest1 ();
 void octreeTest2 ();
-void interimTest ();
 
 int main () {
   QCoreApplication::setApplicationName ("dilay");
+
+  intersectionTest ();
 
   octreeTest1 ();
   //octreeTest2 ();
 
   std::cout << "all tests run successfully\n";
   return 0;
+}
+
+void intersectionTest () {
+  using IntersectionUtil::intersects;
+
+  PrimTriangle tri ( glm::vec3 (0.0f, 0.0f, 0.0f)
+                   , glm::vec3 (2.0f, 0.0f, 0.0f)
+                   , glm::vec3 (0.0f, 2.0f, 0.0f) );
+  PrimSphere   sph ( glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f );
+  PrimPlane    pln ( glm::vec3 (0.0f, 0.0f, 0.0f)
+                   , glm::vec3 (0.0f, 1.0f, 0.0f) );
+  PrimAABox    abx ( glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f );
+
+  float t = 0.0f;
+
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f, 1.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), tri, nullptr));
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f,-1.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), tri, nullptr) == false);
+  assert (intersects (PrimRay ( true
+                              , glm::vec3 (0.0f, 0.0f,-1.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), tri, nullptr));
+
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f, 0.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), sph, &t));
+  assert (t > 0.0f);
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f, 2.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), sph, &t));
+  assert (t > 0.0f && t < 2.0f);
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f,-2.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), sph, &t) == false);
+  assert (intersects (PrimRay ( true
+                              , glm::vec3 (0.0f, 0.0f,-2.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), sph, &t));
+  assert (t < 0.0f && t > -2.0f);
+
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 1.0f, 0.0f)
+                              , glm::vec3 (0.0f,-1.0f, 0.0f) ), pln, &t));
+  assert (t > 0.0f);
+  assert (intersects (PrimRay ( glm::vec3 (0.0f,-1.0f, 0.0f)
+                              , glm::vec3 (0.0f, 1.0f, 0.0f) ), pln, &t));
+  assert (t > 0.0f);
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 1.0f, 0.0f)
+                              , glm::vec3 (0.0f, 1.0f, 0.0f) ), pln, &t) == false);
+  assert (intersects (PrimRay ( true
+                              , glm::vec3 (0.0f, 1.0f, 0.0f)
+                              , glm::vec3 (0.0f, 1.0f, 0.0f) ), pln, &t));
+  assert (t < 0.0f);
+
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f, 1.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), abx));
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f,-1.0f)
+                              , glm::vec3 (0.0f, 0.0f, 1.0f) ), abx));
+  assert (intersects (PrimRay ( glm::vec3 (1.5f, 0.0f, 1.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), abx) == false);
+  assert (intersects (PrimRay ( glm::vec3 (1.5f, 0.0f,-1.0f)
+                              , glm::vec3 (0.0f, 0.0f, 1.0f) ), abx) == false);
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f,-1.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), abx) == false);
+  assert (intersects (PrimRay ( glm::vec3 (0.0f, 0.0f, 1.0f)
+                              , glm::vec3 (0.0f, 0.0f, 1.0f) ), abx) == false);
+  assert (intersects (PrimRay ( true
+                              , glm::vec3 (0.0f, 0.0f,-1.0f)
+                              , glm::vec3 (0.0f, 0.0f,-1.0f) ), abx));
 }
 
 void octreeTest1 () {
