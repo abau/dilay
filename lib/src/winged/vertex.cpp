@@ -23,12 +23,16 @@ glm::vec3 WingedVertex :: savedNormal (const WingedMesh& mesh) const {
 }
 
 glm::vec3 WingedVertex :: interpolatedNormal (const WingedMesh& mesh) const {
-  glm::vec3 normal = glm::vec3 (0.0f,0.0f,0.0f);
+  glm::vec3    normal = glm::vec3 (0.0f);
+  unsigned int n      = 0;
 
   for (WingedFace& f : this->adjacentFaces ()) {
-    normal = normal + f.normal (mesh);
+    if (f.isDegenerated (mesh) == false) {
+      normal += f.normal (mesh);
+      n++;
+    }
   }
-  return glm::normalize (normal);
+  return normal / float (n);
 }
 
 void WingedVertex :: writeNormal (WingedMesh& mesh, const glm::vec3& normal) {

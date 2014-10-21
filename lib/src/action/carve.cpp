@@ -9,7 +9,6 @@
 #include "carve-brush.hpp"
 #include "id.hpp"
 #include "intersection.hpp"
-#include "partial-action/collapse-edge.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/sphere.hpp"
 #include "winged/edge.hpp"
@@ -32,7 +31,7 @@ struct ActionCarve::Impl {
     WingedMesh&   mesh = brush.mesh ();
 
     mesh.intersects               (sphere, domain);
-    this->carveFaces              (brush, domain);
+    //this->carveFaces              (brush, domain);
     this->subdivideEdges          (brush, sphere, domain);
     this->finalize                (mesh, domain);
     this->self->bufferData        (mesh);
@@ -90,6 +89,7 @@ struct ActionCarve::Impl {
       for (WingedEdge* e : thisIteration.edges ()) {
         if (isSubdividable (*e)) {
           this->actions.add <ActionSubdivide> ().subdivideEdge (mesh, *e, newAF);
+          e->vertex1Ref ().writeNormal (mesh, e->vertex1Ref ().interpolatedNormal (mesh));
         }
       }
       domain       .insert (newAF);

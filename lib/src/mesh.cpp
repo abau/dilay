@@ -38,7 +38,7 @@ struct Mesh::Impl {
     this->vertexBufferId      = 0;
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;
-    this->renderMode          = RenderMode::Wireframe;
+    this->renderMode          = RenderMode::SmoothShaded;
 
     this->color               = Config::get <Color> ("/config/editor/mesh/color/normal");
     this->wireframeColor      = Config::get <Color> ("/config/editor/mesh/color/wireframe");

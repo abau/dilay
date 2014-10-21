@@ -36,6 +36,7 @@ class WingedFace {
     WingedVertex&          thirdVertex     () const;
     unsigned int           numEdges        () const;
     glm::vec3              normal          (const WingedMesh&) const;
+    bool                   isDegenerated   (const WingedMesh&) const;
 
     /** `adjacent (v,b)` returns an adjacent edge with `v` as start or end point.
      * It's crucial that `v` is actually a vertex of `this` face.

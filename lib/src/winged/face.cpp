@@ -55,11 +55,16 @@ unsigned int WingedFace :: numEdges () const {
 }
 
 glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
-  glm::vec3 v1 = this->_edge->vertex (*this,0)->vector (mesh);
-  glm::vec3 v2 = this->_edge->vertex (*this,1)->vector (mesh);
-  glm::vec3 v3 = this->_edge->vertex (*this,2)->vector (mesh);
+  assert (this->isTriangle ());
+  return PrimTriangle::normal ( this->firstVertex  ().vector (mesh)
+                              , this->secondVertex ().vector (mesh)
+                              , this->thirdVertex  ().vector (mesh) );
+}
 
-  return glm::normalize (glm::cross (v2-v1, v3-v2));
+bool WingedFace :: isDegenerated (const WingedMesh& mesh) const {
+  return PrimTriangle::isDegenerated ( this->firstVertex  ().vector (mesh)
+                                     , this->secondVertex ().vector (mesh)
+                                     , this->thirdVertex  ().vector (mesh) );
 }
 
 WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex) const {
@@ -97,14 +102,9 @@ bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
 
 float WingedFace :: incircleRadiusSqr (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
-  const glm::vec3 v1 = this->firstVertex  ().vector (mesh);
-  const glm::vec3 v2 = this->secondVertex ().vector (mesh);
-  const glm::vec3 v3 = this->thirdVertex  ().vector (mesh);
-  const float     a  = glm::distance (v1,v2);
-  const float     b  = glm::distance (v2,v3);
-  const float     c  = glm::distance (v1,v3);
-  const float     s  = 0.5f * (a + b + c);
-  return (s-a) * (s-b) * (s-c) / s;
+  return PrimTriangle::incircleRadiusSqr ( this->firstVertex  ().vector (mesh)
+                                         , this->secondVertex ().vector (mesh)
+                                         , this->thirdVertex  ().vector (mesh) );
 }
 
 AdjEdges WingedFace :: adjacentEdges (WingedEdge& e) const {

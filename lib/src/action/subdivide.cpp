@@ -74,8 +74,8 @@ struct ActionSubdivide::Impl {
   }
 
   void subdivideEdge (WingedMesh& mesh, WingedEdge& edge, AffectedFaces& affectedFaces) {
-    this->actions.add <PAInsertEdgeVertex> ().run (mesh, edge, edge.middle (mesh));
-    //SubdivisionButterfly::subdivideEdge (data.mesh, *e));
+    this->actions.add <PAInsertEdgeVertex> ().run 
+      (mesh, edge/*, SubdivisionButterfly::subdivideEdge (mesh, edge) ); */, edge.middle (mesh));
     this->actions.add <PATriangulateQuad>  ().run (mesh, edge.leftFaceRef  (), &affectedFaces);
     this->actions.add <PATriangulateQuad>  ().run (mesh, edge.rightFaceRef (), &affectedFaces);
   }

@@ -6,10 +6,16 @@
 #include "affected-faces.hpp"
 #include "intersection.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
+#include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
+
+#include <iostream>
+#include "util.hpp"
+#include "winged/face-intersection.hpp"
+#include "winged/mesh.hpp"
 
 struct ActionSmooth::Impl {
   ActionUnitOn <WingedMesh> actions;
@@ -19,6 +25,7 @@ struct ActionSmooth::Impl {
 
   void run (WingedMesh& mesh, const VertexSet& vertices, AffectedFaces& affectedFaces) {
     std::unordered_map <WingedVertex*,glm::vec3> deltas;
+
     // compute deltas
     for (WingedVertex* v : vertices) {
       const glm::vec3    p       (v->vector (mesh));
@@ -31,29 +38,40 @@ struct ActionSmooth::Impl {
       }
       deltas.emplace (v, delta / float (valence));
     }
-    // compute positions
+    // compute smoothed positions
     std::unordered_map <WingedVertex*,glm::vec3> positions;
     for (auto deltaIt : deltas) {
-      WingedVertex& v (*deltaIt.first);
-      glm::vec3     normal  (0.0f);
-      unsigned int  valence (0);
+      WingedVertex&   v      (*deltaIt.first);
+      const glm::vec3 p      (v.vector (mesh));
+      const glm::vec3 delta  (deltaIt.second);
+      const glm::vec3 normal (v.savedNormal (mesh));
+      //const float     dot    (glm::dot (normal, delta));
+      const glm::vec3 newP   ((p + delta) /*- (normal * dot)*/);
+      const PrimRay   ray    (true, newP, normal);
 
+      bool intersected = false;
       for (WingedFace& f : v.adjacentFaces ()) {
-        PrimTriangle triangle (f.triangle (mesh));
-
-        if (triangle.isDegenerated () == false) {
-          normal += triangle.normal ();
-          valence++;
+        glm::vec3 intersection;
+        if (IntersectionUtil::intersects (ray, f.triangle (mesh), &intersection)) {
+          positions.emplace (&v, intersection);
+          intersected = true;
+          break;
         }
       }
-      normal *= 1.0f / float (valence);
+      if (intersected == false) {
+        std::cout << "none " << &v << " " << normal << std::endl;
+        
+        WingedFaceIntersection intersection;
+        if (mesh.intersects (ray, intersection)) {
 
-      const glm::vec3 p     (v.vector (mesh));
-      const glm::vec3 delta (deltaIt.second);
-      const float     dot   (glm::dot (normal, delta));
-      const glm::vec3 newP  ((p + delta) - (normal * dot));
+          positions.emplace (&v, intersection.position ());
+        }
+        else {
+          assert (false);
+        }
+      }
 
-      positions.emplace (&v, newP);
+      //positions.emplace (&v, newP);
     }
     // move & add affected faces
     for (auto it : positions) {
