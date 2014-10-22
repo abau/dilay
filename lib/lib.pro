@@ -19,7 +19,7 @@ SOURCES += \
            src/action/new-sphere-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/smooth.cpp \
-           src/action/subdivide.cpp \
+           src/action/subdivide-edge.cpp \
            src/action/translate.cpp \
            src/action/unit.cpp \
            src/adjacent-iterator.cpp \
@@ -109,7 +109,7 @@ HEADERS += \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/smooth.hpp \
-           src/action/subdivide.hpp \
+           src/action/subdivide-edge.hpp \
            src/action/transformer.hpp \
            src/action/translate.hpp \
            src/action/unit.hpp \

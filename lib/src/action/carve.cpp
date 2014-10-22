@@ -2,7 +2,7 @@
 #include <glm/gtx/norm.hpp>
 #include "action/carve.hpp"
 #include "action/smooth.hpp"
-#include "action/subdivide.hpp"
+#include "action/subdivide-edge.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
@@ -77,7 +77,7 @@ struct ActionCarve::Impl {
           thisIteration.insert (*f);
         }
       }
-      ActionSubdivide::extendDomain (thisIteration);
+      ActionSubdivideEdge::extendDomain (thisIteration);
     };
 
     auto isSubdividable = [&] (WingedEdge& edge) -> bool {
@@ -88,7 +88,7 @@ struct ActionCarve::Impl {
       AffectedFaces newAF;
       for (WingedEdge* e : thisIteration.edges ()) {
         if (isSubdividable (*e)) {
-          this->actions.add <ActionSubdivide> ().subdivideEdge (mesh, *e, newAF);
+          this->actions.add <ActionSubdivideEdge> ().subdivideEdge (mesh, *e, newAF);
           e->vertex1Ref ().writeNormal (mesh, e->vertex1Ref ().interpolatedNormal (mesh));
         }
       }
@@ -99,7 +99,7 @@ struct ActionCarve::Impl {
     };
     auto relaxEdges = [&] () {
       for (WingedEdge* e : thisIteration.edges ()) {
-        this->actions.add <ActionSubdivide> ().relaxEdge (mesh, *e, domain);
+        this->actions.add <ActionSubdivideEdge> ().relaxEdge (mesh, *e, domain);
       }
       domain.commit ();
     };

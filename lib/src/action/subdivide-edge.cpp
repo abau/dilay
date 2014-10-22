@@ -1,6 +1,6 @@
 #include <glm/glm.hpp>
 #include "affected-faces.hpp"
-#include "action/subdivide.hpp"
+#include "action/subdivide-edge.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "partial-action/flip-edge.hpp"
@@ -12,7 +12,7 @@
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
 
-struct ActionSubdivide::Impl {
+struct ActionSubdivideEdge::Impl {
   ActionUnitOn <WingedMesh> actions;
 
   void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
@@ -101,10 +101,10 @@ struct ActionSubdivide::Impl {
   }
 };
 
-DELEGATE_BIG3 (ActionSubdivide)
-DELEGATE1_STATIC (void, ActionSubdivide, extendDomain, AffectedFaces&)
-DELEGATE1_STATIC (void, ActionSubdivide, addOneRing, AffectedFaces&)
-DELEGATE3 (void, ActionSubdivide, subdivideEdge, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE3 (void, ActionSubdivide, relaxEdge, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE1 (void, ActionSubdivide, runUndo, WingedMesh&)
-DELEGATE1 (void, ActionSubdivide, runRedo, WingedMesh&)
+DELEGATE_BIG3 (ActionSubdivideEdge)
+DELEGATE1_STATIC (void, ActionSubdivideEdge, extendDomain, AffectedFaces&)
+DELEGATE1_STATIC (void, ActionSubdivideEdge, addOneRing, AffectedFaces&)
+DELEGATE3 (void, ActionSubdivideEdge, subdivideEdge, WingedMesh&, WingedEdge&, AffectedFaces&)
+DELEGATE3 (void, ActionSubdivideEdge, relaxEdge, WingedMesh&, WingedEdge&, AffectedFaces&)
+DELEGATE1 (void, ActionSubdivideEdge, runUndo, WingedMesh&)
+DELEGATE1 (void, ActionSubdivideEdge, runRedo, WingedMesh&)
