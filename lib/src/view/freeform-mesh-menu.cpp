@@ -4,6 +4,7 @@
 #include "tool/move.hpp"
 #include "tool/movement.hpp"
 #include "tool/new-freeform-mesh.hpp"
+#include "tool/subdivide-mesh.hpp"
 #include "view/freeform-mesh-menu.hpp"
 
 ViewFreeformMeshMenu :: ViewFreeformMeshMenu (ViewMainWindow& mW, const glm::ivec2& p)
@@ -13,4 +14,5 @@ ViewFreeformMeshMenu :: ViewFreeformMeshMenu (ViewMainWindow& mW, const glm::ive
   this->addAction <ToolNewFreeformMesh> ();
   this->addAction <ToolMove>            (Movement::CameraPlane);
   this->addAction <ToolCarve>           ();
+  this->addAction <ToolSubdivideMesh>   ();
 }

@@ -20,6 +20,7 @@ SOURCES += \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/smooth.cpp \
            src/action/subdivide-edge.cpp \
+           src/action/subdivide-mesh.cpp \
            src/action/translate.cpp \
            src/action/unit.cpp \
            src/adjacent-iterator.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
            src/partial-action/modify-winged-face.cpp \
            src/partial-action/modify-winged-mesh.cpp \
            src/partial-action/modify-winged-vertex.cpp \
+           src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
            src/primitive/aabox.cpp \
            src/primitive/plane.cpp \
@@ -72,6 +74,7 @@ SOURCES += \
            src/tool/new-freeform-mesh.cpp \
            src/tool/new-sphere-mesh.cpp \
            src/tool/move-camera.cpp \
+           src/tool/subdivide-mesh.cpp \
            src/util.cpp \
            src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
@@ -110,6 +113,7 @@ HEADERS += \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/smooth.hpp \
            src/action/subdivide-edge.hpp \
+           src/action/subdivide-mesh.hpp \
            src/action/transformer.hpp \
            src/action/translate.hpp \
            src/action/unit.hpp \
@@ -144,6 +148,7 @@ HEADERS += \
            src/partial-action/modify-winged-face.hpp \
            src/partial-action/modify-winged-mesh.hpp \
            src/partial-action/modify-winged-vertex.hpp \
+           src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
            src/primitive/aabox.hpp \
            src/primitive/plane.hpp \
@@ -169,6 +174,7 @@ HEADERS += \
            src/tool/new-freeform-mesh.hpp \
            src/tool/new-sphere-mesh.hpp \
            src/tool/move-camera.hpp \
+           src/tool/subdivide-mesh.hpp \
            src/util.hpp \
            src/variant.hpp \
            src/view/freeform-mesh-menu.hpp \
