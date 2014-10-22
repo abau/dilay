@@ -20,7 +20,7 @@ class ActionUnit : public Action {
     A& add (T& t) { 
       A& action = *new A ();
       this->addAction (*new ActionTransformer <T> (t, action));
-      return *action; 
+      return action; 
     }
 
     bool isEmpty () const;
