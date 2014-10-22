@@ -12,8 +12,11 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
     DECLARE_BIG3_VIRTUAL (ActionOnPostProcessedWMesh)
 
   protected:
-    void        bufferData  (WingedMesh&);
-    WingedFace& realignFace (WingedMesh&, WingedFace&&);
+    WingedFace& realignFace     (WingedMesh&, WingedFace&&);
+    void        realignAllFaces (WingedMesh&);
+    void        writeAllNormals (WingedMesh&);
+    void        writeAllIndices (WingedMesh&);
+    void        bufferData      (WingedMesh&);
 
   private:
     void runUndo (WingedMesh&);

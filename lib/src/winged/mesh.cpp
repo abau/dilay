@@ -179,6 +179,17 @@ struct WingedMesh::Impl {
     return newFace;
   }
 
+  void realignAllFaces () {
+    std::vector <WingedFace*> faces;
+    this->octree.forEachFace ([&faces] (WingedFace& f) { 
+      faces.push_back (&f);
+    });
+
+    for (WingedFace* f : faces) {
+      this->realignFace (std::move (*f), f->triangle (*this->self), nullptr);
+    }
+  }
+
   unsigned int numVertices () const { 
     assert (this->mesh.numVertices () == this->vertices.size () + this->freeVertexIndices.size ());
     return this->vertices.size (); 
@@ -339,6 +350,7 @@ DELEGATE1       (void        , WingedMesh, deleteEdge, WingedEdge&)
 DELEGATE1       (void        , WingedMesh, deleteFace, WingedFace&)
 DELEGATE1       (void        , WingedMesh, deleteVertex, WingedVertex&)
 DELEGATE3       (WingedFace& , WingedMesh, realignFace, WingedFace&&, const PrimTriangle&, bool*)
+DELEGATE        (void        , WingedMesh, realignAllFaces)
  
 DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
