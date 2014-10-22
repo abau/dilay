@@ -5,7 +5,6 @@
 #include "adjacent-iterator.hpp"
 #include "partial-action/flip-edge.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
-#include "partial-action/modify-winged-vertex.hpp"
 #include "partial-action/triangulate-quad.hpp"
 #include "subdivision-butterfly.hpp"
 #include "winged/edge.hpp"
