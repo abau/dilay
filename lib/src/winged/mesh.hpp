@@ -59,7 +59,7 @@ class WingedMesh {
     bool               isEmpty            () const;
 
     void               writeAllIndices    (); 
-    void     writeAllInterpolatedNormals  (); 
+    void               writeAllNormals    (); 
     void               bufferData         ();
     void               render             (const Selection&);
     void               reset              ();

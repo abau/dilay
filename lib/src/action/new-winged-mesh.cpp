@@ -76,9 +76,9 @@ struct ActionNewWingedMesh :: Impl {
     }
 
     // write & buffer
-    mesh.writeAllIndices             ();
-    mesh.writeAllInterpolatedNormals ();
-    mesh.bufferData                  ();
+    mesh.writeAllIndices ();
+    mesh.writeAllNormals ();
+    mesh.bufferData      ();
 
     return mesh;
   }
@@ -132,9 +132,9 @@ struct ActionNewWingedMesh :: Impl {
     WingedMesh& mesh = State::scene ().newWingedMesh (this->meshType, this->ids.getIdRef (0));
     this->actions.redo (mesh);
 
-    mesh.writeAllIndices             ();
-    mesh.writeAllInterpolatedNormals ();
-    mesh.bufferData                  ();
+    mesh.writeAllIndices ();
+    mesh.writeAllNormals ();
+    mesh.bufferData      ();
   }
 };
 

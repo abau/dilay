@@ -212,7 +212,7 @@ struct WingedMesh::Impl {
     });
   }
 
-  void writeAllInterpolatedNormals () {
+  void writeAllNormals () {
     for (WingedVertex& v : this->vertices) {
       v.writeNormal (*this->self, v.interpolatedNormal (*this->self));
     }
@@ -348,7 +348,7 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numFreeFaceIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 
 DELEGATE        (void, WingedMesh, writeAllIndices)
-DELEGATE        (void, WingedMesh, writeAllInterpolatedNormals)
+DELEGATE        (void, WingedMesh, writeAllNormals)
 DELEGATE        (void, WingedMesh, bufferData)
 DELEGATE1       (void, WingedMesh, render, const Selection&)
 DELEGATE        (void, WingedMesh, reset)
