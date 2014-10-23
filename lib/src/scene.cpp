@@ -230,6 +230,19 @@ struct Scene :: Impl {
       WingedUtil::printStatistics (m);
     }
   }
+
+  void toggleRenderMode (MeshType t) {
+    switch (t) {
+      case MeshType::Freeform:
+        for (WingedMesh& m : this->wingedMeshes) {
+          m.toggleRenderMode ();
+        }
+        break;
+
+      default:
+        assert (false);
+    }
+  }
 };
 
 DELEGATE_BIG3 (Scene)
@@ -258,3 +271,4 @@ DELEGATE_CONST  (unsigned int     , Scene, numSelections)
 DELEGATE1       (WingedMeshes     , Scene, selectedWingedMeshes, MeshType)
 DELEGATE        (SphereMeshes     , Scene, selectedSphereMeshes)
 DELEGATE_CONST  (void             , Scene, printStatistics)
+DELEGATE1       (void             , Scene, toggleRenderMode, MeshType)

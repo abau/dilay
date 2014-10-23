@@ -52,6 +52,7 @@ class Scene {
           SphereMeshes  selectedSphereMeshes ();
 
           void          printStatistics      () const;
+          void          toggleRenderMode     (MeshType);
 
   private:
     IMPLEMENTATION

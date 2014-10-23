@@ -154,12 +154,10 @@ struct ViewGlWidget::Impl {
         case Qt::Key_Escape:
           QCoreApplication::instance()->quit();
           break;
-          /*
         case Qt::Key_W:
-          State :: mesh ().toggleRenderMode ();
-          this->update ();
+          State :: scene ().toggleRenderMode (MeshType::Freeform);
+          this->self->update ();
           break;
-          */
         case Qt::Key_I:
           State::scene ().printStatistics ();
           break;
