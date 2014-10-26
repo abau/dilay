@@ -12,7 +12,7 @@ class ActionSmooth : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (ActionSmooth)
 
-    void run (WingedMesh&, const VertexSet&, AffectedFaces&);
+    void run (WingedMesh&, const VertexSet&, unsigned int, AffectedFaces&);
   private:
     void runUndo (WingedMesh&);
     void runRedo (WingedMesh&);

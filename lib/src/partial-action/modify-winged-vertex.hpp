@@ -18,6 +18,7 @@ class PAModifyWVertex : public ActionOn <WingedMesh> {
     void writeNormal             (WingedMesh&, WingedVertex&, const glm::vec3&);
     void writeInterpolatedNormal (WingedMesh&, WingedVertex&);
     void move                    (WingedMesh&, WingedVertex&, const glm::vec3&);
+    void moved                   (WingedVertex&, const glm::vec3&);
 
   private:
     void runUndo (WingedMesh&);

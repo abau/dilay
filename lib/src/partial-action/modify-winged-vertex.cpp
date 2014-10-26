@@ -43,10 +43,14 @@ struct PAModifyWVertex :: Impl {
   }
 
   void move (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& pos) {
+    this->moved    (vertex, vertex.vector (mesh));
+    mesh.setVertex (vertex.index (), pos);
+  }
+
+  void moved (WingedVertex& vertex, const glm::vec3& from) {
     this->operation = Operation::Move;
     this->operands.setVertex (0, &vertex);
-    this->vec3.reset         (new glm::vec3 (vertex.vector (mesh)));
-    mesh.setVertex           (vertex.index (), pos);
+    this->vec3.reset         (new glm::vec3 (from));
   }
 
   void toggle (WingedMesh& mesh) { 
@@ -93,5 +97,6 @@ DELEGATE3 (void,PAModifyWVertex,writeIndex ,WingedMesh&,WingedVertex&,unsigned i
 DELEGATE3 (void,PAModifyWVertex,writeNormal,WingedMesh&,WingedVertex&, const glm::vec3&)
 DELEGATE2 (void,PAModifyWVertex,writeInterpolatedNormal,WingedMesh&,WingedVertex&)
 DELEGATE3 (void,PAModifyWVertex,move,WingedMesh&,WingedVertex&,const glm::vec3&)
+DELEGATE2 (void,PAModifyWVertex,moved,WingedVertex&,const glm::vec3&)
 DELEGATE1 (void,PAModifyWVertex,runUndo,WingedMesh&)
 DELEGATE1 (void,PAModifyWVertex,runRedo,WingedMesh&)

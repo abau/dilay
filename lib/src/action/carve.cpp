@@ -34,7 +34,6 @@ struct ActionCarve::Impl {
     //this->carveFaces              (brush, domain);
     this->subdivideEdges          (brush, sphere, domain);
     this->finalize                (mesh, domain);
-    this->self->bufferData        (mesh);
   }
 
   glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
@@ -51,7 +50,7 @@ struct ActionCarve::Impl {
     // get average normal
     glm::vec3 avgNormal (0.0f);
     for (WingedVertex* v : vertices) {
-      avgNormal = avgNormal + v->interpolatedNormal (mesh);;
+      avgNormal = avgNormal + v->savedNormal (mesh);;
     }
     avgNormal = avgNormal / float (vertices.size ());
 
@@ -89,7 +88,6 @@ struct ActionCarve::Impl {
       for (WingedEdge* e : thisIteration.edges ()) {
         if (isSubdividable (*e)) {
           this->actions.add <ActionSubdivideEdge> ().subdivideEdge (mesh, *e, newAF);
-          e->vertex1Ref ().writeNormal (mesh, e->vertex1Ref ().interpolatedNormal (mesh));
         }
       }
       domain       .insert (newAF);
@@ -104,17 +102,14 @@ struct ActionCarve::Impl {
       domain.commit ();
     };
     auto smoothVertices = [&] () {
-      this->actions.add <ActionSmooth> ().run (mesh, thisIteration.toVertexSet (), domain);
+      this->actions.add <ActionSmooth> ().run (mesh, thisIteration.toVertexSet (), 5, domain);
       domain.commit ();
     };
 
-    for (int i = 0; i < 1; i++) {
-      thisIterationDomain ();
-
-      subdivideEdges ();
-      relaxEdges     ();
-      smoothVertices ();
-    }
+    thisIterationDomain ();
+    subdivideEdges ();
+    relaxEdges     ();
+    smoothVertices ();
   }
 
   void finalize (WingedMesh& mesh, AffectedFaces& domain) {
@@ -127,6 +122,8 @@ struct ActionCarve::Impl {
       this->self->realignFace (mesh, std::move (*f));
     }
     domain.reset ();
+
+    this->self->bufferData (mesh);
   }
 };
 
