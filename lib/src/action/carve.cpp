@@ -31,7 +31,7 @@ struct ActionCarve::Impl {
     WingedMesh&   mesh = brush.mesh ();
 
     mesh.intersects               (sphere, domain);
-    //this->carveFaces              (brush, domain);
+    this->carveFaces              (brush, domain);
     this->subdivideEdges          (brush, sphere, domain);
     this->finalize                (mesh, domain);
   }
