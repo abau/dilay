@@ -234,9 +234,9 @@ struct WingedMesh::Impl {
       if (this->freeFaceIndices.empty () == false) {
         unsigned int idx = this->octree.someFaceRef ().index ();
         for (unsigned int i : this->freeFaceIndices) {
-          this->mesh.setIndex (i + 0, idx + 0);
-          this->mesh.setIndex (i + 1, idx + 1);
-          this->mesh.setIndex (i + 2, idx + 2);
+          this->mesh.setIndex (i + 0, this->mesh.index (idx + 0));
+          this->mesh.setIndex (i + 1, this->mesh.index (idx + 1));
+          this->mesh.setIndex (i + 2, this->mesh.index (idx + 2));
         }
       }
       this->mesh.bufferData (); 
