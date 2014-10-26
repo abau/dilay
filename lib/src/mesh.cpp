@@ -157,10 +157,6 @@ struct Mesh::Impl {
   }
 
   void allocateIndices (unsigned int i) { 
-    this->resizeIndices (this->indices.size () + i);
-  }
-
-  void resizeIndices (unsigned int i) {
     this->indices.resize (i);
   }
 

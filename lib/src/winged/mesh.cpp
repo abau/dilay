@@ -112,7 +112,7 @@ struct WingedMesh::Impl {
     }
     else {
       faceIndex = this->mesh.numIndices ();
-      this->mesh.allocateIndices   (3);
+      this->mesh.allocateIndices   (this->mesh.numIndices () + 3);
       this->freeFaceIndices.insert (faceIndex);
     }
     return this->addFace (std::move (face), geometry, faceIndex);
