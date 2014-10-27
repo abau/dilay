@@ -12,10 +12,9 @@ class ActionSubdivideEdge : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (ActionSubdivideEdge)
 
-    static void      extendDomain  (AffectedFaces&);
-    static void      addOneRing    (AffectedFaces&);
-           void      subdivideEdge (WingedMesh&, WingedEdge&, AffectedFaces&);
-           void      relaxEdge     (WingedMesh&, WingedEdge&, AffectedFaces&);
+    static void      extendDomain (AffectedFaces&);
+           void      run          (WingedMesh&, WingedEdge&, AffectedFaces&);
+
   private:
     void runUndo (WingedMesh&);
     void runRedo (WingedMesh&);

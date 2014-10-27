@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "action/carve.hpp"
+#include "action/relax-edge.hpp"
 #include "action/smooth.hpp"
 #include "action/subdivide-edge.hpp"
 #include "action/unit/on.hpp"
@@ -87,7 +88,7 @@ struct ActionCarve::Impl {
       AffectedFaces newAF;
       for (WingedEdge* e : thisIteration.edges ()) {
         if (isSubdividable (*e)) {
-          this->actions.add <ActionSubdivideEdge> ().subdivideEdge (mesh, *e, newAF);
+          this->actions.add <ActionSubdivideEdge> ().run (mesh, *e, newAF);
         }
       }
       domain       .insert (newAF);
@@ -97,7 +98,7 @@ struct ActionCarve::Impl {
     };
     auto relaxEdges = [&] () {
       for (WingedEdge* e : thisIteration.edges ()) {
-        this->actions.add <ActionSubdivideEdge> ().relaxEdge (mesh, *e, domain);
+        this->actions.add <ActionRelaxEdge> ().run (mesh, *e, domain);
       }
       domain.commit ();
     };

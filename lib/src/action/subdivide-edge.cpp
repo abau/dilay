@@ -1,9 +1,8 @@
 #include <glm/glm.hpp>
-#include "affected-faces.hpp"
 #include "action/subdivide-edge.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
-#include "partial-action/flip-edge.hpp"
+#include "affected-faces.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
 #include "partial-action/triangulate-quad.hpp"
 #include "subdivision-butterfly.hpp"
@@ -72,38 +71,16 @@ struct ActionSubdivideEdge::Impl {
     domain.commit ();
   }
 
-  void subdivideEdge (WingedMesh& mesh, WingedEdge& edge, AffectedFaces& affectedFaces) {
+  void run (WingedMesh& mesh, WingedEdge& edge, AffectedFaces& affectedFaces) {
     this->actions.add <PAInsertEdgeVertex> ().run 
       (mesh, edge, SubdivisionButterfly::subdivideEdge (mesh, edge) );
     this->actions.add <PATriangulateQuad>  ().run (mesh, edge.leftFaceRef  (), &affectedFaces);
     this->actions.add <PATriangulateQuad>  ().run (mesh, edge.rightFaceRef (), &affectedFaces);
   }
-
-  void relaxEdge (WingedMesh& mesh, WingedEdge& edge, AffectedFaces& affectedFaces) {
-    if (this->relaxableEdge (edge)) {
-      affectedFaces.insert (edge.leftFaceRef  ());
-      affectedFaces.insert (edge.rightFaceRef ());
-      this->actions.add <PAFlipEdge> ().run (mesh, edge);
-    }
-  }
-
-  bool relaxableEdge (const WingedEdge& edge) const {
-    const int v1  = int (edge.vertex1Ref ().valence ());
-    const int v2  = int (edge.vertex2Ref ().valence ());
-    const int v3  = int (edge.vertexRef (edge.leftFaceRef  (), 2).valence ());
-    const int v4  = int (edge.vertexRef (edge.rightFaceRef (), 2).valence ());
-
-    const int pre  = glm::abs (v1-6)   + glm::abs (v2-6)   + glm::abs (v3-6)   + glm::abs (v4-6);
-    const int post = glm::abs (v1-6-1) + glm::abs (v2-6-1) + glm::abs (v3-6+1) + glm::abs (v4-6+1);
-
-    return post < pre;
-  }
 };
 
 DELEGATE_BIG3 (ActionSubdivideEdge)
 DELEGATE1_STATIC (void, ActionSubdivideEdge, extendDomain, AffectedFaces&)
-DELEGATE1_STATIC (void, ActionSubdivideEdge, addOneRing, AffectedFaces&)
-DELEGATE3 (void, ActionSubdivideEdge, subdivideEdge, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE3 (void, ActionSubdivideEdge, relaxEdge, WingedMesh&, WingedEdge&, AffectedFaces&)
+DELEGATE3 (void, ActionSubdivideEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
 DELEGATE1 (void, ActionSubdivideEdge, runUndo, WingedMesh&)
 DELEGATE1 (void, ActionSubdivideEdge, runRedo, WingedMesh&)
