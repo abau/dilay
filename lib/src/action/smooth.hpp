@@ -1,7 +1,6 @@
 #ifndef DILAY_ACTION_SMOOTH
 #define DILAY_ACTION_SMOOTH
 
-#include <unordered_set>
 #include "action/on.hpp"
 #include "fwd-winged.hpp"
 #include "macro.hpp"
