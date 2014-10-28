@@ -11,8 +11,6 @@ namespace {
   enum class Operation 
     { Vertex1, Vertex2, LeftFace, RightFace
     , LeftPredecessor, LeftSuccessor, RightPredecessor, RightSuccessor
-    , FirstVertex, SecondVertex
-    , Predecessor, Successor
     , SetGeometry
     };
 };
@@ -79,40 +77,38 @@ struct PAModifyWEdge :: Impl {
   }
 
   void firstVertex (WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
-    this->operation = Operation::FirstVertex;
-    this->operands.setIds    ({edge.id (), f.id ()});
-    this->operands.setVertex (0, edge.firstVertex (f));
-    edge.firstVertex (f,v);
+    if (edge.isLeftFace (f))
+      this->vertex1 (edge, v);
+    else
+      this->vertex2 (edge, v);
   }
 
   void secondVertex (WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
-    this->operation = Operation::SecondVertex;
-    this->operands.setIds    ({edge.id (), f.id ()});
-    this->operands.setVertex (0, edge.secondVertex (f));
-    edge.secondVertex (f,v);
+    if (edge.isLeftFace (f))
+      this->vertex2 (edge, v);
+    else
+      this->vertex1 (edge, v);
   }
 
   void face (WingedEdge& edge, const WingedFace& fOld, WingedFace* fNew) {
     if (edge.isLeftFace (fOld))
       this->leftFace (edge,fNew);
-    else if (edge.isRightFace (fOld))
-      this->rightFace (edge,fNew);
     else
-      assert (false);
+      this->rightFace (edge,fNew);
   }
 
   void predecessor (WingedEdge& edge, const WingedFace& f, WingedEdge* e) {
-    this->operation = Operation::Predecessor;
-    this->operands.setIds ({edge.id (), f.id ()});
-    this->operands.setEdge (2, edge.predecessor (f));
-    edge.predecessor (f,e);
+    if (edge.isLeftFace (f)) 
+      this->leftPredecessor  (edge, e);
+    else 
+      this->rightPredecessor (edge, e);
   }
 
   void successor (WingedEdge& edge, const WingedFace& f, WingedEdge* e) {
-    this->operation = Operation::Successor;
-    this->operands.setIds ({edge.id (), f.id ()});
-    this->operands.setEdge (2, edge.successor (f));
-    edge.successor (f,e);
+    if (edge.isLeftFace (f)) 
+      this->leftSuccessor  (edge, e);
+    else 
+      this->rightSuccessor (edge, e);
   }
   
   void setGeometry ( WingedEdge& edge
@@ -185,34 +181,6 @@ struct PAModifyWEdge :: Impl {
         WingedEdge* e = edge.rightSuccessor ();
         edge.rightSuccessor (this->operands.getEdge (mesh,1));
         this->operands.setEdge (1,e);
-        break;
-      }
-      case Operation::FirstVertex: {
-        WingedFace*   f = this->operands.getFace (mesh,1);
-        WingedVertex* v = edge.firstVertex (*f);
-        edge.firstVertex (*f, this->operands.getVertex (mesh,0));
-        this->operands.setVertex (0,v);
-        break;
-      }
-      case Operation::SecondVertex: {
-        WingedFace*   f = this->operands.getFace (mesh,1);
-        WingedVertex* v = edge.secondVertex (*f);
-        edge.secondVertex (*f, this->operands.getVertex (mesh,0));
-        this->operands.setVertex (0,v);
-        break;
-      }
-      case Operation::Predecessor: {
-        WingedFace* f = this->operands.getFace (mesh,1);
-        WingedEdge* e = edge.predecessor (*f);
-        edge.predecessor (*f, this->operands.getEdge (mesh,2));
-        this->operands.setEdge (2,e);
-        break;
-      }
-      case Operation::Successor: {
-        WingedFace* f = this->operands.getFace (mesh,1);
-        WingedEdge* e = edge.successor (*f);
-        edge.successor (*f, this->operands.getEdge (mesh,2));
-        this->operands.setEdge (2,e);
         break;
       }
       case Operation::SetGeometry: {

@@ -38,10 +38,6 @@ class WingedFace {
     glm::vec3              normal          (const WingedMesh&) const;
     bool                   isDegenerated   (const WingedMesh&) const;
 
-    /** `adjacent (v,b)` returns an adjacent edge with `v` as start or end point.
-     * It's crucial that `v` is actually a vertex of `this` face.
-     */
-    WingedEdge*            adjacent               (const WingedVertex&) const;
     WingedEdge*            longestEdge            (const WingedMesh&, float*) const;
     float                  longestEdgeLengthSqr   (const WingedMesh&) const;
     bool                   isTriangle             () const;
@@ -56,7 +52,6 @@ class WingedFace {
 
     SAFE_REF_CONST  (WingedEdge, edge)
     SAFE_REF_CONST  (OctreeNode, octreeNode)
-    SAFE_REF1_CONST (WingedEdge, adjacent, const WingedVertex&)
     SAFE_REF2_CONST (WingedEdge, longestEdge, const WingedMesh&, float*)
   private:
     const IdObject  _id;

@@ -67,14 +67,6 @@ bool WingedFace :: isDegenerated (const WingedMesh& mesh) const {
                                      , this->thirdVertex  ().vector (mesh) );
 }
 
-WingedEdge* WingedFace :: adjacent (const WingedVertex& vertex) const {
-  for (WingedEdge& edge : this->adjacentEdges ()) {
-    if (edge.isAdjacent (vertex))
-      return &edge;
-  }
-  assert (false);
-}
-
 WingedEdge* WingedFace :: longestEdge (const WingedMesh& mesh, float *maxLengthSqr) const {
   WingedEdge* tmpLongest = this->edge ();
   float       tmpLength  = 0.0f;

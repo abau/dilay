@@ -54,12 +54,6 @@ class WingedEdge {
     void            rightPredecessor (WingedEdge* e)   { this->_rightPredecessor = e; }
     void            rightSuccessor   (WingedEdge* e)   { this->_rightSuccessor   = e; }
 
-    void            firstVertex      (const WingedFace&, WingedVertex*);
-    void            secondVertex     (const WingedFace&, WingedVertex*);
-    void            face             (const WingedFace&, WingedFace*);
-    void            predecessor      (const WingedFace&, WingedEdge*);
-    void            successor        (const WingedFace&, WingedEdge*);
-
     glm::vec3       vector           (const WingedMesh&) const;
     glm::vec3       vector           (const WingedMesh&, const WingedVertex&) const;
     float           length           (const WingedMesh&) const;
@@ -68,10 +62,6 @@ class WingedEdge {
     WingedEdge*     predecessor      (const WingedFace&, unsigned int) const;
     WingedVertex*   vertex           (const WingedFace&, unsigned int) const;
     glm::vec3       middle           (const WingedMesh&) const;
-    WingedEdge*     adjacent         (const WingedFace&, const WingedVertex&) const;
-    bool            isAdjacent       (const WingedVertex&) const;
-    bool            isFirstVertex    (const WingedFace&, const WingedVertex&) const;
-    bool            isSecondVertex   (const WingedFace&, const WingedVertex&) const;
     WingedEdge*     adjacentSibling  (const WingedMesh&, const WingedVertex&) const;
 
     SAFE_REF_CONST  (WingedVertex, vertex1)
@@ -93,7 +83,6 @@ class WingedEdge {
     SAFE_REF2_CONST (WingedEdge  , successor, const WingedFace&, unsigned int)
     SAFE_REF2_CONST (WingedEdge  , predecessor, const WingedFace&, unsigned int)
     SAFE_REF2_CONST (WingedVertex, vertex, const WingedFace&, unsigned int)
-    SAFE_REF2_CONST (WingedEdge  , adjacent, const WingedFace&, const WingedVertex&)
 
   private:
     const IdObject  _id;

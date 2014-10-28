@@ -84,31 +84,6 @@ void WingedEdge :: setGeometry ( WingedVertex* v1, WingedVertex* v2
   this->rightSuccessor   (rightSucc);
 }
 
-void WingedEdge :: firstVertex (const WingedFace& face, WingedVertex* vertex) {
-  return this->isLeftFace (face) ? this->vertex1 (vertex)
-                                 : this->vertex2 (vertex);
-}
-
-void WingedEdge :: secondVertex (const WingedFace& face, WingedVertex* vertex) {
-  return this->isLeftFace (face) ? this->vertex2 (vertex)
-                                 : this->vertex1 (vertex);
-}
-
-void WingedEdge :: face (const WingedFace& face, WingedFace* newFace) {
-  return this->isLeftFace (face) ? this->leftFace  (newFace)
-                                 : this->rightFace (newFace);
-}
-
-void WingedEdge :: predecessor (const WingedFace& face, WingedEdge* edge) {
-  return this->isLeftFace (face) ? this->leftPredecessor  (edge)
-                                 : this->rightPredecessor (edge);
-}
-
-void WingedEdge :: successor (const WingedFace& face, WingedEdge* edge) {
-  return this->isLeftFace (face) ? this->leftSuccessor  (edge)
-                                 : this->rightSuccessor (edge);
-}
-
 glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
   glm::vec3 a = this->_vertex1->vector (mesh);
   glm::vec3 b = this->_vertex2->vector (mesh);
@@ -147,31 +122,6 @@ WingedVertex* WingedEdge :: vertex (const WingedFace& face,unsigned int index) c
 glm::vec3 WingedEdge :: middle (const WingedMesh& mesh) const {
   return Util :: between ( this->vertex1 ()->vector (mesh)
                          , this->vertex2 ()->vector (mesh));
-}
-
-WingedEdge* WingedEdge :: adjacent (const WingedFace& face, const WingedVertex& vertex) const {
-  if (this->isLeftFace (face)) {
-    return this->isVertex1 (vertex) ? this->leftPredecessor ()
-                                    : this->leftSuccessor   ();
-  }
-  else {
-    return this->isVertex1 (vertex) ? this->rightSuccessor   ()
-                                    : this->rightPredecessor ();
-  }
-}
-
-bool WingedEdge :: isAdjacent (const WingedVertex& vertex) const {
-  return (vertex.index () == this->_vertex1->index ()) 
-      || (vertex.index () == this->_vertex2->index ());
-}
-
-bool WingedEdge :: isFirstVertex ( const WingedFace& face, const WingedVertex& vertex) const {
-  return this->isLeftFace (face) ? this->isVertex1 (vertex)
-                                 : this->isVertex2 (vertex);
-}
-
-bool WingedEdge :: isSecondVertex ( const WingedFace& face, const WingedVertex& vertex) const {
-  return ! this->isFirstVertex (face,vertex);
 }
 
 WingedEdge* WingedEdge :: adjacentSibling (const WingedMesh& mesh, const WingedVertex& vertex) const {
