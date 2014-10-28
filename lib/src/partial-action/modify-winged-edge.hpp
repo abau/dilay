@@ -24,6 +24,7 @@ class PAModifyWEdge : public ActionOn <WingedMesh> {
     void rightSuccessor       (WingedEdge&, WingedEdge*);
     void firstVertex          (WingedEdge&, const WingedFace&, WingedVertex*);
     void secondVertex         (WingedEdge&, const WingedFace&, WingedVertex*);
+    void vertex               (WingedEdge&, const WingedVertex&, WingedVertex*);
     void face                 (WingedEdge&, const WingedFace&, WingedFace*);
     void predecessor          (WingedEdge&, const WingedFace&, WingedEdge*);
     void successor            (WingedEdge&, const WingedFace&, WingedEdge*);

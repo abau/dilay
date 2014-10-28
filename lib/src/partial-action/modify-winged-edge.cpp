@@ -90,6 +90,13 @@ struct PAModifyWEdge :: Impl {
       this->vertex1 (edge, v);
   }
 
+  void vertex (WingedEdge& edge, const WingedVertex& vertex, WingedVertex* v) {
+    if (edge.isVertex1 (vertex))
+      this->vertex1 (edge, v);
+    else 
+      this->vertex2 (edge, v);
+  }
+
   void face (WingedEdge& edge, const WingedFace& fOld, WingedFace* fNew) {
     if (edge.isLeftFace (fOld))
       this->leftFace (edge,fNew);
@@ -230,6 +237,7 @@ DELEGATE2 (void,PAModifyWEdge,rightPredecessor,WingedEdge&,WingedEdge*)
 DELEGATE2 (void,PAModifyWEdge,rightSuccessor  ,WingedEdge&,WingedEdge*)
 DELEGATE3 (void,PAModifyWEdge,firstVertex     ,WingedEdge&,const WingedFace&,WingedVertex*)
 DELEGATE3 (void,PAModifyWEdge,secondVertex    ,WingedEdge&,const WingedFace&,WingedVertex*)
+DELEGATE3 (void,PAModifyWEdge,vertex          ,WingedEdge&,const WingedVertex&,WingedVertex*)
 DELEGATE3 (void,PAModifyWEdge,face            ,WingedEdge&,const WingedFace&,WingedFace*)
 DELEGATE3 (void,PAModifyWEdge,predecessor     ,WingedEdge&,const WingedFace&,WingedEdge*)
 DELEGATE3 (void,PAModifyWEdge,successor       ,WingedEdge&,const WingedFace&,WingedEdge*)
