@@ -14,7 +14,7 @@
 struct PADeleteEdgeFace :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void deleteEdgeFace (WingedMesh& mesh, WingedEdge& edge) {
+  void run (WingedMesh& mesh, WingedEdge& edge) {
     WingedFace&  faceToDelete = *edge.rightFace ();
     PrimTriangle triangle     = faceToDelete.triangle (mesh);
 
@@ -58,7 +58,6 @@ struct PADeleteEdgeFace :: Impl {
 
 DELEGATE_BIG3 (PADeleteEdgeFace)
 
-DELEGATE2 (void,PADeleteEdgeFace,deleteEdgeFace,WingedMesh&,WingedEdge&)
-DELEGATE1 (void,PADeleteEdgeFace,dissolveEdgeFace,WingedEdge&)
+DELEGATE2 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&)
 DELEGATE1 (void,PADeleteEdgeFace,runUndo,WingedMesh&)
 DELEGATE1 (void,PADeleteEdgeFace,runRedo,WingedMesh&)
