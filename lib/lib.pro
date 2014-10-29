@@ -10,6 +10,7 @@ CONFIG                 += staticlib
 
 SOURCES += \
            src/action/carve.cpp \
+           src/action/collapse-face.cpp \
            src/action/delete-sphere-mesh.cpp \
            src/action/delete-winged-mesh.cpp \
            src/action/ids.cpp \
@@ -103,6 +104,7 @@ SOURCES += \
 HEADERS += \
            src/action.hpp \
            src/action/carve.hpp \
+           src/action/collapse-face.hpp \
            src/action/delete-sphere-mesh.hpp \
            src/action/delete-winged-mesh.hpp \
            src/action/ids.hpp \
