@@ -45,8 +45,8 @@ struct ActionCarve::Impl {
   }
 
   void carveFaces (CarveBrush brush, AffectedFaces& domain) {
-    WingedMesh& mesh     = brush.mesh         ();
-    VertexSet   vertices = domain.toVertexSet ();
+    WingedMesh&  mesh     = brush.mesh         ();
+    VertexPtrSet vertices = domain.toVertexSet ();
 
     // get average normal
     glm::vec3 avgNormal (0.0f);

@@ -5,9 +5,9 @@
 #include "winged/vertex.hpp"
 
 struct AffectedFaces::Impl {
-  FaceSet   faces;
-  EdgeSet   edges;
-  FaceSet   uncommitedFaces;
+  FacePtrSet faces;
+  EdgePtrSet edges;
+  FacePtrSet uncommitedFaces;
 
   void insert (WingedFace& face) {
     this->uncommitedFaces.insert (&face);
@@ -70,8 +70,8 @@ struct AffectedFaces::Impl {
     return this->edges.count (edge) > 0;
   }
 
-  VertexSet toVertexSet () const {
-    VertexSet vertices;
+  VertexPtrSet toVertexSet () const {
+    VertexPtrSet vertices;
     for (WingedEdge* e : this->edges) {
       vertices.insert (e->vertex1 ());
       vertices.insert (e->vertex2 ());
@@ -91,7 +91,7 @@ DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace*)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedEdge&)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedEdge*)
-DELEGATE_CONST  (VertexSet, AffectedFaces, toVertexSet)
-GETTER_CONST    (FaceSet&, AffectedFaces, faces)
-GETTER_CONST    (FaceSet&, AffectedFaces, uncommitedFaces)
-GETTER_CONST    (EdgeSet&, AffectedFaces, edges)
+DELEGATE_CONST  (VertexPtrSet, AffectedFaces, toVertexSet)
+GETTER_CONST    (FacePtrSet&, AffectedFaces, faces)
+GETTER_CONST    (FacePtrSet&, AffectedFaces, uncommitedFaces)
+GETTER_CONST    (EdgePtrSet&, AffectedFaces, edges)

@@ -18,7 +18,7 @@ struct ActionSmooth::Impl {
   void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
-  void run ( WingedMesh& mesh, const VertexSet& vertices, unsigned int numIterations
+  void run ( WingedMesh& mesh, const VertexPtrSet& vertices, unsigned int numIterations
            , AffectedFaces& affectedFaces ) 
   {
     std::vector <glm::vec3> originalPositions;
@@ -43,7 +43,7 @@ struct ActionSmooth::Impl {
     }
   }
 
-  void iteration (WingedMesh& mesh, const VertexSet& vertices) {
+  void iteration (WingedMesh& mesh, const VertexPtrSet& vertices) {
     typedef std::vector <PrimTriangle> AdjTriangles;
 
     auto getData = [&mesh] ( const WingedVertex& v
@@ -117,6 +117,6 @@ struct ActionSmooth::Impl {
 };
 
 DELEGATE_BIG3 (ActionSmooth)
-DELEGATE4 (void, ActionSmooth, run, WingedMesh&, const VertexSet&, unsigned int, AffectedFaces&)
+DELEGATE4 (void, ActionSmooth, run, WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&)
 DELEGATE1 (void, ActionSmooth, runUndo, WingedMesh&)
 DELEGATE1 (void, ActionSmooth, runRedo, WingedMesh&)

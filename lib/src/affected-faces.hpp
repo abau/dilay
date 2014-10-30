@@ -18,10 +18,10 @@ class AffectedFaces {
     bool         contains        (WingedFace*) const;
     bool         contains        (WingedEdge&) const;
     bool         contains        (WingedEdge*) const;
-    VertexSet    toVertexSet     () const;
-    FaceSet&     faces           () const;
-    FaceSet&     uncommitedFaces () const;
-    EdgeSet&     edges           () const;
+    VertexPtrSet toVertexSet     () const;
+    FacePtrSet&  faces           () const;
+    FacePtrSet&  uncommitedFaces () const;
+    EdgePtrSet&  edges           () const;
 
   private:
     IMPLEMENTATION
