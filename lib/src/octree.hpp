@@ -66,7 +66,8 @@ class Octree {
     unsigned int     numFaces            () const;
     unsigned int     numDegeneratedFaces () const;
     OctreeStatistics statistics          () const;
-    WingedFace*      someFace            ();
+    WingedFace*      someFace            () const;
+    WingedFace*      someDegeneratedFace () const;
 
     void        forEachFace              (const std::function <void (WingedFace&)>&) const;
     void        forEachDegeneratedFace   (const std::function <void (WingedFace&)>&) const;

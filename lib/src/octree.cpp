@@ -439,6 +439,9 @@ struct Octree::Impl {
         this->shrinkRoot ();
       }
     }
+    if (this->degeneratedFaces && this->degeneratedFaces->isEmpty ()) {
+      this->degeneratedFaces.reset ();
+    }
   }
 
   bool hasFace (const Id& id) const { return this->idMap.hasElement (id); }
@@ -577,10 +580,20 @@ struct Octree::Impl {
     return stats;
   }
 
-  WingedFace* someFace () {
+  WingedFace* someFace () const {
     return this->numFaces () > 0
          ? &*(this->idMap.begin ()->second)
          : nullptr;
+  }
+
+  WingedFace* someDegeneratedFace () const {
+    if (this->degeneratedFaces) {
+      assert (this->degeneratedFaces->isEmpty () == false);
+      return &this->degeneratedFaces->faces.front ();
+    }
+    else {
+      return nullptr;
+    }
   }
 
   void forEachFace (const std::function <void (WingedFace&)>& f) const {
@@ -614,6 +627,7 @@ DELEGATE_CONST  (bool, Octree, hasRoot)
 DELEGATE_CONST  (unsigned int, Octree, numFaces)
 DELEGATE_CONST  (unsigned int, Octree, numDegeneratedFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
-DELEGATE        (WingedFace* , Octree, someFace)
+DELEGATE_CONST  (WingedFace* , Octree, someFace)
+DELEGATE_CONST  (WingedFace* , Octree, someDegeneratedFace)
 DELEGATE1_CONST (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
 DELEGATE1_CONST (void        , Octree, forEachDegeneratedFace, const std::function <void (WingedFace&)>&)
