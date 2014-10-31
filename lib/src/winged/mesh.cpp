@@ -59,10 +59,6 @@ struct WingedMesh::Impl {
 
   WingedFace* face (const Id& id) { return this->octree.face (id); }
 
-  unsigned int addIndex (unsigned int index) { 
-    return this->mesh.addIndex (index); 
-  }
-
   bool hasFreeVertexIndex () const {
     return ! this->freeVertexIndices.empty ();
   }
@@ -331,7 +327,6 @@ DELEGATE1       (WingedVertex*  , WingedMesh, vertex, unsigned int)
 DELEGATE1       (WingedEdge*    , WingedMesh, edge, const Id&)
 DELEGATE1       (WingedFace*    , WingedMesh, face, const Id&)
 
-DELEGATE1       (unsigned int   , WingedMesh, addIndex, unsigned int)
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
 DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, WingedEdge&&)
