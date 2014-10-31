@@ -78,9 +78,10 @@ struct WingedMesh::Impl {
       const unsigned int reusedIndex = bool (index) ? *index
                                                     : *this->freeVertexIndices.begin ();
 
-      this->vertices.emplace_back (reusedIndex, nullptr);
-      this->vertexMap[reusedIndex] = --this->vertices.end ();
+      this->mesh.setVertex          (reusedIndex, v);
       this->freeVertexIndices.erase (reusedIndex);
+      this->vertices.emplace_back   (reusedIndex, nullptr);
+      this->vertexMap[reusedIndex] = --this->vertices.end ();
     }
     else {
       const unsigned int newIndex = this->mesh.addVertex (v);
