@@ -20,6 +20,17 @@ WingedEdge :: WingedEdge ( const Id& id
   this->setGeometry (v1,v2,left,right,leftPred,leftSucc,rightPred,rightSucc);
 }
 
+WingedEdge :: ~WingedEdge () {
+  if (this->_vertex1)           { this->_vertex1          ->resetEdge (this); }
+  if (this->_vertex2)           { this->_vertex2          ->resetEdge (this); }
+  if (this->_leftFace)          { this->_leftFace         ->resetEdge (this); }
+  if (this->_rightFace)         { this->_rightFace        ->resetEdge (this); }
+  if (this->_leftPredecessor)   { this->_leftPredecessor  ->resetEdge (this); }
+  if (this->_leftSuccessor)     { this->_leftSuccessor    ->resetEdge (this); }
+  if (this->_rightPredecessor)  { this->_rightPredecessor ->resetEdge (this); }
+  if (this->_rightSuccessor)    { this->_rightSuccessor   ->resetEdge (this); }
+}
+
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
   if (face.id () == this->_leftFace->id ()) {
     return true;
@@ -82,6 +93,23 @@ void WingedEdge :: setGeometry ( WingedVertex* v1, WingedVertex* v2
   this->leftSuccessor    (leftSucc);
   this->rightPredecessor (rightPred);
   this->rightSuccessor   (rightSucc);
+}
+
+void WingedEdge :: resetVertex (WingedVertex* v) {
+  if (this->_vertex1 == v) { this->_vertex1 = nullptr; }
+  if (this->_vertex2 == v) { this->_vertex2 = nullptr; }
+}
+
+void WingedEdge :: resetFace (WingedFace* f) {
+  if (this->_leftFace  == f) { this->_leftFace  = nullptr; }
+  if (this->_rightFace == f) { this->_rightFace = nullptr; }
+}
+
+void WingedEdge :: resetEdge (WingedEdge* e) {
+  if (this->_leftPredecessor  == e) { this->_leftPredecessor  = nullptr; }
+  if (this->_leftSuccessor    == e) { this->_leftSuccessor    = nullptr; }
+  if (this->_rightPredecessor == e) { this->_rightPredecessor = nullptr; }
+  if (this->_rightSuccessor   == e) { this->_rightSuccessor   = nullptr; }
 }
 
 glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {

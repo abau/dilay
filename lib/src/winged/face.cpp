@@ -15,6 +15,14 @@ WingedFace :: WingedFace (const Id& id, WingedEdge* e)
   , _index      (std::numeric_limits <unsigned int>::max ())
   {}
 
+WingedFace :: ~WingedFace () {
+  if (this->_edge) { this->_edge->resetFace (this); }
+}
+
+void WingedFace :: resetEdge (WingedEdge* e) {
+  if (this->_edge == e) { this->_edge = nullptr; }
+}
+
 void WingedFace :: writeIndices (WingedMesh& mesh) {
   assert (this->isTriangle ());
 

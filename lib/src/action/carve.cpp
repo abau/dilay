@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "action/carve.hpp"
+#include "action/collapse-face.hpp"
 #include "action/relax-edge.hpp"
 #include "action/smooth.hpp"
 #include "action/subdivide-edge.hpp"
@@ -10,6 +11,7 @@
 #include "carve-brush.hpp"
 #include "id.hpp"
 #include "intersection.hpp"
+#include "octree.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/sphere.hpp"
 #include "winged/edge.hpp"
@@ -31,11 +33,27 @@ struct ActionCarve::Impl {
     PrimSphere    sphere (brush.position (), brush.width ());
     WingedMesh&   mesh = brush.mesh ();
 
-    mesh.intersects               (sphere, domain);
-    this->carveFaces              (brush, domain);
-    this->subdivideEdges          (brush, sphere, domain);
-    this->finalize                (mesh, domain);
+    mesh.intersects      (sphere, domain);
+
+    for (WingedFace* f : domain.faces ()) {
+      this->actions.add <ActionCollapseFace> ().run (mesh, *f, domain);
+      break;
+    }
+    this->finalize       (mesh, domain);
   }
+
+  /*
+  void run (const CarveBrush& brush) { 
+    AffectedFaces domain;
+    PrimSphere    sphere (brush.position (), brush.width ());
+    WingedMesh&   mesh = brush.mesh ();
+
+    mesh.intersects      (sphere, domain);
+    this->carveFaces     (brush, domain);
+    this->subdivideEdges (brush, sphere, domain);
+    this->finalize       (mesh, domain);
+  }
+  */
 
   glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
                         , const glm::vec3& pos) const 
@@ -114,10 +132,18 @@ struct ActionCarve::Impl {
   }
 
   void finalize (WingedMesh& mesh, AffectedFaces& domain) {
+    // collapse degenerated faces
+    WingedFace* degenerated = nullptr;
+    while ((degenerated = mesh.octree ().someDegeneratedFace ()) != nullptr) {
+      this->actions.add <ActionCollapseFace> ().run (mesh, *degenerated, domain);
+    }
+    domain.commit ();
+
     // write normals
     for (WingedVertex* v : domain.toVertexSet ()) {
       this->actions.add <PAModifyWVertex> ().writeInterpolatedNormal (mesh,*v);
     }
+    
     // realign
     for (WingedFace* f : domain.faces ()) {
       this->self->realignFace (mesh, std::move (*f));

@@ -21,27 +21,80 @@ struct ActionCollapseFace::Impl {
   void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, WingedFace& face, AffectedFaces& affectedFaces) {
-    WingedVertex& newVertex = mesh.addVertex (face.triangle (mesh).center ());
+    if (this->isCollapsable (face)) {
+      this->deleteFromAffectedFaces (face, affectedFaces);
+      this->deleteSuccessors        (mesh, face, affectedFaces);
 
-    for (WingedVertex* v : face.adjacentVertices ().collect ()) {
+      WingedVertex& newVertex = this->addNewVertex (mesh, face);
+
+      this->reassign         (mesh, face, newVertex);
+      this->addAffectedFaces (newVertex, affectedFaces);
+    }
+    else {
+      assert (false);
+    }
+  }
+
+  bool isCollapsable (const WingedFace& face) const {
+    unsigned int num3Valences = 0;
+    for (WingedVertex& v : face.adjacentVertices ()) {
+      num3Valences += v.valence () == 3 ? 1 : 0;
+    }
+    return num3Valences <= 1;
+  }
+  
+  void deleteFromAffectedFaces (WingedFace& face, AffectedFaces& affectedFaces) {
+    affectedFaces.remove (face);
+    for (WingedEdge& e : face.adjacentEdges ()) {
+      affectedFaces.remove (e);
+    }
+  }
+
+  void deleteSuccessors (WingedMesh& mesh, WingedFace& face, AffectedFaces& affectedFaces) {
+    EdgePtrVec successorsToDelete;
+    for (WingedEdge& e : face.adjacentEdges ()) {
+      successorsToDelete.push_back (e.successor (e.otherFaceRef (face)));
+    }
+    this->actions.add <PADeleteEdgeFace> ().run (mesh, successorsToDelete, &affectedFaces);
+  }
+
+  WingedVertex& addNewVertex (WingedMesh& mesh, WingedFace& face) {
+    WingedVertex& newVertex    = mesh.addVertex (face.triangle (mesh).center ());
+    WingedEdge&   edge         = face.edgeRef        ();
+    WingedFace&   otherFace    = edge.otherFaceRef   (face);
+    WingedEdge&   fPredecessor = edge.predecessorRef (face);
+    WingedEdge&   fSuccessor   = edge.successorRef   (face);
+    WingedEdge&   oPredecessor = edge.predecessorRef (otherFace);
+    WingedEdge&   oSuccessor   = edge.successorRef   (otherFace);
+
+    if (fSuccessor.id () != oPredecessor.id ()) {
+      this->actions.add <PAModifyWVertex> ().edge (newVertex, &oPredecessor);
+    }
+    else {
+      assert (fPredecessor.id () != oSuccessor.id ());
+      this->actions.add <PAModifyWVertex> ().edge (newVertex, &oSuccessor);
+    }
+    return newVertex;
+  }
+
+  void reassign (WingedMesh& mesh, WingedFace& face, WingedVertex& newVertex) {
+    VertexPtrVec  verticesToDelete = face.adjacentVertices ().collect ();
+    EdgePtrVec    edgesToDelete    = face.adjacentEdges    ().collect ();
+    PrimTriangle  ....
+
+    // handle vertices
+    for (WingedVertex* v : verticesToDelete) {
       for (WingedEdge* e : v->adjacentEdges ().collect ()) {
         this->actions.add <PAModifyWEdge> ().vertex (*e, *v, &newVertex);
       }
       this->actions.add <PAModifyWMesh> ().deleteVertex (mesh, *v);
     }
-    bool first = true;
-    for (WingedEdge* e : face.adjacentEdges ().collect ()) {
-      this->actions.add <PADeleteEdgeFace> ()
-                   .run (mesh, e->successorRef (e->otherFaceRef (face)));
-
+    // handle edges
+    for (WingedEdge* e : edgesToDelete) {
       WingedFace& otherFace   = e->otherFaceRef   (face);
       WingedEdge& predecessor = e->predecessorRef (otherFace);
       WingedEdge& successor   = e->successorRef   (otherFace);
 
-      if (first) {
-        this->actions.add <PAModifyWVertex> ().edge (newVertex, &successor);
-        first = false;
-      }
       this->actions.add <PAModifyWEdge> ().successor   (predecessor, otherFace, &successor);
       this->actions.add <PAModifyWEdge> ().predecessor (successor, otherFace, &predecessor);
       this->actions.add <PAModifyWFace> ().edge        (otherFace, &successor);
@@ -49,6 +102,13 @@ struct ActionCollapseFace::Impl {
     }
     this->actions.add <PAModifyWMesh> ().deleteFace (mesh, face);
 
+    // write indices
+    for (WingedFace& f : newVertex.adjacentFaces ()) {
+      this->actions.add <PAModifyWFace> ().writeIndices (mesh, f);
+    }
+  }
+
+  void addAffectedFaces (WingedVertex& newVertex, AffectedFaces& affectedFaces) {
     for (WingedFace& f : newVertex.adjacentFaces ()) {
       affectedFaces.insert (f);
     }

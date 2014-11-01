@@ -15,11 +15,13 @@ class WingedVertex {
     WingedVertex (unsigned int, WingedEdge*);
     WingedVertex (const WingedVertex&)  = default;
     WingedVertex (      WingedVertex&&) = default;
+   ~WingedVertex ();
 
     unsigned int index              () const { return this->_index; }
     WingedEdge*  edge               () const { return this->_edge;  }
 
     void         edge               (WingedEdge*);
+    void         resetEdge          (WingedEdge*);
     void         writeIndex         (WingedMesh&, unsigned int);
     glm::vec3    vector             (const WingedMesh&) const;
     glm::vec3    savedNormal        (const WingedMesh&) const;

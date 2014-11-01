@@ -1,5 +1,6 @@
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
+#include "affected-faces.hpp"
 #include "partial-action/delete-edge-face.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
@@ -14,10 +15,33 @@
 struct PADeleteEdgeFace :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void run (WingedMesh& mesh, WingedEdge& edge) {
-    WingedFace&  faceToDelete = *edge.rightFace ();
-    PrimTriangle triangle     = faceToDelete.triangle (mesh);
+  void run (WingedMesh& mesh, WingedEdge& edge, AffectedFaces* affectedFaces) {
+    this->run (mesh, edge, edge.rightFaceRef ().triangle (mesh), affectedFaces);
+  }
 
+  void run (WingedMesh& mesh, EdgePtrVec& edges, AffectedFaces* affectedFaces) {
+    std::vector <PrimTriangle> triangles;
+
+    for (WingedEdge* e : edges) {
+      triangles.push_back (e->rightFaceRef ().triangle (mesh));
+    }
+    auto it = triangles.begin ();
+    for (WingedEdge* e : edges) {
+      assert (it != triangles.end ());
+      this->run (mesh, *e, *it, affectedFaces);
+      ++it;
+    }
+  }
+
+  void run ( WingedMesh& mesh, WingedEdge& edge, const PrimTriangle& triangle
+           , AffectedFaces* affectedFaces ) 
+  {
+    WingedFace& faceToDelete = edge.rightFaceRef ();
+
+    if (affectedFaces) {
+      affectedFaces->remove (edge);
+      affectedFaces->remove (faceToDelete);
+    }
     this->dissolveEdgeFace (edge);
 
     actions.add <PAModifyWMesh> ().deleteEdge (mesh,edge);
@@ -25,8 +49,6 @@ struct PADeleteEdgeFace :: Impl {
   }
 
   void dissolveEdgeFace (WingedEdge& edge) {
-    assert (this->actions.isEmpty ());
-
     WingedFace&  faceToDelete  = *edge.rightFace ();
     WingedFace&  remainingFace = *edge.leftFace ();
 
@@ -58,6 +80,7 @@ struct PADeleteEdgeFace :: Impl {
 
 DELEGATE_BIG3 (PADeleteEdgeFace)
 
-DELEGATE2 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&)
+DELEGATE3 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&,AffectedFaces*)
+DELEGATE3 (void,PADeleteEdgeFace,run,WingedMesh&,EdgePtrVec&,AffectedFaces*)
 DELEGATE1 (void,PADeleteEdgeFace,runUndo,WingedMesh&)
 DELEGATE1 (void,PADeleteEdgeFace,runRedo,WingedMesh&)

@@ -8,7 +8,15 @@
 WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e) 
   : _index (i), _edge (e) {}
 
+WingedVertex :: ~WingedVertex () {
+  if (this->_edge) { this->_edge->resetVertex (this); }
+}
+
 void WingedVertex :: edge (WingedEdge* e) { this->_edge = e; }
+
+void WingedVertex :: resetEdge (WingedEdge* e) {
+  if (this->_edge == e) { this->_edge = nullptr; }
+}
 
 void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int faceIndex) {
   mesh.setIndex (faceIndex, this->_index);

@@ -20,6 +20,7 @@ class WingedFace {
     WingedFace (const Id&, WingedEdge*);
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
+   ~WingedFace ();
 
     const Id&              id              () const { return this->_id.id (); }
     WingedEdge*            edge            () const { return this->_edge; }
@@ -29,6 +30,7 @@ class WingedFace {
     void                   edge            (WingedEdge*  e) { this->_edge       = e; }
     void                   octreeNode      (OctreeNode*  n) { this->_octreeNode = n; }
     void                   index           (unsigned int i) { this->_index      = i; }
+    void                   resetEdge       (WingedEdge*);
     void                   writeIndices    (WingedMesh&);
     PrimTriangle           triangle        (const WingedMesh&) const;
     WingedVertex&          firstVertex     () const;
