@@ -231,6 +231,13 @@ struct WingedMesh::Impl {
   }
 
   void bufferData  () { 
+#ifndef NDEBUG
+    for (unsigned int freeFaceIndex : this->freeFaceIndices) {
+      assert (this->freeVertexIndices.count (this->mesh.index (freeFaceIndex + 0)) == 0);
+      assert (this->freeVertexIndices.count (this->mesh.index (freeFaceIndex + 1)) == 0);
+      assert (this->freeVertexIndices.count (this->mesh.index (freeFaceIndex + 2)) == 0);
+    }
+#endif
     this->mesh.bufferData (); 
   }
 
