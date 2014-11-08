@@ -6,7 +6,6 @@
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
-#include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -16,26 +15,6 @@ struct PADeleteEdgeFace :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
   void run (WingedMesh& mesh, WingedEdge& edge, AffectedFaces* affectedFaces) {
-    this->run (mesh, edge, edge.rightFaceRef ().triangle (mesh), affectedFaces);
-  }
-
-  void run (WingedMesh& mesh, EdgePtrVec& edges, AffectedFaces* affectedFaces) {
-    std::vector <PrimTriangle> triangles;
-
-    for (WingedEdge* e : edges) {
-      triangles.push_back (e->rightFaceRef ().triangle (mesh));
-    }
-    auto it = triangles.begin ();
-    for (WingedEdge* e : edges) {
-      assert (it != triangles.end ());
-      this->run (mesh, *e, *it, affectedFaces);
-      ++it;
-    }
-  }
-
-  void run ( WingedMesh& mesh, WingedEdge& edge, const PrimTriangle& triangle
-           , AffectedFaces* affectedFaces ) 
-  {
     WingedFace& faceToDelete = edge.rightFaceRef ();
 
     if (affectedFaces) {
@@ -44,8 +23,10 @@ struct PADeleteEdgeFace :: Impl {
     }
     this->dissolveEdgeFace (edge);
 
+    actions.add <PAModifyWMesh> ().resetEdge  (edge);
+    actions.add <PAModifyWMesh> ().resetFace  (faceToDelete);
     actions.add <PAModifyWMesh> ().deleteEdge (mesh,edge);
-    actions.add <PAModifyWMesh> ().deleteFace (mesh,faceToDelete,triangle); 
+    actions.add <PAModifyWMesh> ().deleteFace (mesh,faceToDelete); 
   }
 
   void dissolveEdgeFace (WingedEdge& edge) {
@@ -81,6 +62,5 @@ struct PADeleteEdgeFace :: Impl {
 DELEGATE_BIG3 (PADeleteEdgeFace)
 
 DELEGATE3 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&,AffectedFaces*)
-DELEGATE3 (void,PADeleteEdgeFace,run,WingedMesh&,EdgePtrVec&,AffectedFaces*)
 DELEGATE1 (void,PADeleteEdgeFace,runUndo,WingedMesh&)
 DELEGATE1 (void,PADeleteEdgeFace,runRedo,WingedMesh&)

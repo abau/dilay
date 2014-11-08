@@ -30,7 +30,7 @@ struct PAInsertEdgeFace :: Impl {
                             , WingedEdge& rightPred, WingedEdge& rightSucc) 
   {
     WingedFace& newLeft    = this->actions.add <PAModifyWMesh> ().addFace (mesh, newLeftGeometry);
-    WingedEdge& splitAlong = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
+    WingedEdge& splitAlong = this->actions.add <PAModifyWMesh> ().addEdge (mesh);
 
     this->actions.add <PAModifyWFace> ().edge (newLeft    , &splitAlong);
     this->actions.add <PAModifyWFace> ().edge (faceToSplit, &splitAlong);

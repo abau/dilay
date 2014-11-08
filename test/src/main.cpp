@@ -143,7 +143,7 @@ void octreeTest1 () {
     glm::vec3 w2 = glm::vec3 (modelMatrix * glm::vec4 (m2, 1.0f));
     glm::vec3 w3 = glm::vec3 (modelMatrix * glm::vec4 (m3, 1.0f));
 
-    octree.insertFace (WingedFace (), PrimTriangle (w1,w2,w3));
+    octree.insertFace (WingedFace (Id ()), PrimTriangle (w1,w2,w3));
   }
   WingedUtil::printStatistics (octree);
 }

@@ -12,12 +12,9 @@ class WingedMesh;
 
 class WingedEdge {
   public:
-    WingedEdge ();
-    WingedEdge ( const Id&, WingedVertex*, WingedVertex*, WingedFace*, WingedFace*  
-               , WingedEdge*, WingedEdge*, WingedEdge*, WingedEdge* );
+    WingedEdge (const Id&);
     WingedEdge (const WingedEdge&)  = default;
     WingedEdge (      WingedEdge&&) = default;
-   ~WingedEdge ();
 
     const Id&       id               () const { return this->_id.id (); }
     WingedVertex*   vertex1          () const { return this->_vertex1; }
@@ -54,10 +51,6 @@ class WingedEdge {
     void            leftSuccessor    (WingedEdge* e)   { this->_leftSuccessor    = e; }
     void            rightPredecessor (WingedEdge* e)   { this->_rightPredecessor = e; }
     void            rightSuccessor   (WingedEdge* e)   { this->_rightSuccessor   = e; }
-
-    void            resetVertex      (WingedVertex*);
-    void            resetFace        (WingedFace*);
-    void            resetEdge        (WingedEdge*);
 
     glm::vec3       vector           (const WingedMesh&) const;
     glm::vec3       vector           (const WingedMesh&, const WingedVertex&) const;

@@ -3,6 +3,7 @@
 #include "action/carve.hpp"
 #include "action/collapse-face.hpp"
 #include "action/relax-edge.hpp"
+#include "action/reset-free-face-indices.hpp"
 #include "action/smooth.hpp"
 #include "action/subdivide-edge.hpp"
 #include "action/unit/on.hpp"
@@ -28,6 +29,7 @@ struct ActionCarve::Impl {
   void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
 
+  /*
   void run (const CarveBrush& brush) { 
     AffectedFaces domain;
     PrimSphere    sphere (brush.position (), brush.width ());
@@ -41,8 +43,8 @@ struct ActionCarve::Impl {
     }
     this->finalize       (mesh, domain);
   }
+  */
 
-  /*
   void run (const CarveBrush& brush) { 
     AffectedFaces domain;
     PrimSphere    sphere (brush.position (), brush.width ());
@@ -53,10 +55,9 @@ struct ActionCarve::Impl {
     this->subdivideEdges (brush, sphere, domain);
     this->finalize       (mesh, domain);
   }
-  */
 
   glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
-                        , const glm::vec3& pos) const 
+                        , const glm::vec3& pos ) const 
   {
     const float delta = brush.y (glm::distance <float> (pos, brush.position ()));
     return pos + (normal * delta);
@@ -138,6 +139,9 @@ struct ActionCarve::Impl {
       this->actions.add <ActionCollapseFace> ().run (mesh, *degenerated, domain);
     }
     domain.commit ();
+
+    // reset free face indices
+    this->actions.add <ActionResetFreeFaceIndices> ().run (mesh);
 
     // write normals
     for (WingedVertex* v : domain.toVertexSet ()) {

@@ -22,7 +22,15 @@ struct ActionIds :: Impl {
     return this->indices.size ();
   }
 
-  void reserveIds     (unsigned int s) { 
+  bool hasId (unsigned int i) const {
+    return i < this->numIds () && this->ids [i] != nullptr;
+  }
+
+  bool hasIndex (unsigned int i) const {
+    return i < this->numIndices () && this->indices [i] != nullptr;
+  }
+
+  void reserveIds (unsigned int s) { 
     if (s > this->numIds ())
       this->ids.resize (s); 
   }
@@ -64,43 +72,38 @@ struct ActionIds :: Impl {
     }
   }
 
-  Id*           getId    (unsigned int i) { return this->ids     [i].get (); }
-  unsigned int* getIndex (unsigned int i) { return this->indices [i].get (); }
-
-  void resetId (unsigned int i) {
-    this->reserveIds (i + 1);
-    this->ids [i].reset (nullptr);
+  Id* getId (unsigned int i) { 
+    return this->ids.size () > i ? this->ids [i].get ()
+                                 : nullptr;
   }
 
-  void resetIndex (unsigned int i) {
-    this->reserveIndices (i + 1);
-    this->indices [i].reset (nullptr);
+  unsigned int* getIndex (unsigned int i) {
+    return this->indices.size () > i ? this->indices [i].get ()
+                                     : nullptr;
   }
 
   WingedMesh& getWingedMesh (unsigned int i) {
-    assert (this->ids [i]);
-    return State::scene ().wingedMesh (*this->ids [i]);
+    return State::scene ().wingedMesh (*this->getId (i));
   }
 
   SphereMesh& getSphereMesh (unsigned int i) {
-    assert (this->ids [i]);
-    return State::scene ().sphereMesh (*this->ids [i]);
+    return State::scene ().sphereMesh (*this->getId (i));
   }
 
   SphereMeshNode* getSphereMeshNode (SphereMesh& mesh, unsigned int i) {
-    return this->ids [i] ? &mesh.node (*this->ids [i]) : nullptr;
+    return this->hasId (i) ? &mesh.node (*this->ids [i]) : nullptr;
   }
 
   WingedFace* getFace (WingedMesh& mesh, unsigned int i) {
-    return this->ids [i] ? mesh.face (*this->ids [i]) : nullptr;
+    return this->hasId (i) ? mesh.face (*this->ids [i]) : nullptr;
   }
 
   WingedEdge* getEdge (WingedMesh& mesh, unsigned int i) {
-    return this->ids [i] ? mesh.edge (*this->ids [i]) : nullptr;
+    return this->hasId (i) ? mesh.edge (*this->ids [i]) : nullptr;
   }
 
   WingedVertex* getVertex (WingedMesh& mesh, unsigned int i) {
-    return this->indices [i] ? mesh.vertex (*this->indices [i]) : nullptr;
+    return this->hasIndex (i) ? mesh.vertex (*this->indices [i]) : nullptr;
   }
 
   void setMesh (unsigned int i, const WingedMesh& mesh) {
@@ -112,23 +115,27 @@ struct ActionIds :: Impl {
   }
 
   void setNode (unsigned int i, const SphereMeshNode* node) {
-    if (node) this->setId   (i, node->id ());
-    else      this->resetId (i);
+    if (node) {
+      this->setId (i, node->id ());
+    }
   }
 
   void setFace (unsigned int i, const WingedFace* face) {
-    if (face) this->setId   (i, face->id ());
-    else      this->resetId (i);
+    if (face) {
+      this->setId (i, face->id ());
+    }
   }
 
   void setEdge (unsigned int i, const WingedEdge* edge) {
-    if (edge) this->setId (i, edge->id ());
-    else      this->resetId (i);
+    if (edge) {
+      this->setId (i, edge->id ());
+    }
   }
 
   void setVertex (unsigned int i, const WingedVertex* vertex) {
-    if (vertex) this->setIndex   (i, vertex->index ());
-    else        this->resetIndex (i);
+    if (vertex) {
+      this->setIndex (i, vertex->index ());
+    }
   }
 };
 
@@ -148,8 +155,6 @@ DELEGATE2      (void           , ActionIds, setIndex,         unsigned int, unsi
 DELEGATE2      (void           , ActionIds, setIndices,       std::initializer_list <unsigned int>, unsigned int)
 DELEGATE1      (Id*            , ActionIds, getId,            unsigned int)
 DELEGATE1      (unsigned int*  , ActionIds, getIndex,         unsigned int)
-DELEGATE1      (void           , ActionIds, resetId,          unsigned int)
-DELEGATE1      (void           , ActionIds, resetIndex,       unsigned int)
 DELEGATE1      (WingedMesh&    , ActionIds, getWingedMesh,    unsigned int)
 DELEGATE1      (SphereMesh&    , ActionIds, getSphereMesh,    unsigned int)
 DELEGATE2      (SphereMeshNode*, ActionIds, getSphereMeshNode,SphereMesh&, unsigned int)

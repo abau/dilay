@@ -6,7 +6,6 @@
 #include "partial-action/modify-winged-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
-#include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
 struct PAInsertEdgeVertex :: Impl {
@@ -18,16 +17,20 @@ struct PAInsertEdgeVertex :: Impl {
     // 1----->newV------->2
 
     WingedVertex& newV  = this->actions.add <PAModifyWMesh> ().addVertex (mesh,v);
-    WingedEdge&   newE  = this->actions.add <PAModifyWMesh> ().addEdge 
-      (mesh, WingedEdge ( Id ()
-                        , e.vertex1 ()         , &newV
-                        , e.leftFace ()        , e.rightFace ()
-                        , e.leftPredecessor () , &e
-                        , &e                   , e.rightSuccessor () ));
+    WingedEdge&   newE  = this->actions.add <PAModifyWMesh> ().addEdge   (mesh);
 
-    this->actions.add <PAModifyWEdge> ().vertex1         (e, &newV);
-    this->actions.add <PAModifyWEdge> ().successor       (e, e.rightFaceRef (), &newE);
-    this->actions.add <PAModifyWEdge> ().predecessor     (e, e.leftFaceRef  (), &newE);
+    this->actions.add <PAModifyWEdge> ().vertex1          (newE, e.vertex1 ());
+    this->actions.add <PAModifyWEdge> ().vertex2          (newE, &newV);
+    this->actions.add <PAModifyWEdge> ().leftFace         (newE, e.leftFace ());
+    this->actions.add <PAModifyWEdge> ().rightFace        (newE, e.rightFace ());
+    this->actions.add <PAModifyWEdge> ().leftPredecessor  (newE, e.leftPredecessor ());
+    this->actions.add <PAModifyWEdge> ().leftSuccessor    (newE, &e);
+    this->actions.add <PAModifyWEdge> ().rightPredecessor (newE, &e);
+    this->actions.add <PAModifyWEdge> ().rightSuccessor   (newE, e.rightSuccessor ());
+
+    this->actions.add <PAModifyWEdge> ().vertex1          (e, &newV);
+    this->actions.add <PAModifyWEdge> ().successor        (e, e.rightFaceRef (), &newE);
+    this->actions.add <PAModifyWEdge> ().predecessor      (e, e.leftFaceRef  (), &newE);
 
     this->actions.add <PAModifyWVertex> ().edge (newV, &e);
 

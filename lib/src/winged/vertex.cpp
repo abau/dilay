@@ -5,21 +5,13 @@
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
-WingedVertex :: WingedVertex (unsigned int i, WingedEdge* e) 
-  : _index (i), _edge (e) {}
-
-WingedVertex :: ~WingedVertex () {
-  if (this->_edge) { this->_edge->resetVertex (this); }
-}
+WingedVertex :: WingedVertex (unsigned int i) 
+  : _index (i), _edge (nullptr) {}
 
 void WingedVertex :: edge (WingedEdge* e) { this->_edge = e; }
 
-void WingedVertex :: resetEdge (WingedEdge* e) {
-  if (this->_edge == e) { this->_edge = nullptr; }
-}
-
-void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int faceIndex) {
-  mesh.setIndex (faceIndex, this->_index);
+void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int index) {
+  mesh.setIndex (index, this->_index);
 }
 
 glm::vec3 WingedVertex :: vector (const WingedMesh& mesh) const {

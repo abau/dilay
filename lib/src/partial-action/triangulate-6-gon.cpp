@@ -36,15 +36,19 @@ struct PATriangulate6Gon :: Impl {
     WingedVertex& v5 = e50.firstVertexRef (f);
 
     WingedFace& a = this->actions.add <PAModifyWMesh> ().addFace 
-      (mesh, WingedFace (Id (), &e01), PrimTriangle (mesh,v0,v1,v5));
+      (mesh, PrimTriangle (mesh,v0,v1,v5));
     WingedFace& b = this->actions.add <PAModifyWMesh> ().addFace 
-      (mesh, WingedFace (Id (), &e23), PrimTriangle (mesh,v1,v2,v3));
+      (mesh, PrimTriangle (mesh,v1,v2,v3));
     WingedFace& c = this->actions.add <PAModifyWMesh> ().addFace
-      (mesh, WingedFace (Id (), &e45), PrimTriangle (mesh,v3,v4,v5));
+      (mesh, PrimTriangle (mesh,v3,v4,v5));
 
-    WingedEdge& e13 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
-    WingedEdge& e35 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
-    WingedEdge& e51 = this->actions.add <PAModifyWMesh> ().addEdge (mesh, WingedEdge ());
+    this->actions.add <PAModifyWFace> ().edge (a, &e01);
+    this->actions.add <PAModifyWFace> ().edge (b, &e23);
+    this->actions.add <PAModifyWFace> ().edge (c, &e45);
+
+    WingedEdge& e13 = this->actions.add <PAModifyWMesh> ().addEdge (mesh);
+    WingedEdge& e35 = this->actions.add <PAModifyWMesh> ().addEdge (mesh);
+    WingedEdge& e51 = this->actions.add <PAModifyWMesh> ().addEdge (mesh);
 
     this->actions.add <PAModifyWEdge> ().setGeometry (e13,&v1,&v3,&f,&b,&e51,&e35,&e23,&e12);
     this->actions.add <PAModifyWEdge> ().setGeometry (e35,&v3,&v5,&f,&c,&e13,&e51,&e45,&e34);

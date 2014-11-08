@@ -6,22 +6,16 @@
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
-WingedFace :: WingedFace () : WingedFace (Id (), nullptr) {}
+namespace {
+  unsigned int defaultIndex = std::numeric_limits <unsigned int>::max ();
+}
 
-WingedFace :: WingedFace (const Id& id, WingedEdge* e)
+WingedFace :: WingedFace (const Id& id)
   : _id         (id)
-  , _edge       (e)
+  , _edge       (nullptr)
   , _octreeNode (nullptr) 
-  , _index      (std::numeric_limits <unsigned int>::max ())
+  , _index      (defaultIndex)
   {}
-
-WingedFace :: ~WingedFace () {
-  if (this->_edge) { this->_edge->resetFace (this); }
-}
-
-void WingedFace :: resetEdge (WingedEdge* e) {
-  if (this->_edge == e) { this->_edge = nullptr; }
-}
 
 void WingedFace :: writeIndices (WingedMesh& mesh) {
   assert (this->isTriangle ());
@@ -32,12 +26,11 @@ void WingedFace :: writeIndices (WingedMesh& mesh) {
 }
 
 PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
-  assert (this->isTriangle ());
+  assert (this->_index != defaultIndex);
 
-  return PrimTriangle ( this->firstVertex  ().vector (mesh)
-                      , this->secondVertex ().vector (mesh)
-                      , this->thirdVertex  ().vector (mesh)
-                      );
+  return PrimTriangle ( mesh.vector (mesh.index (this->_index + 0))
+                      , mesh.vector (mesh.index (this->_index + 1))
+                      , mesh.vector (mesh.index (this->_index + 2)) );
 }
 
 WingedVertex& WingedFace :: firstVertex () const { 

@@ -51,11 +51,10 @@ struct ActionCollapseFace::Impl {
   }
 
   void deleteSuccessors (WingedMesh& mesh, WingedFace& face, AffectedFaces& affectedFaces) {
-    EdgePtrVec successorsToDelete;
     for (WingedEdge& e : face.adjacentEdges ()) {
-      successorsToDelete.push_back (e.successor (e.otherFaceRef (face)));
+      this->actions.add <PADeleteEdgeFace> ()
+                   .run (mesh, e.successorRef (e.otherFaceRef (face)), &affectedFaces);
     }
-    this->actions.add <PADeleteEdgeFace> ().run (mesh, successorsToDelete, &affectedFaces);
   }
 
   WingedVertex& addNewVertex (WingedMesh& mesh, WingedFace& face) {
@@ -80,13 +79,13 @@ struct ActionCollapseFace::Impl {
   void reassign (WingedMesh& mesh, WingedFace& face, WingedVertex& newVertex) {
     VertexPtrVec  verticesToDelete = face.adjacentVertices ().collect ();
     EdgePtrVec    edgesToDelete    = face.adjacentEdges    ().collect ();
-    PrimTriangle  ....
 
     // handle vertices
     for (WingedVertex* v : verticesToDelete) {
       for (WingedEdge* e : v->adjacentEdges ().collect ()) {
         this->actions.add <PAModifyWEdge> ().vertex (*e, *v, &newVertex);
       }
+      this->actions.add <PAModifyWMesh> ().resetVertex  (*v);
       this->actions.add <PAModifyWMesh> ().deleteVertex (mesh, *v);
     }
     // handle edges
@@ -98,6 +97,12 @@ struct ActionCollapseFace::Impl {
       this->actions.add <PAModifyWEdge> ().successor   (predecessor, otherFace, &successor);
       this->actions.add <PAModifyWEdge> ().predecessor (successor, otherFace, &predecessor);
       this->actions.add <PAModifyWFace> ().edge        (otherFace, &successor);
+      this->actions.add <PAModifyWMesh> ().resetEdge   (*e);
+    }
+    this->actions.add <PAModifyWMesh> ().resetFace  (face);
+
+    // delete old edges & face
+    for (WingedEdge* e : edgesToDelete) {
       this->actions.add <PAModifyWMesh> ().deleteEdge  (mesh, *e);
     }
     this->actions.add <PAModifyWMesh> ().deleteFace (mesh, face);

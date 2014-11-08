@@ -24,8 +24,6 @@ class ActionIds {
     void            setIndices        (std::initializer_list <unsigned int>, unsigned int = 0);
     Id*             getId             (unsigned int);
     unsigned int*   getIndex          (unsigned int);
-    void            resetId           (unsigned int);
-    void            resetIndex        (unsigned int);
     WingedMesh&     getWingedMesh     (unsigned int);
     SphereMesh&     getSphereMesh     (unsigned int);
     SphereMeshNode* getSphereMeshNode (SphereMesh&, unsigned int);

@@ -20,6 +20,7 @@ SOURCES += \
            src/action/new-sphere-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/relax-edge.cpp \
+           src/action/reset-free-face-indices.cpp \
            src/action/smooth.cpp \
            src/action/subdivide-edge.cpp \
            src/action/subdivide-mesh.cpp \
@@ -115,6 +116,7 @@ HEADERS += \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/relax-edge.hpp \
+           src/action/reset-free-face-indices.hpp \
            src/action/smooth.hpp \
            src/action/subdivide-edge.hpp \
            src/action/subdivide-mesh.hpp \

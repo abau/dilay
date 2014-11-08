@@ -2,10 +2,11 @@
 #define DILAY_PARTIAL_ACTION_DELETE_EDGE_FACE
 
 #include "action/on.hpp"
-#include "fwd-winged.hpp"
 #include "macro.hpp"
 
 class AffectedFaces;
+class WingedEdge;
+class WingedMesh;
 
 class PADeleteEdgeFace : public ActionOn <WingedMesh> {
   public: 
@@ -15,7 +16,6 @@ class PADeleteEdgeFace : public ActionOn <WingedMesh> {
      * `e` and its right face are also deleted from `a` if `a != nullptr`.
      */
     void run (WingedMesh&, WingedEdge&, AffectedFaces*);
-    void run (WingedMesh&, EdgePtrVec&, AffectedFaces*);
 
   private:
     void runUndo (WingedMesh&);

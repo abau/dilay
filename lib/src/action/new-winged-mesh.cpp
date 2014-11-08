@@ -97,20 +97,17 @@ struct ActionNewWingedMesh :: Impl {
     if (result == map.end ()) {
       WingedVertex* v1    = mesh.vertex (index1);
       WingedVertex* v2    = mesh.vertex (index2);
-      WingedEdge& newEdge = this->actions.add <PAModifyWMesh> ()
-                                 .addEdge ( mesh
-                                          , WingedEdge ( Id ()
-                                                       , v1, v2
-                                                       , &face  , nullptr
-                                                       , nullptr, nullptr
-                                                       , nullptr, nullptr ));
+      WingedEdge& newEdge = this->actions.add <PAModifyWMesh> ().addEdge (mesh);
         
       map.insert (std::pair <UIPair,WingedEdge*> ( UIPair (index1,index2)
                                                  , &newEdge ));
 
-      this->actions.add <PAModifyWVertex> ().edge (*v1 , &newEdge);
-      this->actions.add <PAModifyWVertex> ().edge (*v2 , &newEdge);
-      this->actions.add <PAModifyWFace  > ().edge (face, &newEdge);
+      this->actions.add <PAModifyWEdge  > ().vertex1  (newEdge, v1);
+      this->actions.add <PAModifyWEdge  > ().vertex2  (newEdge, v2);
+      this->actions.add <PAModifyWEdge  > ().leftFace (newEdge, &face);
+      this->actions.add <PAModifyWVertex> ().edge     (*v1 , &newEdge);
+      this->actions.add <PAModifyWVertex> ().edge     (*v2 , &newEdge);
+      this->actions.add <PAModifyWFace  > ().edge     (face, &newEdge);
 
       return newEdge;
     }

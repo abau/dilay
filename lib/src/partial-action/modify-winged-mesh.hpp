@@ -15,15 +15,16 @@ class PAModifyWMesh : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAModifyWMesh)
 
+    void          resetEdge       (WingedEdge&);
+    void          resetFace       (WingedFace&);
+    void          resetVertex     (WingedVertex&);
     void          deleteEdge      (WingedMesh&, WingedEdge&);
     void          deleteFace      (WingedMesh&, WingedFace&);
-    void          deleteFace      (WingedMesh&, WingedFace&, const PrimTriangle&);
     void          deleteVertex    (WingedMesh&, WingedVertex&);
-    WingedEdge&   addEdge         (WingedMesh&, WingedEdge&&);
-    WingedFace&   addFace         (WingedMesh&, WingedFace&&);
+    WingedEdge&   addEdge         (WingedMesh&);
     WingedFace&   addFace         (WingedMesh&, const PrimTriangle&);
-    WingedFace&   addFace         (WingedMesh&, WingedFace&&, const PrimTriangle&);
     WingedVertex& addVertex       (WingedMesh&, const glm::vec3&);
+    void          setIndex        (WingedMesh&, unsigned int, unsigned int);
     void          setupOctreeRoot (WingedMesh&, const glm::vec3&, float);
 
   private:

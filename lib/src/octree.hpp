@@ -55,7 +55,7 @@ class Octree {
     WingedFace&      realignFace         (WingedFace&&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace          (const WingedFace&);
     bool             hasFace             (const Id&) const;
-    WingedFace*      face                (const Id&);
+    WingedFace*      face                (const Id&) const;
     void             render              ();
     bool             intersects          (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
     bool             intersects          (const WingedMesh&, const PrimSphere&, AffectedFaces&);
@@ -72,8 +72,8 @@ class Octree {
     void        forEachFace              (const std::function <void (WingedFace&)>&) const;
     void        forEachDegeneratedFace   (const std::function <void (WingedFace&)>&) const;
 
-    SAFE_REF1 (WingedFace,face,const Id&)
-    SAFE_REF  (WingedFace,someFace)
+    SAFE_REF1_CONST (WingedFace,face,const Id&)
+    SAFE_REF_CONST  (WingedFace,someFace)
 
   private:
     IMPLEMENTATION
