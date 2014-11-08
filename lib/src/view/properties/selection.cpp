@@ -47,7 +47,7 @@ struct ViewPropertiesSelection::Impl {
     else if (this->sphereMeshNodeButton.isChecked ()) {
       return SelectionMode::SphereNode;
     }
-    assert (false);
+    std::abort ();
   }
 };
 

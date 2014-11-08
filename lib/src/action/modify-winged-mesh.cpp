@@ -53,8 +53,6 @@ struct ActionModifyWMesh :: Impl {
         this->operandData.set <glm::vec3> (scal);
         break;
       }
-      default:
-        assert (false);
     }
   }
 

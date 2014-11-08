@@ -57,7 +57,7 @@ struct ActionTranslate::Impl {
         break;
       }
       default:
-        assert (false);
+        std::abort ();
     }
   }
 

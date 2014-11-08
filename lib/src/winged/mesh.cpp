@@ -175,7 +175,7 @@ struct WingedMesh::Impl {
       else if (e->rightFace () == oldFace)
         e->rightFace (&newFace);
       else
-        assert (false);
+        std::abort ();
     }
     return newFace;
   }

@@ -21,22 +21,22 @@ struct Tool::Impl {
     this->toolParameters = new ViewToolParameters (p.mainWindow (), alwaysOpen);
     this->toolParameters->setWindowTitle (name);
 
-    QObject::connect ( this->toolParameters, &ViewToolParameters::finished
-                     , [this] (int r) { 
-                         if (r == ViewToolParameters::Result::Apply) {
-                           this->toolParameters->hide ();
-                         }
-                         else if (r == ViewToolParameters::Result::ApplyAndClose) {
-                           this->close    ();
-                           State::setTool (nullptr); 
-                         }
-                         else if (r == ViewToolParameters::Result::Cancel) {
-                           this->cancel   ();
-                           State::setTool (nullptr); 
-                         }
-                         else { assert (false); }
-                       }
-                     );
+    QObject::connect (this->toolParameters, &ViewToolParameters::finished, [this] (int r) { 
+      switch (r) {
+        case ViewToolParameters::Result::Apply:
+          this->toolParameters->hide ();
+          break;
+
+        case ViewToolParameters::Result::ApplyAndClose:
+          this->close    ();
+          State::setTool (nullptr); 
+          break;
+
+        case ViewToolParameters::Result::Cancel:
+          this->cancel   ();
+          State::setTool (nullptr); 
+      }
+    });
 
     QObject::connect ( this->toolParameters, &ViewToolParameters::rejected
                      , [this] () { State::setTool (nullptr); } );

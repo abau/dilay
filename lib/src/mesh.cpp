@@ -236,7 +236,7 @@ struct Mesh::Impl {
       this->renderWireframe ();
     }
     else {
-      assert (false);
+      std::abort ();
     }
     this->renderEnd ();
   }

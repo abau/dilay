@@ -82,7 +82,6 @@ struct PAModifyWVertex :: Impl {
         this->vec3.reset (new glm::vec3 (pos));
         break;
       }
-      default: assert (false);
     }
   }
 

@@ -77,7 +77,7 @@ class IdMap {
       assert (this->hasElement (id));
       Iterator result = this->map.find (id.primitive ());
       if (result == this->map.end ()) {
-        assert (false);
+        std::abort ();
       }
       else {
         return result->second; 
@@ -88,7 +88,7 @@ class IdMap {
       assert (this->hasElement (id));
       ConstIterator result = this->map.find (id.primitive ());
       if (result == this->map.end ()) {
-        assert (false);
+        std::abort ();
       }
       else {
         return result->second; 

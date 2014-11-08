@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 #include "selection-mode.hpp"
 
 bool SelectionModeUtil::isMajor (SelectionMode mode) {
@@ -6,9 +7,8 @@ bool SelectionModeUtil::isMajor (SelectionMode mode) {
     case SelectionMode::Freeform  : return true;
     case SelectionMode::Sphere    : return true;
     case SelectionMode::SphereNode: return false;
-    default:
-      assert (false);
   }
+  std::abort ();
 }
 
 bool SelectionModeUtil::isMinor (SelectionMode mode) {

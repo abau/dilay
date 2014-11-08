@@ -202,7 +202,6 @@ struct PAModifyWMesh :: Impl {
         mesh.setIndex (this->operandIds.getIndexRef (0), this->operandIds.getIndexRef (1));
         break;
       }
-      default: assert (false);
     }
   }
 
@@ -268,7 +267,6 @@ struct PAModifyWMesh :: Impl {
         mesh.setIndex (this->operandIds.getIndexRef (0), this->operandIds.getIndexRef (2));
         break;
       }
-      default: assert (false);
     }
   }
 };

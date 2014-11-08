@@ -45,7 +45,7 @@ struct PAModifyWFace :: Impl {
         this->operands.setEdge (1,e);
         break;
       }
-      default: assert (false);
+      default: std::abort ();
     }
   }
 

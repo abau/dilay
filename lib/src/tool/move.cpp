@@ -50,7 +50,7 @@ struct ToolMove::Impl {
         entities.set <const WingedMeshes> (scene.selectedWingedMeshes (MeshType::Freeform));
         break;
       default:
-        assert (false);
+        std::abort ();
     }
     return entities;
   }

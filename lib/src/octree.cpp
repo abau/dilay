@@ -159,7 +159,7 @@ struct OctreeNode::Impl {
     for (Child& c : this->children) 
       c->render ();
 #else
-    assert (false);
+    std::abort ();
 #endif
   }
 

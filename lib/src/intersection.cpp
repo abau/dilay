@@ -193,7 +193,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& spher
       return false;
     }
     default:
-      assert (false);
+      std::abort ();
   }
 }
 

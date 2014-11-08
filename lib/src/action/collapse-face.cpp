@@ -31,7 +31,7 @@ struct ActionCollapseFace::Impl {
       this->addAffectedFaces (newVertex, affectedFaces);
     }
     else {
-      assert (false);
+      std::abort ();
     }
   }
 

@@ -217,7 +217,7 @@ struct Config::Impl {
         ConfigConversion::toDomElement (doc, elem, value.get <Color> ());
       }
       else
-        assert (false);
+        std::abort ();
     }
     else {
       const QString& head  = path.first ();

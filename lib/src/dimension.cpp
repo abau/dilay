@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 #include <glm/glm.hpp>
 #include "dimension.hpp"
 
@@ -8,7 +9,7 @@ unsigned int DimensionUtil::index (Dimension d) {
     case Dimension::Y: return 1;
     case Dimension::Z: return 2;
   }
-  assert (false);
+  std::abort ();
 }
 
 glm::vec3 DimensionUtil::vector (Dimension d) {
@@ -17,5 +18,5 @@ glm::vec3 DimensionUtil::vector (Dimension d) {
     case Dimension::Y: return glm::vec3 (0.0f, 1.0f, 0.0f);
     case Dimension::Z: return glm::vec3 (0.0f, 0.0f, 1.0f);
   }
-  assert (false);
+  std::abort ();
 }

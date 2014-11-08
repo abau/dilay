@@ -217,7 +217,6 @@ struct PAModifyWEdge :: Impl {
         this->operands.setEdge   (6, rS);
         break;
       }
-      default: assert (false);
     }
   }
 

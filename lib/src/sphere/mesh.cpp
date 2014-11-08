@@ -55,7 +55,7 @@ struct SphereMeshNode::Impl {
         return;
       }
     }
-    assert (false);
+    std::abort ();
   }
   
   void render (Mesh& mesh, const Selection::Minors* selection) {

@@ -91,7 +91,7 @@ struct ToolMovement::Impl {
       case Movement::PrimaryPlane: 
         return this->moveOnPlane (State::camera ().primaryDimension (), p);
     }
-    assert (false);
+    std::abort ();
   }
 
   bool byMouseEvent (QMouseEvent& e) {
