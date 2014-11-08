@@ -1,4 +1,4 @@
-CONFIG                 += warn_on debug object_parallel_to_source ordered
+CONFIG                 += warn_on object_parallel_to_source ordered
 QT                     += widgets opengl xml
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
