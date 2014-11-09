@@ -22,14 +22,14 @@ class ActionIds {
     void            setIds            (std::initializer_list <Id>, unsigned int = 0);
     void            setIndex          (unsigned int, unsigned int);
     void            setIndices        (std::initializer_list <unsigned int>, unsigned int = 0);
-    Id*             getId             (unsigned int);
-    unsigned int*   getIndex          (unsigned int);
-    WingedMesh&     getWingedMesh     (unsigned int);
-    SphereMesh&     getSphereMesh     (unsigned int);
-    SphereMeshNode* getSphereMeshNode (SphereMesh&, unsigned int);
-    WingedFace*     getFace           (WingedMesh&, unsigned int);
-    WingedEdge*     getEdge           (WingedMesh&, unsigned int);
-    WingedVertex*   getVertex         (WingedMesh&, unsigned int);
+    Id*             getId             (unsigned int) const;
+    unsigned int*   getIndex          (unsigned int) const;
+    WingedMesh&     getWingedMesh     (unsigned int) const;
+    SphereMesh&     getSphereMesh     (unsigned int) const;
+    SphereMeshNode* getSphereMeshNode (SphereMesh&, unsigned int) const;
+    WingedFace*     getFace           (WingedMesh&, unsigned int) const;
+    WingedEdge*     getEdge           (WingedMesh&, unsigned int) const;
+    WingedVertex*   getVertex         (WingedMesh&, unsigned int) const;
     void            setMesh           (unsigned int, const WingedMesh&);
     void            setMesh           (unsigned int, const SphereMesh&);
     void            setNode           (unsigned int, const SphereMeshNode*);
@@ -38,13 +38,13 @@ class ActionIds {
     void            setVertex         (unsigned int, const WingedVertex*);
 
     template <typename T>
-    T&              getMesh           (unsigned int);
+    T&              getMesh           (unsigned int) const;
 
-    SAFE_REF1 (Id          , getId    , unsigned int)
-    SAFE_REF1 (unsigned int, getIndex , unsigned int)
-    SAFE_REF2 (WingedFace  , getFace  , WingedMesh&, unsigned int)
-    SAFE_REF2 (WingedEdge  , getEdge  , WingedMesh&, unsigned int)
-    SAFE_REF2 (WingedVertex, getVertex, WingedMesh&, unsigned int)
+    SAFE_REF1_CONST (Id          , getId    , unsigned int)
+    SAFE_REF1_CONST (unsigned int, getIndex , unsigned int)
+    SAFE_REF2_CONST (WingedFace  , getFace  , WingedMesh&, unsigned int)
+    SAFE_REF2_CONST (WingedEdge  , getEdge  , WingedMesh&, unsigned int)
+    SAFE_REF2_CONST (WingedVertex, getVertex, WingedMesh&, unsigned int)
 
   private:
     IMPLEMENTATION
