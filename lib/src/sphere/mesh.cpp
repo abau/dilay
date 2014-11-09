@@ -204,12 +204,12 @@ struct SphereMesh::Impl {
     return false;
   }
 
-  SphereMeshNode& node (const Id& id) {
+  SphereMeshNode& node (const Id& id) const {
     assert (this->idMap.hasElement (id));
     return this->idMap.elementRef (id);
   }
 
-  SphereMeshNode& root () {
+  SphereMeshNode& root () const {
     assert (this->hasRoot ());
     return this->_root->self;
   }
@@ -243,8 +243,8 @@ DELEGATE4       (SphereMeshNode& , SphereMesh, addNode, const Id&, SphereMeshNod
 DELEGATE1       (void            , SphereMesh, deleteNode, SphereMeshNode&)
 DELEGATE1       (void            , SphereMesh, render, const Selection&)
 DELEGATE2       (bool            , SphereMesh, intersects, const PrimRay&, SphereNodeIntersection&)
-DELEGATE1       (SphereMeshNode& , SphereMesh, node, const Id&)
-DELEGATE        (SphereMeshNode& , SphereMesh, root)
+DELEGATE1_CONST (SphereMeshNode& , SphereMesh, node, const Id&)
+DELEGATE_CONST  (SphereMeshNode& , SphereMesh, root)
 DELEGATE_CONST  (bool            , SphereMesh, hasRoot)
 DELEGATE_CONST  (const glm::vec3&, SphereMesh, position)
 DELEGATE1       (void            , SphereMesh, position, const glm::vec3&)
