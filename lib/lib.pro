@@ -13,6 +13,7 @@ SOURCES += \
            src/action/collapse-face.cpp \
            src/action/delete-sphere-mesh.cpp \
            src/action/delete-winged-mesh.cpp \
+           src/action/identifier.cpp \
            src/action/ids.cpp \
            src/action/modify-sphere-mesh.cpp \
            src/action/modify-winged-mesh.cpp \
@@ -106,8 +107,10 @@ HEADERS += \
            src/action.hpp \
            src/action/carve.hpp \
            src/action/collapse-face.hpp \
+           src/action/data.hpp \
            src/action/delete-sphere-mesh.hpp \
            src/action/delete-winged-mesh.hpp \
+           src/action/identifier.cpp \
            src/action/ids.hpp \
            src/action/modify-sphere-mesh.hpp \
            src/action/modify-winged-mesh.hpp \
