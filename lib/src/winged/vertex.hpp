@@ -21,7 +21,7 @@ class WingedVertex {
 
     void         edge               (WingedEdge*);
     void         writeIndex         (WingedMesh&, unsigned int);
-    glm::vec3    vector             (const WingedMesh&) const;
+    glm::vec3    position           (const WingedMesh&) const;
     glm::vec3    savedNormal        (const WingedMesh&) const;
     glm::vec3    interpolatedNormal (const WingedMesh&) const;
     void         writePosition      (WingedMesh&, const glm::vec3&);

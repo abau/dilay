@@ -16,7 +16,7 @@ struct PrimTriangle::Impl {
 
   Impl ( const WingedMesh& mesh, const WingedVertex& v1
                , const WingedVertex& v2, const WingedVertex& v3)
-    : Impl (v1.vector (mesh), v2.vector (mesh), v3.vector (mesh)) {}
+    : Impl (v1.position (mesh), v2.position (mesh), v3.position (mesh)) {}
 
   glm::vec3 normal () const { 
     return PrimTriangle::normal (this->vertex1, this->vertex2, this->vertex3);

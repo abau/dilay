@@ -14,7 +14,7 @@ void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int index) {
   mesh.setIndex (index, this->_index);
 }
 
-glm::vec3 WingedVertex :: vector (const WingedMesh& mesh) const {
+glm::vec3 WingedVertex :: position (const WingedMesh& mesh) const {
   return mesh.vector (this->_index);
 }
 

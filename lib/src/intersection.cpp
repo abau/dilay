@@ -73,7 +73,7 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& 
 bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
                                     , const WingedVertex& vertex) 
 {
-  return IntersectionUtil :: intersects (sphere, vertex.vector (mesh));
+  return IntersectionUtil :: intersects (sphere, vertex.position (mesh));
 }
 
 // see http://realtimecollisiondetection.net/blog/?p=103
@@ -81,9 +81,9 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
                                     , const WingedFace& face) {
   assert (face.isTriangle ());
 
-  const glm::vec3 A    = face.firstVertex  ().vector (mesh) - sphere.center ();
-  const glm::vec3 B    = face.secondVertex ().vector (mesh) - sphere.center ();
-  const glm::vec3 C    = face.thirdVertex  ().vector (mesh) - sphere.center ();
+  const glm::vec3 A    = face.firstVertex  ().position (mesh) - sphere.center ();
+  const glm::vec3 B    = face.secondVertex ().position (mesh) - sphere.center ();
+  const glm::vec3 C    = face.thirdVertex  ().position (mesh) - sphere.center ();
 
   const float     rr   = sphere.radius () * sphere.radius ();
   const glm::vec3 V    = glm::cross (B-A, C-A);
@@ -130,8 +130,8 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
                                     , const WingedEdge& edge ) 
 {
   float t;
-  const PrimRay ray (edge.vertex1Ref ().vector (mesh), edge.vertex2Ref ().vector (mesh)
-                                                     - edge.vertex1Ref ().vector (mesh));
+  const PrimRay ray (edge.vertex1Ref ().position (mesh), edge.vertex2Ref ().position (mesh)
+                                                       - edge.vertex1Ref ().position (mesh));
   return IntersectionUtil::intersects (ray, sphere, &t)
        ? t <= 1.0f
        : false;

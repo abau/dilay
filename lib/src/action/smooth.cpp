@@ -23,7 +23,7 @@ struct ActionSmooth::Impl {
   {
     std::vector <glm::vec3> originalPositions;
     for (WingedVertex* v : vertices) {
-      originalPositions.push_back (v->vector (mesh));
+      originalPositions.push_back (v->position (mesh));
     }
 
     for (unsigned int i = 0; i < numIterations; i++) {
@@ -49,7 +49,7 @@ struct ActionSmooth::Impl {
     auto getData = [&mesh] ( const WingedVertex& v
                            , glm::vec3& position, glm::vec3& delta, AdjTriangles& adjTriangles ) 
     {
-      position = v.vector (mesh);
+      position = v.position (mesh);
       delta    = glm::vec3 (0.0f);
       adjTriangles.clear ();
 
@@ -62,7 +62,7 @@ struct ActionSmooth::Impl {
         if (triangle.isDegenerated () == false) {
           adjTriangles.push_back (triangle);
         }
-        delta += it.edge ()->otherVertexRef (v).vector (mesh) - position;
+        delta += it.edge ()->otherVertexRef (v).position (mesh) - position;
         valence++;
       }
       delta /= float (valence);

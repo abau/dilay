@@ -10,7 +10,7 @@
 
 void WingedUtil :: printStatistics (const WingedMesh& mesh, const WingedVertex& v) {
   std::cout   << "Vertex "               << v.index       () 
-              << "\n\tposition:\t"       << v.vector      (mesh)
+              << "\n\tposition:\t"       << v.position    (mesh)
               << "\n\tedge:\t\t"         << v.edge        ()->id ();
     std::cout << "\n\tnormal:\t\t"       << v.savedNormal (mesh);
   std::cout   << std::endl;

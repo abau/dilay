@@ -83,8 +83,8 @@ void WingedEdge :: setGeometry ( WingedVertex* v1, WingedVertex* v2
 }
 
 glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
-  glm::vec3 a = this->_vertex1->vector (mesh);
-  glm::vec3 b = this->_vertex2->vector (mesh);
+  glm::vec3 a = this->_vertex1->position (mesh);
+  glm::vec3 b = this->_vertex2->position (mesh);
   return b-a;
 }
 
@@ -118,8 +118,8 @@ WingedVertex* WingedEdge :: vertex (const WingedFace& face,unsigned int index) c
 }
 
 glm::vec3 WingedEdge :: middle (const WingedMesh& mesh) const {
-  return Util :: between ( this->vertex1 ()->vector (mesh)
-                         , this->vertex2 ()->vector (mesh));
+  return Util :: between ( this->vertex1 ()->position (mesh)
+                         , this->vertex2 ()->position (mesh));
 }
 
 WingedEdge* WingedEdge :: adjacentSibling (const WingedMesh& mesh, const WingedVertex& vertex) const {

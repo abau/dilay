@@ -100,7 +100,7 @@ struct PAModifyWMesh :: Impl {
 
     this->operation = Operation::DeleteVertex;
     this->operandIds.setIndex (0, vertex.index ());
-    this->operandData.set <VertexData> (VertexData { vertex.vector (mesh) });
+    this->operandData.set <VertexData> (VertexData { vertex.position (mesh) });
 
     mesh.deleteVertex (vertex);
   }

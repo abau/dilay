@@ -76,14 +76,14 @@ namespace {
         if (sibling) {
           const float sLength = oLength + glm::length (sibling->vector (mesh));
           if (glm::abs (edgeLength - oLength) < glm::abs (edgeLength - sLength) ) {
-            return o.vector (mesh);
+            return o.position (mesh);
           }
           else {
             return traverse (*sibling, sibling->otherVertexRef (o), sLength);
           }
         }
         else {
-          return o.vector (mesh);
+          return o.position (mesh);
         }
     };
 
@@ -103,5 +103,5 @@ glm::vec3 SubdivisionButterfly::subdivideEdge (const WingedMesh& mesh, WingedEdg
   Adjacents     a1            = adjacents (mesh, edge, v1);
   Adjacents     a2            = adjacents (mesh, edge, v2);
 
-  return subdivide (v1.vector (mesh), a1, v2.vector (mesh), a2);
+  return subdivide (v1.position (mesh), a1, v2.position (mesh), a2);
 }

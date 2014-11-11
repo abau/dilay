@@ -76,7 +76,7 @@ struct ActionCarve::Impl {
 
     // write new positions
     for (WingedVertex* v : vertices) {
-      const glm::vec3 newPos = this->carveVertex (brush, avgNormal, v->vector (mesh));
+      const glm::vec3 newPos = this->carveVertex (brush, avgNormal, v->position (mesh));
 
       this->actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
     }
