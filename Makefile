@@ -10,3 +10,9 @@ release:
 
 clean:
 	make -f ${MAKEFILE_QT} clean
+
+gdb:
+	gdb -ex run ./dilay
+
+valgrind:
+	valgrind ./dilay &> valgrind.log
