@@ -153,6 +153,7 @@ DELEGATE1       (void           , ActionIdentifier, setNode, const SphereMeshNod
 DELEGATE1       (void           , ActionIdentifier, setFace, const WingedFace*)
 DELEGATE1       (void           , ActionIdentifier, setEdge, const WingedEdge*)
 DELEGATE1       (void           , ActionIdentifier, setVertex, const WingedVertex*)
+DELEGATE_CONST  (bool           , ActionIdentifier, isSet)
 DELEGATE_CONST  (Id*            , ActionIdentifier, getId)
 DELEGATE_CONST  (unsigned int*  , ActionIdentifier, getIndex)
 DELEGATE_CONST  (WingedMesh*    , ActionIdentifier, getWingedMesh)
