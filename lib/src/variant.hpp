@@ -2,8 +2,8 @@
 #define VARIANT_35425680_d10a_41c7_b91e_2e48cfe545da
 
 #include <cassert>
-#include <functional>
 #include <type_traits>
+#include <functional>
 
 // `VariantDetails` encapsulates internal details of the variant implementation
 namespace VariantDetails {
@@ -243,7 +243,7 @@ class Variant {
       , _isSet    (other._isSet)
       , _setTo    (other._setTo) 
     {
-      if (this->_isSet) {
+      if (this->isSet ()) {
         this->_varUnion.copy (this->_setTo, other._varUnion);
       }
     }
@@ -255,7 +255,7 @@ class Variant {
     {
       other._isSet = false;
 
-      if (this->_isSet) {
+      if (this->isSet ()) {
         this->_varUnion.move (this->_setTo, std::move (other._varUnion));
       }
     }
@@ -268,7 +268,7 @@ class Variant {
       this->_isSet = other._isSet;
       this->_setTo = other._setTo;
 
-      if (this->_isSet) {
+      if (this->isSet ()) {
         this->_varUnion.copy (this->_setTo, other._varUnion);
       }
       return *this;
@@ -284,7 +284,7 @@ class Variant {
 
       other._isSet = false;
 
-      if (this->_isSet) {
+      if (this->isSet ()) {
         this->_varUnion.move (this->_setTo, std::move (other._varUnion));
       }
       return *this;
@@ -295,7 +295,7 @@ class Variant {
     }
 
     void release () {
-      if (this->_isSet) {
+      if (this->isSet ()) {
         this->_varUnion.release (this->_setTo);
         this->_isSet = false;
       }
@@ -303,7 +303,7 @@ class Variant {
 
     template <typename U>
     U& get () const {
-      assert (this->_isSet);
+      assert (this->isSet ());
       return this->_varUnion.template get <U> (this->_setTo);
     }
 
@@ -337,7 +337,7 @@ class Variant {
 
     template <typename U>
     bool is () const { 
-      if (this->_isSet) {
+      if (this->isSet ()) {
         constexpr bool         found = VariantDetails::GetIndex <0,U,Ts ...>::found;
         constexpr unsigned int index = VariantDetails::GetIndex <0,U,Ts ...>::index;
         static_assert (found, "variant type not found");
@@ -350,14 +350,18 @@ class Variant {
 
     template <typename U>
     U caseOf (std::function <U (Ts&)> ... branches) {
-      assert (this->_isSet);
+      assert (this->isSet ());
       return this->_varUnion.template caseOf <U> (this->_setTo, branches ...);
     }
 
     template <typename U>
     U caseOf (std::function <U (const Ts&)> ... branches) const {
-      assert (this->_isSet);
+      assert (this->isSet ());
       return this->_varUnion.template caseOf <U> (this->_setTo, branches ...);
+    }
+
+    bool isSet () const {
+      return this->_isSet;
     }
 
   private:
@@ -367,7 +371,7 @@ class Variant {
 
     template <unsigned int i>
     void resetTo () {
-      if (this->_isSet) {
+      if (this->isSet ()) {
         this->release ();
       }
       this->_isSet = true;
