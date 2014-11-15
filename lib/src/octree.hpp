@@ -23,6 +23,7 @@ struct OctreeStatistics {
   unsigned int numNodes;
   unsigned int numFaces;
   unsigned int numDegeneratedFaces;
+  unsigned int numFreeFaceIndices;
   int          minDepth;
   int          maxDepth;
   unsigned int maxFacesPerNode;
@@ -51,28 +52,32 @@ class Octree {
   public: 
     DECLARE_BIG4MOVE (Octree)
 
-    WingedFace&      insertFace          (WingedFace&&, const PrimTriangle&);
-    WingedFace&      realignFace         (WingedFace&&, const PrimTriangle&, bool* = nullptr);
+    void             setupRoot           (const glm::vec3&, float);
+    void             reserveIndices      (unsigned int);
+    WingedFace&      addFace             (const PrimTriangle&);
+    WingedFace&      addFace             (const WingedFace&, const PrimTriangle&);
+    WingedFace&      realignFace         (const WingedFace&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace          (const WingedFace&);
-    bool             hasFace             (const Id&) const;
-    WingedFace*      face                (const Id&) const;
+    WingedFace*      face                (unsigned int) const;
     void             render              ();
     bool             intersects          (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
     bool             intersects          (const WingedMesh&, const PrimSphere&, AffectedFaces&);
     void             reset               ();
-    void             setupRoot           (const glm::vec3&, float);
     void             shrinkRoot          ();
     bool             hasRoot             () const;
     unsigned int     numFaces            () const;
     unsigned int     numDegeneratedFaces () const;
+    unsigned int     numFreeFaceIndices  () const;
+    unsigned int     numIndices          () const;
     OctreeStatistics statistics          () const;
     WingedFace*      someFace            () const;
     WingedFace*      someDegeneratedFace () const;
 
     void        forEachFace              (const std::function <void (WingedFace&)>&) const;
     void        forEachDegeneratedFace   (const std::function <void (WingedFace&)>&) const;
+    void        forEachFreeFaceIndex     (const std::function <void (unsigned int)>&) const;
 
-    SAFE_REF1_CONST (WingedFace,face,const Id&)
+    SAFE_REF1_CONST (WingedFace,face,unsigned int)
     SAFE_REF_CONST  (WingedFace,someFace)
 
   private:

@@ -19,10 +19,10 @@ WingedEdge :: WingedEdge (const Id& id)
   {}
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
-  if (face.id () == this->_leftFace->id ()) {
+  if (face.index () == this->_leftFace->index ()) {
     return true;
   }
-  else if (face.id () == this->_rightFace->id ()) {
+  else if (face.index () == this->_rightFace->index ()) {
     return false;
   }
   else {

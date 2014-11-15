@@ -13,8 +13,8 @@ class ActionSubdivideMesh : public ActionOnPostProcessedWMesh {
     void run (WingedMesh&);
 
   private:
-    void runUndoBeforePostProcessing (WingedMesh&);
-    void runRedoBeforePostProcessing (WingedMesh&);
+    void runUndoBeforePostProcessing (WingedMesh&) const;
+    void runRedoBeforePostProcessing (WingedMesh&) const;
 
     IMPLEMENTATION
 };

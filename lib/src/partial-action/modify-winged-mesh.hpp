@@ -15,9 +15,6 @@ class PAModifyWMesh : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (PAModifyWMesh)
 
-    void          resetEdge       (WingedEdge&);
-    void          resetFace       (WingedFace&);
-    void          resetVertex     (WingedVertex&);
     void          deleteEdge      (WingedMesh&, WingedEdge&);
     void          deleteFace      (WingedMesh&, WingedFace&);
     void          deleteVertex    (WingedMesh&, WingedVertex&);
@@ -28,8 +25,8 @@ class PAModifyWMesh : public ActionOn <WingedMesh> {
     void          setupOctreeRoot (WingedMesh&, const glm::vec3&, float);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

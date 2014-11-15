@@ -9,8 +9,8 @@
 struct ActionRelaxEdge::Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, WingedEdge& edge, AffectedFaces& affectedFaces) {
     if (this->relaxableEdge (edge)) {
@@ -34,6 +34,6 @@ struct ActionRelaxEdge::Impl {
 };
 
 DELEGATE_BIG3 (ActionRelaxEdge)
-DELEGATE3 (void, ActionRelaxEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE1 (void, ActionRelaxEdge, runUndo, WingedMesh&)
-DELEGATE1 (void, ActionRelaxEdge, runRedo, WingedMesh&)
+DELEGATE3       (void, ActionRelaxEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
+DELEGATE1_CONST (void, ActionRelaxEdge, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, ActionRelaxEdge, runRedo, WingedMesh&)

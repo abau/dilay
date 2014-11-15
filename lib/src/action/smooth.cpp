@@ -15,8 +15,8 @@
 struct ActionSmooth::Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
   void run ( WingedMesh& mesh, const VertexPtrSet& vertices, unsigned int numIterations
            , AffectedFaces& affectedFaces ) 
@@ -34,7 +34,7 @@ struct ActionSmooth::Impl {
     for (WingedVertex* v : vertices) {
       assert (posIt != originalPositions.end ());
 
-      this->actions.add <PAModifyWVertex> ().moved (*v, *posIt);
+      this->actions.add <PAModifyWVertex> ().moved (mesh, *v, *posIt);
 
       for (WingedFace& f : v->adjacentFaces ()) {
         affectedFaces.insert (f);
@@ -116,7 +116,7 @@ struct ActionSmooth::Impl {
   }
 };
 
-DELEGATE_BIG3 (ActionSmooth)
-DELEGATE4 (void, ActionSmooth, run, WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&)
-DELEGATE1 (void, ActionSmooth, runUndo, WingedMesh&)
-DELEGATE1 (void, ActionSmooth, runRedo, WingedMesh&)
+DELEGATE_BIG3   (ActionSmooth)
+DELEGATE4       (void, ActionSmooth, run, WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&)
+DELEGATE1_CONST (void, ActionSmooth, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, ActionSmooth, runRedo, WingedMesh&)

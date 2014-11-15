@@ -23,8 +23,8 @@ struct PADeleteEdgeFace :: Impl {
     }
     this->dissolveEdgeFace (edge);
 
-    actions.add <PAModifyWMesh> ().resetEdge  (edge);
-    actions.add <PAModifyWMesh> ().resetFace  (faceToDelete);
+    actions.add <PAModifyWEdge> ().reset      (edge);
+    actions.add <PAModifyWFace> ().reset      (faceToDelete);
     actions.add <PAModifyWMesh> ().deleteEdge (mesh,edge);
     actions.add <PAModifyWMesh> ().deleteFace (mesh,faceToDelete); 
   }
@@ -55,12 +55,12 @@ struct PADeleteEdgeFace :: Impl {
     actions.add <PAModifyWFace> ().edge (remainingFace, edge.leftSuccessor ());
   }
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 };
 
 DELEGATE_BIG3 (PADeleteEdgeFace)
 
-DELEGATE3 (void,PADeleteEdgeFace,run,WingedMesh&,WingedEdge&,AffectedFaces*)
-DELEGATE1 (void,PADeleteEdgeFace,runUndo,WingedMesh&)
-DELEGATE1 (void,PADeleteEdgeFace,runRedo,WingedMesh&)
+DELEGATE3       (void, PADeleteEdgeFace, run    , WingedMesh&, WingedEdge&, AffectedFaces*)
+DELEGATE1_CONST (void, PADeleteEdgeFace, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PADeleteEdgeFace, runRedo, WingedMesh&)

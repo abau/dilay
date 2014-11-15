@@ -11,22 +11,20 @@ class Selection {
   public:
     DECLARE_BIG6 (Selection)
 
-    typedef std::unordered_set <Id> Minors;
-
     void          selectMajor   (const Id&);
-    void          selectMinor   (const Id&, const Id&);
+    void          selectMinor   (const Id&, unsigned int);
 
     void          unselectMajor (const Id&);
-    void          unselectMinor (const Id&, const Id&);
+    void          unselectMinor (const Id&, unsigned int);
 
     bool          hasMajor      (const Id&) const;
-    bool          hasMinor      (const Id&, const Id&) const;
+    bool          hasMinor      (const Id&, unsigned int) const;
 
     void          toggleMajor   (const Id&);
-    void          toggleMinor   (const Id&, const Id&);
+    void          toggleMinor   (const Id&, unsigned int);
 
     void          forEachMajor  (const std::function <void (const Id&)>&) const;
-    void          forEachMinor  (const std::function <void (const Id&, const Id&)>&) const;
+    void          forEachMinor  (const std::function <void (const Id&, unsigned int)>&) const;
 
     void          reset         ();
     void          resetMajors   ();
@@ -34,9 +32,6 @@ class Selection {
 
     unsigned int  numMajors     () const;
     unsigned int  numMinors     () const;
-
-    // Returned pointer may become invalid by modifying selection
-    const Minors* minors        (const Id&) const;
 
   private:
     IMPLEMENTATION

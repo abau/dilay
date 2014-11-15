@@ -52,12 +52,12 @@ struct PAFlipEdge :: Impl {
     assert (edge.rightFaceRef ().numEdges () == 3);
   }
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 };
 
 DELEGATE_BIG3 (PAFlipEdge)
 
-DELEGATE2 (void, PAFlipEdge, run, WingedMesh&, WingedEdge&)
-DELEGATE1 (void, PAFlipEdge, runUndo, WingedMesh&)
-DELEGATE1 (void, PAFlipEdge, runRedo, WingedMesh&)
+DELEGATE2       (void, PAFlipEdge, run, WingedMesh&, WingedEdge&)
+DELEGATE1_CONST (void, PAFlipEdge, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PAFlipEdge, runRedo, WingedMesh&)

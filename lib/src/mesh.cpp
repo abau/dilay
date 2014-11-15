@@ -119,6 +119,10 @@ struct Mesh::Impl {
     return this->indices.size () - 1;
   }
 
+  void addIndices (unsigned int n) { 
+    this->indices.resize (this->indices.size () + n);
+  }
+
   unsigned int addVertex (const glm::vec3& v) { 
     assert (Util::isNaN (v) == false);
 
@@ -154,10 +158,6 @@ struct Mesh::Impl {
     this->normals [(3*i) + 0] = n.x;
     this->normals [(3*i) + 1] = n.y;
     this->normals [(3*i) + 2] = n.z;
-  }
-
-  void allocateIndices (unsigned int i) { 
-    this->indices.resize (i);
   }
 
   void bufferData () {
@@ -333,11 +333,11 @@ DELEGATE1_CONST  (unsigned int      , Mesh, index, unsigned int)
 DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
 
 DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
+DELEGATE1        (void              , Mesh, addIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
 DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
 DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)
-DELEGATE1        (void              , Mesh, allocateIndices, unsigned int)
 
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)

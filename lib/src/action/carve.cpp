@@ -26,8 +26,8 @@ struct ActionCarve::Impl {
 
   Impl (ActionCarve* s) : self (s) {}
 
-  void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndoBeforePostProcessing (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedoBeforePostProcessing (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
   /*
   void run (const CarveBrush& brush) { 
@@ -160,5 +160,5 @@ struct ActionCarve::Impl {
 
 DELEGATE_BIG3_SELF (ActionCarve)
 DELEGATE1          (void, ActionCarve, run, const CarveBrush&)
-DELEGATE1          (void, ActionCarve, runUndoBeforePostProcessing, WingedMesh&)
-DELEGATE1          (void, ActionCarve, runRedoBeforePostProcessing, WingedMesh&)
+DELEGATE1_CONST    (void, ActionCarve, runUndoBeforePostProcessing, WingedMesh&)
+DELEGATE1_CONST    (void, ActionCarve, runRedoBeforePostProcessing, WingedMesh&)

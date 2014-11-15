@@ -18,7 +18,6 @@
 #include "view/main-window.hpp"
 #include "view/properties/selection.hpp"
 #include "view/properties/widget.hpp"
-#include "view/sphere-mesh-menu.hpp"
 #include "view/tool-menu-parameters.hpp"
 #include "view/util.hpp"
 
@@ -111,7 +110,6 @@ struct ViewGlWidget::Impl {
     Renderer::renderInitialize ();
 
     State::scene ().render (MeshType::Freeform);
-    State::scene ().render (MeshType::Sphere);
 
     if (State::hasTool ()) {
       State::tool ().render ();
@@ -215,11 +213,6 @@ struct ViewGlWidget::Impl {
       switch (State::scene ().selectionMode ()) {
         case SelectionMode::Freeform: {
           ViewFreeformMeshMenu menu (this->mainWindow, pos);
-          menu.exec (QCursor::pos ());
-          break;
-        }
-        case SelectionMode::Sphere: {
-          ViewSphereMeshMenu menu (this->mainWindow, pos);
           menu.exec (QCursor::pos ());
           break;
         }

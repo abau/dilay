@@ -8,8 +8,8 @@
 #include "winged/mesh.hpp"
 
 struct ActionOnPostProcessedWMesh :: Impl {
-  std::unordered_set <Id> realignIds;
-  Bitset <char>           flags;
+  std::unordered_set <unsigned int> realignedFaceIndices;
+  Bitset <char>                     flags;
 
   Impl () {
     this->doRealignAllFaces (false);
@@ -27,24 +27,15 @@ struct ActionOnPostProcessedWMesh :: Impl {
   bool doBufferData      () const { return this->flags.get (3);   }
   void doBufferData      (bool v) {        this->flags.set (3,v); }
 
-  WingedFace& realignFace (WingedMesh& mesh, WingedFace&& face) {
+  WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face) {
     bool        sameNode  = false;
-    WingedFace& realigned = mesh.realignFace ( std::move (face)
+    WingedFace& realigned = mesh.realignFace ( face
                                              , face.triangle (mesh)
                                              , &sameNode );
     if (sameNode == false) {
-      this->realignIds.insert (realigned.id ());
+      this->realignedFaceIndices.insert (realigned.index ());
     }
     return realigned;
-  }
-
-  void realignStoredFaces (WingedMesh& mesh) {
-    for (const Id& id : this->realignIds) {
-      WingedFace* face = mesh.face (id);
-      if (face) {
-        mesh.realignFace (std::move (*face), face->triangle (mesh), nullptr);
-      }
-    }
   }
 
   void realignAllFaces (WingedMesh& mesh) {
@@ -67,39 +58,44 @@ struct ActionOnPostProcessedWMesh :: Impl {
     mesh.bufferData    ();
   }
 
-  void postProcess (WingedMesh& mesh) {
+  void postProcess (WingedMesh& mesh) const {
     if (this->doRealignAllFaces ()) {
-      this->realignAllFaces (mesh);
+      mesh.realignAllFaces ();
     }
     else {
-      this->realignStoredFaces (mesh);
+      for (unsigned int index : this->realignedFaceIndices) {
+        WingedFace* face = mesh.face (index);
+        if (face) {
+          mesh.realignFace (*face, face->triangle (mesh), nullptr);
+        }
+      }
     }
     if (this->doWriteAllNormals ()) {
-      this->writeAllNormals (mesh);
+      mesh.writeAllNormals ();
     }
     if (this->doWriteAllIndices ()) {
-      this->writeAllIndices (mesh);
+      mesh.writeAllIndices ();
     }
     if (this->doBufferData ()) {
-      this->bufferData (mesh);
+      mesh.bufferData ();
     }
   }
 };
 
 DELEGATE_BIG3 (ActionOnPostProcessedWMesh)
 
-DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, WingedFace&&)
+DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, const WingedFace&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, realignAllFaces, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllNormals, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllIndices, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, bufferData, WingedMesh&)
 
-void ActionOnPostProcessedWMesh :: runUndo (WingedMesh& mesh) {
+void ActionOnPostProcessedWMesh :: runUndo (WingedMesh& mesh) const {
   this->runUndoBeforePostProcessing (mesh);
   this->impl->postProcess           (mesh);
 }
 
-void ActionOnPostProcessedWMesh :: runRedo (WingedMesh& mesh) {
+void ActionOnPostProcessedWMesh :: runRedo (WingedMesh& mesh) const {
   this->runRedoBeforePostProcessing (mesh);
   this->impl->postProcess           (mesh);
 }

@@ -28,13 +28,13 @@ class ActionUnitOn : public ActionOn <T> {
 
   private:
 
-    void runUndo (T& t) {
+    void runUndo (T& t) const {
       for (auto it = this->actions.rbegin (); it != this->actions.rend (); ++it) {
         (*it)->undo (t);
       }
     }
 
-    void runRedo (T& t) {
+    void runRedo (T& t) const {
       for (auto it = this->actions.begin (); it != this->actions.end (); ++it) {
         (*it)->redo (t);
       }

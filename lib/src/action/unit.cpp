@@ -15,13 +15,13 @@ struct ActionUnit :: Impl {
     this->actions.push_back (ActionPtr (&action));
   }
 
-  void runUndo () {
+  void runUndo () const {
     for (auto it = this->actions.rbegin (); it != this->actions.rend (); ++it) {
       (*it)->undo ();
     }
   }
 
-  void runRedo () {
+  void runRedo () const {
     for (auto it = this->actions.begin (); it != this->actions.end (); ++it) {
       (*it)->redo ();
     }
@@ -32,5 +32,5 @@ DELEGATE_BIG3  (ActionUnit)
 
 DELEGATE_CONST (bool, ActionUnit, isEmpty)
 DELEGATE1      (void, ActionUnit, addAction, Action&)
-DELEGATE       (void, ActionUnit, runUndo)
-DELEGATE       (void, ActionUnit, runRedo)
+DELEGATE_CONST (void, ActionUnit, runUndo)
+DELEGATE_CONST (void, ActionUnit, runRedo)

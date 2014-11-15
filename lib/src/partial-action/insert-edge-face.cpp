@@ -60,12 +60,11 @@ struct PAInsertEdgeFace :: Impl {
     return splitAlong;
   }
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 };
 
-DELEGATE_BIG3 (PAInsertEdgeFace)
-
-DELEGATE2 (WingedEdge&, PAInsertEdgeFace, run, WingedMesh&, WingedFace&)
-DELEGATE1 (void, PAInsertEdgeFace, runUndo, WingedMesh&)
-DELEGATE1 (void, PAInsertEdgeFace, runRedo, WingedMesh&)
+DELEGATE_BIG3   (PAInsertEdgeFace)
+DELEGATE2       (WingedEdge&, PAInsertEdgeFace, run, WingedMesh&, WingedFace&)
+DELEGATE1_CONST (void, PAInsertEdgeFace, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PAInsertEdgeFace, runRedo, WingedMesh&)

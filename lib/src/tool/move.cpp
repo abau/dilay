@@ -7,7 +7,6 @@
 #include "scene.hpp"
 #include "selection-mode.hpp"
 #include "selection.hpp"
-#include "sphere/mesh.hpp"
 #include "state.hpp"
 #include "tool/move.hpp"
 #include "tool/movement.hpp"
@@ -18,7 +17,7 @@
 #include "winged/mesh.hpp"
 
 namespace {
-  typedef Variant <const SphereMeshes, const WingedMeshes> Entities;
+  typedef Variant <const WingedMeshes> Entities;
 };
 
 struct ToolMove::Impl {
@@ -43,9 +42,6 @@ struct ToolMove::Impl {
     const Selection& selection = scene.selection ();
 
     switch (scene.selectionMode ()) {
-      case SelectionMode::Sphere:
-        entities.set <const SphereMeshes> (scene.selectedSphereMeshes ());
-        break;
       case SelectionMode::Freeform:
         entities.set <const WingedMeshes> (scene.selectedWingedMeshes (MeshType::Freeform));
         break;
@@ -57,8 +53,7 @@ struct ToolMove::Impl {
 
   void translateSelectionBy (const glm::vec3& t) {
     this->entities.caseOf <void>
-      ( [&t] (const SphereMeshes& ms) { for (SphereMesh* m : ms) { m->translate (t); } }
-      , [&t] (const WingedMeshes& ms) { for (WingedMesh* m : ms) { m->translate (t); } }
+      ( [&t] (const WingedMeshes& ms) { for (WingedMesh* m : ms) { m->translate (t); } }
       );
   }
 
@@ -66,10 +61,7 @@ struct ToolMove::Impl {
     this->runCancel ();
 
     this->entities.caseOf <void>
-      ( [this] (const SphereMeshes& ms) {
-          State::history ().add <ActionTranslate> ().translate (ms, this->movement.delta ());
-        }
-      , [this] (const WingedMeshes& ms) {
+      ( [this] (const WingedMeshes& ms) {
           State::history ().add <ActionTranslate> ().translate (ms, this->movement.delta ());
         }
       );

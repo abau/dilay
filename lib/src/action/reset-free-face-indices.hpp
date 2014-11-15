@@ -13,8 +13,8 @@ class ActionResetFreeFaceIndices : public ActionOn <WingedMesh> {
     void run (WingedMesh&);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

@@ -93,12 +93,11 @@ struct PATriangulate6Gon :: Impl {
     }
   }
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 };
 
-DELEGATE_BIG3 (PATriangulate6Gon)
-
-DELEGATE3 (void, PATriangulate6Gon, run, WingedMesh&, WingedFace&, AffectedFaces*)
-DELEGATE1 (void, PATriangulate6Gon, runUndo, WingedMesh&)
-DELEGATE1 (void, PATriangulate6Gon, runRedo, WingedMesh&)
+DELEGATE_BIG3   (PATriangulate6Gon)
+DELEGATE3       (void, PATriangulate6Gon, run, WingedMesh&, WingedFace&, AffectedFaces*)
+DELEGATE1_CONST (void, PATriangulate6Gon, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PATriangulate6Gon, runRedo, WingedMesh&)

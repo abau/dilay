@@ -11,14 +11,10 @@ CONFIG                 += staticlib
 SOURCES += \
            src/action/carve.cpp \
            src/action/collapse-face.cpp \
-           src/action/delete-sphere-mesh.cpp \
            src/action/delete-winged-mesh.cpp \
            src/action/identifier.cpp \
-           src/action/ids.cpp \
-           src/action/modify-sphere-mesh.cpp \
            src/action/modify-winged-mesh.cpp \
            src/action/new-winged-mesh.cpp \
-           src/action/new-sphere-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/relax-edge.cpp \
            src/action/reset-free-face-indices.cpp \
@@ -65,8 +61,6 @@ SOURCES += \
            src/selection.cpp \
            src/selection-mode.cpp \
            src/shader.cpp \
-           src/sphere/node-intersection.cpp \
-           src/sphere/mesh.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
@@ -76,7 +70,6 @@ SOURCES += \
            src/tool/move.cpp \
            src/tool/movement.cpp \
            src/tool/new-freeform-mesh.cpp \
-           src/tool/new-sphere-mesh.cpp \
            src/tool/move-camera.cpp \
            src/tool/subdivide-mesh.cpp \
            src/util.cpp \
@@ -89,7 +82,6 @@ SOURCES += \
            src/view/properties/button.cpp \
            src/view/properties/selection.cpp \
            src/view/properties/widget.cpp \
-           src/view/sphere-mesh-menu.cpp \
            src/view/tool-menu.cpp \
            src/view/tool-menu-parameters.cpp \
            src/view/tool-message.cpp \
@@ -108,14 +100,10 @@ HEADERS += \
            src/action/carve.hpp \
            src/action/collapse-face.hpp \
            src/action/data.hpp \
-           src/action/delete-sphere-mesh.hpp \
            src/action/delete-winged-mesh.hpp \
            src/action/identifier.cpp \
-           src/action/ids.hpp \
-           src/action/modify-sphere-mesh.hpp \
            src/action/modify-winged-mesh.hpp \
            src/action/new-winged-mesh.hpp \
-           src/action/new-sphere-mesh.hpp \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
            src/action/relax-edge.hpp \
@@ -170,8 +158,6 @@ HEADERS += \
            src/selection.hpp \
            src/selection-mode.hpp \
            src/shader.hpp \
-           src/sphere/node-intersection.hpp \
-           src/sphere/mesh.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
@@ -181,7 +167,6 @@ HEADERS += \
            src/tool/move.hpp \
            src/tool/movement.hpp \
            src/tool/new-freeform-mesh.hpp \
-           src/tool/new-sphere-mesh.hpp \
            src/tool/move-camera.hpp \
            src/tool/subdivide-mesh.hpp \
            src/util.hpp \
@@ -195,7 +180,6 @@ HEADERS += \
            src/view/properties/button.hpp \
            src/view/properties/selection.hpp \
            src/view/properties/widget.hpp \
-           src/view/sphere-mesh-menu.hpp \
            src/view/tool-menu.hpp \
            src/view/tool-menu-parameters.hpp \
            src/view/tool-message.hpp \

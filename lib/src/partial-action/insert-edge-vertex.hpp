@@ -18,8 +18,8 @@ class PAInsertEdgeVertex : public ActionOn <WingedMesh> {
     WingedEdge& run (WingedMesh&, WingedEdge&, const glm::vec3&);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

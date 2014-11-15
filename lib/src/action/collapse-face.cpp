@@ -17,8 +17,8 @@
 struct ActionCollapseFace::Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh, WingedFace& face, AffectedFaces& affectedFaces) {
     if (this->isCollapsable (face)) {
@@ -85,8 +85,8 @@ struct ActionCollapseFace::Impl {
       for (WingedEdge* e : v->adjacentEdges ().collect ()) {
         this->actions.add <PAModifyWEdge> ().vertex (*e, *v, &newVertex);
       }
-      this->actions.add <PAModifyWMesh> ().resetVertex  (*v);
-      this->actions.add <PAModifyWMesh> ().deleteVertex (mesh, *v);
+      this->actions.add <PAModifyWVertex> ().reset        (*v);
+      this->actions.add <PAModifyWMesh>   ().deleteVertex (mesh, *v);
     }
     // handle edges
     for (WingedEdge* e : edgesToDelete) {
@@ -97,9 +97,9 @@ struct ActionCollapseFace::Impl {
       this->actions.add <PAModifyWEdge> ().successor   (predecessor, otherFace, &successor);
       this->actions.add <PAModifyWEdge> ().predecessor (successor, otherFace, &predecessor);
       this->actions.add <PAModifyWFace> ().edge        (otherFace, &successor);
-      this->actions.add <PAModifyWMesh> ().resetEdge   (*e);
+      this->actions.add <PAModifyWEdge> ().reset       (*e);
     }
-    this->actions.add <PAModifyWMesh> ().resetFace  (face);
+    this->actions.add <PAModifyWFace> ().reset (face);
 
     // delete old edges & face
     for (WingedEdge* e : edgesToDelete) {
@@ -120,7 +120,7 @@ struct ActionCollapseFace::Impl {
   }
 };
 
-DELEGATE_BIG3 (ActionCollapseFace)
-DELEGATE3 (void, ActionCollapseFace, run, WingedMesh&, WingedFace&, AffectedFaces&)
-DELEGATE1 (void, ActionCollapseFace, runUndo, WingedMesh&)
-DELEGATE1 (void, ActionCollapseFace, runRedo, WingedMesh&)
+DELEGATE_BIG3   (ActionCollapseFace)
+DELEGATE3       (void, ActionCollapseFace, run, WingedMesh&, WingedFace&, AffectedFaces&)
+DELEGATE1_CONST (void, ActionCollapseFace, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, ActionCollapseFace, runRedo, WingedMesh&)

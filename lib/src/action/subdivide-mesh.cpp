@@ -15,8 +15,8 @@ struct ActionSubdivideMesh::Impl {
 
   Impl (ActionSubdivideMesh* s) : self (s) {}
 
-  void runUndoBeforePostProcessing (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedoBeforePostProcessing (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndoBeforePostProcessing (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedoBeforePostProcessing (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh) {
     AffectedFaces affected;
@@ -41,6 +41,6 @@ struct ActionSubdivideMesh::Impl {
 };
 
 DELEGATE_BIG3_SELF (ActionSubdivideMesh)
-DELEGATE1 (void, ActionSubdivideMesh, run, WingedMesh&)
-DELEGATE1 (void, ActionSubdivideMesh, runUndoBeforePostProcessing, WingedMesh&)
-DELEGATE1 (void, ActionSubdivideMesh, runRedoBeforePostProcessing, WingedMesh&)
+DELEGATE1          (void, ActionSubdivideMesh, run, WingedMesh&)
+DELEGATE1_CONST    (void, ActionSubdivideMesh, runUndoBeforePostProcessing, WingedMesh&)
+DELEGATE1_CONST    (void, ActionSubdivideMesh, runRedoBeforePostProcessing, WingedMesh&)

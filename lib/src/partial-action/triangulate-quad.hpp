@@ -19,8 +19,8 @@ class PATriangulateQuad : public ActionOn <WingedMesh> {
     WingedEdge& run (WingedMesh&, WingedFace&, AffectedFaces*);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     class Impl;
     Impl* impl;

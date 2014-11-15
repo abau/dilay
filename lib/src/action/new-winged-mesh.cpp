@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include <limits>
 #include <map>
-#include "action/ids.hpp"
+#include "action/identifier.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "action/unit/on.hpp"
 #include "id.hpp"
@@ -19,7 +19,7 @@
 
 struct ActionNewWingedMesh :: Impl {
   ActionUnitOn <WingedMesh> actions;
-  ActionIds                 ids;
+  ActionIdentifier          id;
   MeshType                  meshType;
 
   typedef std::pair <unsigned int,unsigned int> UIPair;
@@ -30,7 +30,7 @@ struct ActionNewWingedMesh :: Impl {
 
     WingedMesh& mesh = State::scene ().newWingedMesh (t);
     this->meshType   = t;
-    this->ids.setMesh (0, mesh);
+    this->id.setMesh (&mesh);
 
     // octree
     glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
@@ -120,13 +120,13 @@ struct ActionNewWingedMesh :: Impl {
     }
   };
 
-  void runUndo () {
-    this->actions.undo (this->ids.getWingedMesh (0));
-    State::scene ().deleteMesh (this->meshType, this->ids.getIdRef (0));
+  void runUndo () const {
+    this->actions.undo (this->id.getWingedMeshRef ());
+    State::scene ().deleteMesh (this->meshType, this->id.getIdRef ());
   }
 
-  void runRedo () {
-    WingedMesh& mesh = State::scene ().newWingedMesh (this->meshType, this->ids.getIdRef (0));
+  void runRedo () const {
+    WingedMesh& mesh = State::scene ().newWingedMesh (this->meshType, this->id.getIdRef ());
     this->actions.redo (mesh);
 
     mesh.writeAllIndices ();
@@ -135,7 +135,7 @@ struct ActionNewWingedMesh :: Impl {
   }
 };
 
-DELEGATE_BIG3 (ActionNewWingedMesh)
-DELEGATE2 (WingedMesh&, ActionNewWingedMesh, run, MeshType, const MeshDefinition&)
-DELEGATE  (void       , ActionNewWingedMesh, runUndo)
-DELEGATE  (void       , ActionNewWingedMesh, runRedo)
+DELEGATE_BIG3  (ActionNewWingedMesh)
+DELEGATE2      (WingedMesh&, ActionNewWingedMesh, run, MeshType, const MeshDefinition&)
+DELEGATE_CONST (void       , ActionNewWingedMesh, runUndo)
+DELEGATE_CONST (void       , ActionNewWingedMesh, runRedo)

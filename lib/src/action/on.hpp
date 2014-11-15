@@ -6,12 +6,12 @@ class ActionOn {
   public:
     virtual ~ActionOn () {}
 
-    void undo (T& t) { this->runUndo (t); }
-    void redo (T& t) { this->runRedo (t); }
+    void undo (T& t) const { this->runUndo (t); }
+    void redo (T& t) const { this->runRedo (t); }
 
   private:
-    virtual void runUndo (T&) = 0;
-    virtual void runRedo (T&) = 0;
+    virtual void runUndo (T&) const = 0;
+    virtual void runRedo (T&) const = 0;
 };
 
 #endif

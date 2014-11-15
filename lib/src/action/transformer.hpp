@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "action.hpp"
-#include "action/ids.hpp"
+#include "action/identifier.hpp"
 
 template <typename T> class ActionOn;
 
@@ -13,12 +13,12 @@ class ActionTransformer : public Action {
     ActionTransformer (T& t, ActionOn <T>& a) 
       : actionPtr (&a) 
     {
-      this->operands.setMesh (0, t);
+      this->identifier.setMesh (&t);
     }
 
     ActionTransformer (ActionTransformer&& other) 
-      : actionPtr (std::move (other.actionPtr)) 
-      , operands  (std::move (other.operands)) 
+      : actionPtr  (std::move (other.actionPtr)) 
+      , identifier (std::move (other.identifier)) 
     {}
 
     ActionTransformer (const ActionTransformer&) = delete;
@@ -29,16 +29,16 @@ class ActionTransformer : public Action {
     const ActionTransformer& operator= (ActionTransformer&&)      = delete;
 
   private:
-    void runUndo () { 
-      this->actionPtr->undo (this->operands.template getMesh <T> (0));
+    void runUndo () const { 
+      this->actionPtr->undo (*this->identifier.template getMesh <T> ());
     }
 
-    void runRedo () {
-      this->actionPtr->redo (this->operands.template getMesh <T> (0));
+    void runRedo () const {
+      this->actionPtr->redo (*this->identifier.template getMesh <T> ());
     }
 
-    std::unique_ptr < ActionOn <T> > actionPtr;
-    ActionIds                        operands;
+    std::unique_ptr <ActionOn <T>> actionPtr;
+    ActionIdentifier               identifier;
 };
 
 #endif

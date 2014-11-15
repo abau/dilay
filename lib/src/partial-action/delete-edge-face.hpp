@@ -18,8 +18,8 @@ class PADeleteEdgeFace : public ActionOn <WingedMesh> {
     void run (WingedMesh&, WingedEdge&, AffectedFaces*);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

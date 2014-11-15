@@ -2,7 +2,6 @@
 #define DILAY_WINGED_FACE
 
 #include <glm/fwd.hpp>
-#include "id.hpp"
 #include "macro.hpp"
 
 class AdjEdges;
@@ -16,18 +15,17 @@ class WingedMesh;
 
 class WingedFace {
   public:                      
-    WingedFace (const Id&);
+    WingedFace (unsigned int);
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
 
-    const Id&              id              () const { return this->_id.id (); }
+    unsigned int           index           () const { return this->_index; }
     WingedEdge*            edge            () const { return this->_edge; }
     OctreeNode*            octreeNode      () const { return this->_octreeNode; }
-    unsigned int           index           () const { return this->_index; }
 
+    void                   index           (unsigned int i) { this->_index      = i; }
     void                   edge            (WingedEdge*  e) { this->_edge       = e; }
     void                   octreeNode      (OctreeNode*  n) { this->_octreeNode = n; }
-    void                   index           (unsigned int i) { this->_index      = i; }
     void                   writeIndices    (WingedMesh&);
     PrimTriangle           triangle        (const WingedMesh&) const;
     WingedVertex&          firstVertex     () const;
@@ -53,10 +51,9 @@ class WingedFace {
     SAFE_REF_CONST  (OctreeNode, octreeNode)
     SAFE_REF2_CONST (WingedEdge, longestEdge, const WingedMesh&, float*)
   private:
-    const IdObject  _id;
+    unsigned int    _index;
     WingedEdge*     _edge;
     OctreeNode*     _octreeNode;
-    unsigned int    _index;
 };
 
 #endif

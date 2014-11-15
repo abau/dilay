@@ -9,8 +9,8 @@ class Action {
     void redo () { this->runRedo (); }
 
   private:
-    virtual void runUndo () = 0;
-    virtual void runRedo () = 0;
+    virtual void runUndo () const = 0;
+    virtual void runRedo () const = 0;
 };
 
 #endif

@@ -13,8 +13,8 @@ class ActionSmooth : public ActionOn <WingedMesh> {
 
     void run (WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&);
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

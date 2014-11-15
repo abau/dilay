@@ -24,12 +24,11 @@ struct PATriangulateQuad :: Impl {
     return newEdge;
   }
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 };
 
-DELEGATE_BIG3 (PATriangulateQuad)
-
-DELEGATE3 (WingedEdge&, PATriangulateQuad, run, WingedMesh&, WingedFace&, AffectedFaces*)
-DELEGATE1 (void, PATriangulateQuad, runUndo, WingedMesh&)
-DELEGATE1 (void, PATriangulateQuad, runRedo, WingedMesh&)
+DELEGATE_BIG3   (PATriangulateQuad)
+DELEGATE3       (WingedEdge&, PATriangulateQuad, run, WingedMesh&, WingedFace&, AffectedFaces*)
+DELEGATE1_CONST (void, PATriangulateQuad, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PATriangulateQuad, runRedo, WingedMesh&)

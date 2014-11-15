@@ -8,25 +8,25 @@
 struct ActionResetFreeFaceIndices::Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
   void run (WingedMesh& mesh) {
     if (mesh.numFaces () > 0) {
       unsigned int nonFreeFaceIndex = mesh.octree ().someFaceRef ().index ();
       mesh.forEachFreeFaceIndex ([&] (unsigned int index) {
         this->actions.add <PAModifyWMesh> ()
-                     .setIndex (mesh, index + 0, mesh.index (nonFreeFaceIndex + 0));
+                     .setIndex (mesh, (3 * index) + 0, mesh.index ((3 * nonFreeFaceIndex) + 0));
         this->actions.add <PAModifyWMesh> ()
-                     .setIndex (mesh, index + 1, mesh.index (nonFreeFaceIndex + 1));
+                     .setIndex (mesh, (3 * index) + 1, mesh.index ((3 * nonFreeFaceIndex) + 1));
         this->actions.add <PAModifyWMesh> ()
-                     .setIndex (mesh, index + 2, mesh.index (nonFreeFaceIndex + 2));
+                     .setIndex (mesh, (3 * index) + 2, mesh.index ((3 * nonFreeFaceIndex) + 2));
       });
     }
   }
 };
 
-DELEGATE_BIG3 (ActionResetFreeFaceIndices)
-DELEGATE1 (void, ActionResetFreeFaceIndices, run, WingedMesh&)
-DELEGATE1 (void, ActionResetFreeFaceIndices, runUndo, WingedMesh&)
-DELEGATE1 (void, ActionResetFreeFaceIndices, runRedo, WingedMesh&)
+DELEGATE_BIG3   (ActionResetFreeFaceIndices)
+DELEGATE1       (void, ActionResetFreeFaceIndices, run, WingedMesh&)
+DELEGATE1_CONST (void, ActionResetFreeFaceIndices, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, ActionResetFreeFaceIndices, runRedo, WingedMesh&)

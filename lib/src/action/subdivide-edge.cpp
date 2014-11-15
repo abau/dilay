@@ -13,8 +13,8 @@
 struct ActionSubdivideEdge::Impl {
   ActionUnitOn <WingedMesh> actions;
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
   static void extendDomain (AffectedFaces& domain) {
     Impl::addOneRing            (domain);
@@ -81,6 +81,6 @@ struct ActionSubdivideEdge::Impl {
 
 DELEGATE_BIG3 (ActionSubdivideEdge)
 DELEGATE1_STATIC (void, ActionSubdivideEdge, extendDomain, AffectedFaces&)
-DELEGATE3 (void, ActionSubdivideEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE1 (void, ActionSubdivideEdge, runUndo, WingedMesh&)
-DELEGATE1 (void, ActionSubdivideEdge, runRedo, WingedMesh&)
+DELEGATE3        (void, ActionSubdivideEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
+DELEGATE1_CONST  (void, ActionSubdivideEdge, runUndo, WingedMesh&)
+DELEGATE1_CONST  (void, ActionSubdivideEdge, runRedo, WingedMesh&)

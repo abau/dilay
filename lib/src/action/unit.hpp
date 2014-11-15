@@ -27,8 +27,8 @@ class ActionUnit : public Action {
 
   private:
     void addAction (Action&);
-    void runUndo   ();
-    void runRedo   ();
+    void runUndo   () const;
+    void runRedo   () const;
 
     IMPLEMENTATION
 };

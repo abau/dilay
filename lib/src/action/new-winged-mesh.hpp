@@ -15,8 +15,8 @@ class ActionNewWingedMesh : public Action {
     WingedMesh& run (MeshType, const MeshDefinition&);
 
   private:
-    void runUndo ();
-    void runRedo ();
+    void runUndo () const;
+    void runRedo () const;
 
     IMPLEMENTATION
 };

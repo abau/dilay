@@ -21,8 +21,8 @@ class PATriangulate6Gon : public ActionOn <WingedMesh> {
     void run (WingedMesh&, WingedFace&, AffectedFaces*);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

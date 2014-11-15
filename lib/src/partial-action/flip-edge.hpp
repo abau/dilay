@@ -14,8 +14,8 @@ class PAFlipEdge : public ActionOn <WingedMesh> {
     void run (WingedMesh&, WingedEdge&);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

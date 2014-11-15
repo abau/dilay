@@ -22,7 +22,7 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
                        : std::string ("NULL");
   };
   auto maybeFaceId = [] (WingedFace* face) {
-    return bool (face) ? std::to_string (face->id ().primitive ())
+    return bool (face) ? std::to_string (face->index ())
                        : std::string ("NULL");
   };
   auto maybeIndex = [] (WingedVertex* vertex) {
@@ -49,7 +49,7 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
     return bool (node) ? std::to_string (node->id ().primitive ())
                        : std::string ("NULL");
   };
-  std::cout   << "Face "                << f.id () 
+  std::cout   << "Face "                << f.index () 
               << "\n\tedge:\t\t\t"      << f.edgeRef ().id ()
               << "\n\toctree node:\t\t" << maybeNodeId (f.octreeNode ())
               << "\n\tindex:\t\t\t"     << f.index ();
@@ -66,7 +66,6 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
   std::cout << "Number of faces:\t\t"       << mesh.numFaces ()    << std::endl;
   std::cout << "Number of indices:\t\t"     << mesh.numIndices ()  
             << " (" << mesh.numIndices () / 3  << ")" << std::endl;
-  std::cout << "Number of free face indices:\t"       << mesh.numFreeFaceIndices () << std::endl;
 
   if (mesh.vertices ().size () <= 10) {
     for (const WingedVertex& v : mesh.vertices ())
@@ -88,6 +87,7 @@ void WingedUtil :: printStatistics (const Octree& octree) {
             << "\n\tnum nodes:\t\t"           << oStats.numNodes
             << "\n\tnum faces:\t\t"           << oStats.numFaces
             << "\n\tnum degenerated faces:\t" << oStats.numDegeneratedFaces
+            << "\n\tnum free face-indices:\t" << oStats.numFreeFaceIndices
             << "\n\tmax faces per node:\t"    << oStats.maxFacesPerNode
             << "\n\tmin depth:\t\t"           << oStats.minDepth
             << "\n\tmax depth:\t\t"           << oStats.maxDepth

@@ -1,9 +1,9 @@
-#include "action/ids.hpp"
+#include "action/data.hpp"
+#include "action/identifier.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
-#include "state.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -13,15 +13,20 @@ namespace {
 };
 
 struct PAModifyWFace :: Impl {
-  Operation                 operation;
-  ActionIds                 operands;
-  ActionUnitOn <WingedMesh> actions;
+  Operation                     operation;
+  ActionUnitOn <WingedMesh>     actions;
+  ActionData <ActionIdentifier> data;
 
   void edge (WingedFace& face, WingedEdge* e) {
     this->operation = Operation::Edge;
-    this->operands.setFace (0, &face);
-    this->operands.setEdge (1,  face.edge ());
-    face.edge (e);
+
+    this->data.identifier       (face);
+    this->data.valueIdentifiers (face.edge (), e);
+    face.edge                   (e);
+  }
+
+  void reset (WingedFace& face) {
+    this->edge (face, nullptr);
   }
 
   void writeIndices (WingedMesh& mesh, WingedFace& face) {
@@ -35,41 +40,29 @@ struct PAModifyWFace :: Impl {
     }
   }
 
-  void toggle (WingedMesh& mesh) { 
-    WingedFace& face = this->operands.getFaceRef (mesh,0);
-
+  void runUndo (WingedMesh& mesh) const { 
     switch (this->operation) {
       case Operation::Edge: {
-        WingedEdge* e = face.edge ();
-        face.edge (this->operands.getEdge (mesh,1)); 
-        this->operands.setEdge (1,e);
+        this->data.identifier ().getFaceRef (mesh)
+                  .edge (this->data.valueIdentifier (ActionDataType::Old).getEdge (mesh));
         break;
       }
-      default: std::abort ();
-    }
-  }
-
-  void runUndo (WingedMesh& mesh) { 
-    switch (this->operation) {
       case Operation::WriteIndices: {
         this->actions.undo (mesh);
         break;
       }
-      default: {
-        this->toggle (mesh);
-        break;
-      }
     }
   }
 
-  void runRedo (WingedMesh& mesh) { 
+  void runRedo (WingedMesh& mesh) const { 
     switch (this->operation) {
-      case Operation::WriteIndices: {
-        this->actions.redo (mesh);
+      case Operation::Edge: {
+        this->data.identifier ().getFaceRef (mesh)
+                  .edge (this->data.valueIdentifier (ActionDataType::New).getEdge (mesh));
         break;
       }
-      default: {
-        this->toggle (mesh);
+      case Operation::WriteIndices: {
+        this->actions.redo (mesh);
         break;
       }
     }
@@ -78,7 +71,8 @@ struct PAModifyWFace :: Impl {
 
 DELEGATE_BIG3 (PAModifyWFace)
 
-DELEGATE2 (void,PAModifyWFace,edge ,WingedFace&,WingedEdge*)
-DELEGATE2 (void,PAModifyWFace,writeIndices,WingedMesh&,WingedFace&)
-DELEGATE1 (void,PAModifyWFace,runUndo ,WingedMesh&)
-DELEGATE1 (void,PAModifyWFace,runRedo ,WingedMesh&)
+DELEGATE2       (void, PAModifyWFace, edge , WingedFace&, WingedEdge*)
+DELEGATE1       (void, PAModifyWFace, reset , WingedFace&)
+DELEGATE2       (void, PAModifyWFace, writeIndices, WingedMesh&, WingedFace&)
+DELEGATE1_CONST (void, PAModifyWFace, runUndo , WingedMesh&)
+DELEGATE1_CONST (void, PAModifyWFace, runRedo , WingedMesh&)

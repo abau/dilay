@@ -1,5 +1,4 @@
 #include <QObject>
-#include "action/delete-sphere-mesh.hpp"
 #include "action/delete-winged-mesh.hpp"
 #include "action/unit.hpp"
 #include "history.hpp"
@@ -26,10 +25,6 @@ struct ToolDeleteMesh::Impl {
       case MeshType::Freeform:
         this->runDeleteWingedMesh (unit);
         break;
-
-      case MeshType::Sphere:
-        this->runDeleteSphereMesh (unit);
-        break;
     }
 
     if (unit.isEmpty () == false) {
@@ -44,15 +39,6 @@ struct ToolDeleteMesh::Impl {
       (const Id& id) {
         WingedMesh& mesh = State::scene ().wingedMesh (id);
         unit.add <ActionDeleteWMesh> ().deleteMesh (this->meshType, mesh);
-      }
-    );
-  }
-
-  void runDeleteSphereMesh (ActionUnit& unit) {
-    State::scene ().selection ().forEachMajor ([&unit]
-      (const Id& id) {
-        SphereMesh& mesh = State::scene ().sphereMesh (id);
-        unit.add <ActionDeleteSMesh> ().deleteMesh (mesh);
       }
     );
   }

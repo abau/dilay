@@ -14,8 +14,8 @@ class ActionDeleteWMesh : public Action {
     void deleteMesh (MeshType, WingedMesh&);
 
   private:
-    void runUndo ();
-    void runRedo ();
+    void runUndo () const;
+    void runRedo () const;
 
     IMPLEMENTATION
 };

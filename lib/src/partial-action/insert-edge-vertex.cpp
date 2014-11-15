@@ -47,12 +47,11 @@ struct PAInsertEdgeVertex :: Impl {
     return newE;
   }
 
-  void runUndo (WingedMesh& mesh) { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) { this->actions.redo (mesh); }
+  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
+  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
 };
 
-DELEGATE_BIG3 (PAInsertEdgeVertex)
-
-DELEGATE3 (WingedEdge&, PAInsertEdgeVertex, run, WingedMesh&, WingedEdge&, const glm::vec3&)
-DELEGATE1 (void       , PAInsertEdgeVertex, runUndo, WingedMesh&)
-DELEGATE1 (void       , PAInsertEdgeVertex, runRedo, WingedMesh&)
+DELEGATE_BIG3   (PAInsertEdgeVertex)
+DELEGATE3       (WingedEdge&, PAInsertEdgeVertex, run, WingedMesh&, WingedEdge&, const glm::vec3&)
+DELEGATE1_CONST (void       , PAInsertEdgeVertex, runUndo, WingedMesh&)
+DELEGATE1_CONST (void       , PAInsertEdgeVertex, runRedo, WingedMesh&)

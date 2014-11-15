@@ -6,7 +6,6 @@
 
 class WingedMesh;
 class WingedEdge;
-enum class FaceGradient : char;
 class WingedFace;
 class WingedVertex;
 
@@ -28,12 +27,14 @@ class PAModifyWEdge : public ActionOn <WingedMesh> {
     void face                 (WingedEdge&, const WingedFace&, WingedFace*);
     void predecessor          (WingedEdge&, const WingedFace&, WingedEdge*);
     void successor            (WingedEdge&, const WingedFace&, WingedEdge*);
+    void reset                (WingedEdge&);
     void setGeometry          ( WingedEdge&, WingedVertex*, WingedVertex*
                               , WingedFace*, WingedFace*, WingedEdge*, WingedEdge*
                               , WingedEdge*, WingedEdge*);
+
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };
