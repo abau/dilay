@@ -51,6 +51,7 @@ class Indexable {
 
     void freeIndex (unsigned int index) {
       assert (index < this->numIndices ());
+      assert (this->isFree (index) == false);
       this->freeIndices.insert (index);
     }
 
