@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 #include <random>
 #include "octree.hpp"
 #include "primitive/triangle.hpp"
@@ -9,7 +8,6 @@
 #include "winged/util.hpp"
 
 void TestOctree::test1 () {
-  std::cout << "## octree test 1 #######################\n";
   Octree octree;
   octree.setupRoot (glm::vec3 (0.0f), 10.0f);
        
@@ -20,9 +18,6 @@ void TestOctree::test1 () {
   std::uniform_real_distribution <float> twoPiD  (0.0f, 2.0f * glm::pi<float> ());
 
   for (unsigned int i = 0; i < 10000; i++) {
-    if (i % 1000 == 0) {
-      std::cout << "inserted " << i << " faces in octree\n";
-    }
     glm::vec3 m1 (-1.0f, 0.0f, 0.0f);
     glm::vec3 m2 ( 1.0f, 0.0f, 0.0f);
     glm::vec3 m3 ( 0.0f,-1.0f, 0.0f);
@@ -54,7 +49,7 @@ void TestOctree::test1 () {
 
     octree.addFace (PrimTriangle (w1,w2,w3));
   }
-  WingedUtil::printStatistics (octree);
+  //WingedUtil::printStatistics (octree);
 }
 
 void TestOctree::test2 () {
