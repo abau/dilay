@@ -11,10 +11,12 @@ LIBS                   += -L../lib -ldilay -lGL -lGLEW
 PRE_TARGETDEPS         += ../lib/libdilay.a
 
 SOURCES += \
+           src/test-indexable.cpp \
+           src/test-intersection.cpp \
            src/main.cpp \
-           src/test-octree.cpp \
-           src/test-intersection.cpp
+           src/test-octree.cpp
 
 HEADERS += \
-           src/test-octree.hpp \
-           src/test-intersection.hpp
+           src/test-indexable.hpp \
+           src/test-intersection.hpp \
+           src/test-octree.hpp
