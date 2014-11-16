@@ -133,7 +133,7 @@ class IndexableList {
       });
     }
 
-    void deleteElement (const T& element) {
+    void deleteElement (T& element) {
       this->deleteIndex (element.index ());
     }
 
