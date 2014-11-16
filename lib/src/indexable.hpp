@@ -70,6 +70,15 @@ class Indexable {
       return *this->getIter (index);
     }
 
+    TPointer getSome () const {
+      for (unsigned int i = 0; i < this->numIndices (); i++) {
+        if (this->isFree (i) == false) {
+          return this->get (i);
+        }
+      }
+      return nullptr;
+    }
+
     void reset () {
       this->map        .clear ();
       this->freeIndices.clear ();
@@ -145,8 +154,9 @@ class IndexableList {
 
     const TList& elements () const { return this->_elements; }
 
-    T* get    (unsigned int index) const { return this->index.get    (index); }
-    T& getRef (unsigned int index) const { return this->index.getRef (index); }
+    T* get     (unsigned int index) const { return this->index.get     (index); }
+    T& getRef  (unsigned int index) const { return this->index.getRef  (index); }
+    T* getSome ()                   const { return this->index.getSome ();      }
 
     void reset () {
       this->_elements.clear ();

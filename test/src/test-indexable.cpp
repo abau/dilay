@@ -37,6 +37,8 @@ void TestIndexable::test () {
   foos.forEachElement   ([] (Foo&) {});
   foos.forEachFreeIndex ([] (unsigned int) {});
 
+  assert (foos.getSome () == foos.get (0));
+
   foos.reset ();
 
   assert (foos.numElements () == 0);
