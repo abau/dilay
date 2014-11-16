@@ -6,6 +6,7 @@
 #include "config.hpp"
 #include "id-map.hpp"
 #include "id.hpp"
+#include "indexable.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
 #include "primitive/ray.hpp"
@@ -19,17 +20,14 @@
 #include "winged/vertex.hpp"
 
 struct WingedMesh::Impl {
-  typedef std::vector <Vertices::iterator> VertexMap;
-
-  WingedMesh*              self;
-  const IdObject           id;
-  Mesh                     mesh;
-  Vertices                 vertices;
-  Edges                    edges;
-  Octree                   octree;
-  std::set  <unsigned int> freeVertexIndices;
-  VertexMap                vertexMap;
-  IdMap <Edges::iterator>  edgeMap;
+  WingedMesh*                  self;
+  const IdObject               id;
+  Mesh                         mesh;
+  IndexableList <WingedVertex> vertices;
+  Edges                        edges;
+  Octree                       octree;
+  std::set  <unsigned int>     freeVertexIndices;
+  IdMap <Edges::iterator>      edgeMap;
 
   Impl (WingedMesh* s)
     : self   (s)
@@ -45,9 +43,7 @@ struct WingedMesh::Impl {
   glm::vec3    normal (unsigned int i) const { return this->mesh.normal (i); }
 
   WingedVertex* vertex (unsigned int i) const {
-    assert (this->freeVertexIndices.count (i) == 0);
-    return i >= this->vertexMap.size () ? nullptr
-                                        : &*this->vertexMap[i];
+    return this->vertices.get (i);
   }
 
   WingedEdge* edge (const Id& id) const {
@@ -62,33 +58,18 @@ struct WingedMesh::Impl {
     return ! this->freeVertexIndices.empty ();
   }
 
-  WingedVertex& addVertex (const glm::vec3& v) {
-    return this->addVertex (v, nullptr);
+  WingedVertex& addVertex (const glm::vec3& pos) {
+    WingedVertex&      vertex = this->vertices.emplace ();
+    const unsigned int index  = this->mesh.addVertex (pos);
+    assert (vertex.index () == index);
+    return vertex;
   }
 
   WingedVertex& addVertex (const glm::vec3& v, unsigned int index) {
-    return this->addVertex (v, &index);
-  }
-
-  WingedVertex& addVertex (const glm::vec3& v, const unsigned int* index) {
-    if (this->hasFreeVertexIndex ()) {
-      assert (bool (index) == false || this->freeVertexIndices.count (*index) > 0);
-      
-      const unsigned int reusedIndex = bool (index) ? *index
-                                                    : *this->freeVertexIndices.begin ();
-
-      this->mesh.setVertex          (reusedIndex, v);
-      this->freeVertexIndices.erase (reusedIndex);
-      this->vertices.emplace_back   (reusedIndex);
-      this->vertexMap[reusedIndex] = --this->vertices.end ();
-    }
-    else {
-      const unsigned int newIndex = this->mesh.addVertex (v);
-      assert (bool (index) == false || newIndex == *index);
-      this->vertices .emplace_back (newIndex);
-      this->vertexMap.emplace_back (--this->vertices.end ());
-    }
-    return this->vertices.back ();
+    assert (index < this->numVertices ());
+    WingedVertex& vertex = this->vertices.emplaceAt (index);
+    this->mesh.setVertex (index, v);
+    return vertex;
   }
 
   WingedEdge& addEdge (const Id& id) {
@@ -138,8 +119,7 @@ struct WingedMesh::Impl {
   }
 
   void deleteVertex (WingedVertex& vertex) {
-    this->freeVertexIndices.insert (vertex.index ());
-    this->vertices.erase (this->vertexMap [vertex.index ()]);
+    this->vertices.deleteElement (vertex);
   }
 
   WingedFace& realignFace ( const WingedFace& face, const PrimTriangle& triangle
@@ -174,8 +154,7 @@ struct WingedMesh::Impl {
   }
 
   unsigned int numVertices () const { 
-    assert (this->mesh.numVertices () == this->vertices.size () + this->freeVertexIndices.size ());
-    return this->vertices.size (); 
+    return this->vertices.numElements (); 
   }
 
   unsigned int numEdges () const { 
@@ -203,9 +182,9 @@ struct WingedMesh::Impl {
   }
 
   void writeAllNormals () {
-    for (WingedVertex& v : this->vertices) {
+    this->vertices.forEachElement ([this] (WingedVertex& v) {
       v.writeNormal (*this->self, v.interpolatedNormal (*this->self));
-    }
+    });
   }
 
   void bufferData  () { 
@@ -234,10 +213,9 @@ struct WingedMesh::Impl {
 
   void reset () {
     this->mesh             .reset ();
-    this->vertices         .clear ();
+    this->vertices         .reset ();
     this->edges            .clear ();
     this->octree           .reset ();
-    this->freeVertexIndices.clear ();
   }
 
   void setupOctreeRoot (const glm::vec3& center, float width) {
@@ -294,6 +272,10 @@ struct WingedMesh::Impl {
     this->mesh.rotationMatrix (glm::mat4x4 (1.0f));
   }
 
+  void forEachVertex (const std::function <void (WingedVertex&)>& f) const {
+    this->vertices.forEachElement (f);
+  }
+
   void forEachFreeFaceIndex (const std::function <void (unsigned int)>& f) const {
     this->octree.forEachFreeFaceIndex (f);
   }
@@ -318,7 +300,6 @@ DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned i
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
 
-GETTER_CONST    (const Vertices&, WingedMesh, vertices)
 GETTER_CONST    (const Edges&   , WingedMesh, edges)
 GETTER_CONST    (const Octree&  , WingedMesh, octree)
 GETTER_CONST    (const Mesh&    , WingedMesh, mesh)
@@ -358,4 +339,5 @@ DELEGATE1       (void              , WingedMesh, rotationX, float)
 DELEGATE1       (void              , WingedMesh, rotationY, float)
 DELEGATE1       (void              , WingedMesh, rotationZ, float)
 DELEGATE        (void              , WingedMesh, normalize)
+DELEGATE1_CONST (void              , WingedMesh, forEachVertex, const std::function <void (WingedVertex&)>&)
 DELEGATE1_CONST (void              , WingedMesh, forEachFreeFaceIndex, const std::function <void (unsigned int)>&)

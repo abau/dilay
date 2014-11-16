@@ -67,9 +67,10 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
   std::cout << "Number of indices:\t\t"     << mesh.numIndices ()  
             << " (" << mesh.numIndices () / 3  << ")" << std::endl;
 
-  if (mesh.vertices ().size () <= 10) {
-    for (const WingedVertex& v : mesh.vertices ())
-      WingedUtil :: printStatistics (mesh,v);
+  if (mesh.numVertices () <= 10) {
+    mesh.forEachVertex ([&mesh] (const WingedVertex& v) { 
+      WingedUtil::printStatistics (mesh,v); 
+    });
 
     for (const WingedEdge& e : mesh.edges ())
       WingedUtil :: printStatistics (e);

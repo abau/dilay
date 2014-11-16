@@ -24,64 +24,65 @@ class WingedMesh {
     DECLARE_BIG3 (WingedMesh)
     WingedMesh   (const Id&);
 
-    const Id&          id                   () const;
-    glm::vec3          vector               (unsigned int) const;
-    unsigned int       index                (unsigned int) const;
-    glm::vec3          normal               (unsigned int) const;
-    WingedVertex*      vertex               (unsigned int) const ;
-    WingedEdge*        edge                 (const Id&) const ;
-    WingedFace*        face                 (unsigned int) const ;
-    WingedVertex&      addVertex            (const glm::vec3&);
-    WingedVertex&      addVertex            (const glm::vec3&, unsigned int);
-    WingedEdge&        addEdge              (const Id&);
-    WingedFace&        addFace              (const PrimTriangle&);
-    void               setIndex             (unsigned int, unsigned int);
-    void               setVertex            (unsigned int, const glm::vec3&);
-    void               setNormal            (unsigned int, const glm::vec3&);
+    const Id&          id                 () const;
+    glm::vec3          vector             (unsigned int) const;
+    unsigned int       index              (unsigned int) const;
+    glm::vec3          normal             (unsigned int) const;
+    WingedVertex*      vertex             (unsigned int) const ;
+    WingedEdge*        edge               (const Id&) const ;
+    WingedFace*        face               (unsigned int) const ;
+    WingedVertex&      addVertex          (const glm::vec3&);
+    WingedVertex&      addVertex          (const glm::vec3&, unsigned int);
+    WingedEdge&        addEdge            (const Id&);
+    WingedFace&        addFace            (const PrimTriangle&);
+    void               setIndex           (unsigned int, unsigned int);
+    void               setVertex          (unsigned int, const glm::vec3&);
+    void               setNormal          (unsigned int, const glm::vec3&);
 
-    const Vertices&    vertices             () const;
-    const Edges&       edges                () const;
-    const Octree&      octree               () const;
-    const Mesh&        mesh                 () const;
+    const Edges&       edges              () const;
+    const Octree&      octree             () const;
+    const Mesh&        mesh               () const;
 
-    void               deleteEdge           (WingedEdge&);
-    void               deleteFace           (WingedFace&);
-    void               deleteVertex         (WingedVertex&);
+    void               deleteEdge         (WingedEdge&);
+    void               deleteFace         (WingedFace&);
+    void               deleteVertex       (WingedVertex&);
 
-    WingedFace&        realignFace          (const WingedFace&, const PrimTriangle&, bool* = nullptr);
-    void               realignAllFaces      ();
+    WingedFace&        realignFace        (const WingedFace&, const PrimTriangle&, bool* = nullptr);
+    void               realignAllFaces    ();
 
-    unsigned int       numVertices          () const;
-    unsigned int       numEdges             () const;
-    unsigned int       numFaces             () const;
-    unsigned int       numIndices           () const;
-    unsigned int       numFreeFaceIndices   () const;
-    bool               isEmpty              () const;
+    unsigned int       numVertices        () const;
+    unsigned int       numEdges           () const;
+    unsigned int       numFaces           () const;
+    unsigned int       numIndices         () const;
+    unsigned int       numFreeFaceIndices () const;
+    bool               isEmpty            () const;
 
-    void               writeAllIndices      (); 
-    void               writeAllNormals      (); 
-    void               bufferData           ();
-    void               render               (const Selection&);
-    void               reset                ();
-    void               setupOctreeRoot      (const glm::vec3&, float);
-    void               toggleRenderMode     ();
+    void               writeAllIndices    (); 
+    void               writeAllNormals    (); 
+    void               bufferData         ();
+    void               render             (const Selection&);
+    void               reset              ();
+    void               setupOctreeRoot    (const glm::vec3&, float);
+    void               toggleRenderMode   ();
     
-    bool               intersects           (const PrimRay&, WingedFaceIntersection&);
-    bool               intersects           (const PrimSphere&, AffectedFaces&);
+    bool               intersects         (const PrimRay&, WingedFaceIntersection&);
+    bool               intersects         (const PrimSphere&, AffectedFaces&);
 
-    void               scale                (const glm::vec3&);
-    void               scaling              (const glm::vec3&);
-    glm::vec3          scaling              () const;
-    void               translate            (const glm::vec3&);
-    void               position             (const glm::vec3&);
-    glm::vec3          position             () const;
-    void               rotationMatrix       (const glm::mat4x4&);
-    const glm::mat4x4& rotationMatrix       () const;
-    void               rotationX            (float);
-    void               rotationY            (float);
-    void               rotationZ            (float);
-    void               normalize            ();
-    void               forEachFreeFaceIndex (const std::function <void (unsigned int)>&) const;
+    void               scale              (const glm::vec3&);
+    void               scaling            (const glm::vec3&);
+    glm::vec3          scaling            () const;
+    void               translate          (const glm::vec3&);
+    void               position           (const glm::vec3&);
+    glm::vec3          position           () const;
+    void               rotationMatrix     (const glm::mat4x4&);
+    const glm::mat4x4& rotationMatrix     () const;
+    void               rotationX          (float);
+    void               rotationY          (float);
+    void               rotationZ          (float);
+    void               normalize          ();
+
+    void             forEachVertex        (const std::function <void (WingedVertex&)>&) const;
+    void             forEachFreeFaceIndex (const std::function <void (unsigned int)>&) const;
 
     SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)
     SAFE_REF1_CONST (WingedEdge  , edge  , const Id&)
