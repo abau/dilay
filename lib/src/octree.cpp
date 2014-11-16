@@ -7,6 +7,7 @@
 #include "affected-faces.hpp"
 #include "fwd-winged.hpp"
 #include "id-map.hpp"
+#include "indexable.hpp"
 #include "octree.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/ray.hpp"
@@ -247,7 +248,7 @@ struct OctreeNode::Impl {
     return this->faces.empty () && this->children.empty ();
   }
 
-  void deleteFace (Faces::iterator& faceIterator) {
+  void deleteFace (Faces::iterator faceIterator) {
     this->faces.erase (faceIterator);
     if (this->isEmpty () && this->parent) {
       this->parent->childEmptyNotification ();
@@ -362,16 +363,12 @@ GETTER_CONST   (float, OctreeNode, width)
 
 /** Octree class */
 struct Octree::Impl {
-  typedef std::vector <Faces::iterator> FaceMap;
-  typedef std::set    <unsigned int>    FreeFaceIndices;
-
-  Child           root;
-  Child           degeneratedFaces;
-  glm::vec3       rootPosition;
-  float           rootWidth;
-  bool            rootWasSetup;
-  FaceMap         faceMap;
-  FreeFaceIndices freeFaceIndices;
+  Child             root;
+  Child             degeneratedFaces;
+  glm::vec3         rootPosition;
+  float             rootWidth;
+  bool              rootWasSetup;
+  Indexable <Faces> faceIndex;
 
   Impl () : rootWasSetup (false) {}
 
@@ -394,63 +391,38 @@ struct Octree::Impl {
   }
 
   void reserveIndices (unsigned int n) {
-    this->faceMap.reserve (this->faceMap.size () + n);
-    for (unsigned int i = 0; i < n; i++) {
-      this->faceMap.emplace_back   ();
-      this->freeFaceIndices.insert (this->faceMap.size ());
-    }
+    this->faceIndex.reserveIndices (n);
   }
 
   WingedFace& addFace (const PrimTriangle& geometry) {
-    unsigned int index;
-
-    if (this->freeFaceIndices.empty () == false) {
-      index = *this->freeFaceIndices.begin ();
-      this->freeFaceIndices.erase (this->freeFaceIndices.begin ());
-    }
-    else {
-      index = this->faceMap.size ();
-    }
-    return this->addFace (FaceToInsert (index, nullptr, geometry));
+    return this->faceIndex.add ([this,&geometry] (unsigned int index) {
+      return this->addFace (FaceToInsert (index, nullptr, geometry));
+    });
   }
 
   WingedFace& addFace (const WingedFace& face, const PrimTriangle& geometry) {
-    assert (this->freeFaceIndices.count (face.index ()) == 1);
-
-    this->freeFaceIndices.erase (face.index ());
-    return this->addFace (FaceToInsert (face.index (), face.edge (), geometry));
+    return this->addFace (face.index (), face.edge (), geometry);
   }
 
-  WingedFace& addFace (const FaceToInsert& faceToInsert) {
+  WingedFace& addFace (unsigned int index, WingedEdge* edge, const PrimTriangle& geometry) {
+    return this->faceIndex.addAt (index, [this, index, edge, &geometry] () {
+      return this->addFace (FaceToInsert (index, edge, geometry));
+    });
+  }
 
-    auto insertToFaceMap = [&faceToInsert,this] (Faces::iterator it) {
-      if (faceToInsert.index < this->faceMap.size ()) {
-        this->faceMap[faceToInsert.index] = it;
-      }
-      else if (faceToInsert.index == this->faceMap.size ()) {
-        this->faceMap.emplace_back (it);
-      }
-      else {
-        std::abort ();
-      }
-    };
-
+  Faces::iterator addFace (const FaceToInsert& faceToInsert) {
     if (faceToInsert.isDegenerated) {
       if (this->degeneratedFaces == false) {
         this->degeneratedFaces = Child (new OctreeNode::Impl ());
       }
-      Faces::iterator it = this->degeneratedFaces->addFace (faceToInsert);
-      insertToFaceMap (it);
-      return *it;
+      return this->degeneratedFaces->addFace (faceToInsert);
     }
     else {
       if (this->hasRoot () == false) {
         this->initRoot (faceToInsert);
       }
       if (this->root->approxContains (faceToInsert)) {
-        Faces::iterator it = this->root->addFace (faceToInsert);
-        insertToFaceMap (it);
-        return *it;
+        return this->root->addFace (faceToInsert);
       }
       else {
         this->makeParent (faceToInsert);
@@ -459,29 +431,29 @@ struct Octree::Impl {
     }
   }
 
-  WingedFace& realignFace (const WingedFace& face, const PrimTriangle& geometry, bool* sameNode) {
-    assert (this->hasFace   (face.index ())); 
+  WingedFace& realignFace (WingedFace& face, const PrimTriangle& geometry, bool* sameNode) {
     assert (face.octreeNode ()); 
-    OctreeNode* formerNode = face.octreeNode ();
 
-    FaceToInsert faceToInsert (face.index (), face.edge (), geometry);
+    unsigned int index = face.index ();
+    WingedEdge*  edge  = face.edge  ();
+    OctreeNode*  node  = face.octreeNode ();
+
     this->deleteFace (face);
-    WingedFace& newFace = this->addFace (faceToInsert);
+    WingedFace& newFace = this->addFace (index, edge, geometry);
 
     if (sameNode) {
-      *sameNode = formerNode == newFace.octreeNode ();
+      *sameNode = node == newFace.octreeNode ();
     }
     return newFace;
   }
 
-  void deleteFace (const WingedFace& face) {
+  void deleteFace (WingedFace& face) {
     const unsigned int index = face.index ();
 
-    assert (this->hasFace   (index)); 
     assert (face.octreeNode ());
 
-    face.octreeNodeRef ().impl->deleteFace (this->faceMap[index]);
-    this->freeFaceIndices.insert           (index);
+    face.octreeNodeRef ().impl->deleteFace (this->faceIndex.getIter (index));
+    this->faceIndex.freeIndex (index);
 
     if (this->hasRoot ()) {
       if (this->root->isEmpty ()) {
@@ -496,14 +468,8 @@ struct Octree::Impl {
     }
   }
 
-  bool hasFace (unsigned int index) const { 
-    return index < this->faceMap.size () && this->freeFaceIndices.count (index) == 0; 
-  }
-
   WingedFace* face (unsigned int index) const {
-    assert (this->hasFace (index));
-    return index >= this->faceMap.size () ? nullptr
-                                          : &*this->faceMap[index];
+    return this->faceIndex.get (index);
   }
 
   void makeParent (const FaceToInsert& f) {
@@ -569,10 +535,9 @@ struct Octree::Impl {
   }
 
   void reset () { 
-    this->faceMap         .clear ();
-    this->freeFaceIndices .clear ();
     this->root            .reset ();
     this->degeneratedFaces.reset ();
+    this->faceIndex       .reset ();
     this->rootWasSetup = false;
   }
 
@@ -612,11 +577,11 @@ struct Octree::Impl {
   }
 
   unsigned int numFreeFaceIndices () const { 
-    return this->freeFaceIndices.size ();
+    return this->faceIndex.numFreeIndices ();
   }
 
   unsigned int numIndices () const { 
-    return this->faceMap.size ();
+    return this->faceIndex.numIndices ();
   }
 
   OctreeStatistics statistics () const {
@@ -637,13 +602,7 @@ struct Octree::Impl {
   }
 
   WingedFace* someFace () const {
-    for (unsigned int i = 0; i < this->faceMap.size (); i++) {
-      if (this->freeFaceIndices.count (i) == 0) {
-        assert (i == this->faceMap[i]->index ());
-        return &*this->faceMap[i];
-      }
-    }
-    return nullptr;
+    return this->faceIndex.getSome ();
   }
 
   WingedFace* someDegeneratedFace () const {
@@ -657,24 +616,10 @@ struct Octree::Impl {
   }
 
   void forEachFace (const std::function <void (WingedFace&)>& f) const {
-    for (unsigned int i = 0; i < this->faceMap.size (); i++) {
-      if (this->freeFaceIndices.count (i) == 0) {
-        assert (i == this->faceMap[i]->index ());
-        f (*this->faceMap[i]);
-      }
-    }
-  }
-  void forEachDegeneratedFace (const std::function <void (WingedFace&)>& f) const {
-    if (this->degeneratedFaces) {
-      for (WingedFace& face : this->degeneratedFaces->faces) {
-        f (face);
-      }
-    }
+    this->faceIndex.forEachElement (f);
   }
   void forEachFreeFaceIndex (const std::function <void (unsigned int)>& f) const {
-    for (unsigned int ffi : this->freeFaceIndices) {
-      f (ffi);
-    }
+    this->faceIndex.forEachFreeIndex (f);
   }
 };
 
@@ -684,8 +629,8 @@ DELEGATE2       (void        , Octree, setupRoot, const glm::vec3&, float)
 DELEGATE1       (void        , Octree, reserveIndices, unsigned int)
 DELEGATE1       (WingedFace& , Octree, addFace, const PrimTriangle&)
 DELEGATE2       (WingedFace& , Octree, addFace, const WingedFace&, const PrimTriangle&)
-DELEGATE3       (WingedFace& , Octree, realignFace, const WingedFace&, const PrimTriangle&, bool*)
-DELEGATE1       (void        , Octree, deleteFace, const WingedFace&)
+DELEGATE3       (WingedFace& , Octree, realignFace, WingedFace&, const PrimTriangle&, bool*)
+DELEGATE1       (void        , Octree, deleteFace, WingedFace&)
 DELEGATE1_CONST (WingedFace* , Octree, face, unsigned int)
 DELEGATE        (void, Octree, render)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
@@ -701,5 +646,4 @@ DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE_CONST  (WingedFace* , Octree, someFace)
 DELEGATE_CONST  (WingedFace* , Octree, someDegeneratedFace)
 DELEGATE1_CONST (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
-DELEGATE1_CONST (void        , Octree, forEachDegeneratedFace, const std::function <void (WingedFace&)>&)
 DELEGATE1_CONST (void        , Octree, forEachFreeFaceIndex, const std::function <void (unsigned int)>&)

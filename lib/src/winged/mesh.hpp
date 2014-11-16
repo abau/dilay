@@ -47,7 +47,7 @@ class WingedMesh {
     void               deleteFace         (WingedFace&);
     void               deleteVertex       (WingedVertex&);
 
-    WingedFace&        realignFace        (const WingedFace&, const PrimTriangle&, bool* = nullptr);
+    WingedFace&        realignFace        (WingedFace&, const PrimTriangle&, bool* = nullptr);
     void               realignAllFaces    ();
 
     unsigned int       numVertices        () const;

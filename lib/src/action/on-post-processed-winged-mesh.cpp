@@ -27,7 +27,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
   bool doBufferData      () const { return this->flags.get (3);   }
   void doBufferData      (bool v) {        this->flags.set (3,v); }
 
-  WingedFace& realignFace (WingedMesh& mesh, const WingedFace& face) {
+  WingedFace& realignFace (WingedMesh& mesh, WingedFace& face) {
     bool        sameNode  = false;
     WingedFace& realigned = mesh.realignFace ( face
                                              , face.triangle (mesh)
@@ -84,7 +84,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
 
 DELEGATE_BIG3 (ActionOnPostProcessedWMesh)
 
-DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, const WingedFace&)
+DELEGATE2 (WingedFace&, ActionOnPostProcessedWMesh, realignFace, WingedMesh&, WingedFace&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, realignAllFaces, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllNormals, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllIndices, WingedMesh&)

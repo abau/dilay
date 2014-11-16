@@ -122,7 +122,7 @@ struct WingedMesh::Impl {
     this->vertices.deleteElement (vertex);
   }
 
-  WingedFace& realignFace ( const WingedFace& face, const PrimTriangle& triangle
+  WingedFace& realignFace ( WingedFace& face, const PrimTriangle& triangle
                           , bool* sameNode, Octree* newOctree = nullptr ) 
   {
     std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
@@ -149,7 +149,7 @@ struct WingedMesh::Impl {
     });
 
     for (WingedFace* f : faces) {
-      this->realignFace (std::move (*f), f->triangle (*this->self), nullptr);
+      this->realignFace (*f, f->triangle (*this->self), nullptr);
     }
   }
 
@@ -307,7 +307,7 @@ GETTER_CONST    (const Mesh&    , WingedMesh, mesh)
 DELEGATE1       (void        , WingedMesh, deleteEdge, WingedEdge&)
 DELEGATE1       (void        , WingedMesh, deleteFace, WingedFace&)
 DELEGATE1       (void        , WingedMesh, deleteVertex, WingedVertex&)
-DELEGATE3       (WingedFace& , WingedMesh, realignFace, const WingedFace&, const PrimTriangle&, bool*)
+DELEGATE3       (WingedFace& , WingedMesh, realignFace, WingedFace&, const PrimTriangle&, bool*)
 DELEGATE        (void        , WingedMesh, realignAllFaces)
  
 DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)

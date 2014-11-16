@@ -12,7 +12,7 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
     DECLARE_BIG3_VIRTUAL (ActionOnPostProcessedWMesh)
 
   protected:
-    WingedFace& realignFace     (WingedMesh&, const WingedFace&);
+    WingedFace& realignFace     (WingedMesh&, WingedFace&);
     void        realignAllFaces (WingedMesh&);
     void        writeAllNormals (WingedMesh&);
     void        writeAllIndices (WingedMesh&);

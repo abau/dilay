@@ -150,7 +150,7 @@ struct ActionCarve::Impl {
     
     // realign
     for (WingedFace* f : domain.faces ()) {
-      this->self->realignFace (mesh, std::move (*f));
+      this->self->realignFace (mesh, *f);
     }
     domain.reset ();
 
