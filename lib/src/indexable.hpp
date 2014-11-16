@@ -148,24 +148,22 @@ class IndexableList {
     }
 
     void deleteIndex (unsigned int index) {
-      this->_elements.erase (this->index.getIter (index));
+      this->elements.erase (this->index.getIter (index));
       this->index.freeIndex (index);
     }
-
-    const TList& elements () const { return this->_elements; }
 
     T* get     (unsigned int index) const { return this->index.get     (index); }
     T& getRef  (unsigned int index) const { return this->index.getRef  (index); }
     T* getSome ()                   const { return this->index.getSome ();      }
 
     void reset () {
-      this->_elements.clear ();
-      this->index    .reset ();
+      this->elements.clear ();
+      this->index   .reset ();
     }
 
     unsigned int numElements () const {
-      assert (this->_elements.size () == this->index.numElements ());
-      return this->_elements.size ();
+      assert (this->elements.size () == this->index.numElements ());
+      return this->elements.size ();
     }
 
     unsigned int numIndices () const {
@@ -187,11 +185,11 @@ class IndexableList {
   private:
     template <typename ... Ts>
     TListIterator emplaceWithIndex (unsigned int index, const Ts& ... arguments) {
-      this->_elements.emplace_back (index, arguments...);
-      return --this->_elements.end ();
+      this->elements.emplace_back (index, arguments...);
+      return --this->elements.end ();
     }
 
-    TList             _elements;
+    TList             elements;
     Indexable <TList> index;
 };
 
