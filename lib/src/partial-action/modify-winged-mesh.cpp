@@ -119,8 +119,9 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::DeleteVertex: {
-        mesh.addVertex ( this->data.value <glm::vec3> ()
-                       , this->data.identifier ().getIndexRef () );
+        WingedVertex& vertex = mesh.addVertex (this->data.value <glm::vec3> ());
+
+        assert (vertex.index () == this->data.identifier ().getIndexRef ());
         break;
       }
       case Operation::AddEdge: {
@@ -172,8 +173,9 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::AddVertex: {
-        mesh.addVertex ( this->data.value <glm::vec3> ()
-                       , this->data.identifier ().getIndexRef () );
+        WingedVertex& vertex = mesh.addVertex (this->data.value <glm::vec3> ());
+
+        assert (vertex.index () == this->data.identifier ().getIndexRef ());
         break;
       }
       case Operation::InitOctreeRoot: {

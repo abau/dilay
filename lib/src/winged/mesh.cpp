@@ -67,13 +67,6 @@ struct WingedMesh::Impl {
     return vertex;
   }
 
-  WingedVertex& addVertex (const glm::vec3& pos, unsigned int index) {
-    assert (index < this->numVertices ());
-    WingedVertex& vertex = this->vertices.emplaceAt (index);
-    this->mesh.setVertex (index, pos);
-    return vertex;
-  }
-
   WingedEdge& addEdge (const Id& id) {
     this->edges.emplace_back (id);
 
@@ -291,7 +284,6 @@ DELEGATE1_CONST (WingedEdge*    , WingedMesh, edge, const Id&)
 DELEGATE1_CONST (WingedFace*    , WingedMesh, face, unsigned int)
 
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
-DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&, unsigned int)
 DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, const Id&)
 DELEGATE1       (WingedFace&    , WingedMesh, addFace, const PrimTriangle&)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
