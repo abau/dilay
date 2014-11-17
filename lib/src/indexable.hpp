@@ -161,6 +161,10 @@ class IndexableList {
       this->index   .reset ();
     }
 
+    bool isFree (unsigned int index) const {
+      return this->index.isFree (index);
+    }
+
     unsigned int numElements () const {
       assert (this->elements.size () == this->index.numElements ());
       return this->elements.size ();

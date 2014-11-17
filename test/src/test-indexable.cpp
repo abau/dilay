@@ -16,6 +16,8 @@ void TestIndexable::test () {
   assert (foos.numIndices () == 1);
   assert (foos.numFreeIndices () == 0);
 
+  assert (foos.isFree (0) == false);
+
   foos.reserveIndices (10);
 
   assert (foos.numElements () == 1);
