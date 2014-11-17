@@ -53,7 +53,7 @@ struct ActionIdentifier :: Impl {
 
   void setEdge (const WingedEdge* edge) {
     if (edge) {
-      this->setId (edge->id ());
+      this->setIndex (edge->index ());
     }
   }
 
@@ -86,7 +86,7 @@ struct ActionIdentifier :: Impl {
   }
 
   WingedEdge* getEdge (const WingedMesh& mesh) const {
-    return this->hasId () ? mesh.edge (*this->getId ()) : nullptr;
+    return this->hasIndex () ? mesh.edge (*this->getIndex ()) : nullptr;
   }
 
   WingedVertex* getVertex (const WingedMesh& mesh) const {

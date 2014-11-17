@@ -35,9 +35,9 @@ struct ActionDeleteWMesh::Impl {
     mesh.forEachVertex ([this] (WingedVertex& v) {
       this->actions.add <PAModifyWVertex> ().reset (v);
     });
-    for (const WingedEdge& e : mesh.edges ()) {
-      this->actions.add <PAModifyWEdge> ().reset (mesh.edgeRef (e.id ()));
-    }
+    mesh.forEachEdge ([this] (WingedEdge& e) {
+      this->actions.add <PAModifyWEdge> ().reset (e);
+    });
 
     // delete entities
     mesh.octree ().forEachFace ([this,&mesh] (WingedFace& f) {
@@ -46,10 +46,9 @@ struct ActionDeleteWMesh::Impl {
     mesh.forEachVertex ([this,&mesh] (WingedVertex& v) {
       this->actions.add <PAModifyWMesh> ().deleteVertex (mesh, v);
     });
-    while (mesh.numEdges () > 0) {
-      WingedEdge& e = mesh.edgeRef (mesh.edges ().back ().id ());
+    mesh.forEachEdge ([this,&mesh] (WingedEdge& e) {
       this->actions.add <PAModifyWMesh> ().deleteEdge (mesh, e);
-    }
+    });
     State::scene ().deleteMesh (mesh);
   }
 

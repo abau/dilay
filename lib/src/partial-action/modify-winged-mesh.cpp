@@ -65,7 +65,7 @@ struct PAModifyWMesh :: Impl {
   }
 
   WingedEdge& addEdge (WingedMesh& mesh) {
-    WingedEdge& edge = mesh.addEdge (Id ());
+    WingedEdge& edge = mesh.addEdge ();
     this->operation  = Operation::AddEdge;
 
     this->data.identifier (edge);
@@ -109,7 +109,9 @@ struct PAModifyWMesh :: Impl {
 
     switch (this->operation) {
       case Operation::DeleteEdge: {
-        mesh.addEdge (this->data.identifier ().getIdRef ());
+        WingedEdge& edge = mesh.addEdge ();
+
+        assert (edge.index () == this->data.identifier ().getIndexRef ());
         break;
       }
       case Operation::DeleteFace: {
@@ -163,7 +165,9 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::AddEdge: {
-        mesh.addEdge (this->data.identifier ().getIdRef ());
+        WingedEdge& edge = mesh.addEdge ();
+
+        assert (edge.index () == this->data.identifier ().getIndexRef ());
         break;
       }
       case Operation::AddFace: {

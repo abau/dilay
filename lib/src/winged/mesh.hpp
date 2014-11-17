@@ -29,16 +29,15 @@ class WingedMesh {
     unsigned int       index              (unsigned int) const;
     glm::vec3          normal             (unsigned int) const;
     WingedVertex*      vertex             (unsigned int) const ;
-    WingedEdge*        edge               (const Id&) const ;
+    WingedEdge*        edge               (unsigned int) const ;
     WingedFace*        face               (unsigned int) const ;
     WingedVertex&      addVertex          (const glm::vec3&);
-    WingedEdge&        addEdge            (const Id&);
+    WingedEdge&        addEdge            ();
     WingedFace&        addFace            (const PrimTriangle&);
     void               setIndex           (unsigned int, unsigned int);
     void               setVertex          (unsigned int, const glm::vec3&);
     void               setNormal          (unsigned int, const glm::vec3&);
 
-    const Edges&       edges              () const;
     const Octree&      octree             () const;
     const Mesh&        mesh               () const;
 
@@ -81,9 +80,10 @@ class WingedMesh {
     void               normalize          ();
 
     void             forEachVertex        (const std::function <void (WingedVertex&)>&) const;
+    void             forEachEdge          (const std::function <void (WingedEdge&)>&) const;
 
     SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)
-    SAFE_REF1_CONST (WingedEdge  , edge  , const Id&)
+    SAFE_REF1_CONST (WingedEdge  , edge  , unsigned int)
     SAFE_REF1_CONST (WingedFace  , face  , unsigned int)
   private:
     IMPLEMENTATION

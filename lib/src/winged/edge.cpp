@@ -6,8 +6,8 @@
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
   
-WingedEdge :: WingedEdge (const Id& id) 
-  : _id               (id)
+WingedEdge :: WingedEdge (unsigned int i) 
+  : _index            (i)
   , _vertex1          (nullptr)
   , _vertex2          (nullptr)
   , _leftFace         (nullptr)

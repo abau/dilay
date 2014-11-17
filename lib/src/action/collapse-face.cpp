@@ -66,11 +66,11 @@ struct ActionCollapseFace::Impl {
     WingedEdge&   oPredecessor = edge.predecessorRef (otherFace);
     WingedEdge&   oSuccessor   = edge.successorRef   (otherFace);
 
-    if (fSuccessor.id () != oPredecessor.id ()) {
+    if (fSuccessor.index () != oPredecessor.index ()) {
       this->actions.add <PAModifyWVertex> ().edge (newVertex, &oPredecessor);
     }
     else {
-      assert (fPredecessor.id () != oSuccessor.id ());
+      assert (fPredecessor.index () != oSuccessor.index ());
       this->actions.add <PAModifyWVertex> ().edge (newVertex, &oSuccessor);
     }
     return newVertex;

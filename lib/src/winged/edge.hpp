@@ -3,7 +3,6 @@
 
 #include <glm/fwd.hpp>
 #include "fwd-winged.hpp"
-#include "id.hpp"
 #include "macro.hpp"
 
 class WingedVertex;
@@ -12,11 +11,11 @@ class WingedMesh;
 
 class WingedEdge {
   public:
-    WingedEdge (const Id&);
+    WingedEdge (unsigned int);
     WingedEdge (const WingedEdge&)  = default;
     WingedEdge (      WingedEdge&&) = default;
 
-    const Id&       id               () const { return this->_id.id (); }
+    unsigned int    index            () const { return this->_index; }
     WingedVertex*   vertex1          () const { return this->_vertex1; }
     WingedVertex*   vertex2          () const { return this->_vertex2; }
     WingedFace*     leftFace         () const { return this->_leftFace; }
@@ -83,19 +82,19 @@ class WingedEdge {
     SAFE_REF2_CONST (WingedVertex, vertex, const WingedFace&, unsigned int)
 
   private:
-    const IdObject  _id;
+    const unsigned int _index;
 
-    WingedVertex*   _vertex1;
-    WingedVertex*   _vertex2;
+    WingedVertex*      _vertex1;
+    WingedVertex*      _vertex2;
 
-    WingedFace*     _leftFace;
-    WingedFace*     _rightFace;
+    WingedFace*        _leftFace;
+    WingedFace*        _rightFace;
 
-    WingedEdge*     _leftPredecessor;
-    WingedEdge*     _leftSuccessor;
+    WingedEdge*        _leftPredecessor;
+    WingedEdge*        _leftSuccessor;
 
-    WingedEdge*     _rightPredecessor;
-    WingedEdge*     _rightSuccessor;
+    WingedEdge*        _rightPredecessor;
+    WingedEdge*        _rightSuccessor;
 };
 
 #endif

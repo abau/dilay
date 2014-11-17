@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include "../util.hpp"
+#include "id.hpp"
 #include "octree.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
@@ -11,34 +12,34 @@
 void WingedUtil :: printStatistics (const WingedMesh& mesh, const WingedVertex& v) {
   std::cout   << "Vertex "               << v.index       () 
               << "\n\tposition:\t"       << v.position    (mesh)
-              << "\n\tedge:\t\t"         << v.edge        ()->id ();
+              << "\n\tedge:\t\t"         << v.edge        ()->index ();
     std::cout << "\n\tnormal:\t\t"       << v.savedNormal (mesh);
   std::cout   << std::endl;
 }
 
 void WingedUtil :: printStatistics (const WingedEdge& e) {
-  auto maybeEdgeId = [] (WingedEdge* edge) {
-    return bool (edge) ? std::to_string (edge->id ().primitive ())
+  auto maybeEdgeIndex = [] (WingedEdge* edge) {
+    return bool (edge) ? std::to_string (edge->index ())
                        : std::string ("NULL");
   };
-  auto maybeFaceId = [] (WingedFace* face) {
+  auto maybeFaceIndex = [] (WingedFace* face) {
     return bool (face) ? std::to_string (face->index ())
                        : std::string ("NULL");
   };
-  auto maybeIndex = [] (WingedVertex* vertex) {
+  auto maybeVertexIndex = [] (WingedVertex* vertex) {
     return bool (vertex) ? std::to_string (vertex->index ())
                          : std::string ("NULL");
   };
 
-  std::cout << "Edge " << e.id () 
-    << "\n\tvertex 1:\t\t"        << maybeIndex     (e.vertex1          ())
-    <<   "\tvertex 2:\t\t"        << maybeIndex     (e.vertex2          ())
-    << "\n\tleft face:\t\t"       << maybeFaceId    (e.leftFace         ())
-    <<   "\tright face:\t\t"      << maybeFaceId    (e.rightFace        ())
-    << "\n\tleft predecessor:\t"  << maybeEdgeId    (e.leftPredecessor  ())
-    <<   "\tleft successor:\t\t"  << maybeEdgeId    (e.leftSuccessor    ())
-    << "\n\tright predecessor:\t" << maybeEdgeId    (e.rightPredecessor ())
-    <<   "\tright successor:\t"   << maybeEdgeId    (e.rightSuccessor   ())
+  std::cout << "Edge " << e.index () 
+    << "\n\tvertex 1:\t\t"        << maybeVertexIndex (e.vertex1          ())
+    <<   "\tvertex 2:\t\t"        << maybeVertexIndex (e.vertex2          ())
+    << "\n\tleft face:\t\t"       << maybeFaceIndex   (e.leftFace         ())
+    <<   "\tright face:\t\t"      << maybeFaceIndex   (e.rightFace        ())
+    << "\n\tleft predecessor:\t"  << maybeEdgeIndex   (e.leftPredecessor  ())
+    <<   "\tleft successor:\t\t"  << maybeEdgeIndex   (e.leftSuccessor    ())
+    << "\n\tright predecessor:\t" << maybeEdgeIndex   (e.rightPredecessor ())
+    <<   "\tright successor:\t"   << maybeEdgeIndex   (e.rightSuccessor   ())
     << std::endl;
 }
 
@@ -50,9 +51,8 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
                        : std::string ("NULL");
   };
   std::cout   << "Face "                << f.index () 
-              << "\n\tedge:\t\t\t"      << f.edgeRef ().id ()
-              << "\n\toctree node:\t\t" << maybeNodeId (f.octreeNode ())
-              << "\n\tindex:\t\t\t"     << f.index ();
+              << "\n\tedge:\t\t\t"      << f.edgeRef ().index ()
+              << "\n\toctree node:\t\t" << maybeNodeId (f.octreeNode ());
   if (printDerived) {
     std::cout << "\n\tnormal:\t\t\t"    << f.normal  (mesh);
   }
@@ -72,8 +72,9 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
       WingedUtil::printStatistics (mesh,v); 
     });
 
-    for (const WingedEdge& e : mesh.edges ())
+    mesh.forEachEdge ([] (const WingedEdge& e) {
       WingedUtil :: printStatistics (e);
+    });
 
     mesh.octree ().forEachFace ([&mesh,printDerived] (const WingedFace& face) {
       WingedUtil :: printStatistics (mesh,face,printDerived);
