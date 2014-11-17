@@ -14,7 +14,7 @@ struct ActionResetFreeFaceIndices::Impl {
   void run (WingedMesh& mesh) {
     if (mesh.numFaces () > 0) {
       unsigned int nonFreeFaceIndex = mesh.octree ().someFaceRef ().index ();
-      mesh.forEachFreeFaceIndex ([&] (unsigned int index) {
+      mesh.octree ().forEachFreeFaceIndex ([&] (unsigned int index) {
         this->actions.add <PAModifyWMesh> ()
                      .setIndex (mesh, (3 * index) + 0, mesh.index ((3 * nonFreeFaceIndex) + 0));
         this->actions.add <PAModifyWMesh> ()

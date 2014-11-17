@@ -82,7 +82,6 @@ class WingedMesh {
     void               normalize          ();
 
     void             forEachVertex        (const std::function <void (WingedVertex&)>&) const;
-    void             forEachFreeFaceIndex (const std::function <void (unsigned int)>&) const;
 
     SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)
     SAFE_REF1_CONST (WingedEdge  , edge  , const Id&)

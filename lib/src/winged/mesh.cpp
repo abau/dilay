@@ -191,7 +191,7 @@ struct WingedMesh::Impl {
 
   void bufferData  () { 
 #ifndef NDEBUG
-    this->forEachFreeFaceIndex ([this] (unsigned int freeFaceIndex) {
+    this->octree.forEachFreeFaceIndex ([this] (unsigned int freeFaceIndex) {
       assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 0)) == false);
       assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 1)) == false);
       assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 2)) == false);
@@ -277,10 +277,6 @@ struct WingedMesh::Impl {
   void forEachVertex (const std::function <void (WingedVertex&)>& f) const {
     this->vertices.forEachElement (f);
   }
-
-  void forEachFreeFaceIndex (const std::function <void (unsigned int)>& f) const {
-    this->octree.forEachFreeFaceIndex (f);
-  }
 };
 
 DELEGATE_BIG3_SELF         (WingedMesh)
@@ -342,4 +338,3 @@ DELEGATE1       (void              , WingedMesh, rotationY, float)
 DELEGATE1       (void              , WingedMesh, rotationZ, float)
 DELEGATE        (void              , WingedMesh, normalize)
 DELEGATE1_CONST (void              , WingedMesh, forEachVertex, const std::function <void (WingedVertex&)>&)
-DELEGATE1_CONST (void              , WingedMesh, forEachFreeFaceIndex, const std::function <void (unsigned int)>&)
