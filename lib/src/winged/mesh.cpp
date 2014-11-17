@@ -26,7 +26,6 @@ struct WingedMesh::Impl {
   IndexableList <WingedVertex> vertices;
   Edges                        edges;
   Octree                       octree;
-  std::set  <unsigned int>     freeVertexIndices;
   IdMap <Edges::iterator>      edgeMap;
 
   Impl (WingedMesh* s)
@@ -53,10 +52,6 @@ struct WingedMesh::Impl {
   }
 
   WingedFace* face (unsigned int index) const { return this->octree.face (index); }
-
-  bool hasFreeVertexIndex () const {
-    return ! this->freeVertexIndices.empty ();
-  }
 
   WingedVertex& addVertex (const glm::vec3& pos) {
     WingedVertex&      vertex = this->vertices.emplace ();
@@ -97,12 +92,12 @@ struct WingedMesh::Impl {
   }
 
   void setVertex (unsigned int index, const glm::vec3& v) {
-    assert (this->freeVertexIndices.count (index) == 0);
+    assert (this->vertices.isFree (index) == false);
     return this->mesh.setVertex (index,v);
   }
 
   void setNormal (unsigned int index, const glm::vec3& n) {
-    assert (this->freeVertexIndices.count (index) == 0);
+    assert (this->vertices.isFree (index) == false);
     return this->mesh.setNormal (index,n);
   }
 
@@ -190,9 +185,9 @@ struct WingedMesh::Impl {
   void bufferData  () { 
 #ifndef NDEBUG
     this->forEachFreeFaceIndex ([this] (unsigned int freeFaceIndex) {
-      assert (this->freeVertexIndices.count (this->mesh.index (freeFaceIndex + 0)) == 0);
-      assert (this->freeVertexIndices.count (this->mesh.index (freeFaceIndex + 1)) == 0);
-      assert (this->freeVertexIndices.count (this->mesh.index (freeFaceIndex + 2)) == 0);
+      assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 0)) == false);
+      assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 1)) == false);
+      assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 2)) == false);
     });
 #endif
     this->mesh.bufferData (); 
