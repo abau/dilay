@@ -10,6 +10,10 @@ void TestIndexable::test () {
 
   IndexableList <Foo> foos;
 
+  assert (foos.numElements () == 0);
+  assert (foos.numIndices () == 0);
+  assert (foos.numFreeIndices () == 0);
+
   foos.emplace (false);
 
   assert (foos.numElements () == 1);
