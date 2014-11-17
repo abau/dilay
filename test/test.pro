@@ -13,10 +13,12 @@ PRE_TARGETDEPS         += ../lib/libdilay.a
 SOURCES += \
            src/test-indexable.cpp \
            src/test-intersection.cpp \
+           src/test-maybe.cpp \
            src/main.cpp \
            src/test-octree.cpp
 
 HEADERS += \
            src/test-indexable.hpp \
            src/test-intersection.hpp \
+           src/test-maybe.hpp \
            src/test-octree.hpp

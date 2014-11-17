@@ -132,6 +132,7 @@ HEADERS += \
            src/id-map.hpp \
            src/intersection.hpp \
            src/macro.hpp \
+           src/maybe.hpp \
            src/mesh.hpp \
            src/mesh-definition.hpp \
            src/mesh-type.hpp \
