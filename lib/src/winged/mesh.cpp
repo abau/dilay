@@ -54,16 +54,23 @@ struct WingedMesh::Impl {
   WingedFace* face (unsigned int index) const { return this->octree.face (index); }
 
   WingedVertex& addVertex (const glm::vec3& pos) {
-    WingedVertex&      vertex = this->vertices.emplace ();
-    const unsigned int index  = this->mesh.addVertex (pos);
-    assert (vertex.index () == index);
+    WingedVertex& vertex = this->vertices.emplace ();
+    if (vertex.index () == this->mesh.numVertices ()) {
+      this->mesh.addVertex (pos);
+    }
+    else if (vertex.index () < this->mesh.numVertices ()) {
+      this->mesh.setVertex (vertex.index (), pos);
+    }
+    else {
+      std::abort ();
+    }
     return vertex;
   }
 
-  WingedVertex& addVertex (const glm::vec3& v, unsigned int index) {
+  WingedVertex& addVertex (const glm::vec3& pos, unsigned int index) {
     assert (index < this->numVertices ());
     WingedVertex& vertex = this->vertices.emplaceAt (index);
-    this->mesh.setVertex (index, v);
+    this->mesh.setVertex (index, pos);
     return vertex;
   }
 
