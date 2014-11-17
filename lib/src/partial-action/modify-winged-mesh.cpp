@@ -16,25 +16,12 @@ namespace {
     , InitOctreeRoot, SetIndex
   };
 
-  struct FaceData {
-    unsigned int index;
-    PrimTriangle triangle;
-  };
-
-  struct VertexData {
-    glm::vec3 position;
-  };
-
-  struct IndexData {
-    unsigned int index;
-  };
-
   struct OctreeRootData {
     glm::vec3 position;
     float     width;
   };
 
-  typedef ActionData <FaceData, VertexData, IndexData, OctreeRootData> Data;
+  typedef ActionData <PrimTriangle, glm::vec3, unsigned int, OctreeRootData> Data;
 };
 
 struct PAModifyWMesh :: Impl {
@@ -63,7 +50,7 @@ struct PAModifyWMesh :: Impl {
     this->operation = Operation::DeleteFace;
 
     this->data.identifier (face);
-    this->data.value      (FaceData { face.index (), face.triangle (mesh) });
+    this->data.value      (face.triangle (mesh));
     mesh.deleteFace       (face);
   }
 
@@ -73,7 +60,7 @@ struct PAModifyWMesh :: Impl {
     this->operation = Operation::DeleteVertex;
 
     this->data.identifier (vertex);
-    this->data.value      (VertexData { vertex.position (mesh) });
+    this->data.value      (vertex.position (mesh));
     mesh.deleteVertex     (vertex);
   }
 
@@ -90,7 +77,7 @@ struct PAModifyWMesh :: Impl {
     this->operation  = Operation::AddFace;
 
     this->data.identifier (face);
-    this->data.value      (FaceData { face.index (), triangle });
+    this->data.value      (triangle);
     return face;
   }
 
@@ -99,7 +86,7 @@ struct PAModifyWMesh :: Impl {
     this->operation      = Operation::AddVertex;
 
     this->data.identifier (vertex);
-    this->data.value      (VertexData { position });
+    this->data.value      (position);
     return vertex;
   }
 
@@ -107,8 +94,7 @@ struct PAModifyWMesh :: Impl {
     this->operation = Operation::SetIndex;
 
     this->data.identifier (index);
-    this->data.values     ( IndexData { mesh.index (index) }
-                          , IndexData { vertexIndex        });
+    this->data.values     (mesh.index (index), vertexIndex);
     mesh.setIndex         (index, vertexIndex);
   }
 
@@ -127,14 +113,13 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::DeleteFace: {
-        const FaceData& d = this->data.value <FaceData> ();
-        WingedFace& face = mesh.addFace (d.triangle);
+        WingedFace& face = mesh.addFace (this->data.value <PrimTriangle> ());
 
-        assert (face.index () == d.index);
+        assert (face.index () == this->data.identifier ().getIndexRef ());
         break;
       }
       case Operation::DeleteVertex: {
-        mesh.addVertex ( this->data.value <VertexData> ().position
+        mesh.addVertex ( this->data.value <glm::vec3> ()
                        , this->data.identifier ().getIndexRef () );
         break;
       }
@@ -155,7 +140,7 @@ struct PAModifyWMesh :: Impl {
       }
       case Operation::SetIndex: {
         mesh.setIndex ( this->data.identifier ().getIndexRef ()
-                      , this->data.value <IndexData> (ActionDataType::Old).index );
+                      , this->data.value <unsigned int> (ActionDataType::Old) );
         break;
       }
     }
@@ -181,13 +166,13 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::AddFace: {
-        const FaceData& d = this->data.value <FaceData> ();
-        WingedFace& face = mesh.addFace (d.triangle);
-        assert (face.index () == d.index);
+        WingedFace& face = mesh.addFace (this->data.value <PrimTriangle> ());
+
+        assert (face.index () == this->data.identifier ().getIndexRef ());
         break;
       }
       case Operation::AddVertex: {
-        mesh.addVertex ( this->data.value <VertexData> ().position
+        mesh.addVertex ( this->data.value <glm::vec3> ()
                        , this->data.identifier ().getIndexRef () );
         break;
       }
@@ -198,7 +183,7 @@ struct PAModifyWMesh :: Impl {
       }
       case Operation::SetIndex: {
         mesh.setIndex ( this->data.identifier ().getIndexRef ()
-                      , this->data.value <IndexData> (ActionDataType::New).index );
+                      , this->data.value <unsigned int> (ActionDataType::New) );
         break;
       }
     }
