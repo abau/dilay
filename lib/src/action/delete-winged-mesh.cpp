@@ -40,10 +40,9 @@ struct ActionDeleteWMesh::Impl {
     }
 
     // delete entities
-    WingedFace* face = nullptr;
-    while ((face = mesh.octree ().someFace ()) != nullptr) {
-      this->actions.add <PAModifyWMesh> ().deleteFace (mesh, *face);
-    }
+    mesh.octree ().forEachFace ([this,&mesh] (WingedFace& f) {
+      this->actions.add <PAModifyWMesh> ().deleteFace (mesh, f);
+    });
     mesh.forEachVertex ([this,&mesh] (WingedVertex& v) {
       this->actions.add <PAModifyWMesh> ().deleteVertex (mesh, v);
     });
