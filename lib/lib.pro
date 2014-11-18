@@ -12,7 +12,6 @@ SOURCES += \
            src/action/carve.cpp \
            src/action/collapse-face.cpp \
            src/action/delete-winged-mesh.cpp \
-           src/action/identifier.cpp \
            src/action/modify-winged-mesh.cpp \
            src/action/new-winged-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
@@ -23,6 +22,7 @@ SOURCES += \
            src/action/subdivide-mesh.cpp \
            src/action/translate.cpp \
            src/action/unit.cpp \
+           src/action/util.cpp \
            src/adjacent-iterator.cpp \
            src/affected-faces.cpp \
            src/axis.cpp \
@@ -100,7 +100,6 @@ HEADERS += \
            src/action/collapse-face.hpp \
            src/action/data.hpp \
            src/action/delete-winged-mesh.hpp \
-           src/action/identifier.cpp \
            src/action/modify-winged-mesh.hpp \
            src/action/new-winged-mesh.hpp \
            src/action/on.hpp \
@@ -114,6 +113,7 @@ HEADERS += \
            src/action/translate.hpp \
            src/action/unit.hpp \
            src/action/unit/on.hpp \
+           src/action/util.hpp \
            src/adjacent-iterator.hpp \
            src/affected-faces.hpp \
            src/axis.hpp \

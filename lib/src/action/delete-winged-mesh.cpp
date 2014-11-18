@@ -1,6 +1,5 @@
 #include "action/data.hpp"
 #include "action/delete-winged-mesh.hpp"
-#include "action/identifier.hpp"
 #include "action/unit/on.hpp"
 #include "mesh-type.hpp"
 #include "octree.hpp"
@@ -20,8 +19,8 @@ struct ActionDeleteWMesh::Impl {
   ActionData   <MeshType>   data;
   
   void deleteMesh (MeshType t, WingedMesh& mesh) {
-    this->data.identifier (mesh);
-    this->data.value      (t);
+    this->data.index (mesh);
+    this->data.value (t);
 
     // reset entities
     mesh.octree ().forEachFace ([this] (WingedFace& f) {
@@ -50,12 +49,12 @@ struct ActionDeleteWMesh::Impl {
   void runUndo () const {
     WingedMesh& mesh = State::scene ().newWingedMesh (this->data.value <MeshType> ());
 
-    assert (mesh.index () == this->data.identifier ().getIndexRef ());
+    assert (mesh.index () == this->data.index ());
     this->actions.undo (mesh);
   }
     
   void runRedo () const {
-    WingedMesh& mesh = this->data.identifier ().getWingedMeshRef ();
+    WingedMesh& mesh = State::scene ().wingedMeshRef (this->data.index ());
     this->actions.redo (mesh);
     State::scene ().deleteMesh (mesh);
   }

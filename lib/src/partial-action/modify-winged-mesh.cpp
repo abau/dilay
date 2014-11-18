@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include "action/data.hpp"
-#include "action/identifier.hpp"
 #include "octree.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
 #include "primitive/triangle.hpp"
@@ -40,8 +39,8 @@ struct PAModifyWMesh :: Impl {
 
     this->operation = Operation::DeleteEdge;
 
-    this->data.identifier (edge);
-    mesh.deleteEdge       (edge);
+    this->data.index (edge);
+    mesh.deleteEdge  (edge);
   }
 
   void deleteFace (WingedMesh& mesh, WingedFace& face) {
@@ -49,9 +48,9 @@ struct PAModifyWMesh :: Impl {
 
     this->operation = Operation::DeleteFace;
 
-    this->data.identifier (face);
-    this->data.value      (face.triangle (mesh));
-    mesh.deleteFace       (face);
+    this->data.index (face);
+    this->data.value (face.triangle (mesh));
+    mesh.deleteFace  (face);
   }
 
   void deleteVertex (WingedMesh& mesh, WingedVertex& vertex) {
@@ -59,16 +58,16 @@ struct PAModifyWMesh :: Impl {
 
     this->operation = Operation::DeleteVertex;
 
-    this->data.identifier (vertex);
-    this->data.value      (vertex.position (mesh));
-    mesh.deleteVertex     (vertex);
+    this->data.index  (vertex);
+    this->data.value  (vertex.position (mesh));
+    mesh.deleteVertex (vertex);
   }
 
   WingedEdge& addEdge (WingedMesh& mesh) {
     WingedEdge& edge = mesh.addEdge ();
     this->operation  = Operation::AddEdge;
 
-    this->data.identifier (edge);
+    this->data.index (edge);
     return edge;
   }
 
@@ -76,8 +75,8 @@ struct PAModifyWMesh :: Impl {
     WingedFace& face = mesh.addFace (triangle);
     this->operation  = Operation::AddFace;
 
-    this->data.identifier (face);
-    this->data.value      (triangle);
+    this->data.index (face);
+    this->data.value (triangle);
     return face;
   }
 
@@ -85,17 +84,17 @@ struct PAModifyWMesh :: Impl {
     WingedVertex& vertex = mesh.addVertex (position);
     this->operation      = Operation::AddVertex;
 
-    this->data.identifier (vertex);
-    this->data.value      (position);
+    this->data.index (vertex);
+    this->data.value (position);
     return vertex;
   }
 
   void setIndex (WingedMesh& mesh, unsigned int index, unsigned int vertexIndex) {
     this->operation = Operation::SetIndex;
 
-    this->data.identifier (index);
-    this->data.values     (mesh.index (index), vertexIndex);
-    mesh.setIndex         (index, vertexIndex);
+    this->data.index  (index);
+    this->data.values (mesh.index (index), vertexIndex);
+    mesh.setIndex     (index, vertexIndex);
   }
 
   void setupOctreeRoot (WingedMesh& mesh, const glm::vec3& pos, float width) {
@@ -111,39 +110,38 @@ struct PAModifyWMesh :: Impl {
       case Operation::DeleteEdge: {
         WingedEdge& edge = mesh.addEdge ();
 
-        assert (edge.index () == this->data.identifier ().getIndexRef ());
+        assert (edge.index () == this->data.index ());
         break;
       }
       case Operation::DeleteFace: {
         WingedFace& face = mesh.addFace (this->data.value <PrimTriangle> ());
 
-        assert (face.index () == this->data.identifier ().getIndexRef ());
+        assert (face.index () == this->data.index ());
         break;
       }
       case Operation::DeleteVertex: {
         WingedVertex& vertex = mesh.addVertex (this->data.value <glm::vec3> ());
 
-        assert (vertex.index () == this->data.identifier ().getIndexRef ());
+        assert (vertex.index () == this->data.index ());
         break;
       }
       case Operation::AddEdge: {
-        mesh.deleteEdge (this->data.identifier ().getEdgeRef (mesh));
+        mesh.deleteEdge (mesh.edgeRef (this->data.index ()));
         break;
       }
       case Operation::AddFace: {
-        mesh.deleteFace (this->data.identifier ().getFaceRef (mesh));
+        mesh.deleteFace (mesh.faceRef (this->data.index ()));
         break;
       }
       case Operation::AddVertex: {
-        mesh.deleteVertex (this->data.identifier ().getVertexRef (mesh));
+        mesh.deleteVertex (mesh.vertexRef (this->data.index ()));
         break;
       }
       case Operation::InitOctreeRoot: {
         break;
       }
       case Operation::SetIndex: {
-        mesh.setIndex ( this->data.identifier ().getIndexRef ()
-                      , this->data.value <unsigned int> (ActionDataType::Old) );
+        mesh.setIndex (this->data.index (), this->data.value <unsigned int> (ActionDataType::Old));
         break;
       }
     }
@@ -153,33 +151,33 @@ struct PAModifyWMesh :: Impl {
 
     switch (this->operation) {
       case Operation::DeleteEdge: {
-        mesh.deleteEdge (this->data.identifier ().getEdgeRef (mesh));
+        mesh.deleteEdge (mesh.edgeRef (this->data.index ()));
         break;
       }
       case Operation::DeleteFace: {
-        mesh.deleteFace (this->data.identifier ().getFaceRef (mesh));
+        mesh.deleteFace (mesh.faceRef (this->data.index ()));
         break;
       }
       case Operation::DeleteVertex: {
-        mesh.deleteVertex (this->data.identifier ().getVertexRef (mesh));
+        mesh.deleteVertex (mesh.vertexRef (this->data.index ()));
         break;
       }
       case Operation::AddEdge: {
         WingedEdge& edge = mesh.addEdge ();
 
-        assert (edge.index () == this->data.identifier ().getIndexRef ());
+        assert (edge.index () == this->data.index ());
         break;
       }
       case Operation::AddFace: {
         WingedFace& face = mesh.addFace (this->data.value <PrimTriangle> ());
 
-        assert (face.index () == this->data.identifier ().getIndexRef ());
+        assert (face.index () == this->data.index ());
         break;
       }
       case Operation::AddVertex: {
         WingedVertex& vertex = mesh.addVertex (this->data.value <glm::vec3> ());
 
-        assert (vertex.index () == this->data.identifier ().getIndexRef ());
+        assert (vertex.index () == this->data.index ());
         break;
       }
       case Operation::InitOctreeRoot: {
@@ -188,8 +186,7 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::SetIndex: {
-        mesh.setIndex ( this->data.identifier ().getIndexRef ()
-                      , this->data.value <unsigned int> (ActionDataType::New) );
+        mesh.setIndex (this->data.index (), this->data.value <unsigned int> (ActionDataType::New));
         break;
       }
     }

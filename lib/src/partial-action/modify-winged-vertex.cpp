@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include "action/data.hpp"
+#include "action/util.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/mesh.hpp"
@@ -8,7 +9,7 @@
 namespace {
   enum class Operation { Edge, WriteIndex, WriteNormal, Move };
 
-  typedef ActionData <ActionIdentifier, unsigned int, glm::vec3> Data;
+  typedef ActionData <Maybe <unsigned int>, unsigned int, glm::vec3> Data;
 };
 
 struct PAModifyWVertex :: Impl {
@@ -18,9 +19,9 @@ struct PAModifyWVertex :: Impl {
   void edge (WingedVertex& vertex, WingedEdge* e) {
     this->operation = Operation::Edge;
 
-    this->data.identifier       (vertex);
-    this->data.valueIdentifiers (vertex.edge (), e);
-    vertex.edge                 (e);
+    this->data.index  (vertex);
+    this->data.values (ActionUtil::maybeIndex (vertex.edge ()), ActionUtil::maybeIndex (e));
+    vertex.edge       (e);
   }
 
   void reset (WingedVertex& vertex) {
@@ -30,17 +31,17 @@ struct PAModifyWVertex :: Impl {
   void writeIndex (WingedMesh& mesh, WingedVertex& vertex, unsigned int index) {
     this->operation = Operation::WriteIndex;
 
-    this->data.identifier (index);
-    this->data.values     (mesh.index (index), vertex.index ());
-    mesh.setIndex         (index, vertex.index ());
+    this->data.index  (index);
+    this->data.values (mesh.index (index), vertex.index ());
+    mesh.setIndex     (index, vertex.index ());
   }
 
   void writeNormal (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& normal) {
     this->operation = Operation::WriteNormal;
 
-    this->data.identifier (vertex);
-    this->data.values     (vertex.savedNormal (mesh), normal);
-    vertex.writeNormal    (mesh, normal);
+    this->data.index   (vertex);
+    this->data.values  (vertex.savedNormal (mesh), normal);
+    vertex.writeNormal (mesh, normal);
   }
 
   void writeInterpolatedNormal (WingedMesh& mesh, WingedVertex& vertex) {
@@ -50,36 +51,38 @@ struct PAModifyWVertex :: Impl {
   void move (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& pos) {
     this->operation = Operation::Move;
 
-    this->data.identifier (vertex);
-    this->data.values     (vertex.position (mesh), pos);
-    vertex.writePosition  (mesh, pos);
+    this->data.index     (vertex);
+    this->data.values    (vertex.position (mesh), pos);
+    vertex.writePosition (mesh, pos);
   }
 
   void moved (WingedMesh& mesh, WingedVertex& vertex, const glm::vec3& from) {
     this->operation = Operation::Move;
 
-    this->data.identifier (vertex);
-    this->data.values     (from, vertex.position (mesh));
+    this->data.index  (vertex);
+    this->data.values (from, vertex.position (mesh));
   }
 
   void toggle (WingedMesh& mesh, ActionDataType type) const { 
-    const ActionIdentifier& id = this->data.identifier ();
-
     switch (this->operation) {
       case Operation::Edge: {
-        id.getVertexRef (mesh).edge (this->data.valueIdentifier (type).getEdge (mesh));
+        const Maybe <unsigned int>& m = this->data.value <Maybe <unsigned int>> (type);
+
+        mesh.vertexRef (this->data.index ()).edge (ActionUtil::wingedEdge (mesh, m));
         break;
       }
       case Operation::WriteIndex: {
-        mesh.setIndex (id.getIndexRef (), this->data.value <unsigned int> (type));
+        mesh.setIndex (this->data.index (), this->data.value <unsigned int> (type));
         break;
       }
       case Operation::WriteNormal: {
-        id.getVertexRef (mesh).writeNormal (mesh, this->data.value <glm::vec3> (type));
+        mesh.vertexRef   (this->data.index ())
+            .writeNormal (mesh, this->data.value <glm::vec3> (type));
         break;
       }
       case Operation::Move: {
-        id.getVertexRef (mesh).writePosition (mesh, this->data.value <glm::vec3> (type));
+        mesh.vertexRef     (this->data.index ())
+            .writePosition (mesh, this->data.value <glm::vec3> (type));
         break;
       }
     }

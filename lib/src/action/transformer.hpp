@@ -3,7 +3,8 @@
 
 #include <memory>
 #include "action.hpp"
-#include "action/identifier.hpp"
+#include "scene.hpp"
+#include "state.hpp"
 
 template <typename T> class ActionOn;
 
@@ -12,14 +13,10 @@ class ActionTransformer : public Action {
   public:
     ActionTransformer (T& t, ActionOn <T>& a) 
       : actionPtr (&a) 
-    {
-      this->identifier.setMesh (&t);
-    }
-
-    ActionTransformer (ActionTransformer&& other) 
-      : actionPtr  (std::move (other.actionPtr)) 
-      , identifier (std::move (other.identifier)) 
+      , index     (t.index ())
     {}
+
+    ActionTransformer (ActionTransformer&&) = default;
 
     ActionTransformer (const ActionTransformer&) = delete;
 
@@ -30,15 +27,15 @@ class ActionTransformer : public Action {
 
   private:
     void runUndo () const { 
-      this->actionPtr->undo (*this->identifier.template getMesh <T> ());
+      this->actionPtr->undo (*State::scene ().template mesh <T> (this->index));
     }
 
     void runRedo () const {
-      this->actionPtr->redo (*this->identifier.template getMesh <T> ());
+      this->actionPtr->redo (*State::scene ().template mesh <T> (this->index));
     }
 
     std::unique_ptr <ActionOn <T>> actionPtr;
-    ActionIdentifier               identifier;
+    const unsigned int             index;
 };
 
 #endif

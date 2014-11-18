@@ -28,8 +28,8 @@ struct ActionNewWingedMesh :: Impl {
 
     WingedMesh& mesh = State::scene ().newWingedMesh (t);
 
-    this->data.identifier (mesh);
-    this->data.value      (t);
+    this->data.index (mesh);
+    this->data.value (t);
 
     // octree
     glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
@@ -120,7 +120,7 @@ struct ActionNewWingedMesh :: Impl {
   };
 
   void runUndo () const {
-    WingedMesh& mesh = this->data.identifier ().getWingedMeshRef ();
+    WingedMesh& mesh = State::scene ().wingedMeshRef (this->data.index ());
     this->actions.undo (mesh);
     State::scene ().deleteMesh (mesh);
   }
@@ -128,7 +128,7 @@ struct ActionNewWingedMesh :: Impl {
   void runRedo () const {
     WingedMesh& mesh = State::scene ().newWingedMesh (this->data.value <MeshType> ());
 
-    assert (mesh.index () == this->data.identifier ().getIndexRef ());
+    assert (mesh.index () == this->data.index ());
 
     this->actions.redo (mesh);
 

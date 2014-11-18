@@ -1,6 +1,6 @@
 #include "action/data.hpp"
-#include "action/identifier.hpp"
 #include "action/unit/on.hpp"
+#include "action/util.hpp"
 #include "adjacent-iterator.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
@@ -13,16 +13,16 @@ namespace {
 };
 
 struct PAModifyWFace :: Impl {
-  Operation                     operation;
-  ActionUnitOn <WingedMesh>     actions;
-  ActionData <ActionIdentifier> data;
+  Operation                         operation;
+  ActionUnitOn <WingedMesh>         actions;
+  ActionData <Maybe <unsigned int>> data;
 
   void edge (WingedFace& face, WingedEdge* e) {
     this->operation = Operation::Edge;
 
-    this->data.identifier       (face);
-    this->data.valueIdentifiers (face.edge (), e);
-    face.edge                   (e);
+    this->data.index  (face);
+    this->data.values (ActionUtil::maybeIndex (face.edge ()), ActionUtil::maybeIndex (e));
+    face.edge         (e);
   }
 
   void reset (WingedFace& face) {
@@ -43,8 +43,9 @@ struct PAModifyWFace :: Impl {
   void runUndo (WingedMesh& mesh) const { 
     switch (this->operation) {
       case Operation::Edge: {
-        this->data.identifier ().getFaceRef (mesh)
-                  .edge (this->data.valueIdentifier (ActionDataType::Old).getEdge (mesh));
+        const Maybe<unsigned int> m = this->data.value <Maybe <unsigned int>> (ActionDataType::Old);
+
+        mesh.faceRef (this->data.index ()).edge (ActionUtil::wingedEdge (mesh, m));
         break;
       }
       case Operation::WriteIndices: {
@@ -57,8 +58,9 @@ struct PAModifyWFace :: Impl {
   void runRedo (WingedMesh& mesh) const { 
     switch (this->operation) {
       case Operation::Edge: {
-        this->data.identifier ().getFaceRef (mesh)
-                  .edge (this->data.valueIdentifier (ActionDataType::New).getEdge (mesh));
+        const Maybe<unsigned int> m = this->data.value <Maybe <unsigned int>> (ActionDataType::New);
+
+        mesh.faceRef (this->data.index ()).edge (ActionUtil::wingedEdge (mesh, m));
         break;
       }
       case Operation::WriteIndices: {

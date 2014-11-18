@@ -142,6 +142,11 @@ struct Scene :: Impl {
   }
 };
 
+template <> 
+WingedMesh* Scene::mesh <WingedMesh> (unsigned int index) const { 
+  return this->wingedMesh (index); 
+}
+
 DELEGATE_BIG3 (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)

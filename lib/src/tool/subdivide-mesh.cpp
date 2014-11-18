@@ -6,6 +6,7 @@
 #include "selection.hpp"
 #include "state.hpp"
 #include "tool/subdivide-mesh.hpp"
+#include "winged/mesh.hpp"
 
 struct ToolSubdivideMesh::Impl {
   ToolSubdivideMesh* self;

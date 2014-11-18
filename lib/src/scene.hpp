@@ -19,6 +19,9 @@ class Scene {
           void          deleteMesh           (WingedMesh&);
           WingedMesh*   wingedMesh           (unsigned int) const;
 
+          template <typename T>
+          T*            mesh                 (unsigned int) const;
+
           void          render               (MeshType);
           bool          intersects           (SelectionMode, const PrimRay&, WingedFaceIntersection&);
           bool          intersects           (const PrimRay&, WingedFaceIntersection&);

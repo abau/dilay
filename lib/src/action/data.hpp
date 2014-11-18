@@ -2,7 +2,7 @@
 #define DILAY_ACTION_DATA
 
 #include <utility>
-#include "action/identifier.hpp"
+#include "maybe.hpp"
 #include "variant.hpp"
 
 enum class ActionDataType { Old, New };
@@ -10,21 +10,23 @@ enum class ActionDataType { Old, New };
 template <typename ... Ts>
 class ActionData {
   public:
-    void identifier (const ActionIdentifier& i) { 
-      assert (i.isSet ());
-      this->_identifier = i; 
+    void index (unsigned int i) { 
+      this->_index = i; 
     }
 
-    const ActionIdentifier& identifier () const { return this->_identifier; }
+    template <typename T>
+    void index (const T& value) { 
+      this->index (value.index ());
+    }
+
+    unsigned int index () const { 
+      return this->_index.getRef (); 
+    }
 
     template <typename T>
     void values (const T& oldValue, const T& newValue) {
       this->_oldValue.template set <T> (oldValue);
       this->_newValue.template set <T> (newValue);
-    }
-
-    void valueIdentifiers (const ActionIdentifier& oldValue, const ActionIdentifier& newValue) {
-      this->template values <ActionIdentifier> (oldValue, newValue);
     }
 
     template <typename T>
@@ -40,25 +42,16 @@ class ActionData {
       std::abort ();
     }
 
-    const ActionIdentifier& valueIdentifier (ActionDataType t) const {
-      return this->template value <ActionIdentifier> (t);
-    }
-
     template <typename T>
     const T& value () const {
       assert (this->_oldValue.isSet () == false);
       return this->template value <T> (ActionDataType::New);
     }
 
-    const ActionIdentifier& valueIdentifier () const {
-      assert (this->_oldValue.isSet () == false);
-      return this->template value <ActionIdentifier> (ActionDataType::New);
-    }
-
   private:
-    ActionIdentifier _identifier;
-    Variant <Ts ...> _oldValue;
-    Variant <Ts ...> _newValue;
+    Maybe   <unsigned int> _index;
+    Variant <Ts ...>       _oldValue;
+    Variant <Ts ...>       _newValue;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "action/data.hpp"
+#include "action/util.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
@@ -13,17 +14,17 @@ namespace {
     };
 
   struct SetGeometryData {
-    ActionIdentifier vertex1;
-    ActionIdentifier vertex2;
-    ActionIdentifier leftFace;
-    ActionIdentifier rightFace;
-    ActionIdentifier leftPredecessor;
-    ActionIdentifier leftSuccessor;
-    ActionIdentifier rightPredecessor;
-    ActionIdentifier rightSuccessor;
+    Maybe <unsigned int> vertex1;
+    Maybe <unsigned int> vertex2;
+    Maybe <unsigned int> leftFace;
+    Maybe <unsigned int> rightFace;
+    Maybe <unsigned int> leftPredecessor;
+    Maybe <unsigned int> leftSuccessor;
+    Maybe <unsigned int> rightPredecessor;
+    Maybe <unsigned int> rightSuccessor;
   };
 
-  typedef ActionData <ActionIdentifier, SetGeometryData> Data;
+  typedef ActionData <Maybe <unsigned int>, SetGeometryData> Data;
 };
 
 struct PAModifyWEdge :: Impl {
@@ -33,63 +34,71 @@ struct PAModifyWEdge :: Impl {
   void vertex1 (WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex1;
 
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.vertex1 (), v);
-    edge.vertex1                (v);
+    this->data.index  (edge);
+    this->data.values ( ActionUtil::maybeIndex (edge.vertex1 ())
+                      , ActionUtil::maybeIndex (v) );
+    edge.vertex1      (v);
   }
 
   void vertex2 (WingedEdge& edge, WingedVertex* v) {
     this->operation = Operation::Vertex2;
 
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.vertex2 (), v);
-    edge.vertex2                (v);
+    this->data.index  (edge);
+    this->data.values ( ActionUtil::maybeIndex (edge.vertex2 ())
+                      , ActionUtil::maybeIndex (v) );
+    edge.vertex2      (v);
   }
 
   void leftFace (WingedEdge& edge, WingedFace* f) {
     this->operation = Operation::LeftFace;
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.leftFace (), f);
-    edge.leftFace               (f);
+    this->data.index  (edge);
+    this->data.values ( ActionUtil::maybeIndex (edge.leftFace ())
+                      , ActionUtil::maybeIndex (f) );
+    edge.leftFace     (f);
   }
 
   void rightFace (WingedEdge& edge, WingedFace* f) {
     this->operation = Operation::RightFace;
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.rightFace (), f);
-    edge.rightFace              (f);
+    this->data.index  (edge);
+    this->data.values ( ActionUtil::maybeIndex (edge.rightFace ())
+                      , ActionUtil::maybeIndex (f) );
+    edge.rightFace    (f);
   }
 
   void leftPredecessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::LeftPredecessor;
 
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.leftPredecessor (), e);
-    edge.leftPredecessor        (e);
+    this->data.index     (edge);
+    this->data.values    ( ActionUtil::maybeIndex (edge.leftPredecessor ())
+                         , ActionUtil::maybeIndex (e) );
+    edge.leftPredecessor (e);
   }
 
   void leftSuccessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::LeftSuccessor;
 
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.leftSuccessor (), e);
-    edge.leftSuccessor          (e);
+    this->data.index   (edge);
+    this->data.values  ( ActionUtil::maybeIndex (edge.leftSuccessor ())
+                       , ActionUtil::maybeIndex (e) );
+    edge.leftSuccessor (e);
   }
 
   void rightPredecessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::RightPredecessor;
 
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.rightPredecessor (), e);
-    edge.rightPredecessor       (e);
+    this->data.index      (edge);
+    this->data.values     ( ActionUtil::maybeIndex (edge.rightPredecessor ())
+                          , ActionUtil::maybeIndex (e) );
+    edge.rightPredecessor (e);
   }
 
   void rightSuccessor (WingedEdge& edge, WingedEdge* e) {
     this->operation = Operation::RightSuccessor;
 
-    this->data.identifier       (edge);
-    this->data.valueIdentifiers (edge.rightSuccessor (), e);
-    edge.rightSuccessor         (e);
+    this->data.index    (edge);
+    this->data.values   ( ActionUtil::maybeIndex (edge.rightSuccessor ())
+                        , ActionUtil::maybeIndex (e) );
+    edge.rightSuccessor (e);
   }
 
   void firstVertex (WingedEdge& edge, const WingedFace& f, WingedVertex* v) {
@@ -142,63 +151,90 @@ struct PAModifyWEdge :: Impl {
                    , WingedVertex* v1, WingedVertex* v2
                    , WingedFace* lF, WingedFace* rF
                    , WingedEdge* lP, WingedEdge* lS
-                   , WingedEdge* rP, WingedEdge* rS) {
+                   , WingedEdge* rP, WingedEdge* rS) 
+  {
     this->operation = Operation::SetGeometry;
-    this->data.identifier (edge);
-    this->data.values     ( SetGeometryData { edge.vertex1 (), edge.vertex2 ()
-                                            , edge.leftFace (), edge.rightFace ()
-                                            , edge.leftSuccessor (), edge.leftPredecessor ()
-                                            , edge.rightSuccessor (), edge.rightPredecessor () }
-                          , SetGeometryData { v1, v2, lF, rF, lP, lS, rP, rS } );
-
+    this->data.index  (edge);
+    this->data.values (
+        SetGeometryData { 
+          ActionUtil::maybeIndex (edge.vertex1          ())
+        , ActionUtil::maybeIndex (edge.vertex2          ())
+        , ActionUtil::maybeIndex (edge.leftFace         ())
+        , ActionUtil::maybeIndex (edge.rightFace        ())
+        , ActionUtil::maybeIndex (edge.leftPredecessor  ())
+        , ActionUtil::maybeIndex (edge.leftSuccessor    ())
+        , ActionUtil::maybeIndex (edge.rightPredecessor ())
+        , ActionUtil::maybeIndex (edge.rightSuccessor   ())
+        }
+      , SetGeometryData { 
+          ActionUtil::maybeIndex (v1)
+        , ActionUtil::maybeIndex (v2)
+        , ActionUtil::maybeIndex (lF)
+        , ActionUtil::maybeIndex (rF)
+        , ActionUtil::maybeIndex (lP)
+        , ActionUtil::maybeIndex (lS)
+        , ActionUtil::maybeIndex (rP)
+        , ActionUtil::maybeIndex (rS)
+        } );
     edge.setGeometry (v1,v2,lF,rF,lP,lS,rP,rS);
   }
 
   void toggle (WingedMesh& mesh, ActionDataType type) const { 
-    WingedEdge& edge = this->data.identifier ().getEdgeRef (mesh);
+    WingedEdge& edge = mesh.edgeRef (this->data.index ());
 
-    switch (this->operation) {
-      case Operation::Vertex1: {
-        edge.vertex1 (this->data.valueIdentifier (type).getVertex (mesh));
-        break;
-      }
-      case Operation::Vertex2: {
-        edge.vertex2 (this->data.valueIdentifier (type).getVertex (mesh));
-        break;
-      }
-      case Operation::LeftFace: {
-        edge.leftFace (this->data.valueIdentifier (type).getFace (mesh));
-        break;
-      }
-      case Operation::RightFace: {
-        edge.rightFace (this->data.valueIdentifier (type).getFace (mesh));
-        break;
-      }
-      case Operation::LeftPredecessor: {
-        edge.leftPredecessor (this->data.valueIdentifier (type).getEdge (mesh));
-        break;
-      }
-      case Operation::LeftSuccessor: {
-        edge.leftSuccessor (this->data.valueIdentifier (type).getEdge (mesh));
-        break;
-      }
-      case Operation::RightPredecessor: {
-        edge.rightPredecessor (this->data.valueIdentifier (type).getEdge (mesh));
-        break;
-      }
-      case Operation::RightSuccessor: {
-        edge.rightSuccessor (this->data.valueIdentifier (type).getEdge (mesh));
-        break;
-      }
-      case Operation::SetGeometry: {
-        const SetGeometryData& d = this->data.value <SetGeometryData> (type);
+    if (this->operation == Operation::SetGeometry) {
+      const SetGeometryData& d = this->data.value <SetGeometryData> (type);
 
-        edge.setGeometry 
-          ( d.vertex1.getVertex        (mesh),  d.vertex2.getVertex      (mesh)
-          , d.leftFace.getFace         (mesh),  d.rightFace.getFace      (mesh)
-          , d.leftPredecessor.getEdge  (mesh),  d.leftSuccessor.getEdge  (mesh)
-          , d.rightPredecessor.getEdge (mesh),  d.rightSuccessor.getEdge (mesh) );
-        break;
+      edge.setGeometry 
+        ( ActionUtil::wingedVertex (mesh, d.vertex1)
+        , ActionUtil::wingedVertex (mesh, d.vertex2)
+        , ActionUtil::wingedFace   (mesh, d.leftFace)
+        , ActionUtil::wingedFace   (mesh, d.rightFace)
+        , ActionUtil::wingedEdge   (mesh, d.leftPredecessor)
+        , ActionUtil::wingedEdge   (mesh, d.leftSuccessor)
+        , ActionUtil::wingedEdge   (mesh, d.rightPredecessor)
+        , ActionUtil::wingedEdge   (mesh, d.rightSuccessor)
+        );
+    }
+    else {
+      const Maybe <unsigned int>& m = this->data.value <Maybe <unsigned int>> (type);
+
+      switch (this->operation) {
+        case Operation::Vertex1: {
+          edge.vertex1 (ActionUtil::wingedVertex (mesh, m));
+          break;
+        }
+        case Operation::Vertex2: {
+          edge.vertex2 (ActionUtil::wingedVertex (mesh, m));
+          break;
+        }
+        case Operation::LeftFace: {
+          edge.leftFace (ActionUtil::wingedFace (mesh, m));
+          break;
+        }
+        case Operation::RightFace: {
+          edge.rightFace (ActionUtil::wingedFace (mesh, m));
+          break;
+        }
+        case Operation::LeftPredecessor: {
+          edge.leftPredecessor (ActionUtil::wingedEdge (mesh, m));
+          break;
+        }
+        case Operation::LeftSuccessor: {
+          edge.leftSuccessor (ActionUtil::wingedEdge (mesh, m));
+          break;
+        }
+        case Operation::RightPredecessor: {
+          edge.rightPredecessor (ActionUtil::wingedEdge (mesh, m));
+          break;
+        }
+        case Operation::RightSuccessor: {
+          edge.rightSuccessor (ActionUtil::wingedEdge (mesh, m));
+          break;
+        }
+        case Operation::SetGeometry: {
+          break;
+        }
       }
     }
   }
