@@ -6,7 +6,6 @@
 #include "carve-brush.hpp"
 #include "cursor.hpp"
 #include "history.hpp"
-#include "id.hpp"
 #include "mesh-type.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"

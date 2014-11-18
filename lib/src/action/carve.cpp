@@ -10,7 +10,6 @@
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "carve-brush.hpp"
-#include "id.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
 #include "partial-action/modify-winged-vertex.hpp"

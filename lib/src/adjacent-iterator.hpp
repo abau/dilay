@@ -6,7 +6,6 @@
 class WingedVertex;
 class WingedEdge;
 class WingedFace;
-class Id;
 
 /** Iterates over adjacent edges of a face or vertex in counterclockwise order */
 class AdjEdges {

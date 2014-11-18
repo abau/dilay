@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include "../util.hpp"
-#include "id.hpp"
 #include "octree.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
@@ -46,13 +45,9 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
 void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
                                    , bool printDerived) 
 {
-  auto maybeNodeId = [] (OctreeNode* node) {
-    return bool (node) ? std::to_string (node->id ().primitive ())
-                       : std::string ("NULL");
-  };
   std::cout   << "Face "                << f.index () 
               << "\n\tedge:\t\t\t"      << f.edgeRef ().index ()
-              << "\n\toctree node:\t\t" << maybeNodeId (f.octreeNode ());
+              << "\n\toctree node:\t\t" << f.octreeNode ();
   if (printDerived) {
     std::cout << "\n\tnormal:\t\t\t"    << f.normal  (mesh);
   }

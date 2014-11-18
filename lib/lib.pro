@@ -34,7 +34,6 @@ SOURCES += \
            src/cursor.cpp \
            src/dimension.cpp \
            src/history.cpp \
-           src/id.cpp \
            src/intersection.cpp \
            src/mesh.cpp \
            src/mesh-definition.cpp \
@@ -128,8 +127,6 @@ HEADERS += \
            src/dimension.hpp \
            src/fwd-winged.hpp \
            src/history.hpp \
-           src/id.hpp \
-           src/id-map.hpp \
            src/intersection.hpp \
            src/macro.hpp \
            src/maybe.hpp \

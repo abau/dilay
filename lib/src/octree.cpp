@@ -6,7 +6,6 @@
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "fwd-winged.hpp"
-#include "id-map.hpp"
 #include "indexable.hpp"
 #include "octree.hpp"
 #include "primitive/aabox.hpp"
@@ -61,7 +60,6 @@ namespace {
 
 /** Octree node implementation */
 struct OctreeNode::Impl {
-  IdObject             id;
   OctreeNode           node;
   const glm::vec3      center;
   const float          width;
@@ -356,7 +354,6 @@ struct OctreeNode::Impl {
 
 OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
 
-ID             (OctreeNode)
 GETTER_CONST   (int, OctreeNode, depth)
 GETTER_CONST   (const glm::vec3&, OctreeNode, center)
 GETTER_CONST   (float, OctreeNode, width)

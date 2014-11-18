@@ -1,6 +1,5 @@
 #include <cassert>
 #include "adjacent-iterator.hpp"
-#include "id.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
