@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <list>
-#include "id-map.hpp"
+#include "indexable.hpp"
 #include "macro.hpp"
 #include "mesh-type.hpp"
 #include "primitive/ray.hpp"
@@ -13,53 +13,28 @@
 #include "winged/util.hpp"
 
 struct Scene :: Impl {
-  std::list <WingedMesh>  wingedMeshes;
-
-  IdMapPtr <WingedMesh>   wingedMeshIdMap;
-
-  Selection               selection;
-  SelectionMode           selectionMode;
+  IndexableList <WingedMesh> wingedMeshes;
+  Selection                  selection;
+  SelectionMode              selectionMode;
 
   WingedMesh& newWingedMesh (MeshType t) {
-    return this->newWingedMesh (t, Id ());
-  }
-
-  WingedMesh& newWingedMesh (MeshType t, const Id& id) {
     assert (MeshType::Freeform == t);
-    this->wingedMeshes.emplace_back (id);
-    this->wingedMeshIdMap.insert (this->wingedMeshes.back ());
-    return this->wingedMeshes.back ();
-  }
-
-  WingedMesh& newWingedMesh (MeshType t, WingedMesh&& source) {
-    assert (MeshType::Freeform == t);
-    this->wingedMeshes.emplace_back (std::move (source));
-    this->wingedMeshIdMap.insert (this->wingedMeshes.back ());
-    return this->wingedMeshes.back ();
-  }
-
-        WingedMesh& wingedMesh (const Id& id)       { return this->wingedMeshIdMap.elementRef (id); }
-  const WingedMesh& wingedMesh (const Id& id) const { return this->wingedMeshIdMap.elementRef (id); }
-
-  void deleteMesh (MeshType t, const Id& id) {
-    switch (t) {
-      case MeshType::Freeform: {
-        this->deleteMesh (this->wingedMeshIdMap.elementRef (id));
-        break;
-      }
-    }
+    return this->wingedMeshes.emplace ();
   }
 
   void deleteMesh (WingedMesh& mesh) {
-    this->wingedMeshIdMap.remove (mesh.id ());
-    this->wingedMeshes.remove_if ([&mesh] (WingedMesh& m) { return &m == &mesh; });
+    return this->wingedMeshes.deleteElement (mesh);
+  }
+
+  WingedMesh* wingedMesh (unsigned int index) const { 
+    return this->wingedMeshes.get (index); 
   }
 
   void render (MeshType t) {
     if (t == MeshType::Freeform) {
-      for (WingedMesh& m : this->wingedMeshes) {
+      this->forEachMesh ([this] (WingedMesh& m) {
         m.render (this->selection);
-      }
+      });
     }
     else {
       std::abort ();
@@ -68,9 +43,9 @@ struct Scene :: Impl {
 
   bool intersects (SelectionMode t, const PrimRay& ray, WingedFaceIntersection& intersection) {
     if (t == SelectionMode::Freeform) {
-      for (WingedMesh& m : this->wingedMeshes) {
+      this->forEachMesh ([this, &ray, &intersection] (WingedMesh& m) {
         m.intersects (ray, intersection);
-      }
+      });
     }
     return intersection.isIntersection ();
   }
@@ -86,18 +61,19 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  std::pair <Id,unsigned int> intersects (const PrimRay& ray) {
+  bool intersects (const PrimRay& ray, std::pair <unsigned int, unsigned int>& result) {
     switch (this->selectionMode) {
       case SelectionMode::Freeform: {
         WingedFaceIntersection intersection;
         if (this->intersects (ray, intersection)) {
-          return std::pair <Id,unsigned int> ( intersection.mesh ().id    ()
-                                             , intersection.face ().index () );
+          result.first  = intersection.mesh ().index ();
+          result.second = intersection.face ().index ();
+          return true;
         }
         break;
       }
     }
-    return std::pair <Id, unsigned int> ();
+    return false;
   }
 
   void unselectAll () {
@@ -114,8 +90,8 @@ struct Scene :: Impl {
   }
 
   bool selectIntersection (const PrimRay& ray) {
-    std::pair <Id,unsigned int> intersection = this->intersects (ray);
-    if (intersection.first.isValid ()) {
+    std::pair <unsigned, unsigned int> intersection;
+    if (this->intersects (ray, intersection)) {
       if (SelectionModeUtil::isMajor (this->selectionMode)) {
         this->selection.toggleMajor (intersection.first);
       }
@@ -134,33 +110,34 @@ struct Scene :: Impl {
   }
 
   
-  WingedMeshes selectedWingedMeshes (MeshType t) {
-    assert (t == MeshType::Freeform);
-    assert (this->selectionMode == SelectionMode::Freeform);
-
-    WingedMeshes meshes;
-    this->selection.forEachMajor ([this,&meshes] (const Id& id) {
-      meshes.push_back (&this->wingedMesh (id));
-    });
-    return meshes;
-  }
-
   void printStatistics () const {
-    for (const WingedMesh& m : this->wingedMeshes) {
+    this->forEachMesh ([] (WingedMesh& m) {
       WingedUtil::printStatistics (m);
-    }
+    });
   }
 
   void toggleRenderMode (MeshType t) {
     switch (t) {
       case MeshType::Freeform:
-        for (WingedMesh& m : this->wingedMeshes) {
+        this->forEachMesh ([] (WingedMesh& m) {
           m.toggleRenderMode ();
-        }
+        });
         break;
 
       default:
         std::abort ();
+    }
+  }
+
+  void forEachMesh (const std::function <void (WingedMesh&)>& f) const {
+    this->wingedMeshes.forEachElement (f);
+  }
+
+  void forEachSelectedMesh (const std::function <void (WingedMesh&)>& f) const {
+    if (this->selectionMode == SelectionMode::Freeform) {
+      this->selection.forEachMajor ([this,&f] (unsigned int index) {
+        f (*this->wingedMesh (index));
+      });
     }
   }
 };
@@ -168,12 +145,8 @@ struct Scene :: Impl {
 DELEGATE_BIG3 (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)
-DELEGATE2       (WingedMesh&      , Scene, newWingedMesh, MeshType, const Id&)
-DELEGATE_BASE   (WingedMesh&      , Scene, newWingedMesh, (MeshType t, WingedMesh&& m), (t, std::move (m)))
-DELEGATE1       (WingedMesh&      , Scene, wingedMesh, const Id&)
-DELEGATE1_CONST (const WingedMesh&, Scene, wingedMesh, const Id&)
-DELEGATE2       (void             , Scene, deleteMesh, MeshType, const Id&)
 DELEGATE1       (void             , Scene, deleteMesh, WingedMesh&)
+DELEGATE1_CONST (WingedMesh*      , Scene, wingedMesh, unsigned int)
 DELEGATE1       (void             , Scene, render, MeshType)
 DELEGATE3       (bool             , Scene, intersects, SelectionMode, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
@@ -184,6 +157,7 @@ GETTER_CONST    (const Selection& , Scene, selection)
 DELEGATE        (void             , Scene, unselectAll)
 DELEGATE1       (bool             , Scene, selectIntersection, const PrimRay&)
 DELEGATE_CONST  (unsigned int     , Scene, numSelections)
-DELEGATE1       (WingedMeshes     , Scene, selectedWingedMeshes, MeshType)
 DELEGATE_CONST  (void             , Scene, printStatistics)
 DELEGATE1       (void             , Scene, toggleRenderMode, MeshType)
+DELEGATE1_CONST (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
+DELEGATE1_CONST (void             , Scene, forEachSelectedMesh, const std::function <void (WingedMesh&)>&)

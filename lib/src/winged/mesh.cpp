@@ -4,8 +4,6 @@
 #include "../util.hpp"
 #include "adjacent-iterator.hpp"
 #include "config.hpp"
-#include "id-map.hpp"
-#include "id.hpp"
 #include "indexable.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
@@ -21,21 +19,18 @@
 
 struct WingedMesh::Impl {
   WingedMesh*                  self;
-  const IdObject               id;
+  const unsigned int           _index;
   Mesh                         mesh;
   IndexableList <WingedVertex> vertices;
   IndexableList <WingedEdge>   edges;
   Octree                       octree;
 
-  Impl (WingedMesh* s)
+  Impl (WingedMesh* s, unsigned int i) 
     : self   (s)
+    , _index  (i)
     {}
 
-  Impl (WingedMesh* s, const Id& i) 
-    : self   (s)
-    , id     (i)
-    {}
-
+  unsigned int index  ()               const { return this->_index;          }
   glm::vec3    vector (unsigned int i) const { return this->mesh.vertex (i); }
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
   glm::vec3    normal (unsigned int i) const { return this->mesh.normal (i); }
@@ -183,7 +178,7 @@ struct WingedMesh::Impl {
   }
 
   void render (const Selection& selection) { 
-    if (selection.hasMajor (this->id.id ())) {
+    if (selection.hasMajor (this->_index)) {
       this->mesh.color (Config::get <Color> ("/config/editor/selection/color"));
     }
     else {
@@ -265,10 +260,9 @@ struct WingedMesh::Impl {
   }
 };
 
-DELEGATE_BIG3_SELF         (WingedMesh)
-DELEGATE1_CONSTRUCTOR_SELF (WingedMesh,const Id&)
-ID                         (WingedMesh)
+DELEGATE1_BIG3_SELF         (WingedMesh, unsigned int)
 
+DELEGATE_CONST  (unsigned int   , WingedMesh, index)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vector, unsigned int)
 DELEGATE1_CONST (unsigned int   , WingedMesh, index, unsigned int)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, normal, unsigned int)

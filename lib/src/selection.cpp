@@ -1,28 +1,29 @@
 #include <unordered_map>
-#include "id.hpp"
+#include <unordered_set>
 #include "selection.hpp"
 
 struct Selection::Impl {
-  std::unordered_map <Id, std::unordered_set <unsigned int>> selection;
+  std::unordered_map <unsigned int, std::unordered_set <unsigned int>> selection;
 
-  void selectMajor (const Id& id) {
-    this->selection.emplace (id, std::unordered_set <unsigned int> ());
+  void selectMajor (unsigned int index) {
+    this->selection.emplace (index, std::unordered_set <unsigned int> ());
   }
 
-  void selectMinor (const Id& majorId, unsigned int minorIndex) {
-    auto result = this->selection.emplace (majorId, std::unordered_set <unsigned int> ({minorIndex}));
+  void selectMinor (unsigned int majorIndex, unsigned int minorIndex) {
+    auto result = this->selection.emplace ( majorIndex
+                                          , std::unordered_set <unsigned int> ({minorIndex}));
 
     if (result.second == false) {
       result.first->second.emplace (minorIndex);
     }
   }
 
-  void unselectMajor (const Id& id) {
-    this->selection.erase (id);
+  void unselectMajor (unsigned int index) {
+    this->selection.erase (index);
   }
 
-  void unselectMinor (const Id& majorId, unsigned int minorIndex) {
-    auto it = this->selection.find (majorId);
+  void unselectMinor (unsigned int majorIndex, unsigned int minorIndex) {
+    auto it = this->selection.find (majorIndex);
     if (it != this->selection.end ()) {
       it->second.erase (minorIndex);
 
@@ -32,43 +33,43 @@ struct Selection::Impl {
     }
   }
 
-  bool hasMajor (const Id& id) const {
-    return this->selection.count (id) > 0;
+  bool hasMajor (unsigned int index) const {
+    return this->selection.count (index) > 0;
   }
 
-  bool hasMinor (const Id& majorId, unsigned int minorIndex) const {
-    auto it = this->selection.find (majorId);
+  bool hasMinor (unsigned int majorIndex, unsigned int minorIndex) const {
+    auto it = this->selection.find (majorIndex);
     if (it != this->selection.end ()) {
       return it->second.count (minorIndex) > 0;
     }
     return false;
   }
 
-  void toggleMajor (const Id& id) {
-    if (this->hasMajor (id)) {
-      this->unselectMajor (id);
+  void toggleMajor (unsigned int index) {
+    if (this->hasMajor (index)) {
+      this->unselectMajor (index);
     }
     else {
-      this->selectMajor (id);
+      this->selectMajor (index);
     }
   }
 
-  void toggleMinor (const Id& majorId, unsigned int minorIndex) {
-    if (this->hasMinor (majorId, minorIndex)) {
-      this->unselectMinor (majorId, minorIndex);
+  void toggleMinor (unsigned int majorIndex, unsigned int minorIndex) {
+    if (this->hasMinor (majorIndex, minorIndex)) {
+      this->unselectMinor (majorIndex, minorIndex);
     }
     else {
-      this->selectMinor (majorId, minorIndex);
+      this->selectMinor (majorIndex, minorIndex);
     }
   }
 
-  void forEachMajor (const std::function <void (const Id&)>& f) const {
+  void forEachMajor (const std::function <void (unsigned int)>& f) const {
     for (auto major : this->selection) {
       f (major.first);
     }
   }
 
-  void forEachMinor (const std::function <void (const Id&, unsigned int)>& f) const {
+  void forEachMinor (const std::function <void (unsigned int, unsigned int)>& f) const {
     for (auto major : this->selection) {
       for (auto minor : major.second) {
         f (major.first, minor);
@@ -92,22 +93,22 @@ struct Selection::Impl {
   unsigned int numMinors () const {
     unsigned int i = 0;
 
-    this->forEachMinor ([&i] (const Id&, unsigned int) { i++; });
+    this->forEachMinor ([&i] (unsigned int, unsigned int) { i++; });
     return i;
   }
 };
 
 DELEGATE_BIG6 (Selection)
-DELEGATE1       (void        , Selection, selectMajor, const Id&)
-DELEGATE2       (void        , Selection, selectMinor, const Id&, unsigned int)
-DELEGATE1       (void        , Selection, unselectMajor, const Id&)
-DELEGATE2       (void        , Selection, unselectMinor, const Id&, unsigned int)
-DELEGATE1_CONST (bool        , Selection, hasMajor, const Id&)
-DELEGATE2_CONST (bool        , Selection, hasMinor, const Id&, unsigned int)
-DELEGATE1       (void        , Selection, toggleMajor, const Id&)
-DELEGATE2       (void        , Selection, toggleMinor, const Id&, unsigned int)
-DELEGATE1_CONST (void        , Selection, forEachMajor, const std::function <void (const Id&)>&)
-DELEGATE1_CONST (void        , Selection, forEachMinor, const std::function <void (const Id&, unsigned int)>&)
+DELEGATE1       (void        , Selection, selectMajor, unsigned int)
+DELEGATE2       (void        , Selection, selectMinor, unsigned int, unsigned int)
+DELEGATE1       (void        , Selection, unselectMajor, unsigned int)
+DELEGATE2       (void        , Selection, unselectMinor, unsigned int, unsigned int)
+DELEGATE1_CONST (bool        , Selection, hasMajor, unsigned int)
+DELEGATE2_CONST (bool        , Selection, hasMinor, unsigned int, unsigned int)
+DELEGATE1       (void        , Selection, toggleMajor, unsigned int)
+DELEGATE2       (void        , Selection, toggleMinor, unsigned int, unsigned int)
+DELEGATE1_CONST (void        , Selection, forEachMajor, const std::function <void (unsigned int)>&)
+DELEGATE1_CONST (void        , Selection, forEachMinor, const std::function <void (unsigned int, unsigned int)>&)
 DELEGATE        (void        , Selection, reset)
 DELEGATE        (void        , Selection, resetMajors)
 DELEGATE        (void        , Selection, resetMinors)

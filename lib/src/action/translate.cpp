@@ -1,22 +1,20 @@
 #include <glm/glm.hpp>
 #include "action/translate.hpp"
-#include "id.hpp"
-#include "scene.hpp"
-#include "state.hpp"
+#include "action/identifier.hpp"
 #include "selection-mode.hpp"
 #include "winged/mesh.hpp"
 
 struct ActionTranslate::Impl {
-  SelectionMode    selection;
-  std::vector <Id> ids;
-  glm::vec3        delta;
+  SelectionMode                  selection;
+  std::vector <ActionIdentifier> ids;
+  glm::vec3                      delta;
 
   void translate (const std::list <WingedMesh*>& meshes, const glm::vec3& t) {
     this->selection = SelectionMode::Freeform;
     this->delta     = t;
 
     for (WingedMesh* m : meshes) {
-      this->ids.emplace_back (m->id ());
+      this->ids.emplace_back (m);
       m->translate           (this->delta);
       m->normalize           ();
       m->bufferData          ();
@@ -28,8 +26,8 @@ struct ActionTranslate::Impl {
 
     switch (this->selection) {
       case SelectionMode::Freeform: {
-        for (const Id& id : this->ids) {
-          WingedMesh& mesh = State::scene ().wingedMesh (id);
+        for (const ActionIdentifier& id : this->ids) {
+          WingedMesh& mesh = id.getWingedMeshRef ();
           mesh.translate  (toggledDelta);
           mesh.normalize  ();
           mesh.bufferData ();

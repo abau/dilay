@@ -19,8 +19,8 @@ struct ToolSubdivideMesh::Impl {
   ToolResponse runInitialize () {
     ActionUnit& unit = *new ActionUnit ();
 
-    State::scene ().selection ().forEachMajor ([&unit] (const Id& id) {
-      WingedMesh& mesh = State::scene ().wingedMesh (id);
+    State::scene ().selection ().forEachMajor ([&unit] (unsigned int index) {
+      WingedMesh& mesh = State::scene ().wingedMeshRef (index);
       unit.add <ActionSubdivideMesh> (mesh).run (mesh);
     });
 

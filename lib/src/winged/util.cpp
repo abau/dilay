@@ -60,11 +60,11 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
 }
 
 void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
-  std::cout << "Id:\t\t\t\t"                << mesh.id ()          << std::endl;
-  std::cout << "Number of vertices:\t\t"    << mesh.numVertices () << std::endl;
-  std::cout << "Number of edges:\t\t"       << mesh.numEdges ()    << std::endl;
-  std::cout << "Number of faces:\t\t"       << mesh.numFaces ()    << std::endl;
-  std::cout << "Number of indices:\t\t"     << mesh.numIndices ()  
+  std::cout << "Mesh:\t\t\t\t"              << mesh.index ()       << std::endl;
+  std::cout << "\tNumber of vertices:\t"    << mesh.numVertices () << std::endl;
+  std::cout << "\tNumber of edges:\t"       << mesh.numEdges ()    << std::endl;
+  std::cout << "\tNumber of faces:\t"       << mesh.numFaces ()    << std::endl;
+  std::cout << "\tNumber of indices:\t"     << mesh.numIndices ()  
             << " (" << mesh.numIndices () / 3  << ")" << std::endl;
 
   if (mesh.numVertices () <= 10) {

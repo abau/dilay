@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <list>
 #include "action/translate.hpp"
+#include "fwd-winged.hpp"
 #include "history.hpp"
 #include "mesh-type.hpp"
 #include "scene.hpp"
@@ -17,7 +18,7 @@
 #include "winged/mesh.hpp"
 
 namespace {
-  typedef Variant <const WingedMeshes> Entities;
+  typedef Variant <MeshPtrList> Entities;
 };
 
 struct ToolMove::Impl {
@@ -42,9 +43,12 @@ struct ToolMove::Impl {
     const Selection& selection = scene.selection ();
 
     switch (scene.selectionMode ()) {
-      case SelectionMode::Freeform:
-        entities.set <const WingedMeshes> (scene.selectedWingedMeshes (MeshType::Freeform));
+      case SelectionMode::Freeform: {
+        MeshPtrList meshes;
+        scene.forEachSelectedMesh ([&meshes] (WingedMesh& m) { meshes.push_back (&m); });
+        entities.set <MeshPtrList> (meshes);
         break;
+      }
       default:
         std::abort ();
     }
@@ -53,7 +57,7 @@ struct ToolMove::Impl {
 
   void translateSelectionBy (const glm::vec3& t) {
     this->entities.caseOf <void>
-      ( [&t] (const WingedMeshes& ms) { for (WingedMesh* m : ms) { m->translate (t); } }
+      ( [&t] (MeshPtrList& ms) { for (WingedMesh* m : ms) { m->translate (t); } }
       );
   }
 
@@ -61,7 +65,7 @@ struct ToolMove::Impl {
     this->runCancel ();
 
     this->entities.caseOf <void>
-      ( [this] (const WingedMeshes& ms) {
+      ( [this] (MeshPtrList& ms) {
           State::history ().add <ActionTranslate> ().translate (ms, this->movement.delta ());
         }
       );

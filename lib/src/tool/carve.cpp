@@ -45,7 +45,7 @@ struct ToolCarve::Impl {
     WingedFaceIntersection intersection;
 
     if (   scene.intersects (ray, intersection) 
-        && scene.selection  ().hasMajor (intersection.mesh ().id ())) 
+        && scene.selection  ().hasMajor (intersection.mesh ().index ())) 
     {
       this->cursor.position (intersection.position ());
       this->cursor.normal   (intersection.normal   ());

@@ -36,8 +36,8 @@ struct ToolDeleteMesh::Impl {
 
   void runDeleteWingedMesh (ActionUnit& unit) {
     State::scene ().selection ().forEachMajor ([this,&unit]
-      (const Id& id) {
-        WingedMesh& mesh = State::scene ().wingedMesh (id);
+      (unsigned int index) {
+        WingedMesh& mesh = State::scene ().wingedMeshRef (index);
         unit.add <ActionDeleteWMesh> ().deleteMesh (this->meshType, mesh);
       }
     );

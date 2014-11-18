@@ -7,13 +7,11 @@ class WingedMesh;
 class WingedFace;
 class WingedEdge;
 class WingedVertex;
-class Id;
 
 class ActionIdentifier {
   public: 
-    DECLARE_BIG6 (ActionIdentifier)
+    DECLARE_BIG6     (ActionIdentifier)
 
-    ActionIdentifier (const Id&);
     ActionIdentifier (unsigned int);
     ActionIdentifier (const WingedMesh*);
     ActionIdentifier (const WingedFace*);
@@ -24,7 +22,6 @@ class ActionIdentifier {
     ActionIdentifier (const WingedEdge&);
     ActionIdentifier (const WingedVertex&);
 
-    void            setId             (const Id&);
     void            setIndex          (unsigned int);
     void            setMesh           (const WingedMesh*);
     void            setFace           (const WingedFace*);
@@ -32,7 +29,6 @@ class ActionIdentifier {
     void            setVertex         (const WingedVertex*);
 
     bool            isSet             () const;
-    Id*             getId             () const;
     unsigned int*   getIndex          () const;
     WingedMesh*     getWingedMesh     () const;
     WingedFace*     getFace           (const WingedMesh&) const;
@@ -42,7 +38,6 @@ class ActionIdentifier {
     template <typename T>
     T*              getMesh           () const;
 
-    SAFE_REF_CONST  (Id            , getId)
     SAFE_REF_CONST  (unsigned int  , getIndex)
     SAFE_REF_CONST  (WingedMesh    , getWingedMesh)
     SAFE_REF1_CONST (WingedFace    , getFace  , const WingedMesh&)

@@ -13,7 +13,6 @@ class Octree;
 class WingedVertex;
 class WingedFace;
 class WingedEdge;
-class Id;
 class PrimSphere;
 class Selection;
 class Mesh;
@@ -21,10 +20,9 @@ class AffectedFaces;
 
 class WingedMesh {
   public: 
-    DECLARE_BIG3 (WingedMesh)
-    WingedMesh   (const Id&);
+    DECLARE_BIG3 (WingedMesh, unsigned int);
 
-    const Id&          id                 () const;
+    unsigned int       index              () const;
     glm::vec3          vector             (unsigned int) const;
     unsigned int       index              (unsigned int) const;
     glm::vec3          normal             (unsigned int) const;

@@ -53,15 +53,16 @@ struct ActionDeleteWMesh::Impl {
   }
 
   void runUndo () const {
-    WingedMesh& mesh = State::scene ().newWingedMesh ( this->data.value <MeshType> ()
-                                                     , this->data.identifier ().getIdRef () );
+    WingedMesh& mesh = State::scene ().newWingedMesh (this->data.value <MeshType> ());
+
+    assert (mesh.index () == this->data.identifier ().getIndexRef ());
     this->actions.undo (mesh);
   }
     
   void runRedo () const {
-    this->actions.redo (this->data.identifier ().getWingedMeshRef ());
-    State::scene ().deleteMesh ( this->data.value <MeshType> ()
-                               , this->data.identifier ().getIdRef () );
+    WingedMesh& mesh = this->data.identifier ().getWingedMeshRef ();
+    this->actions.redo (mesh);
+    State::scene ().deleteMesh (mesh);
   }
 };
 

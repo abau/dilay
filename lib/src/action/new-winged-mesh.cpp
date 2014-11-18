@@ -1,10 +1,9 @@
 #include <glm/glm.hpp>
 #include <limits>
 #include <map>
-#include "action/identifier.hpp"
+#include "action/data.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "action/unit/on.hpp"
-#include "id.hpp"
 #include "mesh-definition.hpp"
 #include "mesh-type.hpp"
 #include "partial-action/modify-winged-edge.hpp"
@@ -19,8 +18,7 @@
 
 struct ActionNewWingedMesh :: Impl {
   ActionUnitOn <WingedMesh> actions;
-  ActionIdentifier          id;
-  MeshType                  meshType;
+  ActionData <MeshType>     data;
 
   typedef std::pair <unsigned int,unsigned int> UIPair;
   typedef std::map <UIPair, WingedEdge*>        EdgeMap;
@@ -29,8 +27,9 @@ struct ActionNewWingedMesh :: Impl {
     assert (this->actions.isEmpty ());
 
     WingedMesh& mesh = State::scene ().newWingedMesh (t);
-    this->meshType   = t;
-    this->id.setMesh (&mesh);
+
+    this->data.identifier (mesh);
+    this->data.value      (t);
 
     // octree
     glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
@@ -121,12 +120,16 @@ struct ActionNewWingedMesh :: Impl {
   };
 
   void runUndo () const {
-    this->actions.undo (this->id.getWingedMeshRef ());
-    State::scene ().deleteMesh (this->meshType, this->id.getIdRef ());
+    WingedMesh& mesh = this->data.identifier ().getWingedMeshRef ();
+    this->actions.undo (mesh);
+    State::scene ().deleteMesh (mesh);
   }
 
   void runRedo () const {
-    WingedMesh& mesh = State::scene ().newWingedMesh (this->meshType, this->id.getIdRef ());
+    WingedMesh& mesh = State::scene ().newWingedMesh (this->data.value <MeshType> ());
+
+    assert (mesh.index () == this->data.identifier ().getIndexRef ());
+
     this->actions.redo (mesh);
 
     mesh.writeAllIndices ();
