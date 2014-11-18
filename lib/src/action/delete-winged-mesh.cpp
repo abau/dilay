@@ -18,10 +18,6 @@
 struct ActionDeleteWMesh::Impl {
   ActionUnitOn <WingedMesh> actions;
   ActionData   <MeshType>   data;
-
-  ActionIdentifier             id;
-  MeshType                     meshType;
-  std::unique_ptr <WingedMesh> mesh;
   
   void deleteMesh (MeshType t, WingedMesh& mesh) {
     this->data.identifier (mesh);
