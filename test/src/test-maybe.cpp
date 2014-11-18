@@ -3,11 +3,7 @@
 
 void TestMaybe::test () {
 
-  Maybe <int> m1;
-
-  assert (m1.isSet () == false);
-
-  m1.set (5);
+  Maybe <int> m1 (5);
 
   assert (m1.isSet ());
   assert (m1.getRef () == 5);
@@ -34,6 +30,19 @@ void TestMaybe::test () {
 
   m3.set (12);
   m3 = m2;
+
+  assert (m3.isSet () == false);
+
+  m3 = 44;
+  assert (m3.getRef () == 44);
+
+  int *i = new int (55);
+  m3 = i;
+  delete i;
+
+  assert (m3.getRef () == 55);
+
+  m3 = nullptr;
 
   assert (m3.isSet () == false);
 }
