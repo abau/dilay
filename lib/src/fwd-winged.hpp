@@ -10,10 +10,6 @@ class WingedFace;
 class WingedEdge;
 class WingedVertex;
 
-typedef std::list          <WingedFace>    Faces;
-typedef std::list          <WingedEdge>    Edges;
-typedef std::list          <WingedVertex>  Vertices;
-
 typedef std::unordered_set <WingedMesh*>   MeshPtrSet;
 typedef std::unordered_set <WingedFace*>   FacePtrSet;
 typedef std::unordered_set <WingedEdge*>   EdgePtrSet;

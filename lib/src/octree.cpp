@@ -25,6 +25,7 @@
 
 namespace {
   typedef std::unique_ptr <OctreeNode::Impl> Child;
+  typedef std::list       <WingedFace>       Faces;
 
   /** Container for face to insert */
   class FaceToInsert {
