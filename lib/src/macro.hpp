@@ -525,9 +525,6 @@
   void from :: member (t a) { \
     from :: global ().impl -> member = a; }
 
-#define ID(from) \
-  const Id& from :: id () const { return this->impl->id.id () ; }
-
 // safe references
 
 #define SAFE_REF(r,method) \
