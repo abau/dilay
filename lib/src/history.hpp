@@ -20,9 +20,9 @@ class History {
 
     template <typename A, typename T>
     A& add (T& t) { 
-      A& action = *new A ();
+      A* action = new A ();
       this->addAction (new ActionTransformer <T> (t, action));
-      return action; 
+      return *action; 
     }
 
     void addUnit (ActionUnit&&);

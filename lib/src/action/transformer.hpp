@@ -11,8 +11,8 @@ template <typename T> class ActionOn;
 template <typename T>
 class ActionTransformer : public Action {
   public:
-    ActionTransformer (T& t, ActionOn <T>& a) 
-      : actionPtr (&a) 
+    ActionTransformer (T& t, ActionOn <T>* a) 
+      : actionPtr (a) 
       , index     (t.index ())
     {}
 

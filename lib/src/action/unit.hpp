@@ -11,22 +11,22 @@ class ActionUnit : public Action {
 
     template <class A>
     A& add () { 
-      A& action = *new A ();
+      A* action = new A ();
       this->addAction (action); 
-      return action; 
+      return *action; 
     }
 
     template <typename A, typename T>
     A& add (T& t) { 
-      A& action = *new A ();
-      this->addAction (*new ActionTransformer <T> (t, action));
-      return action; 
+      A* action = new A ();
+      this->addAction (new ActionTransformer <T> (t, action));
+      return *action; 
     }
 
     bool isEmpty () const;
 
   private:
-    void addAction (Action&);
+    void addAction (Action*);
     void runUndo   () const;
     void runRedo   () const;
 
