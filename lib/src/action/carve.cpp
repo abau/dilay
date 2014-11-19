@@ -131,6 +131,7 @@ struct ActionCarve::Impl {
     smoothVertices ();
   }
 
+  // TODO outsource because this may be useful for other actions as well
   void finalize (WingedMesh& mesh, AffectedFaces& domain) {
     // collapse degenerated faces
     WingedFace* degenerated = nullptr;
