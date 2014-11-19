@@ -10,7 +10,6 @@ CONFIG                 += staticlib
 
 SOURCES += \
            src/action/carve.cpp \
-           src/action/collapse-face.cpp \
            src/action/delete-winged-mesh.cpp \
            src/action/modify-winged-mesh.cpp \
            src/action/new-winged-mesh.cpp \
@@ -39,6 +38,7 @@ SOURCES += \
            src/mesh-definition.cpp \
            src/octree.cpp \
            src/opengl-util.cpp \
+           src/partial-action/collapse-face.cpp \
            src/partial-action/delete-edge-face.cpp \
            src/partial-action/flip-edge.cpp \
            src/partial-action/insert-edge-face.cpp \
@@ -97,7 +97,6 @@ SOURCES += \
 HEADERS += \
            src/action.hpp \
            src/action/carve.hpp \
-           src/action/collapse-face.hpp \
            src/action/data.hpp \
            src/action/delete-winged-mesh.hpp \
            src/action/modify-winged-mesh.hpp \
@@ -135,6 +134,7 @@ HEADERS += \
            src/mesh-type.hpp \
            src/octree.hpp \
            src/opengl-util.hpp \
+           src/partial-action/collapse-face.hpp \
            src/partial-action/delete-edge-face.hpp \
            src/partial-action/flip-edge.hpp \
            src/partial-action/insert-edge-face.hpp \

@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "action/carve.hpp"
-#include "action/collapse-face.hpp"
 #include "action/relax-edge.hpp"
 #include "action/reset-free-face-indices.hpp"
 #include "action/smooth.hpp"
@@ -12,6 +11,7 @@
 #include "carve-brush.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
+#include "partial-action/collapse-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/sphere.hpp"
 #include "winged/edge.hpp"
@@ -37,7 +37,7 @@ struct ActionCarve::Impl {
     mesh.intersects      (sphere, domain);
 
     for (WingedFace* f : domain.faces ()) {
-      this->actions.add <ActionCollapseFace> ().run (mesh, *f, domain);
+      this->actions.add <PACollapseFace> ().run (mesh, *f, domain);
       break;
     }
     this->finalize       (mesh, domain);
@@ -136,7 +136,7 @@ struct ActionCarve::Impl {
     // collapse degenerated faces
     WingedFace* degenerated = nullptr;
     while ((degenerated = mesh.octree ().someDegeneratedFace ()) != nullptr) {
-      this->actions.add <ActionCollapseFace> ().run (mesh, *degenerated, domain);
+      this->actions.add <PACollapseFace> ().run (mesh, *degenerated, domain);
     }
     domain.commit ();
 

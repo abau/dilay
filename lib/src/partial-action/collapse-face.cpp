@@ -1,8 +1,8 @@
 #include <glm/glm.hpp>
-#include "action/collapse-face.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
+#include "partial-action/collapse-face.hpp"
 #include "partial-action/delete-edge-face.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
@@ -14,7 +14,7 @@
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
-struct ActionCollapseFace::Impl {
+struct PACollapseFace::Impl {
   ActionUnitOn <WingedMesh> actions;
 
   void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
@@ -120,7 +120,7 @@ struct ActionCollapseFace::Impl {
   }
 };
 
-DELEGATE_BIG3   (ActionCollapseFace)
-DELEGATE3       (void, ActionCollapseFace, run, WingedMesh&, WingedFace&, AffectedFaces&)
-DELEGATE1_CONST (void, ActionCollapseFace, runUndo, WingedMesh&)
-DELEGATE1_CONST (void, ActionCollapseFace, runRedo, WingedMesh&)
+DELEGATE_BIG3   (PACollapseFace)
+DELEGATE3       (void, PACollapseFace, run, WingedMesh&, WingedFace&, AffectedFaces&)
+DELEGATE1_CONST (void, PACollapseFace, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PACollapseFace, runRedo, WingedMesh&)
