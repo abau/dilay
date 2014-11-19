@@ -18,7 +18,7 @@ struct ToolSubdivideMesh::Impl {
   }
 
   ToolResponse runInitialize () {
-    ActionUnit& unit = *new ActionUnit ();
+    ActionUnit unit;
 
     State::scene ().selection ().forEachMajor ([&unit] (unsigned int index) {
       WingedMesh& mesh = State::scene ().wingedMeshRef (index);
@@ -26,7 +26,7 @@ struct ToolSubdivideMesh::Impl {
     });
 
     if (unit.isEmpty () == false) {
-      State::history ().addAction (unit);
+      State::history ().addUnit (std::move (unit));
     }
     return ToolResponse::Terminate;
   }

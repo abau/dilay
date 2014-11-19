@@ -4,6 +4,7 @@
 #include "action/transformer.hpp"
 
 class Action;
+class ActionUnit;
 class WingedMesh;
 
 class History {
@@ -12,23 +13,25 @@ class History {
 
     template <typename A>
     A& add () { 
-      A& action = *new A ();
+      A* action = new A ();
       this->addAction (action); 
-      return action; 
+      return *action; 
     }
 
     template <typename A, typename T>
     A& add (T& t) { 
       A& action = *new A ();
-      this->addAction (*new ActionTransformer <T> (t, action));
+      this->addAction (new ActionTransformer <T> (t, action));
       return action; 
     }
 
-    void addAction (Action&);
-    void reset     ();
-    void undo      ();
-    void redo      ();
+    void addUnit (ActionUnit&&);
+    void reset   ();
+    void undo    ();
+    void redo    ();
+
   private:
+    void addAction (Action*);
     IMPLEMENTATION
 };
 

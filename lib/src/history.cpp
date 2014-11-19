@@ -1,6 +1,7 @@
 #include <list>
 #include <memory>
 #include "action.hpp"
+#include "action/unit.hpp"
 #include "history.hpp"
 #include "macro.hpp"
 
@@ -11,9 +12,13 @@ struct History::Impl {
   Timeline past;
   Timeline future;
 
-  void addAction (Action& action) {
+  void addAction (Action* action) {
     this->future.clear ();
-    this->past.push_front (ActionPtr (&action));
+    this->past.push_front (ActionPtr (action));
+  }
+
+  void addUnit (ActionUnit&& unit) {
+    this->addAction (new ActionUnit (std::move (unit)));
   }
 
   void undo () {
@@ -34,6 +39,7 @@ struct History::Impl {
 };
 
 DELEGATE_BIG3 (History)
-DELEGATE1 (void, History, addAction, Action&)
+DELEGATE1 (void, History, addAction, Action*)
+DELEGATE1 (void, History, addUnit, ActionUnit&&)
 DELEGATE  (void, History, undo)
 DELEGATE  (void, History, redo)

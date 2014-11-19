@@ -19,7 +19,7 @@ struct ToolDeleteMesh::Impl {
   }
 
   ToolResponse runInitialize () {
-    ActionUnit& unit = *new ActionUnit ();
+    ActionUnit unit;
 
     switch (this->meshType) {
       case MeshType::Freeform:
@@ -28,7 +28,7 @@ struct ToolDeleteMesh::Impl {
     }
 
     if (unit.isEmpty () == false) {
-      State::history ().addAction (unit);
+      State::history ().addUnit     (std::move (unit));
       State::scene   ().unselectAll ();
     }
     return ToolResponse::Terminate;

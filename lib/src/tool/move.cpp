@@ -72,7 +72,10 @@ struct ToolMove::Impl {
         unit.add <ActionTranslate> (*m).translate (*m, this->movement.delta ());
       }
     });
-    State::history ().addAction (unit);
+
+    if (unit.isEmpty () == false) {
+      State::history ().addUnit (std::move (unit));
+    }
   }
 
   void runCancel () {
