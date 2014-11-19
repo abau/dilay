@@ -26,9 +26,11 @@ class WingedFace {
     void                   index           (unsigned int i) { this->_index      = i; }
     void                   edge            (WingedEdge*  e) { this->_edge       = e; }
     void                   octreeNode      (OctreeNode*  n) { this->_octreeNode = n; }
+
+    WingedVertex*          vertex          (unsigned int) const;
+    unsigned int           vertexIndex     (unsigned int) const;
     void                   writeIndices    (WingedMesh&);
     PrimTriangle           triangle        (const WingedMesh&) const;
-    WingedVertex*          vertex          (unsigned int) const;
     unsigned int           numEdges        () const;
     glm::vec3              normal          (const WingedMesh&) const;
     bool                   isDegenerated   (const WingedMesh&) const;
