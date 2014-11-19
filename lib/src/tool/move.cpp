@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <list>
 #include "action/translate.hpp"
+#include "action/unit.hpp"
 #include "fwd-winged.hpp"
 #include "history.hpp"
 #include "mesh-type.hpp"
@@ -64,11 +65,14 @@ struct ToolMove::Impl {
   void runClose () {
     this->runCancel ();
 
-    this->entities.caseOf <void>
-      ( [this] (MeshPtrList& ms) {
-          State::history ().add <ActionTranslate> ().translate (ms, this->movement.delta ());
-        }
-      );
+    ActionUnit unit;
+
+    this->entities.caseOf <void> ([this,&unit] (MeshPtrList& ms) {
+      for (WingedMesh* m : ms) {
+        unit.add <ActionTranslate> (*m).translate (*m, this->movement.delta ());
+      }
+    });
+    State::history ().addAction (unit);
   }
 
   void runCancel () {

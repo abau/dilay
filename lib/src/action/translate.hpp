@@ -2,21 +2,20 @@
 #define DILAY_ACTION_TRANSLATE
 
 #include <glm/fwd.hpp>
-#include <list>
-#include "action.hpp"
+#include "action/on.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 
-class ActionTranslate : public Action {
+class ActionTranslate : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (ActionTranslate)
 
-    void translate (const std::list <WingedMesh*>&, const glm::vec3&);
+    void translate (WingedMesh&, const glm::vec3&);
 
   private:
-    void runUndo () const;
-    void runRedo () const;
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };
