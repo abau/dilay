@@ -15,9 +15,9 @@ WingedFace :: WingedFace (unsigned int i)
 void WingedFace :: writeIndices (WingedMesh& mesh) {
   assert (this->isTriangle ());
 
-  this->firstVertex  ().writeIndex (mesh, (3 * this->_index) + 0);
-  this->secondVertex ().writeIndex (mesh, (3 * this->_index) + 1);
-  this->thirdVertex  ().writeIndex (mesh, (3 * this->_index) + 2);
+  this->vertex (0)->writeIndex (mesh, (3 * this->_index) + 0);
+  this->vertex (1)->writeIndex (mesh, (3 * this->_index) + 1);
+  this->vertex (2)->writeIndex (mesh, (3 * this->_index) + 2);
 }
 
 PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
@@ -26,16 +26,8 @@ PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
                       , mesh.vector (mesh.index ((3 * this->_index) + 2)) );
 }
 
-WingedVertex& WingedFace :: firstVertex () const { 
-  return this->_edge->firstVertexRef (*this);
-}
-
-WingedVertex& WingedFace :: secondVertex () const { 
-  return this->_edge->secondVertexRef (*this);
-}
-
-WingedVertex& WingedFace :: thirdVertex () const { 
-  return this->_edge->successor (*this)->secondVertexRef (*this);
+WingedVertex* WingedFace :: vertex (unsigned int index) const { 
+  return this->_edge->vertex (*this, index);
 }
 
 unsigned int WingedFace :: numEdges () const {
@@ -50,15 +42,15 @@ unsigned int WingedFace :: numEdges () const {
 
 glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
-  return PrimTriangle::normal ( this->firstVertex  ().position (mesh)
-                              , this->secondVertex ().position (mesh)
-                              , this->thirdVertex  ().position (mesh) );
+  return PrimTriangle::normal ( this->vertex (0)->position (mesh)
+                              , this->vertex (1)->position (mesh)
+                              , this->vertex (2)->position (mesh) );
 }
 
 bool WingedFace :: isDegenerated (const WingedMesh& mesh) const {
-  return PrimTriangle::isDegenerated ( this->firstVertex  ().position (mesh)
-                                     , this->secondVertex ().position (mesh)
-                                     , this->thirdVertex  ().position (mesh) );
+  return PrimTriangle::isDegenerated ( this->vertex (0)->position (mesh)
+                                     , this->vertex (1)->position (mesh)
+                                     , this->vertex (2)->position (mesh) );
 }
 
 WingedEdge* WingedFace :: longestEdge (const WingedMesh& mesh, float *maxLengthSqr) const {
@@ -88,9 +80,9 @@ bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
 
 float WingedFace :: incircleRadiusSqr (const WingedMesh& mesh) const {
   assert (this->isTriangle ());
-  return PrimTriangle::incircleRadiusSqr ( this->firstVertex  ().position (mesh)
-                                         , this->secondVertex ().position (mesh)
-                                         , this->thirdVertex  ().position (mesh) );
+  return PrimTriangle::incircleRadiusSqr ( this->vertex (0)->position (mesh)
+                                         , this->vertex (1)->position (mesh)
+                                         , this->vertex (2)->position (mesh) );
 }
 
 AdjEdges WingedFace :: adjacentEdges (WingedEdge& e) const {

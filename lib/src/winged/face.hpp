@@ -28,9 +28,7 @@ class WingedFace {
     void                   octreeNode      (OctreeNode*  n) { this->_octreeNode = n; }
     void                   writeIndices    (WingedMesh&);
     PrimTriangle           triangle        (const WingedMesh&) const;
-    WingedVertex&          firstVertex     () const;
-    WingedVertex&          secondVertex    () const;
-    WingedVertex&          thirdVertex     () const;
+    WingedVertex*          vertex          (unsigned int) const;
     unsigned int           numEdges        () const;
     glm::vec3              normal          (const WingedMesh&) const;
     bool                   isDegenerated   (const WingedMesh&) const;
@@ -47,9 +45,10 @@ class WingedFace {
     AdjFaces               adjacentFaces          (WingedEdge&) const;
     AdjFaces               adjacentFaces          ()            const;
 
-    SAFE_REF_CONST  (WingedEdge, edge)
-    SAFE_REF_CONST  (OctreeNode, octreeNode)
-    SAFE_REF2_CONST (WingedEdge, longestEdge, const WingedMesh&, float*)
+    SAFE_REF_CONST  (WingedEdge  , edge)
+    SAFE_REF_CONST  (OctreeNode  , octreeNode)
+    SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)
+    SAFE_REF2_CONST (WingedEdge  , longestEdge, const WingedMesh&, float*)
   private:
     unsigned int    _index;
     WingedEdge*     _edge;
