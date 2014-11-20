@@ -33,11 +33,12 @@ struct PAModifyWFace :: Impl {
     assert (face.isTriangle ());
     this->operation = Operation::WriteIndices;
 
-    unsigned int index = face.index ();
-    for (WingedVertex& a : face.adjacentVertices ()) {
-      this->actions.add <PAModifyWVertex> ().writeIndex (mesh, a, index);
-      index++;
-    }
+    this->actions.add <PAModifyWVertex> ()
+                 .writeIndex (mesh, face.vertexRef (0), face.vertexIndex (0));
+    this->actions.add <PAModifyWVertex> ()
+                 .writeIndex (mesh, face.vertexRef (1), face.vertexIndex (1));
+    this->actions.add <PAModifyWVertex> ()
+                 .writeIndex (mesh, face.vertexRef (2), face.vertexIndex (2));
   }
 
   void runUndo (WingedMesh& mesh) const { 
