@@ -32,6 +32,7 @@ glm::vec3 WingedVertex :: interpolatedNormal (const WingedMesh& mesh) const {
       n++;
     }
   }
+  assert (n > 0);
   return normal / float (n);
 }
 

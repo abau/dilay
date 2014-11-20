@@ -33,9 +33,9 @@ struct ActionSubdivideMesh::Impl {
     for (WingedFace* f : affected.faces ()) {
       this->actions.add <PATriangulate6Gon>  ().run (mesh, *f, nullptr);
     }
-    this->self->realignAllFaces (mesh);
-    this->self->writeAllNormals (mesh);
     this->self->writeAllIndices (mesh);
+    this->self->writeAllNormals (mesh);
+    this->self->realignAllFaces (mesh);
     this->self->bufferData      (mesh);
   }
 };
