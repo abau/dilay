@@ -17,10 +17,11 @@ class Indexable {
     typedef std::unordered_set <unsigned int> FreeIndices;
 
     void reserveIndices (unsigned int n) {
-      this->map.reserve (this->numIndices () + n);
-      for (unsigned int i = 0; i < n; i++) {
-        this->map.emplace_back   ();
-        this->freeIndices.insert (this->map.size ());
+      if (n > this->numIndices ()) {
+        for (unsigned int i = this->numIndices (); i < n; i++) {
+          this->freeIndices.insert (i);
+        }
+        this->map.resize (n, TIterator ());
       }
     }
 
