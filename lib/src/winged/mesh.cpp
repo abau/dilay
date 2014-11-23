@@ -67,7 +67,7 @@ struct WingedMesh::Impl {
     WingedFace& face = this->octree.addFace (geometry);
 
     if (3 * face.index () == this->mesh.numIndices ()) {
-      this->mesh.addIndices (3);
+      this->mesh.resizeIndices (this->mesh.numIndices () + 3);
     }
     else if (3 * face.index () > this->mesh.numIndices ()) {
       std::abort ();

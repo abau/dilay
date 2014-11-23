@@ -119,8 +119,8 @@ struct Mesh::Impl {
     return this->indices.size () - 1;
   }
 
-  void addIndices (unsigned int n) { 
-    this->indices.resize (this->indices.size () + n);
+  void resizeIndices (unsigned int n) { 
+    this->indices.resize (n, 0);
   }
 
   unsigned int addVertex (const glm::vec3& v) { 
@@ -135,6 +135,11 @@ struct Mesh::Impl {
     this->normals.push_back (0.0f);
 
     return this->numVertices () - 1;
+  }
+
+  void resizeVertices (unsigned int n) { 
+    this->vertices.resize (3*n, 0.0f);
+    this->normals .resize (3*n, 0.0f);
   }
 
   void setIndex (unsigned int index, unsigned int vertexIndex) {
@@ -333,8 +338,9 @@ DELEGATE1_CONST  (unsigned int      , Mesh, index, unsigned int)
 DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
 
 DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
-DELEGATE1        (void              , Mesh, addIndices, unsigned int)
+DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
+DELEGATE1        (void              , Mesh, resizeVertices, unsigned int)
 DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
 DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)
