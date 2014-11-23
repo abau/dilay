@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <limits>
 #include <vector>
 #include "camera.hpp"
 #include "color.hpp"
@@ -120,7 +121,7 @@ struct Mesh::Impl {
   }
 
   void resizeIndices (unsigned int n) { 
-    this->indices.resize (n, 0);
+    this->indices.resize (n, std::numeric_limits <unsigned int>::max ());
   }
 
   unsigned int addVertex (const glm::vec3& v) { 
@@ -138,8 +139,8 @@ struct Mesh::Impl {
   }
 
   void resizeVertices (unsigned int n) { 
-    this->vertices.resize (3*n, 0.0f);
-    this->normals .resize (3*n, 0.0f);
+    this->vertices.resize (3*n, std::numeric_limits <float>::quiet_NaN ());
+    this->normals .resize (3*n, std::numeric_limits <float>::quiet_NaN ());
   }
 
   void setIndex (unsigned int index, unsigned int vertexIndex) {
