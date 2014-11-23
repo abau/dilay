@@ -25,20 +25,20 @@ void TestIndexable::test () {
   foos.reserveIndices (10);
 
   assert (foos.numElements () == 1);
-  assert (foos.numIndices () == 11);
-  assert (foos.numFreeIndices () == 10);
+  assert (foos.numIndices () == 10);
+  assert (foos.numFreeIndices () == 9);
 
   foos.deleteIndex (0);
 
   assert (foos.numElements () == 0);
-  assert (foos.numIndices () == 11);
-  assert (foos.numFreeIndices () == 11);
+  assert (foos.numIndices () == 10);
+  assert (foos.numFreeIndices () == 10);
 
   foos.emplace (true);
 
   assert (foos.numElements () == 1);
-  assert (foos.numIndices () == 11);
-  assert (foos.numFreeIndices () == 10);
+  assert (foos.numIndices () == 10);
+  assert (foos.numFreeIndices () == 9);
 
   foos.forEachElement   ([] (Foo&) {});
   foos.forEachFreeIndex ([] (unsigned int) {});
