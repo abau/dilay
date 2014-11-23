@@ -42,9 +42,12 @@ class Indexable {
     }
 
     TReference addAt (unsigned int index, const std::function <TIterator ()>& cont) {
-      assert (this->isFree (index));
-      assert (index < this->numIndices ());
-
+      if (index < this->numIndices ()) {
+        assert (this->isFree (index));
+      }
+      else {
+        this->reserveIndices (index + 1);
+      }
       this->freeIndices.erase (index);
       this->map [index] = cont ();
       return *this->map [index];

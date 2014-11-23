@@ -50,4 +50,12 @@ void TestIndexable::test () {
   assert (foos.numElements () == 0);
   assert (foos.numIndices () == 0);
   assert (foos.numFreeIndices () == 0);
+
+  foos.emplaceAt (9, true);
+
+  assert (foos.numElements () == 1);
+  assert (foos.numIndices () == 10);
+  assert (foos.numFreeIndices () == 9);
+
+  assert (foos.getSome () == foos.get (9));
 }
