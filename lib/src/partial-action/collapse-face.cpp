@@ -58,13 +58,15 @@ struct PACollapseFace::Impl {
   }
 
   WingedVertex& addNewVertex (WingedMesh& mesh, WingedFace& face) {
-    WingedVertex& newVertex    = mesh.addVertex (face.triangle (mesh).center ());
     WingedEdge&   edge         = face.edgeRef        ();
     WingedFace&   otherFace    = edge.otherFaceRef   (face);
     WingedEdge&   fPredecessor = edge.predecessorRef (face);
     WingedEdge&   fSuccessor   = edge.successorRef   (face);
     WingedEdge&   oPredecessor = edge.predecessorRef (otherFace);
     WingedEdge&   oSuccessor   = edge.successorRef   (otherFace);
+
+    WingedVertex& newVertex = this->actions.add <PAModifyWMesh> ()
+                                           .addVertex (mesh, face.triangle (mesh).center ());
 
     if (fSuccessor.index () != oPredecessor.index ()) {
       this->actions.add <PAModifyWVertex> ().edge (newVertex, &oPredecessor);
