@@ -1,5 +1,5 @@
-#ifndef DILAY_ACTION_SUBDIVIDE_EDGE
-#define DILAY_ACTION_SUBDIVIDE_EDGE
+#ifndef DILAY_PARTIAL_ACTION_SUBDIVIDE_EDGE
+#define DILAY_PARTIAL_ACTION_SUBDIVIDE_EDGE
 
 #include "action/on.hpp"
 #include "macro.hpp"
@@ -8,9 +8,9 @@ class WingedMesh;
 class WingedEdge;
 class AffectedFaces;
 
-class ActionSubdivideEdge : public ActionOn <WingedMesh> {
+class PASubdivideEdge : public ActionOn <WingedMesh> {
   public: 
-    DECLARE_BIG3 (ActionSubdivideEdge)
+    DECLARE_BIG3 (PASubdivideEdge)
 
     static void      extendDomain (AffectedFaces&);
            void      run          (WingedMesh&, WingedEdge&, AffectedFaces&);

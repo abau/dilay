@@ -1,5 +1,5 @@
-#ifndef DILAY_ACTION_SMOOTH
-#define DILAY_ACTION_SMOOTH
+#ifndef DILAY_PARTIAL_ACTION_SMOOTH
+#define DILAY_PARTIAL_ACTION_SMOOTH
 
 #include "action/on.hpp"
 #include "fwd-winged.hpp"
@@ -7,9 +7,9 @@
 
 class AffectedFaces;
 
-class ActionSmooth : public ActionOn <WingedMesh> {
+class PASmooth : public ActionOn <WingedMesh> {
   public: 
-    DECLARE_BIG3 (ActionSmooth)
+    DECLARE_BIG3 (PASmooth)
 
     void run (WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&);
   private:

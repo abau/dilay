@@ -1,10 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "action/carve.hpp"
-#include "action/relax-edge.hpp"
 #include "action/reset-free-face-indices.hpp"
-#include "action/smooth.hpp"
-#include "action/subdivide-edge.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
@@ -13,6 +10,9 @@
 #include "octree.hpp"
 #include "partial-action/collapse-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
+#include "partial-action/relax-edge.hpp"
+#include "partial-action/smooth.hpp"
+#include "partial-action/subdivide-edge.hpp"
 #include "primitive/sphere.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
@@ -95,7 +95,7 @@ struct ActionCarve::Impl {
           thisIteration.insert (*f);
         }
       }
-      ActionSubdivideEdge::extendDomain (thisIteration);
+      PASubdivideEdge::extendDomain (thisIteration);
     };
 
     auto isSubdividable = [&] (WingedEdge& edge) -> bool {
@@ -106,7 +106,7 @@ struct ActionCarve::Impl {
       AffectedFaces newAF;
       for (WingedEdge* e : thisIteration.edges ()) {
         if (isSubdividable (*e)) {
-          this->actions.add <ActionSubdivideEdge> ().run (mesh, *e, newAF);
+          this->actions.add <PASubdivideEdge> ().run (mesh, *e, newAF);
         }
       }
       domain       .insert (newAF);
@@ -116,12 +116,12 @@ struct ActionCarve::Impl {
     };
     auto relaxEdges = [&] () {
       for (WingedEdge* e : thisIteration.edges ()) {
-        this->actions.add <ActionRelaxEdge> ().run (mesh, *e, domain);
+        this->actions.add <PARelaxEdge> ().run (mesh, *e, domain);
       }
       domain.commit ();
     };
     auto smoothVertices = [&] () {
-      this->actions.add <ActionSmooth> ().run (mesh, thisIteration.toVertexSet (), 5, domain);
+      this->actions.add <PASmooth> ().run (mesh, thisIteration.toVertexSet (), 5, domain);
       domain.commit ();
     };
 

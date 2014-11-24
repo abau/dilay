@@ -14,10 +14,7 @@ SOURCES += \
            src/action/modify-winged-mesh.cpp \
            src/action/new-winged-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
-           src/action/relax-edge.cpp \
            src/action/reset-free-face-indices.cpp \
-           src/action/smooth.cpp \
-           src/action/subdivide-edge.cpp \
            src/action/subdivide-mesh.cpp \
            src/action/translate.cpp \
            src/action/unit.cpp \
@@ -47,6 +44,9 @@ SOURCES += \
            src/partial-action/modify-winged-face.cpp \
            src/partial-action/modify-winged-mesh.cpp \
            src/partial-action/modify-winged-vertex.cpp \
+           src/partial-action/relax-edge.cpp \
+           src/partial-action/smooth.cpp \
+           src/partial-action/subdivide-edge.cpp \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
            src/primitive/aabox.cpp \
@@ -103,10 +103,7 @@ HEADERS += \
            src/action/new-winged-mesh.hpp \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
-           src/action/relax-edge.hpp \
            src/action/reset-free-face-indices.hpp \
-           src/action/smooth.hpp \
-           src/action/subdivide-edge.hpp \
            src/action/subdivide-mesh.hpp \
            src/action/transformer.hpp \
            src/action/translate.hpp \
@@ -143,6 +140,9 @@ HEADERS += \
            src/partial-action/modify-winged-face.hpp \
            src/partial-action/modify-winged-mesh.hpp \
            src/partial-action/modify-winged-vertex.hpp \
+           src/partial-action/relax-edge.hpp \
+           src/partial-action/smooth.hpp \
+           src/partial-action/subdivide-edge.hpp \
            src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
            src/primitive/aabox.hpp \

@@ -1,16 +1,16 @@
 #include <glm/glm.hpp>
-#include "action/subdivide-edge.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
 #include "partial-action/triangulate-quad.hpp"
+#include "partial-action/subdivide-edge.hpp"
 #include "subdivision-butterfly.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
 
-struct ActionSubdivideEdge::Impl {
+struct PASubdivideEdge::Impl {
   ActionUnitOn <WingedMesh> actions;
 
   void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
@@ -79,8 +79,8 @@ struct ActionSubdivideEdge::Impl {
   }
 };
 
-DELEGATE_BIG3 (ActionSubdivideEdge)
-DELEGATE1_STATIC (void, ActionSubdivideEdge, extendDomain, AffectedFaces&)
-DELEGATE3        (void, ActionSubdivideEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE1_CONST  (void, ActionSubdivideEdge, runUndo, WingedMesh&)
-DELEGATE1_CONST  (void, ActionSubdivideEdge, runRedo, WingedMesh&)
+DELEGATE_BIG3 (PASubdivideEdge)
+DELEGATE1_STATIC (void, PASubdivideEdge, extendDomain, AffectedFaces&)
+DELEGATE3        (void, PASubdivideEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
+DELEGATE1_CONST  (void, PASubdivideEdge, runUndo, WingedMesh&)
+DELEGATE1_CONST  (void, PASubdivideEdge, runRedo, WingedMesh&)

@@ -1,10 +1,10 @@
 #include <glm/glm.hpp>
-#include "action/smooth.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
+#include "partial-action/smooth.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
@@ -12,7 +12,7 @@
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
-struct ActionSmooth::Impl {
+struct PASmooth::Impl {
   ActionUnitOn <WingedMesh> actions;
 
   void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
@@ -116,7 +116,7 @@ struct ActionSmooth::Impl {
   }
 };
 
-DELEGATE_BIG3   (ActionSmooth)
-DELEGATE4       (void, ActionSmooth, run, WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&)
-DELEGATE1_CONST (void, ActionSmooth, runUndo, WingedMesh&)
-DELEGATE1_CONST (void, ActionSmooth, runRedo, WingedMesh&)
+DELEGATE_BIG3   (PASmooth)
+DELEGATE4       (void, PASmooth, run, WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&)
+DELEGATE1_CONST (void, PASmooth, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PASmooth, runRedo, WingedMesh&)

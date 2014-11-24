@@ -1,12 +1,12 @@
 #include <glm/glm.hpp>
-#include "action/relax-edge.hpp"
 #include "action/unit/on.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/flip-edge.hpp"
+#include "partial-action/relax-edge.hpp"
 #include "winged/edge.hpp"
 #include "winged/vertex.hpp"
 
-struct ActionRelaxEdge::Impl {
+struct PARelaxEdge::Impl {
   ActionUnitOn <WingedMesh> actions;
 
   void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
@@ -33,7 +33,7 @@ struct ActionRelaxEdge::Impl {
   }
 };
 
-DELEGATE_BIG3 (ActionRelaxEdge)
-DELEGATE3       (void, ActionRelaxEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE1_CONST (void, ActionRelaxEdge, runUndo, WingedMesh&)
-DELEGATE1_CONST (void, ActionRelaxEdge, runRedo, WingedMesh&)
+DELEGATE_BIG3 (PARelaxEdge)
+DELEGATE3       (void, PARelaxEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
+DELEGATE1_CONST (void, PARelaxEdge, runUndo, WingedMesh&)
+DELEGATE1_CONST (void, PARelaxEdge, runRedo, WingedMesh&)
