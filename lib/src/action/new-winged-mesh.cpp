@@ -126,10 +126,8 @@ struct ActionNewWingedMesh :: Impl {
   }
 
   void runRedo () const {
-    WingedMesh& mesh = State::scene ().newWingedMesh (this->data.value <MeshType> ());
-
-    assert (mesh.index () == this->data.index ());
-
+    WingedMesh& mesh = State::scene ().newWingedMesh ( this->data.index ()
+                                                     , this->data.value <MeshType> () );
     this->actions.redo (mesh);
 
     mesh.writeAllIndices ();

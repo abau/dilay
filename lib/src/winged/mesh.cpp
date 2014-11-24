@@ -27,7 +27,7 @@ struct WingedMesh::Impl {
 
   Impl (WingedMesh* s, unsigned int i) 
     : self   (s)
-    , _index  (i)
+    , _index (i)
     {}
 
   unsigned int index  ()               const { return this->_index;          }
@@ -47,30 +47,50 @@ struct WingedMesh::Impl {
 
   WingedVertex& addVertex (const glm::vec3& pos) {
     WingedVertex& vertex = this->vertices.emplace ();
+    this->addVertexToInternalMesh (vertex, pos);
+    return vertex;
+  }
+
+  WingedVertex& addVertex (unsigned int index, const glm::vec3& pos) {
+    WingedVertex& vertex = this->vertices.emplaceAt (index);
+    this->addVertexToInternalMesh (vertex, pos);
+    return vertex;
+  }
+
+  void addVertexToInternalMesh (WingedVertex& vertex, const glm::vec3& pos) {
     if (vertex.index () == this->mesh.numVertices ()) {
       this->mesh.addVertex (pos);
     }
-    else if (vertex.index () < this->mesh.numVertices ()) {
+    else {
+      if (vertex.index () >= this->mesh.numVertices ()) {
+        this->mesh.resizeVertices (vertex.index () + 1);
+      }
       this->mesh.setVertex (vertex.index (), pos);
     }
-    else {
-      std::abort ();
-    }
-    return vertex;
   }
 
   WingedEdge& addEdge () {
     return this->edges.emplace ();
   }
 
+  WingedEdge& addEdge (unsigned int index) {
+    return this->edges.emplaceAt (index);
+  }
+
   WingedFace& addFace (const PrimTriangle& geometry) {
     WingedFace& face = this->octree.addFace (geometry);
 
-    if (3 * face.index () == this->mesh.numIndices ()) {
-      this->mesh.resizeIndices (this->mesh.numIndices () + 3);
+    if ((3 * face.index ()) + 2 >= this->mesh.numIndices ()) {
+      this->mesh.resizeIndices ((3 * face.index ()) + 3);
     }
-    else if (3 * face.index () > this->mesh.numIndices ()) {
-      std::abort ();
+    return face;
+  }
+
+  WingedFace& addFace (unsigned int index, const PrimTriangle& geometry) {
+    WingedFace& face = this->octree.addFace (index, nullptr, geometry);
+
+    if ((3 * face.index ()) + 2 >= this->mesh.numIndices ()) {
+      this->mesh.resizeIndices ((3 * index) + 3);
     }
     return face;
   }
@@ -107,7 +127,7 @@ struct WingedMesh::Impl {
     std::vector <WingedEdge*> adjacents = face.adjacentEdges ().collect ();
 
     WingedFace& newFace = bool (newOctree) 
-                        ? newOctree -> addFace  (face, triangle)
+                        ? newOctree -> addFace  (face.index (), face.edge (), triangle)
                         : this->octree.realignFace (face, triangle, sameNode);
 
     for (WingedEdge* e : adjacents) {
@@ -132,7 +152,7 @@ struct WingedMesh::Impl {
     }
   }
 
-  unsigned int numVertices () const { 
+  unsigned int numVertices () const {
     return this->vertices.numElements (); 
   }
 
@@ -260,7 +280,7 @@ struct WingedMesh::Impl {
   }
 };
 
-DELEGATE1_BIG3_SELF         (WingedMesh, unsigned int)
+DELEGATE1_BIG3_SELF        (WingedMesh, unsigned int)
 
 DELEGATE_CONST  (unsigned int   , WingedMesh, index)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vector, unsigned int)
@@ -271,8 +291,11 @@ DELEGATE1_CONST (WingedEdge*    , WingedMesh, edge, unsigned int)
 DELEGATE1_CONST (WingedFace*    , WingedMesh, face, unsigned int)
 
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
+DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, unsigned int, const glm::vec3&)
 DELEGATE        (WingedEdge&    , WingedMesh, addEdge)
+DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, unsigned int)
 DELEGATE1       (WingedFace&    , WingedMesh, addFace, const PrimTriangle&)
+DELEGATE2       (WingedFace&    , WingedMesh, addFace, unsigned int, const PrimTriangle&)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)

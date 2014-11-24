@@ -7,7 +7,7 @@
 #include "macro.hpp"
 
 class WingedFace;
-class WingedVertex;
+class WingedEdge;
 class WingedMesh;
 class PrimTriangle;
 class OctreeNode;
@@ -52,9 +52,8 @@ class Octree {
     DECLARE_BIG4MOVE (Octree)
 
     void             setupRoot            (const glm::vec3&, float);
-    void             reserveIndices       (unsigned int);
     WingedFace&      addFace              (const PrimTriangle&);
-    WingedFace&      addFace              (const WingedFace&, const PrimTriangle&);
+    WingedFace&      addFace              (unsigned int, WingedEdge*, const PrimTriangle&);
     WingedFace&      realignFace          (WingedFace&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace           (WingedFace&);
     WingedFace*      face                 (unsigned int) const;

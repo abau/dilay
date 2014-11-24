@@ -22,6 +22,11 @@ struct Scene :: Impl {
     return this->wingedMeshes.emplace ();
   }
 
+  WingedMesh& newWingedMesh (unsigned int index, MeshType t) {
+    assert (MeshType::Freeform == t);
+    return this->wingedMeshes.emplaceAt (index);
+  }
+
   void deleteMesh (WingedMesh& mesh) {
     return this->wingedMeshes.deleteElement (mesh);
   }
@@ -150,6 +155,7 @@ WingedMesh* Scene::mesh <WingedMesh> (unsigned int index) const {
 DELEGATE_BIG3 (Scene)
 
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, MeshType)
+DELEGATE2       (WingedMesh&      , Scene, newWingedMesh, unsigned int, MeshType)
 DELEGATE1       (void             , Scene, deleteMesh, WingedMesh&)
 DELEGATE1_CONST (WingedMesh*      , Scene, wingedMesh, unsigned int)
 DELEGATE1       (void             , Scene, render, MeshType)

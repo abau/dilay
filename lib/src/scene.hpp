@@ -16,6 +16,7 @@ class Scene {
     DECLARE_BIG3 (Scene)
 
           WingedMesh&   newWingedMesh        (MeshType);
+          WingedMesh&   newWingedMesh        (unsigned int, MeshType);
           void          deleteMesh           (WingedMesh&);
           WingedMesh*   wingedMesh           (unsigned int) const;
 

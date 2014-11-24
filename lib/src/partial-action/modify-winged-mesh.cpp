@@ -108,21 +108,15 @@ struct PAModifyWMesh :: Impl {
 
     switch (this->operation) {
       case Operation::DeleteEdge: {
-        WingedEdge& edge = mesh.addEdge ();
-
-        assert (edge.index () == this->data.index ());
+        mesh.addEdge (this->data.index ());
         break;
       }
       case Operation::DeleteFace: {
-        WingedFace& face = mesh.addFace (this->data.value <PrimTriangle> ());
-
-        assert (face.index () == this->data.index ());
+        mesh.addFace (this->data.index (), this->data.value <PrimTriangle> ());
         break;
       }
       case Operation::DeleteVertex: {
-        WingedVertex& vertex = mesh.addVertex (this->data.value <glm::vec3> ());
-
-        assert (vertex.index () == this->data.index ());
+        mesh.addVertex (this->data.index (), this->data.value <glm::vec3> ());
         break;
       }
       case Operation::AddEdge: {
@@ -163,21 +157,15 @@ struct PAModifyWMesh :: Impl {
         break;
       }
       case Operation::AddEdge: {
-        WingedEdge& edge = mesh.addEdge ();
-
-        assert (edge.index () == this->data.index ());
+        mesh.addEdge (this->data.index ());
         break;
       }
       case Operation::AddFace: {
-        WingedFace& face = mesh.addFace (this->data.value <PrimTriangle> ());
-
-        assert (face.index () == this->data.index ());
+        mesh.addFace (this->data.index (), this->data.value <PrimTriangle> ());
         break;
       }
       case Operation::AddVertex: {
-        WingedVertex& vertex = mesh.addVertex (this->data.value <glm::vec3> ());
-
-        assert (vertex.index () == this->data.index ());
+        mesh.addVertex (this->data.index (), this->data.value <glm::vec3> ());
         break;
       }
       case Operation::InitOctreeRoot: {

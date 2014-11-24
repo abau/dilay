@@ -388,18 +388,10 @@ struct Octree::Impl {
     this->root = Child (new OctreeNode::Impl (this->rootPosition, this->rootWidth, 0, nullptr));
   }
 
-  void reserveIndices (unsigned int n) {
-    this->faceIndex.reserveIndices (n);
-  }
-
   WingedFace& addFace (const PrimTriangle& geometry) {
     return this->faceIndex.add ([this,&geometry] (unsigned int index) {
       return this->addFace (FaceToInsert (index, nullptr, geometry));
     });
-  }
-
-  WingedFace& addFace (const WingedFace& face, const PrimTriangle& geometry) {
-    return this->addFace (face.index (), face.edge (), geometry);
   }
 
   WingedFace& addFace (unsigned int index, WingedEdge* edge, const PrimTriangle& geometry) {
@@ -624,9 +616,8 @@ struct Octree::Impl {
 DELEGATE_BIG4MOVE (Octree)
 
 DELEGATE2       (void        , Octree, setupRoot, const glm::vec3&, float)
-DELEGATE1       (void        , Octree, reserveIndices, unsigned int)
 DELEGATE1       (WingedFace& , Octree, addFace, const PrimTriangle&)
-DELEGATE2       (WingedFace& , Octree, addFace, const WingedFace&, const PrimTriangle&)
+DELEGATE3       (WingedFace& , Octree, addFace, unsigned int, WingedEdge*, const PrimTriangle&)
 DELEGATE3       (WingedFace& , Octree, realignFace, WingedFace&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, WingedFace&)
 DELEGATE1_CONST (WingedFace* , Octree, face, unsigned int)
