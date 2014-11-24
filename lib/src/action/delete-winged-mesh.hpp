@@ -11,7 +11,7 @@ class ActionDeleteWMesh : public Action {
   public: 
     DECLARE_BIG3 (ActionDeleteWMesh)
 
-    void deleteMesh (MeshType, WingedMesh&);
+    void run (MeshType, WingedMesh&);
 
   private:
     void runUndo () const;

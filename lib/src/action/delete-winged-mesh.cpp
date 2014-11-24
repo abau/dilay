@@ -18,7 +18,7 @@ struct ActionDeleteWMesh::Impl {
   ActionUnitOn <WingedMesh> actions;
   ActionData   <MeshType>   data;
   
-  void deleteMesh (MeshType t, WingedMesh& mesh) {
+  void run (MeshType t, WingedMesh& mesh) {
     this->data.index (mesh);
     this->data.value (t);
 
@@ -64,6 +64,6 @@ struct ActionDeleteWMesh::Impl {
 };
 
 DELEGATE_BIG3   (ActionDeleteWMesh)
-DELEGATE2       (void, ActionDeleteWMesh, deleteMesh, MeshType, WingedMesh&)
+DELEGATE2       (void, ActionDeleteWMesh, run, MeshType, WingedMesh&)
 DELEGATE_CONST  (void, ActionDeleteWMesh, runUndo)
 DELEGATE_CONST  (void, ActionDeleteWMesh, runRedo)
