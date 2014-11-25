@@ -16,7 +16,6 @@ SOURCES += \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/reset-free-face-indices.cpp \
            src/action/subdivide-mesh.cpp \
-           src/action/translate.cpp \
            src/action/unit.cpp \
            src/action/util.cpp \
            src/adjacent-iterator.cpp \
@@ -106,7 +105,6 @@ HEADERS += \
            src/action/reset-free-face-indices.hpp \
            src/action/subdivide-mesh.hpp \
            src/action/transformer.hpp \
-           src/action/translate.hpp \
            src/action/unit.hpp \
            src/action/unit/on.hpp \
            src/action/util.hpp \

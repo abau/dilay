@@ -11,13 +11,13 @@ class ActionModifyWMesh : public ActionOn <WingedMesh> {
   public: 
     DECLARE_BIG3 (ActionModifyWMesh)
 
+    void translate      (WingedMesh&, const glm::vec3&);
     void position       (WingedMesh&, const glm::vec3&);
-    void rotationMatrix (WingedMesh&, const glm::mat4x4&);
-    void scaling        (WingedMesh&, const glm::vec3&);
+    void scale          (WingedMesh&, const glm::vec3&);
 
   private:
-    void runUndo (WingedMesh&);
-    void runRedo (WingedMesh&);
+    void runUndo (WingedMesh&) const;
+    void runRedo (WingedMesh&) const;
 
     IMPLEMENTATION
 };

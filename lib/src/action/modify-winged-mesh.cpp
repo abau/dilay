@@ -1,74 +1,63 @@
 #include <glm/glm.hpp>
 #include "action/modify-winged-mesh.hpp"
-#include "variant.hpp"
+#include "action/data.hpp"
 #include "winged/mesh.hpp"
 
 namespace {
   enum class Operation { 
-    Position, RotationMatrix, Scaling
+    Translate, Scale
   };
 
-  typedef Variant <glm::vec3, glm::mat4x4> OperandData;
+  typedef ActionData <glm::vec3, glm::mat4x4> Data;
 };
 
 struct ActionModifyWMesh :: Impl {
-  Operation   operation;
-  OperandData operandData;
+  Operation operation;
+  Data      data;
+
+  void translate (WingedMesh& mesh, const glm::vec3& delta) {
+    this->operation = Operation::Translate;
+    this->data.values (-delta, delta);
+    mesh.translate    (delta);
+    mesh.normalize    ();
+    mesh.bufferData   ();
+  }
 
   void position (WingedMesh& mesh, const glm::vec3& pos) {
-    this->operation = Operation::Position;
-    this->operandData.set <glm::vec3> (mesh.position ());
-    mesh.position (pos);
+    this->translate (mesh, pos - mesh.position ());
   }
 
-  void rotationMatrix (WingedMesh& mesh, const glm::mat4x4& mat) {
-    this->operation = Operation::RotationMatrix;
-    this->operandData.set <glm::mat4x4> (mesh.rotationMatrix ());
-    mesh.rotationMatrix (mat);
+  void scale (WingedMesh& mesh, const glm::vec3& factor) {
+    this->operation = Operation::Scale;
+    this->data.values (1.0f/factor, factor);
+    mesh.scale        (factor);
+    mesh.normalize    ();
+    mesh.bufferData   ();
   }
 
-  void scaling (WingedMesh& mesh, const glm::vec3& scal) {
-    this->operation = Operation::Scaling;
-    this->operandData.set <glm::vec3> (mesh.scaling ());
-    mesh.scaling (scal);
-  }
-
-  void toggle (WingedMesh& mesh) {
+  void toggle (WingedMesh& mesh, ActionDataType type) const {
     switch (this->operation) {
-      case Operation::Position: {
-        glm::vec3 pos = mesh.position ();
-        mesh.position (this->operandData.get <glm::vec3> ());
-        this->operandData.set <glm::vec3> (pos);
+      case Operation::Translate: {
+        mesh.translate (this->data.value <glm::vec3> (type));
         break;
       }
-      case Operation::RotationMatrix: {
-        glm::mat4x4 rot = mesh.rotationMatrix ();
-        mesh.rotationMatrix (this->operandData.get <glm::mat4x4> ());
-        this->operandData.set <glm::mat4x4> (rot);
-        break;
-      }
-      case Operation::Scaling: {
-        glm::vec3 scal = mesh.scaling ();
-        mesh.scaling (this->operandData.get <glm::vec3> ());
-        this->operandData.set <glm::vec3> (scal);
+      case Operation::Scale: {
+        mesh.scale (this->data.value <glm::vec3> (type));
         break;
       }
     }
+    mesh.normalize  ();
+    mesh.bufferData ();
   }
 
-  void runUndo (WingedMesh& mesh) { 
-    this->toggle (mesh);
-  }
-
-  void runRedo (WingedMesh& mesh) { 
-    this->toggle (mesh);
-  }
+  void runUndo (WingedMesh& mesh) { this->toggle (mesh, ActionDataType::Old); }
+  void runRedo (WingedMesh& mesh) { this->toggle (mesh, ActionDataType::New); }
 };
 
 DELEGATE_BIG3 (ActionModifyWMesh)
 
-DELEGATE2 (void, ActionModifyWMesh, position, WingedMesh&, const glm::vec3&)
-DELEGATE2 (void, ActionModifyWMesh, rotationMatrix, WingedMesh&, const glm::mat4x4&)
-DELEGATE2 (void, ActionModifyWMesh, scaling, WingedMesh&, const glm::vec3&)
-DELEGATE1 (void, ActionModifyWMesh, runUndo , WingedMesh&)
-DELEGATE1 (void, ActionModifyWMesh, runRedo , WingedMesh&)
+DELEGATE2       (void, ActionModifyWMesh, translate, WingedMesh&, const glm::vec3&)
+DELEGATE2       (void, ActionModifyWMesh, position, WingedMesh&, const glm::vec3&)
+DELEGATE2       (void, ActionModifyWMesh, scale, WingedMesh&, const glm::vec3&)
+DELEGATE1_CONST (void, ActionModifyWMesh, runUndo , WingedMesh&)
+DELEGATE1_CONST (void, ActionModifyWMesh, runRedo , WingedMesh&)
