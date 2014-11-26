@@ -18,6 +18,7 @@ class AdjEdges {
         Iterator&   operator++ ();
         bool        operator!= (const Iterator&) const;
         WingedEdge& operator*  ()                const;
+        WingedEdge* operator-> ()                const;
 
               WingedEdge*   edge   () const { return this->_edge;   }
         const WingedFace*   face   () const { return this->_face;   }
@@ -57,6 +58,7 @@ class AdjVertices {
         Iterator&     operator++ ()                        { ++this->eIt; return *this; }
         bool          operator!= (const Iterator& o) const { return this->eIt != o.eIt; }
         WingedVertex& operator*  ()                  const;
+        WingedVertex* operator-> ()                  const;
 
               WingedEdge*   edge   () const { return this->eIt.edge   ();  }
         const WingedFace*   face   () const { return this->eIt.face   ();  }
@@ -89,9 +91,10 @@ class AdjFaces {
         Iterator (const WingedFace&   f, WingedEdge& e, bool i) : eIt (f,e,i) {}
         Iterator (const WingedVertex& v, WingedEdge& e, bool i) : eIt (v,e,i) {}
 
-        Iterator&     operator++ ()                        { ++this->eIt; return *this; }
-        bool          operator!= (const Iterator& o) const { return this->eIt != o.eIt; }
-        WingedFace&   operator*  ()                  const;
+        Iterator&   operator++ ()                        { ++this->eIt; return *this; }
+        bool        operator!= (const Iterator& o) const { return this->eIt != o.eIt; }
+        WingedFace& operator*  ()                  const;
+        WingedFace* operator-> ()                  const;
 
               WingedEdge*   edge   () const { return this->eIt.edge   ();  }
         const WingedFace*   face   () const { return this->eIt.face   ();  }

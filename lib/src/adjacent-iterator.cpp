@@ -37,13 +37,17 @@ AdjEdges::Iterator& AdjEdges::Iterator::operator++ () {
   return *this; 
 }
 
-WingedEdge& AdjEdges::Iterator::operator* () const {
-  assert (this->isEnd == false);
-  return *this->_edge;
-}
-
 bool AdjEdges::Iterator::operator!= (const AdjEdges::Iterator& o) const {
   return this->isEnd != o.isEnd || this->_edge != o._edge;
+}
+
+WingedEdge& AdjEdges::Iterator::operator* () const {
+  return *this->operator-> ();
+}
+
+WingedEdge* AdjEdges::Iterator::operator-> () const {
+  assert (this->isEnd == false);
+  return this->_edge;
 }
 
 AdjEdges :: AdjEdges (const WingedFace& f, WingedEdge& e)
@@ -65,11 +69,14 @@ std::vector <WingedEdge*> AdjEdges :: collect () {
 }
 
 WingedVertex& AdjVertices::Iterator::operator* () const {
-  WingedEdge& edge = *this->eIt;
+  return *this->operator-> ();
+}
+
+WingedVertex* AdjVertices::Iterator::operator-> () const {
   if (this->eIt.face ())
-    return edge.firstVertexRef (*this->eIt.face ());
+    return this->eIt->firstVertex (*this->eIt.face ());
   else
-    return edge.otherVertexRef (*this->eIt.vertex ());
+    return this->eIt->otherVertex (*this->eIt.vertex ());
 }
 
 AdjVertices :: AdjVertices (const WingedFace& f, WingedEdge& e) 
@@ -91,15 +98,18 @@ std::vector <WingedVertex*> AdjVertices :: collect () {
 }
 
 WingedFace& AdjFaces::Iterator::operator* () const {
-  WingedEdge& edge = *this->eIt;
+  return *this->operator-> ();
+}
+
+WingedFace* AdjFaces::Iterator::operator-> () const {
   if (this->eIt.face ()) {
-    return edge.otherFaceRef (*this->eIt.face ());
+    return this->eIt->otherFace (*this->eIt.face ());
   }
-  else if (edge.isVertex1 (*this->eIt.vertex ())) {
-    return edge.rightFaceRef ();
+  else if (this->eIt->isVertex1 (*this->eIt.vertex ())) {
+    return this->eIt->rightFace ();
   }
   else {
-    return edge.leftFaceRef ();
+    return this->eIt->leftFace ();
   }
 }
 
