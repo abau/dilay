@@ -1,18 +1,14 @@
-#include <glm/glm.hpp>
+#include <sstream>
 #include "primitive/plane.hpp"
+#include "util.hpp"
 
-struct PrimPlane::Impl {
-  glm::vec3 point;
-  glm::vec3 normal;
+PrimPlane :: PrimPlane (const glm::vec3& p, const glm::vec3& n)
+  : _point  (p)
+  , _normal (n)
+{}
 
-  Impl (const glm::vec3& p, const glm::vec3& n)
-    : point  (p)
-    , normal (n)
-  {}
-};
-
-DELEGATE2_BIG6 (PrimPlane, const glm::vec3&, const glm::vec3&)
-GETTER_CONST   (const glm::vec3&, PrimPlane, point)
-GETTER_CONST   (const glm::vec3&, PrimPlane, normal)
-SETTER         (const glm::vec3&, PrimPlane, point)
-SETTER         (const glm::vec3&, PrimPlane, normal)
+std::ostream& operator<<(std::ostream& os, const PrimPlane& plane) {
+  os << "PrimPlane { point = "  << (plane.point  ())
+               << ", normal = " << (plane.normal ()) << " }";
+  return os;
+}

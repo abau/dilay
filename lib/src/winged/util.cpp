@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../util.hpp"
 #include "octree.hpp"
+#include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -49,7 +50,7 @@ void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
               << "\n\tedge:\t\t\t"      << f.edgeRef ().index ()
               << "\n\toctree node:\t\t" << f.octreeNode ();
   if (printDerived) {
-    std::cout << "\n\tnormal:\t\t\t"    << f.normal  (mesh);
+    std::cout << "\n\tnormal:\t\t\t"    << f.triangle (mesh).normal ();
   }
   std::cout   << std::endl;
 }

@@ -1,18 +1,11 @@
-#include <glm/glm.hpp>
 #include <sstream>
 #include "primitive/sphere.hpp"
 #include "util.hpp"
 
-struct PrimSphere::Impl {
-  const glm::vec3 center;
-  const float     radius;
-
-  Impl (const glm::vec3& o, float r) : center (o), radius (r) {}
-};
-
-DELEGATE2_BIG4COPY (PrimSphere, const glm::vec3&, float)
-GETTER_CONST   (const glm::vec3&,PrimSphere,center)
-GETTER_CONST   (float           ,PrimSphere,radius)
+PrimSphere :: PrimSphere (const glm::vec3& o, float r) 
+  : _center (o)
+  , _radius (r) 
+{}
 
 std::ostream& operator<<(std::ostream& os, const PrimSphere& sphere) {
   os << "PrimSphere { center = " << (sphere.center ()) 

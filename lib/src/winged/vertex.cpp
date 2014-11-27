@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include "adjacent-iterator.hpp"
+#include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -27,8 +28,9 @@ glm::vec3 WingedVertex :: interpolatedNormal (const WingedMesh& mesh) const {
   unsigned int n      = 0;
 
   for (WingedFace& f : this->adjacentFaces ()) {
-    if (f.isDegenerated (mesh) == false) {
-      normal += f.normal (mesh);
+    PrimTriangle triangle = f.triangle (mesh);
+    if (triangle.isDegenerated () == false) {
+      normal += triangle.normal ();
       n++;
     }
   }

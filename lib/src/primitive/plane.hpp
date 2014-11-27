@@ -1,20 +1,21 @@
 #ifndef DILAY_PRIMITIVE_PLANE
 #define DILAY_PRIMITIVE_PLANE
 
-#include <glm/fwd.hpp>
-#include "macro.hpp"
+#include <glm/glm.hpp>
+#include <iosfwd>
 
 class PrimPlane {
   public:
-    DECLARE_BIG6 (PrimPlane, const glm::vec3&, const glm::vec3&)
+    PrimPlane (const glm::vec3&, const glm::vec3&);
 
-    const glm::vec3& point  () const;
-    const glm::vec3& normal () const;
-          void       point  (const glm::vec3&);
-          void       normal (const glm::vec3&);
+    const glm::vec3& point  () const { return this->_point ; }
+    const glm::vec3& normal () const { return this->_normal; }
 
   private:
-    IMPLEMENTATION
+    const glm::vec3 _point;
+    const glm::vec3 _normal;
 };
+
+std::ostream& operator<<(std::ostream&, const PrimPlane&);
 
 #endif

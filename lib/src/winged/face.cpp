@@ -1,4 +1,3 @@
-#include <glm/glm.hpp>
 #include "adjacent-iterator.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
@@ -44,48 +43,7 @@ unsigned int WingedFace :: numEdges () const {
   return i;
 }
 
-glm::vec3 WingedFace :: normal (const WingedMesh& mesh) const {
-  return PrimTriangle::normal ( mesh.vector (mesh.index (this->vertexIndex (0)))
-                              , mesh.vector (mesh.index (this->vertexIndex (1)))
-                              , mesh.vector (mesh.index (this->vertexIndex (2))) );
-}
-
-bool WingedFace :: isDegenerated (const WingedMesh& mesh) const {
-  return PrimTriangle::isDegenerated ( mesh.vector (mesh.index (this->vertexIndex (0)))
-                                     , mesh.vector (mesh.index (this->vertexIndex (1)))
-                                     , mesh.vector (mesh.index (this->vertexIndex (2))) );
-}
-
-WingedEdge* WingedFace :: longestEdge (const WingedMesh& mesh, float *maxLengthSqr) const {
-  WingedEdge* tmpLongest = this->edge ();
-  float       tmpLength  = 0.0f;
-
-  for (WingedEdge& edge : this->adjacentEdges ()) {
-    float lengthSqr = edge.lengthSqr (mesh);
-    if (lengthSqr > tmpLength) {
-      tmpLength  = lengthSqr;
-      tmpLongest = &edge;
-    }
-  }
-  if (maxLengthSqr) {
-    *maxLengthSqr = tmpLength;
-  }
-  return tmpLongest;
-}
-
-float WingedFace :: longestEdgeLengthSqr (const WingedMesh& mesh) const {
-  float length;
-  this->longestEdge (mesh, &length);
-  return length;
-}
-
 bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
-
-float WingedFace :: incircleRadiusSqr (const WingedMesh& mesh) const {
-  return PrimTriangle::incircleRadiusSqr ( this->vertex (0)->position (mesh)
-                                         , this->vertex (1)->position (mesh)
-                                         , this->vertex (2)->position (mesh) );
-}
 
 AdjEdges WingedFace :: adjacentEdges (WingedEdge& e) const {
   return AdjEdges (*this, e);

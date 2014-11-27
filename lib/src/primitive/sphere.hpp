@@ -1,19 +1,19 @@
 #ifndef DILAY_PRIMITIVE_SPHERE
 #define DILAY_PRIMITIVE_SPHERE
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 #include <iosfwd>
-#include "macro.hpp"
 
 class PrimSphere {
   public:
-    DECLARE_BIG4COPY (PrimSphere, const glm::vec3&, float);
+    PrimSphere (const glm::vec3&, float);
 
-    const glm::vec3& center () const;
-    float            radius () const;
+    const glm::vec3& center () const { return this->_center; }
+    float            radius () const { return this->_radius; }
 
   private:
-    IMPLEMENTATION
+    const glm::vec3 _center;
+    const float     _radius;
 };
 
 std::ostream& operator<<(std::ostream&, const PrimSphere&);
