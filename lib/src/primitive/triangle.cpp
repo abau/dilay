@@ -1,4 +1,5 @@
 #include <glm/gtc/epsilon.hpp>
+#include <glm/gtx/norm.hpp>
 #include <sstream>
 #include "primitive/triangle.hpp"
 #include "ray.hpp"
@@ -66,9 +67,9 @@ float PrimTriangle :: incircleRadiusSqr () const {
 }
 
 float PrimTriangle :: longestEdgeSqr () const {
-  return glm::max ( glm::max ( glm::distance (this->_vertex1,this->_vertex2)
-                             , glm::distance (this->_vertex2,this->_vertex3) )
-                             , glm::distance (this->_vertex1,this->_vertex3) );
+  return glm::max ( glm::max ( glm::distance2 (this->_vertex1,this->_vertex2)
+                             , glm::distance2 (this->_vertex2,this->_vertex3) )
+                             , glm::distance2 (this->_vertex1,this->_vertex3) );
 }
 
 std::ostream& operator<<(std::ostream& os, const PrimTriangle& triangle) {
