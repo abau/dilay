@@ -214,24 +214,30 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
   }
 }
 
-// see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
                                     , glm::vec3* intersection) 
 {
-  const glm::vec3 e1 = tri.vertex2 () - tri.vertex1 ();
-  const glm::vec3 e2 = tri.vertex3 () - tri.vertex1 ();
-  const glm::vec3 s1 = glm::cross (ray.direction (), e2);
-  const float det    = glm::dot   (s1, e1);
-  const float invDet = 1.0f / det;
+  return IntersectionUtil::intersects (ray, tri, tri.normal (), intersection);
+}
 
-  if (glm::epsilonEqual (det, 0.0f, Util::epsilon ())) {
+// see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
+bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
+                                    , const glm::vec3& normal, glm::vec3* intersection) 
+{
+  const float dot = glm::dot (ray.direction (), normal);
+
+  if (glm::epsilonEqual (dot, 0.0f, Util::epsilon ())) {
     return false;
   }
-  const glm::vec3 d  = ray.origin () - tri.vertex1 ();
-  const glm::vec3 s2 = glm::cross (d,e1);
-  const float     b1 = glm::dot (d,s1) * invDet;
-  const float     b2 = glm::dot (ray.direction (), s2) * invDet;
-  const float     t  = glm::dot (e2, s2) * invDet;
+  const glm::vec3 e1     = tri.vertex2 () - tri.vertex1 ();
+  const glm::vec3 e2     = tri.vertex3 () - tri.vertex1 ();
+  const glm::vec3 s1     = glm::cross (ray.direction (), e2);
+  const float     invDet = 1.0f / glm::dot (s1, e1);
+  const glm::vec3 d      = ray.origin () - tri.vertex1 ();
+  const glm::vec3 s2     = glm::cross (d,e1);
+  const float     b1     = glm::dot (d,s1) * invDet;
+  const float     b2     = glm::dot (ray.direction (), s2) * invDet;
+  const float     t      = glm::dot (e2, s2) * invDet;
 
   if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || (t < 0.0f && ray.isLine () == false)) {
     return false;
