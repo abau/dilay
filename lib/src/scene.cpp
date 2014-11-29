@@ -115,9 +115,9 @@ struct Scene :: Impl {
   }
 
   
-  void printStatistics () const {
-    this->forEachMesh ([] (WingedMesh& m) {
-      WingedUtil::printStatistics (m);
+  void printStatistics (bool printAll) const {
+    this->forEachMesh ([printAll] (WingedMesh& m) {
+      WingedUtil::printStatistics (m, printAll);
     });
   }
 
@@ -168,7 +168,7 @@ GETTER_CONST    (const Selection& , Scene, selection)
 DELEGATE        (void             , Scene, unselectAll)
 DELEGATE1       (bool             , Scene, selectIntersection, const PrimRay&)
 DELEGATE_CONST  (unsigned int     , Scene, numSelections)
-DELEGATE_CONST  (void             , Scene, printStatistics)
+DELEGATE1_CONST (void             , Scene, printStatistics, bool)
 DELEGATE1       (void             , Scene, toggleRenderMode, MeshType)
 DELEGATE1_CONST (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1_CONST (void             , Scene, forEachSelectedMesh, const std::function <void (WingedMesh&)>&)

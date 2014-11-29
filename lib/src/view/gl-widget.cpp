@@ -157,7 +157,7 @@ struct ViewGlWidget::Impl {
           this->self->update ();
           break;
         case Qt::Key_I:
-          State::scene ().printStatistics ();
+          State::scene ().printStatistics (true);
           break;
         case Qt::Key_Z:
           if (e->modifiers () == Qt::ControlModifier) {

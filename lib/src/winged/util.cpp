@@ -43,19 +43,14 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
     << std::endl;
 }
 
-void WingedUtil :: printStatistics ( const WingedMesh& mesh, const WingedFace& f
-                                   , bool printDerived) 
-{
+void WingedUtil :: printStatistics (const WingedFace& f) {
   std::cout   << "Face "                << f.index () 
               << "\n\tedge:\t\t\t"      << f.edgeRef ().index ()
-              << "\n\toctree node:\t\t" << f.octreeNode ();
-  if (printDerived) {
-    std::cout << "\n\tnormal:\t\t\t"    << f.triangle (mesh).normal ();
-  }
-  std::cout   << std::endl;
+              << "\n\toctree node:\t\t" << f.octreeNode ()
+              << std::endl;
 }
 
-void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
+void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printAll) {
   std::cout << "Mesh:\t\t\t\t"              << mesh.index ()       << std::endl;
   std::cout << "\tNumber of vertices:\t"    << mesh.numVertices () << std::endl;
   std::cout << "\tNumber of edges:\t"       << mesh.numEdges ()    << std::endl;
@@ -63,7 +58,7 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
   std::cout << "\tNumber of indices:\t"     << mesh.numIndices ()  
             << " (" << mesh.numIndices () / 3  << ")" << std::endl;
 
-  if (mesh.numVertices () <= 10) {
+  if (printAll) {
     mesh.forEachVertex ([&mesh] (const WingedVertex& v) { 
       WingedUtil::printStatistics (mesh,v); 
     });
@@ -72,8 +67,8 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printDerived) {
       WingedUtil :: printStatistics (e);
     });
 
-    mesh.octree ().forEachFace ([&mesh,printDerived] (const WingedFace& face) {
-      WingedUtil :: printStatistics (mesh,face,printDerived);
+    mesh.octree ().forEachFace ([] (const WingedFace& face) {
+      WingedUtil :: printStatistics (face);
     });
   }
   WingedUtil::printStatistics (mesh.octree ());

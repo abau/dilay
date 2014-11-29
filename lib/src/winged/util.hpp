@@ -8,14 +8,14 @@ class WingedVertex;
 class Octree;
 
 namespace WingedUtil {
-  /** `printStatistics (w,b)` prints some statistics about `w`.
-   * If `b == false`, only direct attributes are printed, i.e. no derived attributes
-   * (e.g. normals of faces) are evaluated and printed.
+  void printStatistics (const WingedMesh&, const WingedVertex&);
+  void printStatistics (const WingedEdge&);
+  void printStatistics (const WingedFace&);
+
+  /** `printStatistics (m,b)` prints some statistics about mesh `m`.
+   * If `b == true`, statistics about faces, edges, and vertices are printed as well.
    */
-  void printStatistics (const WingedMesh&  , const WingedVertex&);
-  void printStatistics (                     const WingedEdge&);
-  void printStatistics (const WingedMesh&  , const WingedFace&  , bool = true);
-  void printStatistics (const WingedMesh&  , bool = true);
+  void printStatistics (const WingedMesh&, bool);
   void printStatistics (const Octree&);
 }
 

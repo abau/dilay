@@ -35,7 +35,7 @@ class Scene {
           bool          selectIntersection   (const PrimRay&);
           unsigned int  numSelections        () const;
 
-          void          printStatistics      () const;
+          void          printStatistics      (bool) const;
           void          toggleRenderMode     (MeshType);
           void          forEachMesh          (const std::function <void (WingedMesh&)>&) const;
           void          forEachSelectedMesh  (const std::function <void (WingedMesh&)>&) const;
