@@ -104,7 +104,7 @@ struct ActionCarve::Impl {
 
     auto subdivideEdges = [&] () {
       AffectedFaces newAF;
-      for (WingedEdge* e : thisIteration.edges ()) {
+      for (WingedEdge* e : thisIteration.toEdgeVec ()) {
         if (isSubdividable (*e)) {
           this->actions.add <PASubdivideEdge> ().run (mesh, *e, newAF);
         }
@@ -115,7 +115,7 @@ struct ActionCarve::Impl {
       thisIteration.commit ();
     };
     auto relaxEdges = [&] () {
-      for (WingedEdge* e : thisIteration.edges ()) {
+      for (WingedEdge* e : thisIteration.toEdgeVec ()) {
         this->actions.add <PARelaxEdge> ().run (mesh, *e, domain);
       }
       domain.commit ();

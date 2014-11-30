@@ -11,18 +11,15 @@ class AffectedFaces {
     void insert   (WingedFace&);
     void insert   (const AffectedFaces&);
     void remove   (WingedFace&);
-    void remove   (WingedEdge&);
     void reset    ();
     void commit   ();
     bool contains (WingedFace&) const;
     bool contains (WingedFace*) const;
-    bool contains (WingedEdge&) const;
-    bool contains (WingedEdge*) const;
 
-          VertexPtrSet toVertexSet     () const;
     const FacePtrSet&  faces           () const;
     const FacePtrSet&  uncommitedFaces () const;
-    const EdgePtrSet&  edges           () const;
+          VertexPtrSet toVertexSet     () const;
+          EdgePtrVec   toEdgeVec       () const;
 
   private:
     IMPLEMENTATION

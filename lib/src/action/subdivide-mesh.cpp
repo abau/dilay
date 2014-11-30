@@ -25,7 +25,7 @@ struct ActionSubdivideMesh::Impl {
     });
     affected.commit ();
     // subdivide edges
-    for (WingedEdge* e : affected.edges ()) {
+    for (WingedEdge* e : affected.toEdgeVec ()) {
       this->actions.add <PAInsertEdgeVertex> ().run 
         (mesh, *e , SubdivisionButterfly::subdivideEdge (mesh, *e));
     }

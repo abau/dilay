@@ -6,7 +6,6 @@
 
 struct AffectedFaces::Impl {
   FacePtrSet faces;
-  EdgePtrSet edges;
   FacePtrSet uncommitedFaces;
 
   void insert (WingedFace& face) {
@@ -25,31 +24,16 @@ struct AffectedFaces::Impl {
   void remove (WingedFace& face) {
     this->uncommitedFaces.erase (&face);
     this->faces          .erase (&face);
-
-    for (WingedEdge& e : face.adjacentEdges ()) {
-      if (this->contains (e.otherFaceRef (face)) == false) {
-        this->remove (e);
-      }
-    }
-  }
-
-  void remove (WingedEdge& edge) {
-    this->edges.erase (&edge);
   }
 
   void reset () {
     this->faces          .clear ();
-    this->edges          .clear ();
     this->uncommitedFaces.clear ();
   }
 
   void commit () { 
     for (WingedFace* f : this->uncommitedFaces) {
       this->faces.insert (f);
-
-      for (WingedEdge& e : f->adjacentEdges ()) {
-        this->edges.insert (&e);
-      }
     }
     this->uncommitedFaces.clear ();
   }
@@ -62,21 +46,27 @@ struct AffectedFaces::Impl {
     return this->faces.count (face) > 0 || this->uncommitedFaces.count (face) > 0;
   }
 
-  bool contains (WingedEdge& edge) const { 
-    return this->contains (&edge);
-  }
-
-  bool contains (WingedEdge* edge) const { 
-    return this->edges.count (edge) > 0;
-  }
-
   VertexPtrSet toVertexSet () const {
     VertexPtrSet vertices;
-    for (WingedEdge* e : this->edges) {
-      vertices.insert (e->vertex1 ());
-      vertices.insert (e->vertex2 ());
+    for (WingedFace* f : this->faces) {
+      for (WingedEdge& e : f->adjacentEdges ()) {
+        vertices.insert (e.vertex1 ());
+        vertices.insert (e.vertex2 ());
+      }
     }
     return vertices;
+  }
+
+  EdgePtrVec toEdgeVec () const {
+    EdgePtrVec edges;
+    for (WingedFace* f : this->faces) {
+      for (WingedEdge& e : f->adjacentEdges ()) {
+        if (e.isLeftFace (*f) || (this->faces.count (e.otherFace (*f)) == 0)) {
+          edges.push_back (&e);
+        }
+      }
+    }
+    return edges;
   }
 };
 
@@ -84,14 +74,11 @@ DELEGATE_BIG6   (AffectedFaces)
 DELEGATE1       (void, AffectedFaces, insert, WingedFace&)
 DELEGATE1       (void, AffectedFaces, insert, const AffectedFaces&)
 DELEGATE1       (void, AffectedFaces, remove, WingedFace&)
-DELEGATE1       (void, AffectedFaces, remove, WingedEdge&)
 DELEGATE        (void, AffectedFaces, reset)
 DELEGATE        (void, AffectedFaces, commit)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace*)
-DELEGATE1_CONST (bool, AffectedFaces, contains, WingedEdge&)
-DELEGATE1_CONST (bool, AffectedFaces, contains, WingedEdge*)
-DELEGATE_CONST  (VertexPtrSet, AffectedFaces, toVertexSet)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommitedFaces)
-GETTER_CONST    (const EdgePtrSet&, AffectedFaces, edges)
+DELEGATE_CONST  (VertexPtrSet, AffectedFaces, toVertexSet)
+DELEGATE_CONST  (EdgePtrVec, AffectedFaces, toEdgeVec)

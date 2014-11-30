@@ -18,7 +18,6 @@ struct PADeleteEdgeFace :: Impl {
     WingedFace& faceToDelete = edge.rightFaceRef ();
 
     if (affectedFaces) {
-      affectedFaces->remove (edge);
       affectedFaces->remove (faceToDelete);
     }
     this->dissolveEdgeFace (edge);

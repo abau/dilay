@@ -22,8 +22,8 @@ struct PACollapseFace::Impl {
 
   void run (WingedMesh& mesh, WingedFace& face, AffectedFaces& affectedFaces) {
     if (this->isCollapsable (face)) {
-      this->deleteFromAffectedFaces (face, affectedFaces);
-      this->deleteSuccessors        (mesh, face, affectedFaces);
+      affectedFaces.remove   (face);
+      this->deleteSuccessors (mesh, face, affectedFaces);
 
       WingedVertex& newVertex = this->addNewVertex (mesh, face);
 
@@ -43,13 +43,6 @@ struct PACollapseFace::Impl {
     return num3Valences <= 1;
   }
   
-  void deleteFromAffectedFaces (WingedFace& face, AffectedFaces& affectedFaces) {
-    affectedFaces.remove (face);
-    for (WingedEdge& e : face.adjacentEdges ()) {
-      affectedFaces.remove (e);
-    }
-  }
-
   void deleteSuccessors (WingedMesh& mesh, WingedFace& face, AffectedFaces& affectedFaces) {
     for (WingedEdge& e : face.adjacentEdges ()) {
       this->actions.add <PADeleteEdgeFace> ()
