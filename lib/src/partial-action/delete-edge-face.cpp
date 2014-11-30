@@ -15,10 +15,12 @@ struct PADeleteEdgeFace :: Impl {
   ActionUnitOn <WingedMesh> actions;
 
   void run (WingedMesh& mesh, WingedEdge& edge, AffectedFaces* affectedFaces) {
-    WingedFace& faceToDelete = edge.rightFaceRef ();
+    WingedFace& faceToDelete  = *edge.rightFace ();
+    WingedFace& remainingFace = *edge.leftFace ();
 
     if (affectedFaces) {
       affectedFaces->remove (faceToDelete);
+      affectedFaces->insert (remainingFace);
     }
     this->dissolveEdgeFace (edge);
 
@@ -29,8 +31,8 @@ struct PADeleteEdgeFace :: Impl {
   }
 
   void dissolveEdgeFace (WingedEdge& edge) {
-    WingedFace&  faceToDelete  = *edge.rightFace ();
-    WingedFace&  remainingFace = *edge.leftFace ();
+    WingedFace& faceToDelete  = *edge.rightFace ();
+    WingedFace& remainingFace = *edge.leftFace ();
 
     assert (faceToDelete.octreeNode ());
 
