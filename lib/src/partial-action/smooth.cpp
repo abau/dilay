@@ -22,6 +22,8 @@ struct PASmooth::Impl {
            , AffectedFaces& affectedFaces ) 
   {
     std::vector <glm::vec3> originalPositions;
+    originalPositions.reserve (vertices.size ());
+
     for (WingedVertex* v : vertices) {
       originalPositions.push_back (v->position (mesh));
     }
@@ -57,11 +59,7 @@ struct PASmooth::Impl {
       unsigned int valence  (0);
 
       for (auto it = adjFaces.begin (); it != adjFaces.end (); ++it) {
-        PrimTriangle triangle = (*it).triangle (mesh);
-
-        if (triangle.isDegenerated () == false) {
-          adjTriangles.push_back (triangle);
-        }
+        adjTriangles.push_back (it->triangle (mesh));
         delta += it.edge ()->otherVertexRef (v).position (mesh) - position;
         valence++;
       }
@@ -69,16 +67,20 @@ struct PASmooth::Impl {
     };
 
     auto getInterpolatedNormal = [] (const AdjTriangles& triangles) -> glm::vec3 {
-      glm::vec3 normal = glm::vec3 (0.0f);
+      glm::vec3    normal = glm::vec3 (0.0f);
+      unsigned int n      = 0;
 
       for (const PrimTriangle& t : triangles) {
-        assert (t.isDegenerated () == false);
-        normal += t.normal ();
+        if (t.isDegenerated () == false) {
+          normal += t.normal ();
+          n++;
+        }
       }
-      return normal / float (triangles.size ());
+      return normal / float (n);
     };
 
     std::vector <glm::vec3> newPositions;
+    newPositions.reserve (vertices.size ());
 
     for (WingedVertex* v : vertices) {
       glm::vec3    position;
@@ -95,10 +97,20 @@ struct PASmooth::Impl {
       bool intersected (false);
       for (const PrimTriangle& t : adjTriangles) {
         glm::vec3 intersection;
-        if (IntersectionUtil::intersects (ray, t, &intersection)) {
-          newPositions.push_back (intersection);
-          intersected = true;
-          break;
+
+        if (t.isDegenerated ()) {
+          if (IntersectionUtil::intersects (ray, t, normal, &intersection)) {
+            newPositions.push_back (intersection);
+            intersected = true;
+            break;
+          }
+        }
+        else {
+          if (IntersectionUtil::intersects (ray, t, &intersection)) {
+            newPositions.push_back (intersection);
+            intersected = true;
+            break;
+          }
         }
       }
       if (intersected == false) {
