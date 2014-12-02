@@ -76,7 +76,7 @@ struct PASmooth::Impl {
           n++;
         }
       }
-      return normal / float (n);
+      return n == 0 ? glm::vec3 (0.0f) : normal / float (n);
     };
 
     std::vector <glm::vec3> newPositions;
@@ -90,31 +90,37 @@ struct PASmooth::Impl {
       getData (*v, position, delta, adjTriangles);
 
       const glm::vec3 normal (getInterpolatedNormal (adjTriangles));
-      const float     dot    (glm::dot (normal, delta));
-      const glm::vec3 newP   ((position + delta) - (normal * dot));
-      const PrimRay   ray    (true, newP, normal);
 
-      bool intersected (false);
-      for (const PrimTriangle& t : adjTriangles) {
-        glm::vec3 intersection;
-
-        if (t.isDegenerated ()) {
-          if (IntersectionUtil::intersects (ray, t, normal, &intersection)) {
-            newPositions.push_back (intersection);
-            intersected = true;
-            break;
-          }
-        }
-        else {
-          if (IntersectionUtil::intersects (ray, t, &intersection)) {
-            newPositions.push_back (intersection);
-            intersected = true;
-            break;
-          }
-        }
+      if (normal == glm::vec3 (0.0f)) {
+        newPositions.push_back (position);
       }
-      if (intersected == false) {
-        newPositions.push_back (newP);
+      else {
+        const float     dot  (glm::dot (normal, delta));
+        const glm::vec3 newP ((position + delta) - (normal * dot));
+        const PrimRay   ray  (true, newP, normal);
+
+        bool intersected (false);
+        for (const PrimTriangle& t : adjTriangles) {
+          glm::vec3 intersection;
+
+          if (t.isDegenerated ()) {
+            if (IntersectionUtil::intersects (ray, t, normal, &intersection)) {
+              newPositions.push_back (intersection);
+              intersected = true;
+              break;
+            }
+          }
+          else {
+            if (IntersectionUtil::intersects (ray, t, &intersection)) {
+              newPositions.push_back (intersection);
+              intersected = true;
+              break;
+            }
+          }
+        }
+        if (intersected == false) {
+          newPositions.push_back (newP);
+        }
       }
     }
 
