@@ -63,6 +63,7 @@ struct Scene :: Impl {
     WingedFaceIntersection i1;
     this->intersects (ray, i1);
 
+    intersection = i1;
     return intersection.isIntersection ();
   }
 
