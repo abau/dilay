@@ -4,8 +4,10 @@
 #include "action/on.hpp"
 #include "macro.hpp"
 
+class AffectedFaces;
 class WingedMesh;
 class WingedFace;
+template <typename T> class ActionUnitOn;
 
 class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
   public:
@@ -17,6 +19,15 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
     void        writeAllNormals (WingedMesh&);
     void        writeAllIndices (WingedMesh&);
     void        bufferData      (WingedMesh&);
+
+    /** `finalize (m,f,a)` finalizes an action on `m`:
+     * 1. realign each face in `f`
+     * 2. collapse each degenerated face in `m`
+     * 3. reset free face indices in `m`
+     * 4. write normal for each vertex that is either included in `f` 
+     * or that has been modified by (2.) 
+     * 5. buffer data of `m` */
+    void        finalize        (WingedMesh&, AffectedFaces&, ActionUnitOn <WingedMesh>&);
 
   private:
     void runUndo (WingedMesh&) const;

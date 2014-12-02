@@ -1,14 +1,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "action/carve.hpp"
-#include "action/reset-free-face-indices.hpp"
 #include "action/unit/on.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "carve-brush.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
-#include "partial-action/collapse-face.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "partial-action/relax-edge.hpp"
 #include "partial-action/smooth.hpp"
@@ -52,7 +50,7 @@ struct ActionCarve::Impl {
     mesh.intersects      (sphere, domain);
     this->carveFaces     (brush, domain);
     this->subdivideEdges (brush, sphere, domain);
-    this->finalize       (mesh, domain);
+    this->self->finalize (mesh, domain, this->actions);
   }
 
   glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
@@ -129,32 +127,6 @@ struct ActionCarve::Impl {
     subdivideEdges ();
     relaxEdges     ();
     smoothVertices ();
-  }
-
-  // TODO outsource because this may be useful for other actions as well
-  void finalize (WingedMesh& mesh, AffectedFaces& domain) {
-    // collapse degenerated faces
-    WingedFace* degenerated = nullptr;
-    while ((degenerated = mesh.octree ().someDegeneratedFace ()) != nullptr) {
-      this->actions.add <PACollapseFace> ().run (mesh, *degenerated, domain);
-    }
-    domain.commit ();
-
-    // reset free face indices
-    this->actions.add <ActionResetFreeFaceIndices> ().run (mesh);
-
-    // write normals
-    for (WingedVertex* v : domain.toVertexSet ()) {
-      this->actions.add <PAModifyWVertex> ().writeInterpolatedNormal (mesh,*v);
-    }
-    
-    // realign
-    for (WingedFace* f : domain.faces ()) {
-      this->self->realignFace (mesh, *f);
-    }
-    domain.reset ();
-
-    this->self->bufferData (mesh);
   }
 };
 

@@ -1,7 +1,12 @@
 #include <unordered_set>
 #include "action/on-post-processed-winged-mesh.hpp"
+#include "action/reset-free-face-indices.hpp"
+#include "action/unit/on.hpp"
+#include "affected-faces.hpp"
 #include "bitset.hpp"
 #include "octree.hpp"
+#include "partial-action/collapse-face.hpp"
+#include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -79,6 +84,45 @@ struct ActionOnPostProcessedWMesh :: Impl {
       mesh.bufferData ();
     }
   }
+
+  void finalize ( WingedMesh& mesh, AffectedFaces& affectedFaces
+                , ActionUnitOn <WingedMesh>& actions )
+  {
+    // realign
+    for (auto it = affectedFaces.faces ().begin (); it != affectedFaces.faces ().end (); ) {
+      WingedFace& face = **it;
+      ++it;
+      affectedFaces.remove (face);
+      affectedFaces.insert (this->realignFace (mesh, face));
+    }
+    affectedFaces.commit ();
+
+    while (mesh.octree ().numDegeneratedFaces () > 0) {
+      // collapse degenerated faces
+      WingedFace* degenerated = nullptr;
+      while ((degenerated = mesh.octree ().someDegeneratedFace ()) != nullptr) {
+        actions.add <PACollapseFace> ().run (mesh, *degenerated, affectedFaces);
+      }
+
+      FacePtrSet affectedByCollapse = affectedFaces.uncommitedFaces ();
+      for (WingedFace* f : affectedByCollapse) {
+        affectedFaces.remove (*f);
+        affectedFaces.insert (this->realignFace (mesh, *f));
+      }
+      affectedFaces.commit ();
+    }
+
+    // reset free face indices
+    actions.add <ActionResetFreeFaceIndices> ().run (mesh);
+
+    // write normals
+    for (WingedVertex* v : affectedFaces.toVertexSet ()) {
+      actions.add <PAModifyWVertex> ().writeInterpolatedNormal (mesh,*v);
+    }
+
+    this->bufferData (mesh);
+    assert (mesh.octree ().numDegeneratedFaces () == 0);
+  }
 };
 
 DELEGATE_BIG3 (ActionOnPostProcessedWMesh)
@@ -88,6 +132,7 @@ DELEGATE1 (void       , ActionOnPostProcessedWMesh, realignAllFaces, WingedMesh&
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllNormals, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllIndices, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, bufferData, WingedMesh&)
+DELEGATE3 (void       , ActionOnPostProcessedWMesh, finalize, WingedMesh&, AffectedFaces&, ActionUnitOn<WingedMesh>&)
 
 void ActionOnPostProcessedWMesh :: runUndo (WingedMesh& mesh) const {
   this->runUndoBeforePostProcessing (mesh);
