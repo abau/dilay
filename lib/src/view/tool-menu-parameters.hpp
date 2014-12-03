@@ -10,9 +10,9 @@ class ViewToolMenuParameters {
   public:
     DECLARE_BIG4COPY (ViewToolMenuParameters, ViewMainWindow&, const glm::ivec2&, bool)
 
-    ViewMainWindow&     mainWindow    () const;
-    const glm::ivec2&   clickPosition () const;
-    bool                rightClick    () const;
+    ViewMainWindow&   mainWindow    () const;
+    const glm::ivec2& clickPosition () const;
+    bool              rightClick    () const;
 
   private:
     IMPLEMENTATION

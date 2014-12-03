@@ -2,9 +2,9 @@
 #include "view/tool-menu-parameters.hpp"
 
 struct ViewToolMenuParameters::Impl {
-  ViewMainWindow& mainWindow;
-  glm::ivec2      clickPosition;
-  bool            rightClick;
+        ViewMainWindow& mainWindow;
+  const glm::ivec2      clickPosition;
+  const bool            rightClick;
 
   Impl (ViewMainWindow& w, const glm::ivec2& p, bool r)
     : mainWindow    (w)
