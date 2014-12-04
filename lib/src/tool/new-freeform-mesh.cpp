@@ -6,7 +6,7 @@
 #include "mesh-type.hpp"
 #include "mesh.hpp"
 #include "state.hpp"
-#include "tool/new-freeform-mesh.hpp"
+#include "tools.hpp"
 #include "view/tool-menu-parameters.hpp"
 #include "view/tool-parameters.hpp"
 #include "view/util.hpp"
@@ -53,19 +53,12 @@ struct ToolNewFreeformMesh::Impl {
       return ToolResponse::Redraw;
     }
     else {
-      this->runApply ();
+      State::history ().add <ActionNewWingedMesh> ().run (MeshType::Freeform, this->definition);
       return ToolResponse::Terminate;
     }
   }
-
-  void runApply () {
-    State::history ().add <ActionNewWingedMesh> ().run (MeshType::Freeform, this->definition);
-  }
 };
 
-DELEGATE_BIG3_BASE ( ToolNewFreeformMesh, (const ViewToolMenuParameters& p)
-                   , (this), Tool, (p, toolName ()) )
-DELEGATE_STATIC (QString     , ToolNewFreeformMesh, toolName)
-DELEGATE        (void        , ToolNewFreeformMesh, runRender)
-DELEGATE        (ToolResponse, ToolNewFreeformMesh, runInitialize)
-DELEGATE        (void        , ToolNewFreeformMesh, runApply)
+DELEGATE_TOOL                (ToolNewFreeformMesh)
+DELEGATE_TOOL_RUN_INITIALIZE (ToolNewFreeformMesh)
+DELEGATE_TOOL_RUN_RENDER     (ToolNewFreeformMesh)

@@ -10,8 +10,8 @@
 #include "selection-mode.hpp"
 #include "selection.hpp"
 #include "state.hpp"
-#include "tool/move.hpp"
 #include "tool/movement.hpp"
+#include "tools.hpp"
 #include "variant.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
@@ -99,10 +99,8 @@ struct ToolMove::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolMove, (const ViewToolMenuParameters& p, Movement m)
-                   , (this, m), Tool, (p, toolName (m)) )
-DELEGATE1_STATIC (QString     , ToolMove, toolName, Movement)
-DELEGATE         (void        , ToolMove, runClose)
-DELEGATE         (void        , ToolMove, runCancel)
-DELEGATE1        (ToolResponse, ToolMove, runMouseMoveEvent, QMouseEvent&)
-DELEGATE1        (ToolResponse, ToolMove, runMouseReleaseEvent, QMouseEvent&)
+DELEGATE1_TOOL                        (ToolMove, Movement)
+DELEGATE_TOOL_RUN_CLOSE               (ToolMove)
+DELEGATE_TOOL_RUN_CANCEL              (ToolMove)
+DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolMove)
+DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolMove)

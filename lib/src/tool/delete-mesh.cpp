@@ -6,7 +6,7 @@
 #include "scene.hpp"
 #include "selection.hpp"
 #include "state.hpp"
-#include "tool/delete-mesh.hpp"
+#include "tools.hpp"
 
 struct ToolDeleteMesh::Impl {
   ToolDeleteMesh* self;
@@ -44,7 +44,5 @@ struct ToolDeleteMesh::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolDeleteMesh, (const ViewToolMenuParameters& p, MeshType t)
-                   , (this,t), Tool, (p) )
-DELEGATE1_STATIC (QString     , ToolDeleteMesh, toolName, MeshType)
-DELEGATE         (ToolResponse, ToolDeleteMesh, runInitialize)
+DELEGATE1_TOOL               (ToolDeleteMesh, MeshType)
+DELEGATE_TOOL_RUN_INITIALIZE (ToolDeleteMesh)

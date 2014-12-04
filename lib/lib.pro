@@ -158,13 +158,9 @@ HEADERS += \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
-           src/tool/carve.hpp \
-           src/tool/delete-mesh.hpp \
-           src/tool/move.hpp \
            src/tool/movement.hpp \
-           src/tool/new-freeform-mesh.hpp \
            src/tool/move-camera.hpp \
-           src/tool/subdivide-mesh.hpp \
+           src/tools.hpp \
            src/util.hpp \
            src/variant.hpp \
            src/view/freeform-mesh-menu.hpp \

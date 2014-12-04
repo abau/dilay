@@ -5,7 +5,7 @@
 #include "scene.hpp"
 #include "selection.hpp"
 #include "state.hpp"
-#include "tool/subdivide-mesh.hpp"
+#include "tools.hpp"
 #include "winged/mesh.hpp"
 
 struct ToolSubdivideMesh::Impl {
@@ -32,7 +32,5 @@ struct ToolSubdivideMesh::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolSubdivideMesh, (const ViewToolMenuParameters& p)
-                   , (this), Tool, (p) )
-DELEGATE_STATIC (QString     , ToolSubdivideMesh, toolName)
-DELEGATE        (ToolResponse, ToolSubdivideMesh, runInitialize)
+DELEGATE_TOOL                (ToolSubdivideMesh)
+DELEGATE_TOOL_RUN_INITIALIZE (ToolSubdivideMesh)

@@ -11,7 +11,7 @@
 #include "scene.hpp"
 #include "selection.hpp"
 #include "state.hpp"
-#include "tool/carve.hpp"
+#include "tools.hpp"
 #include "view/util.hpp"
 #include "view/tool-menu-parameters.hpp"
 #include "view/main-window.hpp"
@@ -73,8 +73,6 @@ struct ToolCarve::Impl {
   }
 };
 
-DELEGATE_BIG3_BASE ( ToolCarve, (const ViewToolMenuParameters& p)
-                   , (this), Tool, (p, toolName ()) )
-DELEGATE_STATIC (QString     , ToolCarve, toolName)
-DELEGATE        (void        , ToolCarve, runRender)
-DELEGATE1       (ToolResponse, ToolCarve, runMouseMoveEvent, QMouseEvent&)
+DELEGATE_TOOL                      (ToolCarve)
+DELEGATE_TOOL_RUN_RENDER           (ToolCarve)
+DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT (ToolCarve)

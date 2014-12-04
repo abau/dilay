@@ -1,10 +1,6 @@
 #include "mesh-type.hpp"
-#include "tool/carve.hpp"
-#include "tool/delete-mesh.hpp"
-#include "tool/move.hpp"
 #include "tool/movement.hpp"
-#include "tool/new-freeform-mesh.hpp"
-#include "tool/subdivide-mesh.hpp"
+#include "tools.hpp"
 #include "view/freeform-mesh-menu.hpp"
 
 ViewFreeformMeshMenu :: ViewFreeformMeshMenu (ViewMainWindow& mW, const glm::ivec2& p)
