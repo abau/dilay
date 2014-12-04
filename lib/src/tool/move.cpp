@@ -10,7 +10,7 @@
 #include "selection-mode.hpp"
 #include "selection.hpp"
 #include "state.hpp"
-#include "tool/movement.hpp"
+#include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "variant.hpp"
 #include "view/gl-widget.hpp"
@@ -23,18 +23,18 @@ namespace {
 };
 
 struct ToolMove::Impl {
-  ToolMove*    self;
-  Entities     entities;
-  ToolMovement movement;
+  ToolMove*        self;
+  Entities         entities;
+  ToolUtilMovement movement;
 
-  Impl (ToolMove* s, Movement m) 
+  Impl (ToolMove* s, MovementPlane p) 
     : self     (s) 
     , entities (std::move (Impl::getEntities ()))
-    , movement (m, s->menuParameters ().mainWindow ().glWidget ().cursorPosition ())
+    , movement (p, s->menuParameters ().mainWindow ().glWidget ().cursorPosition ())
   {
   }
 
-  static QString toolName (Movement) {
+  static QString toolName (MovementPlane) {
     return QObject::tr ("Move");
   }
 
@@ -99,7 +99,7 @@ struct ToolMove::Impl {
   }
 };
 
-DELEGATE1_TOOL                        (ToolMove, Movement)
+DELEGATE1_TOOL                        (ToolMove, MovementPlane)
 DELEGATE_TOOL_RUN_CLOSE               (ToolMove)
 DELEGATE_TOOL_RUN_CANCEL              (ToolMove)
 DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolMove)

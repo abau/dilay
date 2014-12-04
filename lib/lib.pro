@@ -66,10 +66,10 @@ SOURCES += \
            src/tool/carve.cpp \
            src/tool/delete-mesh.cpp \
            src/tool/move.cpp \
-           src/tool/movement.cpp \
            src/tool/new-freeform-mesh.cpp \
            src/tool/move-camera.cpp \
            src/tool/subdivide-mesh.cpp \
+           src/tool/util/movement.cpp \
            src/util.cpp \
            src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
@@ -158,8 +158,8 @@ HEADERS += \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
-           src/tool/movement.hpp \
            src/tool/move-camera.hpp \
+           src/tool/util/movement.hpp \
            src/tools.hpp \
            src/util.hpp \
            src/variant.hpp \

@@ -1,5 +1,5 @@
 #include "mesh-type.hpp"
-#include "tool/movement.hpp"
+#include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/freeform-mesh-menu.hpp"
 
@@ -8,7 +8,7 @@ ViewFreeformMeshMenu :: ViewFreeformMeshMenu (ViewMainWindow& mW, const glm::ive
 {
   this->addAction <ToolDeleteMesh>      (MeshType::Freeform);
   this->addAction <ToolNewFreeformMesh> ();
-  this->addAction <ToolMove>            (Movement::CameraPlane);
+  this->addAction <ToolMove>            (MovementPlane::Camera);
   this->addAction <ToolCarve>           ();
   this->addAction <ToolSubdivideMesh>   ();
 }
