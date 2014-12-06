@@ -7,8 +7,8 @@
 #include "mesh.hpp"
 #include "state.hpp"
 #include "tools.hpp"
+#include "view/properties.hpp"
 #include "view/tool-menu-parameters.hpp"
-#include "view/tool-parameters.hpp"
 #include "view/util.hpp"
 
 struct ToolNewFreeformMesh::Impl {
@@ -23,7 +23,7 @@ struct ToolNewFreeformMesh::Impl {
                                     , Config::get <int> ("/cache/tool/new-freeform-mesh/subdiv", 3)
                                     , 5 ))
   {
-    this->self->toolParameters ()->add (QObject::tr ("Subdivisions"), this->subdivEdit);
+    this->self->properties ().add (QObject::tr ("Subdivisions"), this->subdivEdit);
 
     ViewUtil::connect (this->subdivEdit, [this] (int) {
         this->updateMesh           ();
@@ -48,17 +48,11 @@ struct ToolNewFreeformMesh::Impl {
     return QObject::tr ("New Freeform Mesh");
   }
 
-  ToolResponse runInitialize () {
-    if (this->self->menuParameters ().rightClick ()) {
-      return ToolResponse::Redraw;
-    }
-    else {
-      State::history ().add <ActionNewWingedMesh> ().run (MeshType::Freeform, this->definition);
-      return ToolResponse::Terminate;
-    }
+  void runClose () {
+    State::history ().add <ActionNewWingedMesh> ().run (MeshType::Freeform, this->definition);
   }
 };
 
-DELEGATE_TOOL                (ToolNewFreeformMesh)
-DELEGATE_TOOL_RUN_INITIALIZE (ToolNewFreeformMesh)
-DELEGATE_TOOL_RUN_RENDER     (ToolNewFreeformMesh)
+DELEGATE_TOOL            (ToolNewFreeformMesh)
+DELEGATE_TOOL_RUN_CLOSE  (ToolNewFreeformMesh)
+DELEGATE_TOOL_RUN_RENDER (ToolNewFreeformMesh)

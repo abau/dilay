@@ -4,8 +4,8 @@
 #include <QString>
 #include "macro.hpp"
 
+class ViewProperties;
 class ViewToolMenuParameters;
-class ViewToolParameters;
 class QMouseEvent;
 class QWheelEvent;
 
@@ -32,9 +32,8 @@ class Tool {
     void                          cancel               ();
 
   protected:
-    ViewToolParameters*           toolParameters       ();
     void                          updateGlWidget       ();
-    ToolResponse                  closeOrCancelOnClick (QMouseEvent&);
+    ViewProperties&               properties           ();
 
   private:
     IMPLEMENTATION
@@ -46,7 +45,6 @@ class Tool {
     virtual ToolResponse runWheelEvent        (QWheelEvent&) { return ToolResponse::None; }
     virtual QString      runMessage           () const       { return QString (); }
     virtual void         runClose             ()             {}
-    virtual void         runCancel            ()             {}
 };
 
 #define DECLARE_TOOL(name,methods)                     \
@@ -68,7 +66,6 @@ class Tool {
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT   ToolResponse runWheelEvent        (QWheelEvent&);
 #define DECLARE_TOOL_RUN_MESSAGE             QString      runMessage           () const;
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
-#define DECLARE_TOOL_RUN_CANCEL              void         runCancel            ();
 
 #define DELEGATE_TOOL(name)\
   DELEGATE_STATIC (QString, name, toolName) \
@@ -107,6 +104,5 @@ class Tool {
 #define DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT(n)   DELEGATE1      (ToolResponse, n, runWheelEvent, QWheelEvent&)
 #define DELEGATE_TOOL_RUN_MESSAGE(n)             DELEGATE_CONST (QString     , n, runMessage)
 #define DELEGATE_TOOL_RUN_CLOSE(n)               DELEGATE       (void        , n, runClose)
-#define DELEGATE_TOOL_RUN_CANCEL(n)              DELEGATE       (void        , n, runCancel)
 
 #endif

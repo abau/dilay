@@ -7,7 +7,6 @@
 #include "view/tool-menu-parameters.hpp"
 
 class ViewMainWindow;
-class ViewToolMenuParameters;
 
 class ViewToolMenu : public QMenu {
   public:
@@ -23,9 +22,6 @@ class ViewToolMenu : public QMenu {
                                 , args ...));
       });
     }
-
-  protected:
-    void mouseReleaseEvent (QMouseEvent*);
 
   private:
     IMPLEMENTATION

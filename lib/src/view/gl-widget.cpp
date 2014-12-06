@@ -60,11 +60,9 @@ struct ViewGlWidget::Impl {
     this->self->update ();
   }
 
-  void deleteToolMoveCamera (bool cancel = false) {
+  void deleteToolMoveCamera () {
     assert (this->toolMoveCamera);
-    if (cancel) {
-      this->toolMoveCamera->cancel ();
-    }
+    this->toolMoveCamera->close ();
     this->toolMoveCamera.reset (nullptr);
     this->self->update ();
   }
@@ -129,7 +127,7 @@ struct ViewGlWidget::Impl {
     if (this->toolMoveCamera) {
       switch (e->key()) {
         case Qt::Key_Escape:
-          this->deleteToolMoveCamera (true);
+          this->deleteToolMoveCamera ();
           break;
         default:
           this->self->QGLWidget::keyPressEvent (e);
@@ -138,7 +136,7 @@ struct ViewGlWidget::Impl {
     else if (State::hasTool ()) {
       switch (e->key()) {
         case Qt::Key_Escape:
-          State::tool    ().cancel ();
+          State::tool    ().close ();
           State::setTool (nullptr);
           break;
         default:
@@ -190,7 +188,7 @@ struct ViewGlWidget::Impl {
 
   void mouseReleaseEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton && this->toolMoveCamera == false) {
-      ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e),false);
+      ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e));
       this->setToolMoveCamera (*new ToolMoveCamera 
           ( parameters
           , e->modifiers ().testFlag (Qt::ShiftModifier)

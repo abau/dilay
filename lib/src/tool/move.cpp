@@ -78,10 +78,6 @@ struct ToolMove::Impl {
     }
   }
 
-  void runCancel () {
-    this->translateSelectionBy (- this->movement.delta ());
-  }
-
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     glm::vec3 previousDelta = this->movement.delta ();
 
@@ -93,14 +89,8 @@ struct ToolMove::Impl {
       return ToolResponse::None;
     }
   }
-
-  ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
-    return this->self->closeOrCancelOnClick (e);
-  }
 };
 
 DELEGATE1_TOOL                        (ToolMove, MovementPlane)
 DELEGATE_TOOL_RUN_CLOSE               (ToolMove)
-DELEGATE_TOOL_RUN_CANCEL              (ToolMove)
 DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolMove)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolMove)

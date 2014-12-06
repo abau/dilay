@@ -5,57 +5,27 @@
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
+#include "view/properties.hpp"
+#include "view/properties/widget.hpp"
 #include "view/tool-menu-parameters.hpp"
-#include "view/tool-parameters.hpp"
 
 struct Tool::Impl {
   Tool*                  self;
   ViewToolMenuParameters menuParameters;
-  ViewToolParameters*    toolParameters;
 
   Impl (Tool* s, const ViewToolMenuParameters& p, const QString& name) 
     : Impl (s,p)
   {
-    const bool alwaysOpen = this->menuParameters.rightClick ();
-
-    this->toolParameters = new ViewToolParameters (p.mainWindow (), alwaysOpen);
-    this->toolParameters->setWindowTitle (name);
-
-    QObject::connect (this->toolParameters, &ViewToolParameters::finished, [this] (int r) { 
-      switch (r) {
-        case ViewToolParameters::Result::Apply:
-          this->toolParameters->hide ();
-          break;
-
-        case ViewToolParameters::Result::ApplyAndClose:
-          this->close    ();
-          State::setTool (nullptr); 
-          break;
-
-        case ViewToolParameters::Result::Cancel:
-          this->cancel   ();
-          State::setTool (nullptr); 
-      }
-    });
-
-    QObject::connect ( this->toolParameters, &ViewToolParameters::rejected
-                     , [this] () { State::setTool (nullptr); } );
-
-    if (alwaysOpen) {
-      this->toolParameters->show ();
-    }
+    this->menuParameters.mainWindow ().properties ().showTool (name);
   }
 
   Impl (Tool* s, const ViewToolMenuParameters& p) 
     : self           (s) 
     , menuParameters (p)
-    , toolParameters (nullptr)
   {}
 
   ~Impl () {
-    if (this->toolParameters) {
-      this->toolParameters->close  ();
-    }
+    this->menuParameters.mainWindow ().properties ().resetTool ();
   }
 
   ToolResponse initialize () { 
@@ -67,20 +37,12 @@ struct Tool::Impl {
   }
 
   ToolResponse mouseMoveEvent (QMouseEvent& e) { 
-    if (this->toolParameters && this->toolParameters->isVisible ()) {
-      return ToolResponse::None;
-    }
-    else {
-      return this->self->runMouseMoveEvent (e);
-    }
+    return this->self->runMouseMoveEvent (e);
   }
 
   ToolResponse mouseReleaseEvent (QMouseEvent& e) {
-    if (this->toolParameters && this->toolParameters->isVisible ()) {
-      return ToolResponse::None;
-    }
-    else if (e.button () == Qt::RightButton) {
-      this->cancel ();
+    if (e.button () == Qt::RightButton) {
+      this->close ();
       return ToolResponse::Terminate;
     }
     else {
@@ -89,12 +51,7 @@ struct Tool::Impl {
   }
 
   ToolResponse wheelEvent (QWheelEvent& e) {
-    if (this->toolParameters && this->toolParameters->isVisible ()) {
-      return ToolResponse::None;
-    }
-    else {
-      return this->self->runWheelEvent (e);
-    }
+    return this->self->runWheelEvent (e);
   }
 
   QString message () const { 
@@ -105,24 +62,12 @@ struct Tool::Impl {
     return this->self->runClose (); 
   }
 
-  void cancel () { 
-    return this->self->runCancel (); 
-  }
-
   void updateGlWidget () {
     this->menuParameters.mainWindow ().glWidget ().update ();
   }
 
-  ToolResponse closeOrCancelOnClick (QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
-      this->close ();
-      return ToolResponse::Terminate;
-    }
-    else if (e.button () == Qt::RightButton) {
-      this->cancel ();
-      return ToolResponse::Terminate;
-    }
-    return ToolResponse::None;
+  ViewProperties& properties () {
+    return this->menuParameters.mainWindow ().properties ().tool ();
   }
 };
 
@@ -136,7 +81,5 @@ DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEv
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
 DELEGATE_CONST (QString                      , Tool, message)
 DELEGATE       (void                         , Tool, close)
-DELEGATE       (void                         , Tool, cancel)
-GETTER         (ViewToolParameters*          , Tool, toolParameters)
 DELEGATE       (void                         , Tool, updateGlWidget)
-DELEGATE1      (ToolResponse                 , Tool, closeOrCancelOnClick, QMouseEvent&)
+DELEGATE       (ViewProperties&              , Tool, properties)
