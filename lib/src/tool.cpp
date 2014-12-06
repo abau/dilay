@@ -11,21 +11,27 @@
 
 struct Tool::Impl {
   Tool*                  self;
+  const bool             hasProperties;
   ViewToolMenuParameters menuParameters;
 
   Impl (Tool* s, const ViewToolMenuParameters& p, const QString& name) 
-    : Impl (s,p)
+    : self           (s) 
+    , hasProperties  (true)
+    , menuParameters (p)
   {
     this->menuParameters.mainWindow ().properties ().showTool (name);
   }
 
   Impl (Tool* s, const ViewToolMenuParameters& p) 
     : self           (s) 
+    , hasProperties  (false)
     , menuParameters (p)
   {}
 
   ~Impl () {
-    this->menuParameters.mainWindow ().properties ().resetTool ();
+    if (this->hasProperties) {
+      this->menuParameters.mainWindow ().properties ().resetTool ();
+    }
   }
 
   ToolResponse initialize () { 
@@ -67,6 +73,7 @@ struct Tool::Impl {
   }
 
   ViewProperties& properties () {
+    assert (this->hasProperties);
     return this->menuParameters.mainWindow ().properties ().tool ();
   }
 };
