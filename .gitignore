@@ -12,3 +12,4 @@ run-tests
 lib/Makefile
 app/Makefile
 test/Makefile
+valgrind.log
