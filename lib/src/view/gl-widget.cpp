@@ -211,7 +211,7 @@ struct ViewGlWidget::Impl {
       switch (State::scene ().selectionMode ()) {
         case SelectionMode::Freeform: {
           ViewFreeformMeshMenu menu (this->mainWindow, pos);
-          menu.exec (QCursor::pos ());
+          menu.exec (e->globalPos ());
           break;
         }
         default:
