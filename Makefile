@@ -16,3 +16,6 @@ gdb:
 
 valgrind:
 	valgrind ./dilay &> valgrind.log
+
+valgrind-leak:
+	valgrind --leak-check=yes ./dilay &> valgrind.log
