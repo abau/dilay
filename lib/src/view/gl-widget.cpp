@@ -2,7 +2,6 @@
 #include <QKeyEvent>
 #include <glm/glm.hpp>
 #include <memory>
-#include "axis.hpp"
 #include "camera.hpp"
 #include "history.hpp"
 #include "mesh-type.hpp"
@@ -13,6 +12,7 @@
 #include "state.hpp"
 #include "tool.hpp"
 #include "tool/move-camera.hpp"
+#include "view/axis.hpp"
 #include "view/freeform-mesh-menu.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
@@ -26,7 +26,7 @@ struct ViewGlWidget::Impl {
 
   ViewGlWidget*   self;
   ViewMainWindow& mainWindow;
-  Axis            axis;
+  ViewAxis        axis;
   MoveCamera      toolMoveCamera;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW) 

@@ -1,13 +1,13 @@
-#ifndef DILAY_AXIS
-#define DILAY_AXIS
+#ifndef DILAY_VIEW_AXIS
+#define DILAY_VIEW_AXIS
 
 #include "macro.hpp"
 
 class QPainter;
 
-class Axis {
+class ViewAxis {
   public:
-    DECLARE_BIG3 (Axis)
+    DECLARE_BIG3 (ViewAxis)
 
     void  initialize ();
     void  render     ();

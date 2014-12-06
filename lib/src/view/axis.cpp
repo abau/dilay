@@ -1,19 +1,19 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <QPainter>
-#include "axis.hpp"
-#include "renderer.hpp"
-#include "mesh.hpp"
-#include "state.hpp"
-#include "macro.hpp"
 #include "camera.hpp"
 #include "color.hpp"
-#include "render-mode.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
+#include "macro.hpp"
 #include "mesh-definition.hpp"
+#include "mesh.hpp"
+#include "render-mode.hpp"
+#include "renderer.hpp"
+#include "state.hpp"
+#include "view/axis.hpp"
 
-struct Axis::Impl {
+struct ViewAxis::Impl {
   Mesh         coneMesh;
   Mesh         cylinderMesh;
   Mesh         gridMesh;
@@ -164,7 +164,7 @@ struct Axis::Impl {
   }
 };
 
-DELEGATE_BIG3 (Axis)
-DELEGATE      (void, Axis, initialize)
-DELEGATE      (void, Axis, render)
-DELEGATE1     (void, Axis, render, QPainter&)
+DELEGATE_BIG3 (ViewAxis)
+DELEGATE      (void, ViewAxis, initialize)
+DELEGATE      (void, ViewAxis, render)
+DELEGATE1     (void, ViewAxis, render, QPainter&)

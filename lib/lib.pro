@@ -20,7 +20,6 @@ SOURCES += \
            src/action/util.cpp \
            src/adjacent-iterator.cpp \
            src/affected-faces.cpp \
-           src/axis.cpp \
            src/camera.cpp \
            src/carve-brush.cpp \
            src/color.cpp \
@@ -71,6 +70,7 @@ SOURCES += \
            src/tool/subdivide-mesh.cpp \
            src/tool/util/movement.cpp \
            src/util.cpp \
+           src/view/axis.cpp \
            src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
@@ -110,7 +110,6 @@ HEADERS += \
            src/action/util.hpp \
            src/adjacent-iterator.hpp \
            src/affected-faces.hpp \
-           src/axis.hpp \
            src/bitset.hpp \
            src/camera.hpp \
            src/carve-brush.hpp \
@@ -163,6 +162,7 @@ HEADERS += \
            src/tools.hpp \
            src/util.hpp \
            src/variant.hpp \
+           src/view/axis.hpp \
            src/view/freeform-mesh-menu.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
