@@ -138,6 +138,7 @@ struct ViewGlWidget::Impl {
         case Qt::Key_Escape:
           State::tool    ().close ();
           State::setTool (nullptr);
+          this->self->update ();
           break;
         default:
           this->self->QGLWidget::keyPressEvent (e);
