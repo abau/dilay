@@ -16,32 +16,32 @@ struct ViewProperties::Impl {
     , bodyLayout   (*new QGridLayout)
     , body         (*new QFrame)
   {
+    this->setupHeader ();
+    this->setupBody   ();
+
     QVBoxLayout* vBoxLayout = new QVBoxLayout;
 
     vBoxLayout->setSpacing         (0);
     vBoxLayout->setContentsMargins (0,0,0,0);
-    this->setupHeader              (vBoxLayout);
-    this->setupBody                (vBoxLayout);
 
+    vBoxLayout->addWidget (&this->headerButton);
+    vBoxLayout->addWidget (&this->body);
     this->self->setLayout (vBoxLayout);
   }
 
-  void setupHeader (QBoxLayout* globalLayout) {
+  void setupHeader () {
     QObject::connect (&this->headerButton, &ViewPropertiesButton::expand,   [this] () { 
       this->body.show (); 
     });
     QObject::connect (&this->headerButton, &ViewPropertiesButton::collapse, [this] () { 
       this->body.hide (); 
     });
-    globalLayout->addWidget (&this->headerButton);
   }
 
-  void setupBody (QBoxLayout* globalLayout) {
+  void setupBody () {
     this->bodyLayout.setSpacing         (0);
     this->bodyLayout.setContentsMargins (11,0,0,0);
     this->body.setLayout                (&this->bodyLayout);
-
-    globalLayout->addWidget (&this->body);
   }
 
   void setLabel (const QString& label) {
@@ -60,9 +60,17 @@ struct ViewProperties::Impl {
     this->bodyLayout.addWidget (&widget, r, 0, 1, 2);
     return widget;
   }
+
+  void resetWidgets () {
+    QLayoutItem *item;
+    while ((item = this->bodyLayout.takeAt (0)) != nullptr) {
+      delete item;
+    }
+  }
 };
 
 DELEGATE_BIG3_SELF (ViewProperties)
 DELEGATE1 (void    , ViewProperties, setLabel, const QString&)
 DELEGATE2 (QWidget&, ViewProperties, addWidget, const QString&, QWidget&)
 DELEGATE1 (QWidget&, ViewProperties, addWidget, QWidget&)
+DELEGATE  (void    , ViewProperties, resetWidgets)

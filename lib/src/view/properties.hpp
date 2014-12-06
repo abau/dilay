@@ -22,8 +22,9 @@ class ViewProperties : public QWidget {
       return widget;
     }
 
-    QWidget& addWidget (const QString&, QWidget&);
-    QWidget& addWidget (QWidget&);
+    QWidget& addWidget    (const QString&, QWidget&);
+    QWidget& addWidget    (QWidget&);
+    void     resetWidgets ();
 
   private:
     IMPLEMENTATION
