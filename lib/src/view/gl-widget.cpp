@@ -22,12 +22,10 @@
 #include "view/util.hpp"
 
 struct ViewGlWidget::Impl {
-  typedef std::unique_ptr <ToolMoveCamera> MoveCamera;
-
-  ViewGlWidget*   self;
-  ViewMainWindow& mainWindow;
-  ViewAxis        axis;
-  MoveCamera      toolMoveCamera;
+  ViewGlWidget*                    self;
+  ViewMainWindow&                  mainWindow;
+  ViewAxis                         axis;
+  std::unique_ptr <ToolMoveCamera> toolMoveCamera;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW) 
     : self (s)
