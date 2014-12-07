@@ -179,6 +179,8 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseMoveEvent (QMouseEvent* e) {
+    this->self->setFocus (Qt::MouseFocusReason);
+
     if (this->toolMoveCamera) {
       this->handleCameraResponse (this->toolMoveCamera->mouseMoveEvent (*e));
     }
