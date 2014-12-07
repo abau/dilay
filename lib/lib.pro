@@ -76,6 +76,7 @@ SOURCES += \
            src/view/main-widget.cpp \
            src/view/main-window.cpp \
            src/view/menu/freeform-mesh.cpp \
+           src/view/menu/no-selection.cpp \
            src/view/properties.cpp \
            src/view/properties/button.cpp \
            src/view/properties/selection.cpp \
@@ -167,6 +168,7 @@ HEADERS += \
            src/view/main-widget.hpp \
            src/view/main-window.hpp \
            src/view/menu/freeform-mesh.hpp \
+           src/view/menu/no-selection.hpp \
            src/view/properties.hpp \
            src/view/properties/button.hpp \
            src/view/properties/selection.hpp \

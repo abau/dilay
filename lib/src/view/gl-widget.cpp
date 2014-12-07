@@ -16,6 +16,7 @@
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/menu/freeform-mesh.hpp"
+#include "view/menu/no-selection.hpp"
 #include "view/properties/selection.hpp"
 #include "view/properties/widget.hpp"
 #include "view/tool/menu-parameters.hpp"
@@ -209,14 +210,21 @@ struct ViewGlWidget::Impl {
     else if (e->button () == Qt::RightButton) {
       glm::ivec2 pos = ViewUtil::toIVec2 (*e);
 
-      switch (State::scene ().selectionMode ()) {
-        case SelectionMode::Freeform: {
-          ViewMenuFreeformMesh menu (this->mainWindow, pos);
-          menu.exec (e->globalPos ());
-          break;
+      if (State::scene ().numSelections () == 0) {
+        this->selectIntersection (pos);
+      }
+      if (State::scene ().numSelections () == 0) {
+        ViewMenuNoSelection menu (this->mainWindow, pos);
+        menu.exec (e->globalPos ());
+      }
+      else {
+        switch (State::scene ().selectionMode ()) {
+          case SelectionMode::Freeform: {
+            ViewMenuFreeformMesh menu (this->mainWindow, pos);
+            menu.exec (e->globalPos ());
+            break;
+          }
         }
-        default:
-          std::abort ();
       }
     }
   }

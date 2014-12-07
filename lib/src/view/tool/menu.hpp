@@ -13,6 +13,7 @@ class ViewToolMenu : public QMenu {
     DECLARE_BIG3 (ViewToolMenu, ViewMainWindow&, const glm::ivec2&)
 
     ViewToolMenuParameters menuParameters () const;
+    void                   addSeparator   ();
 
     template <typename T, typename ... Args>
     void addAction (const Args& ... args) {

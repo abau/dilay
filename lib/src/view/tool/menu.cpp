@@ -16,7 +16,12 @@ struct ViewToolMenu::Impl {
   ViewToolMenuParameters menuParameters () const {
     return ViewToolMenuParameters (this->mainWindow, this->menuPosition);
   }
+
+  void addSeparator () {
+    this->self->QMenu::addSeparator ();
+  }
 };
 
 DELEGATE2_BIG3_SELF (ViewToolMenu, ViewMainWindow&, const glm::ivec2&)
 DELEGATE_CONST (ViewToolMenuParameters, ViewToolMenu, menuParameters)
+DELEGATE       (void                  , ViewToolMenu, addSeparator)

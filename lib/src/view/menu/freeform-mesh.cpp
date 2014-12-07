@@ -6,9 +6,10 @@
 ViewMenuFreeformMesh :: ViewMenuFreeformMesh (ViewMainWindow& mW, const glm::ivec2& p)
   : ViewToolMenu (mW,p) 
 {
-  this->addAction <ToolDeleteMesh>      (MeshType::Freeform);
-  this->addAction <ToolNewFreeformMesh> ();
   this->addAction <ToolMove>            (MovementPlane::Camera);
   this->addAction <ToolCarve>           ();
   this->addAction <ToolSubdivideMesh>   ();
+  this->addAction <ToolDeleteMesh>      (MeshType::Freeform);
+  this->addSeparator                    ();
+  this->addAction <ToolNewFreeformMesh> ();
 }
