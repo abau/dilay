@@ -2,7 +2,7 @@
 #include <QToolBar>
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/tool-message.hpp"
+#include "view/tool/message.hpp"
 #include "view/util.hpp"
 
 struct ViewMainWindow :: Impl {

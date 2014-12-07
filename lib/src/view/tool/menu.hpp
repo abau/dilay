@@ -4,7 +4,7 @@
 #include <QMenu>
 #include <glm/fwd.hpp>
 #include "state.hpp"
-#include "view/tool-menu-parameters.hpp"
+#include "view/tool/menu-parameters.hpp"
 
 class ViewMainWindow;
 

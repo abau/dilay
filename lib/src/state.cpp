@@ -9,7 +9,7 @@
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/tool-menu-parameters.hpp"
+#include "view/tool/menu-parameters.hpp"
 
 struct State::Impl {
   Camera                 camera;

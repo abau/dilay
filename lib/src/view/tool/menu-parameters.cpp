@@ -1,5 +1,5 @@
 #include <glm/glm.hpp>
-#include "view/tool-menu-parameters.hpp"
+#include "view/tool/menu-parameters.hpp"
 
 struct ViewToolMenuParameters::Impl {
         ViewMainWindow& mainWindow;

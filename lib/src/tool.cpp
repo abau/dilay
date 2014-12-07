@@ -8,7 +8,7 @@
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
 #include "view/properties/widget.hpp"
-#include "view/tool-menu-parameters.hpp"
+#include "view/tool/menu-parameters.hpp"
 #include "view/util.hpp"
 
 struct Tool::Impl {

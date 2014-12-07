@@ -1,6 +1,6 @@
 #include <QObject>
 #include <QString>
-#include "view/tool-message.hpp"
+#include "view/tool/message.hpp"
 
 struct ViewToolMessage::Impl {
   ViewToolMessage* self;

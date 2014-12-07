@@ -11,8 +11,8 @@
 #include "tool/move-camera.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/tool-menu-parameters.hpp"
-#include "view/tool-message.hpp"
+#include "view/tool/menu-parameters.hpp"
+#include "view/tool/message.hpp"
 #include "view/util.hpp"
 
 struct ToolMoveCamera::Impl {

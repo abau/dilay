@@ -80,9 +80,9 @@ SOURCES += \
            src/view/properties/button.cpp \
            src/view/properties/selection.cpp \
            src/view/properties/widget.cpp \
-           src/view/tool-menu.cpp \
-           src/view/tool-menu-parameters.cpp \
-           src/view/tool-message.cpp \
+           src/view/tool/menu.cpp \
+           src/view/tool/menu-parameters.cpp \
+           src/view/tool/message.cpp \
            src/view/util.cpp \
            src/view/vector-edit.cpp \
            src/winged/edge.cpp \
@@ -171,9 +171,9 @@ HEADERS += \
            src/view/properties/button.hpp \
            src/view/properties/selection.hpp \
            src/view/properties/widget.hpp \
-           src/view/tool-menu.hpp \
-           src/view/tool-menu-parameters.hpp \
-           src/view/tool-message.hpp \
+           src/view/tool/menu.hpp \
+           src/view/tool/menu-parameters.hpp \
+           src/view/tool/message.hpp \
            src/view/util.hpp \
            src/view/vector-edit.hpp \
            src/winged/edge.hpp \

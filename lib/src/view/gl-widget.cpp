@@ -18,7 +18,7 @@
 #include "view/main-window.hpp"
 #include "view/properties/selection.hpp"
 #include "view/properties/widget.hpp"
-#include "view/tool-menu-parameters.hpp"
+#include "view/tool/menu-parameters.hpp"
 #include "view/util.hpp"
 
 struct ViewGlWidget::Impl {

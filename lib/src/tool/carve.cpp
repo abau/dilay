@@ -13,7 +13,7 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/util.hpp"
-#include "view/tool-menu-parameters.hpp"
+#include "view/tool/menu-parameters.hpp"
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
 #include "winged/face-intersection.hpp"
