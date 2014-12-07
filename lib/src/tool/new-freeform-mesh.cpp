@@ -23,7 +23,7 @@ struct ToolNewFreeformMesh::Impl {
                                     , Config::get <int> ("/cache/tool/new-freeform-mesh/subdiv", 3)
                                     , 5 ))
   {
-    this->self->properties ().add (QObject::tr ("Subdivisions"), this->subdivEdit);
+    this->self->properties ().addWidget (QObject::tr ("Subdivisions"), this->subdivEdit);
 
     ViewUtil::connect (this->subdivEdit, [this] (int) {
         this->updateMesh           ();

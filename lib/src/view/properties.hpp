@@ -10,21 +10,10 @@ class ViewProperties : public QWidget {
 
     void setLabel (const QString&);
 
-    template <typename T>
-    T& add (const QString& label, T& widget) {
-      this->addWidget (label, static_cast <QWidget&> (widget));
-      return widget;
-    }
-
-    template <typename T>
-    T& add (T& widget) {
-      this->addWidget (static_cast <QWidget&> (widget));
-      return widget;
-    }
-
-    QWidget& addWidget    (const QString&, QWidget&);
-    QWidget& addWidget    (QWidget&);
-    void     resetWidgets ();
+    void addWidget    (const QString&, QWidget&);
+    void addWidget    (QWidget&);
+    void setFooter    (QWidget&);
+    void resetWidgets ();
 
   private:
     IMPLEMENTATION

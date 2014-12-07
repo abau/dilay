@@ -1,4 +1,5 @@
 #include <QMouseEvent>
+#include <QPushButton>
 #include <glm/glm.hpp>
 #include "scene.hpp"
 #include "state.hpp"
@@ -8,6 +9,7 @@
 #include "view/properties.hpp"
 #include "view/properties/widget.hpp"
 #include "view/tool-menu-parameters.hpp"
+#include "view/util.hpp"
 
 struct Tool::Impl {
   Tool*                  self;
@@ -20,6 +22,14 @@ struct Tool::Impl {
     , menuParameters (p)
   {
     this->menuParameters.mainWindow ().properties ().showTool (name);
+
+    QPushButton& apply = ViewUtil::pushButton (QObject::tr ("Apply"), true, true);
+    this->properties ().setFooter (apply);
+
+    QObject::connect (&apply, &QPushButton::clicked, [this] () {
+      this->close ();
+      State::setTool (nullptr);
+    });
   }
 
   Impl (Tool* s, const ViewToolMenuParameters& p) 
