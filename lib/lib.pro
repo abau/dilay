@@ -71,11 +71,11 @@ SOURCES += \
            src/tool/util/movement.cpp \
            src/util.cpp \
            src/view/axis.cpp \
-           src/view/freeform-mesh-menu.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
            src/view/main-widget.cpp \
            src/view/main-window.cpp \
+           src/view/menu/freeform-mesh.cpp \
            src/view/properties.cpp \
            src/view/properties/button.cpp \
            src/view/properties/selection.cpp \
@@ -162,11 +162,11 @@ HEADERS += \
            src/util.hpp \
            src/variant.hpp \
            src/view/axis.hpp \
-           src/view/freeform-mesh-menu.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
            src/view/main-widget.hpp \
            src/view/main-window.hpp \
+           src/view/menu/freeform-mesh.hpp \
            src/view/properties.hpp \
            src/view/properties/button.hpp \
            src/view/properties/selection.hpp \

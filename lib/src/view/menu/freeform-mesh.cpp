@@ -1,9 +1,9 @@
 #include "mesh-type.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
-#include "view/freeform-mesh-menu.hpp"
+#include "view/menu/freeform-mesh.hpp"
 
-ViewFreeformMeshMenu :: ViewFreeformMeshMenu (ViewMainWindow& mW, const glm::ivec2& p)
+ViewMenuFreeformMesh :: ViewMenuFreeformMesh (ViewMainWindow& mW, const glm::ivec2& p)
   : ViewToolMenu (mW,p) 
 {
   this->addAction <ToolDeleteMesh>      (MeshType::Freeform);

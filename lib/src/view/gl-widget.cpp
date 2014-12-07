@@ -13,9 +13,9 @@
 #include "tool.hpp"
 #include "tool/move-camera.hpp"
 #include "view/axis.hpp"
-#include "view/freeform-mesh-menu.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
+#include "view/menu/freeform-mesh.hpp"
 #include "view/properties/selection.hpp"
 #include "view/properties/widget.hpp"
 #include "view/tool/menu-parameters.hpp"
@@ -211,7 +211,7 @@ struct ViewGlWidget::Impl {
 
       switch (State::scene ().selectionMode ()) {
         case SelectionMode::Freeform: {
-          ViewFreeformMeshMenu menu (this->mainWindow, pos);
+          ViewMenuFreeformMesh menu (this->mainWindow, pos);
           menu.exec (e->globalPos ());
           break;
         }
