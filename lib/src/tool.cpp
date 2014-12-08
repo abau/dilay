@@ -56,6 +56,15 @@ struct Tool::Impl {
     return this->self->runMouseMoveEvent (e);
   }
 
+  ToolResponse mousePressEvent (QMouseEvent& e) {
+    if (e.button () == Qt::RightButton) {
+      return ToolResponse::None;
+    }
+    else {
+      return this->self->runMousePressEvent (e);
+    }
+  }
+
   ToolResponse mouseReleaseEvent (QMouseEvent& e) {
     if (e.button () == Qt::RightButton) {
       this->close ();
@@ -94,6 +103,7 @@ GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE       (void                         , Tool, render)
 DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
+DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
 DELEGATE_CONST (QString                      , Tool, message)

@@ -25,6 +25,7 @@ class Tool {
     ToolResponse                  initialize           ();
     void                          render               ();
     ToolResponse                  mouseMoveEvent       (QMouseEvent&);
+    ToolResponse                  mousePressEvent      (QMouseEvent&);
     ToolResponse                  mouseReleaseEvent    (QMouseEvent&);
     ToolResponse                  wheelEvent           (QWheelEvent&);
     QString                       message              () const;
@@ -41,6 +42,7 @@ class Tool {
     virtual ToolResponse runInitialize        ()             { return ToolResponse::None; }
     virtual void         runRender            ()             {}
     virtual ToolResponse runMouseMoveEvent    (QMouseEvent&) { return ToolResponse::None; }
+    virtual ToolResponse runMousePressEvent   (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runMouseReleaseEvent (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runWheelEvent        (QWheelEvent&) { return ToolResponse::None; }
     virtual QString      runMessage           () const       { return QString (); }
@@ -62,6 +64,7 @@ class Tool {
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
 #define DECLARE_TOOL_RUN_RENDER              void         runRender            ();
 #define DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT    ToolResponse runMouseMoveEvent    (QMouseEvent&);
+#define DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT   ToolResponse runMousePressEvent   (QMouseEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT ToolResponse runMouseReleaseEvent (QMouseEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT   ToolResponse runWheelEvent        (QWheelEvent&);
 #define DECLARE_TOOL_RUN_MESSAGE             QString      runMessage           () const;
@@ -100,6 +103,7 @@ class Tool {
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE       (void        , n, runRender)
 #define DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT(n)    DELEGATE1      (ToolResponse, n, runMouseMoveEvent, QMouseEvent&)
+#define DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT(n)   DELEGATE1      (ToolResponse, n, runMousePressEvent, QMouseEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT(n) DELEGATE1      (ToolResponse, n, runMouseReleaseEvent, QMouseEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT(n)   DELEGATE1      (ToolResponse, n, runWheelEvent, QWheelEvent&)
 #define DELEGATE_TOOL_RUN_MESSAGE(n)             DELEGATE_CONST (QString     , n, runMessage)

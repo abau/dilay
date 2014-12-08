@@ -190,6 +190,12 @@ struct ViewGlWidget::Impl {
     }
   }
 
+  void mousePressEvent (QMouseEvent* e) {
+    if (State::hasTool ()) {
+      State::handleToolResponse (State::tool ().mousePressEvent (*e));
+    }
+  }
+
   void mouseReleaseEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton && this->toolMoveCamera == false) {
       ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e));
@@ -246,5 +252,6 @@ DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
 DELEGATE1 (void      , ViewGlWidget, paintEvent,QPaintEvent*)
 DELEGATE1 (void      , ViewGlWidget, keyPressEvent    , QKeyEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
+DELEGATE1 (void      , ViewGlWidget, mousePressEvent  , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, wheelEvent       , QWheelEvent*)
