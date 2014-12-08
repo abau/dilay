@@ -37,39 +37,27 @@ QDoubleSpinBox& ViewUtil :: spinBox (float value) {
   return spinBox;
 }
 
-QPushButton& ViewUtil :: pushButton (const QString& label, bool ignoreFocus, bool isDefaultButton) {
+QPushButton& ViewUtil :: pushButton (const QString& label, bool isDefaultButton) {
   QPushButton& button = *new QPushButton (label);
   button.setDefault (isDefaultButton);
-  if (ignoreFocus) { 
-    button.setFocusPolicy (Qt::NoFocus);
-  }
   return button;
 }
 
-QToolButton& ViewUtil :: toolButton (const QString& label, bool ignoreFocus) {
+QToolButton& ViewUtil :: toolButton (const QString& label) {
   QToolButton& button = *new QToolButton ();
   button.setText (label);
-  if (ignoreFocus) { 
-    button.setFocusPolicy (Qt::NoFocus);
-  }
   return button;
 }
 
-QRadioButton& ViewUtil :: radioButton (const QString& label, bool ignoreFocus, bool isChecked) {
+QRadioButton& ViewUtil :: radioButton (const QString& label, bool isChecked) {
   QRadioButton& button = *new QRadioButton (label);
   button.setChecked (isChecked);
-  if (ignoreFocus) { 
-    button.setFocusPolicy (Qt::NoFocus);
-  }
   return button;
 }
 
-QCheckBox& ViewUtil :: checkBox (const QString& label, bool ignoreFocus, bool isChecked) {
+QCheckBox& ViewUtil :: checkBox (const QString& label, bool isChecked) {
   QCheckBox& box = *new QCheckBox (label);
   box.setChecked (isChecked);
-  if (ignoreFocus) { 
-    box.setFocusPolicy (Qt::NoFocus);
-  }
   return box;
 }
 

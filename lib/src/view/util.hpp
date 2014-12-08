@@ -19,10 +19,10 @@ namespace ViewUtil {
   QDoubleSpinBox& spinBox     (float, float, float);
   QDoubleSpinBox& spinBox     (float, float);
   QDoubleSpinBox& spinBox     (float);
-  QPushButton&    pushButton  (const QString&, bool, bool = false);
-  QToolButton&    toolButton  (const QString&, bool);
-  QRadioButton&   radioButton (const QString&, bool, bool = false);
-  QCheckBox&      checkBox    (const QString&, bool, bool = false);
+  QPushButton&    pushButton  (const QString&, bool = false);
+  QToolButton&    toolButton  (const QString&);
+  QRadioButton&   radioButton (const QString&, bool = false);
+  QCheckBox&      checkBox    (const QString&, bool = false);
   glm::uvec2      toUVec2     (const QPoint&);
   glm::uvec2      toUVec2     (const QMouseEvent&);
   glm::ivec2      toIVec2     (const QPoint&);

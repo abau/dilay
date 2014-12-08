@@ -23,7 +23,7 @@ struct Tool::Impl {
   {
     this->menuParameters.mainWindow ().properties ().showTool (name);
 
-    QPushButton& apply = ViewUtil::pushButton (QObject::tr ("Apply"), true, true);
+    QPushButton& apply = ViewUtil::pushButton (QObject::tr ("Apply"), true);
     this->properties ().setFooter (apply);
 
     QObject::connect (&apply, &QPushButton::clicked, [this] () {

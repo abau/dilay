@@ -9,7 +9,7 @@ struct ViewPropertiesSelection::Impl {
 
   Impl (ViewPropertiesSelection* s) 
     : self                 (s) 
-    , freeformMeshButton   (ViewUtil::radioButton (tr ("Freeform Mesh"), true, true))
+    , freeformMeshButton   (ViewUtil::radioButton (tr ("Freeform Mesh"), true))
   {
     this->self->setLabel  (tr ("Selection"));
     this->self->addWidget (this->freeformMeshButton);
