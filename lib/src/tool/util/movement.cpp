@@ -10,12 +10,12 @@
 #include "view/util.hpp"
 
 struct ToolUtilMovement::Impl {
-  MovementPlane plane;
-  glm::vec3     originalPosition;
-  glm::vec3     position;
+  MovementConstraint constraint;
+  glm::vec3          originalPosition;
+  glm::vec3          position;
 
-  Impl (MovementPlane p, const glm::ivec2& pos) 
-    : plane            (p)
+  Impl (MovementConstraint c, const glm::ivec2& pos) 
+    : constraint       (c)
     , originalPosition (State::camera ().gazePoint ())
     , position         (originalPosition)
   {
@@ -67,28 +67,28 @@ struct ToolUtilMovement::Impl {
   }
 
   bool move (const glm::ivec2& p, bool reverse) {
-    switch (this->plane) {
-      case MovementPlane::X: 
+    switch (this->constraint) {
+      case MovementConstraint::XAxis: 
         return reverse ? this->moveOnPlane (Dimension::X, p)
                        : this->moveAlong   (Dimension::X, p);
-      case MovementPlane::Y: 
+      case MovementConstraint::YAxis: 
         return reverse ? this->moveOnPlane (Dimension::Y, p)
                        : this->moveAlong   (Dimension::Y, p);
-      case MovementPlane::Z: 
+      case MovementConstraint::ZAxis: 
         return reverse ? this->moveOnPlane (Dimension::Z, p)
                        : this->moveAlong   (Dimension::Z, p);
-      case MovementPlane::XY: 
+      case MovementConstraint::XYPlane: 
         return reverse ? this->moveOnPlane (Dimension::Z, p)
                        : this->moveAlong   (Dimension::Z, p);
-      case MovementPlane::XZ: 
+      case MovementConstraint::XZPlane: 
         return reverse ? this->moveOnPlane (Dimension::Y, p)
                        : this->moveAlong   (Dimension::Y, p);
-      case MovementPlane::YZ: 
+      case MovementConstraint::YZPlane: 
         return reverse ? this->moveOnPlane (Dimension::X, p)
                        : this->moveAlong   (Dimension::X, p);
-      case MovementPlane::Camera: 
+      case MovementConstraint::CameraPlane: 
         return this->moveOnPlane (glm::normalize (State::camera ().toEyePoint ()), p); 
-      case MovementPlane::Primary: 
+      case MovementConstraint::PrimaryPlane: 
         return this->moveOnPlane (State::camera ().primaryDimension (), p);
     }
     std::abort ();
@@ -104,7 +104,7 @@ struct ToolUtilMovement::Impl {
   }
 };
 
-DELEGATE2_BIG6  (ToolUtilMovement, MovementPlane, const glm::ivec2&)
+DELEGATE2_BIG6  (ToolUtilMovement, MovementConstraint, const glm::ivec2&)
 GETTER_CONST    (const glm::vec3&, ToolUtilMovement, originalPosition)
 DELEGATE_CONST  (glm::vec3       , ToolUtilMovement, delta)
 GETTER_CONST    (const glm::vec3&, ToolUtilMovement, position)

@@ -27,14 +27,14 @@ struct ToolMove::Impl {
   Entities         entities;
   ToolUtilMovement movement;
 
-  Impl (ToolMove* s, MovementPlane p) 
+  Impl (ToolMove* s, MovementConstraint c) 
     : self     (s) 
     , entities (std::move (Impl::getEntities ()))
-    , movement (p, s->menuParameters ().mainWindow ().glWidget ().cursorPosition ())
+    , movement (c, s->menuParameters ().mainWindow ().glWidget ().cursorPosition ())
   {
   }
 
-  static QString toolName (MovementPlane) {
+  static QString toolName (MovementConstraint) {
     return QObject::tr ("Move");
   }
 
@@ -91,6 +91,6 @@ struct ToolMove::Impl {
   }
 };
 
-DELEGATE1_TOOL                        (ToolMove, MovementPlane)
+DELEGATE1_TOOL                        (ToolMove, MovementConstraint)
 DELEGATE_TOOL_RUN_CLOSE               (ToolMove)
 DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolMove)
