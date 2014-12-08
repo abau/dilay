@@ -7,7 +7,8 @@ enum class MovementConstraint;
 enum class MeshType;
 
 DECLARE_PARAM_TOOL (ToolMove, (MovementConstraint), DECLARE_TOOL_RUN_CLOSE
-                                                    DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT )
+                                                    DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT
+                                                    DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT )
 
 DECLARE_TOOL (ToolCarve, DECLARE_TOOL_RUN_RENDER
                          DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT )
