@@ -78,14 +78,14 @@ struct ToolUtilMovement::Impl {
         return reverse ? this->moveOnPlane (Dimension::Z, p)
                        : this->moveAlong   (Dimension::Z, p);
       case MovementConstraint::XYPlane: 
-        return reverse ? this->moveOnPlane (Dimension::Z, p)
-                       : this->moveAlong   (Dimension::Z, p);
+        return reverse ? this->moveAlong   (Dimension::Z, p)
+                       : this->moveOnPlane (Dimension::Z, p);
       case MovementConstraint::XZPlane: 
-        return reverse ? this->moveOnPlane (Dimension::Y, p)
-                       : this->moveAlong   (Dimension::Y, p);
+        return reverse ? this->moveAlong   (Dimension::Y, p)
+                       : this->moveOnPlane (Dimension::Y, p);
       case MovementConstraint::YZPlane: 
-        return reverse ? this->moveOnPlane (Dimension::X, p)
-                       : this->moveAlong   (Dimension::X, p);
+        return reverse ? this->moveAlong   (Dimension::X, p)
+                       : this->moveOnPlane (Dimension::X, p);
       case MovementConstraint::CameraPlane: 
         return this->moveOnPlane (glm::normalize (State::camera ().toEyePoint ()), p); 
       case MovementConstraint::PrimaryPlane: 
@@ -105,9 +105,11 @@ struct ToolUtilMovement::Impl {
 };
 
 DELEGATE2_BIG6  (ToolUtilMovement, MovementConstraint, const glm::ivec2&)
-GETTER_CONST    (const glm::vec3&, ToolUtilMovement, originalPosition)
-DELEGATE_CONST  (glm::vec3       , ToolUtilMovement, delta)
-GETTER_CONST    (const glm::vec3&, ToolUtilMovement, position)
-SETTER          (const glm::vec3&, ToolUtilMovement, position)
-DELEGATE1       (bool            , ToolUtilMovement, byMouseEvent, QMouseEvent&)
-DELEGATE2_CONST (bool            , ToolUtilMovement, onCameraPlane, const glm::ivec2&, glm::vec3&)
+GETTER_CONST    (MovementConstraint, ToolUtilMovement, constraint)
+SETTER          (MovementConstraint, ToolUtilMovement, constraint)
+GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, originalPosition)
+DELEGATE_CONST  (glm::vec3         , ToolUtilMovement, delta)
+GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
+SETTER          (const glm::vec3&  , ToolUtilMovement, position)
+DELEGATE1       (bool              , ToolUtilMovement, byMouseEvent, QMouseEvent&)
+DELEGATE2_CONST (bool              , ToolUtilMovement, onCameraPlane, const glm::ivec2&, glm::vec3&)
