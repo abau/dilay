@@ -13,12 +13,12 @@
 
 struct Tool::Impl {
   Tool*                  self;
-  const bool             hasProperties;
+  const bool             isPrimary;
   ViewToolMenuParameters menuParameters;
 
   Impl (Tool* s, const ViewToolMenuParameters& p, const QString& name) 
     : self           (s) 
-    , hasProperties  (true)
+    , isPrimary      (true)
     , menuParameters (p)
   {
     this->menuParameters.mainWindow ().properties ().showTool (name);
@@ -34,12 +34,12 @@ struct Tool::Impl {
 
   Impl (Tool* s, const ViewToolMenuParameters& p) 
     : self           (s) 
-    , hasProperties  (false)
+    , isPrimary      (false)
     , menuParameters (p)
   {}
 
   ~Impl () {
-    if (this->hasProperties) {
+    if (this->isPrimary) {
       this->menuParameters.mainWindow ().properties ().resetTool ();
     }
   }
@@ -92,7 +92,7 @@ struct Tool::Impl {
   }
 
   ViewProperties& properties () {
-    assert (this->hasProperties);
+    assert (this->isPrimary);
     return this->menuParameters.mainWindow ().properties ().tool ();
   }
 };
