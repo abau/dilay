@@ -19,8 +19,6 @@ class Tool {
 
     Tool (const ViewToolMenuParameters&);
 
-    friend class ToolUtil;
-
     const ViewToolMenuParameters& menuParameters       () const;
     ToolResponse                  initialize           ();
     void                          render               ();
