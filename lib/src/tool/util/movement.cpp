@@ -14,14 +14,11 @@ struct ToolUtilMovement::Impl {
   glm::vec3          originalPosition;
   glm::vec3          position;
 
-  Impl (MovementConstraint c, const glm::ivec2& pos) 
+  Impl (MovementConstraint c) 
     : constraint       (c)
     , originalPosition (State::camera ().gazePoint ())
     , position         (originalPosition)
-  {
-    this->move (pos, false);
-    this->originalPosition = this->position;
-  }
+  {}
 
   glm::vec3 delta () const {
     return this->position - this->originalPosition;
@@ -104,7 +101,7 @@ struct ToolUtilMovement::Impl {
   }
 };
 
-DELEGATE2_BIG6  (ToolUtilMovement, MovementConstraint, const glm::ivec2&)
+DELEGATE1_BIG6  (ToolUtilMovement, MovementConstraint)
 GETTER_CONST    (MovementConstraint, ToolUtilMovement, constraint)
 SETTER          (MovementConstraint, ToolUtilMovement, constraint)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, originalPosition)

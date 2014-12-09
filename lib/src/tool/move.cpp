@@ -36,7 +36,7 @@ struct ToolMove::Impl {
     : self           (s) 
     , constraintEdit (*new QButtonGroup)
     , entities       (std::move (Impl::getEntities ()))
-    , movement       (c, s->menuParameters ().mainWindow ().glWidget ().cursorPosition ())
+    , movement       (c)
   {
     this->setupButtons ();
   }
