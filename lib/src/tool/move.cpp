@@ -32,11 +32,11 @@ struct ToolMove::Impl {
   Entities         entities;
   ToolUtilMovement movement;
 
-  Impl (ToolMove* s, MovementConstraint c) 
+  Impl (ToolMove* s) 
     : self           (s) 
     , constraintEdit (*new QButtonGroup)
     , entities       (std::move (Impl::getEntities ()))
-    , movement       (c)
+    , movement       (MovementConstraint::CameraPlane)
   {
     this->setupButtons ();
   }
@@ -87,7 +87,7 @@ struct ToolMove::Impl {
     this->constraintEdit.button (Config::get <int> ("/cache/tool/move/constraint", 7))->click ();
   }
 
-  static QString toolName (MovementConstraint) {
+  static QString toolName () {
     return QObject::tr ("Move");
   }
 
@@ -148,7 +148,7 @@ struct ToolMove::Impl {
   }
 };
 
-DELEGATE1_TOOL                      (ToolMove, MovementConstraint)
+DELEGATE_TOOL                       (ToolMove)
 DELEGATE_TOOL_RUN_CLOSE             (ToolMove)
 DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT  (ToolMove)
 DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT (ToolMove)
