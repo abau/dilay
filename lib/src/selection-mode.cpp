@@ -4,7 +4,7 @@
 
 bool SelectionModeUtil::isMajor (SelectionMode mode) {
   switch (mode) {
-    case SelectionMode::Freeform  : return true;
+    case SelectionMode::WingedMesh: return true;
   }
   std::abort ();
 }

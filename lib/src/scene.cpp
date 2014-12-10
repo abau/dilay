@@ -33,7 +33,7 @@ struct Scene :: Impl {
   }
 
   bool intersects (SelectionMode t, const PrimRay& ray, WingedFaceIntersection& intersection) {
-    if (t == SelectionMode::Freeform) {
+    if (t == SelectionMode::WingedMesh) {
       this->forEachMesh ([this, &ray, &intersection] (WingedMesh& m) {
         m.intersects (ray, intersection);
       });
@@ -55,7 +55,7 @@ struct Scene :: Impl {
 
   bool intersects (const PrimRay& ray, std::pair <unsigned int, unsigned int>& result) {
     switch (this->selectionMode) {
-      case SelectionMode::Freeform: {
+      case SelectionMode::WingedMesh: {
         WingedFaceIntersection intersection;
         if (this->intersects (ray, intersection)) {
           result.first  = intersection.mesh ().index ();
@@ -112,7 +112,7 @@ struct Scene :: Impl {
   }
 
   void forEachSelectedMesh (const std::function <void (WingedMesh&)>& f) const {
-    if (this->selectionMode == SelectionMode::Freeform) {
+    if (this->selectionMode == SelectionMode::WingedMesh) {
       this->selection.forEachMajor ([this,&f] (unsigned int index) {
         f (*this->wingedMesh (index));
       });

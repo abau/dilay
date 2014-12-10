@@ -224,7 +224,7 @@ struct ViewGlWidget::Impl {
       }
       else {
         switch (State::scene ().selectionMode ()) {
-          case SelectionMode::Freeform: {
+          case SelectionMode::WingedMesh: {
             ViewMenuFreeformMesh menu (this->mainWindow, pos);
             menu.exec (e->globalPos ());
             break;

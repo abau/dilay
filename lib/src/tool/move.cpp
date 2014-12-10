@@ -96,7 +96,7 @@ struct ToolMove::Impl {
     const Selection& selection = scene.selection ();
 
     switch (scene.selectionMode ()) {
-      case SelectionMode::Freeform: {
+      case SelectionMode::WingedMesh: {
         MeshPtrList meshes;
         scene.forEachSelectedMesh ([&meshes] (WingedMesh& m) { meshes.push_back (&m); });
         entities.set <MeshPtrList> (meshes);

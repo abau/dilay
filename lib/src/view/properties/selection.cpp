@@ -5,25 +5,25 @@
 
 struct ViewPropertiesSelection::Impl {
   ViewPropertiesSelection* self;
-  QRadioButton&            freeformMeshButton;
+  QRadioButton&            polyMeshButton;
 
   Impl (ViewPropertiesSelection* s) 
-    : self                 (s) 
-    , freeformMeshButton   (ViewUtil::radioButton (tr ("Freeform Mesh"), true))
+    : self             (s) 
+    , polyMeshButton   (ViewUtil::radioButton (tr ("PolyMesh"), true))
   {
     this->self->setLabel  (tr ("Selection"));
-    this->self->addWidget (this->freeformMeshButton);
+    this->self->addWidget (this->polyMeshButton);
 
-    QObject::connect (&this->freeformMeshButton, &QRadioButton::toggled, [this] (bool checked) {
+    QObject::connect (&this->polyMeshButton, &QRadioButton::toggled, [this] (bool checked) {
       if (checked) {
-        emit this->self->selectionModeChanged (SelectionMode::Freeform);
+        emit this->self->selectionModeChanged (SelectionMode::WingedMesh);
       }
     });
   }
 
   SelectionMode selectionMode () const {
-    if (this->freeformMeshButton.isChecked ()) {
-      return SelectionMode::Freeform;
+    if (this->polyMeshButton.isChecked ()) {
+      return SelectionMode::WingedMesh;
     }
     std::abort ();
   }

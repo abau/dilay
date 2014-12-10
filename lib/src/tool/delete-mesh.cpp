@@ -21,7 +21,7 @@ struct ToolDeleteMesh::Impl {
     ActionUnit unit;
 
     switch (State::scene ().selectionMode ()) {
-      case SelectionMode::Freeform:
+      case SelectionMode::WingedMesh:
         this->runDeleteWingedMesh (unit);
         break;
     }
