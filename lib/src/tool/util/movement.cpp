@@ -63,30 +63,31 @@ struct ToolUtilMovement::Impl {
     return false;
   }
 
-  bool move (const glm::ivec2& p, bool reverse) {
+  bool move (const glm::ivec2& p, bool modify) {
     switch (this->constraint) {
       case MovementConstraint::XAxis: 
-        return reverse ? this->moveOnPlane (Dimension::X, p)
-                       : this->moveAlong   (Dimension::X, p);
+        return modify ? this->moveOnPlane (Dimension::X, p)
+                      : this->moveAlong   (Dimension::X, p);
       case MovementConstraint::YAxis: 
-        return reverse ? this->moveOnPlane (Dimension::Y, p)
-                       : this->moveAlong   (Dimension::Y, p);
+        return modify ? this->moveOnPlane (Dimension::Y, p)
+                      : this->moveAlong   (Dimension::Y, p);
       case MovementConstraint::ZAxis: 
-        return reverse ? this->moveOnPlane (Dimension::Z, p)
-                       : this->moveAlong   (Dimension::Z, p);
+        return modify ? this->moveOnPlane (Dimension::Z, p)
+                      : this->moveAlong   (Dimension::Z, p);
       case MovementConstraint::XYPlane: 
-        return reverse ? this->moveAlong   (Dimension::Z, p)
-                       : this->moveOnPlane (Dimension::Z, p);
+        return modify ? this->moveAlong   (Dimension::Z, p)
+                      : this->moveOnPlane (Dimension::Z, p);
       case MovementConstraint::XZPlane: 
-        return reverse ? this->moveAlong   (Dimension::Y, p)
-                       : this->moveOnPlane (Dimension::Y, p);
+        return modify ? this->moveAlong   (Dimension::Y, p)
+                      : this->moveOnPlane (Dimension::Y, p);
       case MovementConstraint::YZPlane: 
-        return reverse ? this->moveAlong   (Dimension::X, p)
-                       : this->moveOnPlane (Dimension::X, p);
+        return modify ? this->moveAlong   (Dimension::X, p)
+                      : this->moveOnPlane (Dimension::X, p);
       case MovementConstraint::CameraPlane: 
         return this->moveOnPlane (glm::normalize (State::camera ().toEyePoint ()), p); 
       case MovementConstraint::PrimaryPlane: 
-        return this->moveOnPlane (State::camera ().primaryDimension (), p);
+        return modify ? this->moveAlong   (State::camera ().primaryDimension (), p)
+                      : this->moveOnPlane (State::camera ().primaryDimension (), p);
     }
     std::abort ();
   }
