@@ -6,7 +6,6 @@
 class WingedMesh;
 class PrimRay;
 class WingedFaceIntersection;
-enum class MeshType;
 enum class SelectionMode;
 class Selection;
 class Intersection;
@@ -15,15 +14,11 @@ class Scene {
   public: 
     DECLARE_BIG3 (Scene)
 
-          WingedMesh&   newWingedMesh        (MeshType);
-          WingedMesh&   newWingedMesh        (unsigned int, MeshType);
+          WingedMesh&   newWingedMesh        ();
+          WingedMesh&   newWingedMesh        (unsigned int);
           void          deleteMesh           (WingedMesh&);
           WingedMesh*   wingedMesh           (unsigned int) const;
 
-          template <typename T>
-          T*            mesh                 (unsigned int) const;
-
-          void          render               (MeshType);
           bool          intersects           (SelectionMode, const PrimRay&, WingedFaceIntersection&);
           bool          intersects           (const PrimRay&, WingedFaceIntersection&);
           bool          intersects           (const PrimRay&, Intersection&);
@@ -36,9 +31,12 @@ class Scene {
           unsigned int  numSelections        () const;
 
           void          printStatistics      (bool) const;
-          void          toggleRenderMode     (MeshType);
           void          forEachMesh          (const std::function <void (WingedMesh&)>&) const;
           void          forEachSelectedMesh  (const std::function <void (WingedMesh&)>&) const;
+
+    template <typename T> T*   mesh             (unsigned int) const;
+    template <typename T> void render           ();
+    template <typename T> void toggleRenderMode ();
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:

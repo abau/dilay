@@ -2,27 +2,26 @@
 #include "action/delete-winged-mesh.hpp"
 #include "action/unit.hpp"
 #include "history.hpp"
-#include "mesh-type.hpp"
 #include "scene.hpp"
 #include "selection.hpp"
+#include "selection-mode.hpp"
 #include "state.hpp"
 #include "tools.hpp"
 
 struct ToolDeleteMesh::Impl {
   ToolDeleteMesh* self;
-  MeshType        meshType;
 
-  Impl (ToolDeleteMesh* s, MeshType t) : self (s), meshType (t) {}
+  Impl (ToolDeleteMesh* s) : self (s) {}
 
-  static QString toolName (MeshType) {
+  static QString toolName () {
     return QObject::tr ("Delete Mesh");
   }
 
   ToolResponse runInitialize () {
     ActionUnit unit;
 
-    switch (this->meshType) {
-      case MeshType::Freeform:
+    switch (State::scene ().selectionMode ()) {
+      case SelectionMode::Freeform:
         this->runDeleteWingedMesh (unit);
         break;
     }
@@ -38,11 +37,11 @@ struct ToolDeleteMesh::Impl {
     State::scene ().selection ().forEachMajor ([this,&unit]
       (unsigned int index) {
         WingedMesh& mesh = State::scene ().wingedMeshRef (index);
-        unit.add <ActionDeleteWMesh> ().run (this->meshType, mesh);
+        unit.add <ActionDeleteWMesh> ().run (mesh);
       }
     );
   }
 };
 
-DELEGATE1_TOOL               (ToolDeleteMesh, MeshType)
+DELEGATE_TOOL                (ToolDeleteMesh)
 DELEGATE_TOOL_RUN_INITIALIZE (ToolDeleteMesh)

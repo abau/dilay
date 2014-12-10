@@ -1,7 +1,6 @@
-#include "action/data.hpp"
 #include "action/delete-winged-mesh.hpp"
 #include "action/unit/on.hpp"
-#include "mesh-type.hpp"
+#include "maybe.hpp"
 #include "octree.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
@@ -15,12 +14,11 @@
 #include "winged/vertex.hpp"
 
 struct ActionDeleteWMesh::Impl {
-  ActionUnitOn <WingedMesh> actions;
-  ActionData   <MeshType>   data;
+  ActionUnitOn <WingedMesh>   actions;
+  Maybe        <unsigned int> index;
   
-  void run (MeshType t, WingedMesh& mesh) {
-    this->data.index (mesh);
-    this->data.value (t);
+  void run (WingedMesh& mesh) {
+    this->index.set (mesh.index ());
 
     // reset entities
     mesh.octree ().forEachFace ([this] (WingedFace& f) {
@@ -47,8 +45,7 @@ struct ActionDeleteWMesh::Impl {
   }
 
   void runUndo () const {
-    WingedMesh& mesh = State::scene ().newWingedMesh ( this->data.index ()
-                                                     , this->data.value <MeshType> () );
+    WingedMesh& mesh = State::scene ().newWingedMesh (this->index.getRef ());
     this->actions.undo (mesh);
 
     mesh.writeAllIndices ();
@@ -57,13 +54,13 @@ struct ActionDeleteWMesh::Impl {
   }
     
   void runRedo () const {
-    WingedMesh& mesh = State::scene ().wingedMeshRef (this->data.index ());
+    WingedMesh& mesh = State::scene ().wingedMeshRef (this->index.getRef ());
     this->actions.redo (mesh);
     State::scene ().deleteMesh (mesh);
   }
 };
 
 DELEGATE_BIG3   (ActionDeleteWMesh)
-DELEGATE2       (void, ActionDeleteWMesh, run, MeshType, WingedMesh&)
+DELEGATE1       (void, ActionDeleteWMesh, run, WingedMesh&)
 DELEGATE_CONST  (void, ActionDeleteWMesh, runUndo)
 DELEGATE_CONST  (void, ActionDeleteWMesh, runRedo)

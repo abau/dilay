@@ -1,11 +1,10 @@
 #include <glm/glm.hpp>
 #include <limits>
 #include <map>
-#include "action/data.hpp"
 #include "action/new-winged-mesh.hpp"
 #include "action/unit/on.hpp"
+#include "maybe.hpp"
 #include "mesh-definition.hpp"
-#include "mesh-type.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
@@ -17,19 +16,17 @@
 #include "winged/mesh.hpp"
 
 struct ActionNewWingedMesh :: Impl {
-  ActionUnitOn <WingedMesh> actions;
-  ActionData <MeshType>     data;
+  ActionUnitOn <WingedMesh>   actions;
+  Maybe        <unsigned int> index;
 
   typedef std::pair <unsigned int,unsigned int> UIPair;
   typedef std::map <UIPair, WingedEdge*>        EdgeMap;
 
-  WingedMesh& run (MeshType t, const MeshDefinition& def) {
+  WingedMesh& run (const MeshDefinition& def) {
     assert (this->actions.isEmpty ());
 
-    WingedMesh& mesh = State::scene ().newWingedMesh (t);
-
-    this->data.index (mesh);
-    this->data.value (t);
+    WingedMesh& mesh = State::scene ().newWingedMesh ();
+    this->index.set (mesh.index ());
 
     // octree
     glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
@@ -120,14 +117,13 @@ struct ActionNewWingedMesh :: Impl {
   };
 
   void runUndo () const {
-    WingedMesh& mesh = State::scene ().wingedMeshRef (this->data.index ());
+    WingedMesh& mesh = State::scene ().wingedMeshRef (this->index.getRef ());
     this->actions.undo (mesh);
     State::scene ().deleteMesh (mesh);
   }
 
   void runRedo () const {
-    WingedMesh& mesh = State::scene ().newWingedMesh ( this->data.index ()
-                                                     , this->data.value <MeshType> () );
+    WingedMesh& mesh = State::scene ().newWingedMesh (this->index.getRef ());
     this->actions.redo (mesh);
 
     mesh.writeAllIndices ();
@@ -137,6 +133,6 @@ struct ActionNewWingedMesh :: Impl {
 };
 
 DELEGATE_BIG3  (ActionNewWingedMesh)
-DELEGATE2      (WingedMesh&, ActionNewWingedMesh, run, MeshType, const MeshDefinition&)
+DELEGATE1      (WingedMesh&, ActionNewWingedMesh, run, const MeshDefinition&)
 DELEGATE_CONST (void       , ActionNewWingedMesh, runUndo)
 DELEGATE_CONST (void       , ActionNewWingedMesh, runRedo)

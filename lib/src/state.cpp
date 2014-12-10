@@ -3,7 +3,6 @@
 #include "camera.hpp"
 #include "history.hpp"
 #include "mesh-definition.hpp"
-#include "mesh-type.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -19,8 +18,7 @@ struct State::Impl {
 
   void initialize () { 
     this->camera.initialize ();
-    this->history.add <ActionNewWingedMesh> ().run ( MeshType::Freeform
-                                                   , MeshDefinition::icosphere (2));
+    this->history.add <ActionNewWingedMesh> ().run (MeshDefinition::icosphere (2));
   }
 
   bool hasTool () const { 

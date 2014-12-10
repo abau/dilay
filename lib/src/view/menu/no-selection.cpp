@@ -1,5 +1,3 @@
-#include "mesh-type.hpp"
-#include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/menu/no-selection.hpp"
 

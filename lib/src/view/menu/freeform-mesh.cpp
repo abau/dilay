@@ -1,4 +1,3 @@
-#include "mesh-type.hpp"
 #include "tools.hpp"
 #include "view/menu/freeform-mesh.hpp"
 
@@ -8,7 +7,7 @@ ViewMenuFreeformMesh :: ViewMenuFreeformMesh (ViewMainWindow& mW, const glm::ive
   this->addAction <ToolMove>            ();
   this->addAction <ToolCarve>           ();
   this->addAction <ToolSubdivideMesh>   ();
-  this->addAction <ToolDeleteMesh>      (MeshType::Freeform);
+  this->addAction <ToolDeleteMesh>      ();
   this->addSeparator                    ();
   this->addAction <ToolNewFreeformMesh> ();
 }

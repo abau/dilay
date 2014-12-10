@@ -5,14 +5,13 @@
 #include "macro.hpp"
 
 class WingedMesh;
-enum class MeshType;
 class MeshDefinition;
 
 class ActionNewWingedMesh : public Action {
   public: 
     DECLARE_BIG3 (ActionNewWingedMesh)
 
-    WingedMesh& run (MeshType, const MeshDefinition&);
+    WingedMesh& run (const MeshDefinition&);
 
   private:
     void runUndo () const;

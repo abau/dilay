@@ -125,7 +125,6 @@ HEADERS += \
            src/maybe.hpp \
            src/mesh.hpp \
            src/mesh-definition.hpp \
-           src/mesh-type.hpp \
            src/octree.hpp \
            src/opengl-util.hpp \
            src/partial-action/collapse-face.hpp \

@@ -3,7 +3,6 @@
 #include "config.hpp"
 #include "history.hpp"
 #include "mesh-definition.hpp"
-#include "mesh-type.hpp"
 #include "mesh.hpp"
 #include "state.hpp"
 #include "tools.hpp"
@@ -49,7 +48,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   void runClose () {
-    State::history ().add <ActionNewWingedMesh> ().run (MeshType::Freeform, this->definition);
+    State::history ().add <ActionNewWingedMesh> ().run (this->definition);
   }
 };
 

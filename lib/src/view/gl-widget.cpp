@@ -4,7 +4,6 @@
 #include <memory>
 #include "camera.hpp"
 #include "history.hpp"
-#include "mesh-type.hpp"
 #include "primitive/ray.hpp"
 #include "renderer.hpp"
 #include "scene.hpp"
@@ -106,7 +105,7 @@ struct ViewGlWidget::Impl {
 
     Renderer::renderInitialize ();
 
-    State::scene ().render (MeshType::Freeform);
+    State::scene ().render <WingedMesh> ();
 
     if (State::hasTool ()) {
       State::tool ().render ();
@@ -151,7 +150,7 @@ struct ViewGlWidget::Impl {
           QCoreApplication::instance()->quit();
           break;
         case Qt::Key_W:
-          State :: scene ().toggleRenderMode (MeshType::Freeform);
+          State :: scene ().toggleRenderMode <WingedMesh> ();
           this->self->update ();
           break;
         case Qt::Key_I:

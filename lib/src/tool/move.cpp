@@ -7,7 +7,6 @@
 #include "config.hpp"
 #include "fwd-winged.hpp"
 #include "history.hpp"
-#include "mesh-type.hpp"
 #include "scene.hpp"
 #include "selection-mode.hpp"
 #include "selection.hpp"
