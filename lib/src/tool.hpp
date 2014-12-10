@@ -53,12 +53,6 @@ class Tool {
     static QString toolName ();                        \
     private: IMPLEMENTATION methods };
 
-#define DECLARE_PARAM_TOOL(name,params,methods)                           \
-  class name : public Tool { public:                                      \
-    DECLARE_BIG3 (name, const ViewToolMenuParameters&, ESC_PARENS params) \
-    static QString toolName params;                                       \
-    private: IMPLEMENTATION methods };
-
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
 #define DECLARE_TOOL_RUN_RENDER              void         runRender            ();
 #define DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT    ToolResponse runMouseMoveEvent    (QMouseEvent&);
@@ -72,31 +66,6 @@ class Tool {
   DELEGATE_STATIC (QString, name, toolName) \
   DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p) \
                      , (this), Tool, (p, toolName ()))
-
-#define DELEGATE1_TOOL(name,t1)\
-  DELEGATE1_STATIC (QString, name, toolName, t1) \
-  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p,t1 a1) \
-                     , (this,a1), Tool, (p, toolName (a1)))
-
-#define DELEGATE2_TOOL(name,t1,t2)\
-  DELEGATE2_STATIC (QString, name, toolName, t1, t2) \
-  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p,t1 a1,t2 a2) \
-                     , (this,a1,a2), Tool, (p, toolName (a1,a2)))
-
-#define DELEGATE3_TOOL(name,t1,t2,t3)\
-  DELEGATE3_STATIC (QString, name, toolName, t1, t2, t3) \
-  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p,t1 a1,t2 a2,t3 a3) \
-                     , (this,a1,a2,a3), Tool, (p, toolName (a1,a2,a3)))
-
-#define DELEGATE4_TOOL(name,t1,t2,t3,t4)\
-  DELEGATE4_STATIC (QString, name, toolName, t1, t2, t3, t4) \
-  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p,t1 a1,t2 a2,t3 a3,t4 a4) \
-                     , (this,a1,a2,a3,a4), Tool, (p, toolName (a1,a2,a3,a4)))
-
-#define DELEGATE5_TOOL(name,t1,t2,t3,t4,t5)\
-  DELEGATE5_STATIC (QString, name, toolName, t1, t2, t3, t4, t5) \
-  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p,t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) \
-                     , (this,a1,a2,a3,a4,a5), Tool, (p, toolName (a1,a2,a3,a4,a5)))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE       (void        , n, runRender)
