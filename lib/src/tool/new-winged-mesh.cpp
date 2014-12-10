@@ -10,16 +10,16 @@
 #include "view/tool/menu-parameters.hpp"
 #include "view/util.hpp"
 
-struct ToolNewFreeformMesh::Impl {
-  ToolNewFreeformMesh* self;
-  QSpinBox&            subdivEdit;
-  MeshDefinition       definition;
-  Mesh                 mesh;
+struct ToolNewWingedMesh::Impl {
+  ToolNewWingedMesh* self;
+  QSpinBox&          subdivEdit;
+  MeshDefinition     definition;
+  Mesh               mesh;
 
-  Impl (ToolNewFreeformMesh* s) 
+  Impl (ToolNewWingedMesh* s) 
     : self (s) 
     , subdivEdit (ViewUtil::spinBox ( 1
-                                    , Config::get <int> ("/cache/tool/new-freeform-mesh/subdiv", 3)
+                                    , Config::get <int> ("/cache/tool/new-winged-mesh/subdiv", 3)
                                     , 5 ))
   {
     this->self->properties ().addWidget (QObject::tr ("Subdivisions"), this->subdivEdit);
@@ -36,7 +36,7 @@ struct ToolNewFreeformMesh::Impl {
     this->definition    = MeshDefinition::icosphere (numSubdiv);
     this->mesh          = Mesh (this->definition);
     this->mesh.bufferData ();
-    Config::cache <int>   ("/cache/tool/new-freeform-mesh/subdiv", numSubdiv);
+    Config::cache <int>   ("/cache/tool/new-winged-mesh/subdiv", numSubdiv);
   }
 
   void runRender () {
@@ -44,7 +44,7 @@ struct ToolNewFreeformMesh::Impl {
   }
 
   static QString toolName () {
-    return QObject::tr ("New Freeform Mesh");
+    return QObject::tr ("New PolyMesh");
   }
 
   void runClose () {
@@ -52,6 +52,6 @@ struct ToolNewFreeformMesh::Impl {
   }
 };
 
-DELEGATE_TOOL            (ToolNewFreeformMesh)
-DELEGATE_TOOL_RUN_CLOSE  (ToolNewFreeformMesh)
-DELEGATE_TOOL_RUN_RENDER (ToolNewFreeformMesh)
+DELEGATE_TOOL            (ToolNewWingedMesh)
+DELEGATE_TOOL_RUN_CLOSE  (ToolNewWingedMesh)
+DELEGATE_TOOL_RUN_RENDER (ToolNewWingedMesh)

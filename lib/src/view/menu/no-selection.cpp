@@ -4,5 +4,5 @@
 ViewMenuNoSelection :: ViewMenuNoSelection (ViewMainWindow& mW, const glm::ivec2& p)
   : ViewToolMenu (mW,p) 
 {
-  this->addAction <ToolNewFreeformMesh> ();
+  this->addAction <ToolNewWingedMesh> ();
 }

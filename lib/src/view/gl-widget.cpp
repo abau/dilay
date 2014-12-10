@@ -14,7 +14,7 @@
 #include "view/axis.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/menu/freeform-mesh.hpp"
+#include "view/menu/winged-mesh.hpp"
 #include "view/menu/no-selection.hpp"
 #include "view/properties/selection.hpp"
 #include "view/properties/widget.hpp"
@@ -225,7 +225,7 @@ struct ViewGlWidget::Impl {
       else {
         switch (State::scene ().selectionMode ()) {
           case SelectionMode::WingedMesh: {
-            ViewMenuFreeformMesh menu (this->mainWindow, pos);
+            ViewMenuWingedMesh menu (this->mainWindow, pos);
             menu.exec (e->globalPos ());
             break;
           }

@@ -65,7 +65,7 @@ SOURCES += \
            src/tool/carve.cpp \
            src/tool/delete-mesh.cpp \
            src/tool/move.cpp \
-           src/tool/new-freeform-mesh.cpp \
+           src/tool/new-winged-mesh.cpp \
            src/tool/move-camera.cpp \
            src/tool/subdivide-mesh.cpp \
            src/tool/util/movement.cpp \
@@ -75,7 +75,7 @@ SOURCES += \
            src/view/light.cpp \
            src/view/main-widget.cpp \
            src/view/main-window.cpp \
-           src/view/menu/freeform-mesh.cpp \
+           src/view/menu/winged-mesh.cpp \
            src/view/menu/no-selection.cpp \
            src/view/properties.cpp \
            src/view/properties/button.cpp \
@@ -166,7 +166,7 @@ HEADERS += \
            src/view/light.hpp \
            src/view/main-widget.hpp \
            src/view/main-window.hpp \
-           src/view/menu/freeform-mesh.hpp \
+           src/view/menu/winged-mesh.hpp \
            src/view/menu/no-selection.hpp \
            src/view/properties.hpp \
            src/view/properties/button.hpp \
