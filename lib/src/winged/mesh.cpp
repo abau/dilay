@@ -11,7 +11,6 @@
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
 #include "primitive/triangle.hpp"
-#include "selection.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -197,8 +196,8 @@ struct WingedMesh::Impl {
     this->mesh.bufferData (); 
   }
 
-  void render (const Selection& selection) { 
-    if (selection.hasMajor (this->_index)) {
+  void render (bool isSelected) { 
+    if (isSelected) {
       this->mesh.color (Config::get <Color> ("/config/editor/selection/color"));
     }
     else {
@@ -318,7 +317,7 @@ DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 DELEGATE        (void, WingedMesh, writeAllIndices)
 DELEGATE        (void, WingedMesh, writeAllNormals)
 DELEGATE        (void, WingedMesh, bufferData)
-DELEGATE1       (void, WingedMesh, render, const Selection&)
+DELEGATE1       (void, WingedMesh, render, bool)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)

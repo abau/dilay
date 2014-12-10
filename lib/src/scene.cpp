@@ -128,7 +128,7 @@ WingedMesh* Scene::mesh <WingedMesh> (unsigned int index) const {
 template <> 
 void Scene::render <WingedMesh> () {
   this->forEachMesh ([this] (WingedMesh& m) {
-    m.render (this->selection ());
+    m.render (this->selection ().hasMajor (m.index ()));
   });
 }
 
