@@ -16,27 +16,23 @@ struct Tool::Impl {
   const bool             isPrimary;
   ViewToolMenuParameters menuParameters;
 
-  Impl (Tool* s, const ViewToolMenuParameters& p, const QString& name) 
-    : self           (s) 
-    , isPrimary      (true)
-    , menuParameters (p)
-  {
-    this->menuParameters.mainWindow ().properties ().showTool (name);
-
-    QPushButton& apply = ViewUtil::pushButton (QObject::tr ("Apply"), true);
-    this->properties ().setFooter (apply);
-
-    QObject::connect (&apply, &QPushButton::clicked, [this] () {
-      this->close ();
-      State::setTool (nullptr);
-    });
-  }
-
   Impl (Tool* s, const ViewToolMenuParameters& p) 
     : self           (s) 
-    , isPrimary      (false)
+    , isPrimary      (p.hasLabel ())
     , menuParameters (p)
-  {}
+  {
+    if (this->isPrimary) {
+      this->menuParameters.mainWindow ().properties ().showTool (p.label ());
+
+      QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"), true);
+      this->properties ().setFooter (close);
+
+      QObject::connect (&close, &QPushButton::clicked, [this] () {
+        this->close ();
+        State::setTool (nullptr);
+      });
+    }
+  }
 
   ~Impl () {
     if (this->isPrimary) {
@@ -97,8 +93,7 @@ struct Tool::Impl {
   }
 };
 
-DELEGATE2_BIG3_SELF        (Tool, const ViewToolMenuParameters&, const QString&)
-DELEGATE1_CONSTRUCTOR_SELF (Tool, const ViewToolMenuParameters&) 
+DELEGATE1_BIG3_SELF (Tool, const ViewToolMenuParameters&)
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE       (void                         , Tool, render)

@@ -15,9 +15,7 @@ enum class ToolResponse {
 
 class Tool {
   public:
-    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&, const QString&)
-
-    Tool (const ViewToolMenuParameters&);
+    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&)
 
     const ViewToolMenuParameters& menuParameters       () const;
     ToolResponse                  initialize           ();
@@ -50,7 +48,6 @@ class Tool {
 #define DECLARE_TOOL(name,methods)                     \
   class name : public Tool { public:                   \
     DECLARE_BIG3 (name, const ViewToolMenuParameters&) \
-    static QString toolName ();                        \
     private: IMPLEMENTATION methods };
 
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
@@ -63,9 +60,7 @@ class Tool {
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
 
 #define DELEGATE_TOOL(name)\
-  DELEGATE_STATIC (QString, name, toolName) \
-  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p) \
-                     , (this), Tool, (p, toolName ()))
+  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p), (this), Tool, (p))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE       (void        , n, runRender)

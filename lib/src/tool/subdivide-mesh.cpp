@@ -13,10 +13,6 @@ struct ToolSubdivideMesh::Impl {
 
   Impl (ToolSubdivideMesh* s) : self (s) {}
 
-  static QString toolName () {
-    return QObject::tr ("Subdivide Mesh");
-  }
-
   ToolResponse runInitialize () {
     ActionUnit unit;
 

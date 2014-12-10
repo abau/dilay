@@ -43,10 +43,6 @@ struct ToolNewWingedMesh::Impl {
     this->mesh.render ();
   }
 
-  static QString toolName () {
-    return QObject::tr ("New PolyMesh");
-  }
-
   void runClose () {
     State::history ().add <ActionNewWingedMesh> ().run (this->definition);
   }

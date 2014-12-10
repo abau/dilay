@@ -4,5 +4,5 @@
 ViewMenuNoSelection :: ViewMenuNoSelection (ViewMainWindow& mW, const glm::ivec2& p)
   : ViewToolMenu (mW,p) 
 {
-  this->addAction <ToolNewWingedMesh> ();
+  this->addAction <ToolNewWingedMesh> (QObject::tr ("New PolyMesh"));
 }

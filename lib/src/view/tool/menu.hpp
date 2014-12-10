@@ -2,6 +2,7 @@
 #define DILAY_VIEW_TOOL_MENU
 
 #include <QMenu>
+#include <QString>
 #include <glm/fwd.hpp>
 #include "state.hpp"
 #include "view/tool/menu-parameters.hpp"
@@ -12,15 +13,14 @@ class ViewToolMenu : public QMenu {
   public:
     DECLARE_BIG3 (ViewToolMenu, ViewMainWindow&, const glm::ivec2&)
 
-    ViewToolMenuParameters menuParameters () const;
+    ViewToolMenuParameters menuParameters (const QString&) const;
     void                   addSeparator   ();
 
-    template <typename T, typename ... Args>
-    void addAction (const Args& ... args) {
-      QAction* a = this->QMenu::addAction (T::toolName (args ...));
-      QObject::connect (a, &QAction::triggered, [this, args ...] () { 
-          State::setTool (new T ( this->menuParameters ()
-                                , args ...));
+    template <typename T>
+    void addAction (const QString& label) {
+      QAction* a = this->QMenu::addAction (label);
+      QObject::connect (a, &QAction::triggered, [this, label] () { 
+          State::setTool (new T (this->menuParameters (label)));
       });
     }
 

@@ -86,10 +86,6 @@ struct ToolMove::Impl {
     this->constraintEdit.button (Config::get <int> ("/cache/tool/move/constraint", 7))->click ();
   }
 
-  static QString toolName () {
-    return QObject::tr ("Move");
-  }
-
   static Entities getEntities () {
           Entities   entities;
           Scene&     scene     = State::scene ();

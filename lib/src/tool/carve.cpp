@@ -33,10 +33,6 @@ struct ToolCarve::Impl {
                        , false );
   }
 
-  static QString toolName () {
-    return QObject::tr ("Carve");
-  }
-
   bool updateCursor (const glm::ivec2& mouse, bool updateBrush) {
     PrimRay                ray   = State::camera ().ray (mouse);
     Scene&                 scene = State::scene ();

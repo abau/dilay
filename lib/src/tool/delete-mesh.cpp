@@ -13,10 +13,6 @@ struct ToolDeleteMesh::Impl {
 
   Impl (ToolDeleteMesh* s) : self (s) {}
 
-  static QString toolName () {
-    return QObject::tr ("Delete Mesh");
-  }
-
   ToolResponse runInitialize () {
     ActionUnit unit;
 
