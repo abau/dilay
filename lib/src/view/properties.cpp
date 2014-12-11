@@ -101,8 +101,8 @@ struct ViewProperties::Impl {
 };
 
 DELEGATE_BIG3_SELF (ViewProperties)
-DELEGATE1 (void    , ViewProperties, setLabel, const QString&)
-DELEGATE2 (void    , ViewProperties, addWidget, const QString&, QWidget&)
-DELEGATE1 (void    , ViewProperties, addWidget, QWidget&)
-DELEGATE1 (void    , ViewProperties, setFooter, QWidget&)
-DELEGATE  (void    , ViewProperties, resetWidgets)
+DELEGATE1 (void, ViewProperties, setLabel, const QString&)
+DELEGATE2 (void, ViewProperties, addWidget, const QString&, QWidget&)
+DELEGATE1 (void, ViewProperties, addWidget, QWidget&)
+DELEGATE1 (void, ViewProperties, setFooter, QWidget&)
+DELEGATE  (void, ViewProperties, resetWidgets)
