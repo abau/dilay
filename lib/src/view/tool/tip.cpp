@@ -41,15 +41,15 @@ namespace {
         break;
 
       case ViewToolTip::Modifier::Ctrl: 
-        string.append ("+ Ctrl");
+        string.append ("+Ctrl");
         break;
 
       case ViewToolTip::Modifier::Shift: 
-        string.append ("+ Shift");
+        string.append ("+Shift");
         break;
 
       case ViewToolTip::Modifier::Alt: 
-        string.append ("+ Alt");
+        string.append ("+Alt");
         break;
     }
 
