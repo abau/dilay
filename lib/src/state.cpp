@@ -8,6 +8,7 @@
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
+#include "view/properties/widget.hpp"
 #include "view/tool/menu-parameters.hpp"
 
 struct State::Impl {
@@ -32,10 +33,20 @@ struct State::Impl {
 
   void setTool (Tool* tool) { 
     if (tool) {
-      tool->menuParameters ().mainWindow ().showMessage (tool->message ());
+      tool->showToolTip ();
+
+      if (tool->hasProperties ()) {
+        tool->menuParameters ().mainWindow ().properties ().showTool (
+          tool->menuParameters ().label ()
+        );
+      }
     }
     else if (this->toolPtr) {
-      this->toolPtr->menuParameters ().mainWindow ().showDefaultMessage ();
+      this->toolPtr->menuParameters ().mainWindow ().showDefaultToolTip ();
+
+      if (this->toolPtr->hasProperties ()) {
+        this->toolPtr->menuParameters ().mainWindow ().properties ().resetTool ();
+      }
     }
     this->toolPtr.reset (tool); 
 

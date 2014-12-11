@@ -2,7 +2,7 @@
 #include <QToolBar>
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/tool/message.hpp"
+#include "view/tool/tip.hpp"
 #include "view/util.hpp"
 
 struct ViewMainWindow :: Impl {
@@ -28,7 +28,7 @@ struct ViewMainWindow :: Impl {
     this->statusBar.addWidget          (&ViewUtil::stretcher (true,false));
     this->statusBar.addWidget          (&this->numSelectionsLabel);
     this->statusBar.addWidget          (new QLabel (" "));
-    this->showDefaultMessage           ();
+    this->showDefaultToolTip           ();
     this->showNumSelections            (0);
   }
 
@@ -39,13 +39,20 @@ struct ViewMainWindow :: Impl {
     this->messageLabel.setText (message);
   }
 
-  void showDefaultMessage () {
-    this->showMessage (ViewToolMessage::message 
-        ({ ViewToolMessage (QObject::tr ("Select"))            .left   ()
-         , ViewToolMessage (QObject::tr ("Camera Mode"))       .middle ()
-         , ViewToolMessage (QObject::tr ("Gaze & Camera Mode")).middle ().shift ()
-         , ViewToolMessage (QObject::tr ("Menu"))              .right  ()
-         }));
+  void showToolTip (const ViewToolTip& tip) {
+    this->showMessage (tip.toString ());
+  }
+
+  void showDefaultToolTip () {
+    ViewToolTip tip;
+
+    tip.add ( ViewToolTip::Button::Left, QObject::tr ("Select"));
+    tip.add ( ViewToolTip::Button::Middle, QObject::tr ("Camera Mode"));
+    tip.add ( ViewToolTip::Button::Middle
+            , ViewToolTip::Modifier::Shift, QObject::tr ("Gaze & Camera Mode"));
+    tip.add ( ViewToolTip::Button::Right, QObject::tr ("Menu"));
+
+    this->showToolTip (tip);
   }
 
   void showNumSelections (unsigned int n) {
@@ -58,5 +65,6 @@ DELEGATE_BIG3_SELF (ViewMainWindow)
 DELEGATE  (ViewGlWidget&        , ViewMainWindow, glWidget)
 DELEGATE  (ViewPropertiesWidget&, ViewMainWindow, properties)
 DELEGATE1 (void                 , ViewMainWindow, showMessage, const QString&)
-DELEGATE  (void                 , ViewMainWindow, showDefaultMessage)
+DELEGATE1 (void                 , ViewMainWindow, showToolTip, const ViewToolTip&)
+DELEGATE  (void                 , ViewMainWindow, showDefaultToolTip)
 DELEGATE1 (void                 , ViewMainWindow, showNumSelections, unsigned int)

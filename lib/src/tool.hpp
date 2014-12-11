@@ -1,11 +1,11 @@
 #ifndef DILAY_TOOL
 #define DILAY_TOOL
 
-#include <QString>
 #include "macro.hpp"
 
 class ViewProperties;
 class ViewToolMenuParameters;
+class ViewToolTip;
 class QMouseEvent;
 class QWheelEvent;
 
@@ -17,20 +17,22 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&)
 
+    bool                          hasProperties        () const;
     const ViewToolMenuParameters& menuParameters       () const;
+    void                          showToolTip          ();
     ToolResponse                  initialize           ();
     void                          render               ();
     ToolResponse                  mouseMoveEvent       (QMouseEvent&);
     ToolResponse                  mousePressEvent      (QMouseEvent&);
     ToolResponse                  mouseReleaseEvent    (QMouseEvent&);
     ToolResponse                  wheelEvent           (QWheelEvent&);
-    QString                       message              () const;
     void                          close                ();
     void                          cancel               ();
 
   protected:
     void                          updateGlWidget       ();
     ViewProperties&               properties           ();
+    ViewToolTip&                  toolTip              ();
 
   private:
     IMPLEMENTATION
@@ -41,7 +43,6 @@ class Tool {
     virtual ToolResponse runMousePressEvent   (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runMouseReleaseEvent (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runWheelEvent        (QWheelEvent&) { return ToolResponse::None; }
-    virtual QString      runMessage           () const       { return QString (); }
     virtual void         runClose             ()             {}
 };
 
@@ -56,7 +57,6 @@ class Tool {
 #define DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT   ToolResponse runMousePressEvent   (QMouseEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT ToolResponse runMouseReleaseEvent (QMouseEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT   ToolResponse runWheelEvent        (QWheelEvent&);
-#define DECLARE_TOOL_RUN_MESSAGE             QString      runMessage           () const;
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
 
 #define DELEGATE_TOOL(name)\
@@ -68,7 +68,6 @@ class Tool {
 #define DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT(n)   DELEGATE1      (ToolResponse, n, runMousePressEvent, QMouseEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT(n) DELEGATE1      (ToolResponse, n, runMouseReleaseEvent, QMouseEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT(n)   DELEGATE1      (ToolResponse, n, runWheelEvent, QWheelEvent&)
-#define DELEGATE_TOOL_RUN_MESSAGE(n)             DELEGATE_CONST (QString     , n, runMessage)
 #define DELEGATE_TOOL_RUN_CLOSE(n)               DELEGATE       (void        , n, runClose)
 
 #endif

@@ -5,14 +5,12 @@
 #include "config.hpp"
 #include "intersection.hpp"
 #include "primitive/ray.hpp"
-#include "renderer.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool/move-camera.hpp"
 #include "view/gl-widget.hpp"
-#include "view/main-window.hpp"
 #include "view/tool/menu-parameters.hpp"
-#include "view/tool/message.hpp"
+#include "view/tool/tip.hpp"
 #include "view/util.hpp"
 
 struct ToolMoveCamera::Impl {
@@ -34,18 +32,7 @@ struct ToolMoveCamera::Impl {
     , rotationFactor     (Config::get <float> ("/config/editor/camera/rotation-factor"))
     , panningFactor      (Config::get <float> ("/config/editor/camera/panning-factor"))
     , initiallySetGaze   (g)
-  {
-    this->self->menuParameters ().mainWindow ().showMessage (this->self->message ());
-  }
-
-  ~Impl () {
-    if (State::hasTool ()) {
-      this->self->menuParameters ().mainWindow ().showMessage (State::tool ().message ());
-    }
-    else {
-      this->self->menuParameters ().mainWindow ().showDefaultMessage ();
-    }
-  }
+  {}
 
   ToolResponse runInitialize () {
     if (this->initiallySetGaze) {
@@ -119,15 +106,6 @@ struct ToolMoveCamera::Impl {
     return ToolResponse::None;
   }
 
-  QString runMessage () const {
-    return ViewToolMessage::message 
-      ({ ViewToolMessage (QObject::tr ("Accept"))     .left   () 
-       , ViewToolMessage (QObject::tr ("Drag To Pan")).middle ()
-       , ViewToolMessage (QObject::tr ("Gaze"))       .middle ().shift ()
-       , ViewToolMessage (QObject::tr ("Cancel"))     .right  ()
-       }); 
-  }
-
   void runCancel () {
     State::camera ().set (this->originalGazepoint, this->originalToEyepoint, this->originalUp);
   }
@@ -139,5 +117,4 @@ DELEGATE         (ToolResponse, ToolMoveCamera, runInitialize)
 DELEGATE1        (ToolResponse, ToolMoveCamera, runMouseMoveEvent, QMouseEvent&)
 DELEGATE1        (ToolResponse, ToolMoveCamera, runMouseReleaseEvent, QMouseEvent&)
 DELEGATE1_STATIC (ToolResponse, ToolMoveCamera, staticWheelEvent, QWheelEvent&)
-DELEGATE_CONST   (QString     , ToolMoveCamera, runMessage)
 DELEGATE         (void        , ToolMoveCamera, runCancel)

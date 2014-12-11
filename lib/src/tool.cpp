@@ -9,21 +9,21 @@
 #include "view/properties.hpp"
 #include "view/properties/widget.hpp"
 #include "view/tool/menu-parameters.hpp"
+#include "view/tool/tip.hpp"
 #include "view/util.hpp"
 
 struct Tool::Impl {
   Tool*                  self;
-  const bool             isPrimary;
+  const bool             hasProperties;
   ViewToolMenuParameters menuParameters;
+  ViewToolTip            toolTip;
 
   Impl (Tool* s, const ViewToolMenuParameters& p) 
     : self           (s) 
-    , isPrimary      (p.hasLabel ())
+    , hasProperties  (p.hasLabel ())
     , menuParameters (p)
   {
-    if (this->isPrimary) {
-      this->menuParameters.mainWindow ().properties ().showTool (p.label ());
-
+    if (this->hasProperties) {
       QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"), true);
       this->properties ().setFooter (close);
 
@@ -32,12 +32,11 @@ struct Tool::Impl {
         State::setTool (nullptr);
       });
     }
+    this->toolTip.add (ViewToolTip::Button::Left, QObject::tr ("Close"));
   }
 
-  ~Impl () {
-    if (this->isPrimary) {
-      this->menuParameters.mainWindow ().properties ().resetTool ();
-    }
+  void showToolTip () {
+    this->menuParameters.mainWindow ().showToolTip (this->toolTip);
   }
 
   ToolResponse initialize () { 
@@ -75,10 +74,6 @@ struct Tool::Impl {
     return this->self->runWheelEvent (e);
   }
 
-  QString message () const { 
-    return this->self->runMessage (); 
-  }
-
   void close () { 
     return this->self->runClose (); 
   }
@@ -87,21 +82,24 @@ struct Tool::Impl {
     this->menuParameters.mainWindow ().glWidget ().update ();
   }
 
+
   ViewProperties& properties () {
-    assert (this->isPrimary);
+    assert (this->hasProperties);
     return this->menuParameters.mainWindow ().properties ().tool ();
   }
 };
 
 DELEGATE1_BIG3_SELF (Tool, const ViewToolMenuParameters&)
+GETTER_CONST   (bool                         , Tool, hasProperties)
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
+DELEGATE       (void                         , Tool, showToolTip)
 DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE       (void                         , Tool, render)
 DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
-DELEGATE_CONST (QString                      , Tool, message)
 DELEGATE       (void                         , Tool, close)
 DELEGATE       (void                         , Tool, updateGlWidget)
 DELEGATE       (ViewProperties&              , Tool, properties)
+GETTER         (ViewToolTip&                 , Tool, toolTip)
