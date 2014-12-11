@@ -14,8 +14,9 @@ class ViewToolTip {
 
     QString toString () const;
 
-    void add (Button, Modifier, const QString&);
-    void add (Button, const QString&);
+    void add   (Button, Modifier, const QString&);
+    void add   (Button, const QString&);
+    void reset ();
 
   private:
     IMPLEMENTATION

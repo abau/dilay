@@ -84,9 +84,14 @@ struct ViewToolTip::Impl {
   void add (Button button, const QString& tip) {
     this->add (button, ViewToolTip::Modifier::None, tip);
   }
+
+  void reset () {
+    this->tips.clear ();
+  }
 };
 
 DELEGATE_BIG4COPY (ViewToolTip)
 DELEGATE_CONST (QString, ViewToolTip, toString)
 DELEGATE3      (void   , ViewToolTip, add, ViewToolTip::Button, ViewToolTip::Modifier, const QString&)
 DELEGATE2      (void   , ViewToolTip, add, ViewToolTip::Button, const QString&)
+DELEGATE       (void   , ViewToolTip, reset)

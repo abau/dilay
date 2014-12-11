@@ -18,6 +18,7 @@
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
 #include "view/tool/menu-parameters.hpp"
+#include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "winged/mesh.hpp"
 
@@ -38,6 +39,7 @@ struct ToolMove::Impl {
     , movement       (MovementConstraint::CameraPlane)
   {
     this->setupButtons ();
+    this->setupToolTip ();
   }
 
   void setupButtons () {
@@ -81,9 +83,21 @@ struct ToolMove::Impl {
         default:
           std::abort ();
       }
+      this->setupToolTip ();
       Config::cache <int> ("/cache/tool/move/constraint", id);
     });
     this->constraintEdit.button (Config::get <int> ("/cache/tool/move/constraint", 7))->click ();
+  }
+
+  void setupToolTip () {
+    this->self->resetToolTip ();
+    this->self->toolTip ().add (ViewToolTip::Button::Left, QObject::tr ("Drag To Move"));
+
+    if (this->movement.constraint () != MovementConstraint::CameraPlane) {
+      this->self->toolTip ().add ( ViewToolTip::Button::Left, ViewToolTip::Modifier::Shift
+                                 , QObject::tr ("Drag To Move Orthogonally") );
+    }
+    this->self->showToolTip ();
   }
 
   static Entities getEntities () {

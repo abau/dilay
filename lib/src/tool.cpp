@@ -32,7 +32,7 @@ struct Tool::Impl {
         State::setTool (nullptr);
       });
     }
-    this->toolTip.add (ViewToolTip::Button::Right, QObject::tr ("Close"));
+    this->resetToolTip ();
   }
 
   void showToolTip () {
@@ -82,10 +82,14 @@ struct Tool::Impl {
     State::mainWindow ().glWidget ().update ();
   }
 
-
   ViewProperties& properties () {
     assert (this->hasProperties);
     return State::mainWindow ().properties ().tool ();
+  }
+
+  void resetToolTip () {
+    this->toolTip.reset ();
+    this->toolTip.add   (ViewToolTip::Button::Right, QObject::tr ("Close"));
   }
 };
 
@@ -103,3 +107,4 @@ DELEGATE       (void                         , Tool, close)
 DELEGATE       (void                         , Tool, updateGlWidget)
 DELEGATE       (ViewProperties&              , Tool, properties)
 GETTER         (ViewToolTip&                 , Tool, toolTip)
+DELEGATE       (void                         , Tool, resetToolTip)

@@ -32,6 +32,7 @@ class Tool {
     void                          updateGlWidget       ();
     ViewProperties&               properties           ();
     ViewToolTip&                  toolTip              ();
+    void                          resetToolTip         ();
 
   private:
     IMPLEMENTATION
