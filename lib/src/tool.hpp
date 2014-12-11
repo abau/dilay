@@ -27,7 +27,6 @@ class Tool {
     ToolResponse                  mouseReleaseEvent    (QMouseEvent&);
     ToolResponse                  wheelEvent           (QWheelEvent&);
     void                          close                ();
-    void                          cancel               ();
 
   protected:
     void                          updateGlWidget       ();
