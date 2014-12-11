@@ -7,11 +7,9 @@
 #include "state.hpp"
 #include "view/tool/menu-parameters.hpp"
 
-class ViewMainWindow;
-
 class ViewToolMenu : public QMenu {
   public:
-    DECLARE_BIG3 (ViewToolMenu, ViewMainWindow&, const glm::ivec2&)
+    DECLARE_BIG3 (ViewToolMenu, const glm::ivec2&)
 
     ViewToolMenuParameters menuParameters (const QString&) const;
     void                   addSeparator   ();

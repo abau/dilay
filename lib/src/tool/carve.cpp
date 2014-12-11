@@ -29,7 +29,7 @@ struct ToolCarve::Impl {
   {
     this->cursor.setGeometry (this->brush.width ());
     this->cursor.enable      ();
-    this->updateCursor ( this->self->menuParameters ().mainWindow ().glWidget ().cursorPosition ()
+    this->updateCursor ( State::mainWindow ().glWidget ().cursorPosition ()
                        , false );
   }
 

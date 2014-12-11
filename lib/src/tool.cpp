@@ -36,7 +36,7 @@ struct Tool::Impl {
   }
 
   void showToolTip () {
-    this->menuParameters.mainWindow ().showToolTip (this->toolTip);
+    State::mainWindow ().showToolTip (this->toolTip);
   }
 
   ToolResponse initialize () { 
@@ -79,13 +79,13 @@ struct Tool::Impl {
   }
 
   void updateGlWidget () {
-    this->menuParameters.mainWindow ().glWidget ().update ();
+    State::mainWindow ().glWidget ().update ();
   }
 
 
   ViewProperties& properties () {
     assert (this->hasProperties);
-    return this->menuParameters.mainWindow ().properties ().tool ();
+    return State::mainWindow ().properties ().tool ();
   }
 };
 

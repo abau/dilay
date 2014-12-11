@@ -1,8 +1,6 @@
 #include "tools.hpp"
 #include "view/menu/no-selection.hpp"
 
-ViewMenuNoSelection :: ViewMenuNoSelection (ViewMainWindow& mW, const glm::ivec2& p)
-  : ViewToolMenu (mW,p) 
-{
+ViewMenuNoSelection :: ViewMenuNoSelection (const glm::ivec2& p) : ViewToolMenu (p) {
   this->addAction <ToolNewWingedMesh> (QObject::tr ("New PolyMesh"));
 }

@@ -5,7 +5,7 @@
 
 class ViewMenuNoSelection : public ViewToolMenu {
   public:
-    ViewMenuNoSelection (ViewMainWindow&, const glm::ivec2&);
+    ViewMenuNoSelection (const glm::ivec2&);
 };
 
 #endif

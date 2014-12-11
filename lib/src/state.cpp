@@ -12,14 +12,24 @@
 #include "view/tool/menu-parameters.hpp"
 
 struct State::Impl {
+  ViewMainWindow*        mainWindowPtr;
   Camera                 camera;
   History                history;
   Scene                  scene;
   std::unique_ptr <Tool> toolPtr;
 
-  void initialize () { 
+  Impl () : mainWindowPtr (nullptr)
+  {}
+
+  void initialize (ViewMainWindow& mW) { 
+    this->mainWindowPtr = &mW;
     this->camera.initialize ();
     this->history.add <ActionNewWingedMesh> ().run (MeshDefinition::icosphere (2));
+  }
+
+  ViewMainWindow& mainWindow () const {
+    assert (this->mainWindowPtr);
+    return *this->mainWindowPtr;
   }
 
   bool hasTool () const { 
@@ -36,16 +46,14 @@ struct State::Impl {
       tool->showToolTip ();
 
       if (tool->hasProperties ()) {
-        tool->menuParameters ().mainWindow ().properties ().showTool (
-          tool->menuParameters ().label ()
-        );
+        this->mainWindow ().properties ().showTool (tool->menuParameters ().label ());
       }
     }
     else if (this->toolPtr) {
-      this->toolPtr->menuParameters ().mainWindow ().showDefaultToolTip ();
+      this->mainWindow ().showDefaultToolTip ();
 
       if (this->toolPtr->hasProperties ()) {
-        this->toolPtr->menuParameters ().mainWindow ().properties ().resetTool ();
+        this->mainWindow ().properties ().resetTool ();
       }
     }
     this->toolPtr.reset (tool); 
@@ -61,10 +69,10 @@ struct State::Impl {
       case ToolResponse::None:
         break;
       case ToolResponse::Redraw:
-        this->toolPtr->menuParameters ().mainWindow ().glWidget ().update ();
+        this->mainWindow ().glWidget ().update ();
         break;
       case ToolResponse::Terminate:
-        this->toolPtr->menuParameters ().mainWindow ().glWidget ().update ();
+        this->mainWindow ().glWidget ().update ();
         this->setTool (nullptr);
         break;
     }
@@ -77,7 +85,8 @@ DELEGATE_BIG3 (State)
 GETTER_GLOBAL    (Camera&           , State, camera)
 GETTER_GLOBAL    (History&          , State, history)
 GETTER_GLOBAL    (Scene&            , State, scene)
-DELEGATE_GLOBAL  (void              , State, initialize)
+DELEGATE_GLOBAL  (ViewMainWindow&   , State, mainWindow)
+DELEGATE1_GLOBAL (void              , State, initialize, ViewMainWindow&)
 DELEGATE_GLOBAL  (bool              , State, hasTool)
 DELEGATE_GLOBAL  (Tool&             , State, tool)
 DELEGATE1_GLOBAL (void              , State, setTool, Tool*)

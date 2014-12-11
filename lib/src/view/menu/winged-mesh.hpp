@@ -5,7 +5,7 @@
 
 class ViewMenuWingedMesh : public ViewToolMenu {
   public:
-    ViewMenuWingedMesh (ViewMainWindow&, const glm::ivec2&);
+    ViewMenuWingedMesh (const glm::ivec2&);
 };
 
 #endif

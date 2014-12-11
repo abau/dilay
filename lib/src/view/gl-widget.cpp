@@ -28,7 +28,7 @@ struct ViewGlWidget::Impl {
   std::unique_ptr <ToolMoveCamera> toolMoveCamera;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW) 
-    : self (s)
+    : self       (s)
     , mainWindow (mW) 
   {
     this->self->setAutoFillBackground (false);
@@ -82,7 +82,7 @@ struct ViewGlWidget::Impl {
 
   void initializeGL () {
     Renderer::initialize ();
-    State   ::initialize ();
+    State   ::initialize (this->mainWindow);
 
     this->axis.initialize        ();
     this->self->setMouseTracking (true);
@@ -197,7 +197,7 @@ struct ViewGlWidget::Impl {
 
   void mouseReleaseEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton && this->toolMoveCamera == false) {
-      ViewToolMenuParameters parameters (this->mainWindow, ViewUtil::toIVec2 (*e));
+      ViewToolMenuParameters parameters (ViewUtil::toIVec2 (*e));
       this->setToolMoveCamera (*new ToolMoveCamera 
           ( parameters
           , e->modifiers ().testFlag (Qt::ShiftModifier)
@@ -219,13 +219,13 @@ struct ViewGlWidget::Impl {
         this->selectIntersection (pos);
       }
       if (State::scene ().numSelections () == 0) {
-        ViewMenuNoSelection menu (this->mainWindow, pos);
+        ViewMenuNoSelection menu (pos);
         menu.exec (e->globalPos ());
       }
       else {
         switch (State::scene ().selectionMode ()) {
           case SelectionMode::WingedMesh: {
-            ViewMenuWingedMesh menu (this->mainWindow, pos);
+            ViewMenuWingedMesh menu (pos);
             menu.exec (e->globalPos ());
             break;
           }
