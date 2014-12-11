@@ -22,10 +22,10 @@
 #include "view/util.hpp"
 
 struct ViewGlWidget::Impl {
-  ViewGlWidget*                    self;
-  ViewMainWindow&                  mainWindow;
-  ViewAxis                         axis;
-  std::unique_ptr <ToolMoveCamera> toolMoveCamera;
+  ViewGlWidget*   self;
+  ViewMainWindow& mainWindow;
+  ViewAxis        axis;
+  ToolMoveCamera  toolMoveCamera;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW) 
     : self       (s)
@@ -50,33 +50,6 @@ struct ViewGlWidget::Impl {
     if (State::scene ().selectIntersection (State::camera ().ray (pos))) {
       this->mainWindow.showNumSelections (State::scene ().numSelections ());
       this->self->update ();
-    }
-  }
-
-  void setToolMoveCamera (ToolMoveCamera& tool) {
-    assert (this->toolMoveCamera == false);
-    this->toolMoveCamera.reset (&tool);
-    this->handleCameraResponse (this->toolMoveCamera->initialize ());
-    this->self->update ();
-  }
-
-  void deleteToolMoveCamera () {
-    assert (this->toolMoveCamera);
-    this->toolMoveCamera->close ();
-    this->toolMoveCamera.reset (nullptr);
-    this->self->update ();
-  }
-
-  void handleCameraResponse (ToolResponse response) {
-    switch (response) {
-      case ToolResponse::None:
-        break;
-      case ToolResponse::Redraw:
-        this->self->update ();
-        break;
-      case ToolResponse::Terminate:
-        this->deleteToolMoveCamera ();
-        break;
     }
   }
 
@@ -124,16 +97,7 @@ struct ViewGlWidget::Impl {
   }
 
   void keyPressEvent (QKeyEvent* e) {
-    if (this->toolMoveCamera) {
-      switch (e->key()) {
-        case Qt::Key_Escape:
-          this->deleteToolMoveCamera ();
-          break;
-        default:
-          this->self->QGLWidget::keyPressEvent (e);
-      }
-    }
-    else if (State::hasTool ()) {
+    if (State::hasTool ()) {
       switch (e->key()) {
         case Qt::Key_Escape:
           State::tool    ().close ();
@@ -181,8 +145,8 @@ struct ViewGlWidget::Impl {
   void mouseMoveEvent (QMouseEvent* e) {
     this->self->setFocus (Qt::MouseFocusReason);
 
-    if (this->toolMoveCamera) {
-      this->handleCameraResponse (this->toolMoveCamera->mouseMoveEvent (*e));
+    if (e->buttons ().testFlag (Qt::MiddleButton)) {
+      this->toolMoveCamera.mouseMoveEvent (*e);
     }
     else if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mouseMoveEvent (*e));
@@ -190,21 +154,17 @@ struct ViewGlWidget::Impl {
   }
 
   void mousePressEvent (QMouseEvent* e) {
-    if (State::hasTool ()) {
+    if (e->button () == Qt::MiddleButton) {
+      this->toolMoveCamera.mousePressEvent (*e);
+    }
+    else if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mousePressEvent (*e));
     }
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    if (e->button () == Qt::MiddleButton && this->toolMoveCamera == false) {
-      ViewToolMenuParameters parameters (ViewUtil::toIVec2 (*e));
-      this->setToolMoveCamera (*new ToolMoveCamera 
-          ( parameters
-          , e->modifiers ().testFlag (Qt::ShiftModifier)
-          ));
-    }
-    else if (this->toolMoveCamera) {
-      this->handleCameraResponse (this->toolMoveCamera->mouseReleaseEvent (*e));
+    if (e->button () == Qt::MiddleButton) {
+      this->toolMoveCamera.mouseReleaseEvent (*e);
     }
     else if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mouseReleaseEvent (*e));
@@ -235,7 +195,7 @@ struct ViewGlWidget::Impl {
   }
 
   void wheelEvent (QWheelEvent* e) {
-    this->handleCameraResponse (ToolMoveCamera::staticWheelEvent (*e));
+    this->toolMoveCamera.wheelEvent (*e);
   }
 };
 

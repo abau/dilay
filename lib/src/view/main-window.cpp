@@ -47,9 +47,11 @@ struct ViewMainWindow :: Impl {
     ViewToolTip tip;
 
     tip.add ( ViewToolTip::Button::Left, QObject::tr ("Select"));
-    tip.add ( ViewToolTip::Button::Middle, QObject::tr ("Camera Mode"));
+    tip.add ( ViewToolTip::Button::Middle, QObject::tr ("Drag To Rotate"));
     tip.add ( ViewToolTip::Button::Middle
-            , ViewToolTip::Modifier::Shift, QObject::tr ("Gaze & Camera Mode"));
+            , ViewToolTip::Modifier::Ctrl, QObject::tr ("Drag To Pan"));
+    tip.add ( ViewToolTip::Button::Middle
+            , ViewToolTip::Modifier::Shift, QObject::tr ("Gaze"));
     tip.add ( ViewToolTip::Button::Right, QObject::tr ("Menu"));
 
     this->showToolTip (tip);
