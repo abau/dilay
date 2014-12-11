@@ -226,9 +226,9 @@ struct MeshDefinition::Impl {
     const float    c = 2.0f * glm::pi <float> () / float (numBaseVertices);
 
     for (unsigned int i = 0; i < numBaseVertices; i++) {
-      m.addVertex (glm::vec3 ( glm::sin <float> (float (i) * c)
+      m.addVertex (glm::vec3 ( glm::sin (float (i) * c)
                              , -0.5f
-                             , glm::cos <float> (float (i) * c)));
+                             , glm::cos (float (i) * c)));
     }
     m.addVertex (glm::vec3 (0.0f, -0.5f, 0.0f));
     m.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
@@ -249,14 +249,14 @@ struct MeshDefinition::Impl {
     const float    c = 2.0f * glm::pi <float> () / float (numVertices);
 
     for (unsigned int i = 0; i < numVertices; i++) {
-      m.addVertex (glm::vec3 ( glm::sin <float> (float (i) * c)
+      m.addVertex (glm::vec3 ( glm::sin (float (i) * c)
                              , -0.5f
-                             , glm::cos <float> (float (i) * c)));
+                             , glm::cos (float (i) * c)));
     }
     for (unsigned int i = 0; i < numVertices; i++) {
-      m.addVertex (glm::vec3 ( glm::sin <float> (float (i) * c)
+      m.addVertex (glm::vec3 ( glm::sin (float (i) * c)
                              , 0.5f
-                             , glm::cos <float> (float (i) * c)));
+                             , glm::cos (float (i) * c)));
     }
     m.addVertex (glm::vec3 (0.0f, -0.5f, 0.0f));
     m.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
