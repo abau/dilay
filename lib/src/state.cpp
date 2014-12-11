@@ -34,13 +34,13 @@ struct State::Impl {
     if (tool) {
       tool->menuParameters ().mainWindow ().showMessage (tool->message ());
     }
-    else if (toolPtr) {
-      toolPtr->menuParameters ().mainWindow ().showDefaultMessage ();
+    else if (this->toolPtr) {
+      this->toolPtr->menuParameters ().mainWindow ().showDefaultMessage ();
     }
     this->toolPtr.reset (tool); 
 
-    if (toolPtr) {
-      this->handleToolResponse (toolPtr->initialize ());
+    if (this->toolPtr) {
+      this->handleToolResponse (this->toolPtr->initialize ());
     }
   }
 
