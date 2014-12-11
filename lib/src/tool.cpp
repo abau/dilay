@@ -32,7 +32,7 @@ struct Tool::Impl {
         State::setTool (nullptr);
       });
     }
-    this->toolTip.add (ViewToolTip::Button::Left, QObject::tr ("Close"));
+    this->toolTip.add (ViewToolTip::Button::Right, QObject::tr ("Close"));
   }
 
   void showToolTip () {
