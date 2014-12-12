@@ -20,6 +20,7 @@
 #include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
+#include "view/vector-edit.hpp"
 #include "winged/mesh.hpp"
 
 namespace {
@@ -28,21 +29,23 @@ namespace {
 
 struct ToolMove::Impl {
   ToolMove*        self;
-  QButtonGroup&    constraintEdit;
   Entities         entities;
   ToolUtilMovement movement;
+  ViewVectorEdit&  deltaEdit;
 
   Impl (ToolMove* s) 
-    : self           (s) 
-    , constraintEdit (*new QButtonGroup)
-    , entities       (std::move (Impl::getEntities ()))
-    , movement       (MovementConstraint::CameraPlane)
+    : self      (s) 
+    , entities  (std::move (Impl::getEntities ()))
+    , movement  (MovementConstraint::CameraPlane)
+    , deltaEdit (*new ViewVectorEdit ("\u0394",glm::vec3 (0.0f)))
   {
-    this->setupButtons ();
-    this->setupToolTip ();
+    this->setupProperties ();
+    this->setupToolTip    ();
   }
 
-  void setupButtons () {
+  void setupProperties () {
+    QButtonGroup&   constraintEdit (*new QButtonGroup);
+
     std::vector <QString> labels = { QObject::tr ("x-axis")
                                    , QObject::tr ("y-axis")
                                    , QObject::tr ("z-axis")
@@ -56,13 +59,14 @@ struct ToolMove::Impl {
     for (QString& label : labels) {
       QRadioButton& button = ViewUtil::radioButton (label);
 
-      this->constraintEdit.addButton (&button, id);
+      constraintEdit.addButton (&button, id);
       this->self->properties ().addWidget (button);
       id++;
     }
+    this->self->properties ().addWidget (this->deltaEdit);
 
     void (QButtonGroup::* buttonReleased)(int) = &QButtonGroup::buttonReleased;
-    QObject::connect (&this->constraintEdit, buttonReleased, [this] (int id) {
+    QObject::connect (&constraintEdit, buttonReleased, [this] (int id) {
       switch (id) {
         case 1: this->movement.constraint (MovementConstraint::XAxis);
                 break;
@@ -86,7 +90,16 @@ struct ToolMove::Impl {
       this->setupToolTip ();
       this->self->config ().cache <int> ("constraint", id);
     });
-    this->constraintEdit.button (this->self->config ().get <int> ("constraint", 7))->click ();
+    constraintEdit.button (this->self->config ().get <int> ("constraint", 7))->click ();
+
+    QObject::connect ( &this->deltaEdit, &ViewVectorEdit::vectorEdited
+                     , [this] (const glm::vec3& d) 
+    {
+      this->resetTranslationOfSelection ();
+      this->translateSelectionBy        (d);
+      this->movement.delta              (d);
+      this->self->updateGlWidget        ();
+    });
   }
 
   void setupToolTip () {
@@ -118,6 +131,10 @@ struct ToolMove::Impl {
     return entities;
   }
 
+  void resetTranslationOfSelection () {
+    this->translateSelectionBy (- this->movement.delta ());
+  }
+
   void translateSelectionBy (const glm::vec3& t) {
     this->entities.caseOf <void>
       ( [&t] (MeshPtrList& ms) { for (WingedMesh* m : ms) { m->translate (t); } }
@@ -125,7 +142,7 @@ struct ToolMove::Impl {
   }
 
   void runClose () {
-    this->translateSelectionBy (- this->movement.delta ());
+    this->resetTranslationOfSelection ();
 
     ActionUnit unit;
 
@@ -144,6 +161,7 @@ struct ToolMove::Impl {
     const glm::vec3 previousDelta = this->movement.delta ();
 
     if (e.buttons ().testFlag (Qt::LeftButton) && this->movement.byMouseEvent (e)) {
+      this->deltaEdit.vector     (this->movement.delta ());
       this->translateSelectionBy (this->movement.delta () - previousDelta);
       return ToolResponse::Redraw;
     }

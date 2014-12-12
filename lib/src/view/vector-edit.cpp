@@ -1,48 +1,42 @@
 #include <QDoubleValidator>
+#include <QGridLayout>
+#include <QLabel>
 #include <QLineEdit>
-#include <QVBoxLayout>
 #include "view/vector-edit.hpp"
 
 struct ViewVectorEdit::Impl {
-  ViewVectorEdit* self;
-  glm::vec3       vectorData;
-  QLineEdit*      edit [3];
+  ViewVectorEdit*   self;
+  glm::vec3         vectorData;
+  QDoubleValidator* validator [3];
+  QLineEdit*        edit [3];
 
-  Impl (ViewVectorEdit* s, const glm::vec3& v) 
+  static const int  numDecimals = 2;
+
+  Impl (ViewVectorEdit* s, const QString& label, const glm::vec3& v) 
     : self       (s) 
     , vectorData (v)
   { 
-    QVBoxLayout* layout = new QVBoxLayout;
+    QGridLayout* layout = new QGridLayout;
+    layout->setSpacing         (0);
+    layout->setContentsMargins (0,11,0,11);
+    this->self->setLayout      (layout);
 
-    this->edit[0] = new QLineEdit;
-    this->edit[1] = new QLineEdit;
-    this->edit[2] = new QLineEdit;
+    for (int i = 0; i <= 2; i++) {
+      this->edit[i]      = new QLineEdit;
+      this->validator[i] = new QDoubleValidator (this->edit[i]);
 
-    QDoubleValidator* validator0 = new QDoubleValidator (this->edit[0]);
-    QDoubleValidator* validator1 = new QDoubleValidator (this->edit[1]);
-    QDoubleValidator* validator2 = new QDoubleValidator (this->edit[2]);
+      this->validator[i]->setDecimals (Impl::numDecimals);
+      this->edit[i]->setValidator     (this->validator[i]);
+      this->changeComponent           (i, v[i]);
 
-    this->edit[0]->setValidator (validator0);
-    this->edit[1]->setValidator (validator1);
-    this->edit[2]->setValidator (validator2);
+      QString component (i == 0 ? "x" : (i == 1 ? "y" : "z"));
+      
+      layout->addWidget (new QLabel (label + "-" + component + ": "), i, 0);
+      layout->addWidget (this->edit[i], i, 1);
 
-    this->edit[0]->setText      (validator0->locale ().toString (v.x));
-    this->edit[1]->setText      (validator1->locale ().toString (v.y));
-    this->edit[2]->setText      (validator2->locale ().toString (v.z));
-
-    layout->setSpacing (0);
-    layout->addWidget  (this->edit[0]);
-    layout->addWidget  (this->edit[1]);
-    layout->addWidget  (this->edit[2]);
-
-    this->self->setLayout (layout);
-
-    QObject::connect (this->edit[0], &QLineEdit::textEdited, [this] (const QString& text)
-        { this->componentChanged (0, text); });
-    QObject::connect (this->edit[1], &QLineEdit::textEdited, [this] (const QString& text)
-        { this->componentChanged (1, text); });
-    QObject::connect (this->edit[2], &QLineEdit::textEdited, [this] (const QString& text)
-        { this->componentChanged (2, text); });
+      QObject::connect (this->edit[i], &QLineEdit::textEdited, [this,i] (const QString& text)
+        { this->componentChanged (i, text); });
+    }
   };
 
   void componentChanged (int i, const QString& text) {
@@ -62,11 +56,12 @@ struct ViewVectorEdit::Impl {
 
   void changeComponent (int i, float v) {
     this->vectorData[i] = v;
-    this->edit[i]->setText (std::to_string (v).c_str ());
+    this->edit[i]->setText (QString::number (v, 'f', Impl::numDecimals));
   }
 };
 
-DELEGATE_BIG2_BASE (ViewVectorEdit,(const glm::vec3& v, QWidget* p),(this,v),QWidget,(p))
+DELEGATE_BIG2_BASE ( ViewVectorEdit, (const QString& l, const glm::vec3& v, QWidget* p)
+                   , (this,l,v), QWidget, (p) )
 DELEGATE1 (void, ViewVectorEdit, vector, const glm::vec3&)
 DELEGATE1 (void, ViewVectorEdit, x     , float)
 DELEGATE1 (void, ViewVectorEdit, y     , float)

@@ -8,7 +8,7 @@
 class ViewVectorEdit : public QWidget {
   Q_OBJECT
   public:
-    DECLARE_BIG2 (ViewVectorEdit, const glm::vec3&, QWidget* = nullptr)
+    DECLARE_BIG2 (ViewVectorEdit, const QString&, const glm::vec3&, QWidget* = nullptr)
 
     void vector (const glm::vec3&);
     void x      (float);
