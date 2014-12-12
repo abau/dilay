@@ -24,7 +24,7 @@ struct Tool::Impl {
     , menuParameters (p)
     , config         ("/cache/tool/" + key + "/")
   {
-    QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"), true);
+    QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
     this->properties ().setFooter (close);
 
     QObject::connect (&close, &QPushButton::clicked, [this] () {
