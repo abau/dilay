@@ -12,7 +12,7 @@ enum class MovementConstraint { XAxis, YAxis, ZAxis
                               };
 class ToolUtilMovement {
   public:
-    DECLARE_BIG6 (ToolUtilMovement, MovementConstraint)
+    DECLARE_BIG4COPY (ToolUtilMovement, MovementConstraint)
 
     MovementConstraint constraint       () const;
           void         constraint       (MovementConstraint);

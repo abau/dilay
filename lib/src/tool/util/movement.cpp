@@ -11,7 +11,7 @@
 
 struct ToolUtilMovement::Impl {
   MovementConstraint constraint;
-  glm::vec3          originalPosition;
+  const glm::vec3    originalPosition;
   glm::vec3          position;
 
   Impl (MovementConstraint c) 
@@ -102,7 +102,7 @@ struct ToolUtilMovement::Impl {
   }
 };
 
-DELEGATE1_BIG6  (ToolUtilMovement, MovementConstraint)
+DELEGATE1_BIG4COPY (ToolUtilMovement, MovementConstraint)
 GETTER_CONST    (MovementConstraint, ToolUtilMovement, constraint)
 SETTER          (MovementConstraint, ToolUtilMovement, constraint)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, originalPosition)
