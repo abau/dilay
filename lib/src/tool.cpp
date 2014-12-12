@@ -1,6 +1,7 @@
 #include <QMouseEvent>
 #include <QPushButton>
 #include <glm/glm.hpp>
+#include "config.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -17,11 +18,13 @@ struct Tool::Impl {
   const bool             hasProperties;
   ViewToolMenuParameters menuParameters;
   ViewToolTip            toolTip;
+  ConfigProxy            config;
 
-  Impl (Tool* s, const ViewToolMenuParameters& p) 
+  Impl (Tool* s, const ViewToolMenuParameters& p, const std::string& key) 
     : self           (s) 
     , hasProperties  (p.hasLabel ())
     , menuParameters (p)
+    , config         ("/cache/tool/" + key + "/")
   {
     if (this->hasProperties) {
       QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"), true);
@@ -93,7 +96,7 @@ struct Tool::Impl {
   }
 };
 
-DELEGATE1_BIG3_SELF (Tool, const ViewToolMenuParameters&)
+DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const std::string&)
 GETTER_CONST   (bool                         , Tool, hasProperties)
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (void                         , Tool, showToolTip)
@@ -108,3 +111,4 @@ DELEGATE       (void                         , Tool, updateGlWidget)
 DELEGATE       (ViewProperties&              , Tool, properties)
 GETTER         (ViewToolTip&                 , Tool, toolTip)
 DELEGATE       (void                         , Tool, resetToolTip)
+GETTER         (ConfigProxy&                 , Tool, config)

@@ -1,8 +1,10 @@
 #ifndef DILAY_TOOL
 #define DILAY_TOOL
 
+#include <string>
 #include "macro.hpp"
 
+class ConfigProxy;
 class ViewProperties;
 class ViewToolMenuParameters;
 class ViewToolTip;
@@ -15,7 +17,7 @@ enum class ToolResponse {
 
 class Tool {
   public:
-    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&)
+    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&, const std::string&)
 
     bool                          hasProperties        () const;
     const ViewToolMenuParameters& menuParameters       () const;
@@ -33,6 +35,7 @@ class Tool {
     ViewProperties&               properties           ();
     ViewToolTip&                  toolTip              ();
     void                          resetToolTip         ();
+    ConfigProxy&                  config               ();
 
   private:
     IMPLEMENTATION
@@ -60,7 +63,7 @@ class Tool {
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
 
 #define DELEGATE_TOOL(name)\
-  DELEGATE_BIG3_BASE ( name, (const ViewToolMenuParameters& p), (this), Tool, (p))
+  DELEGATE_BIG3_BASE (name, (const ViewToolMenuParameters& p), (this), Tool, (p, #name))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE       (void        , n, runRender)

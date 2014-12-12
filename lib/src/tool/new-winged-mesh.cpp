@@ -19,7 +19,7 @@ struct ToolNewWingedMesh::Impl {
   Impl (ToolNewWingedMesh* s) 
     : self (s) 
     , subdivEdit (ViewUtil::spinBox ( 1
-                                    , Config::get <int> ("/cache/tool/new-winged-mesh/subdiv", 3)
+                                    , this->self->config ().get <int> ("subdiv", 3)
                                     , 5 ))
   {
     this->self->properties ().addWidget (QObject::tr ("Subdivisions"), this->subdivEdit);
@@ -36,7 +36,7 @@ struct ToolNewWingedMesh::Impl {
     this->definition    = MeshDefinition::icosphere (numSubdiv);
     this->mesh          = Mesh (this->definition);
     this->mesh.bufferData ();
-    Config::cache <int>   ("/cache/tool/new-winged-mesh/subdiv", numSubdiv);
+    this->self->config ().cache <int> ("subdiv", numSubdiv);
   }
 
   void runRender () {
