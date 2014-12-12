@@ -44,17 +44,11 @@ struct State::Impl {
   void setTool (Tool* tool) { 
     if (tool) {
       tool->showToolTip ();
-
-      if (tool->hasProperties ()) {
-        this->mainWindow ().properties ().showTool (tool->menuParameters ().label ());
-      }
+      this->mainWindow ().properties ().showTool (tool->menuParameters ().label ());
     }
     else if (this->toolPtr) {
       this->mainWindow ().showDefaultToolTip ();
-
-      if (this->toolPtr->hasProperties ()) {
-        this->mainWindow ().properties ().resetTool ();
-      }
+      this->mainWindow ().properties ().resetTool ();
     }
     this->toolPtr.reset (tool); 
 

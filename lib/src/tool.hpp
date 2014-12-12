@@ -19,7 +19,6 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&, const std::string&)
 
-    bool                          hasProperties        () const;
     const ViewToolMenuParameters& menuParameters       () const;
     void                          showToolTip          ();
     ToolResponse                  initialize           ();

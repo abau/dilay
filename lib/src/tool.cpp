@@ -15,26 +15,22 @@
 
 struct Tool::Impl {
   Tool*                  self;
-  const bool             hasProperties;
   ViewToolMenuParameters menuParameters;
   ViewToolTip            toolTip;
   ConfigProxy            config;
 
   Impl (Tool* s, const ViewToolMenuParameters& p, const std::string& key) 
     : self           (s) 
-    , hasProperties  (p.hasLabel ())
     , menuParameters (p)
     , config         ("/cache/tool/" + key + "/")
   {
-    if (this->hasProperties) {
-      QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"), true);
-      this->properties ().setFooter (close);
+    QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"), true);
+    this->properties ().setFooter (close);
 
-      QObject::connect (&close, &QPushButton::clicked, [this] () {
-        this->close ();
-        State::setTool (nullptr);
-      });
-    }
+    QObject::connect (&close, &QPushButton::clicked, [this] () {
+      this->close ();
+      State::setTool (nullptr);
+    });
     this->resetToolTip ();
   }
 
@@ -86,7 +82,6 @@ struct Tool::Impl {
   }
 
   ViewProperties& properties () {
-    assert (this->hasProperties);
     return State::mainWindow ().properties ().tool ();
   }
 
@@ -97,7 +92,6 @@ struct Tool::Impl {
 };
 
 DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const std::string&)
-GETTER_CONST   (bool                         , Tool, hasProperties)
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (void                         , Tool, showToolTip)
 DELEGATE       (ToolResponse                 , Tool, initialize)
