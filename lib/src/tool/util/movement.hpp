@@ -18,6 +18,7 @@ class ToolUtilMovement {
           void         constraint       (MovementConstraint);
     const glm::vec3&   originalPosition () const;
           glm::vec3    delta            () const;
+          void         delta            (const glm::vec3&);
     const glm::vec3&   position         () const;
           void         position         (const glm::vec3&);
           bool         byMouseEvent     (QMouseEvent&);

@@ -24,6 +24,10 @@ struct ToolUtilMovement::Impl {
     return this->position - this->originalPosition;
   }
 
+  void delta (const glm::vec3& d) {
+    this->position = this->originalPosition + d;
+  }
+
   bool intersects (const glm::vec3& normal, const glm::ivec2& p, glm::vec3& i) const {
     const PrimRay   ray = State::camera ().ray (p);
     const PrimPlane plane (this->position, normal);
@@ -107,6 +111,7 @@ GETTER_CONST    (MovementConstraint, ToolUtilMovement, constraint)
 SETTER          (MovementConstraint, ToolUtilMovement, constraint)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, originalPosition)
 DELEGATE_CONST  (glm::vec3         , ToolUtilMovement, delta)
+DELEGATE1       (void              , ToolUtilMovement, delta, const glm::vec3&)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
 SETTER          (const glm::vec3&  , ToolUtilMovement, position)
 DELEGATE1       (bool              , ToolUtilMovement, byMouseEvent, QMouseEvent&)
