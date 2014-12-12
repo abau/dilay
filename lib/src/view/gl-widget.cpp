@@ -97,48 +97,36 @@ struct ViewGlWidget::Impl {
   }
 
   void keyPressEvent (QKeyEvent* e) {
-    if (State::hasTool ()) {
-      switch (e->key()) {
-        case Qt::Key_Escape:
-          State::tool    ().close ();
-          State::setTool (nullptr);
-          this->self->update ();
-          break;
-        default:
-          this->self->QGLWidget::keyPressEvent (e);
+    const int                   key = e->key ();
+    const Qt::KeyboardModifiers mod = e->modifiers ();
+
+    if (key == Qt::Key_W) {
+      State :: scene ().toggleRenderMode <WingedMesh> ();
+      this->self->update ();
+    }
+    else if (key == Qt::Key_I) {
+      State::scene ().printStatistics (false);
+    }
+    else if (State::hasTool ()) {
+      if (key == Qt::Key_Escape || key == Qt::Key_Enter) {
+        State::tool    ().close ();
+        State::setTool (nullptr);
+        this->self->update ();
       }
     }
+    else if (key == Qt::Key_Escape) {
+      QCoreApplication::instance()->quit();
+    }
+    else if (key == Qt::Key_Z && mod == Qt::ControlModifier) {
+      State::history ().undo ();
+      this->self->update ();
+    }
+    else if (key == Qt::Key_Y && mod == Qt::ControlModifier) {
+      State::history ().redo ();
+      this->self->update ();
+    }
     else {
-      switch (e->key()) {
-        case Qt::Key_Escape:
-          QCoreApplication::instance()->quit();
-          break;
-        case Qt::Key_W:
-          State :: scene ().toggleRenderMode <WingedMesh> ();
-          this->self->update ();
-          break;
-        case Qt::Key_I:
-          State::scene ().printStatistics (false);
-          break;
-        case Qt::Key_Z:
-          if (e->modifiers () == Qt::ControlModifier) {
-            State::history ().undo ();
-            this->self->update ();
-          }
-          else
-            this->self->QGLWidget::keyPressEvent (e);
-          break;
-        case Qt::Key_Y:
-          if (e->modifiers () == Qt::ControlModifier) {
-            State::history ().redo ();
-            this->self->update ();
-          }
-          else
-            this->self->QGLWidget::keyPressEvent (e);
-          break;
-        default:
-          this->self->QGLWidget::keyPressEvent (e);
-      }
+      this->self->QGLWidget::keyPressEvent (e);
     }
   }
 
