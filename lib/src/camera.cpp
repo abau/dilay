@@ -3,6 +3,7 @@
 #include <glm/gtx/matrix_major_storage.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "camera.hpp"
+#include "config.hpp"
 #include "dimension.hpp"
 #include "opengl-util.hpp"
 #include "primitive/ray.hpp"
@@ -25,14 +26,15 @@ struct Camera::Impl {
 
   Impl (Camera* s) 
     : self         (s)
-    , gazeStepSize (1.0f)
-    , resolution   (1024,800)
-    , nearClipping (0.1f)
-    , farClipping  (1000.0f) {
+    , gazeStepSize ( Config::get <float> ("/config/editor/camera/gaze-step-size") )
+    , resolution   ( Config::get <int>   ("/config/editor/camera/initial-resolution/width") 
+                   , Config::get <int>   ("/config/editor/camera/initial-resolution/height") )
+    , nearClipping ( Config::get <float> ("/config/editor/camera/near-clipping") )
+    , farClipping  ( Config::get <float> ("/config/editor/camera/far-clipping") ) {
 
-    this->set ( glm::vec3 (0.0f,0.0f,0.0f)
-              , glm::vec3 (3.0f,3.0f,3.0f)
-              , glm::vec3 (0.0f,1.0f,0.0f)
+    this->set ( Config::get <glm::vec3> ("/config/editor/camera/gaze-point")
+              , Config::get <glm::vec3> ("/config/editor/camera/eye-point")
+              , Config::get <glm::vec3> ("/config/editor/camera/up")
               , false);
   }
 
