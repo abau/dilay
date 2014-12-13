@@ -49,7 +49,7 @@ struct ActionCarve::Impl {
 
     mesh.intersects      (sphere, domain);
     this->carveFaces     (brush, domain);
-    this->subdivideEdges (brush, sphere, domain);
+    this->subdivideEdges (brush, domain);
     this->self->finalize (mesh, domain, this->actions);
   }
 
@@ -67,7 +67,7 @@ struct ActionCarve::Impl {
     // get average normal
     glm::vec3 avgNormal (0.0f);
     for (WingedVertex* v : vertices) {
-      avgNormal = avgNormal + v->savedNormal (mesh);;
+      avgNormal = avgNormal + v->savedNormal (mesh);
     }
     avgNormal = avgNormal / float (vertices.size ());
 
@@ -79,51 +79,35 @@ struct ActionCarve::Impl {
     }
   }
 
-  void subdivideEdges (const CarveBrush& brush, const PrimSphere& sphere, AffectedFaces& domain) {
-    const float maxLength    = (4.0f/3.0f) * brush.detail ();
-    const float maxLengthSqr = maxLength * maxLength;
-
-    WingedMesh&   mesh          (brush.mesh ());
-    AffectedFaces thisIteration (domain);
-
-    auto thisIterationDomain = [&] () {
-      thisIteration.reset ();
-      for (WingedFace* f : domain.faces ()) {
-        if (IntersectionUtil::intersects (sphere, mesh, *f)) {
-          thisIteration.insert (*f);
-        }
-      }
-      PASubdivideEdge::extendDomain (thisIteration);
-    };
+  void subdivideEdges (const CarveBrush& brush, AffectedFaces& domain) {
+    const float maxLength    ((4.0f/3.0f) * brush.detail ());
+    const float maxLengthSqr (maxLength * maxLength);
+    WingedMesh& mesh         (brush.mesh ());
 
     auto isSubdividable = [&] (WingedEdge& edge) -> bool {
       return edge.lengthSqr (mesh) > maxLengthSqr;
     };
 
     auto subdivideEdges = [&] () {
-      AffectedFaces newAF;
-      for (WingedEdge* e : thisIteration.toEdgeVec ()) {
+      for (WingedEdge* e : domain.toEdgeVec ()) {
         if (isSubdividable (*e)) {
-          this->actions.add <PASubdivideEdge> ().run (mesh, *e, newAF);
+          this->actions.add <PASubdivideEdge> ().run (mesh, *e, domain);
         }
       }
-      domain       .insert (newAF);
-      domain       .commit ();
-      thisIteration.insert (newAF);
-      thisIteration.commit ();
+      domain.commit ();
     };
     auto relaxEdges = [&] () {
-      for (WingedEdge* e : thisIteration.toEdgeVec ()) {
+      for (WingedEdge* e : domain.toEdgeVec ()) {
         this->actions.add <PARelaxEdge> ().run (mesh, *e, domain);
       }
       domain.commit ();
     };
     auto smoothVertices = [&] () {
-      this->actions.add <PASmooth> ().run (mesh, thisIteration.toVertexSet (), 5, domain);
+      this->actions.add <PASmooth> ().run (mesh, domain.toVertexSet (), 5, domain);
       domain.commit ();
     };
 
-    thisIterationDomain ();
+    PASubdivideEdge::extendDomain (domain);
     subdivideEdges ();
     relaxEdges     ();
     smoothVertices ();
