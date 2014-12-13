@@ -57,16 +57,14 @@ struct ToolMoveCamera::Impl {
   void mousePressEvent (QMouseEvent& event) {
     if (event.button () == Qt::MiddleButton) {
       this->oldPos = ViewUtil::toIVec2 (event);
-    }
-  }
 
-  void mouseReleaseEvent (QMouseEvent& event) {
-    if (event.button () == Qt::MiddleButton && event.modifiers ().testFlag (Qt::ShiftModifier)) {
-      Camera&      cam = State::camera ();
-      Intersection intersection;
-      if (State::scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
-        cam.setGaze (intersection.position ());
-        State::mainWindow ().glWidget ().update ();
+      if (event.modifiers ().testFlag (Qt::ShiftModifier)) {
+        Camera&      cam = State::camera ();
+        Intersection intersection;
+        if (State::scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
+          cam.setGaze (intersection.position ());
+          State::mainWindow ().glWidget ().update ();
+        }
       }
     }
   }
@@ -87,5 +85,4 @@ struct ToolMoveCamera::Impl {
 DELEGATE_BIG3 (ToolMoveCamera)
 DELEGATE1 (void, ToolMoveCamera, mouseMoveEvent, QMouseEvent&)
 DELEGATE1 (void, ToolMoveCamera, mousePressEvent, QMouseEvent&)
-DELEGATE1 (void, ToolMoveCamera, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1 (void, ToolMoveCamera, wheelEvent, QWheelEvent&)

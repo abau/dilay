@@ -151,10 +151,7 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    if (e->button () == Qt::MiddleButton) {
-      this->toolMoveCamera.mouseReleaseEvent (*e);
-    }
-    else if (State::hasTool ()) {
+    if (State::hasTool ()) {
       State::handleToolResponse (State::tool ().mouseReleaseEvent (*e));
     }
     else if (e->button () == Qt::LeftButton) {
