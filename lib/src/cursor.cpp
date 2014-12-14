@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <limits>
 #include "color.hpp"
 #include "cursor.hpp"
 #include "mesh.hpp"
@@ -12,17 +11,33 @@ struct Cursor::Impl {
   Mesh          mesh;
   float         radius;
   unsigned int  sectors;
-  bool          _isEnabled;
+  bool          isEnabled;
 
-  Impl () : radius (0.2f), sectors (20), _isEnabled (false) {}
+  Impl (float r) : radius (r), sectors (40), isEnabled (true) {
+    this->updateGeometry ();
+  }
 
-  void setGeometry (float r) {
+  void position (const glm::vec3& v) { this->mesh.position (v); }
+
+  void normal (const glm::vec3& v) {
+    const float d   = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
+    const float eps = Util::epsilon ();
+    if (d >= 1.0f - eps || d <= -1.0f + eps) {
+      this->mesh.rotationMatrix (glm::mat4(1.0f));
+    }
+    else {
+      const glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
+      const float     angle = glm::acos (d);
+      this->mesh.rotationMatrix (glm::rotate (glm::mat4(1.0f), angle, axis));
+    }
+  }
+
+  void updateGeometry () {
     assert (this->sectors > 2);
     float sectorStep = 2.0f * M_PI / float (this->sectors);
     float theta      = 0.0f;
 
     this->mesh.reset ();
-    this->radius = r;
 
     for (unsigned int s = 0; s < this->sectors; s++) {
       float x = this->radius * sin (theta);
@@ -41,23 +56,8 @@ struct Cursor::Impl {
     this->mesh.bufferData ();
   }
 
-  void position (const glm::vec3& v) { this->mesh.position (v); }
-
-  void normal (const glm::vec3& v) {
-    const float d   = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
-    const float eps = Util::epsilon ();
-    if (d >= 1.0f - eps || d <= -1.0f + eps) {
-      this->mesh.rotationMatrix (glm::mat4(1.0f));
-    }
-    else {
-      const glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
-      const float     angle = glm::acos (d);
-      this->mesh.rotationMatrix (glm::rotate (glm::mat4(1.0f), angle, axis));
-    }
-  }
-
   void render () {
-    if (this->_isEnabled) {
+    if (this->isEnabled) {
       this->mesh.renderBegin ();
 
       glDisable (GL_DEPTH_TEST); 
@@ -71,18 +71,17 @@ struct Cursor::Impl {
     }
   }
 
-  void  enable    ()       { this->_isEnabled = true;  }
-  void  disable   ()       { this->_isEnabled = false; }
-  bool  isEnabled () const { return this->_isEnabled;  }
+  void  enable    ()       { this->isEnabled = true;  }
+  void  disable   ()       { this->isEnabled = false; }
 };
 
-DELEGATE_BIG6 (Cursor)
-
-DELEGATE1       (void,  Cursor, setGeometry, float)
-DELEGATE1       (void,  Cursor, position, const glm::vec3&)
-DELEGATE1       (void,  Cursor, normal, const glm::vec3&)
-DELEGATE        (void,  Cursor, render)
-DELEGATE        (void,  Cursor, enable)
-DELEGATE        (void,  Cursor, disable)
-DELEGATE_CONST  (bool,  Cursor, isEnabled)
-GETTER_CONST    (float, Cursor, radius)
+DELEGATE1_BIG6 (Cursor, float)
+SETTER       (float, Cursor, radius)
+DELEGATE1    (void,  Cursor, position, const glm::vec3&)
+DELEGATE1    (void,  Cursor, normal, const glm::vec3&)
+DELEGATE     (void,  Cursor, updateGeometry)
+DELEGATE     (void,  Cursor, render)
+DELEGATE     (void,  Cursor, enable)
+DELEGATE     (void,  Cursor, disable)
+GETTER_CONST (bool,  Cursor, isEnabled)
+GETTER_CONST (float, Cursor, radius)

@@ -6,16 +6,17 @@
 
 class Cursor {
   public: 
-    DECLARE_BIG6 (Cursor)
+    DECLARE_BIG6 (Cursor, float)
 
-    void  setGeometry        (float);
-    void  position           (const glm::vec3&);
-    void  normal             (const glm::vec3&);
-    void  render             ();
-    void  enable             ();
-    void  disable            ();
-    bool  isEnabled          () const;
-    float radius             () const;
+    void  radius         (float);
+    void  position       (const glm::vec3&);
+    void  normal         (const glm::vec3&);
+    void  updateGeometry ();
+    void  render         ();
+    void  enable         ();
+    void  disable        ();
+    bool  isEnabled      () const;
+    float radius         () const;
 
   private:
     IMPLEMENTATION

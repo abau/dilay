@@ -26,9 +26,8 @@ struct ToolCarve::Impl {
   Impl (ToolCarve* s) 
     : self   (s) 
     , brush  (0.1f, 0.005f, 0.03f, 0.2f)
+    , cursor (this->brush.width ())
   {
-    this->cursor.setGeometry (this->brush.width ());
-    this->cursor.enable      ();
     this->updateCursor ( State::mainWindow ().glWidget ().cursorPosition ()
                        , false );
   }
