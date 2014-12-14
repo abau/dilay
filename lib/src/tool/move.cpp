@@ -46,14 +46,14 @@ struct ToolMove::Impl {
   void setupProperties () {
     QButtonGroup&   constraintEdit (*new QButtonGroup);
 
-    std::vector <QString> labels = { QObject::tr ("x-axis")
-                                   , QObject::tr ("y-axis")
-                                   , QObject::tr ("z-axis")
-                                   , QObject::tr ("xy-plane")
-                                   , QObject::tr ("xz-plane")
-                                   , QObject::tr ("yz-plane")
-                                   , QObject::tr ("camera-plane")
-                                   , QObject::tr ("primary plane") };
+    std::vector <QString> labels = { QObject::tr ("X-axis")
+                                   , QObject::tr ("Y-axis")
+                                   , QObject::tr ("Z-axis")
+                                   , QObject::tr ("XY-plane")
+                                   , QObject::tr ("XZ-plane")
+                                   , QObject::tr ("YZ-plane")
+                                   , QObject::tr ("Camera-plane")
+                                   , QObject::tr ("Primary plane") };
 
     int id = 1; // according to documentation, id should be positive
     for (QString& label : labels) {
@@ -104,11 +104,11 @@ struct ToolMove::Impl {
 
   void setupToolTip () {
     this->self->resetToolTip ();
-    this->self->toolTip ().add (ViewToolTip::Button::Left, QObject::tr ("Drag To Move"));
+    this->self->toolTip ().add (ViewToolTip::Button::Left, QObject::tr ("Drag to move"));
 
     if (this->movement.constraint () != MovementConstraint::CameraPlane) {
       this->self->toolTip ().add ( ViewToolTip::Button::Left, ViewToolTip::Modifier::Shift
-                                 , QObject::tr ("Drag To Move Orthogonally") );
+                                 , QObject::tr ("Drag to move orthogonally") );
     }
     this->self->showToolTip ();
   }
