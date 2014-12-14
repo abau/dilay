@@ -16,24 +16,12 @@ QSpinBox& ViewUtil :: spinBox (int min, int value, int max) {
   return spinBox;
 }
 
-QDoubleSpinBox& ViewUtil :: spinBox (float min, float value, float max) {
-  QDoubleSpinBox& spinBox = ViewUtil::spinBox (min,value);
-  spinBox.setMaximum (double (max));
-  return spinBox;
-}
-
-QDoubleSpinBox& ViewUtil :: spinBox (float min, float value) {
-  QDoubleSpinBox& spinBox = ViewUtil::spinBox (value);
-  spinBox.setMinimum (double (min));
-  return spinBox;
-}
-
-QDoubleSpinBox& ViewUtil :: spinBox (float value) {
+QDoubleSpinBox& ViewUtil :: spinBox (float min, float value, float max, float stepSize) {
   QDoubleSpinBox& spinBox = *new QDoubleSpinBox;
   spinBox.setValue      (double (value));
-  spinBox.setRange      (-1000.0, 1000.0);
-  spinBox.setSingleStep (0.1);
-  spinBox.setDecimals   (3);
+  spinBox.setRange      (min, max);
+  spinBox.setSingleStep (stepSize);
+  spinBox.setDecimals   (2);
   return spinBox;
 }
 
