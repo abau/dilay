@@ -27,8 +27,7 @@ struct Camera::Impl {
   Impl (Camera* s) 
     : self         (s)
     , gazeStepSize ( Config::get <float> ("/config/editor/camera/gaze-step-size") )
-    , resolution   ( Config::get <int>   ("/config/editor/camera/initial-resolution/width") 
-                   , Config::get <int>   ("/config/editor/camera/initial-resolution/height") )
+    , resolution   ( 1024, 768 )
     , nearClipping ( Config::get <float> ("/config/editor/camera/near-clipping") )
     , farClipping  ( Config::get <float> ("/config/editor/camera/far-clipping") ) {
 

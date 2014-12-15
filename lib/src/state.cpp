@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 #include <memory>
 #include "action/new-winged-mesh.hpp"
 #include "camera.hpp"
@@ -10,6 +11,7 @@
 #include "view/main-window.hpp"
 #include "view/properties/widget.hpp"
 #include "view/tool/menu-parameters.hpp"
+#include "util.hpp"
 
 struct State::Impl {
   ViewMainWindow*        mainWindowPtr;
@@ -24,7 +26,11 @@ struct State::Impl {
   void initialize (ViewMainWindow& mW) { 
     this->mainWindowPtr = &mW;
     this->camera.initialize ();
-    this->history.add <ActionNewWingedMesh> ().run (MeshDefinition::icosphere (2));
+
+    MeshDefinition meshDefinition (MeshDefinition::icosphere (2));
+    meshDefinition.scale          (Util::defaultScale ());
+
+    this->history.add <ActionNewWingedMesh> ().run (meshDefinition);
   }
 
   ViewMainWindow& mainWindow () const {

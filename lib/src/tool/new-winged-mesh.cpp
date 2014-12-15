@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 #include <QSpinBox>
 #include "action/new-winged-mesh.hpp"
 #include "config.hpp"
@@ -9,6 +10,7 @@
 #include "view/properties.hpp"
 #include "view/tool/menu-parameters.hpp"
 #include "view/util.hpp"
+#include "util.hpp"
 
 struct ToolNewWingedMesh::Impl {
   ToolNewWingedMesh* self;
@@ -34,7 +36,9 @@ struct ToolNewWingedMesh::Impl {
   void updateMesh () {
     const int numSubdiv = this->subdivEdit.value ();
     this->definition    = MeshDefinition::icosphere (numSubdiv);
-    this->mesh          = Mesh (this->definition);
+    this->definition.scale (Util::defaultScale ());
+
+    this->mesh = Mesh (this->definition);
     this->mesh.bufferData ();
     this->self->config ().cache <int> ("subdiv", numSubdiv);
   }
