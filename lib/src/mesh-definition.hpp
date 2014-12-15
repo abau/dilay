@@ -15,6 +15,9 @@ class MeshDefinition {
     unsigned int     numFace3    () const;
     const glm::vec3& vertex      (unsigned int) const;
     void             face        (unsigned int, unsigned int&, unsigned int&, unsigned int&) const;
+    void             scale       (const glm::vec3&);
+    void             translate   (const glm::vec3&);
+    void             transform   (const glm::mat4x4&);
 
     static MeshDefinition cube      ();
     static MeshDefinition sphere    (unsigned int, unsigned int);

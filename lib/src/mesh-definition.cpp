@@ -1,6 +1,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
@@ -45,6 +46,20 @@ struct MeshDefinition::Impl {
     i1 = std::get <0> (this->indices3[i]);
     i2 = std::get <1> (this->indices3[i]);
     i3 = std::get <2> (this->indices3[i]);
+  }
+
+  void scale (const glm::vec3& s) {
+    this->transform (glm::scale (glm::mat4x4 (1.0f), s));
+  }
+
+  void translate (const glm::vec3& t) {
+    this->transform (glm::translate (glm::mat4x4 (1.0f), t));
+  }
+
+  void transform (const glm::mat4x4& matrix) {
+    for (glm::vec3& v : this->vertices) {
+      v = Util::transformPosition (matrix, v);
+    }
   }
 
   static MeshDefinition cube () {
@@ -284,6 +299,9 @@ DELEGATE_CONST  (unsigned int, MeshDefinition, numVertices)
 DELEGATE_CONST  (unsigned int, MeshDefinition, numFace3)
 DELEGATE1_CONST (const glm::vec3&, MeshDefinition, vertex, unsigned int)
 DELEGATE4_CONST (void, MeshDefinition, face, unsigned int, unsigned int&, unsigned int&, unsigned int&)
+DELEGATE1       (void, MeshDefinition, scale, const glm::vec3&)
+DELEGATE1       (void, MeshDefinition, translate, const glm::vec3&)
+DELEGATE1       (void, MeshDefinition, transform, const glm::mat4x4&)
 
 DELEGATE_STATIC  (MeshDefinition, MeshDefinition, cube)
 DELEGATE2_STATIC (MeshDefinition, MeshDefinition, sphere, unsigned int, unsigned int)
