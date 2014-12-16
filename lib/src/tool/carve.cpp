@@ -29,7 +29,7 @@ struct ToolCarve::Impl {
 
   Impl (ToolCarve* s) 
     : self   (s) 
-    , brush  ( this->self->config ().get <float> ("width"            , 10.0f)
+    , brush  ( this->self->config ().get <float> ("radius"           , 10.0f)
              , this->self->config ().get <float> ("detail"           ,  0.6f)
              , this->self->config ().get <float> ("intensity-factor" ,  0.1f)
              , this->self->config ().get <float> ("step-width-factor",  0.3f) )
@@ -41,7 +41,7 @@ struct ToolCarve::Impl {
       this->cursor.radius         (r);
       this->cursor.updateGeometry ();
       this->self->updateGlWidget  ();
-      this->self->config ().cache ("width", r);
+      this->self->config ().cache ("radius", r);
     });
     this->self->properties ().addWidget (QObject::tr ("Radius"), radiusEdit);
 
