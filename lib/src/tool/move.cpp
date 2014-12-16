@@ -88,7 +88,7 @@ struct ToolMove::Impl {
           std::abort ();
       }
       this->setupToolTip ();
-      this->self->config ().cache <int> ("constraint", id);
+      this->self->config ().cache ("constraint", id);
     });
     constraintEdit.button (this->self->config ().get <int> ("constraint", 7))->click ();
 

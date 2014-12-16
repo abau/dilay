@@ -41,14 +41,14 @@ struct ToolCarve::Impl {
       this->cursor.radius         (r);
       this->cursor.updateGeometry ();
       this->self->updateGlWidget  ();
-      this->self->config ().cache <float> ("width", r);
+      this->self->config ().cache ("width", r);
     });
     this->self->properties ().addWidget (QObject::tr ("Radius"), radiusEdit);
 
     QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, this->brush.detail (), 0.95f, 0.1f);
     ViewUtil::connect (detailEdit, [this] (float h) {
       this->brush.detail (h);
-      this->self->config ().cache <float> ("detail", h);
+      this->self->config ().cache ("detail", h);
     });
     this->self->properties ().addWidget (QObject::tr ("Detail"), detailEdit);
 
@@ -56,7 +56,7 @@ struct ToolCarve::Impl {
                                                       , 1000.0f, 0.1f );
     ViewUtil::connect (intensityEdit, [this] (float d) {
       this->brush.intensityFactor (d);
-      this->self->config ().cache <float> ("intensity", d);
+      this->self->config ().cache ("intensity", d);
     });
     this->self->properties ().addWidget (QObject::tr ("Intensity"), intensityEdit);
 
@@ -64,7 +64,7 @@ struct ToolCarve::Impl {
                                                  , 1000.0f, 0.1f );
     ViewUtil::connect (stepEdit, [this] (float s) {
       this->brush.stepWidthFactor (s);
-      this->self->config ().cache <float> ("step-width-factor", s);
+      this->self->config ().cache ("step-width-factor", s);
     });
     this->self->properties ().addWidget (QObject::tr ("Step width"), stepEdit);
 

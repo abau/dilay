@@ -40,7 +40,7 @@ struct ToolNewWingedMesh::Impl {
 
     this->mesh = Mesh (this->definition);
     this->mesh.bufferData ();
-    this->self->config ().cache <int> ("subdiv", numSubdiv);
+    this->self->config ().cache ("subdiv", numSubdiv);
   }
 
   void runRender () {
