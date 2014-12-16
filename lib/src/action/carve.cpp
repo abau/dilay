@@ -29,7 +29,7 @@ struct ActionCarve::Impl {
   /*
   void run (const CarveBrush& brush) { 
     AffectedFaces domain;
-    PrimSphere    sphere (brush.position (), brush.width ());
+    PrimSphere    sphere (brush.position (), brush.radius ());
     WingedMesh&   mesh = brush.mesh ();
 
     mesh.intersects      (sphere, domain);
@@ -44,7 +44,7 @@ struct ActionCarve::Impl {
 
   void run (const CarveBrush& brush) { 
     AffectedFaces domain;
-    PrimSphere    sphere (brush.position (), brush.width ());
+    PrimSphere    sphere (brush.position (), brush.radius ());
     WingedMesh&   mesh = brush.mesh ();
 
     mesh.intersects      (sphere, domain);
@@ -80,7 +80,7 @@ struct ActionCarve::Impl {
   }
 
   void subdivideEdges (const CarveBrush& brush, AffectedFaces& domain) {
-    const float maxLength    ((4.0f/3.0f) * brush.detail ());
+    const float maxLength    ((4.0f/3.0f) * brush.subdivThreshold ());
     const float maxLengthSqr (maxLength * maxLength);
     WingedMesh& mesh         (brush.mesh ());
 

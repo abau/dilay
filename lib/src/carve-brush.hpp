@@ -10,21 +10,24 @@ class CarveBrush {
   public:
     DECLARE_BIG6 (CarveBrush, float, float, float, float)
 
-    float            y            (float) const;
-    float            width        ()      const;
-    float            height       ()      const;
-    float            detail       ()      const;
-    float            stepWidth    ()      const;
-    bool             hasPosition  ()      const;
-    const glm::vec3& lastPosition ()      const;
-    const glm::vec3& position     ()      const;
-    WingedMesh&      mesh         ()      const;
+    float            y               (float) const;
+    float            radius          ()      const;
+    float            detail          ()      const;
+    float            subdivThreshold ()      const;
+    float            intensityFactor ()      const;
+    float            intensity       ()      const;
+    float            stepWidthFactor ()      const;
+    float            stepWidth       ()      const;
+    bool             hasPosition     ()      const;
+    const glm::vec3& lastPosition    ()      const;
+    const glm::vec3& position        ()      const;
+    WingedMesh&      mesh            ()      const;
 
-    bool             updatePosition (WingedMesh&, const glm::vec3&);
-    void             width          (float);
-    void             height         (float);
-    void             detail         (float);
-    void             stepWidth      (float);
+    bool             updatePosition  (WingedMesh&, const glm::vec3&);
+    void             radius          (float);
+    void             detail          (float);
+    void             intensityFactor (float);
+    void             stepWidthFactor (float);
 
   private:
     IMPLEMENTATION
