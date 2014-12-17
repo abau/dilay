@@ -97,8 +97,7 @@ struct ToolUtilMovement::Impl {
   }
 
   bool byMouseEvent (QMouseEvent& e) {
-    return this->move ( ViewUtil::toIVec2 (e)
-                      , e.modifiers ().testFlag (Qt::ShiftModifier));
+    return this->move (ViewUtil::toIVec2 (e), e.modifiers () == Qt::ShiftModifier);
   }
 
   bool onCameraPlane (const glm::ivec2& p, glm::vec3& intersection) const {

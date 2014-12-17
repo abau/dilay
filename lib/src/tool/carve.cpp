@@ -97,7 +97,7 @@ struct ToolCarve::Impl {
   }
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
-    const bool doCarve = e.buttons ().testFlag (Qt::LeftButton);
+    const bool doCarve = e.buttons () == Qt::LeftButton;
     if (this->updateCursor (ViewUtil::toIVec2 (e), doCarve)) {
       State::history ().add <ActionCarve, WingedMesh> (this->brush.mesh ())
                        .run (this->brush);

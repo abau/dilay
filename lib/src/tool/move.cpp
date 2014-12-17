@@ -160,7 +160,7 @@ struct ToolMove::Impl {
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     const glm::vec3 previousDelta = this->movement.delta ();
 
-    if (e.buttons ().testFlag (Qt::LeftButton) && this->movement.byMouseEvent (e)) {
+    if (e.buttons () == Qt::LeftButton && this->movement.byMouseEvent (e)) {
       this->deltaEdit.vector     (this->movement.delta ());
       this->translateSelectionBy (this->movement.delta () - previousDelta);
       return ToolResponse::Redraw;

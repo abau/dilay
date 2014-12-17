@@ -25,13 +25,13 @@ struct ToolMoveCamera::Impl {
   {}
 
   void mouseMoveEvent (QMouseEvent& event) {
-    if (event.buttons ().testFlag (Qt::MiddleButton)) {
+    if (event.buttons () == Qt::MiddleButton) {
             Camera&     cam        = State::camera ();
       const glm::uvec2& resolution = cam.resolution ();
             glm::ivec2  newPos     = ViewUtil::toIVec2 (event);
             glm::ivec2  delta      = newPos - oldPos;
 
-      if (event.modifiers ().testFlag (Qt::NoModifier)) {
+      if (event.modifiers () == Qt::NoModifier) {
         if (delta.x != 0) {
           cam.verticalRotation ( 2.0f * glm::pi <float> () 
                                * this->rotationFactor
@@ -43,7 +43,7 @@ struct ToolMoveCamera::Impl {
                                  * float (-delta.y) / float (resolution.y));
         }
       }
-      else if (event.modifiers ().testFlag (Qt::ControlModifier)) {
+      else if (event.modifiers () == Qt::ControlModifier) {
         cam.setGaze ( cam.gazePoint () 
                     + (this->panningFactor * float ( delta.x) * cam.right ())
                     + (this->panningFactor * float (-delta.y) * cam.up    ())
@@ -58,7 +58,7 @@ struct ToolMoveCamera::Impl {
     if (event.button () == Qt::MiddleButton) {
       this->oldPos = ViewUtil::toIVec2 (event);
 
-      if (event.modifiers ().testFlag (Qt::ShiftModifier)) {
+      if (event.modifiers () == Qt::ShiftModifier) {
         Camera&      cam = State::camera ();
         Intersection intersection;
         if (State::scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {

@@ -133,7 +133,7 @@ struct ViewGlWidget::Impl {
   void mouseMoveEvent (QMouseEvent* e) {
     this->self->setFocus (Qt::MouseFocusReason);
 
-    if (e->buttons ().testFlag (Qt::MiddleButton)) {
+    if (e->buttons () == Qt::MiddleButton) {
       this->toolMoveCamera.mouseMoveEvent (*e);
     }
     else if (State::hasTool ()) {
