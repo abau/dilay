@@ -43,7 +43,7 @@ struct ToolMoveCamera::Impl {
                                  * float (-delta.y) / float (resolution.y));
         }
       }
-      else if (event.modifiers () == Qt::ControlModifier) {
+      else if (event.modifiers () == Qt::ShiftModifier) {
         cam.setGaze ( cam.gazePoint () 
                     + (this->panningFactor * float ( delta.x) * cam.right ())
                     + (this->panningFactor * float (-delta.y) * cam.up    ())
