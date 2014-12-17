@@ -104,10 +104,10 @@ struct ToolMove::Impl {
 
   void setupToolTip () {
     this->self->resetToolTip ();
-    this->self->toolTip ().add (ViewToolTip::Button::Left, QObject::tr ("Drag to move"));
+    this->self->toolTip ().add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to move"));
 
     if (this->movement.constraint () != MovementConstraint::CameraPlane) {
-      this->self->toolTip ().add ( ViewToolTip::Button::Left, ViewToolTip::Modifier::Shift
+      this->self->toolTip ().add ( ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift
                                  , QObject::tr ("Drag to move orthogonally") );
     }
     this->self->showToolTip ();

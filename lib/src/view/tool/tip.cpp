@@ -6,9 +6,9 @@
 #include "view/tool/tip.hpp"
 
 namespace {
-  typedef std::tuple <ViewToolTip::Button, ViewToolTip::Modifier, QString> Tip;
+  typedef std::tuple <ViewToolTip::MouseEvent, ViewToolTip::Modifier, QString> Tip;
 
-  bool strictButtonOrder (ViewToolTip::Button a, ViewToolTip::Button b) {
+  bool strictButtonOrder (ViewToolTip::MouseEvent a, ViewToolTip::MouseEvent b) {
     return static_cast <int> (a) < static_cast <int> (b);
   }
 
@@ -20,19 +20,19 @@ namespace {
     QString string ("[");
 
     switch (std::get <0> (tip)) {
-      case ViewToolTip::Button::None: 
-        std::abort ();
-        break;
-
-      case ViewToolTip::Button::Left: 
+      case ViewToolTip::MouseEvent::Left: 
         string.append ("Left");
         break;
 
-      case ViewToolTip::Button::Middle: 
+      case ViewToolTip::MouseEvent::Middle: 
         string.append ("Middle");
         break;
 
-      case ViewToolTip::Button::Right: 
+      case ViewToolTip::MouseEvent::Wheel: 
+        string.append ("Wheel");
+        break;
+
+      case ViewToolTip::MouseEvent::Right: 
         string.append ("Right");
         break;
     }
@@ -77,12 +77,12 @@ struct ViewToolTip::Impl {
     return result;
   }
 
-  void add (Button button, Modifier modifier, const QString& tip) {
-    this->tips.push_back (std::make_tuple (button, modifier, tip));
+  void add (MouseEvent event, Modifier modifier, const QString& tip) {
+    this->tips.push_back (std::make_tuple (event, modifier, tip));
   }
 
-  void add (Button button, const QString& tip) {
-    this->add (button, ViewToolTip::Modifier::None, tip);
+  void add (MouseEvent event, const QString& tip) {
+    this->add (event, ViewToolTip::Modifier::None, tip);
   }
 
   void reset () {
@@ -92,6 +92,6 @@ struct ViewToolTip::Impl {
 
 DELEGATE_BIG4COPY (ViewToolTip)
 DELEGATE_CONST (QString, ViewToolTip, toString)
-DELEGATE3      (void   , ViewToolTip, add, ViewToolTip::Button, ViewToolTip::Modifier, const QString&)
-DELEGATE2      (void   , ViewToolTip, add, ViewToolTip::Button, const QString&)
+DELEGATE3      (void   , ViewToolTip, add, ViewToolTip::MouseEvent, ViewToolTip::Modifier, const QString&)
+DELEGATE2      (void   , ViewToolTip, add, ViewToolTip::MouseEvent, const QString&)
 DELEGATE       (void   , ViewToolTip, reset)

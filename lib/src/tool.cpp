@@ -87,7 +87,7 @@ struct Tool::Impl {
 
   void resetToolTip () {
     this->toolTip.reset ();
-    this->toolTip.add   (ViewToolTip::Button::Right, QObject::tr ("Close"));
+    this->toolTip.add   (ViewToolTip::MouseEvent::Right, QObject::tr ("Close"));
   }
 };
 

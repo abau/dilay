@@ -9,13 +9,13 @@ class ViewToolTip {
   public:
     DECLARE_BIG4COPY (ViewToolTip)
 
-    enum class Button   { None, Left, Middle, Right };
-    enum class Modifier { None, Ctrl, Shift, Alt };
+    enum class MouseEvent { Left, Middle, Wheel, Right };
+    enum class Modifier   { None, Ctrl, Shift, Alt };
 
     QString toString () const;
 
-    void add   (Button, Modifier, const QString&);
-    void add   (Button, const QString&);
+    void add   (MouseEvent, Modifier, const QString&);
+    void add   (MouseEvent, const QString&);
     void reset ();
 
   private:
