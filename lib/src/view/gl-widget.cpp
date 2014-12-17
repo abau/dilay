@@ -180,7 +180,12 @@ struct ViewGlWidget::Impl {
   }
 
   void wheelEvent (QWheelEvent* e) {
-    this->toolMoveCamera.wheelEvent (*e);
+    if (e->modifiers () == Qt::NoModifier) {
+      this->toolMoveCamera.wheelEvent (*e);
+    }
+    else if (State::hasTool ()) {
+      State::handleToolResponse (State::tool ().wheelEvent (*e));
+    }
   }
 };
 
