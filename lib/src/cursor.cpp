@@ -37,7 +37,7 @@ struct Cursor::Impl {
     float sectorStep = 2.0f * M_PI / float (this->sectors);
     float theta      = 0.0f;
 
-    this->mesh.reset ();
+    this->mesh.resetGeometry ();
 
     for (unsigned int s = 0; s < this->sectors; s++) {
       float x = this->radius * sin (theta);

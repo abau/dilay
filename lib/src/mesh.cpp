@@ -270,12 +270,18 @@ struct Mesh::Impl {
     this->rotationMatrix    = glm::mat4x4 (1.0f);
     this->translationMatrix = glm::mat4x4 (1.0f);
     this->vertices.clear ();
-    this->indices.clear  ();
-    this->normals.clear  ();
+    this->indices .clear ();
+    this->normals .clear ();
     OpenGLUtil :: safeDeleteArray  (this->arrayObjectId);
     OpenGLUtil :: safeDeleteBuffer (this->vertexBufferId);
     OpenGLUtil :: safeDeleteBuffer (this->indexBufferId);
     OpenGLUtil :: safeDeleteBuffer (this->normalBufferId);
+  }
+
+  void resetGeometry () {
+    this->vertices.clear ();
+    this->indices .clear ();
+    this->normals .clear ();
   }
 
   void toggleRenderMode () {
@@ -355,6 +361,7 @@ DELEGATE1        (void              , Mesh, render, bool)
 DELEGATE         (void              , Mesh, renderSolid)
 DELEGATE         (void              , Mesh, renderWireframe)
 DELEGATE         (void              , Mesh, reset)
+DELEGATE         (void              , Mesh, resetGeometry)
 SETTER           (RenderMode        , Mesh, renderMode)
 DELEGATE         (void              , Mesh, toggleRenderMode)
 

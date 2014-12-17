@@ -41,6 +41,7 @@ class Mesh {
     void               renderSolid       ();
     void               renderWireframe   ();
     void               reset             ();
+    void               resetGeometry     ();
     void               renderMode        (RenderMode);
     void               toggleRenderMode  ();
 
