@@ -18,14 +18,16 @@
 #include "view/main-window.hpp"
 #include "view/gl-widget.hpp"
 #include "view/properties.hpp"
+#include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 
 struct ToolCarve::Impl {
-  ToolCarve* self;
-  CarveBrush brush;
-  Cursor     cursor;
+  ToolCarve*      self;
+  CarveBrush      brush;
+  Cursor          cursor;
+  QDoubleSpinBox* radiusEdit;
 
   Impl (ToolCarve* s) 
     : self   (s) 
@@ -35,15 +37,21 @@ struct ToolCarve::Impl {
              , this->self->config ().get <float> ("step-width-factor",  0.3f) )
     , cursor (this->brush.radius ())
   {
-    QDoubleSpinBox& radiusEdit = ViewUtil::spinBox (0.01f, this->brush.radius (), 1000.0f, 1.0f);
-    ViewUtil::connect (radiusEdit, [this] (float r) {
+    this->setupProperties ();
+    this->setupToolTip    ();
+    this->updateCursor    (State::mainWindow ().glWidget ().cursorPosition (), false);
+  }
+
+  void setupProperties () {
+    this->radiusEdit = &ViewUtil::spinBox (0.01f, this->brush.radius (), 1000.0f, 1.0f);
+    ViewUtil::connect (*radiusEdit, [this] (float r) {
       this->brush .radius         (r);
       this->cursor.radius         (r);
       this->cursor.updateGeometry ();
       this->self->updateGlWidget  ();
       this->self->config ().cache ("radius", r);
     });
-    this->self->properties ().addWidget (QObject::tr ("Radius"), radiusEdit);
+    this->self->properties ().addWidget (QObject::tr ("Radius"), *radiusEdit);
 
     QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, this->brush.detail (), 0.95f, 0.1f);
     ViewUtil::connect (detailEdit, [this] (float h) {
@@ -67,9 +75,16 @@ struct ToolCarve::Impl {
       this->self->config ().cache ("step-width-factor", s);
     });
     this->self->properties ().addWidget (QObject::tr ("Step width"), stepEdit);
-
-    this->updateCursor (State::mainWindow ().glWidget ().cursorPosition (), false);
   }
+
+  void setupToolTip () {
+    this->self->resetToolTip ();
+    this->self->toolTip ().add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
+    this->self->toolTip ().add ( ViewToolTip::MouseEvent::Wheel, ViewToolTip::Modifier::Shift
+                               , QObject::tr ("Change radius") );
+    this->self->showToolTip ();
+  }
+
 
   bool updateCursor (const glm::ivec2& mouse, bool updateBrush) {
     PrimRay                ray   = State::camera ().ray (mouse);
@@ -82,10 +97,9 @@ struct ToolCarve::Impl {
       this->cursor.position (intersection.position ());
       this->cursor.normal   (intersection.normal   ());
 
-      return updateBrush 
-        ? this->brush.updatePosition ( intersection.mesh     ()
-                                     , intersection.position () )
-        : false;
+      return updateBrush ? this->brush.updatePosition ( intersection.mesh     ()
+                                                      , intersection.position () )
+                         : false;
     }
     else {
       return false;
@@ -104,8 +118,23 @@ struct ToolCarve::Impl {
     }
     return ToolResponse::Redraw;
   }
+
+  ToolResponse runWheelEvent (QWheelEvent& e) {
+    if (e.orientation () == Qt::Vertical && e.modifiers ().testFlag (Qt::ShiftModifier)) {
+      if (e.delta () > 0) {
+        this->radiusEdit->stepUp ();
+        return ToolResponse::Redraw;
+      }
+      else {
+        this->radiusEdit->stepDown ();
+        return ToolResponse::Redraw;
+      }
+    }
+    return ToolResponse::None;
+  }
 };
 
-DELEGATE_TOOL                      (ToolCarve)
-DELEGATE_TOOL_RUN_RENDER           (ToolCarve)
-DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT (ToolCarve)
+DELEGATE_TOOL                       (ToolCarve)
+DELEGATE_TOOL_RUN_RENDER            (ToolCarve)
+DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT  (ToolCarve)
+DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolCarve)
