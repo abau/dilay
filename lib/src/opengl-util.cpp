@@ -1,7 +1,5 @@
 #include <glm/glm.hpp>
 #include <iostream>
-#include <stdexcept>
-#include "macro.hpp"
 #include "opengl-util.hpp"
 
 namespace OpenGLUtil {
@@ -15,20 +13,23 @@ namespace OpenGLUtil {
   }
 
   void safeDeleteArray (GLuint& id) {
-    if (id > 0 && glIsVertexArray (id) == GL_TRUE) 
+    if (id > 0 && glIsVertexArray (id) == GL_TRUE) {
       glDeleteVertexArrays (1,&id);
+    }
     id = 0;
   }
 
   void safeDeleteBuffer (GLuint& id) {
-    if (id > 0 && glIsBuffer (id) == GL_TRUE) 
+    if (id > 0 && glIsBuffer (id) == GL_TRUE) {
       glDeleteBuffers (1,&id);
+    }
     id = 0;
   }
 
   void safeDeleteShader (GLuint& id) {
-    if (id > 0 && glIsShader (id) == GL_TRUE) 
+    if (id > 0 && glIsShader (id) == GL_TRUE) {
       glDeleteShader (id);
+    }
     id = 0;
   }
 
@@ -73,7 +74,8 @@ namespace OpenGLUtil {
       OpenGLUtil::safeDeleteProgram   (programId);
       OpenGLUtil::safeDeleteShader    (vsId);
       OpenGLUtil::safeDeleteShader    (fsId);
-      throw (std::runtime_error ("Can not link shader program: see info log"));
+      std::cerr << "Can not link shader program: see info log" << std::endl;
+      std::abort ();
     }
     return programId;
   }
@@ -98,7 +100,8 @@ namespace OpenGLUtil {
     glGetShaderiv (shaderId, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
       OpenGLUtil::showInfoLog (shaderId);
-      throw (std::runtime_error ("Can not compile shader: see info log"));
+      std::cerr << "Can not compile shader: see info log" << std::endl;
+      std::abort ();
     }
     return shaderId;
   }
