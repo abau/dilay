@@ -10,6 +10,7 @@ release:
 
 clean:
 	make -f ${MAKEFILE_QT} clean
+	make -f ${MAKEFILE_QT} distclean
 
 gdb:
 	gdb -ex run ./dilay
