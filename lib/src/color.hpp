@@ -8,13 +8,19 @@ class QColor;
 
 class Color {
   public: 
-    Color            (float,float,float,float);
-    Color            ();
-    Color            (float,float,float);
-    Color            (const glm::vec3&);
-    Color            (const glm::vec4&);
+    Color (float,float,float,float);
+    Color ();
+    Color (float,float,float);
+    Color (const glm::vec3&);
+    Color (const glm::vec4&);
     // copies and scales a color using `scale`
-    Color            (const Color&, float);
+    Color (const Color&, float);
+
+    static Color black ();
+    static Color white ();
+    static Color red   ();
+    static Color green ();
+    static Color blue  ();
 
     float r          () const;
     float g          () const;
