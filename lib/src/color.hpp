@@ -3,18 +3,16 @@
 
 #include <glm/fwd.hpp>
 #include <iosfwd>
-#include "macro.hpp"
 
 class QColor;
 
 class Color {
   public: 
-    DECLARE_BIG6     (Color,float,float,float,float)
+    Color            (float,float,float,float);
     Color            ();
     Color            (float,float,float);
     Color            (const glm::vec3&);
     Color            (const glm::vec4&);
-
     // copies and scales a color using `scale`
     Color            (const Color&, float);
 
@@ -36,7 +34,10 @@ class Color {
     QColor    qColor () const;
 
   private:
-    IMPLEMENTATION
+    float _r;
+    float _g;
+    float _b;
+    float _opacity;
 };
 
 std::ostream& operator<<(std::ostream&, const Color&);
