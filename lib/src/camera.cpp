@@ -11,8 +11,6 @@
 
 struct Camera::Impl {
   Camera*      self;
-  float        gazeStepSize;
-
   glm::vec3    gazePoint;
   glm::vec3    toEyePoint;
   glm::vec3    up;
@@ -26,7 +24,6 @@ struct Camera::Impl {
 
   Impl (Camera* s) 
     : self         (s)
-    , gazeStepSize ( Config::get <float> ("/config/editor/camera/gaze-step-size") )
     , resolution   ( 1024, 768 )
     , nearClipping ( Config::get <float> ("/config/editor/camera/near-clipping") )
     , farClipping  ( Config::get <float> ("/config/editor/camera/far-clipping") ) {
