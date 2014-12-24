@@ -1,18 +1,17 @@
 #ifndef DILAY_VIEW_GL_WIDGET
 #define DILAY_VIEW_GL_WIDGET
 
-#include <GL/glew.h>
-// after glew:
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
+class Config;
 class ViewMainWindow;
 
-class ViewGlWidget : public QGLWidget {
+class ViewGlWidget : public QOpenGLWidget {
     Q_OBJECT
   public:
-    DECLARE_BIG2 (ViewGlWidget, const QGLFormat&, ViewMainWindow&)
+    DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&)
 
     glm::ivec2 cursorPosition       ();
     void       selectIntersection   ();
@@ -21,8 +20,9 @@ class ViewGlWidget : public QGLWidget {
   protected:
     void initializeGL       ();
     void resizeGL           (int,int);
+    void paintGL            ();
  
-    void paintEvent         (QPaintEvent*);
+    //void paintEvent         (QPaintEvent*);
     void keyPressEvent      (QKeyEvent*);
     void mouseMoveEvent     (QMouseEvent*);
     void mousePressEvent    (QMouseEvent*);

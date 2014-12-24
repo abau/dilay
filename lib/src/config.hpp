@@ -6,23 +6,24 @@
 
 class Config {
   public:   
-    static Config& global (); 
+    DECLARE_BIG2 (Config)
 
-    template <class T> static const T& get   (const std::string&);  
-    template <class T> static const T& get   (const std::string&, const T&);  
-    template <class T> static void     cache (const std::string&, const T&);  
+    template <class T> const T& get   (const std::string&) const;  
+    template <class T> const T& get   (const std::string&, const T&) const;  
+    template <class T> void     cache (const std::string&, const T&);  
 
-    static void writeCache ();
+    void writeCache ();
 
   private:
-    DECLARE_BIG3 (Config)
-
     IMPLEMENTATION
 };
 
 class ConfigProxy {
   public:
-    ConfigProxy (const std::string& p) : prefix (p) {
+    ConfigProxy (Config& c, const std::string& p) 
+      : config (c)
+      , prefix (p) 
+    {
       assert (p.back () == '/');
     }
 
@@ -32,20 +33,23 @@ class ConfigProxy {
 
     template <class T> 
     const T& get (const std::string& p) const { 
-      return Config::get<T> (this->key(p));
+      return this->config.get<T> (this->key(p));
     }
 
     template <class T> 
     const T& get (const std::string& p, const T& v) const {
-      return Config::get<T> (this->key (p), v);
+      return this->config.get<T> (this->key (p), v);
     }
 
     template <class T> 
     void cache (const std::string& p, const T& v) const {
-      return Config::cache<T> (this->key (p), v);
+      return this->config.cache<T> (this->key (p), v);
     }
 
+    const std::string& getPrefix () const { return this->prefix; }
+
   private:
+    Config&           config;
     const std::string prefix;
 };
 

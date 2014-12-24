@@ -5,6 +5,8 @@
 #include "action/transformer.hpp"
 #include "macro.hpp"
 
+class Scene;
+
 class ActionUnit : public Action {
   public: 
     DECLARE_BIG3 (ActionUnit)
@@ -17,9 +19,9 @@ class ActionUnit : public Action {
     }
 
     template <typename A, typename T>
-    A& add (T& t) { 
+    A& add (Scene& scene, T& t) { 
       A* action = new A ();
-      this->addAction (new ActionTransformer <T> (t, action));
+      this->addAction (new ActionTransformer <T> (scene, t, action));
       return *action; 
     }
 

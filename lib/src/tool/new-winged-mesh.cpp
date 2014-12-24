@@ -44,11 +44,12 @@ struct ToolNewWingedMesh::Impl {
   }
 
   void runRender () {
-    this->mesh.render ();
+    this->mesh.render (this->self->state ().camera ());
   }
 
   void runClose () {
-    State::history ().add <ActionNewWingedMesh> ().run (this->definition);
+    this->self->state ().history ().add <ActionNewWingedMesh> ()
+                        .run (this->self->state ().scene (), this->definition);
   }
 };
 

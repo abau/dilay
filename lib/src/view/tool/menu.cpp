@@ -4,15 +4,17 @@
 
 struct ViewToolMenu::Impl {
   ViewToolMenu*    self;
+  State&           state;
   const glm::ivec2 menuPosition;
 
-  Impl (ViewToolMenu* s, const glm::ivec2& p)
+  Impl (ViewToolMenu* s, State& st, const glm::ivec2& p)
     : self         (s)
+    , state        (st)
     , menuPosition (p)
   {}
 
   ViewToolMenuParameters menuParameters (const QString& label) const {
-    return ViewToolMenuParameters (this->menuPosition, label);
+    return ViewToolMenuParameters (this->state, this->menuPosition, label);
   }
 
   void addSeparator () {
@@ -20,6 +22,7 @@ struct ViewToolMenu::Impl {
   }
 };
 
-DELEGATE1_BIG3_SELF (ViewToolMenu, const glm::ivec2&)
+DELEGATE2_BIG3_SELF (ViewToolMenu, State&, const glm::ivec2&)
+GETTER_CONST    (State&                , ViewToolMenu, state)
 DELEGATE1_CONST (ViewToolMenuParameters, ViewToolMenu, menuParameters, const QString&)
 DELEGATE        (void                  , ViewToolMenu, addSeparator)

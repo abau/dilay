@@ -4,32 +4,34 @@
 #include "macro.hpp"
 
 class Camera;
+class Config;
 class History;
 class Id;
 class Mesh;
+class Renderer;
 class Scene;
 class Tool;
 enum class ToolResponse;
-class WingedMesh;
 class ViewMainWindow;
+class WingedMesh;
 
 class State {
   public:                                   
-    static State&   global             ();
+    DECLARE_BIG2 (State, ViewMainWindow&, Config&)
 
-    static ViewMainWindow& mainWindow         ();
-    static Camera&         camera             ();
-    static History&        history            ();
-    static Scene&          scene              ();
-    static bool            hasTool            ();
-    static Tool&           tool               ();
-    static void            setTool            (Tool*);
+    ViewMainWindow& mainWindow         ();
+    Config&         config             ();
+    Renderer&       renderer           ();
+    Camera&         camera             ();
+    History&        history            ();
+    Scene&          scene              ();
+    bool            hasTool            ();
+    Tool&           tool               ();
+    void            setTool            (Tool*);
 
-    static void            initialize         (ViewMainWindow&);
-    static void            handleToolResponse (ToolResponse);
+    void            handleToolResponse (ToolResponse);
+
   private:
-    DECLARE_BIG3 (State)
-
     IMPLEMENTATION
 };
 #endif

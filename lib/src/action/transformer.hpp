@@ -3,16 +3,16 @@
 
 #include <memory>
 #include "action.hpp"
-#include "scene.hpp"
-#include "state.hpp"
 
 template <typename T> class ActionOn;
+class Scene;
 
 template <typename T>
 class ActionTransformer : public Action {
   public:
-    ActionTransformer (T& t, ActionOn <T>* a) 
-      : actionPtr (a) 
+    ActionTransformer (Scene& s, T& t, ActionOn <T>* a) 
+      : scene     (s)
+      , actionPtr (a) 
       , index     (t.index ())
     {}
 
@@ -27,13 +27,14 @@ class ActionTransformer : public Action {
 
   private:
     void runUndo () const { 
-      this->actionPtr->undo (*State::scene ().template mesh <T> (this->index));
+      this->actionPtr->undo (*this->scene.template mesh <T> (this->index));
     }
 
     void runRedo () const {
-      this->actionPtr->redo (*State::scene ().template mesh <T> (this->index));
+      this->actionPtr->redo (*this->scene.template mesh <T> (this->index));
     }
 
+    Scene&                         scene;
     std::unique_ptr <ActionOn <T>> actionPtr;
     const unsigned int             index;
 };

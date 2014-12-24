@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "macro.hpp"
 
+class Config;
 class ViewGlWidget;
 class ViewPropertiesWidget;
 class ViewToolTip;
@@ -11,7 +12,7 @@ class ViewToolTip;
 class ViewMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    DECLARE_BIG3 (ViewMainWindow)
+    DECLARE_BIG3 (ViewMainWindow, Config&)
 
     ViewGlWidget&         glWidget           ();
     ViewPropertiesWidget& properties         ();

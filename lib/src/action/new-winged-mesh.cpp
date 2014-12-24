@@ -11,21 +11,22 @@
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/triangle.hpp"
 #include "scene.hpp"
-#include "state.hpp"
 #include "winged/edge.hpp"
 #include "winged/mesh.hpp"
 
 struct ActionNewWingedMesh :: Impl {
+  Scene*                      scene;
   ActionUnitOn <WingedMesh>   actions;
   Maybe        <unsigned int> index;
 
   typedef std::pair <unsigned int,unsigned int> UIPair;
   typedef std::map <UIPair, WingedEdge*>        EdgeMap;
 
-  WingedMesh& run (const MeshDefinition& def) {
+  WingedMesh& run (Scene& s, const MeshDefinition& def) {
     assert (this->actions.isEmpty ());
 
-    WingedMesh& mesh = State::scene ().newWingedMesh ();
+    this->scene      = &s;
+    WingedMesh& mesh = this->scene->newWingedMesh ();
     this->index.set (mesh.index ());
 
     // octree
@@ -117,13 +118,13 @@ struct ActionNewWingedMesh :: Impl {
   };
 
   void runUndo () const {
-    WingedMesh& mesh = State::scene ().wingedMeshRef (this->index.getRef ());
+    WingedMesh& mesh = this->scene->wingedMeshRef (this->index.getRef ());
     this->actions.undo (mesh);
-    State::scene ().deleteMesh (mesh);
+    this->scene->deleteMesh (mesh);
   }
 
   void runRedo () const {
-    WingedMesh& mesh = State::scene ().newWingedMesh (this->index.getRef ());
+    WingedMesh& mesh = this->scene->newWingedMesh (this->index.getRef ());
     this->actions.redo (mesh);
 
     mesh.writeAllIndices ();
@@ -133,6 +134,6 @@ struct ActionNewWingedMesh :: Impl {
 };
 
 DELEGATE_BIG3  (ActionNewWingedMesh)
-DELEGATE1      (WingedMesh&, ActionNewWingedMesh, run, const MeshDefinition&)
+DELEGATE2      (WingedMesh&, ActionNewWingedMesh, run, Scene&, const MeshDefinition&)
 DELEGATE_CONST (void       , ActionNewWingedMesh, runUndo)
 DELEGATE_CONST (void       , ActionNewWingedMesh, runRedo)

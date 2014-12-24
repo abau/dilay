@@ -1,39 +1,35 @@
 #ifndef DILAY_RENDERER
 #define DILAY_RENDERER
 
-#include <GL/glew.h>
-// after glew:
-#include <GL/gl.h>
 #include <glm/fwd.hpp>
+#include "configurable.hpp"
 #include "macro.hpp"
 
 class Color;
+class Config;
 enum  class RenderMode;
-class Camera;
 
-class Renderer {
+class Renderer : public Configurable {
   public:
-    static Renderer& global ();
+    DECLARE_BIG3 (Renderer, const Config&)
 
-    static void initialize         ();
-    static void shutdown           ();
-    static void renderInitialize   ();
-    static void setProgram         (const RenderMode&);
-    static void setMvp             (const GLfloat*);
-    static void setModel           (const GLfloat*);
-    static void setColor3          (const Color&);
-    static void setColor4          (const Color&);
-    static void setAmbient         (const Color&);
-    static void setEyePoint        (const glm::vec3&);
-    static void setLightPosition   (unsigned int, const glm::vec3&);
-    static void setLightColor      (unsigned int, const Color&);
-    static void setLightIrradiance (unsigned int, float);
-    static void updateLights       (const Camera&);
+    void setupRendering     ();
+    void setProgram         (const RenderMode&);
+    void setMvp             (const float*);
+    void setModel           (const float*);
+    void setColor3          (const Color&);
+    void setColor4          (const Color&);
+    void setAmbient         (const Color&);
+    void setEyePoint        (const glm::vec3&);
+    void setLightPosition   (unsigned int, const glm::vec3&);
+    void setLightColor      (unsigned int, const Color&);
+    void setLightIrradiance (unsigned int, float);
+    void updateLights       (const glm::mat4x4&);
 
   private:
-    DECLARE_BIG3 (Renderer)
-
     IMPLEMENTATION
+
+    void runFromConfig (const Config&);
 };
 
 #endif

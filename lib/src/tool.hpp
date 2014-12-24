@@ -5,6 +5,7 @@
 #include "macro.hpp"
 
 class ConfigProxy;
+class State;
 class ViewProperties;
 class ViewToolMenuParameters;
 class ViewToolTip;
@@ -30,6 +31,7 @@ class Tool {
     void                          close                ();
 
   protected:
+    State&                        state                ();
     void                          updateGlWidget       ();
     ViewProperties&               properties           ();
     ViewToolTip&                  toolTip              ();

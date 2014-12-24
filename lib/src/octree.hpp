@@ -6,16 +6,17 @@
 #include <unordered_map>
 #include "macro.hpp"
 
-class WingedFace;
-class WingedEdge;
-class WingedMesh;
-class PrimTriangle;
+class AffectedFaces;
+class Camera;
+class Id;
 class OctreeNode;
 class PrimRay;
-class WingedFaceIntersection;
 class PrimSphere;
-class Id;
-class AffectedFaces;
+class PrimTriangle;
+class WingedEdge;
+class WingedFace;
+class WingedFaceIntersection;
+class WingedMesh;
 
 struct OctreeStatistics {
   typedef std::unordered_map <int, unsigned int> DepthMap;
@@ -57,7 +58,7 @@ class Octree {
     WingedFace&      realignFace          (WingedFace&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace           (WingedFace&);
     WingedFace*      face                 (unsigned int) const;
-    void             render               ();
+    void             render               (const Camera&);
     bool             intersects           (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
     bool             intersects           (const WingedMesh&, const PrimSphere&, AffectedFaces&);
     void             reset                ();

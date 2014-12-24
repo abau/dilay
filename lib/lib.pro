@@ -25,6 +25,7 @@ SOURCES += \
            src/color.cpp \
            src/config.cpp \
            src/config-conversion.cpp \
+           src/configurable.cpp \
            src/cursor.cpp \
            src/dimension.cpp \
            src/history.cpp \
@@ -32,7 +33,7 @@ SOURCES += \
            src/mesh.cpp \
            src/mesh-definition.cpp \
            src/octree.cpp \
-           src/opengl-util.cpp \
+           src/opengl.cpp \
            src/partial-action/collapse-face.cpp \
            src/partial-action/delete-edge-face.cpp \
            src/partial-action/flip-edge.cpp \
@@ -116,6 +117,7 @@ HEADERS += \
            src/color.hpp \
            src/config.hpp \
            src/config-conversion.hpp \
+           src/configurable.hpp \
            src/cursor.hpp \
            src/dimension.hpp \
            src/fwd-winged.hpp \
@@ -126,7 +128,7 @@ HEADERS += \
            src/mesh.hpp \
            src/mesh-definition.hpp \
            src/octree.hpp \
-           src/opengl-util.hpp \
+           src/opengl.hpp \
            src/partial-action/collapse-face.hpp \
            src/partial-action/delete-edge-face.hpp \
            src/partial-action/flip-edge.hpp \

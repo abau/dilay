@@ -5,18 +5,19 @@
 #include "intersection.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
-#include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "view/util.hpp"
 
 struct ToolUtilMovement::Impl {
+  const Camera&      camera;
   MovementConstraint constraint;
   const glm::vec3    originalPosition;
   glm::vec3          position;
 
-  Impl (MovementConstraint c) 
-    : constraint       (c)
-    , originalPosition (State::camera ().gazePoint ())
+  Impl (const Camera& cam, MovementConstraint c) 
+    : camera           (cam)
+    , constraint       (c)
+    , originalPosition (cam.gazePoint ())
     , position         (originalPosition)
   {}
 
@@ -29,7 +30,7 @@ struct ToolUtilMovement::Impl {
   }
 
   bool intersects (const glm::vec3& normal, const glm::ivec2& p, glm::vec3& i) const {
-    const PrimRay   ray = State::camera ().ray (p);
+    const PrimRay   ray = this->camera.ray (p);
     const PrimPlane plane (this->position, normal);
           float     t;
     
@@ -52,7 +53,7 @@ struct ToolUtilMovement::Impl {
 
   bool moveAlong (Dimension axisDim, const glm::ivec2& p) {
     const unsigned int i = DimensionUtil::index (axisDim);
-    const glm::vec3    e = State::camera ().toEyePoint ();
+    const glm::vec3    e = this->camera.toEyePoint ();
 
     if (glm::dot (DimensionUtil::vector (axisDim), glm::normalize (e)) < 0.9) {
       glm::vec3 normal    = e;
@@ -88,10 +89,10 @@ struct ToolUtilMovement::Impl {
         return modify ? this->moveAlong   (Dimension::X, p)
                       : this->moveOnPlane (Dimension::X, p);
       case MovementConstraint::CameraPlane: 
-        return this->moveOnPlane (glm::normalize (State::camera ().toEyePoint ()), p); 
+        return this->moveOnPlane (glm::normalize (this->camera.toEyePoint ()), p); 
       case MovementConstraint::PrimaryPlane: 
-        return modify ? this->moveAlong   (State::camera ().primaryDimension (), p)
-                      : this->moveOnPlane (State::camera ().primaryDimension (), p);
+        return modify ? this->moveAlong   (this->camera.primaryDimension (), p)
+                      : this->moveOnPlane (this->camera.primaryDimension (), p);
     }
     std::abort ();
   }
@@ -101,11 +102,11 @@ struct ToolUtilMovement::Impl {
   }
 
   bool onCameraPlane (const glm::ivec2& p, glm::vec3& intersection) const {
-    return this->intersects (glm::normalize (State::camera ().toEyePoint ()), p, intersection); 
+    return this->intersects (glm::normalize (this->camera.toEyePoint ()), p, intersection); 
   }
 };
 
-DELEGATE1_BIG4COPY (ToolUtilMovement, MovementConstraint)
+DELEGATE2_BIG4COPY (ToolUtilMovement, const Camera&, MovementConstraint)
 GETTER_CONST    (MovementConstraint, ToolUtilMovement, constraint)
 SETTER          (MovementConstraint, ToolUtilMovement, constraint)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, originalPosition)

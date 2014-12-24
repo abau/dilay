@@ -1,7 +1,9 @@
 #include "tools.hpp"
 #include "view/menu/winged-mesh.hpp"
 
-ViewMenuWingedMesh :: ViewMenuWingedMesh (const glm::ivec2& p) : ViewToolMenu (p) {
+ViewMenuWingedMesh :: ViewMenuWingedMesh (State& s, const glm::ivec2& p) 
+  : ViewToolMenu (s, p) 
+{
   this->addAction <ToolMove>          (QObject::tr ("Move"));
   this->addAction <ToolCarve>         (QObject::tr ("Carve"));
   this->addAction <ToolSubdivideMesh> (QObject::tr ("Subdivide"));

@@ -1,11 +1,10 @@
-#include <GL/glew.h>
-#include <GL/gl.h>
 #include <QApplication>
 #include <QTranslator>
-#include "view/main-window.hpp"
 #include "config.hpp"
+#include "opengl.hpp"
+#include "view/main-window.hpp"
 
-int main(int argv, char **args) {
+int main (int argv, char **args) {
   QApplication app (argv, args);
 
   if (QLocale::system ().language () == QLocale::German) {
@@ -14,11 +13,13 @@ int main(int argv, char **args) {
     app.installTranslator (&appTranslator);
   }
 
-  ViewMainWindow w;
-  w.show ();
+  OpenGL::setDefaultFormat ();
+  Config         config;
+  ViewMainWindow mainWindow (config);
+  mainWindow.show ();
 
-  QObject::connect (&app, &QApplication::aboutToQuit, [] () {
-    Config::writeCache ();
+  QObject::connect (&app, &QApplication::aboutToQuit, [&config] () {
+    config.writeCache ();
   });
   return app.exec();
 }

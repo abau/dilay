@@ -13,20 +13,18 @@
 #include "view/util.hpp"
 
 struct ToolMoveCamera::Impl {
-        glm::ivec2 oldPos;
-  const float      rotationFactor;
-  const float      panningFactor;
-  const float      zoomInFactor;
+  glm::ivec2 oldPos;
+  float      rotationFactor;
+  float      panningFactor;
+  float      zoomInFactor;
 
-  Impl ()
-    : rotationFactor (Config::get <float> ("/config/editor/camera/rotation-factor"))
-    , panningFactor  (Config::get <float> ("/config/editor/camera/panning-factor"))
-    , zoomInFactor   (Config::get <float> ("/config/editor/camera/zoom-in-factor"))
-  {}
+  Impl (const Config& config) {
+    this->runFromConfig (config);
+  }
 
-  void mouseMoveEvent (QMouseEvent& event) {
+  void mouseMoveEvent (State& state, QMouseEvent& event) {
     if (event.buttons () == Qt::MiddleButton) {
-            Camera&     cam        = State::camera ();
+            Camera&     cam        = state.camera ();
       const glm::uvec2& resolution = cam.resolution ();
             glm::ivec2  newPos     = ViewUtil::toIVec2 (event);
             glm::ivec2  delta      = newPos - oldPos;
@@ -50,39 +48,46 @@ struct ToolMoveCamera::Impl {
                     );
       }
       this->oldPos = newPos;
-      State::mainWindow ().glWidget ().update ();
+      state.mainWindow ().glWidget ().update ();
     }
   }
 
-  void mousePressEvent (QMouseEvent& event) {
+  void mousePressEvent (State& state, QMouseEvent& event) {
     if (event.button () == Qt::MiddleButton) {
       this->oldPos = ViewUtil::toIVec2 (event);
 
       if (event.modifiers () == Qt::ShiftModifier) {
-        Camera&      cam = State::camera ();
+        Camera&      cam = state.camera ();
         Intersection intersection;
-        if (State::scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
+        if (state.scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
           cam.setGaze (intersection.position ());
-          State::mainWindow ().glWidget ().update ();
+          state.mainWindow ().glWidget ().update ();
         }
       }
     }
   }
 
-  void wheelEvent (QWheelEvent& event) {
+  void wheelEvent (State& state, QWheelEvent& event) {
     if (event.orientation () == Qt::Vertical) {
       if (event.delta () > 0) {
-        State::camera ().stepAlongGaze (this->zoomInFactor);
+        state.camera ().stepAlongGaze (this->zoomInFactor);
       }
       else if (event.delta () < 0) {
-        State::camera ().stepAlongGaze (1.0f / this->zoomInFactor);
+        state.camera ().stepAlongGaze (1.0f / this->zoomInFactor);
       }
-      State::mainWindow ().glWidget ().update ();
+      state.mainWindow ().glWidget ().update ();
     }
+  }
+
+  void runFromConfig (const Config& config) {
+    rotationFactor = config.get <float> ("/config/editor/camera/rotation-factor");
+    panningFactor  = config.get <float> ("/config/editor/camera/panning-factor");
+    zoomInFactor   = config.get <float> ("/config/editor/camera/zoom-in-factor");
   }
 };
 
-DELEGATE_BIG3 (ToolMoveCamera)
-DELEGATE1 (void, ToolMoveCamera, mouseMoveEvent, QMouseEvent&)
-DELEGATE1 (void, ToolMoveCamera, mousePressEvent, QMouseEvent&)
-DELEGATE1 (void, ToolMoveCamera, wheelEvent, QWheelEvent&)
+DELEGATE1_BIG3 (ToolMoveCamera, const Config&)
+DELEGATE2 (void, ToolMoveCamera, mouseMoveEvent, State&, QMouseEvent&)
+DELEGATE2 (void, ToolMoveCamera, mousePressEvent, State&, QMouseEvent&)
+DELEGATE2 (void, ToolMoveCamera, wheelEvent, State&, QWheelEvent&)
+DELEGATE1 (void, ToolMoveCamera, runFromConfig, const Config&)

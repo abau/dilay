@@ -2,8 +2,10 @@
 #include <memory>
 #include "action/new-winged-mesh.hpp"
 #include "camera.hpp"
+#include "config.hpp"
 #include "history.hpp"
 #include "mesh-definition.hpp"
+#include "renderer.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -13,29 +15,32 @@
 #include "view/tool/menu-parameters.hpp"
 #include "util.hpp"
 
+#include <iostream>
+
 struct State::Impl {
-  ViewMainWindow*        mainWindowPtr;
+  ViewMainWindow&        mainWindow;
+  Config&                config;
+  Renderer               renderer;
   Camera                 camera;
   History                history;
   Scene                  scene;
   std::unique_ptr <Tool> toolPtr;
 
-  Impl () : mainWindowPtr (nullptr)
-  {}
-
-  void initialize (ViewMainWindow& mW) { 
-    this->mainWindowPtr = &mW;
-    this->camera.initialize ();
-
+  Impl (ViewMainWindow& mW, Config& c) 
+    : mainWindow (mW) 
+    , config     (c)
+    , renderer   (config)
+    , camera     (config, renderer)
+    , scene      (ConfigProxy (config, "/config/editor/poly-mesh/"))
+  {
     MeshDefinition meshDefinition (MeshDefinition::icosphere (2));
     meshDefinition.scale          (Util::defaultScale ());
 
-    this->history.add <ActionNewWingedMesh> ().run (meshDefinition);
+    this->history.add <ActionNewWingedMesh> ().run (this->scene, meshDefinition);
   }
 
-  ViewMainWindow& mainWindow () const {
-    assert (this->mainWindowPtr);
-    return *this->mainWindowPtr;
+  ~Impl () {
+    this->toolPtr.reset (nullptr);
   }
 
   bool hasTool () const { 
@@ -50,11 +55,11 @@ struct State::Impl {
   void setTool (Tool* tool) { 
     if (tool) {
       tool->showToolTip ();
-      this->mainWindow ().properties ().showTool (tool->menuParameters ().label ());
+      this->mainWindow.properties ().showTool (tool->menuParameters ().label ());
     }
     else if (this->toolPtr) {
-      this->mainWindow ().showDefaultToolTip ();
-      this->mainWindow ().properties ().resetTool ();
+      this->mainWindow.showDefaultToolTip ();
+      this->mainWindow.properties ().resetTool ();
     }
     this->toolPtr.reset (tool); 
 
@@ -69,25 +74,25 @@ struct State::Impl {
       case ToolResponse::None:
         break;
       case ToolResponse::Redraw:
-        this->mainWindow ().glWidget ().update ();
+        this->mainWindow.glWidget ().update ();
         break;
       case ToolResponse::Terminate:
-        this->mainWindow ().glWidget ().update ();
+        this->mainWindow.glWidget ().update ();
         this->setTool (nullptr);
         break;
     }
   }
 };
 
-GLOBAL        (State)
-DELEGATE_BIG3 (State)
+DELEGATE2_BIG2 (State, ViewMainWindow&, Config&)
 
-GETTER_GLOBAL    (Camera&           , State, camera)
-GETTER_GLOBAL    (History&          , State, history)
-GETTER_GLOBAL    (Scene&            , State, scene)
-DELEGATE_GLOBAL  (ViewMainWindow&   , State, mainWindow)
-DELEGATE1_GLOBAL (void              , State, initialize, ViewMainWindow&)
-DELEGATE_GLOBAL  (bool              , State, hasTool)
-DELEGATE_GLOBAL  (Tool&             , State, tool)
-DELEGATE1_GLOBAL (void              , State, setTool, Tool*)
-DELEGATE1_GLOBAL (void              , State, handleToolResponse, ToolResponse)
+GETTER    (ViewMainWindow&   , State, mainWindow)
+GETTER    (Config&           , State, config)
+GETTER    (Renderer&         , State, renderer)
+GETTER    (Camera&           , State, camera)
+GETTER    (History&          , State, history)
+GETTER    (Scene&            , State, scene)
+DELEGATE  (bool              , State, hasTool)
+DELEGATE  (Tool&             , State, tool)
+DELEGATE1 (void              , State, setTool, Tool*)
+DELEGATE1 (void              , State, handleToolResponse, ToolResponse)

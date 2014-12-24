@@ -1,8 +1,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "camera.hpp"
 #include "color.hpp"
 #include "cursor.hpp"
 #include "mesh.hpp"
+#include "opengl.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
 #include "util.hpp"
@@ -56,16 +58,17 @@ struct Cursor::Impl {
     this->mesh.bufferData ();
   }
 
-  void render () {
+  void render (const Camera& camera) {
     if (this->isEnabled) {
-      this->mesh.renderBegin ();
+      this->mesh.renderBegin (camera);
 
-      glDisable (GL_DEPTH_TEST); 
+      OpenGL::glDisable (OpenGL::DepthTest ()); 
 
-      Renderer :: global ().setColor3 (Color (1.0f, 0.0f, 0.0f));
-      glDrawElements     (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
+      camera.renderer ().setColor3 (Color (1.0f, 0.0f, 0.0f));
+      OpenGL::glDrawElements ( OpenGL::Lines (), this->mesh.numIndices ()
+                             , OpenGL::UnsignedInt (), (void*)0 );
 
-      glEnable (GL_DEPTH_TEST); 
+      OpenGL::glEnable (OpenGL::DepthTest ()); 
 
       this->mesh.renderEnd ();
     }
@@ -80,7 +83,7 @@ SETTER       (float, Cursor, radius)
 DELEGATE1    (void,  Cursor, position, const glm::vec3&)
 DELEGATE1    (void,  Cursor, normal, const glm::vec3&)
 DELEGATE     (void,  Cursor, updateGeometry)
-DELEGATE     (void,  Cursor, render)
+DELEGATE1    (void,  Cursor, render, const Camera&)
 DELEGATE     (void,  Cursor, enable)
 DELEGATE     (void,  Cursor, disable)
 GETTER_CONST (bool,  Cursor, isEnabled)

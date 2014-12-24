@@ -1,16 +1,15 @@
+#include <QOpenGLContext>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
 #include <vector>
 #include "camera.hpp"
 #include "color.hpp"
-#include "config.hpp"
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
-#include "opengl-util.hpp"
+#include "opengl.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
-#include "state.hpp"
 #include "util.hpp"
 
 struct Mesh::Impl {
@@ -40,9 +39,8 @@ struct Mesh::Impl {
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;
     this->renderMode          = RenderMode::SmoothShaded;
-
-    this->color               = Config::get <Color> ("/config/editor/mesh/color/normal");
-    this->wireframeColor      = Config::get <Color> ("/config/editor/mesh/color/wireframe");
+    this->color               = Color::white ();
+    this->wireframeColor      = Color::black ();
   }
 
   Impl (const MeshDefinition& def) : Impl () { 
@@ -167,38 +165,42 @@ struct Mesh::Impl {
   }
 
   void bufferData () {
-    if (glIsVertexArray (this->arrayObjectId) == GL_FALSE)
-      glGenVertexArrays (1, &this->arrayObjectId);
-    if (glIsBuffer (this->vertexBufferId) == GL_FALSE)
-      glGenBuffers      (1, &this->vertexBufferId);
-    if (glIsBuffer (this->indexBufferId) == GL_FALSE)
-      glGenBuffers      (1, &this->indexBufferId);
-    if (glIsBuffer (this->normalBufferId) == GL_FALSE)
-      glGenBuffers      (1, &this->normalBufferId);
+    if (OpenGL::glIsVertexArray (this->arrayObjectId) == false) {
+      OpenGL::glGenVertexArrays (1, &this->arrayObjectId);
+    }
+    if (OpenGL::glIsBuffer (this->vertexBufferId) == false) {
+      OpenGL::glGenBuffers (1, &this->vertexBufferId);
+    }
+    if (OpenGL::glIsBuffer (this->indexBufferId) == false) {
+      OpenGL::glGenBuffers (1, &this->indexBufferId);
+    }
+    if (OpenGL::glIsBuffer (this->normalBufferId) == false) {
+      OpenGL::glGenBuffers (1, &this->normalBufferId);
+    }
 
-    glBindVertexArray          (this->arrayObjectId);
+    OpenGL::glBindVertexArray          (this->arrayObjectId);
 
-    glBindBuffer               ( GL_ARRAY_BUFFER, this->vertexBufferId );
-    glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfVertices ()
-                               , &this->vertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray  ( OpenGLUtil :: PositionIndex);
-    glVertexAttribPointer      ( OpenGLUtil :: PositionIndex
-                               , 3, GL_FLOAT, GL_FALSE, 0, 0);
+    OpenGL::glBindBuffer               ( OpenGL::ArrayBuffer (), this->vertexBufferId );
+    OpenGL::glBufferData               ( OpenGL::ArrayBuffer (), this->sizeOfVertices ()
+                                       , &this->vertices[0], OpenGL::StaticDraw ());
+    OpenGL::glEnableVertexAttribArray  ( OpenGL::PositionIndex);
+    OpenGL::glVertexAttribPointer      ( OpenGL::PositionIndex
+                                       , 3, OpenGL::Float (), false, 0, 0);
 
-    glBindBuffer               ( GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId );
-    glBufferData               ( GL_ELEMENT_ARRAY_BUFFER, this->sizeOfIndices ()
-                               , &this->indices[0], GL_STATIC_DRAW);
+    OpenGL::glBindBuffer               ( OpenGL::ElementArrayBuffer (), this->indexBufferId );
+    OpenGL::glBufferData               ( OpenGL::ElementArrayBuffer (), this->sizeOfIndices ()
+                                       , &this->indices[0], OpenGL::StaticDraw ());
 
-    glBindBuffer               ( GL_ARRAY_BUFFER, this->normalBufferId );
-    glBufferData               ( GL_ARRAY_BUFFER, this->sizeOfNormals ()
-                               , &this->normals[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray  ( OpenGLUtil :: NormalIndex);
-    glVertexAttribPointer      ( OpenGLUtil :: NormalIndex
-                               , 3, GL_FLOAT, GL_FALSE, 0, 0);
+    OpenGL::glBindBuffer               ( OpenGL::ArrayBuffer (), this->normalBufferId );
+    OpenGL::glBufferData               ( OpenGL::ArrayBuffer (), this->sizeOfNormals ()
+                                       , &this->normals[0], OpenGL::StaticDraw ());
+    OpenGL::glEnableVertexAttribArray  ( OpenGL::NormalIndex);
+    OpenGL::glVertexAttribPointer      ( OpenGL::NormalIndex
+                                       , 3, OpenGL::Float (), false, 0, 0);
 
-    glBindBuffer               ( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    glBindBuffer               ( GL_ARRAY_BUFFER, 0 );
-    glBindVertexArray          ( 0 );
+    OpenGL::glBindBuffer               ( OpenGL::ElementArrayBuffer (), 0 );
+    OpenGL::glBindBuffer               ( OpenGL::ArrayBuffer (), 0 );
+    OpenGL::glBindVertexArray          ( 0 );
   }
 
   glm::mat4x4 modelMatrix () const {
@@ -211,35 +213,35 @@ struct Mesh::Impl {
           * glm::scale     (glm::mat4x4 (1.0f), 1.0f / this->scaling ());
   }
 
-  void setModelMatrix (bool noZoom) {
-    State::camera ().setModelViewProjection (this->modelMatrix (), noZoom);
+  void setModelMatrix (const Camera& camera, bool noZoom) {
+    camera.setModelViewProjection (this->modelMatrix (), noZoom);
   }
 
-  void renderBegin (bool noZoom) {
-    Renderer :: setProgram (this->renderMode);
-    this->setModelMatrix   (noZoom);
-    glBindVertexArray      (this->arrayObjectId);
-    glBindBuffer           (GL_ARRAY_BUFFER, this->vertexBufferId);
-    glBindBuffer           (GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
+  void renderBegin (const Camera& camera, bool noZoom) {
+    camera.renderer ().setProgram (this->renderMode);
+    this->setModelMatrix          (camera, noZoom);
+    OpenGL::glBindVertexArray     (this->arrayObjectId);
+    OpenGL::glBindBuffer          (OpenGL::ArrayBuffer (), this->vertexBufferId);
+    OpenGL::glBindBuffer          (OpenGL::ElementArrayBuffer (), this->indexBufferId);
   }
 
   void renderEnd () { 
-    glBindBuffer      (GL_ARRAY_BUFFER, 0);
-    glBindBuffer      (GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray (0); 
+    OpenGL::glBindBuffer      (OpenGL::ArrayBuffer (), 0);
+    OpenGL::glBindBuffer      (OpenGL::ElementArrayBuffer (), 0);
+    OpenGL::glBindVertexArray (0); 
   }
 
-  void render (bool noZoom) {
-    this->renderBegin (noZoom);
+  void render (const Camera& camera, bool noZoom) {
+    this->renderBegin (camera, noZoom);
 
     if (  this->renderMode == RenderMode::SmoothShaded 
        || this->renderMode == RenderMode::FlatShaded
        || this->renderMode == RenderMode::Color ) 
     {
-      this->renderSolid ();
+      this->renderSolid (camera.renderer ());
     }
     else if (this->renderMode == RenderMode::Wireframe) {
-      this->renderWireframe ();
+      this->renderWireframe (camera.renderer ());
     }
     else {
       std::abort ();
@@ -247,22 +249,25 @@ struct Mesh::Impl {
     this->renderEnd ();
   }
 
-  void renderSolid () {
-    Renderer :: setColor3 (this->color);
-    glDrawElements        (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+  void renderSolid (Renderer& renderer) {
+    renderer.setColor3 (this->color);
+    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
+                           , OpenGL::UnsignedInt (), (void*)0 );
   }
 
-  void renderWireframe () {
-    Renderer :: setColor3 (this->color);
-    glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+  void renderWireframe (Renderer& renderer) {
+    renderer.setColor3 (this->color);
+    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
+                           , OpenGL::UnsignedInt (), (void*)0);
 
-    glClear(GL_DEPTH_BUFFER_BIT);
+    OpenGL::glClear (OpenGL::DepthBufferBit ());
 
-    Renderer :: setColor3 (this->wireframeColor);
-    glPolygonMode      (GL_FRONT, GL_LINE);
-    glDrawElements     (GL_TRIANGLES, this->numIndices (), GL_UNSIGNED_INT, (void*)0);
+    renderer.setColor3 (this->wireframeColor);
+    OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Line ());
+    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
+                           , OpenGL::UnsignedInt (), (void*)0 );
 
-    glPolygonMode      (GL_FRONT, GL_FILL);
+    OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Fill ());
   }
 
   void reset () {
@@ -272,10 +277,10 @@ struct Mesh::Impl {
     this->vertices.clear ();
     this->indices .clear ();
     this->normals .clear ();
-    OpenGLUtil :: safeDeleteArray  (this->arrayObjectId);
-    OpenGLUtil :: safeDeleteBuffer (this->vertexBufferId);
-    OpenGLUtil :: safeDeleteBuffer (this->indexBufferId);
-    OpenGLUtil :: safeDeleteBuffer (this->normalBufferId);
+    OpenGL::safeDeleteArray  (this->arrayObjectId);
+    OpenGL::safeDeleteBuffer (this->vertexBufferId);
+    OpenGL::safeDeleteBuffer (this->indexBufferId);
+    OpenGL::safeDeleteBuffer (this->normalBufferId);
   }
 
   void resetGeometry () {
@@ -285,7 +290,7 @@ struct Mesh::Impl {
   }
 
   void toggleRenderMode () {
-    this->renderMode = RenderModeUtil :: toggle (this->renderMode);
+    this->renderMode = RenderModeUtil::toggle (this->renderMode);
   }
 
   void scale (const glm::vec3& v) {
@@ -355,11 +360,9 @@ DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, worldMatrix)
-DELEGATE1        (void              , Mesh, renderBegin, bool)
+DELEGATE2        (void              , Mesh, renderBegin, const Camera&, bool)
 DELEGATE         (void              , Mesh, renderEnd)
-DELEGATE1        (void              , Mesh, render, bool)
-DELEGATE         (void              , Mesh, renderSolid)
-DELEGATE         (void              , Mesh, renderWireframe)
+DELEGATE2        (void              , Mesh, render, const Camera&, bool)
 DELEGATE         (void              , Mesh, reset)
 DELEGATE         (void              , Mesh, resetGeometry)
 SETTER           (RenderMode        , Mesh, renderMode)
@@ -378,3 +381,5 @@ DELEGATE1        (void              , Mesh, rotationY, float)
 DELEGATE1        (void              , Mesh, rotationZ, float)
 GETTER_CONST     (const Color&      , Mesh, color)
 SETTER           (const Color&      , Mesh, color)
+GETTER_CONST     (const Color&      , Mesh, wireframeColor)
+SETTER           (const Color&      , Mesh, wireframeColor)

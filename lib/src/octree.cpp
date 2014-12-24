@@ -5,9 +5,11 @@
 #include <vector>
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
+#include "camera.hpp"
 #include "fwd-winged.hpp"
 #include "indexable.hpp"
 #include "octree.hpp"
+#include "opengl.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
@@ -151,22 +153,24 @@ struct OctreeNode::Impl {
   {}
 #endif
 
-  void render () {
-    assert (this->storeDegenerated == false);
 #ifdef DILAY_RENDER_OCTREE
-    this->mesh.renderBegin ();
-    glDisable (GL_DEPTH_TEST);
-    Renderer :: setColor3 (Color (1.0f, 1.0f, 0.0f));
-    glDrawElements (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
-    glEnable (GL_DEPTH_TEST);
+  void render (const Camera& camera) {
+    assert (this->storeDegenerated == false);
+    OpenGL::Functions& f = OpenGL::functions ();
+
+    this->mesh.renderBegin (camera);
+    f.glDisable (GL_DEPTH_TEST);
+    camera.renderer ().setColor3 (Color (1.0f, 1.0f, 0.0f));
+    f.glDrawElements (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
+    f.glEnable (GL_DEPTH_TEST);
     this->mesh.renderEnd ();
 
     for (Child& c : this->children) 
-      c->render ();
-#else
-    std::abort ();
-#endif
+      c->render (camera);
   }
+#else
+  void render (const Camera&) { std::abort (); }
+#endif
 
   bool approxContains (const glm::vec3& v) const {
     assert (this->storeDegenerated == false);
@@ -501,14 +505,16 @@ struct Octree::Impl {
     this->root->children [index]->parent = &*this->root;
   }
 
-  void render () { 
 #ifdef DILAY_RENDER_OCTREE
+  void render (const Camera& camera) { 
     if (this->hasRoot ()) 
-      this->root->render ();
-#else
-    assert (false && "compiled without rendering support for octrees");
-#endif
+      this->root->render (camera);
   }
+#else
+  void render (const Camera&) { 
+    assert (false && "compiled without rendering support for octrees");
+  }
+#endif
 
   bool intersects (WingedMesh& mesh, const PrimRay& ray, WingedFaceIntersection& intersection) {
     if (this->hasRoot ()) {
@@ -621,7 +627,7 @@ DELEGATE3       (WingedFace& , Octree, addFace, unsigned int, WingedEdge*, const
 DELEGATE3       (WingedFace& , Octree, realignFace, WingedFace&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, WingedFace&)
 DELEGATE1_CONST (WingedFace* , Octree, face, unsigned int)
-DELEGATE        (void, Octree, render)
+DELEGATE1       (void, Octree, render, const Camera&)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
 DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, AffectedFaces&)
 DELEGATE        (void, Octree, reset)

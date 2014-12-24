@@ -239,38 +239,36 @@ struct Config::Impl {
   }
 };
 
-DELEGATE_BIG3 (Config)
-GLOBAL (Config);
-
-DELEGATE_GLOBAL (void, Config, writeCache);
+DELEGATE_BIG2 (Config)
+DELEGATE (void, Config, writeCache);
 
 template <class T>
-const T& Config :: get (const std::string& path) {
-  return Config::global ().impl->get<T> (path);
+const T& Config :: get (const std::string& path) const {
+  return this->impl->get<T> (path);
 }
 
 template <class T>
-const T& Config :: get (const std::string& path, const T& defaultV) {
-  return Config::global ().impl->get<T> (path, defaultV);
+const T& Config :: get (const std::string& path, const T& defaultV) const {
+  return this->impl->get<T> (path, defaultV);
 }
 
 template <class T>
 void Config :: cache (const std::string& path, const T& value) {
-  return Config::global ().impl->cache<T> (path, value);
+  return this->impl->cache<T> (path, value);
 }
 
-template const float&      Config :: get<float>        (const std::string&);
-template const float&      Config :: get<float>        (const std::string&, const float&);
+template const float&      Config :: get<float>        (const std::string&) const;
+template const float&      Config :: get<float>        (const std::string&, const float&) const;
 template void              Config :: cache<float>      (const std::string&, const float&);
-template const int&        Config :: get<int>          (const std::string&);
-template const int&        Config :: get<int>          (const std::string&, const int&);
+template const int&        Config :: get<int>          (const std::string&) const;
+template const int&        Config :: get<int>          (const std::string&, const int&) const;
 template void              Config :: cache<int>        (const std::string&, const int&);
-template const Color&      Config :: get<Color>        (const std::string&);
-template const Color&      Config :: get<Color>        (const std::string&, const Color&);
+template const Color&      Config :: get<Color>        (const std::string&) const;
+template const Color&      Config :: get<Color>        (const std::string&, const Color&) const;
 template void              Config :: cache<Color>      (const std::string&, const Color&);
-template const glm::vec3&  Config :: get<glm::vec3>    (const std::string&);
-template const glm::vec3&  Config :: get<glm::vec3>    (const std::string&, const glm::vec3&);
+template const glm::vec3&  Config :: get<glm::vec3>    (const std::string&) const;
+template const glm::vec3&  Config :: get<glm::vec3>    (const std::string&, const glm::vec3&) const;
 template void              Config :: cache<glm::vec3>  (const std::string&, const glm::vec3&);
-template const glm::ivec2& Config :: get<glm::ivec2>   (const std::string&);
-template const glm::ivec2& Config :: get<glm::ivec2>   (const std::string&, const glm::ivec2&);
+template const glm::ivec2& Config :: get<glm::ivec2>   (const std::string&) const;
+template const glm::ivec2& Config :: get<glm::ivec2>   (const std::string&, const glm::ivec2&) const;
 template void              Config :: cache<glm::ivec2> (const std::string&, const glm::ivec2&);

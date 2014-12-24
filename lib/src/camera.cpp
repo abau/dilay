@@ -5,12 +5,13 @@
 #include "camera.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
-#include "opengl-util.hpp"
+#include "opengl.hpp"
 #include "primitive/ray.hpp"
 #include "renderer.hpp"
 
 struct Camera::Impl {
   Camera*      self;
+  Renderer&    renderer;
   glm::vec3    gazePoint;
   glm::vec3    toEyePoint;
   glm::vec3    up;
@@ -22,16 +23,20 @@ struct Camera::Impl {
   float        nearClipping;
   float        farClipping;
 
-  Impl (Camera* s) 
+  Impl (Camera* s, const Config& config, Renderer& r) 
     : self         (s)
+    , renderer     (r)
     , resolution   ( 1024, 768 )
-    , nearClipping ( Config::get <float> ("/config/editor/camera/near-clipping") )
-    , farClipping  ( Config::get <float> ("/config/editor/camera/far-clipping") ) {
+    , nearClipping ( config.get <float> ("/config/editor/camera/near-clipping") )
+    , farClipping  ( config.get <float> ("/config/editor/camera/far-clipping") ) {
 
-    this->set ( Config::get <glm::vec3> ("/config/editor/camera/gaze-point")
-              , Config::get <glm::vec3> ("/config/editor/camera/eye-point")
-              , Config::get <glm::vec3> ("/config/editor/camera/up")
+    this->set ( config.get <glm::vec3> ("/config/editor/camera/gaze-point")
+              , config.get <glm::vec3> ("/config/editor/camera/eye-point")
+              , config.get <glm::vec3> ("/config/editor/camera/up")
               , false);
+
+    this->updateView       ();
+    this->updateProjection ();
   }
 
   glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
@@ -48,11 +53,6 @@ struct Camera::Impl {
                           , glm::vec4 (p,1.0f));
   }
 
-  void initialize () {
-    this->updateView ();
-    this->updateProjection ();
-  }
-
   void updateResolution (const glm::uvec2& dimension) {
     this->resolution = dimension;
     this->updateProjection ();
@@ -65,8 +65,8 @@ struct Camera::Impl {
 
   void setModelViewProjection (const glm::mat4x4& model, bool noZoom) const {
     glm::mat4x4 mvp = this->modelViewProjection (model, noZoom);
-    Renderer :: setMvp   (&mvp  [0][0]);
-    Renderer :: setModel (&model[0][0]);
+    this->renderer.setMvp   (&mvp  [0][0]);
+    this->renderer.setModel (&model[0][0]);
   }
 
   void set (const glm::vec3& g, const glm::vec3& e, const glm::vec3& u, bool update = true) {
@@ -135,7 +135,7 @@ struct Camera::Impl {
   }
 
   void updateProjection () {
-    glViewport (0, 0, this->resolution.x, this->resolution.y);
+    OpenGL::glViewport (0, 0, this->resolution.x, this->resolution.y);
     this->projection = glm::perspective ( 
         glm::radians (45.0f)
       , float (this->resolution.x) / float (this->resolution.y)
@@ -148,8 +148,8 @@ struct Camera::Impl {
     this->viewNoZoom = glm::lookAt ( glm::normalize (this->toEyePoint)
                                    , glm::vec3 (0.0f)
                                    , this->up );
-    Renderer::setEyePoint  (this->eyePoint ());
-    Renderer::updateLights (*this->self);
+    this->renderer.setEyePoint  (this->eyePoint ());
+    this->renderer.updateLights (this->world    ());
   }
 
   glm::vec3 eyePoint () const {
@@ -168,9 +168,9 @@ struct Camera::Impl {
   }
 };
 
-DELEGATE_BIG6_SELF (Camera)
+DELEGATE2_BIG3_SELF (Camera, const Config&, Renderer&)
 
-DELEGATE        (void              , Camera, initialize)
+GETTER_CONST    (Renderer&         , Camera, renderer)
 GETTER_CONST    (const glm::uvec2& , Camera, resolution)
 GETTER_CONST    (const glm::vec3&  , Camera, gazePoint)
 GETTER_CONST    (const glm::vec3&  , Camera, toEyePoint)

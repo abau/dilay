@@ -39,7 +39,7 @@ struct ToolCarve::Impl {
   {
     this->setupProperties ();
     this->setupToolTip    ();
-    this->updateCursor    (State::mainWindow ().glWidget ().cursorPosition (), false);
+    this->updateCursor    (s->state ().mainWindow ().glWidget ().cursorPosition (), false);
   }
 
   void setupProperties () {
@@ -87,8 +87,8 @@ struct ToolCarve::Impl {
 
 
   bool updateCursor (const glm::ivec2& mouse, bool updateBrush) {
-    PrimRay                ray   = State::camera ().ray (mouse);
-    Scene&                 scene = State::scene ();
+    PrimRay                ray   = this->self->state ().camera ().ray (mouse);
+    Scene&                 scene = this->self->state ().scene ();
     WingedFaceIntersection intersection;
 
     if (   scene.intersects (ray, intersection) 
@@ -107,14 +107,16 @@ struct ToolCarve::Impl {
   }
 
   void runRender () {
-    this->cursor.render ();
+    this->cursor.render (this->self->state ().camera ());
   }
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     const bool doCarve = e.buttons () == Qt::LeftButton;
     if (this->updateCursor (ViewUtil::toIVec2 (e), doCarve)) {
-      State::history ().add <ActionCarve, WingedMesh> (this->brush.mesh ())
-                       .run (this->brush);
+      this->self->state ().history ()
+                          .add <ActionCarve, WingedMesh> ( this->self->state ().scene ()
+                                                         , this->brush.mesh () )
+                          .run (this->brush);
     }
     return ToolResponse::Redraw;
   }

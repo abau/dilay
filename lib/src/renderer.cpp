@@ -1,21 +1,19 @@
-#include <stdexcept>
 #include <glm/glm.hpp>
-#include "renderer.hpp"
-#include "config.hpp"
-#include "opengl-util.hpp"
-#include "render-mode.hpp"
 #include "color.hpp"
+#include "config.hpp"
 #include "macro.hpp"
-#include "camera.hpp"
+#include "opengl.hpp"
+#include "render-mode.hpp"
+#include "renderer.hpp"
 #include "shader.hpp"
 
 namespace {
   const unsigned int numLights = 2;
 
   struct LightIds {
-    GLuint positionId;
-    GLuint colorId;
-    GLuint irradianceId;
+    int positionId;
+    int colorId;
+    int irradianceId;
 
     LightIds () {
       this->positionId   = 0;
@@ -25,13 +23,13 @@ namespace {
   };
 
   struct ShaderIds {
-    GLuint   programId;
-    GLuint   mvpId;
-    GLuint   modelId;
-    GLuint   colorId;
-    GLuint   ambientId;
-    GLuint   eyePointId;
-    LightIds lightIds [numLights];
+    unsigned int programId;
+    int          mvpId;
+    int          modelId;
+    int          colorId;
+    int          ambientId;
+    int          eyePointId;
+    LightIds     lightIds [numLights];
 
     ShaderIds () {
       this->programId  = 0;
@@ -61,123 +59,106 @@ struct Renderer::Impl {
   ShaderIds*     activeShaderIndex;
   GlobalUniforms globalUniforms;
   Color          clearColor;
+  glm::vec3      light1LocalPos;
+  glm::vec3      light2LocalPos;
 
-  Impl () : activeShaderIndex (nullptr) {}
+  Impl (const Config& config) : activeShaderIndex (nullptr) {
+    this->runFromConfig (config);
 
-  void initialize () {
-    static bool isInitialized = false;
+    this->shaderIds [static_cast <int> (RenderMode::SmoothShaded)].programId =
+      OpenGL::loadProgram ( Shader::smoothVertexShader   ()
+                          , Shader::smoothFragmentShader ()
+                          );
+    this->shaderIds [static_cast <int> (RenderMode::Wireframe)].programId =
+      OpenGL::loadProgram ( Shader::simpleVertexShader   ()
+                          , Shader::simpleFragmentShader ()
+                          );
+    this->shaderIds [static_cast <int> (RenderMode::FlatShaded)].programId =
+      OpenGL::loadProgram ( Shader::flatVertexShader   ()
+                          , Shader::flatFragmentShader ()
+                          );
+    this->shaderIds [static_cast <int> (RenderMode::Color)].programId =
+      OpenGL::loadProgram ( Shader::simpleVertexShader   ()
+                          , Shader::simpleFragmentShader ()
+                          );
 
-    if ( ! isInitialized ) {
-      GLenum err = glewInit ();
-      if (err  != GLEW_OK ) {
-        std::string e1 = std::string ("Error while initializing glew: ");
-        std::string e2 = std::string ((const char*)glewGetErrorString (err));
-        throw (std::runtime_error (e1 + e2));
-      }
-
-      this->clearColor = Config::get<Color> ("/config/editor/background");
-
-      this->shaderIds [static_cast <int> (RenderMode::SmoothShaded)].programId =
-        OpenGLUtil :: loadProgram ( Shader::smoothVertexShader   ()
-                                  , Shader::smoothFragmentShader ()
-                                  );
-      this->shaderIds [static_cast <int> (RenderMode::Wireframe)].programId =
-        OpenGLUtil :: loadProgram ( Shader::simpleVertexShader   ()
-                                  , Shader::simpleFragmentShader ()
-                                  );
-      this->shaderIds [static_cast <int> (RenderMode::FlatShaded)].programId =
-        OpenGLUtil :: loadProgram ( Shader::flatVertexShader   ()
-                                  , Shader::flatFragmentShader ()
-                                  );
-      this->shaderIds [static_cast <int> (RenderMode::Color)].programId =
-        OpenGLUtil :: loadProgram ( Shader::simpleVertexShader   ()
-                                  , Shader::simpleFragmentShader ()
-                                  );
-
-      for (unsigned int i = 0; i < RenderModeUtil :: numRenderModes; i++) {
-        ShaderIds *s                = &this->shaderIds [i];
-        GLuint     p                = s->programId;
-        s->mvpId                    = glGetUniformLocation (p, "mvp");
-        s->modelId                  = glGetUniformLocation (p, "model");
-        s->colorId                  = glGetUniformLocation (p, "color");
-        s->ambientId                = glGetUniformLocation (p, "ambient");
-        s->eyePointId               = glGetUniformLocation (p, "eyePoint");
-        s->lightIds[0].positionId   = glGetUniformLocation (p, "light1Position");
-        s->lightIds[0].colorId      = glGetUniformLocation (p, "light1Color");
-        s->lightIds[0].irradianceId = glGetUniformLocation (p, "light1Irradiance");
-        s->lightIds[1].positionId   = glGetUniformLocation (p, "light2Position");
-        s->lightIds[1].colorId      = glGetUniformLocation (p, "light2Color");
-        s->lightIds[1].irradianceId = glGetUniformLocation (p, "light2Irradiance");
-      }
-
-      this->setAmbient         (  Config::get<Color>     ("/config/editor/light/ambient"));
-      this->setLightPosition   (0,Config::get<glm::vec3> ("/config/editor/light/light1/position"));
-      this->setLightColor      (0,Config::get<Color>     ("/config/editor/light/light1/color"));
-      this->setLightIrradiance (0,Config::get<float>     ("/config/editor/light/light1/irradiance"));
-      this->setLightPosition   (1,Config::get<glm::vec3> ("/config/editor/light/light2/position"));
-      this->setLightColor      (1,Config::get<Color>     ("/config/editor/light/light2/color"));
-      this->setLightIrradiance (1,Config::get<float>     ("/config/editor/light/light2/irradiance"));
-
-      isInitialized = true;
+    for (unsigned int i = 0; i < RenderModeUtil :: numRenderModes; i++) {
+      ShaderIds    *s             = &this->shaderIds [i];
+      unsigned int p              = s->programId;
+      s->mvpId                    = OpenGL::glGetUniformLocation (p, "mvp");
+      s->modelId                  = OpenGL::glGetUniformLocation (p, "model");
+      s->colorId                  = OpenGL::glGetUniformLocation (p, "color");
+      s->ambientId                = OpenGL::glGetUniformLocation (p, "ambient");
+      s->eyePointId               = OpenGL::glGetUniformLocation (p, "eyePoint");
+      s->lightIds[0].positionId   = OpenGL::glGetUniformLocation (p, "light1Position");
+      s->lightIds[0].colorId      = OpenGL::glGetUniformLocation (p, "light1Color");
+      s->lightIds[0].irradianceId = OpenGL::glGetUniformLocation (p, "light1Irradiance");
+      s->lightIds[1].positionId   = OpenGL::glGetUniformLocation (p, "light2Position");
+      s->lightIds[1].colorId      = OpenGL::glGetUniformLocation (p, "light2Color");
+      s->lightIds[1].irradianceId = OpenGL::glGetUniformLocation (p, "light2Irradiance");
     }
   }
 
-  void shutdown () {
-    for (unsigned int rm = 0; rm < RenderModeUtil :: numRenderModes; rm++)
-      OpenGLUtil :: safeDeleteProgram (this->shaderIds[rm].programId);
+  ~Impl () {
+    for (unsigned int rm = 0; rm < RenderModeUtil :: numRenderModes; rm++) {
+      OpenGL::safeDeleteProgram (this->shaderIds[rm].programId);
+    }
   }
 
-  void renderInitialize () {
-    glClearColor ( this->clearColor.r ()
-                 , this->clearColor.g ()
-                 , this->clearColor.b (), 0.0f);
+  void setupRendering () {
+    OpenGL::glClearColor ( this->clearColor.r ()
+                         , this->clearColor.g ()
+                         , this->clearColor.b (), 0.0f);
         
-    glDepthFunc (GL_LEQUAL); 
-    glEnable    (GL_CULL_FACE);
-    glEnable    (GL_DEPTH_TEST); 
-    glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    OpenGL::glFrontFace (OpenGL::CCW       ());
+    OpenGL::glEnable    (OpenGL::CullFace  ());
+    OpenGL::glCullFace  (OpenGL::Back      ());
+    OpenGL::glEnable    (OpenGL::DepthTest ()); 
+    OpenGL::glDepthFunc (OpenGL::LEqual    ()); 
+    OpenGL::glClear     ( OpenGL::ColorBufferBit ()
+                        | OpenGL::DepthBufferBit () );
   }
 
   void setProgram (const RenderMode& renderMode) {
     this->activeShaderIndex = &this->shaderIds[static_cast <int> (renderMode)];
-    glUseProgram (this->activeShaderIndex->programId);
+    OpenGL::glUseProgram (this->activeShaderIndex->programId);
 
-    OpenGLUtil :: glUniformVec3 
+    OpenGL::glUniformVec3 
       (this->activeShaderIndex->ambientId, this->globalUniforms.ambient.vec3 ());
 
-    OpenGLUtil :: glUniformVec3 
+    OpenGL::glUniformVec3 
       (this->activeShaderIndex->eyePointId, this->globalUniforms.eyePoint);
 
     for (unsigned int i = 0; i < numLights; i++) {
-      OpenGLUtil :: glUniformVec3 
+      OpenGL::glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].positionId
         , this->globalUniforms.lightUniforms[i].position);
-      OpenGLUtil :: glUniformVec3 
+      OpenGL::glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].colorId
         , this->globalUniforms.lightUniforms[i].color.vec3 ());
-      glUniform1f ( this->activeShaderIndex->lightIds[i].irradianceId
-                  , this->globalUniforms.lightUniforms[i].irradiance);
+      OpenGL::glUniform1f ( this->activeShaderIndex->lightIds[i].irradianceId
+                          , this->globalUniforms.lightUniforms[i].irradiance );
     }
   }
 
-  void setMvp (const GLfloat* mvp) {
+  void setMvp (const float* mvp) {
     assert (this->activeShaderIndex);
-    glUniformMatrix4fv (this->activeShaderIndex->mvpId, 1, GL_FALSE, mvp);
+    OpenGL::glUniformMatrix4fv (this->activeShaderIndex->mvpId, 1, false, mvp);
   }
 
-  void setModel (const GLfloat* model) {
+  void setModel (const float* model) {
     assert (this->activeShaderIndex);
-    glUniformMatrix4fv (this->activeShaderIndex->modelId, 1, GL_FALSE, model);
+    OpenGL::glUniformMatrix4fv (this->activeShaderIndex->modelId, 1, false, model);
   }
 
   void setColor3 (const Color& c) {
     assert (this->activeShaderIndex);
-    OpenGLUtil :: glUniformVec3 (this->activeShaderIndex->colorId, c.vec3 ());
+    OpenGL::glUniformVec3 (this->activeShaderIndex->colorId, c.vec3 ());
   }
 
   void setColor4 (const Color& c) {
     assert (this->activeShaderIndex);
-    OpenGLUtil :: glUniformVec4 (this->activeShaderIndex->colorId, c.vec4 ());
+    OpenGL::glUniformVec4 (this->activeShaderIndex->colorId, c.vec4 ());
   }
 
   void setAmbient (const Color& c) {
@@ -203,31 +184,40 @@ struct Renderer::Impl {
     this->globalUniforms.lightUniforms[i].irradiance = irr;
   }
 
-  void updateLights (const Camera& camera) {
-    glm::mat3x3 world = glm::mat3x3 (camera.world ());
-    glm::vec3   pos1  = Config::get<glm::vec3> ("/config/editor/light/light1/position");
-    glm::vec3   pos2  = Config::get<glm::vec3> ("/config/editor/light/light2/position");
+  void updateLights (const glm::mat4x4& world) {
+    const glm::mat3x3 w (world);
 
-    this->setLightPosition (0, world * pos1);
-    this->setLightPosition (1, world * pos2);
+    this->setLightPosition (0, w * this->light1LocalPos);
+    this->setLightPosition (1, w * this->light2LocalPos);
+  }
+
+  void runFromConfig (const Config& config) {
+    this->clearColor     = config.get<Color>     ("/config/editor/background");
+    this->light1LocalPos = config.get<glm::vec3> ("/config/editor/light/light1/position");
+    this->light2LocalPos = config.get<glm::vec3> ("/config/editor/light/light2/position");
+
+    this->setAmbient         (   config.get<Color>     ("/config/editor/light/ambient"));
+    this->setLightPosition   (0, this->light1LocalPos);
+    this->setLightColor      (0, config.get<Color>     ("/config/editor/light/light1/color"));
+    this->setLightIrradiance (0, config.get<float>     ("/config/editor/light/light1/irradiance"));
+    this->setLightPosition   (1, this->light2LocalPos);
+    this->setLightColor      (1, config.get<Color>     ("/config/editor/light/light2/color"));
+    this->setLightIrradiance (1, config.get<float>     ("/config/editor/light/light2/irradiance"));
   }
 };
 
-GLOBAL                (Renderer)
-DELEGATE_CONSTRUCTOR  (Renderer)
-DELEGATE_DESTRUCTOR   (Renderer)
+DELEGATE1_BIG3 (Renderer, const Config&)
 
-DELEGATE_GLOBAL  (void,Renderer,initialize)
-DELEGATE_GLOBAL  (void,Renderer,shutdown)
-DELEGATE_GLOBAL  (void,Renderer,renderInitialize)
-DELEGATE1_GLOBAL (void,Renderer,setProgram        ,const RenderMode&)
-DELEGATE1_GLOBAL (void,Renderer,setMvp            ,const GLfloat*)
-DELEGATE1_GLOBAL (void,Renderer,setModel          ,const GLfloat*)
-DELEGATE1_GLOBAL (void,Renderer,setColor3         ,const Color&)
-DELEGATE1_GLOBAL (void,Renderer,setColor4         ,const Color&)
-DELEGATE1_GLOBAL (void,Renderer,setAmbient        ,const Color&)
-DELEGATE1_GLOBAL (void,Renderer,setEyePoint       ,const glm::vec3&)
-DELEGATE2_GLOBAL (void,Renderer,setLightPosition  ,unsigned int, const glm::vec3&)
-DELEGATE2_GLOBAL (void,Renderer,setLightColor     ,unsigned int, const Color&)
-DELEGATE2_GLOBAL (void,Renderer,setLightIrradiance,unsigned int, float)
-DELEGATE1_GLOBAL (void,Renderer,updateLights      ,const Camera&)
+DELEGATE  (void, Renderer, setupRendering)
+DELEGATE1 (void, Renderer, setProgram        , const RenderMode&)
+DELEGATE1 (void, Renderer, setMvp            , const float*)
+DELEGATE1 (void, Renderer, setModel          , const float*)
+DELEGATE1 (void, Renderer, setColor3         , const Color&)
+DELEGATE1 (void, Renderer, setColor4         , const Color&)
+DELEGATE1 (void, Renderer, setAmbient        , const Color&)
+DELEGATE1 (void, Renderer, setEyePoint       , const glm::vec3&)
+DELEGATE2 (void, Renderer, setLightPosition  , unsigned int, const glm::vec3&)
+DELEGATE2 (void, Renderer, setLightColor     , unsigned int, const Color&)
+DELEGATE2 (void, Renderer, setLightIrradiance, unsigned int, float)
+DELEGATE1 (void, Renderer, updateLights      , const glm::mat4x4&)
+DELEGATE1 (void, Renderer, runFromConfig     , const Config&)

@@ -12,9 +12,9 @@ struct ViewMainWindow :: Impl {
   QLabel&         messageLabel;
   QLabel&         numSelectionsLabel;
 
-  Impl (ViewMainWindow* s) 
+  Impl (ViewMainWindow* s, Config& config) 
     : self               (s) 
-    , mainWidget         (*new ViewMainWidget (*this->self))
+    , mainWidget         (*new ViewMainWidget (*this->self, config))
     , statusBar          (*new QToolBar       ())
     , messageLabel       (*new QLabel         ())
     , numSelectionsLabel (*new QLabel         ())
@@ -63,7 +63,7 @@ struct ViewMainWindow :: Impl {
   }
 };
 
-DELEGATE_BIG3_SELF (ViewMainWindow)
+DELEGATE1_BIG3_SELF (ViewMainWindow, Config&)
 DELEGATE  (ViewGlWidget&        , ViewMainWindow, glWidget)
 DELEGATE  (ViewPropertiesWidget&, ViewMainWindow, properties)
 DELEGATE1 (void                 , ViewMainWindow, showMessage, const QString&)

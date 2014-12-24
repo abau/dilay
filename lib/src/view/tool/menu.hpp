@@ -9,8 +9,9 @@
 
 class ViewToolMenu : public QMenu {
   public:
-    DECLARE_BIG3 (ViewToolMenu, const glm::ivec2&)
+    DECLARE_BIG3 (ViewToolMenu, State&, const glm::ivec2&)
 
+    State&                 state          () const;
     ViewToolMenuParameters menuParameters (const QString&) const;
     void                   addSeparator   ();
 
@@ -18,7 +19,7 @@ class ViewToolMenu : public QMenu {
     void addAction (const QString& label) {
       QAction* a = this->QMenu::addAction (label);
       QObject::connect (a, &QAction::triggered, [this, label] () { 
-          State::setTool (new T (this->menuParameters (label)));
+          this->state ().setTool (new T (this->menuParameters (label)));
       });
     }
 

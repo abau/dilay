@@ -22,20 +22,20 @@ struct Tool::Impl {
   Impl (Tool* s, const ViewToolMenuParameters& p, const std::string& key) 
     : self           (s) 
     , menuParameters (p)
-    , config         ("/cache/tool/" + key + "/")
+    , config         (p.state ().config (), "/cache/tool/" + key + "/")
   {
     QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
     this->properties ().setFooter (close);
 
     QObject::connect (&close, &QPushButton::clicked, [this] () {
       this->close ();
-      State::setTool (nullptr);
+      this->state ().setTool (nullptr);
     });
     this->resetToolTip ();
   }
 
   void showToolTip () {
-    State::mainWindow ().showToolTip (this->toolTip);
+    this->state ().mainWindow ().showToolTip (this->toolTip);
   }
 
   ToolResponse initialize () { 
@@ -77,12 +77,16 @@ struct Tool::Impl {
     return this->self->runClose (); 
   }
 
+  State& state () {
+    return this->menuParameters.state ();
+  }
+
   void updateGlWidget () {
-    State::mainWindow ().glWidget ().update ();
+    this->state ().mainWindow ().glWidget ().update ();
   }
 
   ViewProperties& properties () {
-    return State::mainWindow ().properties ().tool ();
+    return this->state ().mainWindow ().properties ().tool ();
   }
 
   void resetToolTip () {
@@ -101,6 +105,7 @@ DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEven
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
 DELEGATE       (void                         , Tool, close)
+DELEGATE       (State&                       , Tool, state)
 DELEGATE       (void                         , Tool, updateGlWidget)
 DELEGATE       (ViewProperties&              , Tool, properties)
 GETTER         (ViewToolTip&                 , Tool, toolTip)

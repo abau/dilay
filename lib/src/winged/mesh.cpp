@@ -4,6 +4,7 @@
 #include "../util.hpp"
 #include "adjacent-iterator.hpp"
 #include "config.hpp"
+#include "color.hpp"
 #include "indexable.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
@@ -23,11 +24,13 @@ struct WingedMesh::Impl {
   IndexableList <WingedVertex> vertices;
   IndexableList <WingedEdge>   edges;
   Octree                       octree;
+  Color                        colorNormal; 
+  Color                        colorSelection; 
 
   Impl (WingedMesh* s, unsigned int i) 
     : self   (s)
     , _index (i)
-    {}
+  {}
 
   unsigned int index  ()               const { return this->_index;          }
   glm::vec3    vector (unsigned int i) const { return this->mesh.vertex (i); }
@@ -196,16 +199,16 @@ struct WingedMesh::Impl {
     this->mesh.bufferData (); 
   }
 
-  void render (bool isSelected) { 
+  void render (const Camera& camera, bool isSelected) { 
     if (isSelected) {
-      this->mesh.color (Config::get <Color> ("/config/editor/selection/color"));
+      this->mesh.color (this->colorSelection);
     }
     else {
-      this->mesh.color (Config::get <Color> ("/config/editor/mesh/color/normal"));
+      this->mesh.color (this->colorNormal);
     }
-    this->mesh.render   (); 
+    this->mesh.render   (camera); 
 #ifdef DILAY_RENDER_OCTREE
-    this->octree.render ();
+    this->octree.render (camera);
 #endif
   }
 
@@ -277,9 +280,15 @@ struct WingedMesh::Impl {
   void forEachEdge (const std::function <void (WingedEdge&)>& f) const {
     this->edges.forEachElement (f);
   }
+
+  void runFromConfig (const ConfigProxy& config) {
+    this->colorNormal    = config.get <Color> ("color/normal");
+    this->colorSelection = config.get <Color> ("color/selection");
+    this->mesh.wireframeColor (config.get <Color> ("color/wireframe"));
+  }
 };
 
-DELEGATE1_BIG3_SELF        (WingedMesh, unsigned int)
+DELEGATE1_BIG3_SELF (WingedMesh, unsigned int)
 
 DELEGATE_CONST  (unsigned int   , WingedMesh, index)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vector, unsigned int)
@@ -317,7 +326,7 @@ DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 DELEGATE        (void, WingedMesh, writeAllIndices)
 DELEGATE        (void, WingedMesh, writeAllNormals)
 DELEGATE        (void, WingedMesh, bufferData)
-DELEGATE1       (void, WingedMesh, render, bool)
+DELEGATE2       (void, WingedMesh, render, const Camera&, bool)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
@@ -339,3 +348,4 @@ DELEGATE1       (void              , WingedMesh, rotationZ, float)
 DELEGATE        (void              , WingedMesh, normalize)
 DELEGATE1_CONST (void              , WingedMesh, forEachVertex, const std::function <void (WingedVertex&)>&)
 DELEGATE1_CONST (void              , WingedMesh, forEachEdge  , const std::function <void (WingedEdge&)>&)
+DELEGATE1       (void              , WingedMesh, runFromConfig, const ConfigProxy&);

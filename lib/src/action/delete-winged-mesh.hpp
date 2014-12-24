@@ -4,13 +4,14 @@
 #include "action.hpp"
 #include "macro.hpp"
 
+class Scene;
 class WingedMesh;
 
 class ActionDeleteWMesh : public Action {
   public: 
     DECLARE_BIG3 (ActionDeleteWMesh)
 
-    void run (WingedMesh&);
+    void run (Scene&, WingedMesh&);
 
   private:
     void runUndo () const;

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <list>
+#include "config.hpp"
 #include "indexable.hpp"
 #include "macro.hpp"
 #include "primitive/ray.hpp"
@@ -12,16 +13,25 @@
 #include "winged/util.hpp"
 
 struct Scene :: Impl {
+  const ConfigProxy          wingedMeshConfig;
   IndexableList <WingedMesh> wingedMeshes;
   Selection                  selection;
   SelectionMode              selectionMode;
 
+  Impl (const ConfigProxy& wmConfig)
+    : wingedMeshConfig (wmConfig)
+  {}
+
   WingedMesh& newWingedMesh () {
-    return this->wingedMeshes.emplace ();
+    WingedMesh& mesh = this->wingedMeshes.emplace ();
+    mesh.fromConfig (this->wingedMeshConfig);
+    return mesh;
   }
 
   WingedMesh& newWingedMesh (unsigned int index) {
-    return this->wingedMeshes.emplaceAt (index);
+    WingedMesh& mesh = this->wingedMeshes.emplaceAt (index);
+    mesh.fromConfig (this->wingedMeshConfig);
+    return mesh;
   }
 
   void deleteMesh (WingedMesh& mesh) {
@@ -126,9 +136,9 @@ WingedMesh* Scene::mesh <WingedMesh> (unsigned int index) const {
 }
 
 template <> 
-void Scene::render <WingedMesh> () {
-  this->forEachMesh ([this] (WingedMesh& m) {
-    m.render (this->selection ().hasMajor (m.index ()));
+void Scene::render <WingedMesh> (const Camera& camera) {
+  this->forEachMesh ([this, &camera] (WingedMesh& m) {
+    m.render (camera, this->selection ().hasMajor (m.index ()));
   });
 }
 
@@ -139,7 +149,7 @@ void Scene::toggleRenderMode <WingedMesh> () {
   });
 }
 
-DELEGATE_BIG3 (Scene)
+DELEGATE1_BIG3 (Scene, const ConfigProxy&)
 
 DELEGATE        (WingedMesh&      , Scene, newWingedMesh)
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, unsigned int)

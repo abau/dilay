@@ -2,20 +2,25 @@
 #define DILAY_TOOL_MOVE_CAMERA
 
 #include <glm/fwd.hpp>
+#include "configurable.hpp"
 
+class Config;
+class State;
 class QMouseEvent;
 class QWheelEvent;
 
-class ToolMoveCamera {
+class ToolMoveCamera : public Configurable {
   public:
-    DECLARE_BIG3 (ToolMoveCamera)
+    DECLARE_BIG3 (ToolMoveCamera, const Config&)
 
-    void mouseMoveEvent    (QMouseEvent&);
-    void mousePressEvent   (QMouseEvent&);
-    void wheelEvent        (QWheelEvent&);
+    void mouseMoveEvent  (State&, QMouseEvent&);
+    void mousePressEvent (State&, QMouseEvent&);
+    void wheelEvent      (State&, QWheelEvent&);
 
   private:
     IMPLEMENTATION
+
+    void runFromConfig (const Config&);
 };
 
 #endif

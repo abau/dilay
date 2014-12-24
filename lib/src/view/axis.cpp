@@ -8,6 +8,7 @@
 #include "macro.hpp"
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
+#include "opengl.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
 #include "state.hpp"
@@ -22,12 +23,11 @@ struct ViewAxis::Impl {
   Color        axisLabelColor;
   unsigned int gridResolution;
 
-  void initialize () {
+  Impl (const Config& config) {
+    this->runFromConfig (config);
+
     this->axisResolution = glm::uvec2 (200,200);
     this->gridResolution = 6;
-
-    this->axisLabelColor = Config::get <Color> ("/config/editor/axis/color/label");
-    this->axisColor      = Config::get <Color> ("/config/editor/axis/color/normal");
 
     this->coneMesh       = Mesh (MeshDefinition::cone     (10));
     this->cylinderMesh   = Mesh (MeshDefinition::cylinder (10));
@@ -67,45 +67,45 @@ struct ViewAxis::Impl {
     this->gridMesh.bufferData ();
   }
 
-  void render () {
-    glClear(GL_DEPTH_BUFFER_BIT);
+  void render (Camera& camera) {
+    OpenGL::glClear (OpenGL::DepthBufferBit ());
 
-    glm::uvec2 resolution = State::camera ().resolution ();
-    State::camera ().updateResolution (glm::uvec2(200,200));
+    glm::uvec2 resolution = camera.resolution ();
+    camera.updateResolution (glm::uvec2 (200,200));
 
     this->cylinderMesh.position       (glm::vec3 (0.0f, 0.15f, 0.0f));
     this->cylinderMesh.rotationMatrix (glm::mat4x4 (1.0f));
-    this->cylinderMesh.render         (true);
+    this->cylinderMesh.render         (camera, true);
 
     this->cylinderMesh.position       (glm::vec3 (0.15f, 0.0f, 0.0f));
     this->cylinderMesh.rotationZ      (0.5f * glm::pi<float> ());
-    this->cylinderMesh.render         (true);
+    this->cylinderMesh.render         (camera, true);
 
     this->cylinderMesh.position       (glm::vec3 (0.0f, 0.0f, 0.15f));
     this->cylinderMesh.rotationX      (0.5f * glm::pi<float> ());
-    this->cylinderMesh.render         (true);
+    this->cylinderMesh.render         (camera, true);
 
     this->coneMesh.position           (glm::vec3 (0.0f, 0.3f, 0.0f));
     this->coneMesh.rotationMatrix     (glm::mat4x4 (1.0f));
-    this->coneMesh.render             (true);
+    this->coneMesh.render             (camera, true);
 
     this->coneMesh.position           (glm::vec3 (0.3f, 0.0f, 0.0f));
     this->coneMesh.rotationZ          (- 0.5f * glm::pi<float> ());
-    this->coneMesh.render             (true);
+    this->coneMesh.render             (camera, true);
 
     this->coneMesh.position           (glm::vec3 (0.0f, 0.0f, 0.3f));
     this->coneMesh.rotationX          (0.5f * glm::pi<float> ());
-    this->coneMesh.render             (true);
+    this->coneMesh.render             (camera, true);
 
-    this->renderGrid                  ();
+    this->renderGrid                  (camera);
 
-    State::camera ().updateResolution (resolution);
+    camera.updateResolution (resolution);
   }
 
-  void renderGrid () {
+  void renderGrid (const Camera& camera) {
     unsigned int numLines = (this->gridResolution - 1) * (this->gridResolution - 1) * 4;
 
-    switch (State::camera ().primaryDimension ()) {
+    switch (camera.primaryDimension ()) {
       case Dimension::X:
         this->gridMesh.rotationY (- 0.5f * glm::pi<float> ());
         break;
@@ -117,29 +117,31 @@ struct ViewAxis::Impl {
         break;
     }
 
-    this->gridMesh.renderBegin (true);
+    this->gridMesh.renderBegin (camera, true);
 
-    Renderer::setColor3 (this->axisColor);
-    glDrawElements (GL_LINES, numLines, GL_UNSIGNED_INT, (GLvoid*)0);
+    camera.renderer ().setColor3 (this->axisColor);
+    OpenGL::glDrawElements (OpenGL::Lines (), numLines, OpenGL::UnsignedInt (), (void*)0);
 
     this->gridMesh.renderEnd ();
   }
 
-  void render (QPainter& painter) {
+  void render (Camera& camera, QPainter& painter) {
     this->coneMesh.rotationMatrix (glm::mat4x4 (1.0f));
 
     QFont        font       = this->makeFont ();
     QFontMetrics metrics (font); 
     int          w          = glm::max (metrics.maxWidth (), metrics.height ());
-    glm::uvec2   resolution = State::camera ().resolution ();
-    State::camera ().updateResolution (this->axisResolution);
+    glm::uvec2   resolution = camera.resolution ();
+    camera.updateResolution (this->axisResolution);
 
-    auto f = [this,&resolution,&painter,w] (const glm::vec3& p, const QString& l) {
+    auto f = [this, &resolution, &painter, w, &camera] 
+             (const glm::vec3& p, const QString& l) 
+    {
       this->coneMesh.position (p);
 
-      glm::ivec2 pos = State::camera ().fromWorld ( glm::vec3 (0.0f)
-                                                  , this->coneMesh.modelMatrix ()
-                                                  , true);
+      glm::ivec2 pos = camera.fromWorld ( glm::vec3 (0.0f)
+                                        , this->coneMesh.modelMatrix ()
+                                        , true);
       QRect rect ( pos.x - (w / 2)
                  , resolution.y - this->axisResolution.y + pos.y - (w / 2)
                  , w, w );
@@ -154,7 +156,7 @@ struct ViewAxis::Impl {
     f (glm::vec3 (0.0f , 0.35f, 0.0f ), "Y");
     f (glm::vec3 (0.0f , 0.0f , 0.35f), "Z");
 
-    State :: camera ().updateResolution (resolution);
+    camera.updateResolution (resolution);
   }
 
   QFont makeFont () {
@@ -162,9 +164,14 @@ struct ViewAxis::Impl {
     font.setWeight (QFont::Bold);
     return font;
   }
+
+  void runFromConfig (const Config& config) {
+    this->axisLabelColor = config.get <Color> ("/config/editor/axis/color/label");
+    this->axisColor      = config.get <Color> ("/config/editor/axis/color/normal");
+  }
 };
 
-DELEGATE_BIG3 (ViewAxis)
-DELEGATE      (void, ViewAxis, initialize)
-DELEGATE      (void, ViewAxis, render)
-DELEGATE1     (void, ViewAxis, render, QPainter&)
+DELEGATE1_BIG3 (ViewAxis, const Config&)
+DELEGATE1 (void, ViewAxis, render, Camera&)
+DELEGATE2 (void, ViewAxis, render, Camera&, QPainter&)
+DELEGATE1 (void, ViewAxis, runFromConfig, const Config&)

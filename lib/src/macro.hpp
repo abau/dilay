@@ -199,30 +199,6 @@
 #define DELEGATE5_STATIC(r,from,method,t1,t2,t3,t4,t5) \
   DELEGATE_BASE_STATIC (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
 
-#define GLOBAL(from) \
-  from & from :: global () { static from g; return g; }
-
-#define DELEGATE_BASE_GLOBAL(r,from,method,ifaceParams,implArgs) \
-  r from :: method ifaceParams { return from :: global ().impl-> method implArgs ; }
-
-#define DELEGATE_GLOBAL(r,from,method) \
-  DELEGATE_BASE_GLOBAL (r,from,method,(),())
-
-#define DELEGATE1_GLOBAL(r,from,method,t1) \
-  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1),(a1))
-
-#define DELEGATE2_GLOBAL(r,from,method,t1,t2) \
-  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2),(a1,a2))
-
-#define DELEGATE3_GLOBAL(r,from,method,t1,t2,t3) \
-  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3),(a1,a2,a3))
-
-#define DELEGATE4_GLOBAL(r,from,method,t1,t2,t3,t4) \
-  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4),(a1,a2,a3,a4))
-
-#define DELEGATE5_GLOBAL(r,from,method,t1,t2,t3,t4,t5) \
-  DELEGATE_BASE_GLOBAL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
-
 // big 2 delegators
 
 #define DELEGATE_BIG2(from) \
@@ -512,18 +488,6 @@
 
 #define SETTER(t,from,member) \
   void from :: member (t a) { this->impl-> member = a; }
-
-#define GETTER_CONST_GLOBAL(r,from,member) \
-  r from :: member () const { \
-    return from :: global ().impl-> member ; }
-
-#define GETTER_GLOBAL(r,from,member) \
-  r from :: member () { \
-    return from :: global ().impl-> member ; }
-
-#define SETTER_GLOBAL(t,from,member) \
-  void from :: member (t a) { \
-    from :: global ().impl -> member = a; }
 
 // safe references
 

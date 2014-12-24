@@ -5,6 +5,7 @@
 
 class Action;
 class ActionUnit;
+class Scene;
 class WingedMesh;
 
 class History {
@@ -19,9 +20,9 @@ class History {
     }
 
     template <typename A, typename T>
-    A& add (T& t) { 
+    A& add (Scene& scene, T& t) { 
       A* action = new A ();
-      this->addAction (new ActionTransformer <T> (t, action));
+      this->addAction (new ActionTransformer <T> (scene, t, action));
       return *action; 
     }
 

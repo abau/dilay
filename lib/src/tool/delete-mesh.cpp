@@ -16,24 +16,24 @@ struct ToolDeleteMesh::Impl {
   ToolResponse runInitialize () {
     ActionUnit unit;
 
-    switch (State::scene ().selectionMode ()) {
+    switch (this->self->state ().scene ().selectionMode ()) {
       case SelectionMode::WingedMesh:
         this->runDeleteWingedMesh (unit);
         break;
     }
 
     if (unit.isEmpty () == false) {
-      State::history ().addUnit     (std::move (unit));
-      State::scene   ().unselectAll ();
+      this->self->state ().history ().addUnit     (std::move (unit));
+      this->self->state ().scene   ().unselectAll ();
     }
     return ToolResponse::Terminate;
   }
 
   void runDeleteWingedMesh (ActionUnit& unit) {
-    State::scene ().selection ().forEachMajor ([this,&unit]
+    this->self->state ().scene ().selection ().forEachMajor ([this,&unit]
       (unsigned int index) {
-        WingedMesh& mesh = State::scene ().wingedMeshRef (index);
-        unit.add <ActionDeleteWMesh> ().run (mesh);
+        WingedMesh& mesh = this->self->state ().scene ().wingedMeshRef (index);
+        unit.add <ActionDeleteWMesh> ().run (this->self->state ().scene (), mesh);
       }
     );
   }

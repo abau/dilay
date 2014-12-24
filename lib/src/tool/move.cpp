@@ -36,8 +36,8 @@ struct ToolMove::Impl {
   Impl (ToolMove* s) 
     : self      (s) 
     , entities  (std::move (Impl::getEntities ()))
-    , movement  (MovementConstraint::CameraPlane)
-    , deltaEdit (*new ViewVectorEdit ("\u0394",glm::vec3 (0.0f)))
+    , movement  (s->state ().camera (), MovementConstraint::CameraPlane)
+    , deltaEdit (*new ViewVectorEdit ("\u0394", glm::vec3 (0.0f)))
   {
     this->setupProperties ();
     this->setupToolTip    ();
@@ -113,9 +113,9 @@ struct ToolMove::Impl {
     this->self->showToolTip ();
   }
 
-  static Entities getEntities () {
+  Entities getEntities () {
           Entities   entities;
-          Scene&     scene     = State::scene ();
+          Scene&     scene     = this->self->state ().scene ();
     const Selection& selection = scene.selection ();
 
     switch (scene.selectionMode ()) {
@@ -148,12 +148,13 @@ struct ToolMove::Impl {
 
     this->entities.caseOf <void> ([this,&unit] (MeshPtrList& ms) {
       for (WingedMesh* m : ms) {
-        unit.add <ActionModifyWMesh> (*m).translate (*m, this->movement.delta ());
+        unit.add <ActionModifyWMesh> (this->self->state ().scene (), *m)
+            .translate (*m, this->movement.delta ());
       }
     });
 
     if (unit.isEmpty () == false) {
-      State::history ().addUnit (std::move (unit));
+      this->self->state ().history ().addUnit (std::move (unit));
     }
   }
 

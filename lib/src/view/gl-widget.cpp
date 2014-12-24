@@ -4,6 +4,7 @@
 #include <memory>
 #include "camera.hpp"
 #include "history.hpp"
+#include "opengl.hpp"
 #include "primitive/ray.hpp"
 #include "renderer.hpp"
 #include "scene.hpp"
@@ -22,20 +23,34 @@
 #include "view/util.hpp"
 
 struct ViewGlWidget::Impl {
+  typedef std::unique_ptr <State>    StatePtr;
+  typedef std::unique_ptr <ViewAxis> AxisPtr;
+
   ViewGlWidget*   self;
   ViewMainWindow& mainWindow;
-  ViewAxis        axis;
+  Config&         config;
   ToolMoveCamera  toolMoveCamera;
+  AxisPtr         axis;
+  StatePtr        state;
 
-  Impl (ViewGlWidget* s, ViewMainWindow& mW) 
-    : self       (s)
-    , mainWindow (mW) 
+  Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& c) 
+    : self           (s)
+    , mainWindow     (mW)
+    , config         (c)
+    , toolMoveCamera (c)
+    , axis           (nullptr)
+    , state          (nullptr)
   {
     this->self->setAutoFillBackground (false);
   }
 
   ~Impl () {
-    State::setTool (nullptr);
+    this->self->makeCurrent ();
+
+    this->axis .reset (nullptr);
+    this->state.reset (nullptr);
+
+    this->self->doneCurrent ();
   }
 
   glm::ivec2 cursorPosition () {
@@ -47,53 +62,44 @@ struct ViewGlWidget::Impl {
   }
 
   void selectIntersection (const glm::ivec2& pos) {
-    if (State::scene ().selectIntersection (State::camera ().ray (pos))) {
-      this->mainWindow.showNumSelections (State::scene ().numSelections ());
+    if (this->state->scene ().selectIntersection (this->state->camera ().ray (pos))) {
+      this->mainWindow.showNumSelections (this->state->scene ().numSelections ());
       this->self->update ();
     }
   }
 
   void initializeGL () {
-    Renderer::initialize ();
-    State   ::initialize (this->mainWindow);
+    OpenGL  ::initializeFunctions ();
 
-    this->axis.initialize        ();
+    this->axis .reset (new ViewAxis (this->config));
+    this->state.reset (new State (this->mainWindow, this->config));
+
     this->self->setMouseTracking (true);
     this->self->setFocus         ();
-
-    Renderer::updateLights (State::camera ());
 
     QObject::connect 
       ( &this->mainWindow.properties ().selection ()
       , &ViewPropertiesSelection::selectionModeChanged 
       , [this] (SelectionMode m) { 
-          State::scene ().changeSelectionMode (m);
-          this->mainWindow.showNumSelections (State::scene ().numSelections ());
+          this->state->scene ().changeSelectionMode (m);
+          this->mainWindow.showNumSelections (this->state->scene ().numSelections ());
           this->self->update (); 
       });
   }
 
-  void paintEvent (QPaintEvent*) {
-    this->self->makeCurrent ();
+  void paintGL () {
+    this->state->renderer ().setupRendering ();
+    this->state->scene    ().render <WingedMesh> (this->state->camera ());
 
-    Renderer::renderInitialize ();
-
-    State::scene ().render <WingedMesh> ();
-
-    if (State::hasTool ()) {
-      State::tool ().render ();
+    if (this->state->hasTool ()) {
+      this->state->tool ().render ();
     }
-    this->axis.render ();
-
-    QPainter painter (this->self);
-
-    this->axis.render (painter);
-
-    painter.end ();
+    this->axis->render (this->state->camera ());
+    //this->axis->render (this->state->camera (), painter);
   }
 
   void resizeGL (int w, int h) {
-    State::camera ().updateResolution (glm::uvec2 (w,h));
+    this->state->camera ().updateResolution (glm::uvec2 (w,h));
   }
 
   void keyPressEvent (QKeyEvent* e) {
@@ -101,32 +107,32 @@ struct ViewGlWidget::Impl {
     const Qt::KeyboardModifiers mod = e->modifiers ();
 
     if (key == Qt::Key_W) {
-      State :: scene ().toggleRenderMode <WingedMesh> ();
+      this->state->scene ().toggleRenderMode <WingedMesh> ();
       this->self->update ();
     }
     else if (key == Qt::Key_I) {
-      State::scene ().printStatistics (false);
+      this->state->scene ().printStatistics (false);
     }
-    else if (State::hasTool ()) {
+    else if (this->state->hasTool ()) {
       if (key == Qt::Key_Escape || key == Qt::Key_Enter) {
-        State::tool    ().close ();
-        State::setTool (nullptr);
-        this->self->update ();
+        this->state->tool    ().close ();
+        this->state->setTool (nullptr);
+        this->self->update   ();
       }
     }
     else if (key == Qt::Key_Escape) {
       QCoreApplication::instance()->quit();
     }
     else if (key == Qt::Key_Z && mod == Qt::ControlModifier) {
-      State::history ().undo ();
+      this->state->history ().undo ();
       this->self->update ();
     }
     else if (key == Qt::Key_Y && mod == Qt::ControlModifier) {
-      State::history ().redo ();
+      this->state->history ().redo ();
       this->self->update ();
     }
     else {
-      this->self->QGLWidget::keyPressEvent (e);
+      this->self->QOpenGLWidget::keyPressEvent (e);
     }
   }
 
@@ -134,25 +140,25 @@ struct ViewGlWidget::Impl {
     this->self->setFocus (Qt::MouseFocusReason);
 
     if (e->buttons () == Qt::MiddleButton) {
-      this->toolMoveCamera.mouseMoveEvent (*e);
+      this->toolMoveCamera.mouseMoveEvent (*this->state, *e);
     }
-    else if (State::hasTool ()) {
-      State::handleToolResponse (State::tool ().mouseMoveEvent (*e));
+    else if (this->state->hasTool ()) {
+      this->state->handleToolResponse (this->state->tool ().mouseMoveEvent (*e));
     }
   }
 
   void mousePressEvent (QMouseEvent* e) {
     if (e->button () == Qt::MiddleButton) {
-      this->toolMoveCamera.mousePressEvent (*e);
+      this->toolMoveCamera.mousePressEvent (*this->state, *e);
     }
-    else if (State::hasTool ()) {
-      State::handleToolResponse (State::tool ().mousePressEvent (*e));
+    else if (this->state->hasTool ()) {
+      this->state->handleToolResponse (this->state->tool ().mousePressEvent (*e));
     }
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    if (State::hasTool ()) {
-      State::handleToolResponse (State::tool ().mouseReleaseEvent (*e));
+    if (this->state->hasTool ()) {
+      this->state->handleToolResponse (this->state->tool ().mouseReleaseEvent (*e));
     }
     else if (e->button () == Qt::LeftButton) {
       this->selectIntersection (ViewUtil::toIVec2 (*e));
@@ -160,17 +166,17 @@ struct ViewGlWidget::Impl {
     else if (e->button () == Qt::RightButton) {
       glm::ivec2 pos = ViewUtil::toIVec2 (*e);
 
-      if (State::scene ().numSelections () == 0) {
+      if (this->state->scene ().numSelections () == 0) {
         this->selectIntersection (pos);
       }
-      if (State::scene ().numSelections () == 0) {
-        ViewMenuNoSelection menu (pos);
+      if (this->state->scene ().numSelections () == 0) {
+        ViewMenuNoSelection menu (*this->state, pos);
         menu.exec (e->globalPos ());
       }
       else {
-        switch (State::scene ().selectionMode ()) {
+        switch (this->state->scene ().selectionMode ()) {
           case SelectionMode::WingedMesh: {
-            ViewMenuWingedMesh menu (pos);
+            ViewMenuWingedMesh menu (*this->state, pos);
             menu.exec (e->globalPos ());
             break;
           }
@@ -181,24 +187,22 @@ struct ViewGlWidget::Impl {
 
   void wheelEvent (QWheelEvent* e) {
     if (e->modifiers () == Qt::NoModifier) {
-      this->toolMoveCamera.wheelEvent (*e);
+      this->toolMoveCamera.wheelEvent (*this->state, *e);
     }
-    else if (State::hasTool ()) {
-      State::handleToolResponse (State::tool ().wheelEvent (*e));
+    else if (this->state->hasTool ()) {
+      this->state->handleToolResponse (this->state->tool ().wheelEvent (*e));
     }
   }
 };
 
-DELEGATE_CONSTRUCTOR_BASE ( ViewGlWidget, (const QGLFormat& f, ViewMainWindow& w)
-                          , (this,w), QGLWidget, (f))
-DELEGATE_DESTRUCTOR (ViewGlWidget)
-
+DELEGATE2_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&)
 DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
 DELEGATE  (void      , ViewGlWidget, selectIntersection)
 DELEGATE1 (void      , ViewGlWidget, selectIntersection, const glm::ivec2&)
 DELEGATE  (void      , ViewGlWidget, initializeGL)
-DELEGATE2 (void      , ViewGlWidget, resizeGL         , int, int)
-DELEGATE1 (void      , ViewGlWidget, paintEvent,QPaintEvent*)
+DELEGATE2 (void      , ViewGlWidget, resizeGL, int, int)
+DELEGATE  (void      , ViewGlWidget, paintGL)
+//DELEGATE1 (void      , ViewGlWidget, paintEvent,QPaintEvent*)
 DELEGATE1 (void      , ViewGlWidget, keyPressEvent    , QKeyEvent*)
 DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
 DELEGATE1 (void      , ViewGlWidget, mousePressEvent  , QMouseEvent*)

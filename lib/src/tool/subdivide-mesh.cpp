@@ -14,15 +14,16 @@ struct ToolSubdivideMesh::Impl {
   Impl (ToolSubdivideMesh* s) : self (s) {}
 
   ToolResponse runInitialize () {
+    Scene&     scene = this->self->state ().scene ();
     ActionUnit unit;
 
-    State::scene ().selection ().forEachMajor ([&unit] (unsigned int index) {
-      WingedMesh& mesh = State::scene ().wingedMeshRef (index);
-      unit.add <ActionSubdivideMesh> (mesh).run (mesh);
+    scene.selection ().forEachMajor ([&scene,&unit] (unsigned int index) {
+      WingedMesh& mesh = scene.wingedMeshRef (index);
+      unit.add <ActionSubdivideMesh> (scene, mesh).run (mesh);
     });
 
     if (unit.isEmpty () == false) {
-      State::history ().addUnit (std::move (unit));
+      this->self->state ().history ().addUnit (std::move (unit));
     }
     return ToolResponse::Terminate;
   }

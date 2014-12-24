@@ -4,6 +4,7 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
+class Camera;
 class QMouseEvent;
 
 enum class MovementConstraint { XAxis, YAxis, ZAxis
@@ -12,7 +13,7 @@ enum class MovementConstraint { XAxis, YAxis, ZAxis
                               };
 class ToolUtilMovement {
   public:
-    DECLARE_BIG4COPY (ToolUtilMovement, MovementConstraint)
+    DECLARE_BIG4COPY (ToolUtilMovement, const Camera&, MovementConstraint)
 
     MovementConstraint constraint       () const;
           void         constraint       (MovementConstraint);

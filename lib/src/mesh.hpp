@@ -4,9 +4,10 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-enum class RenderMode;
+class Camera;
 class Color;
 class MeshDefinition;
+enum class RenderMode;
 
 class Mesh {
   public:
@@ -35,11 +36,9 @@ class Mesh {
     void               bufferData        ();
     glm::mat4x4        modelMatrix       () const;
     glm::mat4x4        worldMatrix       () const;
-    void               renderBegin       (bool = false);
+    void               renderBegin       (const Camera&, bool = false);
     void               renderEnd         ();
-    void               render            (bool = false);
-    void               renderSolid       ();
-    void               renderWireframe   ();
+    void               render            (const Camera&, bool = false);
     void               reset             ();
     void               resetGeometry     ();
     void               renderMode        (RenderMode);
@@ -58,6 +57,8 @@ class Mesh {
     void               rotationZ         (float);
     const Color&       color             () const;
     void               color             (const Color&);
+    const Color&       wireframeColor    () const;
+    void               wireframeColor    (const Color&);
 
   private: 
     IMPLEMENTATION

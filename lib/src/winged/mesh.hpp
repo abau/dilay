@@ -3,21 +3,24 @@
 
 #include <functional>
 #include <glm/fwd.hpp>
+#include "configurable.hpp"
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 
-class WingedFaceIntersection;
-class PrimRay;
-class PrimTriangle;
-class Octree;
-class WingedVertex;
-class WingedFace;
-class WingedEdge;
-class PrimSphere;
-class Mesh;
 class AffectedFaces;
+class Camera;
+class ConfigProxy;
+class Mesh;
+class Octree;
+class PrimRay;
+class PrimSphere;
+class PrimTriangle;
+class WingedEdge;
+class WingedFace;
+class WingedFaceIntersection;
+class WingedVertex;
 
-class WingedMesh {
+class WingedMesh : public ProxyConfigurable {
   public: 
     DECLARE_BIG3 (WingedMesh, unsigned int);
 
@@ -58,7 +61,7 @@ class WingedMesh {
     void               writeAllIndices    (); 
     void               writeAllNormals    (); 
     void               bufferData         ();
-    void               render             (bool);
+    void               render             (const Camera&, bool);
     void               reset              ();
     void               setupOctreeRoot    (const glm::vec3&, float);
     void               toggleRenderMode   ();
@@ -87,6 +90,8 @@ class WingedMesh {
     SAFE_REF1_CONST (WingedFace  , face  , unsigned int)
   private:
     IMPLEMENTATION
+
+    void runFromConfig (const ConfigProxy&);
 };
 
 #endif
