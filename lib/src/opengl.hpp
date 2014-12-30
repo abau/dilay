@@ -32,29 +32,27 @@ namespace OpenGL {
   unsigned int Triangles          ();
   unsigned int UnsignedInt        ();
 
-  void glBindBuffer              (unsigned int, unsigned int);
-  void glBindVertexArray         (unsigned int);
-  void glBufferData              (unsigned int, unsigned int, const void*, unsigned int);
-  void glClear                   (unsigned int);
-  void glClearColor              (float, float, float, float);
-  void glCullFace                (unsigned int);
-  void glDepthFunc               (unsigned int);
-  void glDisable                 (unsigned int);
-  void glDrawElements            (unsigned int, unsigned int, unsigned int, const void*);
-  void glEnable                  (unsigned int);
-  void glEnableVertexAttribArray (unsigned int);
-  void glFrontFace               (unsigned int);
-  void glGenBuffers              (unsigned int, unsigned int*);
-  void glGenVertexArrays         (unsigned int, unsigned int*);
-  int  glGetUniformLocation      (unsigned int, const char*);
-  bool glIsBuffer                (unsigned int);
-  bool glIsVertexArray           (unsigned int);
-  void glPolygonMode             (unsigned int, unsigned int);
-  void glUniform1f               (int, float);
-  void glUniformMatrix4fv        (int, unsigned int, bool, const float*);
-  void glUseProgram              (unsigned int);
-  void glVertexAttribPointer     (unsigned int, int, unsigned int, bool, unsigned int, const void*);
-  void glViewport                (unsigned int, unsigned int, unsigned int, unsigned int);
+  void glBindBuffer               (unsigned int, unsigned int);
+  void glBufferData               (unsigned int, unsigned int, const void*, unsigned int);
+  void glClear                    (unsigned int);
+  void glClearColor               (float, float, float, float);
+  void glCullFace                 (unsigned int);
+  void glDepthFunc                (unsigned int);
+  void glDisable                  (unsigned int);
+  void glDisableVertexAttribArray (unsigned int);
+  void glDrawElements             (unsigned int, unsigned int, unsigned int, const void*);
+  void glEnable                   (unsigned int);
+  void glEnableVertexAttribArray  (unsigned int);
+  void glFrontFace                (unsigned int);
+  void glGenBuffers               (unsigned int, unsigned int*);
+  int  glGetUniformLocation       (unsigned int, const char*);
+  bool glIsBuffer                 (unsigned int);
+  void glPolygonMode              (unsigned int, unsigned int);
+  void glUniform1f                (int, float);
+  void glUniformMatrix4fv         (int, unsigned int, bool, const float*);
+  void glUseProgram               (unsigned int);
+  void glVertexAttribPointer      (unsigned int, int, unsigned int, bool, unsigned int, const void*);
+  void glViewport                 (unsigned int, unsigned int, unsigned int, unsigned int);
 
   // utilities
   enum VertexAttributIndex { PositionIndex = 0
@@ -64,7 +62,6 @@ namespace OpenGL {
   void         drawLineElements   (unsigned int);
   void         glUniformVec3      (unsigned int, const glm::vec3&);
   void         glUniformVec4      (unsigned int, const glm::vec4&);
-  void         safeDeleteArray    (unsigned int&);
   void         safeDeleteBuffer   (unsigned int&);
   void         safeDeleteShader   (unsigned int&);
   void         safeDeleteProgram  (unsigned int&);

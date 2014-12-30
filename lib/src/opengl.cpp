@@ -1,5 +1,5 @@
 #include <QOpenGLContext>
-#include <QOpenGLFunctions_3_2_Core>
+#include <QOpenGLFunctions_2_1>
 #include <glm/glm.hpp>
 #include <iostream>
 #include "opengl.hpp"
@@ -26,22 +26,23 @@ namespace OpenGL {
   static_assert (sizeof (int) >= 4, "type does not meet size required by OpenGL");
   static_assert (sizeof (float) >= 4, "type does not meet size required by OpenGL");
 
-  static QOpenGLFunctions_3_2_Core* fun = nullptr;
+  static QOpenGLFunctions_2_1* fun = nullptr;
 
   void setDefaultFormat () {
     QSurfaceFormat format;
 
-    format.setVersion         (3, 2);
+    format.setVersion         (2, 1);
     format.setDepthBufferSize (24);
-    format.setProfile         (QSurfaceFormat::CoreProfile);
+    format.setProfile         (QSurfaceFormat::NoProfile);
+    format.setRenderableType  (QSurfaceFormat::OpenGL);
 
     QSurfaceFormat::setDefaultFormat (format);
   }
 
   void initializeFunctions () {
-    fun = QOpenGLContext::currentContext ()->versionFunctions <QOpenGLFunctions_3_2_Core> ();
+    fun = QOpenGLContext::currentContext ()->versionFunctions <QOpenGLFunctions_2_1> ();
     if (fun == false) {
-      std::cerr << "Could not obtain OpenGL 3.2 core context" << std::endl;
+      std::cerr << "Could not obtain OpenGL 2.1 context" << std::endl;
       std::abort ();
     }
     fun->initializeOpenGLFunctions ();
@@ -69,22 +70,20 @@ namespace OpenGL {
   DELEGATE_GL_CONSTANT (UnsignedInt, GL_UNSIGNED_INT);
 
   DELEGATE2_GL (void, glBindBuffer, unsigned int, unsigned int)
-  DELEGATE1_GL (void, glBindVertexArray, unsigned int)
   DELEGATE4_GL (void, glBufferData, unsigned int, unsigned int, const void*, unsigned int)
   DELEGATE1_GL (void, glClear, unsigned int)
   DELEGATE4_GL (void, glClearColor, float, float, float, float)
   DELEGATE1_GL (void, glCullFace, unsigned int)
   DELEGATE1_GL (void, glDepthFunc, unsigned int)
   DELEGATE1_GL (void, glDisable, unsigned int)
+  DELEGATE1_GL (void, glDisableVertexAttribArray, unsigned int)
   DELEGATE4_GL (void, glDrawElements, unsigned int, unsigned int, unsigned int, const void*)
   DELEGATE1_GL (void, glEnable, unsigned int)
   DELEGATE1_GL (void, glEnableVertexAttribArray, unsigned int)
   DELEGATE1_GL (void, glFrontFace, unsigned int)
   DELEGATE2_GL (void, glGenBuffers, unsigned int, unsigned int*)
-  DELEGATE2_GL (void, glGenVertexArrays, unsigned int, unsigned int*)
   DELEGATE2_GL (int , glGetUniformLocation, unsigned int, const char*)
   DELEGATE1_GL (bool, glIsBuffer, unsigned int)
-  DELEGATE1_GL (bool, glIsVertexArray, unsigned int)
   DELEGATE2_GL (void, glPolygonMode, unsigned int, unsigned int)
   DELEGATE2_GL (void, glUniform1f, int, float)
   DELEGATE4_GL (void, glUniformMatrix4fv, int, unsigned int, bool, const float*)
@@ -98,13 +97,6 @@ namespace OpenGL {
 
   void glUniformVec4 (unsigned int id, const glm::vec4& v) {
     fun->glUniform4f (id, v.x, v.y, v.z, v.w);
-  }
-
-  void safeDeleteArray (unsigned int& id) {
-    if (id > 0 && fun->glIsVertexArray (id) == GL_TRUE) {
-      fun->glDeleteVertexArrays (1, &id);
-    }
-    id = 0;
   }
 
   void safeDeleteBuffer (unsigned int& id) {
@@ -176,7 +168,6 @@ namespace OpenGL {
 
     fun->glBindAttribLocation   (programId, OpenGL::PositionIndex, "position");
     fun->glBindAttribLocation   (programId, OpenGL::NormalIndex,   "normal");
-    fun->glBindFragDataLocation (programId, 0, "fragmentColor");
 
     fun->glLinkProgram (programId);
 
