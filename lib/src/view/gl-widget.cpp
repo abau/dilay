@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QKeyEvent>
+#include <QPainter>
 #include <glm/glm.hpp>
 #include <memory>
 #include "camera.hpp"
@@ -88,6 +89,9 @@ struct ViewGlWidget::Impl {
   }
 
   void paintGL () {
+    QPainter painter (this->self);
+    painter.beginNativePainting ();
+
     this->state->renderer ().setupRendering ();
     this->state->scene    ().render <WingedMesh> (this->state->camera ());
 
@@ -95,7 +99,11 @@ struct ViewGlWidget::Impl {
       this->state->tool ().render ();
     }
     this->axis->render (this->state->camera ());
-    //this->axis->render (this->state->camera (), painter);
+
+    OpenGL::glDisable (OpenGL::DepthTest ()); 
+    painter.endNativePainting ();
+
+    this->axis->render (this->state->camera (), painter);
   }
 
   void resizeGL (int w, int h) {
