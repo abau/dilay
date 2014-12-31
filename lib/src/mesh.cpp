@@ -1,4 +1,3 @@
-#include <QOpenGLContext>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
@@ -17,15 +16,15 @@ struct Mesh::Impl {
   glm::mat4x4                 scalingMatrix;
   glm::mat4x4                 rotationMatrix;
   glm::mat4x4                 translationMatrix;
-  std::vector<   GLfloat   >  vertices;
-  std::vector< unsigned int>  indices;
-  std::vector<   GLfloat   >  normals;
+  std::vector <float>         vertices;
+  std::vector <unsigned int>  indices;
+  std::vector <float>         normals;
   Color                       color;
   Color                       wireframeColor;
 
-  GLuint                      vertexBufferId;
-  GLuint                      indexBufferId;
-  GLuint                      normalBufferId;
+  unsigned int                vertexBufferId;
+  unsigned int                indexBufferId;
+  unsigned int                normalBufferId;
 
   RenderMode                  renderMode;
 
@@ -78,7 +77,7 @@ struct Mesh::Impl {
   unsigned int numNormals  () const { return this->normals.size () / 3; }
 
   unsigned int sizeOfVertices () const { 
-    return this->vertices.size () * sizeof (GLfloat);
+    return this->vertices.size () * sizeof (float);
   }
 
   unsigned int sizeOfIndices () const { 
@@ -86,7 +85,7 @@ struct Mesh::Impl {
   }
 
   unsigned int sizeOfNormals () const { 
-    return this->normals.size () * sizeof (GLfloat);
+    return this->normals.size () * sizeof (float);
   }
 
   glm::vec3 vertex (unsigned int i) const {
