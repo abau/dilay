@@ -20,6 +20,7 @@ struct Scene :: Impl {
 
   Impl (const ConfigProxy& wmConfig)
     : wingedMeshConfig (wmConfig)
+    , selectionMode    (SelectionMode::WingedMesh)
   {}
 
   WingedMesh& newWingedMesh () {
