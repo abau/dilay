@@ -6,19 +6,19 @@
 #include "camera.hpp"
 #include "carve-brush.hpp"
 #include "config.hpp"
-#include "cursor.hpp"
 #include "history.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "selection.hpp"
 #include "state.hpp"
 #include "tools.hpp"
-#include "view/util.hpp"
-#include "view/tool/menu-parameters.hpp"
-#include "view/main-window.hpp"
+#include "view/cursor.hpp"
 #include "view/gl-widget.hpp"
+#include "view/main-window.hpp"
 #include "view/properties.hpp"
+#include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
+#include "view/util.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
@@ -26,7 +26,7 @@
 struct ToolCarve::Impl {
   ToolCarve*      self;
   CarveBrush      brush;
-  Cursor          cursor;
+  ViewCursor      cursor;
   QDoubleSpinBox* radiusEdit;
 
   Impl (ToolCarve* s) 

@@ -1,15 +1,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "../util.hpp"
 #include "camera.hpp"
 #include "color.hpp"
-#include "cursor.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
-#include "util.hpp"
+#include "view/cursor.hpp"
 
-struct Cursor::Impl {
+struct ViewCursor::Impl {
   Mesh          mesh;
   float         radius;
   unsigned int  sectors;
@@ -78,13 +78,13 @@ struct Cursor::Impl {
   void  disable   ()       { this->isEnabled = false; }
 };
 
-DELEGATE1_BIG6 (Cursor, float)
-SETTER       (float, Cursor, radius)
-DELEGATE1    (void,  Cursor, position, const glm::vec3&)
-DELEGATE1    (void,  Cursor, normal, const glm::vec3&)
-DELEGATE     (void,  Cursor, updateGeometry)
-DELEGATE1    (void,  Cursor, render, const Camera&)
-DELEGATE     (void,  Cursor, enable)
-DELEGATE     (void,  Cursor, disable)
-GETTER_CONST (bool,  Cursor, isEnabled)
-GETTER_CONST (float, Cursor, radius)
+DELEGATE1_BIG6 (ViewCursor, float)
+SETTER       (float, ViewCursor, radius)
+DELEGATE1    (void,  ViewCursor, position, const glm::vec3&)
+DELEGATE1    (void,  ViewCursor, normal, const glm::vec3&)
+DELEGATE     (void,  ViewCursor, updateGeometry)
+DELEGATE1    (void,  ViewCursor, render, const Camera&)
+DELEGATE     (void,  ViewCursor, enable)
+DELEGATE     (void,  ViewCursor, disable)
+GETTER_CONST (bool,  ViewCursor, isEnabled)
+GETTER_CONST (float, ViewCursor, radius)

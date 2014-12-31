@@ -26,7 +26,6 @@ SOURCES += \
            src/config.cpp \
            src/config-conversion.cpp \
            src/configurable.cpp \
-           src/cursor.cpp \
            src/dimension.cpp \
            src/history.cpp \
            src/intersection.cpp \
@@ -72,6 +71,7 @@ SOURCES += \
            src/tool/util/movement.cpp \
            src/util.cpp \
            src/view/axis.cpp \
+           src/view/cursor.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
            src/view/main-widget.cpp \
@@ -118,7 +118,6 @@ HEADERS += \
            src/config.hpp \
            src/config-conversion.hpp \
            src/configurable.hpp \
-           src/cursor.hpp \
            src/dimension.hpp \
            src/fwd-winged.hpp \
            src/history.hpp \
@@ -164,6 +163,7 @@ HEADERS += \
            src/util.hpp \
            src/variant.hpp \
            src/view/axis.hpp \
+           src/view/cursor.hpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
            src/view/main-widget.hpp \

@@ -1,14 +1,14 @@
-#ifndef DILAY_CURSOR
-#define DILAY_CURSOR
+#ifndef DILAY_VIEW_CURSOR
+#define DILAY_VIEW_CURSOR
 
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
 class Camera;
 
-class Cursor {
+class ViewCursor {
   public: 
-    DECLARE_BIG6 (Cursor, float)
+    DECLARE_BIG6 (ViewCursor, float)
 
     void  radius         (float);
     void  position       (const glm::vec3&);
