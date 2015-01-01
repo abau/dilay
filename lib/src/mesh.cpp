@@ -27,17 +27,19 @@ struct Mesh::Impl {
   unsigned int                normalBufferId;
 
   RenderMode                  renderMode;
+  bool                        renderWireframe;
 
   Impl () { 
     this->scalingMatrix       = glm::mat4x4 (1.0f);
     this->rotationMatrix      = glm::mat4x4 (1.0f);
     this->translationMatrix   = glm::mat4x4 (1.0f);
+    this->color               = Color::white ();
+    this->wireframeColor      = Color::black ();
     this->vertexBufferId      = 0;
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;
-    this->renderMode          = RenderMode::SmoothShaded;
-    this->color               = Color::white ();
-    this->wireframeColor      = Color::black ();
+    this->renderMode          = RenderMode::Smooth;
+    this->renderWireframe     = false;
   }
 
   Impl (const MeshDefinition& def) : Impl () { 
@@ -68,6 +70,7 @@ struct Mesh::Impl {
               , indexBufferId       (0)
               , normalBufferId      (0)
               , renderMode          (source.renderMode) 
+              , renderWireframe     (source.renderWireframe) 
               {}
 
   ~Impl () { this->reset (); }
@@ -211,7 +214,7 @@ struct Mesh::Impl {
 
     OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indexBufferId);
 
-    if (this->renderMode == RenderMode::SmoothShaded) {
+    if (this->renderMode == RenderMode::Smooth) {
       OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normalBufferId);
       OpenGL::glEnableVertexAttribArray (OpenGL::NormalIndex);
       OpenGL::glVertexAttribPointer     (OpenGL::NormalIndex, 3, OpenGL::Float (), false, 0, 0);
@@ -229,40 +232,22 @@ struct Mesh::Impl {
   void render (const Camera& camera, bool noZoom) {
     this->renderBegin (camera, noZoom);
 
-    if (  this->renderMode == RenderMode::SmoothShaded 
-       || this->renderMode == RenderMode::FlatShaded
-       || this->renderMode == RenderMode::Color ) 
-    {
-      this->renderSolid (camera.renderer ());
-    }
-    else if (this->renderMode == RenderMode::Wireframe) {
-      this->renderWireframe (camera.renderer ());
-    }
-    else {
-      std::abort ();
+    camera.renderer ().setColor3 (this->color);
+    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
+                           , OpenGL::UnsignedInt (), (void*)0 );
+
+    if (this->renderWireframe) {
+      camera.renderer ().setProgram (RenderMode::Constant);
+      this->setModelMatrix (camera, noZoom);
+
+      camera.renderer ().setColor3 (this->wireframeColor);
+
+      OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Line ());
+      OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
+                             , OpenGL::UnsignedInt (), (void*)0 );
+      OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Fill ());
     }
     this->renderEnd ();
-  }
-
-  void renderSolid (Renderer& renderer) {
-    renderer.setColor3 (this->color);
-    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                           , OpenGL::UnsignedInt (), (void*)0 );
-  }
-
-  void renderWireframe (Renderer& renderer) {
-    renderer.setColor3 (this->color);
-    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                           , OpenGL::UnsignedInt (), (void*)0);
-
-    OpenGL::glClear (OpenGL::DepthBufferBit ());
-
-    renderer.setColor3 (this->wireframeColor);
-    OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Line ());
-    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                           , OpenGL::UnsignedInt (), (void*)0 );
-
-    OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Fill ());
   }
 
   void reset () {
@@ -281,10 +266,6 @@ struct Mesh::Impl {
     this->vertices.clear ();
     this->indices .clear ();
     this->normals .clear ();
-  }
-
-  void toggleRenderMode () {
-    this->renderMode = RenderModeUtil::toggle (this->renderMode);
   }
 
   void scale (const glm::vec3& v) {
@@ -359,8 +340,10 @@ DELEGATE         (void              , Mesh, renderEnd)
 DELEGATE2        (void              , Mesh, render, const Camera&, bool)
 DELEGATE         (void              , Mesh, reset)
 DELEGATE         (void              , Mesh, resetGeometry)
+GETTER_CONST     (RenderMode        , Mesh, renderMode)
 SETTER           (RenderMode        , Mesh, renderMode)
-DELEGATE         (void              , Mesh, toggleRenderMode)
+GETTER_CONST     (bool              , Mesh, renderWireframe)
+SETTER           (bool              , Mesh, renderWireframe)
 
 DELEGATE1        (void              , Mesh, scale      , const glm::vec3&)
 DELEGATE1        (void              , Mesh, scaling    , const glm::vec3&)

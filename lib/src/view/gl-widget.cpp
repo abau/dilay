@@ -115,8 +115,14 @@ struct ViewGlWidget::Impl {
     const Qt::KeyboardModifiers mod = e->modifiers ();
 
     if (key == Qt::Key_W) {
-      this->state->scene ().toggleRenderMode <WingedMesh> ();
-      this->self->update ();
+      if (mod == Qt::ControlModifier) {
+        this->state->scene ().toggleRenderMode <WingedMesh> ();
+        this->self->update ();
+      }
+      else if (mod == Qt::NoModifier) {
+        this->state->scene ().toggleRenderWireframe <WingedMesh> ();
+        this->self->update ();
+      }
     }
     else if (key == Qt::Key_I) {
       this->state->scene ().printStatistics (false);

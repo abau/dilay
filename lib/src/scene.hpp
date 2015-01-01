@@ -36,9 +36,10 @@ class Scene {
           void          forEachMesh          (const std::function <void (WingedMesh&)>&) const;
           void          forEachSelectedMesh  (const std::function <void (WingedMesh&)>&) const;
 
-    template <typename T> T*   mesh             (unsigned int) const;
-    template <typename T> void render           (const Camera&);
-    template <typename T> void toggleRenderMode ();
+    template <typename T> T*   mesh                  (unsigned int) const;
+    template <typename T> void render                (const Camera&);
+    template <typename T> void toggleRenderMode      ();
+    template <typename T> void toggleRenderWireframe ();
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:

@@ -53,7 +53,6 @@ SOURCES += \
            src/primitive/sphere.cpp \
            src/primitive/triangle.cpp \
            src/renderer.cpp \
-           src/render-mode.cpp \
            src/scene.cpp \
            src/selection.cpp \
            src/selection-mode.cpp \

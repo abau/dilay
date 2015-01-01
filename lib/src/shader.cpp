@@ -41,31 +41,6 @@ const std::string Shader::smoothFragmentShader () {
     ;
 }
 
-const std::string Shader::simpleVertexShader () {
-  return
-    "#version 120                                                                            \n"
-    "                                                                                        \n"
-    "uniform   mat4 mvp;                                                                     \n"
-    "attribute vec3 position;                                                                \n"
-    "                                                                                        \n"
-    "void main(){                                                                            \n"
-    "  gl_Position = mvp * vec4 (position,1);                                                \n"
-    "}                                                                                       \n"
-    ;
-}
-
-const std::string Shader::simpleFragmentShader () {
-  return
-    "#version 120                                                                            \n"
-    "                                                                                        \n"
-    "uniform vec3 color;                                                                     \n"
-    "                                                                                        \n"
-    "void main(){                                                                            \n"
-    "  gl_FragColor = vec4 (color, 1.0);                                                     \n"
-    "}                                                                                       \n"
-    ;
-}
-
 const std::string Shader::flatVertexShader () {
   return
     "#version 120                                                                            \n"
@@ -109,6 +84,31 @@ const std::string Shader::flatFragmentShader () {
     "                                                                                        \n"
     "  vec3  light        = ambient + light1 + light2;                                       \n"
     "  gl_FragColor       = vec4 (color * light, 1.0);                                       \n"
+    "}                                                                                       \n"
+    ;
+}
+
+const std::string Shader::constantVertexShader () {
+  return
+    "#version 120                                                                            \n"
+    "                                                                                        \n"
+    "uniform   mat4 mvp;                                                                     \n"
+    "attribute vec3 position;                                                                \n"
+    "                                                                                        \n"
+    "void main(){                                                                            \n"
+    "  gl_Position = mvp * vec4 (position,1);                                                \n"
+    "}                                                                                       \n"
+    ;
+}
+
+const std::string Shader::constantFragmentShader () {
+  return
+    "#version 120                                                                            \n"
+    "                                                                                        \n"
+    "uniform vec3 color;                                                                     \n"
+    "                                                                                        \n"
+    "void main(){                                                                            \n"
+    "  gl_FragColor = vec4 (color, 1.0);                                                     \n"
     "}                                                                                       \n"
     ;
 }

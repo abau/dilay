@@ -150,6 +150,13 @@ void Scene::toggleRenderMode <WingedMesh> () {
   });
 }
 
+template <> 
+void Scene::toggleRenderWireframe <WingedMesh> () {
+  this->forEachMesh ([] (WingedMesh& m) {
+    m.toggleRenderWireframe ();
+  });
+}
+
 DELEGATE1_BIG3 (Scene, const ConfigProxy&)
 
 DELEGATE        (WingedMesh&      , Scene, newWingedMesh)

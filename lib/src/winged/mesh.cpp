@@ -12,6 +12,7 @@
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
 #include "primitive/triangle.hpp"
+#include "render-mode.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -224,7 +225,18 @@ struct WingedMesh::Impl {
     this->octree.setupRoot (center,width);
   }
 
-  void toggleRenderMode () { this->mesh.toggleRenderMode (); }
+  void toggleRenderMode () { 
+    if (this->mesh.renderMode () == RenderMode::Smooth) {
+      this->mesh.renderMode (RenderMode::Flat);
+    }
+    else {
+      this->mesh.renderMode (RenderMode::Smooth);
+    }
+  }
+
+  void toggleRenderWireframe () { 
+    this->mesh.renderWireframe (! this->mesh.renderWireframe ());
+  }
 
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
     return this->octree.intersects (*this->self, ray, intersection);
@@ -330,6 +342,7 @@ DELEGATE2       (void, WingedMesh, render, const Camera&, bool)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
+DELEGATE        (void, WingedMesh, toggleRenderWireframe)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)

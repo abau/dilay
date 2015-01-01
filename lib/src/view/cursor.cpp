@@ -54,7 +54,7 @@ struct ViewCursor::Impl {
     }
     this->mesh.addIndex   (0);
     this->mesh.addIndex   (this->sectors-1);
-    this->mesh.renderMode (RenderMode::Wireframe);
+    this->mesh.renderMode (RenderMode::Constant);
     this->mesh.bufferData ();
   }
 

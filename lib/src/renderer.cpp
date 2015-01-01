@@ -65,21 +65,17 @@ struct Renderer::Impl {
   Impl (const Config& config) : activeShaderIndex (nullptr) {
     this->runFromConfig (config);
 
-    this->shaderIds [static_cast <int> (RenderMode::SmoothShaded)].programId =
+    this->shaderIds [static_cast <int> (RenderMode::Smooth)].programId =
       OpenGL::loadProgram ( Shader::smoothVertexShader   ()
                           , Shader::smoothFragmentShader ()
                           );
-    this->shaderIds [static_cast <int> (RenderMode::Wireframe)].programId =
-      OpenGL::loadProgram ( Shader::simpleVertexShader   ()
-                          , Shader::simpleFragmentShader ()
-                          );
-    this->shaderIds [static_cast <int> (RenderMode::FlatShaded)].programId =
+    this->shaderIds [static_cast <int> (RenderMode::Flat)].programId =
       OpenGL::loadProgram ( Shader::flatVertexShader   ()
                           , Shader::flatFragmentShader ()
                           );
-    this->shaderIds [static_cast <int> (RenderMode::Color)].programId =
-      OpenGL::loadProgram ( Shader::simpleVertexShader   ()
-                          , Shader::simpleFragmentShader ()
+    this->shaderIds [static_cast <int> (RenderMode::Constant)].programId =
+      OpenGL::loadProgram ( Shader::constantVertexShader   ()
+                          , Shader::constantFragmentShader ()
                           );
 
     for (unsigned int i = 0; i < RenderModeUtil :: numRenderModes; i++) {

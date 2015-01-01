@@ -33,12 +33,12 @@ struct ViewAxis::Impl {
     this->cylinderMesh   = Mesh (MeshDefinition::cylinder (10));
 
     this->cylinderMesh.scaling    (glm::vec3 (0.01f, 0.3f , 0.01f));
-    this->cylinderMesh.renderMode (RenderMode::Color);
+    this->cylinderMesh.renderMode (RenderMode::Constant);
     this->cylinderMesh.color      (this->axisColor);
     this->cylinderMesh.bufferData ();
 
     this->coneMesh.scaling        (glm::vec3 (0.03f, 0.1f, 0.03f));
-    this->coneMesh.renderMode     (RenderMode::Color);
+    this->coneMesh.renderMode     (RenderMode::Constant);
     this->coneMesh.color          (this->axisColor);
     this->coneMesh.bufferData     ();
 
@@ -63,7 +63,7 @@ struct ViewAxis::Impl {
         this->gridMesh.addIndex ((j*gridResolution)+i);
       }
     }
-    this->gridMesh.renderMode (RenderMode::Color);
+    this->gridMesh.renderMode (RenderMode::Constant);
     this->gridMesh.bufferData ();
   }
 

@@ -7,11 +7,11 @@ namespace Shader {
   const std::string smoothVertexShader   ();
   const std::string smoothFragmentShader ();
 
-  const std::string simpleVertexShader   ();
-  const std::string simpleFragmentShader ();
-
   const std::string flatVertexShader     ();
   const std::string flatFragmentShader   ();
+
+  const std::string constantVertexShader   ();
+  const std::string constantFragmentShader ();
 };
 
 #endif
