@@ -49,7 +49,7 @@ struct ViewMainWindow :: Impl {
     tip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Select"));
     tip.add ( ViewToolTip::MouseEvent::Middle, QObject::tr ("Drag to rotate"));
     tip.add ( ViewToolTip::MouseEvent::Middle
-            , ViewToolTip::Modifier::Shift, QObject::tr ("Gaze/Drag to pan"));
+            , ViewToolTip::Modifier::Ctrl, QObject::tr ("Gaze/Drag to pan"));
     tip.add ( ViewToolTip::MouseEvent::Right, QObject::tr ("Menu"));
 
     this->showToolTip (tip);
