@@ -130,7 +130,7 @@ struct OctreeNode::Impl {
       this->mesh.addIndex (0); this->mesh.addIndex (4); 
 
       this->mesh.position   (this->center);
-      this->mesh.renderMode (RenderMode::Wireframe);
+      this->mesh.renderMode (RenderMode::Constant);
       this->mesh.bufferData ();
 #endif
   }
@@ -156,14 +156,14 @@ struct OctreeNode::Impl {
 #ifdef DILAY_RENDER_OCTREE
   void render (const Camera& camera) {
     assert (this->storeDegenerated == false);
-    OpenGL::Functions& f = OpenGL::functions ();
 
     this->mesh.renderBegin (camera);
-    f.glDisable (GL_DEPTH_TEST);
     camera.renderer ().setColor3 (Color (1.0f, 1.0f, 0.0f));
-    f.glDrawElements (GL_LINES, this->mesh.numIndices (), GL_UNSIGNED_INT, (void*)0);
-    f.glEnable (GL_DEPTH_TEST);
-    this->mesh.renderEnd ();
+    OpenGL::glDisable      (OpenGL::DepthTest ());
+    OpenGL::glDrawElements ( OpenGL::Lines (), this->mesh.numIndices ()
+                           , OpenGL::UnsignedInt (), nullptr );
+    OpenGL::glEnable       (OpenGL::DepthTest ());
+    this->mesh.renderEnd   ();
 
     for (Child& c : this->children) 
       c->render (camera);
