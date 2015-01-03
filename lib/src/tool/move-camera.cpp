@@ -41,7 +41,7 @@ struct ToolMoveCamera::Impl {
                                  * float (-delta.y) / float (resolution.y));
         }
       }
-      else if (event.modifiers () == Qt::ShiftModifier) {
+      else if (event.modifiers () == Qt::ControlModifier) {
         cam.setGaze ( cam.gazePoint () 
                     + (this->panningFactor * float ( delta.x) * cam.right ())
                     + (this->panningFactor * float (-delta.y) * cam.up    ())
@@ -56,7 +56,7 @@ struct ToolMoveCamera::Impl {
     if (event.button () == Qt::MiddleButton) {
       this->oldPos = ViewUtil::toIVec2 (event);
 
-      if (event.modifiers () == Qt::ShiftModifier) {
+      if (event.modifiers () == Qt::ControlModifier) {
         Camera&      cam = state.camera ();
         Intersection intersection;
         if (state.scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
