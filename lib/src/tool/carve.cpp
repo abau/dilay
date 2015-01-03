@@ -14,8 +14,6 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/cursor.hpp"
-#include "view/gl-widget.hpp"
-#include "view/main-window.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
@@ -40,7 +38,7 @@ struct ToolCarve::Impl {
   {
     this->setupProperties ();
     this->setupToolTip    ();
-    this->updateCursor    (s->state ().mainWindow ().glWidget ().cursorPosition (), false);
+    this->updateCursor    (this->self->cursorPosition (), false);
   }
 
   void setupProperties () {

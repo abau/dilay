@@ -93,6 +93,10 @@ struct Tool::Impl {
     this->toolTip.reset ();
     this->toolTip.add   (ViewToolTip::MouseEvent::Right, QObject::tr ("Close"));
   }
+
+  glm::ivec2 cursorPosition () {
+    return this->state ().mainWindow ().glWidget ().cursorPosition ();
+  }
 };
 
 DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const std::string&)
@@ -111,3 +115,4 @@ DELEGATE       (ViewProperties&              , Tool, properties)
 GETTER         (ViewToolTip&                 , Tool, toolTip)
 DELEGATE       (void                         , Tool, resetToolTip)
 GETTER         (ConfigProxy&                 , Tool, config)
+DELEGATE_CONST (glm::ivec2                   , Tool, cursorPosition)

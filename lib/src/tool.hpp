@@ -2,6 +2,7 @@
 #define DILAY_TOOL
 
 #include <string>
+#include <glm/fwd.hpp>
 #include "macro.hpp"
 
 class ConfigProxy;
@@ -37,6 +38,7 @@ class Tool {
     ViewToolTip&                  toolTip              ();
     void                          resetToolTip         ();
     ConfigProxy&                  config               ();
+    glm::ivec2                    cursorPosition       () const;
 
   private:
     IMPLEMENTATION
