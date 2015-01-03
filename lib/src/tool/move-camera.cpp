@@ -80,9 +80,9 @@ struct ToolMoveCamera::Impl {
   }
 
   void runFromConfig (const Config& config) {
-    rotationFactor = config.get <float> ("/config/editor/camera/rotation-factor");
-    panningFactor  = config.get <float> ("/config/editor/camera/panning-factor");
-    zoomInFactor   = config.get <float> ("/config/editor/camera/zoom-in-factor");
+    rotationFactor = config.get <float> ("editor/camera/rotation-factor");
+    panningFactor  = config.get <float> ("editor/camera/panning-factor");
+    zoomInFactor   = config.get <float> ("editor/camera/zoom-in-factor");
   }
 };
 

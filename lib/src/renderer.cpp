@@ -251,17 +251,17 @@ struct Renderer::Impl {
   }
 
   void runFromConfig (const Config& config) {
-    this->clearColor     = config.get<Color>     ("/config/editor/background");
-    this->light1LocalPos = config.get<glm::vec3> ("/config/editor/light/light1/position");
-    this->light2LocalPos = config.get<glm::vec3> ("/config/editor/light/light2/position");
+    this->clearColor     = config.get<Color>     ("editor/background");
+    this->light1LocalPos = config.get<glm::vec3> ("editor/light/light1/position");
+    this->light2LocalPos = config.get<glm::vec3> ("editor/light/light2/position");
 
-    this->setAmbient         (   config.get<Color>     ("/config/editor/light/ambient"));
+    this->setAmbient         (   config.get<Color>     ("editor/light/ambient"));
     this->setLightPosition   (0, this->light1LocalPos);
-    this->setLightColor      (0, config.get<Color>     ("/config/editor/light/light1/color"));
-    this->setLightIrradiance (0, config.get<float>     ("/config/editor/light/light1/irradiance"));
+    this->setLightColor      (0, config.get<Color>     ("editor/light/light1/color"));
+    this->setLightIrradiance (0, config.get<float>     ("editor/light/light1/irradiance"));
     this->setLightPosition   (1, this->light2LocalPos);
-    this->setLightColor      (1, config.get<Color>     ("/config/editor/light/light2/color"));
-    this->setLightIrradiance (1, config.get<float>     ("/config/editor/light/light2/irradiance"));
+    this->setLightColor      (1, config.get<Color>     ("editor/light/light2/color"));
+    this->setLightIrradiance (1, config.get<float>     ("editor/light/light2/irradiance"));
   }
 };
 

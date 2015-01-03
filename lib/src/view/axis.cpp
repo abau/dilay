@@ -165,8 +165,8 @@ struct ViewAxis::Impl {
   }
 
   void runFromConfig (const Config& config) {
-    this->axisLabelColor = config.get <Color> ("/config/editor/axis/color/label");
-    this->axisColor      = config.get <Color> ("/config/editor/axis/color/normal");
+    this->axisLabelColor = config.get <Color> ("editor/axis/color/label");
+    this->axisColor      = config.get <Color> ("editor/axis/color/normal");
   }
 };
 

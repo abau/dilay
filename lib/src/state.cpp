@@ -31,7 +31,7 @@ struct State::Impl {
     , config     (c)
     , renderer   (config)
     , camera     (config, renderer)
-    , scene      (ConfigProxy (config, "/config/editor/poly-mesh/"))
+    , scene      (ConfigProxy (config, "editor/poly-mesh/"))
   {
     MeshDefinition meshDefinition (MeshDefinition::icosphere (2));
     meshDefinition.scale          (Util::defaultScale ());

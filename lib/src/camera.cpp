@@ -27,12 +27,12 @@ struct Camera::Impl {
     : self         (s)
     , renderer     (r)
     , resolution   ( 1024, 768 )
-    , nearClipping ( config.get <float> ("/config/editor/camera/near-clipping") )
-    , farClipping  ( config.get <float> ("/config/editor/camera/far-clipping") ) {
+    , nearClipping ( config.get <float> ("editor/camera/near-clipping") )
+    , farClipping  ( config.get <float> ("editor/camera/far-clipping") ) {
 
-    this->set ( config.get <glm::vec3> ("/config/editor/camera/gaze-point")
-              , config.get <glm::vec3> ("/config/editor/camera/eye-point")
-              , config.get <glm::vec3> ("/config/editor/camera/up")
+    this->set ( config.get <glm::vec3> ("editor/camera/gaze-point")
+              , config.get <glm::vec3> ("editor/camera/eye-point")
+              , config.get <glm::vec3> ("editor/camera/up")
               , false);
 
     this->updateView       ();

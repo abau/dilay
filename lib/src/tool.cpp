@@ -22,7 +22,7 @@ struct Tool::Impl {
   Impl (Tool* s, const ViewToolMenuParameters& p, const std::string& key) 
     : self           (s) 
     , menuParameters (p)
-    , config         (p.state ().config (), "/cache/tool/" + key + "/")
+    , config         (p.state ().config (), "editor/tool/" + key + "/")
   {
     QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
     this->properties ().setFooter (close);

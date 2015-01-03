@@ -41,20 +41,24 @@ struct Config::Impl {
   }
 
   template <class T>
-  const T& get (const std::string& path) const {
-    assert (path.find ("/" + this->optionsRoot) == 0);
-    ConfigMap::const_iterator value = this->optionsMap.find (path);
+  const T& get (const std::string& relativePath) const {
+    assert (relativePath.front () != '/');
+
+    const std::string         absolutePath = "/" + this->optionsRoot + "/" + relativePath;
+    ConfigMap::const_iterator value        = this->optionsMap.find (absolutePath);
 
     if (value == this->optionsMap.end ()) {
-      throw (std::runtime_error ("Can not find config path " + path));
+      throw (std::runtime_error ("Can not find config path " + absolutePath));
     }
     return value->second.get <T> ();
   }
 
   template <class T>
-  const T& get (const std::string& path, const T& defaultV) const {
-    assert (path.find ("/" + this->cacheRoot) == 0);
-    ConfigMap::const_iterator value = this->cacheMap.find (path);
+  const T& get (const std::string& relativePath, const T& defaultV) const {
+    assert (relativePath.front () != '/');
+
+    const std::string         absolutePath = "/" + this->cacheRoot + "/" + relativePath;
+    ConfigMap::const_iterator value        = this->cacheMap.find (absolutePath);
 
     if (value == this->cacheMap.end ()) {
       return defaultV;
@@ -63,12 +67,15 @@ struct Config::Impl {
   }
 
   template <class T>
-  void cache (const std::string& path, const T& t) {
-    assert (path.find ("/" + this->cacheRoot) == 0);
-    Value value;
+  void cache (const std::string& relativePath, const T& t) {
+    assert (relativePath.front () != '/');
+
+    const std::string absolutePath = "/" + this->cacheRoot + "/" + relativePath;
+    Value             value;
+
     value.set <T>          (t);
-    this->cacheMap.erase   (path);
-    this->cacheMap.emplace (path, value);
+    this->cacheMap.erase   (absolutePath);
+    this->cacheMap.emplace (absolutePath, value);
   }
 
   std::string getDirectory () const {
