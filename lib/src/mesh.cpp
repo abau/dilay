@@ -27,7 +27,6 @@ struct Mesh::Impl {
   unsigned int                normalBufferId;
 
   RenderMode                  renderMode;
-  bool                        renderWireframe;
 
   Impl () { 
     this->scalingMatrix       = glm::mat4x4 (1.0f);
@@ -39,7 +38,6 @@ struct Mesh::Impl {
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;
     this->renderMode          = RenderMode::Smooth;
-    this->renderWireframe     = false;
   }
 
   Impl (const MeshDefinition& def) : Impl () { 
@@ -70,7 +68,6 @@ struct Mesh::Impl {
               , indexBufferId       (0)
               , normalBufferId      (0)
               , renderMode          (source.renderMode) 
-              , renderWireframe     (source.renderWireframe) 
               {}
 
   ~Impl () { this->reset (); }
@@ -204,8 +201,19 @@ struct Mesh::Impl {
     camera.setModelViewProjection (this->modelMatrix (), noZoom);
   }
 
+  bool renderFallbackWireframe () const {
+    return RenderModeUtil::rendersWireframe       (this->renderMode)
+        && Renderer      ::requiresGeometryShader (this->renderMode)
+        && OpenGL        ::supportsGeometryShader () == false;
+  }
+
   void renderBegin (const Camera& camera, bool noZoom) {
-    camera.renderer ().setProgram     (this->renderMode);
+    if (this->renderFallbackWireframe ()) {
+      camera.renderer ().setProgram (RenderModeUtil::nonWireframe (this->renderMode));
+    }
+    else {
+      camera.renderer ().setProgram (this->renderMode);
+    }
     this->setModelMatrix              (camera, noZoom);
 
     OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId);
@@ -214,7 +222,7 @@ struct Mesh::Impl {
 
     OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indexBufferId);
 
-    if (this->renderMode == RenderMode::Smooth) {
+    if (Renderer::requiresNormalAttribute (this->renderMode)) {
       OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normalBufferId);
       OpenGL::glEnableVertexAttribArray (OpenGL::NormalIndex);
       OpenGL::glVertexAttribPointer     (OpenGL::NormalIndex, 3, OpenGL::Float (), false, 0, 0);
@@ -232,11 +240,12 @@ struct Mesh::Impl {
   void render (const Camera& camera, bool noZoom) {
     this->renderBegin (camera, noZoom);
 
-    camera.renderer ().setColor3 (this->color);
+    camera.renderer ().setColor3          (this->color);
+    camera.renderer ().setWireframeColor3 (this->wireframeColor);
     OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
                            , OpenGL::UnsignedInt (), (void*)0 );
 
-    if (this->renderWireframe) {
+    if (this->renderFallbackWireframe ()) {
       camera.renderer ().setProgram (RenderMode::Constant);
       this->setModelMatrix (camera, noZoom);
 
@@ -342,8 +351,6 @@ DELEGATE         (void              , Mesh, reset)
 DELEGATE         (void              , Mesh, resetGeometry)
 GETTER_CONST     (RenderMode        , Mesh, renderMode)
 SETTER           (RenderMode        , Mesh, renderMode)
-GETTER_CONST     (bool              , Mesh, renderWireframe)
-SETTER           (bool              , Mesh, renderWireframe)
 
 DELEGATE1        (void              , Mesh, scale      , const glm::vec3&)
 DELEGATE1        (void              , Mesh, scaling    , const glm::vec3&)

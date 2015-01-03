@@ -43,8 +43,6 @@ class Mesh {
     void               resetGeometry     ();
     RenderMode         renderMode        () const;
     void               renderMode        (RenderMode);
-    bool               renderWireframe   () const;
-    void               renderWireframe   (bool);
 
     void               scale             (const glm::vec3&);
     void               scaling           (const glm::vec3&);

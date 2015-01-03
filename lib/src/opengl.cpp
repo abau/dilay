@@ -1,8 +1,10 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions_2_1>
+#include <QOpenGLExtensions>
 #include <glm/glm.hpp>
 #include <iostream>
 #include "opengl.hpp"
+#include "shader.hpp"
 
 #define DELEGATE_GL_CONSTANT(method,constant) \
   unsigned int method () { return constant; }
@@ -26,7 +28,8 @@ namespace OpenGL {
   static_assert (sizeof (int) >= 4, "type does not meet size required by OpenGL");
   static_assert (sizeof (float) >= 4, "type does not meet size required by OpenGL");
 
-  static QOpenGLFunctions_2_1* fun = nullptr;
+  static QOpenGLFunctions_2_1* fun                    = nullptr;
+  static QOpenGLExtension_EXT_geometry_shader4* gsFun = nullptr;
 
   void setDefaultFormat () {
     QSurfaceFormat format;
@@ -46,6 +49,15 @@ namespace OpenGL {
       std::abort ();
     }
     fun->initializeOpenGLFunctions ();
+
+    if (OpenGL::supportsGeometryShader ()) {
+      gsFun = new QOpenGLExtension_EXT_geometry_shader4 ();
+      if (gsFun == false) {
+        std::cerr << "Could not initialize GL_EXT_geometry_shader4 extension" << std::endl;
+        std::abort ();
+      }
+      gsFun->initializeOpenGLFunctions ();
+    }
   }
 
   DELEGATE_GL_CONSTANT (ArrayBuffer, GL_ARRAY_BUFFER);
@@ -84,12 +96,17 @@ namespace OpenGL {
   DELEGATE2_GL (void, glGenBuffers, unsigned int, unsigned int*)
   DELEGATE2_GL (int , glGetUniformLocation, unsigned int, const char*)
   DELEGATE1_GL (bool, glIsBuffer, unsigned int)
+  DELEGATE1_GL (bool, glIsProgram, unsigned int)
   DELEGATE2_GL (void, glPolygonMode, unsigned int, unsigned int)
   DELEGATE2_GL (void, glUniform1f, int, float)
   DELEGATE4_GL (void, glUniformMatrix4fv, int, unsigned int, bool, const float*)
   DELEGATE1_GL (void, glUseProgram, unsigned int)
   DELEGATE6_GL (void, glVertexAttribPointer, unsigned int, int, unsigned int, bool, unsigned int, const void*)
   DELEGATE4_GL (void, glViewport, unsigned int, unsigned int, unsigned int, unsigned int)
+
+  bool supportsGeometryShader () {
+    return QOpenGLContext::currentContext ()->hasExtension (QByteArray ("GL_EXT_geometry_shader4"));
+  }
 
   void glUniformVec3 (unsigned int id, const glm::vec3& v) {
     fun->glUniform3f (id, v.x, v.y, v.z);
@@ -129,7 +146,8 @@ namespace OpenGL {
   }
 
   unsigned int loadProgram ( const std::string& vertexShader
-                           , const std::string& fragmentShader ) 
+                           , const std::string& fragmentShader
+                           , bool loadGeometryShader ) 
   {
     auto showInfoLog = [] (GLuint id) {
       const int maxLogLength = 1000;
@@ -159,15 +177,27 @@ namespace OpenGL {
       return shaderId;
     };
 
-    GLuint vsId = compileShader (GL_VERTEX_SHADER,   vertexShader);
-    GLuint fsId = compileShader (GL_FRAGMENT_SHADER, fragmentShader);
-
     GLuint programId = fun->glCreateProgram();
+    GLuint vsId      = compileShader (GL_VERTEX_SHADER,   vertexShader);
+    GLuint fsId      = compileShader (GL_FRAGMENT_SHADER, fragmentShader);
+    GLuint gmId      = 0;
+
     fun->glAttachShader (programId, vsId);
     fun->glAttachShader (programId, fsId);
 
-    fun->glBindAttribLocation   (programId, OpenGL::PositionIndex, "position");
-    fun->glBindAttribLocation   (programId, OpenGL::NormalIndex,   "normal");
+    if (loadGeometryShader) {
+      assert (OpenGL::supportsGeometryShader ());
+
+      gmId = compileShader (GL_GEOMETRY_SHADER_EXT, Shader::geometryShader ());
+      fun->glAttachShader (programId, gmId);
+
+      gsFun->glProgramParameteriEXT (programId, GL_GEOMETRY_VERTICES_OUT_EXT, 3);
+      gsFun->glProgramParameteriEXT (programId, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
+      gsFun->glProgramParameteriEXT (programId, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLES);
+    }
+
+    fun->glBindAttribLocation (programId, OpenGL::PositionIndex, "position");
+    fun->glBindAttribLocation (programId, OpenGL::NormalIndex,   "normal");
 
     fun->glLinkProgram (programId);
 
@@ -177,11 +207,12 @@ namespace OpenGL {
     if (status == GL_FALSE) {
       showInfoLog               (programId);
       OpenGL::safeDeleteProgram (programId);
-      OpenGL::safeDeleteShader  (vsId);
-      OpenGL::safeDeleteShader  (fsId);
       std::cerr << "Can not link shader program: see info log" << std::endl;
       std::abort ();
     }
+    OpenGL::safeDeleteShader (vsId);
+    OpenGL::safeDeleteShader (fsId);
+    OpenGL::safeDeleteShader (gmId);
     return programId;
   }
 }

@@ -1,5 +1,5 @@
 CONFIG                 += warn_on object_parallel_to_source ordered
-QT                     += widgets opengl xml
+QT                     += widgets opengl openglextensions xml
 MOC_DIR                =  moc
 OBJECTS_DIR            =  obj
 QMAKE_CXXFLAGS         += --std=c++14 -DGLM_FORCE_RADIANS 

@@ -47,6 +47,7 @@ namespace OpenGL {
   void glGenBuffers               (unsigned int, unsigned int*);
   int  glGetUniformLocation       (unsigned int, const char*);
   bool glIsBuffer                 (unsigned int);
+  bool glIsProgram                (unsigned int);
   void glPolygonMode              (unsigned int, unsigned int);
   void glUniform1f                (int, float);
   void glUniformMatrix4fv         (int, unsigned int, bool, const float*);
@@ -59,13 +60,13 @@ namespace OpenGL {
                            , NormalIndex   = 1
                            };
 
-  void         drawLineElements   (unsigned int);
-  void         glUniformVec3      (unsigned int, const glm::vec3&);
-  void         glUniformVec4      (unsigned int, const glm::vec4&);
-  void         safeDeleteBuffer   (unsigned int&);
-  void         safeDeleteShader   (unsigned int&);
-  void         safeDeleteProgram  (unsigned int&);
-  unsigned int loadProgram        (const std::string&, const std::string&);
+  bool         supportsGeometryShader ();
+  void         glUniformVec3          (unsigned int, const glm::vec3&);
+  void         glUniformVec4          (unsigned int, const glm::vec4&);
+  void         safeDeleteBuffer       (unsigned int&);
+  void         safeDeleteShader       (unsigned int&);
+  void         safeDeleteProgram      (unsigned int&);
+  unsigned int loadProgram            (const std::string&, const std::string&, bool);
 }
 
 #endif

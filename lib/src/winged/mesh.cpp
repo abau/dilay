@@ -226,16 +226,31 @@ struct WingedMesh::Impl {
   }
 
   void toggleRenderMode () { 
-    if (this->mesh.renderMode () == RenderMode::Smooth) {
-      this->mesh.renderMode (RenderMode::Flat);
-    }
-    else {
-      this->mesh.renderMode (RenderMode::Smooth);
+    switch (this->mesh.renderMode ()) {
+      case RenderMode::Smooth:
+        this->mesh.renderMode (RenderMode::Flat);
+        break;
+      case RenderMode::SmoothWireframe:
+        this->mesh.renderMode (RenderMode::FlatWireframe);
+        break;
+      case RenderMode::Flat:
+        this->mesh.renderMode (RenderMode::Smooth);
+        break;
+      case RenderMode::FlatWireframe:
+        this->mesh.renderMode (RenderMode::SmoothWireframe);
+        break;
+      default:
+        std::abort ();
     }
   }
 
   void toggleRenderWireframe () { 
-    this->mesh.renderWireframe (! this->mesh.renderWireframe ());
+    if (RenderModeUtil::rendersWireframe (this->mesh.renderMode ())) {
+      this->mesh.renderMode (RenderModeUtil::nonWireframe (this->mesh.renderMode ()));
+    }
+    else {
+      this->mesh.renderMode (RenderModeUtil::wireframe (this->mesh.renderMode ()));
+    }
   }
 
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
