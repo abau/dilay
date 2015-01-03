@@ -1,3 +1,4 @@
+#include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
@@ -35,7 +36,8 @@ struct ToolCarve::Impl {
     , brush  ( this->self->config ().get <float> ("radius"           , 10.0f)
              , this->self->config ().get <float> ("detail-factor"    ,  0.6f)
              , this->self->config ().get <float> ("intensity-factor" ,  0.1f)
-             , this->self->config ().get <float> ("step-width-factor",  0.3f) )
+             , this->self->config ().get <float> ("step-width-factor",  0.3f)
+             , this->self->config ().get <bool>  ("subdivide"        ,  true) )
     , cursor ( this->brush.radius ()
              , this->self->config ().get <Color> ("cursor-color"     , Color::red ()) )
   {
@@ -77,6 +79,13 @@ struct ToolCarve::Impl {
       this->self->config ().cache ("step-width-factor", s);
     });
     this->self->properties ().addWidget (QObject::tr ("Step width"), stepEdit);
+
+    QCheckBox& subdivEdit = ViewUtil::checkBox (QObject::tr ("Subdivide"), this->brush.subdivide ());
+    QObject::connect (&subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
+      this->brush.subdivide (bool (s));
+      this->self->config ().cache ("subdivide", bool (s));
+    });
+    this->self->properties ().addWidget (subdivEdit);
   }
 
   void setupToolTip () {

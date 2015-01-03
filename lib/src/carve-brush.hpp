@@ -8,17 +8,19 @@ class WingedMesh;
 
 class CarveBrush {
   public:
-    DECLARE_BIG6 (CarveBrush, float, float, float, float)
+    DECLARE_BIG6 (CarveBrush, float, float, float, float, bool)
 
-    float            radius          ()      const;
-    float            detailFactor    ()      const;
-    float            intensityFactor ()      const;
-    float            stepWidthFactor ()      const;
+    float            radius          () const;
+    float            detailFactor    () const;
+    float            intensityFactor () const;
+    float            stepWidthFactor () const;
+    bool             subdivide       () const;
 
     void             radius          (float);
     void             detailFactor    (float);
     void             intensityFactor (float);
     void             stepWidthFactor (float);
+    void             subdivide       (bool);
 
     float            y               (float) const;
     float            subdivThreshold ()      const;

@@ -47,9 +47,12 @@ struct ActionCarve::Impl {
     PrimSphere    sphere (brush.position (), brush.radius ());
     WingedMesh&   mesh = brush.mesh ();
 
-    mesh.intersects      (sphere, domain);
-    this->carveFaces     (brush, domain);
-    this->subdivideEdges (brush, domain);
+    mesh.intersects  (sphere, domain);
+    this->carveFaces (brush, domain);
+
+    if (brush.subdivide ()) {
+      this->subdivideEdges (brush, domain);
+    }
     this->self->finalize (mesh, domain, this->actions);
   }
 
