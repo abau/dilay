@@ -2,7 +2,6 @@
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include <unordered_map>
 #include "action/carve.hpp"
 #include "camera.hpp"
 #include "carve-brush.hpp"
@@ -18,9 +17,7 @@
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
-#include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
-#include "view/util.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"

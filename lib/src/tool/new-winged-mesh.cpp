@@ -8,7 +8,6 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/properties.hpp"
-#include "view/tool/menu-parameters.hpp"
 #include "view/util.hpp"
 #include "util.hpp"
 

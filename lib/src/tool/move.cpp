@@ -14,8 +14,6 @@
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "variant.hpp"
-#include "view/gl-widget.hpp"
-#include "view/main-window.hpp"
 #include "view/properties.hpp"
 #include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
