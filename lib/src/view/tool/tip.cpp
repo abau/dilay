@@ -19,6 +19,22 @@ namespace {
   QString tipToString (const Tip& tip) {
     QString string ("[");
 
+    switch (std::get <1> (tip)) {
+      case ViewToolTip::Modifier::None: 
+        break;
+
+      case ViewToolTip::Modifier::Ctrl: 
+        string.append ("Ctrl+");
+        break;
+
+      case ViewToolTip::Modifier::Shift: 
+        string.append ("Shift+");
+        break;
+
+      case ViewToolTip::Modifier::Alt: 
+        string.append ("Alt+");
+        break;
+    }
     switch (std::get <0> (tip)) {
       case ViewToolTip::MouseEvent::Left: 
         string.append ("Left");
@@ -34,22 +50,6 @@ namespace {
 
       case ViewToolTip::MouseEvent::Right: 
         string.append ("Right");
-        break;
-    }
-    switch (std::get <1> (tip)) {
-      case ViewToolTip::Modifier::None: 
-        break;
-
-      case ViewToolTip::Modifier::Ctrl: 
-        string.append ("+Ctrl");
-        break;
-
-      case ViewToolTip::Modifier::Shift: 
-        string.append ("+Shift");
-        break;
-
-      case ViewToolTip::Modifier::Alt: 
-        string.append ("+Alt");
         break;
     }
 
