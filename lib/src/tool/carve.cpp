@@ -33,7 +33,7 @@ struct ToolCarve::Impl {
   Impl (ToolCarve* s) 
     : self   (s) 
     , brush  ( this->self->config ().get <float> ("radius"           , 10.0f)
-             , this->self->config ().get <float> ("detail"           ,  0.6f)
+             , this->self->config ().get <float> ("detail-factor"    ,  0.6f)
              , this->self->config ().get <float> ("intensity-factor" ,  0.1f)
              , this->self->config ().get <float> ("step-width-factor",  0.3f) )
     , cursor ( this->brush.radius ()
@@ -55,10 +55,10 @@ struct ToolCarve::Impl {
     });
     this->self->properties ().addWidget (QObject::tr ("Radius"), *radiusEdit);
 
-    QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, this->brush.detail (), 0.95f, 0.1f);
+    QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, this->brush.detailFactor (), 0.95f, 0.1f);
     ViewUtil::connect (detailEdit, [this] (float h) {
-      this->brush.detail (h);
-      this->self->config ().cache ("detail", h);
+      this->brush.detailFactor (h);
+      this->self->config ().cache ("detail-factor", h);
     });
     this->self->properties ().addWidget (QObject::tr ("Detail"), detailEdit);
 

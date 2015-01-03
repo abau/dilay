@@ -12,7 +12,7 @@ class CarveBrush {
 
     float            y               (float) const;
     float            radius          ()      const;
-    float            detail          ()      const;
+    float            detailFactor    ()      const;
     float            subdivThreshold ()      const;
     float            intensityFactor ()      const;
     float            intensity       ()      const;
@@ -25,7 +25,7 @@ class CarveBrush {
 
     bool             updatePosition  (WingedMesh&, const glm::vec3&);
     void             radius          (float);
-    void             detail          (float);
+    void             detailFactor    (float);
     void             intensityFactor (float);
     void             stepWidthFactor (float);
 

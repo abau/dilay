@@ -5,7 +5,7 @@
 struct CarveBrush :: Impl {
 
   float        radius;
-  float        detail;
+  float        detailFactor;
   float        intensityFactor;
   float        stepWidthFactor;
   bool         hasPosition;
@@ -15,7 +15,7 @@ struct CarveBrush :: Impl {
 
   Impl (float r, float d, float i, float s) 
     : radius          (r)
-    , detail          (d)
+    , detailFactor    (d)
     , intensityFactor (i)
     , stepWidthFactor (s)
     , hasPosition     (false)
@@ -33,7 +33,7 @@ struct CarveBrush :: Impl {
   }
 
   float subdivThreshold () const {
-    return (1.0f - this->detail) * this->radius;
+    return (1.0f - this->detailFactor) * this->radius;
   }
 
   float intensity () const {
@@ -79,7 +79,7 @@ DELEGATE4_BIG6 (CarveBrush, float, float, float, float)
   
 DELEGATE1_CONST (float            , CarveBrush, y, float)
 GETTER_CONST    (float            , CarveBrush, radius)
-GETTER_CONST    (float            , CarveBrush, detail)
+GETTER_CONST    (float            , CarveBrush, detailFactor)
 DELEGATE_CONST  (float            , CarveBrush, subdivThreshold)
 GETTER_CONST    (float            , CarveBrush, intensityFactor)
 DELEGATE_CONST  (float            , CarveBrush, intensity)
@@ -91,6 +91,6 @@ DELEGATE_CONST  (const glm::vec3& , CarveBrush, position)
 DELEGATE_CONST  (WingedMesh&      , CarveBrush, mesh)
 DELEGATE2       (bool             , CarveBrush, updatePosition, WingedMesh&, const glm::vec3&)
 SETTER          (float            , CarveBrush, radius)
-SETTER          (float            , CarveBrush, detail)
+SETTER          (float            , CarveBrush, detailFactor)
 SETTER          (float            , CarveBrush, intensityFactor)
 SETTER          (float            , CarveBrush, stepWidthFactor)
