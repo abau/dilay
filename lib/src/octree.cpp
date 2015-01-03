@@ -1,11 +1,9 @@
 #include <glm/glm.hpp>
 #include <limits>
 #include <memory>
-#include <set>
 #include <vector>
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
-#include "camera.hpp"
 #include "fwd-winged.hpp"
 #include "indexable.hpp"
 #include "octree.hpp"
@@ -22,7 +20,6 @@
 #include "color.hpp"
 #include "mesh.hpp"
 #include "render-mode.hpp"
-#include "renderer.hpp"
 #endif
 
 namespace {
@@ -132,6 +129,7 @@ struct OctreeNode::Impl {
       this->mesh.position   (this->center);
       this->mesh.renderMode (RenderMode::Constant);
       this->mesh.bufferData ();
+      this->mesh.color      (Color (1.0f, 1.0f, 0.0f));
 #endif
   }
         Impl            (const Impl&) = delete;
@@ -158,15 +156,15 @@ struct OctreeNode::Impl {
     assert (this->storeDegenerated == false);
 
     this->mesh.renderBegin (camera);
-    camera.renderer ().setColor3 (Color (1.0f, 1.0f, 0.0f));
     OpenGL::glDisable      (OpenGL::DepthTest ());
     OpenGL::glDrawElements ( OpenGL::Lines (), this->mesh.numIndices ()
                            , OpenGL::UnsignedInt (), nullptr );
     OpenGL::glEnable       (OpenGL::DepthTest ());
     this->mesh.renderEnd   ();
 
-    for (Child& c : this->children) 
+    for (Child& c : this->children) {
       c->render (camera);
+    }
   }
 #else
   void render (const Camera&) { std::abort (); }

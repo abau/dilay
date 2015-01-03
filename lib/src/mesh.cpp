@@ -214,6 +214,9 @@ struct Mesh::Impl {
     else {
       camera.renderer ().setProgram (this->renderMode);
     }
+    camera.renderer ().setColor3          (this->color);
+    camera.renderer ().setWireframeColor3 (this->wireframeColor);
+
     this->setModelMatrix              (camera, noZoom);
 
     OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId);
@@ -240,8 +243,6 @@ struct Mesh::Impl {
   void render (const Camera& camera, bool noZoom) {
     this->renderBegin (camera, noZoom);
 
-    camera.renderer ().setColor3          (this->color);
-    camera.renderer ().setWireframeColor3 (this->wireframeColor);
     OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
                            , OpenGL::UnsignedInt (), (void*)0 );
 

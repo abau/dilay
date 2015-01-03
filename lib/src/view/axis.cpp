@@ -10,7 +10,6 @@
 #include "mesh.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
-#include "renderer.hpp"
 #include "state.hpp"
 #include "view/axis.hpp"
 
@@ -65,6 +64,7 @@ struct ViewAxis::Impl {
     }
     this->gridMesh.renderMode (RenderMode::Constant);
     this->gridMesh.bufferData ();
+    this->gridMesh.color      (this->axisColor);
   }
 
   void render (Camera& camera) {
@@ -119,7 +119,6 @@ struct ViewAxis::Impl {
 
     this->gridMesh.renderBegin (camera, true);
 
-    camera.renderer ().setColor3 (this->axisColor);
     OpenGL::glDrawElements (OpenGL::Lines (), numLines, OpenGL::UnsignedInt (), (void*)0);
 
     this->gridMesh.renderEnd ();

@@ -6,7 +6,6 @@
 #include "mesh.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
-#include "renderer.hpp"
 #include "view/cursor.hpp"
 
 struct ViewCursor::Impl {
@@ -56,19 +55,17 @@ struct ViewCursor::Impl {
     this->mesh.addIndex   (this->sectors-1);
     this->mesh.renderMode (RenderMode::Constant);
     this->mesh.bufferData ();
+    this->mesh.color      (Color (1.0f, 0.0f, 0.0f));
   }
 
   void render (const Camera& camera) {
     if (this->isEnabled) {
       this->mesh.renderBegin (camera);
 
-      OpenGL::glDisable (OpenGL::DepthTest ()); 
-
-      camera.renderer ().setColor3 (Color (1.0f, 0.0f, 0.0f));
+      OpenGL::glDisable      (OpenGL::DepthTest ()); 
       OpenGL::glDrawElements ( OpenGL::Lines (), this->mesh.numIndices ()
                              , OpenGL::UnsignedInt (), (void*)0 );
-
-      OpenGL::glEnable (OpenGL::DepthTest ()); 
+      OpenGL::glEnable       (OpenGL::DepthTest ()); 
 
       this->mesh.renderEnd ();
     }
