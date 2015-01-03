@@ -14,8 +14,8 @@
 #include "variant.hpp"
 
 struct Config::Impl {
-  typedef Variant <float,int,glm::vec3,glm::ivec2,Color> Value;
-  typedef std::unordered_map <std::string, Value>        ConfigMap;
+  typedef Variant <float,int,bool,glm::vec3,glm::ivec2,Color> Value;
+  typedef std::unordered_map <std::string, Value>             ConfigMap;
 
   const std::string optionsFileName;
   const std::string cacheFileName;
@@ -144,6 +144,9 @@ struct Config::Impl {
           else if (attribute.value () == "integer") {
             this->insertIntoConfigMap <int> (configMap, prefix, element);
           }
+          else if (attribute.value () == "boolean") {
+            this->insertIntoConfigMap <bool> (configMap, prefix, element);
+          }
           else if (attribute.value () == "vector3f") {
             this->insertIntoConfigMap <glm::vec3> (configMap, prefix, element);
           }
@@ -214,6 +217,9 @@ struct Config::Impl {
       else if (value.is <int> ()) {
         ConfigConversion::toDomElement (doc, elem, value.get <int> ());
       }
+      else if (value.is <bool> ()) {
+        ConfigConversion::toDomElement (doc, elem, value.get <bool> ());
+      }
       else if (value.is <glm::vec3> ()) {
         ConfigConversion::toDomElement (doc, elem, value.get <glm::vec3> ());
       }
@@ -270,6 +276,9 @@ template void              Config :: cache<float>      (const std::string&, cons
 template const int&        Config :: get<int>          (const std::string&) const;
 template const int&        Config :: get<int>          (const std::string&, const int&) const;
 template void              Config :: cache<int>        (const std::string&, const int&);
+template const bool&       Config :: get<bool>         (const std::string&) const;
+template const bool&       Config :: get<bool>         (const std::string&, const bool&) const;
+template void              Config :: cache<bool>       (const std::string&, const bool&);
 template const Color&      Config :: get<Color>        (const std::string&) const;
 template const Color&      Config :: get<Color>        (const std::string&, const Color&) const;
 template void              Config :: cache<Color>      (const std::string&, const Color&);

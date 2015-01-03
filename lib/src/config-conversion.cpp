@@ -17,6 +17,13 @@ bool ConfigConversion :: fromDomElement (QDomElement e, int& v) {
   return ok;
 }
 
+bool ConfigConversion :: fromDomElement (QDomElement e, bool& v) {
+  assert (e.attributeNode ("type").value () == "boolean");
+  bool ok = true;
+  v = e.text ().toInt (&ok) != 0;
+  return ok;
+}
+
 bool ConfigConversion :: fromDomElement (QDomElement e, glm::vec3& v) {
   assert (e.attributeNode ("type").value () == "vector3f");
 
@@ -60,6 +67,13 @@ QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& 
                                               , const int& v) {
   elem.setAttribute ("type", "integer");
   elem.appendChild  (doc.createTextNode (std::to_string (v).c_str ()));
+  return elem;
+}
+
+QDomElement& ConfigConversion :: toDomElement ( QDomDocument& doc, QDomElement& elem
+                                              , const bool& v) {
+  elem.setAttribute ("type", "boolean");
+  elem.appendChild  (doc.createTextNode (std::to_string (v ? 1 : 0).c_str ()));
   return elem;
 }
 
