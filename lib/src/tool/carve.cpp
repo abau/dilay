@@ -5,6 +5,7 @@
 #include "action/carve.hpp"
 #include "camera.hpp"
 #include "carve-brush.hpp"
+#include "color.hpp"
 #include "config.hpp"
 #include "history.hpp"
 #include "primitive/ray.hpp"
@@ -35,7 +36,8 @@ struct ToolCarve::Impl {
              , this->self->config ().get <float> ("detail"           ,  0.6f)
              , this->self->config ().get <float> ("intensity-factor" ,  0.1f)
              , this->self->config ().get <float> ("step-width-factor",  0.3f) )
-    , cursor (this->brush.radius ())
+    , cursor ( this->brush.radius ()
+             , this->self->config ().get <Color> ("cursor-color"     , Color::red ()) )
   {
     this->setupProperties ();
     this->setupToolTip    ();

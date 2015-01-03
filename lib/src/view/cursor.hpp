@@ -5,10 +5,11 @@
 #include "macro.hpp"
 
 class Camera;
+class Color;
 
 class ViewCursor {
   public: 
-    DECLARE_BIG6 (ViewCursor, float)
+    DECLARE_BIG6 (ViewCursor, float, const Color&)
 
     void  radius         (float);
     void  position       (const glm::vec3&);
