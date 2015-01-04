@@ -13,7 +13,7 @@ enum class MovementConstraint { XAxis, YAxis, ZAxis
                               };
 class ToolUtilMovement {
   public:
-    DECLARE_BIG4COPY (ToolUtilMovement, const Camera&, MovementConstraint)
+    DECLARE_BIG4COPY (ToolUtilMovement, const Camera&, const glm::vec3&, MovementConstraint)
 
     MovementConstraint constraint       () const;
           void         constraint       (MovementConstraint);

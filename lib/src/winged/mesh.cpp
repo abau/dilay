@@ -177,6 +177,10 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
+  glm::vec3 avgCenter () const {
+    return this->octree.avgCenter ();
+  }
+
   void writeAllIndices () {
     this->octree.forEachFace ([this] (WingedFace& face) {
       face.writeIndices (*this->self);
@@ -349,6 +353,7 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
+DELEGATE_CONST  (glm::vec3   , WingedMesh, avgCenter)
 
 DELEGATE        (void, WingedMesh, writeAllIndices)
 DELEGATE        (void, WingedMesh, writeAllNormals)

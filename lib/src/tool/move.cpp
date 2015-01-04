@@ -34,7 +34,7 @@ struct ToolMove::Impl {
   Impl (ToolMove* s) 
     : self      (s) 
     , entities  (std::move (this->getEntities ()))
-    , movement  (s->state ().camera (), MovementConstraint::CameraPlane)
+    , movement  (s->state ().camera (), this->center (), MovementConstraint::CameraPlane)
     , deltaEdit (*new ViewVectorEdit ("\u0394", glm::vec3 (0.0f)))
   {
     this->setupProperties ();
@@ -124,6 +124,23 @@ struct ToolMove::Impl {
       }
     }
     return entities;
+  }
+
+  glm::vec3 center () {
+    glm::vec3    c (0.0f);
+    unsigned int n (0);
+    Scene&       scene = this->self->state ().scene ();
+
+    switch (scene.selectionMode ()) {
+      case SelectionMode::WingedMesh: {
+        scene.forEachSelectedMesh ([&c,&n] (WingedMesh& m) { 
+          c += m.avgCenter ();
+          n++;
+        });
+        break;
+      }
+    }
+    return c / float (n);
   }
 
   void resetTranslationOfSelection () {

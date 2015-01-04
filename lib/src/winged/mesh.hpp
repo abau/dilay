@@ -57,6 +57,7 @@ class WingedMesh : public ProxyConfigurable {
     unsigned int       numIndices            () const;
     unsigned int       numFreeFaceIndices    () const;
     bool               isEmpty               () const;
+    glm::vec3          avgCenter             () const;
 
     void               writeAllIndices       (); 
     void               writeAllNormals       (); 
