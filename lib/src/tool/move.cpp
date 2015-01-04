@@ -33,7 +33,7 @@ struct ToolMove::Impl {
 
   Impl (ToolMove* s) 
     : self      (s) 
-    , entities  (std::move (Impl::getEntities ()))
+    , entities  (std::move (this->getEntities ()))
     , movement  (s->state ().camera (), MovementConstraint::CameraPlane)
     , deltaEdit (*new ViewVectorEdit ("\u0394", glm::vec3 (0.0f)))
   {
@@ -112,9 +112,8 @@ struct ToolMove::Impl {
   }
 
   Entities getEntities () {
-          Entities   entities;
-          Scene&     scene     = this->self->state ().scene ();
-    const Selection& selection = scene.selection ();
+    Entities entities;
+    Scene&   scene = this->self->state ().scene ();
 
     switch (scene.selectionMode ()) {
       case SelectionMode::WingedMesh: {
@@ -123,8 +122,6 @@ struct ToolMove::Impl {
         entities.set <MeshPtrList> (meshes);
         break;
       }
-      default:
-        std::abort ();
     }
     return entities;
   }
