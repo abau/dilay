@@ -4,15 +4,15 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-class PrimSphere;
+class PrimAABox;
+class PrimPlane;
 class PrimRay;
-class WingedVertex;
+class PrimSphere;
+class PrimTriangle;
 class WingedEdge;
 class WingedFace;
 class WingedMesh;
-class PrimPlane;
-class PrimTriangle;
-class PrimAABox;
+class WingedVertex;
 
 class Intersection {
   public:
