@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "action/carve.hpp"
+#include "action/unit.hpp"
 #include "camera.hpp"
 #include "carve-brush.hpp"
 #include "color.hpp"
@@ -21,20 +22,22 @@
 #include "winged/mesh.hpp"
 
 struct ToolCarve::Impl {
-  ToolCarve*      self;
-  CarveBrush      brush;
-  ViewCursor      cursor;
-  QDoubleSpinBox* radiusEdit;
+  ToolCarve*                   self;
+  std::unique_ptr <ActionUnit> actions;
+  CarveBrush                   brush;
+  ViewCursor                   cursor;
+  QDoubleSpinBox*              radiusEdit;
 
   Impl (ToolCarve* s) 
-    : self   (s) 
-    , brush  ( this->self->config ().get <float> ("radius"           , 10.0f)
-             , this->self->config ().get <float> ("detail-factor"    ,  0.6f)
-             , this->self->config ().get <float> ("intensity-factor" ,  0.1f)
-             , this->self->config ().get <float> ("step-width-factor",  0.3f)
-             , this->self->config ().get <bool>  ("subdivide"        ,  true) )
-    , cursor ( this->brush.radius ()
-             , this->self->config ().get <Color> ("cursor-color"     , Color::red ()) )
+    : self    (s) 
+    , actions (new ActionUnit) 
+    , brush   ( this->self->config ().get <float> ("radius"           , 10.0f)
+              , this->self->config ().get <float> ("detail-factor"    ,  0.6f)
+              , this->self->config ().get <float> ("intensity-factor" ,  0.1f)
+              , this->self->config ().get <float> ("step-width-factor",  0.3f)
+              , this->self->config ().get <bool>  ("subdivide"        ,  true) )
+    , cursor  ( this->brush.radius ()
+              , this->self->config ().get <Color> ("cursor-color"     , Color::red ()) )
   {
     this->setupProperties ();
     this->setupToolTip    ();
@@ -119,12 +122,18 @@ struct ToolCarve::Impl {
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     const bool doCarve = e.buttons () == Qt::LeftButton;
     if (this->updateCursor (ViewUtil::toIVec2 (e), doCarve)) {
-      this->self->state ().history ()
-                          .add <ActionCarve, WingedMesh> ( this->self->state ().scene ()
-                                                         , this->brush.mesh () )
-                          .run (this->brush);
+      this->actions->add <ActionCarve, WingedMesh> 
+        (this->self->state ().scene (), this->brush.mesh ()).run (this->brush);
     }
     return ToolResponse::Redraw;
+  }
+
+  ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
+    if (e.button () == Qt::LeftButton && this->actions->isEmpty () == false) {
+      this->self->state ().history ().addUnit (std::move (*this->actions));
+      this->actions.reset (new ActionUnit ());
+    }
+    return ToolResponse::None;
   }
 
   ToolResponse runWheelEvent (QWheelEvent& e) {
@@ -140,9 +149,17 @@ struct ToolCarve::Impl {
     }
     return ToolResponse::None;
   }
+
+  void runClose () {
+    if (this->actions->isEmpty () == false) {
+      this->self->state ().history ().addUnit (std::move (*this->actions));
+    }
+  }
 };
 
-DELEGATE_TOOL                       (ToolCarve)
-DELEGATE_TOOL_RUN_RENDER            (ToolCarve)
-DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT  (ToolCarve)
-DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolCarve)
+DELEGATE_TOOL                         (ToolCarve)
+DELEGATE_TOOL_RUN_RENDER              (ToolCarve)
+DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolCarve)
+DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolCarve)
+DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT   (ToolCarve)
+DELEGATE_TOOL_RUN_CLOSE               (ToolCarve)

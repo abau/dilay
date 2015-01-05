@@ -111,8 +111,9 @@ struct ViewGlWidget::Impl {
   }
 
   void keyPressEvent (QKeyEvent* e) {
-    const int                   key = e->key ();
-    const Qt::KeyboardModifiers mod = e->modifiers ();
+    const int                   key     = e->key ();
+    const Qt::KeyboardModifiers mod     = e->modifiers ();
+    const bool                  hasTool = this->state->hasTool ();
 
     if (key == Qt::Key_W) {
       if (mod == Qt::ControlModifier) {
@@ -127,7 +128,19 @@ struct ViewGlWidget::Impl {
     else if (key == Qt::Key_I) {
       this->state->scene ().printStatistics (false);
     }
-    else if (this->state->hasTool ()) {
+    else if (key == Qt::Key_Z && mod == Qt::ControlModifier
+         && (hasTool == false || this->state->tool ().allowUndoRedo ()))
+    {
+      this->state->history ().undo ();
+      this->self->update ();
+    }
+    else if (key == Qt::Key_Y && mod == Qt::ControlModifier
+         && (hasTool == false || this->state->tool ().allowUndoRedo ()))
+    {
+      this->state->history ().redo ();
+      this->self->update ();
+    }
+    else if (hasTool) {
       if (key == Qt::Key_Escape || key == Qt::Key_Enter) {
         this->state->tool    ().close ();
         this->state->setTool (nullptr);
@@ -136,14 +149,6 @@ struct ViewGlWidget::Impl {
     }
     else if (key == Qt::Key_Escape) {
       QCoreApplication::instance()->quit();
-    }
-    else if (key == Qt::Key_Z && mod == Qt::ControlModifier) {
-      this->state->history ().undo ();
-      this->self->update ();
-    }
-    else if (key == Qt::Key_Y && mod == Qt::ControlModifier) {
-      this->state->history ().redo ();
-      this->self->update ();
     }
     else {
       this->self->QOpenGLWidget::keyPressEvent (e);

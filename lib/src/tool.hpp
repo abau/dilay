@@ -23,6 +23,7 @@ class Tool {
 
     const ViewToolMenuParameters& menuParameters       () const;
     void                          showToolTip          ();
+    bool                          allowUndoRedo        () const;
     ToolResponse                  initialize           ();
     void                          render               ();
     ToolResponse                  mouseMoveEvent       (QMouseEvent&);
@@ -43,6 +44,7 @@ class Tool {
   private:
     IMPLEMENTATION
 
+    virtual bool         runAllowUndoRedo     () const       { return false; }
     virtual ToolResponse runInitialize        ()             { return ToolResponse::None; }
     virtual void         runRender            ()             {}
     virtual ToolResponse runMouseMoveEvent    (QMouseEvent&) { return ToolResponse::None; }
@@ -57,6 +59,7 @@ class Tool {
     DECLARE_BIG3 (name, const ViewToolMenuParameters&) \
     private: IMPLEMENTATION methods };
 
+#define ALLOW_TOOL_UNDO_REDO                 bool         runAllowUndoRedo     () const { return true; };
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
 #define DECLARE_TOOL_RUN_RENDER              void         runRender            ();
 #define DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT    ToolResponse runMouseMoveEvent    (QMouseEvent&);

@@ -38,6 +38,10 @@ struct Tool::Impl {
     this->state ().mainWindow ().showToolTip (this->toolTip);
   }
 
+  bool allowUndoRedo () const {
+    return this->self->runAllowUndoRedo ();
+  }
+
   ToolResponse initialize () { 
     return this->self->runInitialize ();
   }
@@ -102,6 +106,7 @@ struct Tool::Impl {
 DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const std::string&)
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (void                         , Tool, showToolTip)
+DELEGATE_CONST (bool                         , Tool, allowUndoRedo)
 DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE       (void                         , Tool, render)
 DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
