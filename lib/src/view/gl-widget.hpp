@@ -22,7 +22,6 @@ class ViewGlWidget : public QOpenGLWidget {
     void resizeGL           (int,int);
     void paintGL            ();
  
-    //void paintEvent         (QPaintEvent*);
     void keyPressEvent      (QKeyEvent*);
     void mouseMoveEvent     (QMouseEvent*);
     void mousePressEvent    (QMouseEvent*);
