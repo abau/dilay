@@ -32,12 +32,12 @@ class Tool {
     void                          close                ();
 
   protected:
-    State&                        state                ();
+    State&                        state                () const;
     void                          updateGlWidget       ();
-    ViewProperties&               properties           ();
-    ViewToolTip&                  toolTip              ();
+    ViewProperties&               properties           () const;
+    ViewToolTip&                  toolTip              () const;
     void                          resetToolTip         ();
-    ConfigProxy&                  config               ();
+    ConfigProxy&                  config               () const;
     glm::ivec2                    cursorPosition       () const;
 
   private:

@@ -77,7 +77,7 @@ struct Tool::Impl {
     return this->self->runClose (); 
   }
 
-  State& state () {
+  State& state () const {
     return this->menuParameters.state ();
   }
 
@@ -85,7 +85,7 @@ struct Tool::Impl {
     this->state ().mainWindow ().glWidget ().update ();
   }
 
-  ViewProperties& properties () {
+  ViewProperties& properties () const {
     return this->state ().mainWindow ().properties ().tool ();
   }
 
@@ -109,10 +109,10 @@ DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEven
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
 DELEGATE       (void                         , Tool, close)
-DELEGATE       (State&                       , Tool, state)
+DELEGATE_CONST (State&                       , Tool, state)
 DELEGATE       (void                         , Tool, updateGlWidget)
-DELEGATE       (ViewProperties&              , Tool, properties)
-GETTER         (ViewToolTip&                 , Tool, toolTip)
+DELEGATE_CONST (ViewProperties&              , Tool, properties)
+GETTER_CONST   (ViewToolTip&                 , Tool, toolTip)
 DELEGATE       (void                         , Tool, resetToolTip)
-GETTER         (ConfigProxy&                 , Tool, config)
+GETTER_CONST   (ConfigProxy&                 , Tool, config)
 DELEGATE_CONST (glm::ivec2                   , Tool, cursorPosition)
