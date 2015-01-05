@@ -14,7 +14,6 @@ SOURCES += \
            src/action/modify-winged-mesh.cpp \
            src/action/new-winged-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
-           src/action/reset-free-face-indices.cpp \
            src/action/subdivide-mesh.cpp \
            src/action/unit.cpp \
            src/action/util.cpp \
@@ -103,7 +102,6 @@ HEADERS += \
            src/action/new-winged-mesh.hpp \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
-           src/action/reset-free-face-indices.hpp \
            src/action/subdivide-mesh.hpp \
            src/action/transformer.hpp \
            src/action/unit.hpp \

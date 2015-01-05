@@ -1,6 +1,5 @@
 #include <unordered_set>
 #include "action/on-post-processed-winged-mesh.hpp"
-#include "action/reset-free-face-indices.hpp"
 #include "action/unit/on.hpp"
 #include "affected-faces.hpp"
 #include "bitset.hpp"
@@ -111,9 +110,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
       }
       affectedFaces.commit ();
     }
-
-    // reset free face indices
-    actions.add <ActionResetFreeFaceIndices> ().run (mesh);
+    mesh.resetFreeFaceIndices ();
 
     // write normals
     for (WingedVertex* v : affectedFaces.toVertexSet ()) {

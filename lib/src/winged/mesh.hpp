@@ -61,6 +61,7 @@ class WingedMesh : public ProxyConfigurable {
 
     void               writeAllIndices       (); 
     void               writeAllNormals       (); 
+    void               resetFreeFaceIndices  ();
     void               bufferData            ();
     void               render                (const Camera&, bool);
     void               reset                 ();
