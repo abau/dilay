@@ -353,19 +353,6 @@ struct OctreeNode::Impl {
       }
     }
   }
-
-  glm::vec3 avgCenter () const {
-    if (this->children.empty ()) {
-      return this->center;
-    }
-    else {
-      glm::vec3 center (0.0f);
-      for (const Child& c : this->children) {
-        center += c->avgCenter ();
-      }
-      return center / float (this->children.size ());
-    }
-  }
 };
 
 OctreeNode :: OctreeNode (OctreeNode::Impl* i) : impl (i) { }
@@ -622,11 +609,6 @@ struct Octree::Impl {
     }
   }
 
-  glm::vec3 avgCenter () const {
-    assert (this->hasRoot ());
-    return this->root->avgCenter ();
-  }
-
   void forEachFace (const std::function <void (WingedFace&)>& f) const {
     this->faceIndex.forEachElement (f);
   }
@@ -656,6 +638,5 @@ DELEGATE_CONST  (unsigned int, Octree, numIndices)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE_CONST  (WingedFace* , Octree, someFace)
 DELEGATE_CONST  (WingedFace* , Octree, someDegeneratedFace)
-DELEGATE_CONST  (glm::vec3   , Octree, avgCenter)
 DELEGATE1_CONST (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
 DELEGATE1_CONST (void        , Octree, forEachFreeFaceIndex, const std::function <void (unsigned int)>&)

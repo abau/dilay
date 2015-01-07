@@ -319,6 +319,16 @@ struct Mesh::Impl {
   void rotationZ (float angle) {
     this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (0.0f,0.0f,1.0f));
   }
+
+  glm::vec3 center () const {
+    glm::vec3 c (0.0f);
+    for (unsigned int i = 0; i < this->numVertices (); i++) {
+      c.x += this->vertices [(3 * i) + 0];
+      c.y += this->vertices [(3 * i) + 1];
+      c.z += this->vertices [(3 * i) + 2];
+    }
+    return c / float (this->numVertices ());
+  }
 };
 
 DELEGATE_BIG6         (Mesh)
@@ -364,6 +374,7 @@ GETTER_CONST     (const glm::mat4x4&, Mesh, rotationMatrix)
 DELEGATE1        (void              , Mesh, rotationX, float)
 DELEGATE1        (void              , Mesh, rotationY, float)
 DELEGATE1        (void              , Mesh, rotationZ, float)
+DELEGATE_CONST   (glm::vec3         , Mesh, center)
 GETTER_CONST     (const Color&      , Mesh, color)
 SETTER           (const Color&      , Mesh, color)
 GETTER_CONST     (const Color&      , Mesh, wireframeColor)

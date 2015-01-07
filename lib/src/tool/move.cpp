@@ -139,7 +139,7 @@ struct ToolMove::Impl {
     switch (scene.selectionMode ()) {
       case SelectionMode::WingedMesh: {
         scene.forEachSelectedMesh ([&c,&n] (WingedMesh& m) { 
-          c += m.avgCenter ();
+          c += m.center ();
           n++;
         });
         break;

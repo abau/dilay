@@ -177,8 +177,8 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  glm::vec3 avgCenter () const {
-    return this->octree.avgCenter ();
+  glm::vec3 center () const {
+    return this->mesh.center ();
   }
 
   void writeAllIndices () {
@@ -364,7 +364,7 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
-DELEGATE_CONST  (glm::vec3   , WingedMesh, avgCenter)
+DELEGATE_CONST  (glm::vec3   , WingedMesh, center)
 
 DELEGATE        (void, WingedMesh, writeAllIndices)
 DELEGATE        (void, WingedMesh, writeAllNormals)

@@ -71,7 +71,6 @@ class Octree {
     OctreeStatistics statistics           () const;
     WingedFace*      someFace             () const;
     WingedFace*      someDegeneratedFace  () const;
-    glm::vec3        avgCenter            () const;
 
     void             forEachFace          (const std::function <void (WingedFace&)>&) const;
     void             forEachFreeFaceIndex (const std::function <void (unsigned int)>&) const;

@@ -55,6 +55,7 @@ class Mesh {
     void               rotationX         (float);
     void               rotationY         (float);
     void               rotationZ         (float);
+    glm::vec3          center            () const;
     const Color&       color             () const;
     void               color             (const Color&);
     const Color&       wireframeColor    () const;
