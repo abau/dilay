@@ -1,7 +1,9 @@
 #include <QMouseEvent>
 #include <QPushButton>
 #include <glm/glm.hpp>
+#include "action.hpp"
 #include "config.hpp"
+#include "history.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -18,11 +20,13 @@ struct Tool::Impl {
   ViewToolMenuParameters menuParameters;
   ViewToolTip            toolTip;
   ConfigProxy            config;
+  const Action*          undoLimit;
 
   Impl (Tool* s, const ViewToolMenuParameters& p, const std::string& key) 
     : self           (s) 
     , menuParameters (p)
     , config         (p.state ().config (), "editor/tool/" + key + "/")
+    , undoLimit      (p.state ().history ().recent ())
   {
     QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
     this->properties ().setFooter (close);
@@ -38,7 +42,12 @@ struct Tool::Impl {
     this->state ().mainWindow ().showToolTip (this->toolTip);
   }
 
-  bool allowUndoRedo () const {
+  bool allowUndo () const {
+    return ( this->menuParameters.state ().history ().recent () != this->undoLimit )
+        && ( this->self->runAllowUndoRedo () );
+  }
+
+  bool allowRedo () const {
     return this->self->runAllowUndoRedo ();
   }
 
@@ -106,7 +115,8 @@ struct Tool::Impl {
 DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const std::string&)
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (void                         , Tool, showToolTip)
-DELEGATE_CONST (bool                         , Tool, allowUndoRedo)
+DELEGATE_CONST (bool                         , Tool, allowUndo)
+DELEGATE_CONST (bool                         , Tool, allowRedo)
 DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE       (void                         , Tool, render)
 DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)

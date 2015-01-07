@@ -129,13 +129,13 @@ struct ViewGlWidget::Impl {
       this->state->scene ().printStatistics (false);
     }
     else if (key == Qt::Key_Z && mod == Qt::ControlModifier
-         && (hasTool == false || this->state->tool ().allowUndoRedo ()))
+         && (hasTool == false || this->state->tool ().allowUndo ()))
     {
       this->state->history ().undo ();
       this->self->update ();
     }
     else if (key == Qt::Key_Y && mod == Qt::ControlModifier
-         && (hasTool == false || this->state->tool ().allowUndoRedo ()))
+         && (hasTool == false || this->state->tool ().allowRedo ()))
     {
       this->state->history ().redo ();
       this->self->update ();

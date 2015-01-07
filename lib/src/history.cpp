@@ -36,10 +36,15 @@ struct History::Impl {
       this->future.pop_front      ();
     }
   }
+
+  const Action* recent () const {
+    return this->past.empty () ? nullptr : &*this->past.front ();
+  }
 };
 
 DELEGATE_BIG3 (History)
-DELEGATE1 (void, History, addAction, Action*)
-DELEGATE1 (void, History, addUnit, ActionUnit&&)
-DELEGATE  (void, History, undo)
-DELEGATE  (void, History, redo)
+DELEGATE1      (void, History, addAction, Action*)
+DELEGATE1      (void, History, addUnit, ActionUnit&&)
+DELEGATE       (void, History, undo)
+DELEGATE       (void, History, redo)
+DELEGATE_CONST (const Action*, History, recent)

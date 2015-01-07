@@ -26,10 +26,11 @@ class History {
       return *action; 
     }
 
-    void addUnit (ActionUnit&&);
-    void reset   ();
-    void undo    ();
-    void redo    ();
+    void          addUnit (ActionUnit&&);
+    void          reset   ();
+    void          undo    ();
+    void          redo    ();
+    const Action* recent  () const;
 
   private:
     void addAction (Action*);

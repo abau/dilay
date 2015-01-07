@@ -23,7 +23,8 @@ class Tool {
 
     const ViewToolMenuParameters& menuParameters       () const;
     void                          showToolTip          ();
-    bool                          allowUndoRedo        () const;
+    bool                          allowUndo            () const;
+    bool                          allowRedo            () const;
     ToolResponse                  initialize           ();
     void                          render               ();
     ToolResponse                  mouseMoveEvent       (QMouseEvent&);
