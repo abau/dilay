@@ -5,8 +5,8 @@ class Action {
   public:
     virtual ~Action () {}
 
-    void undo () { this->runUndo (); }
-    void redo () { this->runRedo (); }
+    void undo () const { this->runUndo (); }
+    void redo () const { this->runRedo (); }
 
   private:
     virtual void runUndo () const = 0;
