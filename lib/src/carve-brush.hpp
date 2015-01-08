@@ -4,6 +4,7 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
+class WingedFace;
 class WingedMesh;
 
 class CarveBrush {
@@ -30,7 +31,8 @@ class CarveBrush {
     const glm::vec3& lastPosition    ()      const;
     const glm::vec3& position        ()      const;
     WingedMesh&      mesh            ()      const;
-    bool             updatePosition  (WingedMesh&, const glm::vec3&);
+    WingedFace&      face            ()      const;
+    bool             updatePosition  (WingedMesh&, WingedFace&, const glm::vec3&);
 
   private:
     IMPLEMENTATION

@@ -13,6 +13,7 @@ struct CarveBrush :: Impl {
   glm::vec3    lastPosition;
   glm::vec3   _position;
   WingedMesh* _mesh;
+  WingedFace* _face;
 
   Impl (float r, float d, float i, float s, bool sd) 
     : radius          (r)
@@ -56,12 +57,18 @@ struct CarveBrush :: Impl {
     return *this->_mesh;
   }
 
-  bool updatePosition (WingedMesh& m, const glm::vec3& p) {
+  WingedFace& face () const {
+    assert (this->hasPosition);
+    return *this->_face;
+  }
+
+  bool updatePosition (WingedMesh& m, WingedFace& f, const glm::vec3& p) {
     if (this->hasPosition) {
       if (glm::distance2 (this->_position, p) > this->stepWidth () * this->stepWidth ()) {
         this->lastPosition = this->_position;
         this->_position    =  p;
         this->_mesh        = &m;
+        this->_face        = &f;
         return true;
       }
       else {
@@ -72,6 +79,7 @@ struct CarveBrush :: Impl {
       this->hasPosition =  true;
       this->_position   =  p;
       this->_mesh       = &m;
+      this->_face       = &f;
       return true;
     }
   }
@@ -97,4 +105,5 @@ GETTER_CONST    (bool             , CarveBrush, hasPosition)
 GETTER_CONST    (const glm::vec3& , CarveBrush, lastPosition)
 DELEGATE_CONST  (const glm::vec3& , CarveBrush, position)
 DELEGATE_CONST  (WingedMesh&      , CarveBrush, mesh)
-DELEGATE2       (bool             , CarveBrush, updatePosition, WingedMesh&, const glm::vec3&)
+DELEGATE_CONST  (WingedFace&      , CarveBrush, face)
+DELEGATE3       (bool             , CarveBrush, updatePosition, WingedMesh&, WingedFace&, const glm::vec3&)

@@ -107,6 +107,7 @@ struct ToolCarve::Impl {
       this->cursor.normal   (intersection.normal   ());
 
       return updateBrush ? this->brush.updatePosition ( intersection.mesh     ()
+                                                      , intersection.face     ()
                                                       , intersection.position () )
                          : false;
     }
