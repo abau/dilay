@@ -19,10 +19,14 @@ PrimTriangle :: PrimTriangle ( const WingedMesh& mesh, const WingedVertex& v1
                  , v3.position (mesh) ) 
 {}
 
-glm::vec3 PrimTriangle :: normal () const { 
+glm::vec3 PrimTriangle :: cross () const { 
   assert (this->isDegenerated () == false);
-  return glm::normalize (glm::cross ( this->_vertex2 - this->_vertex1
-                                    , this->_vertex3 - this->_vertex2 ));
+  return glm::cross ( this->_vertex2 - this->_vertex1
+                    , this->_vertex3 - this->_vertex2 );
+}
+
+glm::vec3 PrimTriangle :: normal () const { 
+  return glm::normalize (this->cross ());
 }
 
 glm::vec3 PrimTriangle :: center () const {

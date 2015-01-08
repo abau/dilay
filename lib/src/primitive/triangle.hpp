@@ -17,6 +17,7 @@ class PrimTriangle {
     const glm::vec3& vertex1           () const { return this->_vertex1; }
     const glm::vec3& vertex2           () const { return this->_vertex2; }
     const glm::vec3& vertex3           () const { return this->_vertex3; }
+          glm::vec3  cross             () const;
           glm::vec3  normal            () const;
           glm::vec3  center            () const;
           glm::vec3  minimum           () const;
