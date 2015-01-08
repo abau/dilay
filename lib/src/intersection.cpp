@@ -2,6 +2,7 @@
 #include <glm/gtc/epsilon.hpp>
 #include <limits>
 #include "adjacent-iterator.hpp"
+#include "affected-faces.hpp"
 #include "intersection.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/plane.hpp"
@@ -259,4 +260,27 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
   const float tMax = glm::min ( glm::min (max.x, max.y), max.z );
 
   return (tMax >= 0.0f || ray.isLine ()) && tMin <= tMax;
+}
+
+void IntersectionUtil :: extend ( const PrimSphere& sphere, const WingedMesh& mesh
+                                , WingedFace& face, AffectedFaces& faces ) 
+{
+  const glm::vec3 normal (face.triangle (mesh).cross ());
+
+  std::function <void (WingedFace&)> go = [&sphere,&mesh,&faces,&normal] 
+                                          (WingedFace& f) 
+  {
+    if ( faces.contains (f) == false
+      && IntersectionUtil::intersects (sphere, mesh, f)
+      && glm::dot (normal, f.triangle (mesh).cross ()) > 0.0f ) 
+    {
+      faces.insert (f);
+      faces.commit ();
+
+      for (WingedFace& a : f.adjacentFaces ()) {
+        IntersectionUtil::extend (sphere, mesh, a, faces);
+      }
+    }
+  };
+  go (face);
 }

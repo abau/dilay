@@ -4,6 +4,7 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
+class AffectedFaces;
 class PrimAABox;
 class PrimPlane;
 class PrimRay;
@@ -42,6 +43,8 @@ namespace IntersectionUtil {
   bool intersects (const PrimRay&, const PrimTriangle& , glm::vec3*); 
   bool intersects (const PrimRay&, const PrimTriangle& , const glm::vec3&, glm::vec3*); 
   bool intersects (const PrimRay&, const PrimAABox&); 
+
+  void extend     (const PrimSphere&, const WingedMesh&, WingedFace&, AffectedFaces&);
 }
 
 #endif

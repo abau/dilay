@@ -7,7 +7,6 @@
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 
-class AffectedFaces;
 class Camera;
 class ConfigProxy;
 class Mesh;
@@ -70,7 +69,6 @@ class WingedMesh : public ProxyConfigurable {
     void               toggleRenderWireframe ();
     
     bool               intersects            (const PrimRay&, WingedFaceIntersection&);
-    bool               intersects            (const PrimSphere&, AffectedFaces&);
 
     void               scale                 (const glm::vec3&);
     void               scaling               (const glm::vec3&);

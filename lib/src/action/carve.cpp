@@ -45,15 +45,15 @@ struct ActionCarve::Impl {
   void run (const CarveBrush& brush) { 
     AffectedFaces domain;
     PrimSphere    sphere (brush.position (), brush.radius ());
-    WingedMesh&   mesh = brush.mesh ();
 
-    mesh.intersects  (sphere, domain);
+    IntersectionUtil::extend (sphere, brush.mesh (), brush.face (), domain);
+
     this->carveFaces (brush, domain);
 
     if (brush.subdivide ()) {
       this->subdivideEdges (brush, domain);
     }
-    this->self->finalize (mesh, domain, this->actions);
+    this->self->finalize (brush.mesh (), domain, this->actions);
   }
 
   glm::vec3 carveVertex ( const CarveBrush& brush, const glm::vec3& normal
