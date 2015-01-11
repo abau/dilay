@@ -26,22 +26,6 @@ struct ActionCarve::Impl {
   void runUndoBeforePostProcessing (WingedMesh& mesh) const { this->actions.undo (mesh); }
   void runRedoBeforePostProcessing (WingedMesh& mesh) const { this->actions.redo (mesh); }
 
-  /*
-  void run (const CarveBrush& brush) { 
-    AffectedFaces domain;
-    PrimSphere    sphere (brush.position (), brush.radius ());
-    WingedMesh&   mesh = brush.mesh ();
-
-    mesh.intersects      (sphere, domain);
-
-    for (WingedFace* f : domain.faces ()) {
-      this->actions.add <PACollapseFace> ().run (mesh, *f, domain);
-      break;
-    }
-    this->finalize       (mesh, domain);
-  }
-  */
-
   void run (const CarveBrush& brush) { 
     AffectedFaces domain;
     PrimSphere    sphere (brush.position (), brush.radius ());
