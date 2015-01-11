@@ -14,7 +14,7 @@
   "uniform   vec3  light2Color;                                                            \n" \
   "uniform   float light2Irradiance;                                                       \n" \
   "                                                                                        \n" \
-  "varying out vec3 vsOut;                                                                 \n" \
+  "varying vec3 vsOut;                                                                     \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
   "  gl_Position        = mvp * vec4 (position,1);                                         \n" \
@@ -31,8 +31,8 @@
   "uniform vec3 color;                                                                     \n" \
   "uniform vec3 wireframeColor;                                                            \n" \
   "                                                                                        \n" \
-  "varying in vec3 " OUT ";                                                                \n" \
-  "varying in vec3 barycentric;                                                            \n" \
+  "varying vec3 " OUT ";                                                                   \n" \
+  "varying vec3 barycentric;                                                               \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
   "  gl_FragColor = vec4 (color * " OUT ", 1.0);                                           \n" \
@@ -47,7 +47,7 @@
   "attribute vec3 position;                                                                \n" \
   "attribute vec3 normal;                                                                  \n" \
   "                                                                                        \n" \
-  "varying out vec3 vsOut;                                                                 \n" \
+  "varying vec3 vsOut;                                                                     \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
   "  gl_Position = mvp * vec4 (position,1);                                                \n" \
@@ -67,8 +67,8 @@
   "uniform vec3  light2Color;                                                              \n" \
   "uniform float light2Irradiance;                                                         \n" \
   "                                                                                        \n" \
-  "varying in vec3 " OUT ";                                                                \n" \
-  "varying in vec3 barycentric;                                                            \n" \
+  "varying vec3 " OUT ";                                                                   \n" \
+  "varying vec3 barycentric;                                                               \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
   "  vec3  normal       = normalize(cross(dFdx(" OUT "),dFdy(" OUT ")));                   \n" \
@@ -99,7 +99,7 @@
   "uniform vec3 color;                                                                     \n" \
   "uniform vec3 wireframeColor;                                                            \n" \
   "                                                                                        \n" \
-  "varying in vec3 barycentric;                                                            \n" \
+  "varying vec3 barycentric;                                                               \n" \
   "                                                                                        \n" \
   "void main(){                                                                            \n" \
   "  gl_FragColor = vec4 (color, 1.0);                                                     \n" \
