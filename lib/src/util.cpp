@@ -79,6 +79,6 @@ bool Util :: isNaN (const glm::vec3& v) {
   return glm::isnan (v.x) || glm::isnan (v.y) || glm::isnan (v.z);
 }
 
-glm::vec3 Util :: defaultScale () {
-  return glm::vec3 (100.0f);
+float Util :: defaultScale () {
+  return 100.0f;
 }

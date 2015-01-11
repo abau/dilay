@@ -17,7 +17,7 @@ namespace Util {
   unsigned int    solveQuadraticEq   (float, float, float, float&, float&);
   float           epsilon            ();
   bool            isNaN              (const glm::vec3&);
-  glm::vec3       defaultScale       ();
+  float           defaultScale       ();
 }
 
 #endif

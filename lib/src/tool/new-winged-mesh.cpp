@@ -35,7 +35,7 @@ struct ToolNewWingedMesh::Impl {
   void updateMesh () {
     const int numSubdiv = this->subdivEdit.value ();
     this->definition    = MeshDefinition::icosphere (numSubdiv);
-    this->definition.scale (Util::defaultScale ());
+    this->definition.scale (glm::vec3 (Util::defaultScale ()));
 
     this->mesh = Mesh (this->definition);
     this->mesh.bufferData ();
