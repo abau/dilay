@@ -209,7 +209,7 @@ struct Mesh::Impl {
 
   void renderBegin (const Camera& camera, bool noZoom) {
     if (this->renderFallbackWireframe ()) {
-      camera.renderer ().setProgram (RenderModeUtil::nonWireframe (this->renderMode));
+      camera.renderer ().setProgram (RenderMode::Constant);
     }
     else {
       camera.renderer ().setProgram (this->renderMode);
@@ -243,19 +243,27 @@ struct Mesh::Impl {
   void render (const Camera& camera, bool noZoom) {
     this->renderBegin (camera, noZoom);
 
-    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                           , OpenGL::UnsignedInt (), (void*)0 );
-
     if (this->renderFallbackWireframe ()) {
-      camera.renderer ().setProgram (RenderMode::Constant);
-      this->setModelMatrix (camera, noZoom);
-
       camera.renderer ().setColor3 (this->wireframeColor);
 
       OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Line ());
       OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
                              , OpenGL::UnsignedInt (), (void*)0 );
       OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Fill ());
+
+      camera.renderer ().setProgram (RenderModeUtil::nonWireframe (this->renderMode));
+      camera.renderer ().setColor3  (this->color);
+      this->setModelMatrix (camera, noZoom);
+
+      OpenGL::glEnable        (OpenGL::PolygonOffsetFill ());
+      OpenGL::glPolygonOffset (Util::defaultScale (), Util::defaultScale ());
+      OpenGL::glDrawElements  ( OpenGL::Triangles (), this->numIndices ()
+                              , OpenGL::UnsignedInt (), (void*)0 );
+      OpenGL::glDisable       (OpenGL::PolygonOffsetFill ());
+    }
+    else {
+      OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
+                             , OpenGL::UnsignedInt (), (void*)0 );
     }
     this->renderEnd ();
   }

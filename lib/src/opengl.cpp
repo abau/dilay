@@ -76,6 +76,7 @@ namespace OpenGL {
   DELEGATE_GL_CONSTANT (LEqual, GL_LEQUAL);
   DELEGATE_GL_CONSTANT (Line, GL_LINE);
   DELEGATE_GL_CONSTANT (Lines, GL_LINES);
+  DELEGATE_GL_CONSTANT (PolygonOffsetFill, GL_POLYGON_OFFSET_FILL);
   DELEGATE_GL_CONSTANT (StaticDraw, GL_STATIC_DRAW);
   DELEGATE_GL_CONSTANT (StencilBufferBit, GL_STENCIL_BUFFER_BIT);
   DELEGATE_GL_CONSTANT (Triangles, GL_TRIANGLES);
@@ -98,6 +99,7 @@ namespace OpenGL {
   DELEGATE1_GL (bool, glIsBuffer, unsigned int)
   DELEGATE1_GL (bool, glIsProgram, unsigned int)
   DELEGATE2_GL (void, glPolygonMode, unsigned int, unsigned int)
+  DELEGATE2_GL (void, glPolygonOffset, float, float)
   DELEGATE2_GL (void, glUniform1f, int, float)
   DELEGATE4_GL (void, glUniformMatrix4fv, int, unsigned int, bool, const float*)
   DELEGATE1_GL (void, glUseProgram, unsigned int)

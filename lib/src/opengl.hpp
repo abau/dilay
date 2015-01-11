@@ -27,6 +27,7 @@ namespace OpenGL {
   unsigned int LEqual             ();
   unsigned int Line               ();
   unsigned int Lines              ();
+  unsigned int PolygonOffsetFill  ();
   unsigned int StaticDraw         ();
   unsigned int StencilBufferBit   ();
   unsigned int Triangles          ();
@@ -49,6 +50,7 @@ namespace OpenGL {
   bool glIsBuffer                 (unsigned int);
   bool glIsProgram                (unsigned int);
   void glPolygonMode              (unsigned int, unsigned int);
+  void glPolygonOffset            (float, float);
   void glUniform1f                (int, float);
   void glUniformMatrix4fv         (int, unsigned int, bool, const float*);
   void glUseProgram               (unsigned int);
