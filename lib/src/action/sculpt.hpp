@@ -1,17 +1,17 @@
-#ifndef DILAY_ACTION_CARVE
-#define DILAY_ACTION_CARVE
+#ifndef DILAY_ACTION_SCULPT
+#define DILAY_ACTION_SCULPT
 
 #include "action/on-post-processed-winged-mesh.hpp"
 #include "macro.hpp"
 
+class SculptBrush;
 class WingedMesh;
-class CarveBrush;
 
-class ActionCarve : public ActionOnPostProcessedWMesh {
+class ActionSculpt : public ActionOnPostProcessedWMesh {
   public: 
-    DECLARE_BIG3 (ActionCarve)
+    DECLARE_BIG3 (ActionSculpt)
 
-    void run (const CarveBrush&);
+    void run (const SculptBrush&);
 
   private:
     void runUndoBeforePostProcessing (WingedMesh&) const;

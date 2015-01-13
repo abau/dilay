@@ -9,18 +9,17 @@ INCLUDEPATH            += src
 CONFIG                 += staticlib
 
 SOURCES += \
-           src/action/carve.cpp \
            src/action/delete-winged-mesh.cpp \
            src/action/modify-winged-mesh.cpp \
            src/action/new-winged-mesh.cpp \
            src/action/on-post-processed-winged-mesh.cpp \
+           src/action/sculpt.cpp \
            src/action/subdivide-mesh.cpp \
            src/action/unit.cpp \
            src/action/util.cpp \
            src/adjacent-iterator.cpp \
            src/affected-faces.cpp \
            src/camera.cpp \
-           src/carve-brush.cpp \
            src/color.cpp \
            src/config.cpp \
            src/config-conversion.cpp \
@@ -54,6 +53,8 @@ SOURCES += \
            src/render-mode.cpp \
            src/renderer.cpp \
            src/scene.cpp \
+           src/sculpt-brush.cpp \
+           src/sculpt-brush/carve.cpp \
            src/selection.cpp \
            src/selection-mode.cpp \
            src/shader.cpp \
@@ -95,13 +96,13 @@ SOURCES += \
 
 HEADERS += \
            src/action.hpp \
-           src/action/carve.hpp \
            src/action/data.hpp \
            src/action/delete-winged-mesh.hpp \
            src/action/modify-winged-mesh.hpp \
            src/action/new-winged-mesh.hpp \
            src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
+           src/action/sculpt.hpp \
            src/action/subdivide-mesh.hpp \
            src/action/transformer.hpp \
            src/action/unit.hpp \
@@ -111,7 +112,6 @@ HEADERS += \
            src/affected-faces.hpp \
            src/bitset.hpp \
            src/camera.hpp \
-           src/carve-brush.hpp \
            src/color.hpp \
            src/config.hpp \
            src/config-conversion.hpp \
@@ -148,6 +148,8 @@ HEADERS += \
            src/render-mode.hpp \
            src/renderer.hpp \
            src/scene.hpp \
+           src/sculpt-brush.hpp \
+           src/sculpt-brush/carve.hpp \
            src/selection.hpp \
            src/selection-mode.hpp \
            src/shader.hpp \

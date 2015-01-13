@@ -2,15 +2,15 @@
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "action/carve.hpp"
+#include "action/sculpt.hpp"
 #include "action/unit.hpp"
 #include "camera.hpp"
-#include "carve-brush.hpp"
 #include "color.hpp"
 #include "config.hpp"
 #include "history.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
+#include "sculpt-brush/carve.hpp"
 #include "selection.hpp"
 #include "state.hpp"
 #include "tools.hpp"
@@ -24,24 +24,27 @@
 struct ToolCarve::Impl {
   ToolCarve*                   self;
   std::unique_ptr <ActionUnit> actions;
-  CarveBrush                   brush;
+  SculptBrushCarve             brush;
   ViewCursor                   cursor;
   QDoubleSpinBox*              radiusEdit;
 
   Impl (ToolCarve* s) 
     : self    (s) 
     , actions (new ActionUnit) 
-    , brush   ( this->self->config ().get <float> ("radius"           , 10.0f)
-              , this->self->config ().get <float> ("detail-factor"    ,  0.6f)
-              , this->self->config ().get <float> ("intensity-factor" ,  0.1f)
-              , this->self->config ().get <float> ("step-width-factor",  0.3f)
-              , this->self->config ().get <bool>  ("subdivide"        ,  true) )
-    , cursor  ( this->brush.radius ()
-              , this->self->config ().get <Color> ("cursor-color"     , Color::red ()) )
+    , cursor  (1.0f, this->self->config ().get <Color> ("cursor-color", Color::red ()))
   {
+    this->brush.radius          (this->self->config ().get <float> ("radius"           , 10.0f));
+    this->brush.detailFactor    (this->self->config ().get <float> ("detail-factor"    ,  0.6f));
+    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" ,  0.1f));
+    this->brush.stepWidthFactor (this->self->config ().get <float> ("step-width-factor",  0.3f));
+    this->brush.subdivide       (this->self->config ().get <bool>  ("subdivide"        ,  true));
+
     this->setupProperties ();
     this->setupToolTip    ();
-    this->updateCursor    (this->self->cursorPosition (), false);
+
+    this->cursor.radius         (this->brush.radius ());
+    this->cursor.updateGeometry ();
+    this->updateCursor          (this->self->cursorPosition (), false);
   }
 
   void setupProperties () {
@@ -106,9 +109,9 @@ struct ToolCarve::Impl {
       this->cursor.position (intersection.position ());
       this->cursor.normal   (intersection.normal   ());
 
-      return updateBrush ? this->brush.updatePosition ( intersection.mesh     ()
-                                                      , intersection.face     ()
-                                                      , intersection.position () )
+      return updateBrush ? this->brush.update ( intersection.mesh     ()
+                                              , intersection.face     ()
+                                              , intersection.position () )
                          : false;
     }
     else {
@@ -123,7 +126,7 @@ struct ToolCarve::Impl {
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     const bool doCarve = e.buttons () == Qt::LeftButton;
     if (this->updateCursor (ViewUtil::toIVec2 (e), doCarve)) {
-      this->actions->add <ActionCarve, WingedMesh> 
+      this->actions->add <ActionSculpt, WingedMesh> 
         (this->self->state ().scene (), this->brush.mesh ()).run (this->brush);
     }
     return ToolResponse::Redraw;
