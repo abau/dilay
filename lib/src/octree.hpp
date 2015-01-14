@@ -6,10 +6,12 @@
 #include <unordered_map>
 #include "macro.hpp"
 
+class AffectedFaces;
 class Camera;
 class Id;
 class OctreeNode;
 class PrimRay;
+class PrimSphere;
 class PrimTriangle;
 class WingedEdge;
 class WingedFace;
@@ -58,6 +60,7 @@ class Octree {
     WingedFace*      face                 (unsigned int) const;
     void             render               (const Camera&);
     bool             intersects           (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
+    bool             intersects           (const WingedMesh&, const PrimSphere&, AffectedFaces&);
     void             reset                ();
     void             shrinkRoot           ();
     bool             hasRoot              () const;

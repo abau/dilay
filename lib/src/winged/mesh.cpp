@@ -272,6 +272,10 @@ struct WingedMesh::Impl {
     return this->octree.intersects (*this->self, ray, intersection);
   }
 
+  bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
+    return this->octree.intersects (*this->self, sphere, faces);
+  }
+
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
   void               scaling        (const glm::vec3& v)   { return this->mesh.scaling (v); }
   glm::vec3          scaling        () const               { return this->mesh.scaling (); }
@@ -373,6 +377,7 @@ DELEGATE        (void, WingedMesh, toggleRenderMode)
 DELEGATE        (void, WingedMesh, toggleRenderWireframe)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
 DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)
