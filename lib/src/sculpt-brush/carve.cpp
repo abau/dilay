@@ -1,7 +1,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "action/unit/on.hpp"
+#include "affected-faces.hpp"
+#include "fwd-winged.hpp"
+#include "intersection.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
+#include "primitive/sphere.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "winged/vertex.hpp"
 
@@ -26,8 +30,13 @@ struct SculptBrushCarve :: Impl {
     }
   }
 
-  void runSculpt (const VertexPtrSet& vertices, ActionUnitOn <WingedMesh>& actions) const {
-    WingedMesh& mesh = this->self->mesh ();
+  void runSculpt (AffectedFaces& faces, ActionUnitOn <WingedMesh>& actions) const {
+    PrimSphere  sphere (this->self->position (), this->self->radius ());
+    WingedMesh& mesh   (this->self->mesh ());
+
+    IntersectionUtil::extend (sphere, mesh, this->self->face (), faces);
+
+    VertexPtrSet vertices (faces.toVertexSet ());
 
     // get average normal
     glm::vec3 avgNormal (0.0f);
@@ -78,7 +87,7 @@ GETTER_CONST    (float            , SculptBrushCarve, stepWidthFactor)
 GETTER_CONST    (const glm::vec3& , SculptBrushCarve, lastPosition)
 SETTER          (float            , SculptBrushCarve, intensityFactor)
 SETTER          (float            , SculptBrushCarve, stepWidthFactor)
-DELEGATE2_CONST (void             , SculptBrushCarve, runSculpt, const VertexPtrSet&, ActionUnitOn <WingedMesh>&)
+DELEGATE2_CONST (void             , SculptBrushCarve, runSculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
 DELEGATE_CONST  (float            , SculptBrushCarve, intensity)
 DELEGATE_CONST  (float            , SculptBrushCarve, stepWidth)
 DELEGATE3       (bool             , SculptBrushCarve, runUpdate, WingedMesh&, WingedFace&, const glm::vec3&)

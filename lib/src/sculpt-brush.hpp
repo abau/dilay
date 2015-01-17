@@ -2,10 +2,10 @@
 #define DILAY_SCULPT_BRUSH
 
 #include <glm/fwd.hpp>
-#include "fwd-winged.hpp"
 #include "macro.hpp"
 
 template <typename T> class ActionUnitOn;
+class AffectedFaces;
 class WingedFace;
 class WingedMesh;
 
@@ -21,7 +21,7 @@ class SculptBrush {
     void             detailFactor    (float);
     void             subdivide       (bool);
 
-    void             sculpt          (const VertexPtrSet&, ActionUnitOn <WingedMesh>&) const;
+    void             sculpt          (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
     float            subdivThreshold () const;
     const glm::vec3& position        () const;
     WingedMesh&      mesh            () const;
@@ -35,7 +35,7 @@ class SculptBrush {
   private:
     IMPLEMENTATION
 
-    virtual void     runSculpt       (const VertexPtrSet&, ActionUnitOn <WingedMesh>&) const = 0;
+    virtual void     runSculpt       (AffectedFaces&, ActionUnitOn <WingedMesh>&) const = 0;
     virtual bool     runUpdate       (WingedMesh&, WingedFace&, const glm::vec3&);
 };
 

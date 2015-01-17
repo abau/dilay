@@ -4,11 +4,9 @@
 #include "action/unit/on.hpp"
 #include "affected-faces.hpp"
 #include "sculpt-brush.hpp"
-#include "intersection.hpp"
 #include "partial-action/relax-edge.hpp"
 #include "partial-action/smooth.hpp"
 #include "partial-action/subdivide-edge.hpp"
-#include "primitive/sphere.hpp"
 #include "winged/edge.hpp"
 
 struct ActionSculpt::Impl {
@@ -22,11 +20,8 @@ struct ActionSculpt::Impl {
 
   void run (const SculptBrush& brush) { 
     AffectedFaces domain;
-    PrimSphere    sphere (brush.position (), brush.radius ());
 
-    IntersectionUtil::extend (sphere, brush.mesh (), brush.face (), domain);
-
-    brush.sculpt (domain.toVertexSet (), this->actions);
+    brush.sculpt (domain, this->actions);
 
     if (brush.subdivide ()) {
       this->subdivideEdges (brush, domain);

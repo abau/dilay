@@ -18,8 +18,8 @@ struct SculptBrush :: Impl {
     , wasUpdated (false)
     {}
 
-  void sculpt (const VertexPtrSet& vertices, ActionUnitOn <WingedMesh>& actions) const {
-    this->self->runSculpt (vertices, actions);
+  void sculpt (AffectedFaces& faces, ActionUnitOn <WingedMesh>& actions) const {
+    this->self->runSculpt (faces, actions);
   }
 
   float subdivThreshold () const {
@@ -66,7 +66,7 @@ GETTER_CONST    (bool             , SculptBrush, subdivide)
 SETTER          (float            , SculptBrush, radius)
 SETTER          (float            , SculptBrush, detailFactor)
 SETTER          (bool             , SculptBrush, subdivide)
-DELEGATE2_CONST (void             , SculptBrush, sculpt, const VertexPtrSet&, ActionUnitOn <WingedMesh>&)
+DELEGATE2_CONST (void             , SculptBrush, sculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
 DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, position)
 DELEGATE_CONST  (WingedMesh&      , SculptBrush, mesh)

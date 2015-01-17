@@ -20,7 +20,7 @@ class SculptBrushCarve : public SculptBrush {
   private:
     IMPLEMENTATION
 
-    void runSculpt (const VertexPtrSet&, ActionUnitOn <WingedMesh>&) const;
+    void runSculpt (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
     bool runUpdate (WingedMesh&, WingedFace&, const glm::vec3&);
 };
 
