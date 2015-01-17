@@ -60,7 +60,9 @@ struct ToolMoveCamera::Impl {
         Camera&      cam = state.camera ();
         Intersection intersection;
         if (state.scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
-          cam.setGaze (intersection.position ());
+          cam.set ( intersection.position ()
+                  , cam.position () - intersection.position ()
+                  , cam.up () );
           state.mainWindow ().glWidget ().update ();
         }
       }
