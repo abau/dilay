@@ -15,10 +15,12 @@ class SculptBrush {
 
     float            radius          () const;
     float            detailFactor    () const;
+    float            stepWidthFactor () const;
     bool             subdivide       () const;
 
     void             radius          (float);
     void             detailFactor    (float);
+    void             stepWidthFactor (float);
     void             subdivide       (bool);
 
     void             sculpt          (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
@@ -28,15 +30,10 @@ class SculptBrush {
     WingedFace&      face            () const;
     bool             update          (WingedMesh&, WingedFace&, const glm::vec3&);
 
-  protected:
-    bool             wasUpdated      () const;
-    void             updateBase      (WingedMesh&, WingedFace&, const glm::vec3&);
-
   private:
     IMPLEMENTATION
 
-    virtual void     runSculpt       (AffectedFaces&, ActionUnitOn <WingedMesh>&) const = 0;
-    virtual bool     runUpdate       (WingedMesh&, WingedFace&, const glm::vec3&);
+    virtual void runSculpt (AffectedFaces&, ActionUnitOn <WingedMesh>&) const = 0;
 };
 
 #endif

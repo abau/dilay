@@ -7,21 +7,13 @@ class SculptBrushCarve : public SculptBrush {
   public:
     DECLARE_BIG6 (SculptBrushCarve)
 
-    float            intensityFactor () const;
-    float            stepWidthFactor () const;
-    const glm::vec3& lastPosition    () const;
-
-    float            intensity       () const;
-    float            stepWidth       () const;
-
-    void             intensityFactor (float);
-    void             stepWidthFactor (float);
+    float intensityFactor () const;
+    void  intensityFactor (float);
 
   private:
     IMPLEMENTATION
 
     void runSculpt (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
-    bool runUpdate (WingedMesh&, WingedFace&, const glm::vec3&);
 };
 
 #endif

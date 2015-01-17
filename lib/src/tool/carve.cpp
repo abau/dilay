@@ -35,9 +35,9 @@ struct ToolCarve::Impl {
   {
     this->brush.radius          (this->self->config ().get <float> ("radius"           , 10.0f));
     this->brush.detailFactor    (this->self->config ().get <float> ("detail-factor"    ,  0.6f));
-    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" ,  0.1f));
     this->brush.stepWidthFactor (this->self->config ().get <float> ("step-width-factor",  0.3f));
     this->brush.subdivide       (this->self->config ().get <bool>  ("subdivide"        ,  true));
+    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" ,  0.1f));
 
     this->setupProperties ();
     this->setupToolTip    ();
@@ -65,14 +65,6 @@ struct ToolCarve::Impl {
     });
     this->self->properties ().addWidget (QObject::tr ("Detail"), detailEdit);
 
-    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, this->brush.intensityFactor ()
-                                                      , 1000.0f, 0.1f );
-    ViewUtil::connect (intensityEdit, [this] (float d) {
-      this->brush.intensityFactor (d);
-      this->self->config ().cache ("intensity", d);
-    });
-    this->self->properties ().addWidget (QObject::tr ("Intensity"), intensityEdit);
-
     QDoubleSpinBox& stepEdit = ViewUtil::spinBox ( 0.01f, this->brush.stepWidthFactor ()
                                                  , 1000.0f, 0.1f );
     ViewUtil::connect (stepEdit, [this] (float s) {
@@ -87,6 +79,14 @@ struct ToolCarve::Impl {
       this->self->config ().cache ("subdivide", bool (s));
     });
     this->self->properties ().addWidget (subdivEdit);
+
+    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, this->brush.intensityFactor ()
+                                                      , 1000.0f, 0.1f );
+    ViewUtil::connect (intensityEdit, [this] (float d) {
+      this->brush.intensityFactor (d);
+      this->self->config ().cache ("intensity", d);
+    });
+    this->self->properties ().addWidget (QObject::tr ("Intensity"), intensityEdit);
   }
 
   void setupToolTip () {
