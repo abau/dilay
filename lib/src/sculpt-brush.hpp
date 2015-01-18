@@ -11,7 +11,7 @@ class WingedMesh;
 
 class SculptBrush {
   public:
-    DECLARE_BIG6 (SculptBrush)
+    DECLARE_BIG6_VIRTUAL (SculptBrush)
 
     float            radius          () const;
     float            detailFactor    () const;
