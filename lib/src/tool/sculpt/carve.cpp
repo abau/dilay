@@ -49,10 +49,15 @@ struct ToolSculptCarve::Impl {
       this->self->cursor ().position (intersection.position ());
       this->self->cursor ().normal   (intersection.normal   ());
 
-      return updateBrush ? this->brush.update ( intersection.mesh     ()
-                                              , intersection.face     ()
-                                              , intersection.position () )
-                         : false;
+      if (updateBrush) {
+        this->brush.mesh (&intersection.mesh ());
+        this->brush.face (&intersection.face ());
+
+        return this->brush.updatePosition (intersection.position ());
+      }
+      else {
+        return false;
+      }
     }
     else {
       return false;

@@ -17,20 +17,24 @@ class SculptBrush {
     float            detailFactor    () const;
     float            stepWidthFactor () const;
     bool             subdivide       () const;
+    WingedMesh*      mesh            () const;
+    WingedFace*      face            () const;
 
     void             radius          (float);
     void             detailFactor    (float);
     void             stepWidthFactor (float);
     void             subdivide       (bool);
+    void             mesh            (WingedMesh*);
+    void             face            (WingedFace*);
 
     void             sculpt          (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
     float            subdivThreshold () const;
     const glm::vec3& position        () const;
     glm::vec3        delta           () const;
-    WingedMesh&      mesh            () const;
-    WingedFace&      face            () const;
-    bool             update          (WingedMesh&, WingedFace&, const glm::vec3&);
+    bool             updatePosition  (const glm::vec3&);
 
+    SAFE_REF_CONST (WingedMesh, mesh)
+    SAFE_REF_CONST (WingedFace, face)
   private:
     IMPLEMENTATION
 

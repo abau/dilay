@@ -9,11 +9,11 @@ struct SculptBrush :: Impl {
   float        detailFactor;
   float        stepWidthFactor;
   bool         subdivide;
+  WingedMesh*  mesh;
+  WingedFace*  face;
   bool         hasPosition;
   glm::vec3    lastPosition;
   glm::vec3   _position;
-  WingedMesh* _mesh;
-  WingedFace* _face;
 
   Impl (SculptBrush* s) 
     : self        (s)
@@ -42,23 +42,11 @@ struct SculptBrush :: Impl {
     return this->_position - this->lastPosition;
   }
 
-  WingedMesh& mesh () const {
-    assert (this->hasPosition);
-    return *this->_mesh;
-  }
-
-  WingedFace& face () const {
-    assert (this->hasPosition);
-    return *this->_face;
-  }
-
-  bool update (WingedMesh& m, WingedFace& f, const glm::vec3& p) {
+  bool updatePosition (const glm::vec3& p) {
     if (this->hasPosition) {
       if (glm::distance2 (this->_position, p) > this->stepWidth () * this->stepWidth ()) {
         this->lastPosition = this->_position;
         this->_position    =  p;
-        this->_mesh        = &m;
-        this->_face        = &f;
         return true;
       }
       else {
@@ -69,8 +57,6 @@ struct SculptBrush :: Impl {
       this->hasPosition  = true;
       this->lastPosition = p;
       this->_position    = p;
-      this->_mesh        = &m;
-      this->_face        = &f;
       return true;
     }
   }
@@ -82,14 +68,16 @@ GETTER_CONST    (float            , SculptBrush, radius)
 GETTER_CONST    (float            , SculptBrush, detailFactor)
 GETTER_CONST    (float            , SculptBrush, stepWidthFactor)
 GETTER_CONST    (bool             , SculptBrush, subdivide)
+GETTER_CONST    (WingedMesh*      , SculptBrush, mesh)
+GETTER_CONST    (WingedFace*      , SculptBrush, face)
 SETTER          (float            , SculptBrush, radius)
 SETTER          (float            , SculptBrush, detailFactor)
 SETTER          (float            , SculptBrush, stepWidthFactor)
 SETTER          (bool             , SculptBrush, subdivide)
+SETTER          (WingedMesh*      , SculptBrush, mesh)
+SETTER          (WingedFace*      , SculptBrush, face)
 DELEGATE2_CONST (void             , SculptBrush, sculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
 DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, position)
 DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
-DELEGATE_CONST  (WingedMesh&      , SculptBrush, mesh)
-DELEGATE_CONST  (WingedFace&      , SculptBrush, face)
-DELEGATE3       (bool             , SculptBrush, update, WingedMesh&, WingedFace&, const glm::vec3&)
+DELEGATE1       (bool             , SculptBrush, updatePosition, const glm::vec3&)

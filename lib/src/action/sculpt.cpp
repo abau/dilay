@@ -26,13 +26,13 @@ struct ActionSculpt::Impl {
     if (brush.subdivide ()) {
       this->subdivideEdges (brush, domain);
     }
-    this->self->finalize (brush.mesh (), domain, this->actions);
+    this->self->finalize (brush.meshRef (), domain, this->actions);
   }
 
   void subdivideEdges (const SculptBrush& brush, AffectedFaces& domain) {
     const float maxLength    ((4.0f/3.0f) * brush.subdivThreshold ());
     const float maxLengthSqr (maxLength * maxLength);
-    WingedMesh& mesh         (brush.mesh ());
+    WingedMesh& mesh         (brush.meshRef ());
 
     auto isSubdividable = [&] (WingedEdge& edge) -> bool {
       return edge.lengthSqr (mesh) > maxLengthSqr;

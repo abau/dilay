@@ -31,9 +31,9 @@ struct SculptBrushCarve :: Impl {
 
   void runSculpt (AffectedFaces& faces, ActionUnitOn <WingedMesh>& actions) const {
     PrimSphere  sphere (this->self->position (), this->self->radius ());
-    WingedMesh& mesh   (this->self->mesh ());
+    WingedMesh& mesh   (this->self->meshRef ());
 
-    IntersectionUtil::extend (sphere, mesh, this->self->face (), faces);
+    IntersectionUtil::extend (sphere, mesh, this->self->faceRef (), faces);
 
     VertexPtrSet vertices (faces.toVertexSet ());
 

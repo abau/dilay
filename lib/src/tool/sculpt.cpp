@@ -45,13 +45,14 @@ struct ToolSculpt::Impl {
   }
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
-    const bool doCarve = e.buttons () == Qt::LeftButton;
-    if (this->behavior->update ( this->self->state ()
-                               , ViewUtil::toIVec2 (e), doCarve )) 
-    {
+    const bool updateBrush = e.buttons () == Qt::LeftButton;
+    const bool doCarve     = this->behavior->update ( this->self->state ()
+                                                    , ViewUtil::toIVec2 (e)
+                                                    , updateBrush );
+    if (updateBrush && doCarve) {
       this->actions->add <ActionSculpt, WingedMesh> 
         ( this->self->state ().scene ()
-        , this->behavior->brush ().mesh ()
+        , this->behavior->brush ().meshRef ()
         ).run (this->behavior->brush ());
     }
     return ToolResponse::Redraw;
