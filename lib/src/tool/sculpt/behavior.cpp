@@ -43,6 +43,8 @@ struct ToolSculptBehavior::Impl {
     this->radiusEdit.setValue (brush.radius ());
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
       this->self->brush ().radius (r);
+      this->cursor.radius (r);
+      this->cursor.updateGeometry ();
       this->config.cache ("radius", r);
     });
     properties.addWidget (QObject::tr ("Radius"), this->radiusEdit);
