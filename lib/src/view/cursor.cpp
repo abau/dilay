@@ -14,13 +14,13 @@ struct ViewCursor::Impl {
   unsigned int  sectors;
   bool          isEnabled;
 
-  Impl (float r, const Color& color) 
+  Impl (float r, const Color& c) 
     : radius    (r)
     , sectors   (40)
     , isEnabled (true) 
   {
     this->updateGeometry ();
-    this->mesh.color     (color);
+    this->color          (c);
   }
 
   void position (const glm::vec3& v) { this->mesh.position (v); }
@@ -36,6 +36,10 @@ struct ViewCursor::Impl {
       const float     angle = glm::acos (d);
       this->mesh.rotationMatrix (glm::rotate (glm::mat4(1.0f), angle, axis));
     }
+  }
+
+  void color (const Color& color) {
+    this->mesh.color (color);
   }
 
   void updateGeometry () {
@@ -83,6 +87,7 @@ DELEGATE2_BIG6 (ViewCursor, float, const Color&)
 SETTER       (float, ViewCursor, radius)
 DELEGATE1    (void,  ViewCursor, position, const glm::vec3&)
 DELEGATE1    (void,  ViewCursor, normal, const glm::vec3&)
+DELEGATE1    (void,  ViewCursor, color, const Color&)
 DELEGATE     (void,  ViewCursor, updateGeometry)
 DELEGATE1    (void,  ViewCursor, render, const Camera&)
 DELEGATE     (void,  ViewCursor, enable)
