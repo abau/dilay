@@ -62,11 +62,13 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
-           src/tool/carve.cpp \
+           src/tool/sculpt.cpp \
            src/tool/delete-mesh.cpp \
            src/tool/move.cpp \
            src/tool/new-winged-mesh.cpp \
            src/tool/move-camera.cpp \
+           src/tool/sculpt/behavior.cpp \
+           src/tool/sculpt/carve.cpp \
            src/tool/subdivide-mesh.cpp \
            src/tool/util/movement.cpp \
            src/util.cpp \
@@ -158,6 +160,8 @@ HEADERS += \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/move-camera.hpp \
+           src/tool/sculpt/behavior.hpp \
+           src/tool/sculpt/behaviors.hpp \
            src/tool/util/movement.hpp \
            src/tools.hpp \
            src/util.hpp \
