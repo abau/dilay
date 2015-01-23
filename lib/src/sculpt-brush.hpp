@@ -26,6 +26,7 @@ class SculptBrush {
     void             sculpt          (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
     float            subdivThreshold () const;
     const glm::vec3& position        () const;
+    glm::vec3        delta           () const;
     WingedMesh&      mesh            () const;
     WingedFace&      face            () const;
     bool             update          (WingedMesh&, WingedFace&, const glm::vec3&);

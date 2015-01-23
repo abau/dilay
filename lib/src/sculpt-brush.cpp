@@ -37,6 +37,11 @@ struct SculptBrush :: Impl {
     return this->_position;
   }
 
+  glm::vec3 delta () const {
+    assert (this->hasPosition);
+    return this->_position - this->lastPosition;
+  }
+
   WingedMesh& mesh () const {
     assert (this->hasPosition);
     return *this->_mesh;
@@ -61,10 +66,11 @@ struct SculptBrush :: Impl {
       }
     }
     else {
-      this->hasPosition =  true;
-      this->_position   =  p;
-      this->_mesh       = &m;
-      this->_face       = &f;
+      this->hasPosition  = true;
+      this->lastPosition = p;
+      this->_position    = p;
+      this->_mesh        = &m;
+      this->_face        = &f;
       return true;
     }
   }
@@ -83,6 +89,7 @@ SETTER          (bool             , SculptBrush, subdivide)
 DELEGATE2_CONST (void             , SculptBrush, sculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
 DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, position)
+DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
 DELEGATE_CONST  (WingedMesh&      , SculptBrush, mesh)
 DELEGATE_CONST  (WingedFace&      , SculptBrush, face)
 DELEGATE3       (bool             , SculptBrush, update, WingedMesh&, WingedFace&, const glm::vec3&)
