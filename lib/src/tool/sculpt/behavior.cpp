@@ -79,8 +79,8 @@ struct ToolSculptBehavior::Impl {
                 , QObject::tr ("Change radius") );
   }
 
-  bool update (State& state, const glm::ivec2& pos, bool updateBrush) {
-    return this->self->runUpdate (state, pos, updateBrush);
+  bool mouseMoveEvent (State& state, const glm::ivec2& pos, bool updateBrush) {
+    return this->self->runMouseMoveEvent (state, pos, updateBrush);
   }
 };
 
@@ -92,4 +92,4 @@ GETTER_CONST (ConfigProxy&   , ToolSculptBehavior, config)
 DELEGATE     (void           , ToolSculptBehavior, setupBrush)
 DELEGATE1    (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
 DELEGATE1    (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
-DELEGATE3    (bool           , ToolSculptBehavior, update, State&, const glm::ivec2&, bool)
+DELEGATE3    (bool           , ToolSculptBehavior, mouseMoveEvent, State&, const glm::ivec2&, bool)

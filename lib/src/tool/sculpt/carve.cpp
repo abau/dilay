@@ -39,7 +39,7 @@ struct ToolSculptCarve::Impl {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
   }
 
-  bool runUpdate (State& state, const glm::ivec2& pos, bool updateBrush) {
+  bool runMouseMoveEvent (State& state, const glm::ivec2& pos, bool leftButton) {
     const PrimRay          ray = state.camera ().ray (pos);
     WingedFaceIntersection intersection;
 
@@ -49,7 +49,7 @@ struct ToolSculptCarve::Impl {
       this->self->cursor ().position (intersection.position ());
       this->self->cursor ().normal   (intersection.normal   ());
 
-      if (updateBrush) {
+      if (leftButton) {
         this->brush.mesh (&intersection.mesh ());
         this->brush.face (&intersection.face ());
 

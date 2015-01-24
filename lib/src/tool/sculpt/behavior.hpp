@@ -23,7 +23,7 @@ class ToolSculptBehavior {
     void setupBrush      ();
     void setupProperties (ViewProperties&);
     void setupToolTip    (ViewToolTip&);
-    bool update          (State&, const glm::ivec2&, bool);
+    bool mouseMoveEvent  (State&, const glm::ivec2&, bool);
 
   protected:
     ConfigProxy& config () const;
@@ -34,7 +34,7 @@ class ToolSculptBehavior {
     virtual void runSetupBrush      () = 0;
     virtual void runSetupProperties (ViewProperties&) = 0;
     virtual void runSetupToolTip    (ViewToolTip&) = 0;
-    virtual bool runUpdate          (State&, const glm::ivec2&, bool) = 0;
+    virtual bool runMouseMoveEvent  (State&, const glm::ivec2&, bool) = 0;
 };
 
 #define DECLARE_TOOL_BEHAVIOR(name)                                               \
@@ -45,7 +45,7 @@ class ToolSculptBehavior {
              void runSetupBrush      ();                                          \
              void runSetupProperties (ViewProperties&);                           \
              void runSetupToolTip    (ViewToolTip&);                              \
-             bool runUpdate          (State&, const glm::ivec2&, bool);           \
+             bool runMouseMoveEvent  (State&, const glm::ivec2&, bool);           \
   };
 
 #define DELEGATE_TOOL_BEHAVIOR(name)                                              \
@@ -54,6 +54,6 @@ class ToolSculptBehavior {
   DELEGATE     (void, name, runSetupBrush)                                        \
   DELEGATE1    (void, name, runSetupProperties, ViewProperties&)                  \
   DELEGATE1    (void, name, runSetupToolTip, ViewToolTip&)                        \
-  DELEGATE3    (bool, name, runUpdate, State&, const glm::ivec2&, bool)
+  DELEGATE3    (bool, name, runMouseMoveEvent, State&, const glm::ivec2&, bool)
 
 #endif
