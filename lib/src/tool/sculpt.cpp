@@ -70,12 +70,12 @@ struct ToolSculpt::Impl {
     if (e.orientation () == Qt::Vertical && e.modifiers ().testFlag (Qt::ShiftModifier)) {
       if (e.delta () > 0) {
         this->behavior->radiusEdit ().stepUp ();
-        return ToolResponse::Redraw;
       }
       else {
         this->behavior->radiusEdit ().stepDown ();
-        return ToolResponse::Redraw;
       }
+      ViewUtil::deselect (this->behavior->radiusEdit ());
+      return ToolResponse::Redraw;
     }
     return ToolResponse::None;
   }

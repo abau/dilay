@@ -1,5 +1,6 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include <QLineEdit>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QRadioButton>
@@ -83,4 +84,8 @@ QWidget& ViewUtil :: stretcher (bool horizontal, bool vertical) {
   widget.setSizePolicy ( horizontal ? QSizePolicy::Expanding : QSizePolicy::Preferred
                        , vertical   ? QSizePolicy::Expanding : QSizePolicy::Preferred );
   return widget;
+}
+
+void ViewUtil :: deselect (QAbstractSpinBox& spinBox) {
+  spinBox.findChild <QLineEdit*> ()->deselect ();
 }

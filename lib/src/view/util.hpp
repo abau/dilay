@@ -4,15 +4,16 @@
 #include <functional>
 #include <glm/fwd.hpp>
 
-class QSpinBox;
+class QAbstractSpinBox;
+class QCheckBox;
 class QDoubleSpinBox;
+class QMouseEvent;
+class QPoint;
 class QPushButton;
+class QRadioButton;
+class QSpinBox;
 class QString;
 class QToolButton;
-class QRadioButton;
-class QCheckBox;
-class QPoint;
-class QMouseEvent;
 
 namespace ViewUtil {
   QSpinBox&       spinBox     (int, int, int);
@@ -28,6 +29,7 @@ namespace ViewUtil {
   void            connect     (const QSpinBox&, const std::function <void (int)>&);
   void            connect     (const QDoubleSpinBox&, const std::function <void (double)>&);
   QWidget&        stretcher   (bool, bool);
+  void            deselect    (QAbstractSpinBox&);
 };
 
 #endif
