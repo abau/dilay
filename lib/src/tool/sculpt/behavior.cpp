@@ -12,12 +12,14 @@
 struct ToolSculptBehavior::Impl {
   ToolSculptBehavior* self;
   ConfigProxy&        config;
+  State&              state;
   ViewCursor          cursor;
   QDoubleSpinBox&     radiusEdit;
 
-  Impl (ToolSculptBehavior* s, ConfigProxy& c) 
+  Impl (ToolSculptBehavior* s, ConfigProxy& c, State& st) 
     : self       (s)
     , config     (c)
+    , state      (st)
     , cursor     (1.0f, Color::red ())
     , radiusEdit (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
   {}
@@ -79,17 +81,18 @@ struct ToolSculptBehavior::Impl {
                 , QObject::tr ("Change radius") );
   }
 
-  bool mouseMoveEvent (State& state, const glm::ivec2& pos, bool updateBrush) {
-    return this->self->runMouseMoveEvent (state, pos, updateBrush);
+  bool mouseMoveEvent (const glm::ivec2& pos, bool updateBrush) {
+    return this->self->runMouseMoveEvent (pos, updateBrush);
   }
 };
 
-DELEGATE1_BIG3_SELF (ToolSculptBehavior, ConfigProxy&)
+DELEGATE2_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&)
 
 GETTER_CONST (ViewCursor&    , ToolSculptBehavior, cursor)
 GETTER_CONST (QDoubleSpinBox&, ToolSculptBehavior, radiusEdit)
 GETTER_CONST (ConfigProxy&   , ToolSculptBehavior, config)
+GETTER_CONST (State&         , ToolSculptBehavior, state)
 DELEGATE     (void           , ToolSculptBehavior, setupBrush)
 DELEGATE1    (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
 DELEGATE1    (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
-DELEGATE3    (bool           , ToolSculptBehavior, mouseMoveEvent, State&, const glm::ivec2&, bool)
+DELEGATE2    (bool           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)

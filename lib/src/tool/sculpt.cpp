@@ -24,12 +24,12 @@ struct ToolSculpt::Impl {
     , actions  (new ActionUnit) 
   {
     this->setBehavior <ToolSculptCarve> ();
-    this->behavior->mouseMoveEvent (this->self->state (), this->self->cursorPosition (), false);
+    this->behavior->mouseMoveEvent (this->self->cursorPosition (), false);
   }
 
   template <typename T>
   void setBehavior () {
-    this->behavior.reset (new T (this->self->config ()));
+    this->behavior.reset (new T (this->self->config (), this->self->state ()));
     this->behavior->setupBrush      ();
     this->behavior->setupProperties (this->self->properties ());
 
@@ -46,8 +46,7 @@ struct ToolSculpt::Impl {
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
     const bool leftButton  = e.buttons () == Qt::LeftButton;
-    const bool doCarve     = this->behavior->mouseMoveEvent ( this->self->state ()
-                                                            , ViewUtil::toIVec2 (e)
+    const bool doCarve     = this->behavior->mouseMoveEvent ( ViewUtil::toIVec2 (e)
                                                             , leftButton );
     if (leftButton && doCarve) {
       this->actions->add <ActionSculpt, WingedMesh> 

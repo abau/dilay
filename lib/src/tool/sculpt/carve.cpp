@@ -39,8 +39,9 @@ struct ToolSculptCarve::Impl {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
   }
 
-  bool runMouseMoveEvent (State& state, const glm::ivec2& pos, bool leftButton) {
-    const PrimRay          ray = state.camera ().ray (pos);
+  bool runMouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
+          State&           state = this->self->state ();
+    const PrimRay          ray   = state.camera ().ray (pos);
     WingedFaceIntersection intersection;
 
     if (   state.scene ().intersects (ray, intersection) 
