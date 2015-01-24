@@ -60,6 +60,10 @@ struct SculptBrush :: Impl {
       return true;
     }
   }
+
+  void resetPosition () {
+    this->hasPosition = false;
+  }
 };
 
 DELEGATE_BIG6_SELF (SculptBrush)
@@ -78,6 +82,8 @@ SETTER          (WingedMesh*      , SculptBrush, mesh)
 SETTER          (WingedFace*      , SculptBrush, face)
 DELEGATE2_CONST (void             , SculptBrush, sculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
 DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
+GETTER_CONST    (bool             , SculptBrush, hasPosition)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, position)
 DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
 DELEGATE1       (bool             , SculptBrush, updatePosition, const glm::vec3&)
+DELEGATE        (void             , SculptBrush, resetPosition)
