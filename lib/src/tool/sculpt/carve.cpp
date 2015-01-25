@@ -33,6 +33,10 @@ struct ToolSculptCarve::Impl {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
   }
 
+  bool runMouseLeftPressEvent (const glm::ivec2& pos) {
+    return this->runMouseMoveEvent (pos, true);
+  }
+
   bool runMouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
     WingedFaceIntersection intersection;
 

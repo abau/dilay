@@ -88,8 +88,12 @@ struct ToolSculptBehavior::Impl {
                 , QObject::tr ("Change radius") );
   }
 
-  bool mouseMoveEvent (const glm::ivec2& pos, bool updateBrush) {
-    return this->self->runMouseMoveEvent (pos, updateBrush);
+  bool mouseLeftPressEvent (const glm::ivec2& pos) {
+    return this->self->runMouseLeftPressEvent (pos);
+  }
+
+  bool mouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
+    return this->self->runMouseMoveEvent (pos, leftButton);
   }
 
   bool intersectsSelection (const glm::ivec2& pos, WingedFaceIntersection& intersection) const {
@@ -109,5 +113,6 @@ GETTER_CONST    (State&         , ToolSculptBehavior, state)
 DELEGATE        (void           , ToolSculptBehavior, setupBrush)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
+DELEGATE1       (bool           , ToolSculptBehavior, mouseLeftPressEvent, const glm::ivec2&)
 DELEGATE2       (bool           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)

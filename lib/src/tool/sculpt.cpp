@@ -40,27 +40,47 @@ struct ToolSculpt::Impl {
     this->self->showToolTip      ();
   }
 
+  void addSculptAction () {
+    this->actions->add <ActionSculpt, WingedMesh> ( this->self->state ().scene ()
+                                                  , this->behavior->brush ().meshRef () )
+      .run (this->behavior->brush ());
+  }
+
   void runRender () {
     this->behavior->cursor ().render (this->self->state ().camera ());
   }
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
-    const bool leftButton  = e.buttons () == Qt::LeftButton;
-    const bool doCarve     = this->behavior->mouseMoveEvent ( ViewUtil::toIVec2 (e)
-                                                            , leftButton );
-    if (leftButton && doCarve) {
-      this->actions->add <ActionSculpt, WingedMesh> 
-        ( this->self->state ().scene ()
-        , this->behavior->brush ().meshRef ()
-        ).run (this->behavior->brush ());
+    const bool leftButton = e.buttons () == Qt::LeftButton;
+    const bool doSculpt   = this->behavior->mouseMoveEvent ( ViewUtil::toIVec2 (e)
+                                                           , leftButton );
+    if (leftButton && doSculpt) {
+      this->addSculptAction ();
     }
     return ToolResponse::Redraw;
   }
 
+  ToolResponse runMousePressEvent (QMouseEvent& e) {
+    if (e.button () == Qt::LeftButton) {
+      const bool doSculpt = this->behavior->mouseLeftPressEvent (ViewUtil::toIVec2 (e));
+      if (doSculpt) {
+        this->addSculptAction ();
+      }
+      return ToolResponse::Redraw;
+    }
+    else {
+      return ToolResponse::None;
+    }
+  }
+
   ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton && this->actions->isEmpty () == false) {
-      this->self->state ().history ().addUnit (std::move (*this->actions));
-      this->actions.reset (new ActionUnit ());
+    if (e.button () == Qt::LeftButton) {
+      this->behavior->brush ().resetPosition ();
+
+      if (this->actions->isEmpty () == false) {
+        this->self->state ().history ().addUnit (std::move (*this->actions));
+        this->actions.reset (new ActionUnit ());
+      }
     }
     return ToolResponse::None;
   }
@@ -89,6 +109,7 @@ struct ToolSculpt::Impl {
 DELEGATE_TOOL                         (ToolSculpt)
 DELEGATE_TOOL_RUN_RENDER              (ToolSculpt)
 DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolSculpt)
+DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT   (ToolSculpt)
 DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolSculpt)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT   (ToolSculpt)
 DELEGATE_TOOL_RUN_CLOSE               (ToolSculpt)
