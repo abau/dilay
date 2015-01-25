@@ -100,10 +100,6 @@ struct ToolUtilMovement::Impl {
   bool byMouseEvent (QMouseEvent& e) {
     return this->move (ViewUtil::toIVec2 (e), e.modifiers () == Qt::ShiftModifier);
   }
-
-  bool onCameraPlane (const glm::ivec2& p, glm::vec3& intersection) const {
-    return this->intersects (glm::normalize (this->camera.toEyePoint ()), p, intersection); 
-  }
 };
 
 DELEGATE3_BIG4COPY (ToolUtilMovement, const Camera&, const glm::vec3&, MovementConstraint)
@@ -115,4 +111,3 @@ DELEGATE1       (void              , ToolUtilMovement, delta, const glm::vec3&)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
 SETTER          (const glm::vec3&  , ToolUtilMovement, position)
 DELEGATE1       (bool              , ToolUtilMovement, byMouseEvent, QMouseEvent&)
-DELEGATE2_CONST (bool              , ToolUtilMovement, onCameraPlane, const glm::ivec2&, glm::vec3&)
