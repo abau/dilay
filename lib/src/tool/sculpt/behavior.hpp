@@ -11,6 +11,7 @@ class State;
 class ViewCursor;
 class ViewProperties;
 class ViewToolTip;
+class WingedFaceIntersection;
 
 class ToolSculptBehavior {
   public:
@@ -26,8 +27,9 @@ class ToolSculptBehavior {
     bool mouseMoveEvent  (const glm::ivec2&, bool);
 
   protected:
-    ConfigProxy& config () const;
-    State&       state  () const;
+    ConfigProxy& config              () const;
+    State&       state               () const;
+    bool         intersectsSelection (const glm::ivec2&, WingedFaceIntersection&) const;
 
   private:
     IMPLEMENTATION

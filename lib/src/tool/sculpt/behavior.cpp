@@ -1,13 +1,20 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include "camera.hpp"
 #include "color.hpp"
 #include "config.hpp"
+#include "primitive/ray.hpp"
+#include "scene.hpp"
 #include "sculpt-brush.hpp"
+#include "selection.hpp"
+#include "state.hpp"
 #include "tool/sculpt/behavior.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
+#include "winged/face-intersection.hpp"
+#include "winged/mesh.hpp"
 
 struct ToolSculptBehavior::Impl {
   ToolSculptBehavior* self;
@@ -84,15 +91,23 @@ struct ToolSculptBehavior::Impl {
   bool mouseMoveEvent (const glm::ivec2& pos, bool updateBrush) {
     return this->self->runMouseMoveEvent (pos, updateBrush);
   }
+
+  bool intersectsSelection (const glm::ivec2& pos, WingedFaceIntersection& intersection) const {
+    const PrimRay ray = this->state.camera ().ray (pos);
+
+    return this->state.scene ().intersects (ray, intersection) 
+        && this->state.scene ().selection  ().hasMajor (intersection.mesh ().index ());
+  }
 };
 
 DELEGATE2_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&)
 
-GETTER_CONST (ViewCursor&    , ToolSculptBehavior, cursor)
-GETTER_CONST (QDoubleSpinBox&, ToolSculptBehavior, radiusEdit)
-GETTER_CONST (ConfigProxy&   , ToolSculptBehavior, config)
-GETTER_CONST (State&         , ToolSculptBehavior, state)
-DELEGATE     (void           , ToolSculptBehavior, setupBrush)
-DELEGATE1    (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
-DELEGATE1    (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
-DELEGATE2    (bool           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
+GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
+GETTER_CONST    (QDoubleSpinBox&, ToolSculptBehavior, radiusEdit)
+GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
+GETTER_CONST    (State&         , ToolSculptBehavior, state)
+DELEGATE        (void           , ToolSculptBehavior, setupBrush)
+DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
+DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
+DELEGATE2       (bool           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
+DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)

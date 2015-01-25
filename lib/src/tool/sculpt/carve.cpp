@@ -1,19 +1,13 @@
 #include <QDoubleSpinBox>
 #include <glm/glm.hpp>
-#include "camera.hpp"
 #include "config.hpp"
-#include "primitive/ray.hpp"
-#include "scene.hpp"
 #include "sculpt-brush/carve.hpp"
-#include "selection.hpp"
-#include "state.hpp"
 #include "tool/sculpt/behaviors.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
-#include "winged/mesh.hpp"
 
 struct ToolSculptCarve::Impl {
   ToolSculptCarve* self;
@@ -40,13 +34,9 @@ struct ToolSculptCarve::Impl {
   }
 
   bool runMouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
-          State&           state = this->self->state ();
-    const PrimRay          ray   = state.camera ().ray (pos);
     WingedFaceIntersection intersection;
 
-    if (   state.scene ().intersects (ray, intersection) 
-        && state.scene ().selection  ().hasMajor (intersection.mesh ().index ())) 
-    {
+    if (this->self->intersectsSelection (pos, intersection)) {
       this->self->cursor ().position (intersection.position ());
       this->self->cursor ().normal   (intersection.normal   ());
 
