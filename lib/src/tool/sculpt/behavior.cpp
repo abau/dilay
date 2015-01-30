@@ -1,8 +1,11 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include "action/sculpt.hpp"
+#include "action/unit.hpp"
 #include "camera.hpp"
 #include "color.hpp"
 #include "config.hpp"
+#include "history.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "sculpt-brush.hpp"
@@ -17,16 +20,18 @@
 #include "winged/mesh.hpp"
 
 struct ToolSculptBehavior::Impl {
-  ToolSculptBehavior* self;
-  ConfigProxy&        config;
-  State&              state;
-  ViewCursor          cursor;
-  QDoubleSpinBox&     radiusEdit;
+  ToolSculptBehavior*          self;
+  ConfigProxy&                 config;
+  State&                       state;
+  std::unique_ptr <ActionUnit> actions;
+  ViewCursor                   cursor;
+  QDoubleSpinBox&              radiusEdit;
 
   Impl (ToolSculptBehavior* s, ConfigProxy& c, State& st) 
     : self       (s)
     , config     (c)
     , state      (st)
+    , actions    (new ActionUnit) 
     , cursor     (1.0f, Color::red ())
     , radiusEdit (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
   {}
@@ -88,12 +93,19 @@ struct ToolSculptBehavior::Impl {
                 , QObject::tr ("Change radius") );
   }
 
-  bool mouseLeftPressEvent (const glm::ivec2& pos) {
-    return this->self->runMouseLeftPressEvent (pos);
+  void mouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
+    this->self->runMouseMoveEvent (pos, leftButton);
   }
 
-  bool mouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
-    return this->self->runMouseMoveEvent (pos, leftButton);
+  void mouseLeftPressEvent (const glm::ivec2& pos) {
+    this->self->runMouseLeftPressEvent (pos);
+  }
+
+  void addActionsToHistory () {
+    if (this->actions->isEmpty () == false) {
+      this->state.history ().addUnit (std::move (*this->actions));
+      this->actions.reset (new ActionUnit ());
+    }
   }
 
   bool intersectsSelection (const glm::ivec2& pos, WingedFaceIntersection& intersection) const {
@@ -101,6 +113,11 @@ struct ToolSculptBehavior::Impl {
 
     return this->state.scene ().intersects (ray, intersection) 
         && this->state.scene ().selection  ().hasMajor (intersection.mesh ().index ());
+  }
+
+  void sculpt () {
+    this->actions->add <ActionSculpt, WingedMesh> 
+      (this->state.scene (), this->self->brush ().meshRef ()).run (this->self->brush ());
   }
 };
 
@@ -113,6 +130,8 @@ GETTER_CONST    (State&         , ToolSculptBehavior, state)
 DELEGATE        (void           , ToolSculptBehavior, setupBrush)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
-DELEGATE1       (bool           , ToolSculptBehavior, mouseLeftPressEvent, const glm::ivec2&)
-DELEGATE2       (bool           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
+DELEGATE2       (void           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
+DELEGATE1       (void           , ToolSculptBehavior, mouseLeftPressEvent, const glm::ivec2&)
+DELEGATE        (void           , ToolSculptBehavior, addActionsToHistory)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
+DELEGATE        (void           , ToolSculptBehavior, sculpt)

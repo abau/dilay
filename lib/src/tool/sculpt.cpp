@@ -1,9 +1,6 @@
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "action/sculpt.hpp"
-#include "action/unit.hpp"
-#include "history.hpp"
 #include "scene.hpp"
 #include "sculpt-brush.hpp"
 #include "state.hpp"
@@ -17,11 +14,9 @@
 struct ToolSculpt::Impl {
   ToolSculpt*                          self;
   std::unique_ptr <ToolSculptBehavior> behavior;
-  std::unique_ptr <ActionUnit>         actions;
 
   Impl (ToolSculpt* s) 
     : self     (s) 
-    , actions  (new ActionUnit) 
   {
     this->setBehavior <ToolSculptCarve> ();
     this->behavior->mouseMoveEvent (this->self->cursorPosition (), false);
@@ -40,32 +35,19 @@ struct ToolSculpt::Impl {
     this->self->showToolTip      ();
   }
 
-  void addSculptAction () {
-    this->actions->add <ActionSculpt, WingedMesh> ( this->self->state ().scene ()
-                                                  , this->behavior->brush ().meshRef () )
-      .run (this->behavior->brush ());
-  }
-
   void runRender () {
     this->behavior->cursor ().render (this->self->state ().camera ());
   }
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
-    const bool leftButton = e.buttons () == Qt::LeftButton;
-    const bool doSculpt   = this->behavior->mouseMoveEvent ( ViewUtil::toIVec2 (e)
-                                                           , leftButton );
-    if (leftButton && doSculpt) {
-      this->addSculptAction ();
-    }
+    this->behavior->mouseMoveEvent ( ViewUtil::toIVec2 (e)
+                                   , e.buttons () == Qt::LeftButton );
     return ToolResponse::Redraw;
   }
 
   ToolResponse runMousePressEvent (QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
-      const bool doSculpt = this->behavior->mouseLeftPressEvent (ViewUtil::toIVec2 (e));
-      if (doSculpt) {
-        this->addSculptAction ();
-      }
+      this->behavior->mouseLeftPressEvent (ViewUtil::toIVec2 (e));
       return ToolResponse::Redraw;
     }
     else {
@@ -76,11 +58,8 @@ struct ToolSculpt::Impl {
   ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       this->behavior->brush ().resetPosition ();
-
-      if (this->actions->isEmpty () == false) {
-        this->self->state ().history ().addUnit (std::move (*this->actions));
-        this->actions.reset (new ActionUnit ());
-      }
+      this->behavior->addActionsToHistory ();
+      return ToolResponse::Redraw;
     }
     return ToolResponse::None;
   }
@@ -100,9 +79,7 @@ struct ToolSculpt::Impl {
   }
 
   void runClose () {
-    if (this->actions->isEmpty () == false) {
-      this->self->state ().history ().addUnit (std::move (*this->actions));
-    }
+    this->behavior->addActionsToHistory ();
   }
 };
 

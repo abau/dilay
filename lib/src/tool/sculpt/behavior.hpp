@@ -24,13 +24,15 @@ class ToolSculptBehavior {
     void setupBrush          ();
     void setupProperties     (ViewProperties&);
     void setupToolTip        (ViewToolTip&);
-    bool mouseLeftPressEvent (const glm::ivec2&);
-    bool mouseMoveEvent      (const glm::ivec2&, bool);
+    void mouseMoveEvent      (const glm::ivec2&, bool);
+    void mouseLeftPressEvent (const glm::ivec2&);
+    void addActionsToHistory ();
 
   protected:
     ConfigProxy& config              () const;
     State&       state               () const;
     bool         intersectsSelection (const glm::ivec2&, WingedFaceIntersection&) const;
+    void         sculpt              ();
 
   private:
     IMPLEMENTATION
@@ -38,8 +40,8 @@ class ToolSculptBehavior {
     virtual void runSetupBrush          () = 0;
     virtual void runSetupProperties     (ViewProperties&) = 0;
     virtual void runSetupToolTip        (ViewToolTip&) = 0;
-    virtual bool runMouseLeftPressEvent (const glm::ivec2&) = 0;
-    virtual bool runMouseMoveEvent      (const glm::ivec2&, bool) = 0;
+    virtual void runMouseLeftPressEvent (const glm::ivec2&) = 0;
+    virtual void runMouseMoveEvent      (const glm::ivec2&, bool) = 0;
 };
 
 #define DECLARE_TOOL_BEHAVIOR(name)                                                         \
@@ -50,8 +52,8 @@ class ToolSculptBehavior {
              void runSetupBrush          ();                                                \
              void runSetupProperties     (ViewProperties&);                                 \
              void runSetupToolTip        (ViewToolTip&);                                    \
-             bool runMouseLeftPressEvent (const glm::ivec2&);                               \
-             bool runMouseMoveEvent      (const glm::ivec2&, bool);                         \
+             void runMouseLeftPressEvent (const glm::ivec2&);                               \
+             void runMouseMoveEvent      (const glm::ivec2&, bool);                         \
   };
 
 #define DELEGATE_TOOL_BEHAVIOR(name)                                                        \
@@ -60,7 +62,7 @@ class ToolSculptBehavior {
   DELEGATE     (void, name, runSetupBrush)                                                  \
   DELEGATE1    (void, name, runSetupProperties, ViewProperties&);                           \
   DELEGATE1    (void, name, runSetupToolTip, ViewToolTip&);                                 \
-  DELEGATE1    (bool, name, runMouseLeftPressEvent, const glm::ivec2&)                      \
-  DELEGATE2    (bool, name, runMouseMoveEvent, const glm::ivec2&, bool)
+  DELEGATE1    (void, name, runMouseLeftPressEvent, const glm::ivec2&)                      \
+  DELEGATE2    (void, name, runMouseMoveEvent, const glm::ivec2&, bool)
 
 #endif
