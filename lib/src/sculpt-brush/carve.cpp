@@ -11,7 +11,10 @@ struct SculptBrushCarve :: Impl {
   SculptBrushCarve* self;
   float             intensityFactor;
 
-  Impl (SculptBrushCarve* s) : self (s) {}
+  Impl (SculptBrushCarve* s) 
+    : self            (s) 
+    , intensityFactor (0.0f)
+  {}
 
   float intensity () const {
     return this->intensityFactor * this->self->radius ();
