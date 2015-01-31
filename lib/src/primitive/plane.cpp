@@ -4,7 +4,7 @@
 
 PrimPlane :: PrimPlane (const glm::vec3& p, const glm::vec3& n)
   : _point  (p)
-  , _normal (n)
+  , _normal (glm::normalize (n))
 {}
 
 std::ostream& operator<<(std::ostream& os, const PrimPlane& plane) {

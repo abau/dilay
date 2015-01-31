@@ -60,7 +60,7 @@ struct ToolUtilMovement::Impl {
                 normal[i] = 0.0f;
       glm::vec3 intersection;
 
-      if (this->intersects (glm::normalize (normal), p, intersection)) {
+      if (this->intersects (normal, p, intersection)) {
         this->position[i] = intersection[i];
         return true;
       }
@@ -89,7 +89,7 @@ struct ToolUtilMovement::Impl {
         return modify ? this->moveAlong   (Dimension::X, p)
                       : this->moveOnPlane (Dimension::X, p);
       case MovementConstraint::CameraPlane: 
-        return this->moveOnPlane (glm::normalize (this->camera.toEyePoint ()), p); 
+        return this->moveOnPlane (this->camera.toEyePoint (), p); 
       case MovementConstraint::PrimaryPlane: 
         return modify ? this->moveAlong   (this->camera.primaryDimension (), p)
                       : this->moveOnPlane (this->camera.primaryDimension (), p);
