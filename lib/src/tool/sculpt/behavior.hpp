@@ -17,43 +17,46 @@ class ToolSculptBehavior {
   public:
     DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, ConfigProxy&, State&)
 
-    virtual SculptBrush&    brush      () const = 0;
-            ViewCursor&     cursor     () const;
-            QDoubleSpinBox& radiusEdit () const;
-
-    void setupBrush          ();
-    void setupProperties     (ViewProperties&);
-    void setupToolTip        (ViewToolTip&);
-    void mouseMoveEvent      (const glm::ivec2&, bool);
-    void mouseLeftPressEvent (const glm::ivec2&);
-    void addActionsToHistory ();
+    void setupBrushAndCursor   ();
+    void setupProperties       (ViewProperties&);
+    void setupToolTip          (ViewToolTip&);
+    void render                ();
+    void mouseMoveEvent        (const glm::ivec2&, bool);
+    void mouseLeftPressEvent   (const glm::ivec2&);
+    void mouseLeftReleaseEvent ();
+    void mouseWheelEvent       (bool);
+    void close                 ();
 
   protected:
     ConfigProxy& config              () const;
     State&       state               () const;
+    ViewCursor&  cursor              () const;
     bool         intersectsSelection (const glm::ivec2&, WingedFaceIntersection&) const;
+    void         setupBrush          (SculptBrush&) const;
+    void         sculpt              (const SculptBrush&);
     void         sculpt              ();
 
   private:
     IMPLEMENTATION
 
-    virtual void runSetupBrush          () = 0;
-    virtual void runSetupProperties     (ViewProperties&) = 0;
-    virtual void runSetupToolTip        (ViewToolTip&) = 0;
-    virtual void runMouseLeftPressEvent (const glm::ivec2&) = 0;
-    virtual void runMouseMoveEvent      (const glm::ivec2&, bool) = 0;
+    virtual SculptBrush& brush                  () const = 0;
+    virtual void         runSetupBrush          () = 0;
+    virtual void         runSetupProperties     (ViewProperties&) = 0;
+    virtual void         runSetupToolTip        (ViewToolTip&) = 0;
+    virtual void         runMouseLeftPressEvent (const glm::ivec2&) = 0;
+    virtual void         runMouseMoveEvent      (const glm::ivec2&, bool) = 0;
 };
 
 #define DECLARE_TOOL_BEHAVIOR(name)                                                         \
   class name : public ToolSculptBehavior {                                                  \
     public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
-             SculptBrush& brush () const;                                                   \
     private: IMPLEMENTATION                                                                 \
-             void runSetupBrush          ();                                                \
-             void runSetupProperties     (ViewProperties&);                                 \
-             void runSetupToolTip        (ViewToolTip&);                                    \
-             void runMouseLeftPressEvent (const glm::ivec2&);                               \
-             void runMouseMoveEvent      (const glm::ivec2&, bool);                         \
+             SculptBrush& brush                  () const;                                  \
+             void         runSetupBrush          ();                                        \
+             void         runSetupProperties     (ViewProperties&);                         \
+             void         runSetupToolTip        (ViewToolTip&);                            \
+             void         runMouseLeftPressEvent (const glm::ivec2&);                       \
+             void         runMouseMoveEvent      (const glm::ivec2&, bool);                 \
   };
 
 #define DELEGATE_TOOL_BEHAVIOR(name)                                                        \

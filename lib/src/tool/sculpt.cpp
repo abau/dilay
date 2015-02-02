@@ -15,9 +15,7 @@ struct ToolSculpt::Impl {
   ToolSculpt*                          self;
   std::unique_ptr <ToolSculptBehavior> behavior;
 
-  Impl (ToolSculpt* s) 
-    : self     (s) 
-  {
+  Impl (ToolSculpt* s) : self (s) {
     this->setBehavior <ToolSculptCarve> ();
     this->behavior->mouseMoveEvent (this->self->cursorPosition (), false);
   }
@@ -25,18 +23,16 @@ struct ToolSculpt::Impl {
   template <typename T>
   void setBehavior () {
     this->behavior.reset (new T (this->self->config (), this->self->state ()));
-    this->behavior->setupBrush      ();
-    this->behavior->setupProperties (this->self->properties ());
+    this->behavior->setupBrushAndCursor ();
+    this->behavior->setupProperties     (this->self->properties ());
 
     this->self->resetToolTip     ();
     this->behavior->setupToolTip (this->self->toolTip ());
-    this->self->toolTip ().add   ( ViewToolTip::MouseEvent::Wheel, ViewToolTip::Modifier::Shift
-                                 , QObject::tr ("Change radius") );
     this->self->showToolTip      ();
   }
 
   void runRender () {
-    this->behavior->cursor ().render (this->self->state ().camera ());
+    this->behavior->render ();
   }
 
   ToolResponse runMouseMoveEvent (QMouseEvent& e) {
@@ -57,8 +53,7 @@ struct ToolSculpt::Impl {
 
   ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
-      this->behavior->brush ().resetPosition ();
-      this->behavior->addActionsToHistory ();
+      this->behavior->mouseLeftReleaseEvent ();
       return ToolResponse::Redraw;
     }
     return ToolResponse::None;
@@ -66,20 +61,14 @@ struct ToolSculpt::Impl {
 
   ToolResponse runWheelEvent (QWheelEvent& e) {
     if (e.orientation () == Qt::Vertical && e.modifiers ().testFlag (Qt::ShiftModifier)) {
-      if (e.delta () > 0) {
-        this->behavior->radiusEdit ().stepUp ();
-      }
-      else {
-        this->behavior->radiusEdit ().stepDown ();
-      }
-      ViewUtil::deselect (this->behavior->radiusEdit ());
+      this->behavior->mouseWheelEvent (e.delta () > 0);
       return ToolResponse::Redraw;
     }
     return ToolResponse::None;
   }
 
   void runClose () {
-    this->behavior->addActionsToHistory ();
+    this->behavior->close ();
   }
 };
 

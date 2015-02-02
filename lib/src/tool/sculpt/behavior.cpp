@@ -36,20 +36,15 @@ struct ToolSculptBehavior::Impl {
     , radiusEdit (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
   {}
 
-  void setupBrush () {
-    SculptBrush& brush = this->self->brush ();
+  void setupBrushAndCursor () {
+    this->setupBrush            (this->self->brush ());
+    this->self->runSetupBrush   ();
 
-    brush.radius          (this->self->config ().get <float> ("radius"           , 10.0f));
-    brush.detailFactor    (this->self->config ().get <float> ("detail-factor"    ,  0.6f));
-    brush.stepWidthFactor (this->self->config ().get <float> ("step-width-factor",  0.3f));
-    brush.subdivide       (this->self->config ().get <bool>  ("subdivide"        ,  true));
-
-    this->cursor.radius         (brush.radius ());
-    this->cursor.color          (this->self->config ().get <Color> ("cursor-color", Color::red ()));
+    this->cursor.radius         (this->self->brush ().radius ());
+    this->cursor.color          (this->config.get <Color> ("cursor-color", Color::red ()));
     this->cursor.updateGeometry ();
+   }
 
-    this->self->runSetupBrush ();
-  }
 
   void setupProperties (ViewProperties& properties) {
     SculptBrush& brush = this->self->brush ();
@@ -93,6 +88,10 @@ struct ToolSculptBehavior::Impl {
                 , QObject::tr ("Change radius") );
   }
 
+  void render () {
+    this->cursor.render (this->state.camera ());
+  }
+
   void mouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
     this->self->runMouseMoveEvent (pos, leftButton);
   }
@@ -101,11 +100,26 @@ struct ToolSculptBehavior::Impl {
     this->self->runMouseLeftPressEvent (pos);
   }
 
-  void addActionsToHistory () {
+  void mouseLeftReleaseEvent () {
+    this->self->brush ().resetPosition ();
     if (this->actions->isEmpty () == false) {
       this->state.history ().addUnit (std::move (*this->actions));
       this->actions.reset (new ActionUnit ());
     }
+  }
+
+  void mouseWheelEvent (bool up) {
+    if (up) {
+      this->radiusEdit.stepUp ();
+    }
+    else {
+      this->radiusEdit.stepDown ();
+    }
+    ViewUtil::deselect (this->radiusEdit);
+  }
+
+  void close () {
+    this->mouseLeftReleaseEvent ();
   }
 
   bool intersectsSelection (const glm::ivec2& pos, WingedFaceIntersection& intersection) const {
@@ -115,23 +129,38 @@ struct ToolSculptBehavior::Impl {
         && this->state.scene ().selection  ().hasMajor (intersection.mesh ().index ());
   }
 
-  void sculpt () {
+  void setupBrush (SculptBrush& brush) const {
+    brush.radius          (this->self->config ().get <float> ("radius"           , 10.0f));
+    brush.detailFactor    (this->self->config ().get <float> ("detail-factor"    ,  0.6f));
+    brush.stepWidthFactor (this->self->config ().get <float> ("step-width-factor",  0.3f));
+    brush.subdivide       (this->self->config ().get <bool>  ("subdivide"        ,  true));
+  }
+
+  void sculpt (const SculptBrush& brush) {
     this->actions->add <ActionSculpt, WingedMesh> 
-      (this->state.scene (), this->self->brush ().meshRef ()).run (this->self->brush ());
+      (this->state.scene (), brush.meshRef ()).run (brush);
+  }
+
+  void sculpt () {
+    this->sculpt (this->self->brush ());
   }
 };
 
 DELEGATE2_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&)
 
-GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
-GETTER_CONST    (QDoubleSpinBox&, ToolSculptBehavior, radiusEdit)
 GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
 GETTER_CONST    (State&         , ToolSculptBehavior, state)
-DELEGATE        (void           , ToolSculptBehavior, setupBrush)
+GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
+DELEGATE        (void           , ToolSculptBehavior, setupBrushAndCursor)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
+DELEGATE        (void           , ToolSculptBehavior, render)
 DELEGATE2       (void           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
 DELEGATE1       (void           , ToolSculptBehavior, mouseLeftPressEvent, const glm::ivec2&)
-DELEGATE        (void           , ToolSculptBehavior, addActionsToHistory)
+DELEGATE        (void           , ToolSculptBehavior, mouseLeftReleaseEvent)
+DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, bool)
+DELEGATE        (void           , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
+DELEGATE1_CONST (void           , ToolSculptBehavior, setupBrush, SculptBrush&)
+DELEGATE1       (void           , ToolSculptBehavior, sculpt, const SculptBrush&)
 DELEGATE        (void           , ToolSculptBehavior, sculpt)
