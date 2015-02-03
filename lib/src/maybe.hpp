@@ -64,6 +64,10 @@ class Maybe {
       this->value.reset (new T (newValue));
     }
 
+    void reset () {
+      this->value.reset ();
+    }
+
   private:
     std::unique_ptr <T> value;
 };
