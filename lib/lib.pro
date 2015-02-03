@@ -55,6 +55,7 @@ SOURCES += \
            src/scene.cpp \
            src/sculpt-brush.cpp \
            src/sculpt-brush/carve.cpp \
+           src/sculpt-brush/subdivide.cpp \
            src/selection.cpp \
            src/selection-mode.cpp \
            src/shader.cpp \
@@ -152,6 +153,7 @@ HEADERS += \
            src/scene.hpp \
            src/sculpt-brush.hpp \
            src/sculpt-brush/carve.hpp \
+           src/sculpt-brush/subdivide.hpp \
            src/selection.hpp \
            src/selection-mode.hpp \
            src/shader.hpp \
