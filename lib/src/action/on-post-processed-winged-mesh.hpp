@@ -23,10 +23,9 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
     /** `finalize (m,f,a)` finalizes an action on `m`:
      * 1. realign each face in `f`
      * 2. collapse each degenerated face in `m`
-     * 3. reset free face indices in `m`
-     * 4. write normal for each vertex that is either included in `f` 
+     * 3. write normal for each vertex that is either included in `f` 
      * or that has been modified by (2.) 
-     * 5. buffer data of `m` */
+     * 4. buffer data of `m` */
     void        finalize        (WingedMesh&, AffectedFaces&, ActionUnitOn <WingedMesh>&);
 
   private:

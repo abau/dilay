@@ -110,7 +110,6 @@ struct ActionOnPostProcessedWMesh :: Impl {
       }
       affectedFaces.commit ();
     }
-    mesh.resetFreeFaceIndices ();
 
     // write normals
     for (WingedVertex* v : affectedFaces.toVertexSet ()) {

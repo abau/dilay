@@ -193,25 +193,19 @@ struct WingedMesh::Impl {
     });
   }
 
-  void resetFreeFaceIndices () {
-    if (this->numFaces () > 0) {
-      unsigned int nonFreeFaceIndex = this->octree.someFaceRef ().index ();
-      this->octree.forEachFreeFaceIndex ([&] (unsigned int index) {
-        this->setIndex ((3 * index) + 0, this->index ((3 * nonFreeFaceIndex) + 0));
-        this->setIndex ((3 * index) + 1, this->index ((3 * nonFreeFaceIndex) + 1));
-        this->setIndex ((3 * index) + 2, this->index ((3 * nonFreeFaceIndex) + 2));
-      });
-    }
-  }
-
   void bufferData  () { 
-#ifndef NDEBUG
-    this->octree.forEachFreeFaceIndex ([this] (unsigned int freeFaceIndex) {
-      assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 0)) == false);
-      assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 1)) == false);
-      assert (this->vertices.isFree (this->mesh.index (freeFaceIndex + 2)) == false);
-    });
-#endif
+    auto resetFreeFaceIndices = [this] () {
+      if (this->numFaces () > 0) {
+        unsigned int nonFreeFaceIndex = this->octree.someFaceRef ().index ();
+        this->octree.forEachFreeFaceIndex ([&] (unsigned int index) {
+          this->setIndex ((3 * index) + 0, this->index ((3 * nonFreeFaceIndex) + 0));
+          this->setIndex ((3 * index) + 1, this->index ((3 * nonFreeFaceIndex) + 1));
+          this->setIndex ((3 * index) + 2, this->index ((3 * nonFreeFaceIndex) + 2));
+        });
+      }
+    };
+
+    resetFreeFaceIndices  ();
     this->mesh.bufferData (); 
   }
 
@@ -368,7 +362,6 @@ DELEGATE_CONST  (glm::vec3   , WingedMesh, center)
 
 DELEGATE        (void, WingedMesh, writeAllIndices)
 DELEGATE        (void, WingedMesh, writeAllNormals)
-DELEGATE        (void, WingedMesh, resetFreeFaceIndices)
 DELEGATE        (void, WingedMesh, bufferData)
 DELEGATE2       (void, WingedMesh, render, const Camera&, bool)
 DELEGATE        (void, WingedMesh, reset)
