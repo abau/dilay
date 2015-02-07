@@ -6,6 +6,7 @@
 
 class ConfigProxy;
 class QDoubleSpinBox;
+class PrimRay;
 class SculptBrush;
 class State;
 class ViewCursor;
@@ -31,6 +32,7 @@ class ToolSculptBehavior {
     ConfigProxy& config              () const;
     State&       state               () const;
     ViewCursor&  cursor              () const;
+    bool         intersectsSelection (const PrimRay&, WingedFaceIntersection&) const;
     bool         intersectsSelection (const glm::ivec2&, WingedFaceIntersection&) const;
     void         setupBrush          (SculptBrush&) const;
     void         sculpt              (const SculptBrush&);
@@ -39,15 +41,17 @@ class ToolSculptBehavior {
   private:
     IMPLEMENTATION
 
-    virtual SculptBrush& brush                  () const = 0;
-    virtual void         runSetupBrush          () = 0;
-    virtual void         runSetupProperties     (ViewProperties&) = 0;
-    virtual void         runSetupToolTip        (ViewToolTip&) = 0;
-    virtual void         runMouseLeftPressEvent (const glm::ivec2&) = 0;
-    virtual void         runMouseMoveEvent      (const glm::ivec2&, bool) = 0;
+    virtual SculptBrush& brush                    () const = 0;
+    virtual void         runSetupBrush            () = 0;
+    virtual void         runSetupProperties       (ViewProperties&) = 0;
+    virtual void         runSetupToolTip          (ViewToolTip&) = 0;
+    virtual void         runMouseLeftPressEvent   (const glm::ivec2&) = 0;
+    virtual void         runMouseMoveEvent        (const glm::ivec2&, bool) = 0;
+    virtual void         runMouseLeftReleaseEvent () {}
+    virtual void         runRender                () const {}
 };
 
-#define DECLARE_TOOL_BEHAVIOR(name)                                                         \
+#define DECLARE_TOOL_BEHAVIOR(name,otherMethods)                                            \
   class name : public ToolSculptBehavior {                                                  \
     public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
     private: IMPLEMENTATION                                                                 \
@@ -57,15 +61,28 @@ class ToolSculptBehavior {
              void         runSetupToolTip        (ViewToolTip&);                            \
              void         runMouseLeftPressEvent (const glm::ivec2&);                       \
              void         runMouseMoveEvent      (const glm::ivec2&, bool);                 \
+             otherMethods                                                                   \
   };
+
+#define DECLARE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT \
+  void runMouseLeftReleaseEvent ();
+
+#define DECLARE_TOOL_BEHAVIOR_RUN_RENDER \
+  void runRender () const;
 
 #define DELEGATE_TOOL_BEHAVIOR(name)                                                        \
   DELEGATE_BIG3_BASE (name, (ConfigProxy& c, State& s), (this), ToolSculptBehavior, (c,s))  \
-  GETTER_CONST (SculptBrush&, name, brush)                                                  \
-  DELEGATE     (void, name, runSetupBrush)                                                  \
-  DELEGATE1    (void, name, runSetupProperties, ViewProperties&);                           \
-  DELEGATE1    (void, name, runSetupToolTip, ViewToolTip&);                                 \
-  DELEGATE1    (void, name, runMouseLeftPressEvent, const glm::ivec2&)                      \
-  DELEGATE2    (void, name, runMouseMoveEvent, const glm::ivec2&, bool)
+  GETTER_CONST   (SculptBrush&, name, brush)                                                \
+  DELEGATE       (void, name, runSetupBrush)                                                \
+  DELEGATE1      (void, name, runSetupProperties, ViewProperties&);                         \
+  DELEGATE1      (void, name, runSetupToolTip, ViewToolTip&);                               \
+  DELEGATE1      (void, name, runMouseLeftPressEvent, const glm::ivec2&)                    \
+  DELEGATE2      (void, name, runMouseMoveEvent, const glm::ivec2&, bool)                    
+
+#define DELEGATE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT(n) \
+  DELEGATE (void, n, runMouseLeftReleaseEvent)
+
+#define DELEGATE_TOOL_BEHAVIOR_RUN_RENDER(n) \
+  DELEGATE_CONST (void, n, runRender)
 
 #endif

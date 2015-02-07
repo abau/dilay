@@ -7,8 +7,14 @@ class SculptBrushCarve : public SculptBrush {
   public:
     DECLARE_BIG6 (SculptBrushCarve)
 
-    float intensityFactor () const;
-    void  intensityFactor (float);
+    float        intensityFactor     () const;
+    unsigned int order               () const;
+    void         intensityFactor     (float);
+    void         order               (unsigned int);
+    void         useLastPosition     (bool);
+    void         useIntersection     (bool);
+    void         direction           (const glm::vec3&);
+    void         useAverageDirection ();
 
   private:
     IMPLEMENTATION

@@ -71,6 +71,7 @@ SOURCES += \
            src/tool/move-camera.cpp \
            src/tool/sculpt/behavior.cpp \
            src/tool/sculpt/carve.cpp \
+           src/tool/sculpt/drag.cpp \
            src/tool/subdivide-mesh.cpp \
            src/tool/util/movement.cpp \
            src/util.cpp \

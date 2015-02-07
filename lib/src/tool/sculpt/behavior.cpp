@@ -90,6 +90,7 @@ struct ToolSculptBehavior::Impl {
 
   void render () const {
     this->cursor.render (this->state.camera ());
+    this->self->runRender ();
   }
 
   void mouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
@@ -101,7 +102,12 @@ struct ToolSculptBehavior::Impl {
   }
 
   void mouseLeftReleaseEvent () {
+    this->self->runMouseLeftReleaseEvent ();
     this->self->brush ().resetPosition ();
+    this->addActionsToHistory ();
+  }
+
+  void addActionsToHistory () {
     if (this->actions->isEmpty () == false) {
       this->state.history ().addUnit (std::move (*this->actions));
       this->actions.reset (new ActionUnit ());
@@ -119,14 +125,16 @@ struct ToolSculptBehavior::Impl {
   }
 
   void close () {
-    this->mouseLeftReleaseEvent ();
+    this->addActionsToHistory ();
+  }
+
+  bool intersectsSelection (const PrimRay& ray, WingedFaceIntersection& intersection) const {
+    return this->state.scene ().intersects (ray, intersection) 
+        && this->state.scene ().selection  ().hasMajor (intersection.mesh ().index ());
   }
 
   bool intersectsSelection (const glm::ivec2& pos, WingedFaceIntersection& intersection) const {
-    const PrimRay ray = this->state.camera ().ray (pos);
-
-    return this->state.scene ().intersects (ray, intersection) 
-        && this->state.scene ().selection  ().hasMajor (intersection.mesh ().index ());
+    return this->intersectsSelection (this->state.camera ().ray (pos), intersection);
   }
 
   void setupBrush (SculptBrush& brush) const {
@@ -160,6 +168,7 @@ DELEGATE1       (void           , ToolSculptBehavior, mouseLeftPressEvent, const
 DELEGATE        (void           , ToolSculptBehavior, mouseLeftReleaseEvent)
 DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, bool)
 DELEGATE        (void           , ToolSculptBehavior, close)
+DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
 DELEGATE1_CONST (void           , ToolSculptBehavior, setupBrush, SculptBrush&)
 DELEGATE1       (void           , ToolSculptBehavior, sculpt, const SculptBrush&)

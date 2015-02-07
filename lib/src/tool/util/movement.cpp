@@ -11,7 +11,7 @@
 struct ToolUtilMovement::Impl {
   const Camera&      camera;
   MovementConstraint constraint;
-  const glm::vec3    originalPosition;
+  glm::vec3          originalPosition;
   glm::vec3          position;
 
   Impl (const Camera& cam, const glm::vec3& o, MovementConstraint c) 
@@ -100,6 +100,11 @@ struct ToolUtilMovement::Impl {
   bool byMouseEvent (QMouseEvent& e) {
     return this->move (ViewUtil::toIVec2 (e), e.modifiers () == Qt::ShiftModifier);
   }
+
+  void resetPosition (const glm::vec3& p) {
+    this->originalPosition = p;
+    this->position         = p;
+  }
 };
 
 DELEGATE3_BIG4COPY (ToolUtilMovement, const Camera&, const glm::vec3&, MovementConstraint)
@@ -112,3 +117,4 @@ GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
 SETTER          (const glm::vec3&  , ToolUtilMovement, position)
 DELEGATE2       (bool              , ToolUtilMovement, move, const glm::ivec2&, bool)
 DELEGATE1       (bool              , ToolUtilMovement, byMouseEvent, QMouseEvent&)
+DELEGATE1       (void              , ToolUtilMovement, resetPosition, const glm::vec3&)
