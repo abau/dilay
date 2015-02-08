@@ -32,8 +32,8 @@ struct Mesh::Impl {
     this->scalingMatrix       = glm::mat4x4 (1.0f);
     this->rotationMatrix      = glm::mat4x4 (1.0f);
     this->translationMatrix   = glm::mat4x4 (1.0f);
-    this->color               = Color::white ();
-    this->wireframeColor      = Color::black ();
+    this->color               = Color::White ();
+    this->wireframeColor      = Color::Black ();
     this->vertexBufferId      = 0;
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;

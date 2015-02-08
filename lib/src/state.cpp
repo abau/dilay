@@ -33,7 +33,7 @@ struct State::Impl {
     , camera     (config, renderer)
     , scene      (ConfigProxy (config, "editor/poly-mesh/"))
   {
-    MeshDefinition meshDefinition (MeshDefinition::icosphere (2));
+    MeshDefinition meshDefinition (MeshDefinition::Icosphere (2));
     meshDefinition.scale          (glm::vec3 (Util::defaultScale ()));
 
     this->history.add <ActionNewWingedMesh> ().run (this->scene, meshDefinition);

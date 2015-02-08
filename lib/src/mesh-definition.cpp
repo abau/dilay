@@ -62,7 +62,7 @@ struct MeshDefinition::Impl {
     }
   }
 
-  static MeshDefinition cube () {
+  static MeshDefinition Cube () {
     MeshDefinition m;
     const float d = 0.5f;
 
@@ -84,7 +84,7 @@ struct MeshDefinition::Impl {
     return m;
   }
 
-  static MeshDefinition sphere (unsigned int rings, unsigned int sectors) {
+  static MeshDefinition Sphere (unsigned int rings, unsigned int sectors) {
     assert (rings > 1 && sectors > 2);
     MeshDefinition m;
 
@@ -133,7 +133,7 @@ struct MeshDefinition::Impl {
     return m;
   }
 
-  static MeshDefinition icosphere (unsigned int numSubdivisions) {
+  static MeshDefinition Icosphere (unsigned int numSubdivisions) {
     MeshDefinition m;
     typedef unsigned long                          Key;
     typedef std::unordered_map <Key, unsigned int> VertexCache;
@@ -234,7 +234,7 @@ struct MeshDefinition::Impl {
     return m;
   }
 
-  static MeshDefinition cone (unsigned int numBaseVertices) {
+  static MeshDefinition Cone (unsigned int numBaseVertices) {
     assert (numBaseVertices >= 3);
 
     MeshDefinition m;
@@ -257,7 +257,7 @@ struct MeshDefinition::Impl {
     return m;
   }
 
-  static MeshDefinition cylinder (unsigned int numVertices) {
+  static MeshDefinition Cylinder (unsigned int numVertices) {
     assert (numVertices >= 3);
 
     MeshDefinition m;
@@ -303,8 +303,8 @@ DELEGATE1       (void, MeshDefinition, scale, const glm::vec3&)
 DELEGATE1       (void, MeshDefinition, translate, const glm::vec3&)
 DELEGATE1       (void, MeshDefinition, transform, const glm::mat4x4&)
 
-DELEGATE_STATIC  (MeshDefinition, MeshDefinition, cube)
-DELEGATE2_STATIC (MeshDefinition, MeshDefinition, sphere, unsigned int, unsigned int)
-DELEGATE1_STATIC (MeshDefinition, MeshDefinition, icosphere, unsigned int)
-DELEGATE1_STATIC (MeshDefinition, MeshDefinition, cone, unsigned int)
-DELEGATE1_STATIC (MeshDefinition, MeshDefinition, cylinder, unsigned int)
+DELEGATE_STATIC  (MeshDefinition, MeshDefinition, Cube)
+DELEGATE2_STATIC (MeshDefinition, MeshDefinition, Sphere, unsigned int, unsigned int)
+DELEGATE1_STATIC (MeshDefinition, MeshDefinition, Icosphere, unsigned int)
+DELEGATE1_STATIC (MeshDefinition, MeshDefinition, Cone, unsigned int)
+DELEGATE1_STATIC (MeshDefinition, MeshDefinition, Cylinder, unsigned int)

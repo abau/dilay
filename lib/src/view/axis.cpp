@@ -28,8 +28,8 @@ struct ViewAxis::Impl {
     this->axisResolution = glm::uvec2 (200,200);
     this->gridResolution = 6;
 
-    this->coneMesh       = Mesh (MeshDefinition::cone     (10));
-    this->cylinderMesh   = Mesh (MeshDefinition::cylinder (10));
+    this->coneMesh       = Mesh (MeshDefinition::Cone     (10));
+    this->cylinderMesh   = Mesh (MeshDefinition::Cylinder (10));
 
     this->cylinderMesh.scaling    (glm::vec3 (0.01f, 0.3f , 0.01f));
     this->cylinderMesh.renderMode (RenderMode::Constant);

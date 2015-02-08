@@ -32,7 +32,7 @@ struct ToolSculptBehavior::Impl {
     , config     (c)
     , state      (st)
     , actions    (new ActionUnit) 
-    , cursor     (1.0f, Color::red ())
+    , cursor     (1.0f, Color::Red ())
     , radiusEdit (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
   {}
 
@@ -41,7 +41,7 @@ struct ToolSculptBehavior::Impl {
     this->self->runSetupBrush   ();
 
     this->cursor.radius         (this->self->brush ().radius ());
-    this->cursor.color          (this->config.get <Color> ("cursor-color", Color::red ()));
+    this->cursor.color          (this->config.get <Color> ("cursor-color", Color::Red ()));
     this->cursor.updateGeometry ();
    }
 

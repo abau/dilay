@@ -16,11 +16,11 @@ class Color {
     // copies and scales a color using `scale`
     Color (const Color&, float);
 
-    static Color black ();
-    static Color white ();
-    static Color red   ();
-    static Color green ();
-    static Color blue  ();
+    static Color Black ();
+    static Color White ();
+    static Color Red   ();
+    static Color Green ();
+    static Color Blue  ();
 
     float r          () const;
     float g          () const;

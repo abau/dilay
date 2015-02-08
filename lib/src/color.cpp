@@ -18,11 +18,11 @@ Color :: Color (const Color& c, float f)   : Color (c) {
   this->scale (f);
 }
 
-Color Color :: black () { return Color (0.0f, 0.0f, 0.0f); }
-Color Color :: white () { return Color (1.0f, 1.0f, 1.0f); }
-Color Color :: red   () { return Color (1.0f, 0.0f, 0.0f); }
-Color Color :: green () { return Color (0.0f, 1.0f, 0.0f); }
-Color Color :: blue  () { return Color (0.0f, 0.0f, 1.0f); }
+Color Color :: Black () { return Color (0.0f, 0.0f, 0.0f); }
+Color Color :: White () { return Color (1.0f, 1.0f, 1.0f); }
+Color Color :: Red   () { return Color (1.0f, 0.0f, 0.0f); }
+Color Color :: Green () { return Color (0.0f, 1.0f, 0.0f); }
+Color Color :: Blue  () { return Color (0.0f, 0.0f, 1.0f); }
 
 float Color :: r       () const { return this->_r; }
 float Color :: g       () const { return this->_g; }

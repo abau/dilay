@@ -19,11 +19,11 @@ class MeshDefinition {
     void             translate   (const glm::vec3&);
     void             transform   (const glm::mat4x4&);
 
-    static MeshDefinition cube      ();
-    static MeshDefinition sphere    (unsigned int, unsigned int);
-    static MeshDefinition icosphere (unsigned int);
-    static MeshDefinition cone      (unsigned int);
-    static MeshDefinition cylinder  (unsigned int);
+    static MeshDefinition Cube      ();
+    static MeshDefinition Sphere    (unsigned int, unsigned int);
+    static MeshDefinition Icosphere (unsigned int);
+    static MeshDefinition Cone      (unsigned int);
+    static MeshDefinition Cylinder  (unsigned int);
 
   private:
     IMPLEMENTATION
