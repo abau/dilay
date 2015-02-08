@@ -3,8 +3,6 @@
 #include "../mesh.hpp"
 #include "../util.hpp"
 #include "adjacent-iterator.hpp"
-#include "config.hpp"
-#include "color.hpp"
 #include "indexable.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
@@ -25,8 +23,6 @@ struct WingedMesh::Impl {
   IndexableList <WingedVertex> vertices;
   IndexableList <WingedEdge>   edges;
   Octree                       octree;
-  Color                        colorNormal; 
-  Color                        colorSelection; 
 
   Impl (WingedMesh* s, unsigned int i) 
     : self   (s)
@@ -177,10 +173,6 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  glm::vec3 center () const {
-    return this->mesh.center ();
-  }
-
   void writeAllIndices () {
     this->octree.forEachFace ([this] (WingedFace& face) {
       face.writeIndices (*this->self);
@@ -209,13 +201,7 @@ struct WingedMesh::Impl {
     this->mesh.bufferData (); 
   }
 
-  void render (const Camera& camera, bool isSelected) { 
-    if (isSelected) {
-      this->mesh.color (this->colorSelection);
-    }
-    else {
-      this->mesh.color (this->colorNormal);
-    }
+  void render (const Camera& camera) const { 
     this->mesh.render   (camera); 
 #ifdef DILAY_RENDER_OCTREE
     this->octree.render (camera);
@@ -223,10 +209,10 @@ struct WingedMesh::Impl {
   }
 
   void reset () {
-    this->mesh             .reset ();
-    this->vertices         .reset ();
-    this->edges            .reset ();
-    this->octree           .reset ();
+    this->mesh    .reset ();
+    this->vertices.reset ();
+    this->edges   .reset ();
+    this->octree  .reset ();
   }
 
   void setupOctreeRoot (const glm::vec3& center, float width) {
@@ -309,18 +295,32 @@ struct WingedMesh::Impl {
     this->mesh.rotationMatrix (glm::mat4x4 (1.0f));
   }
 
+  glm::vec3 center () const {
+    return this->mesh.center ();
+  }
+
+  const Color& color () const {
+    return this->mesh.color ();
+  }
+
+  void color (const Color& c) {
+    this->mesh.color (c);
+  }
+
+  const Color& wireframeColor () const {
+    return this->mesh.wireframeColor ();
+  }
+
+  void wireframeColor (const Color& c) {
+    this->mesh.wireframeColor (c);
+  }
+
   void forEachVertex (const std::function <void (WingedVertex&)>& f) const {
     this->vertices.forEachElement (f);
   }
 
   void forEachEdge (const std::function <void (WingedEdge&)>& f) const {
     this->edges.forEachElement (f);
-  }
-
-  void runFromConfig (const ConfigProxy& config) {
-    this->colorNormal    = config.get <Color> ("color/normal");
-    this->colorSelection = config.get <Color> ("color/selection");
-    this->mesh.wireframeColor (config.get <Color> ("color/wireframe"));
   }
 };
 
@@ -358,12 +358,11 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
-DELEGATE_CONST  (glm::vec3   , WingedMesh, center)
 
 DELEGATE        (void, WingedMesh, writeAllIndices)
 DELEGATE        (void, WingedMesh, writeAllNormals)
 DELEGATE        (void, WingedMesh, bufferData)
-DELEGATE2       (void, WingedMesh, render, const Camera&, bool)
+DELEGATE1_CONST (void, WingedMesh, render, const Camera&)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)
@@ -384,6 +383,10 @@ DELEGATE1       (void              , WingedMesh, rotationX, float)
 DELEGATE1       (void              , WingedMesh, rotationY, float)
 DELEGATE1       (void              , WingedMesh, rotationZ, float)
 DELEGATE        (void              , WingedMesh, normalize)
+DELEGATE_CONST  (glm::vec3         , WingedMesh, center)
+DELEGATE_CONST  (const Color&      , WingedMesh, color)
+DELEGATE1       (void              , WingedMesh, color, const Color&)
+DELEGATE_CONST  (const Color&      , WingedMesh, wireframeColor)
+DELEGATE1       (void              , WingedMesh, wireframeColor, const Color&)
 DELEGATE1_CONST (void              , WingedMesh, forEachVertex, const std::function <void (WingedVertex&)>&)
 DELEGATE1_CONST (void              , WingedMesh, forEachEdge  , const std::function <void (WingedEdge&)>&)
-DELEGATE1       (void              , WingedMesh, runFromConfig, const ConfigProxy&);

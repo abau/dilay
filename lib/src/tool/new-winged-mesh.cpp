@@ -42,7 +42,7 @@ struct ToolNewWingedMesh::Impl {
     this->self->config ().cache ("subdiv", numSubdiv);
   }
 
-  void runRender () {
+  void runRender () const {
     this->mesh.render (this->self->state ().camera ());
   }
 

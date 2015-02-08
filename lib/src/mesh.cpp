@@ -197,7 +197,7 @@ struct Mesh::Impl {
           * glm::scale     (glm::mat4x4 (1.0f), 1.0f / this->scaling ());
   }
 
-  void setModelMatrix (const Camera& camera, bool noZoom) {
+  void setModelMatrix (const Camera& camera, bool noZoom) const {
     camera.setModelViewProjection (this->modelMatrix (), noZoom);
   }
 
@@ -207,7 +207,7 @@ struct Mesh::Impl {
         && OpenGL        ::supportsGeometryShader () == false;
   }
 
-  void renderBegin (const Camera& camera, bool noZoom) {
+  void renderBegin (const Camera& camera, bool noZoom) const {
     if (this->renderFallbackWireframe ()) {
       camera.renderer ().setProgram (RenderMode::Constant);
     }
@@ -233,14 +233,14 @@ struct Mesh::Impl {
     OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), 0);
   }
 
-  void renderEnd () { 
+  void renderEnd () const { 
     OpenGL::glDisableVertexAttribArray (OpenGL::PositionIndex);
     OpenGL::glDisableVertexAttribArray (OpenGL::NormalIndex);
     OpenGL::glBindBuffer               (OpenGL::ArrayBuffer (), 0);
     OpenGL::glBindBuffer               (OpenGL::ElementArrayBuffer (), 0);
   }
 
-  void render (const Camera& camera, bool noZoom) {
+  void render (const Camera& camera, bool noZoom) const {
     this->renderBegin (camera, noZoom);
 
     if (this->renderFallbackWireframe ()) {
@@ -363,9 +363,9 @@ DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, worldMatrix)
-DELEGATE2        (void              , Mesh, renderBegin, const Camera&, bool)
-DELEGATE         (void              , Mesh, renderEnd)
-DELEGATE2        (void              , Mesh, render, const Camera&, bool)
+DELEGATE2_CONST  (void              , Mesh, renderBegin, const Camera&, bool)
+DELEGATE_CONST   (void              , Mesh, renderEnd)
+DELEGATE2_CONST  (void              , Mesh, render, const Camera&, bool)
 DELEGATE         (void              , Mesh, reset)
 DELEGATE         (void              , Mesh, resetGeometry)
 GETTER_CONST     (RenderMode        , Mesh, renderMode)

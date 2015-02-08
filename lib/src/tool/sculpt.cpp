@@ -31,7 +31,7 @@ struct ToolSculpt::Impl {
     this->self->showToolTip      ();
   }
 
-  void runRender () {
+  void runRender () const {
     this->behavior->render ();
   }
 

@@ -55,7 +55,7 @@ struct Tool::Impl {
     return this->self->runInitialize ();
   }
 
-  void render () { 
+  void render () const { 
     return this->self->runRender ( ); 
   }
 
@@ -118,7 +118,7 @@ DELEGATE       (void                         , Tool, showToolTip)
 DELEGATE_CONST (bool                         , Tool, allowUndo)
 DELEGATE_CONST (bool                         , Tool, allowRedo)
 DELEGATE       (ToolResponse                 , Tool, initialize)
-DELEGATE       (void                         , Tool, render)
+DELEGATE_CONST (void                         , Tool, render)
 DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEvent&)
 DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)

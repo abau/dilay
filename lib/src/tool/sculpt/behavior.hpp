@@ -20,7 +20,7 @@ class ToolSculptBehavior {
     void setupBrushAndCursor   ();
     void setupProperties       (ViewProperties&);
     void setupToolTip          (ViewToolTip&);
-    void render                ();
+    void render                () const;
     void mouseMoveEvent        (const glm::ivec2&, bool);
     void mouseLeftPressEvent   (const glm::ivec2&);
     void mouseLeftReleaseEvent ();

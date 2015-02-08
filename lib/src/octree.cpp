@@ -152,7 +152,7 @@ struct OctreeNode::Impl {
 #endif
 
 #ifdef DILAY_RENDER_OCTREE
-  void render (const Camera& camera) {
+  void render (const Camera& camera) const {
     assert (this->storeDegenerated == false);
 
     this->mesh.renderBegin (camera);
@@ -162,12 +162,12 @@ struct OctreeNode::Impl {
     OpenGL::glEnable       (OpenGL::DepthTest ());
     this->mesh.renderEnd   ();
 
-    for (Child& c : this->children) {
+    for (const Child& c : this->children) {
       c->render (camera);
     }
   }
 #else
-  void render (const Camera&) { std::abort (); }
+  void render (const Camera&) const { std::abort (); }
 #endif
 
   bool approxContains (const glm::vec3& v) const {
@@ -504,12 +504,12 @@ struct Octree::Impl {
   }
 
 #ifdef DILAY_RENDER_OCTREE
-  void render (const Camera& camera) { 
+  void render (const Camera& camera) const { 
     if (this->hasRoot ()) 
       this->root->render (camera);
   }
 #else
-  void render (const Camera&) { 
+  void render (const Camera&) const { 
     assert (false && "compiled without rendering support for octrees");
   }
 #endif
@@ -625,7 +625,7 @@ DELEGATE3       (WingedFace& , Octree, addFace, unsigned int, WingedEdge*, const
 DELEGATE3       (WingedFace& , Octree, realignFace, WingedFace&, const PrimTriangle&, bool*)
 DELEGATE1       (void        , Octree, deleteFace, WingedFace&)
 DELEGATE1_CONST (WingedFace* , Octree, face, unsigned int)
-DELEGATE1       (void, Octree, render, const Camera&)
+DELEGATE1_CONST (void, Octree, render, const Camera&)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
 DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, AffectedFaces&)
 DELEGATE        (void, Octree, reset)

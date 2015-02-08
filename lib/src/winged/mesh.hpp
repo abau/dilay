@@ -3,13 +3,12 @@
 
 #include <functional>
 #include <glm/fwd.hpp>
-#include "configurable.hpp"
 #include "fwd-winged.hpp"
 #include "macro.hpp"
 
 class AffectedFaces;
 class Camera;
-class ConfigProxy;
+class Color;
 class Mesh;
 class Octree;
 class PrimRay;
@@ -20,7 +19,7 @@ class WingedFace;
 class WingedFaceIntersection;
 class WingedVertex;
 
-class WingedMesh : public ProxyConfigurable {
+class WingedMesh {
   public: 
     DECLARE_BIG3 (WingedMesh, unsigned int);
 
@@ -57,12 +56,11 @@ class WingedMesh : public ProxyConfigurable {
     unsigned int       numIndices            () const;
     unsigned int       numFreeFaceIndices    () const;
     bool               isEmpty               () const;
-    glm::vec3          center                () const;
 
     void               writeAllIndices       (); 
     void               writeAllNormals       (); 
     void               bufferData            ();
-    void               render                (const Camera&, bool);
+    void               render                (const Camera&) const;
     void               reset                 ();
     void               setupOctreeRoot       (const glm::vec3&, float);
     void               toggleRenderMode      ();
@@ -83,6 +81,11 @@ class WingedMesh : public ProxyConfigurable {
     void               rotationY             (float);
     void               rotationZ             (float);
     void               normalize             ();
+    glm::vec3          center                () const;
+    const Color&       color                 () const;
+    void               color                 (const Color&);
+    const Color&       wireframeColor        () const;
+    void               wireframeColor        (const Color&);
 
     void               forEachVertex         (const std::function <void (WingedVertex&)>&) const;
     void               forEachEdge           (const std::function <void (WingedEdge&)>&) const;
@@ -92,8 +95,6 @@ class WingedMesh : public ProxyConfigurable {
     SAFE_REF1_CONST (WingedFace  , face  , unsigned int)
   private:
     IMPLEMENTATION
-
-    void runFromConfig (const ConfigProxy&);
 };
 
 #endif

@@ -16,6 +16,8 @@ class Scene {
   public: 
     DECLARE_BIG3 (Scene, const ConfigProxy&)
 
+    const ConfigProxy&  wingedMeshConfig     () const;
+
           WingedMesh&   newWingedMesh        ();
           WingedMesh&   newWingedMesh        (unsigned int);
           void          deleteMesh           (WingedMesh&);

@@ -26,7 +26,7 @@ class Tool {
     bool                          allowUndo            () const;
     bool                          allowRedo            () const;
     ToolResponse                  initialize           ();
-    void                          render               ();
+    void                          render               () const;
     ToolResponse                  mouseMoveEvent       (QMouseEvent&);
     ToolResponse                  mousePressEvent      (QMouseEvent&);
     ToolResponse                  mouseReleaseEvent    (QMouseEvent&);
@@ -47,7 +47,7 @@ class Tool {
 
     virtual bool         runAllowUndoRedo     () const       { return false; }
     virtual ToolResponse runInitialize        ()             { return ToolResponse::None; }
-    virtual void         runRender            ()             {}
+    virtual void         runRender            () const       {}
     virtual ToolResponse runMouseMoveEvent    (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runMousePressEvent   (QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runMouseReleaseEvent (QMouseEvent&) { return ToolResponse::None; }
@@ -62,7 +62,7 @@ class Tool {
 
 #define ALLOW_TOOL_UNDO_REDO                 bool         runAllowUndoRedo     () const { return true; };
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
-#define DECLARE_TOOL_RUN_RENDER              void         runRender            ();
+#define DECLARE_TOOL_RUN_RENDER              void         runRender            () const;
 #define DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT    ToolResponse runMouseMoveEvent    (QMouseEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT   ToolResponse runMousePressEvent   (QMouseEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT ToolResponse runMouseReleaseEvent (QMouseEvent&);
@@ -73,7 +73,7 @@ class Tool {
   DELEGATE_BIG3_BASE (name, (const ViewToolMenuParameters& p), (this), Tool, (p, #name))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
-#define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE       (void        , n, runRender)
+#define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE_CONST (void        , n, runRender)
 #define DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT(n)    DELEGATE1      (ToolResponse, n, runMouseMoveEvent, QMouseEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT(n)   DELEGATE1      (ToolResponse, n, runMousePressEvent, QMouseEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT(n) DELEGATE1      (ToolResponse, n, runMouseReleaseEvent, QMouseEvent&)

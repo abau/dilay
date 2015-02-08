@@ -66,7 +66,7 @@ struct ViewCursor::Impl {
     this->mesh.bufferData ();
   }
 
-  void render (const Camera& camera) {
+  void render (const Camera& camera) const {
     if (this->isEnabled) {
       this->mesh.renderBegin (camera);
 
@@ -83,14 +83,14 @@ struct ViewCursor::Impl {
   void  disable   ()       { this->isEnabled = false; }
 };
 
-DELEGATE2_BIG6 (ViewCursor, float, const Color&)
-SETTER       (float, ViewCursor, radius)
-DELEGATE1    (void,  ViewCursor, position, const glm::vec3&)
-DELEGATE1    (void,  ViewCursor, normal, const glm::vec3&)
-DELEGATE1    (void,  ViewCursor, color, const Color&)
-DELEGATE     (void,  ViewCursor, updateGeometry)
-DELEGATE1    (void,  ViewCursor, render, const Camera&)
-DELEGATE     (void,  ViewCursor, enable)
-DELEGATE     (void,  ViewCursor, disable)
-GETTER_CONST (bool,  ViewCursor, isEnabled)
-GETTER_CONST (float, ViewCursor, radius)
+DELEGATE2_BIG6  (ViewCursor, float, const Color&)
+SETTER          (float, ViewCursor, radius)
+DELEGATE1       (void,  ViewCursor, position, const glm::vec3&)
+DELEGATE1       (void,  ViewCursor, normal, const glm::vec3&)
+DELEGATE1       (void,  ViewCursor, color, const Color&)
+DELEGATE        (void,  ViewCursor, updateGeometry)
+DELEGATE1_CONST (void,  ViewCursor, render, const Camera&)
+DELEGATE        (void,  ViewCursor, enable)
+DELEGATE        (void,  ViewCursor, disable)
+GETTER_CONST    (bool,  ViewCursor, isEnabled)
+GETTER_CONST    (float, ViewCursor, radius)

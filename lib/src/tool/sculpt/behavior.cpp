@@ -88,7 +88,7 @@ struct ToolSculptBehavior::Impl {
                 , QObject::tr ("Change radius") );
   }
 
-  void render () {
+  void render () const {
     this->cursor.render (this->state.camera ());
   }
 
@@ -154,7 +154,7 @@ GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
 DELEGATE        (void           , ToolSculptBehavior, setupBrushAndCursor)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
-DELEGATE        (void           , ToolSculptBehavior, render)
+DELEGATE_CONST  (void           , ToolSculptBehavior, render)
 DELEGATE2       (void           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
 DELEGATE1       (void           , ToolSculptBehavior, mouseLeftPressEvent, const glm::ivec2&)
 DELEGATE        (void           , ToolSculptBehavior, mouseLeftReleaseEvent)

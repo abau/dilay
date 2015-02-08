@@ -58,7 +58,7 @@ class Octree {
     WingedFace&      realignFace          (WingedFace&, const PrimTriangle&, bool* = nullptr);
     void             deleteFace           (WingedFace&);
     WingedFace*      face                 (unsigned int) const;
-    void             render               (const Camera&);
+    void             render               (const Camera&) const;
     bool             intersects           (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
     bool             intersects           (const WingedMesh&, const PrimSphere&, AffectedFaces&);
     void             reset                ();

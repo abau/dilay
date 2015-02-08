@@ -24,15 +24,11 @@ struct Scene :: Impl {
   {}
 
   WingedMesh& newWingedMesh () {
-    WingedMesh& mesh = this->wingedMeshes.emplace ();
-    mesh.fromConfig (this->wingedMeshConfig);
-    return mesh;
+    return this->wingedMeshes.emplace ();
   }
 
   WingedMesh& newWingedMesh (unsigned int index) {
-    WingedMesh& mesh = this->wingedMeshes.emplaceAt (index);
-    mesh.fromConfig (this->wingedMeshConfig);
-    return mesh;
+    return this->wingedMeshes.emplaceAt (index);
   }
 
   void deleteMesh (WingedMesh& mesh) {
@@ -138,8 +134,19 @@ WingedMesh* Scene::mesh <WingedMesh> (unsigned int index) const {
 
 template <> 
 void Scene::render <WingedMesh> (const Camera& camera) {
-  this->forEachMesh ([this, &camera] (WingedMesh& m) {
-    m.render (camera, this->selection ().hasMajor (m.index ()));
+  const Color& normalColor = this->wingedMeshConfig ().get <Color> ("color/normal");
+  const Color& selectColor = this->wingedMeshConfig ().get <Color> ("color/selection");
+  const Color& wireColor   = this->wingedMeshConfig ().get <Color> ("color/wireframe");
+
+  this->forEachMesh ([&] (WingedMesh& m) {
+    if (this->selection ().hasMajor (m.index ())) {
+      m.color (selectColor);
+    }
+    else {
+      m.color (normalColor);
+    }
+    m.wireframeColor (wireColor);
+    m.render         (camera);
   });
 }
 
@@ -159,19 +166,20 @@ void Scene::toggleRenderWireframe <WingedMesh> () {
 
 DELEGATE1_BIG3 (Scene, const ConfigProxy&)
 
-DELEGATE        (WingedMesh&      , Scene, newWingedMesh)
-DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, unsigned int)
-DELEGATE1       (void             , Scene, deleteMesh, WingedMesh&)
-DELEGATE1_CONST (WingedMesh*      , Scene, wingedMesh, unsigned int)
-DELEGATE3       (bool             , Scene, intersects, SelectionMode, const PrimRay&, WingedFaceIntersection&)
-DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
-DELEGATE2       (bool             , Scene, intersects, const PrimRay&, Intersection&)
-GETTER_CONST    (SelectionMode    , Scene, selectionMode)
-DELEGATE1       (void             , Scene, changeSelectionMode, SelectionMode)
-GETTER_CONST    (const Selection& , Scene, selection)
-DELEGATE        (void             , Scene, unselectAll)
-DELEGATE1       (bool             , Scene, selectIntersection, const PrimRay&)
-DELEGATE_CONST  (unsigned int     , Scene, numSelections)
-DELEGATE1_CONST (void             , Scene, printStatistics, bool)
-DELEGATE1_CONST (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
-DELEGATE1_CONST (void             , Scene, forEachSelectedMesh, const std::function <void (WingedMesh&)>&)
+GETTER_CONST    (const ConfigProxy&, Scene, wingedMeshConfig)
+DELEGATE        (WingedMesh&       , Scene, newWingedMesh)
+DELEGATE1       (WingedMesh&       , Scene, newWingedMesh, unsigned int)
+DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
+DELEGATE1_CONST (WingedMesh*       , Scene, wingedMesh, unsigned int)
+DELEGATE3       (bool              , Scene, intersects, SelectionMode, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, Intersection&)
+GETTER_CONST    (SelectionMode     , Scene, selectionMode)
+DELEGATE1       (void              , Scene, changeSelectionMode, SelectionMode)
+GETTER_CONST    (const Selection&  , Scene, selection)
+DELEGATE        (void              , Scene, unselectAll)
+DELEGATE1       (bool              , Scene, selectIntersection, const PrimRay&)
+DELEGATE_CONST  (unsigned int      , Scene, numSelections)
+DELEGATE1_CONST (void              , Scene, printStatistics, bool)
+DELEGATE1_CONST (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
+DELEGATE1_CONST (void              , Scene, forEachSelectedMesh, const std::function <void (WingedMesh&)>&)
