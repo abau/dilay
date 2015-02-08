@@ -9,6 +9,7 @@
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
+#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "state.hpp"
 #include "view/axis.hpp"
@@ -70,41 +71,40 @@ struct ViewAxis::Impl {
   void render (Camera& camera) {
     OpenGL::glClear (OpenGL::DepthBufferBit ());
 
-    glm::uvec2 resolution = camera.resolution ();
+    const glm::uvec2  resolution = camera.resolution ();
+    const RenderFlags flags      = RenderFlags::NoZoom ();
     camera.updateResolution (glm::uvec2 (200,200));
 
     this->cylinderMesh.position       (glm::vec3 (0.0f, 0.15f, 0.0f));
     this->cylinderMesh.rotationMatrix (glm::mat4x4 (1.0f));
-    this->cylinderMesh.render         (camera, true);
+    this->cylinderMesh.render         (camera, flags);
 
     this->cylinderMesh.position       (glm::vec3 (0.15f, 0.0f, 0.0f));
     this->cylinderMesh.rotationZ      (0.5f * glm::pi<float> ());
-    this->cylinderMesh.render         (camera, true);
+    this->cylinderMesh.render         (camera, flags);
 
     this->cylinderMesh.position       (glm::vec3 (0.0f, 0.0f, 0.15f));
     this->cylinderMesh.rotationX      (0.5f * glm::pi<float> ());
-    this->cylinderMesh.render         (camera, true);
+    this->cylinderMesh.render         (camera, flags);
 
     this->coneMesh.position           (glm::vec3 (0.0f, 0.3f, 0.0f));
     this->coneMesh.rotationMatrix     (glm::mat4x4 (1.0f));
-    this->coneMesh.render             (camera, true);
+    this->coneMesh.render             (camera, flags);
 
     this->coneMesh.position           (glm::vec3 (0.3f, 0.0f, 0.0f));
     this->coneMesh.rotationZ          (- 0.5f * glm::pi<float> ());
-    this->coneMesh.render             (camera, true);
+    this->coneMesh.render             (camera, flags);
 
     this->coneMesh.position           (glm::vec3 (0.0f, 0.0f, 0.3f));
     this->coneMesh.rotationX          (0.5f * glm::pi<float> ());
-    this->coneMesh.render             (camera, true);
+    this->coneMesh.render             (camera, flags);
 
-    this->renderGrid                  (camera);
+    this->renderGrid                  (camera, flags);
 
     camera.updateResolution (resolution);
   }
 
-  void renderGrid (const Camera& camera) {
-    unsigned int numLines = (this->gridResolution - 1) * (this->gridResolution - 1) * 4;
-
+  void renderGrid (const Camera& camera, const RenderFlags& flags) {
     switch (camera.primaryDimension ()) {
       case Dimension::X:
         this->gridMesh.rotationY (- 0.5f * glm::pi<float> ());
@@ -116,12 +116,7 @@ struct ViewAxis::Impl {
         this->gridMesh.rotationMatrix (glm::mat4x4 (1.0f));
         break;
     }
-
-    this->gridMesh.renderBegin (camera, true);
-
-    OpenGL::glDrawElements (OpenGL::Lines (), numLines, OpenGL::UnsignedInt (), (void*)0);
-
-    this->gridMesh.renderEnd ();
+    this->gridMesh.renderLines (camera, flags);
   }
 
   void render (Camera& camera, QPainter& painter) {

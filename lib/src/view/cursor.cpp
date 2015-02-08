@@ -4,7 +4,7 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "mesh.hpp"
-#include "opengl.hpp"
+#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "view/cursor.hpp"
 
@@ -68,19 +68,12 @@ struct ViewCursor::Impl {
 
   void render (const Camera& camera) const {
     if (this->isEnabled) {
-      this->mesh.renderBegin (camera);
-
-      OpenGL::glDisable      (OpenGL::DepthTest ()); 
-      OpenGL::glDrawElements ( OpenGL::Lines (), this->mesh.numIndices ()
-                             , OpenGL::UnsignedInt (), (void*)0 );
-      OpenGL::glEnable       (OpenGL::DepthTest ()); 
-
-      this->mesh.renderEnd ();
+      this->mesh.renderLines (camera, RenderFlags::NoDepthTest ());
     }
   }
 
-  void  enable    ()       { this->isEnabled = true;  }
-  void  disable   ()       { this->isEnabled = false; }
+  void enable  () { this->isEnabled = true;  }
+  void disable () { this->isEnabled = false; }
 };
 
 DELEGATE2_BIG6  (ViewCursor, float, const Color&)

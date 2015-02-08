@@ -7,6 +7,7 @@
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
+#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
 #include "util.hpp"
@@ -207,7 +208,7 @@ struct Mesh::Impl {
         && OpenGL        ::supportsGeometryShader () == false;
   }
 
-  void renderBegin (const Camera& camera, bool noZoom) const {
+  void renderBegin (const Camera& camera, const RenderFlags& flags) const {
     if (this->renderFallbackWireframe ()) {
       camera.renderer ().setProgram (RenderMode::Constant);
     }
@@ -217,7 +218,7 @@ struct Mesh::Impl {
     camera.renderer ().setColor3          (this->color);
     camera.renderer ().setWireframeColor3 (this->wireframeColor);
 
-    this->setModelMatrix              (camera, noZoom);
+    this->setModelMatrix              (camera, flags.noZoom ());
 
     OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId);
     OpenGL::glEnableVertexAttribArray (OpenGL::PositionIndex);
@@ -231,6 +232,14 @@ struct Mesh::Impl {
       OpenGL::glVertexAttribPointer     (OpenGL::NormalIndex, 3, OpenGL::Float (), false, 0, 0);
     }
     OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), 0);
+
+    if (flags.noDepthTest ()) {
+      OpenGL::glDisable (OpenGL::DepthTest ()); 
+    }
+  }
+
+  void renderBegin (const Camera& camera) const {
+    this->renderBegin (camera, RenderFlags ());
   }
 
   void renderEnd () const { 
@@ -238,10 +247,11 @@ struct Mesh::Impl {
     OpenGL::glDisableVertexAttribArray (OpenGL::NormalIndex);
     OpenGL::glBindBuffer               (OpenGL::ArrayBuffer (), 0);
     OpenGL::glBindBuffer               (OpenGL::ElementArrayBuffer (), 0);
+    OpenGL::glEnable                   (OpenGL::DepthTest ()); 
   }
 
-  void render (const Camera& camera, bool noZoom) const {
-    this->renderBegin (camera, noZoom);
+  void render (const Camera& camera, const RenderFlags& flags) const {
+    this->renderBegin (camera, flags);
 
     if (this->renderFallbackWireframe ()) {
       camera.renderer ().setColor3 (this->wireframeColor);
@@ -253,7 +263,7 @@ struct Mesh::Impl {
 
       camera.renderer ().setProgram (RenderModeUtil::nonWireframe (this->renderMode));
       camera.renderer ().setColor3  (this->color);
-      this->setModelMatrix (camera, noZoom);
+      this->setModelMatrix (camera, flags.noZoom ());
 
       OpenGL::glEnable        (OpenGL::PolygonOffsetFill ());
       OpenGL::glPolygonOffset (Util::defaultScale (), Util::defaultScale ());
@@ -265,6 +275,17 @@ struct Mesh::Impl {
       OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
                              , OpenGL::UnsignedInt (), (void*)0 );
     }
+    this->renderEnd ();
+  }
+
+  void render (const Camera& camera) const {
+    this->render (camera, RenderFlags ());
+  }
+
+  void renderLines (const Camera& camera, const RenderFlags& flags) const {
+    this->renderBegin (camera, flags);
+    OpenGL::glDrawElements ( OpenGL::Lines (), this->numIndices ()
+                           , OpenGL::UnsignedInt (), (void*)0 );
     this->renderEnd ();
   }
 
@@ -363,9 +384,12 @@ DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, worldMatrix)
-DELEGATE2_CONST  (void              , Mesh, renderBegin, const Camera&, bool)
+DELEGATE2_CONST  (void              , Mesh, renderBegin, const Camera&, const RenderFlags&)
+DELEGATE1_CONST  (void              , Mesh, renderBegin, const Camera&)
 DELEGATE_CONST   (void              , Mesh, renderEnd)
-DELEGATE2_CONST  (void              , Mesh, render, const Camera&, bool)
+DELEGATE2_CONST  (void              , Mesh, render, const Camera&, const RenderFlags&)
+DELEGATE1_CONST  (void              , Mesh, render, const Camera&)
+DELEGATE2_CONST  (void              , Mesh, renderLines, const Camera&, const RenderFlags&)
 DELEGATE         (void              , Mesh, reset)
 DELEGATE         (void              , Mesh, resetGeometry)
 GETTER_CONST     (RenderMode        , Mesh, renderMode)

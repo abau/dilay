@@ -7,7 +7,6 @@
 #include "fwd-winged.hpp"
 #include "indexable.hpp"
 #include "octree.hpp"
-#include "opengl.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
@@ -19,6 +18,7 @@
 #ifdef DILAY_RENDER_OCTREE
 #include "color.hpp"
 #include "mesh.hpp"
+#include "render-flags.hpp"
 #include "render-mode.hpp"
 #endif
 
@@ -155,12 +155,7 @@ struct OctreeNode::Impl {
   void render (const Camera& camera) const {
     assert (this->storeDegenerated == false);
 
-    this->mesh.renderBegin (camera);
-    OpenGL::glDisable      (OpenGL::DepthTest ());
-    OpenGL::glDrawElements ( OpenGL::Lines (), this->mesh.numIndices ()
-                           , OpenGL::UnsignedInt (), nullptr );
-    OpenGL::glEnable       (OpenGL::DepthTest ());
-    this->mesh.renderEnd   ();
+    this->mesh.renderLines (camera, RenderFlags::NoDepthTest ());
 
     for (const Child& c : this->children) {
       c->render (camera);
