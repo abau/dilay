@@ -11,6 +11,7 @@ LIBS                   += -L../lib -ldilay -lGL -lGLEW
 PRE_TARGETDEPS         += ../lib/libdilay.a
 
 SOURCES += \
+           src/test-bitset.cpp \
            src/test-indexable.cpp \
            src/test-intersection.cpp \
            src/test-maybe.cpp \

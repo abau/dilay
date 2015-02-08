@@ -1,6 +1,7 @@
 #ifndef DILAY_BITSET
 #define DILAY_BITSET
 
+#include <cassert>
 #include <initializer_list>
 
 template <typename T>
