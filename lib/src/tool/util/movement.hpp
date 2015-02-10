@@ -9,7 +9,8 @@ class QMouseEvent;
 
 enum class MovementConstraint { XAxis, YAxis, ZAxis
                               , XYPlane, XZPlane, YZPlane
-                              , CameraPlane, PrimaryPlane 
+                              , CameraPlane, VerticalCameraPlane
+                              , PrimaryPlane, Explicit
                               };
 class ToolUtilMovement {
   public:
@@ -17,6 +18,7 @@ class ToolUtilMovement {
 
     MovementConstraint constraint       () const;
           void         constraint       (MovementConstraint);
+          void         explicitPlane    (const glm::vec3&);
     const glm::vec3&   originalPosition () const;
           glm::vec3    delta            () const;
           void         delta            (const glm::vec3&);
