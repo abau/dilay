@@ -68,7 +68,7 @@ struct ToolSculptDrag::Impl {
       const glm::vec3  up     = glm::vec3 (0.0f, 1.0f, 0.0f);
       const glm::vec3  e      = glm::normalize (this->self->state ().camera ().toEyePoint ());
 
-      if (glm::dot (e, normal) > 0.9f) {
+      if (glm::abs (glm::dot (e, normal)) > 0.9f) {
         noDrag ();
       }
       else {
@@ -86,7 +86,7 @@ struct ToolSculptDrag::Impl {
         this->draggedVerticesMesh.reset    ();
 
         // setup movement
-        if (glm::dot (normal, up) > 0.9f) {
+        if (glm::abs (glm::dot (normal, up)) > 0.9f) {
           this->movement.constraint (MovementConstraint::VerticalCameraPlane);
         }
         else {
