@@ -53,7 +53,7 @@ struct ToolSculpt::Impl {
 
   ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
-      this->behavior->mouseLeftReleaseEvent ();
+      this->behavior->mouseLeftReleaseEvent (ViewUtil::toIVec2 (e));
       return ToolResponse::Redraw;
     }
     return ToolResponse::None;

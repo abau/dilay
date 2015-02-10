@@ -102,7 +102,7 @@ struct ToolSculptDrag::Impl {
     }
   }
 
-  void runMouseLeftReleaseEvent () {
+  void runMouseLeftReleaseEvent (const glm::ivec2&) {
 
     auto initialSculpt = [this] {
       this->brush.useIntersection (false);

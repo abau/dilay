@@ -101,8 +101,8 @@ struct ToolSculptBehavior::Impl {
     this->self->runMouseLeftPressEvent (pos);
   }
 
-  void mouseLeftReleaseEvent () {
-    this->self->runMouseLeftReleaseEvent ();
+  void mouseLeftReleaseEvent (const glm::ivec2& pos) {
+    this->self->runMouseLeftReleaseEvent (pos);
     this->self->brush ().resetPosition ();
     this->addActionsToHistory ();
   }
@@ -165,7 +165,7 @@ DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&
 DELEGATE_CONST  (void           , ToolSculptBehavior, render)
 DELEGATE2       (void           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
 DELEGATE1       (void           , ToolSculptBehavior, mouseLeftPressEvent, const glm::ivec2&)
-DELEGATE        (void           , ToolSculptBehavior, mouseLeftReleaseEvent)
+DELEGATE1       (void           , ToolSculptBehavior, mouseLeftReleaseEvent, const glm::ivec2&)
 DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, bool)
 DELEGATE        (void           , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)

@@ -24,7 +24,7 @@ class ToolSculptBehavior {
     void render                () const;
     void mouseMoveEvent        (const glm::ivec2&, bool);
     void mouseLeftPressEvent   (const glm::ivec2&);
-    void mouseLeftReleaseEvent ();
+    void mouseLeftReleaseEvent (const glm::ivec2&);
     void mouseWheelEvent       (bool);
     void close                 ();
 
@@ -47,7 +47,7 @@ class ToolSculptBehavior {
     virtual void         runSetupToolTip          (ViewToolTip&) = 0;
     virtual void         runMouseLeftPressEvent   (const glm::ivec2&) = 0;
     virtual void         runMouseMoveEvent        (const glm::ivec2&, bool) = 0;
-    virtual void         runMouseLeftReleaseEvent () {}
+    virtual void         runMouseLeftReleaseEvent (const glm::ivec2&) {}
     virtual void         runRender                () const {}
 };
 
@@ -65,7 +65,7 @@ class ToolSculptBehavior {
   };
 
 #define DECLARE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT \
-  void runMouseLeftReleaseEvent ();
+  void runMouseLeftReleaseEvent (const glm::ivec2&);
 
 #define DECLARE_TOOL_BEHAVIOR_RUN_RENDER \
   void runRender () const;
@@ -80,7 +80,7 @@ class ToolSculptBehavior {
   DELEGATE2      (void, name, runMouseMoveEvent, const glm::ivec2&, bool)                    
 
 #define DELEGATE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT(n) \
-  DELEGATE (void, n, runMouseLeftReleaseEvent)
+  DELEGATE1 (void, n, runMouseLeftReleaseEvent, const glm::ivec2&)
 
 #define DELEGATE_TOOL_BEHAVIOR_RUN_RENDER(n) \
   DELEGATE_CONST (void, n, runRender)
