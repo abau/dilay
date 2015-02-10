@@ -23,6 +23,9 @@ struct ViewCursor::Impl {
     this->color          (c);
   }
 
+  const Color& color    () const { return this->mesh.color    (); }
+  glm::vec3    position () const { return this->mesh.position (); }
+
   void position (const glm::vec3& v) { this->mesh.position (v); }
 
   void normal (const glm::vec3& v) {
@@ -77,13 +80,15 @@ struct ViewCursor::Impl {
 };
 
 DELEGATE2_BIG6  (ViewCursor, float, const Color&)
-SETTER          (float, ViewCursor, radius)
-DELEGATE1       (void,  ViewCursor, position, const glm::vec3&)
-DELEGATE1       (void,  ViewCursor, normal, const glm::vec3&)
-DELEGATE1       (void,  ViewCursor, color, const Color&)
-DELEGATE        (void,  ViewCursor, updateGeometry)
-DELEGATE1_CONST (void,  ViewCursor, render, const Camera&)
-DELEGATE        (void,  ViewCursor, enable)
-DELEGATE        (void,  ViewCursor, disable)
-GETTER_CONST    (bool,  ViewCursor, isEnabled)
-GETTER_CONST    (float, ViewCursor, radius)
+GETTER_CONST    (float       , ViewCursor, radius)
+DELEGATE_CONST  (const Color&, ViewCursor, color)
+DELEGATE_CONST  (glm::vec3   , ViewCursor, position)
+SETTER          (float       , ViewCursor, radius)
+DELEGATE1       (void        , ViewCursor, position, const glm::vec3&)
+DELEGATE1       (void        , ViewCursor, normal, const glm::vec3&)
+DELEGATE1       (void        , ViewCursor, color, const Color&)
+DELEGATE        (void        , ViewCursor, updateGeometry)
+DELEGATE1_CONST (void        , ViewCursor, render, const Camera&)
+DELEGATE        (void        , ViewCursor, enable)
+DELEGATE        (void        , ViewCursor, disable)
+GETTER_CONST    (bool        , ViewCursor, isEnabled)

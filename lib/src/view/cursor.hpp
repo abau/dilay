@@ -11,6 +11,10 @@ class ViewCursor {
   public: 
     DECLARE_BIG6 (ViewCursor, float, const Color&)
 
+    float        radius   () const;
+    const Color& color    () const;
+    glm::vec3    position () const;
+
     void  radius         (float);
     void  position       (const glm::vec3&);
     void  normal         (const glm::vec3&);
@@ -20,7 +24,6 @@ class ViewCursor {
     void  enable         ();
     void  disable        ();
     bool  isEnabled      () const;
-    float radius         () const;
 
   private:
     IMPLEMENTATION
