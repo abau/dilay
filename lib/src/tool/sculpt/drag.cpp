@@ -1,7 +1,6 @@
 #include <QDoubleSpinBox>
 #include <glm/glm.hpp>
 #include "camera.hpp"
-#include "color.hpp"
 #include "mesh.hpp"
 #include "primitive/ray.hpp"
 #include "render-flags.hpp"
@@ -51,7 +50,7 @@ struct ToolSculptDrag::Impl {
         }
       }
       this->draggedVerticesMesh.renderMode (RenderMode::Constant);
-      this->draggedVerticesMesh.color      (Color::Red ());
+      this->draggedVerticesMesh.color      (this->self->cursor ().color ());
       this->draggedVerticesMesh.bufferData ();
     }
   }
