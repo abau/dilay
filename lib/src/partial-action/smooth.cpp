@@ -104,11 +104,7 @@ struct PASmooth::Impl {
           glm::vec3 intersection;
 
           if (t.isDegenerated ()) {
-            if (IntersectionUtil::intersects (ray, t, normal, &intersection)) {
-              newPositions.push_back (intersection);
-              intersected = true;
-              break;
-            }
+            continue;
           }
           else {
             if (IntersectionUtil::intersects (ray, t, &intersection)) {
