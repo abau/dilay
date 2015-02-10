@@ -38,7 +38,6 @@ struct ToolSculptBehavior::Impl {
 
   void setupBrushAndCursor () {
     this->setupBrush            (this->self->brush ());
-    this->self->runSetupBrush   ();
 
     this->cursor.radius         (this->self->brush ().radius ());
     this->cursor.color          (this->config.get <Color> ("cursor-color", Color::Red ()));

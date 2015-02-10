@@ -13,9 +13,9 @@ struct ToolSculptCarve::Impl {
   ToolSculptCarve* self;
   SculptBrushCarve brush;
 
-  Impl (ToolSculptCarve* s) : self (s) {}
-
-  void runSetupBrush () {
+  Impl (ToolSculptCarve* s) 
+    : self (s) 
+  {
     this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" , 0.1f));
   }
 

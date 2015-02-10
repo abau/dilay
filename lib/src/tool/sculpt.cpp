@@ -16,7 +16,7 @@ struct ToolSculpt::Impl {
   std::unique_ptr <ToolSculptBehavior> behavior;
 
   Impl (ToolSculpt* s) : self (s) {
-    this->setBehavior <ToolSculptDrag> ();
+    this->setBehavior <ToolSculptCarve> ();
     this->behavior->mouseMoveEvent (this->self->cursorPosition (), false);
   }
 

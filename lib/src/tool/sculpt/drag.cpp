@@ -29,8 +29,6 @@ struct ToolSculptDrag::Impl {
                , MovementConstraint::Explicit )
   {}
 
-  void runSetupBrush () {}
-
   void runSetupProperties (ViewProperties&) {}
 
   void runSetupToolTip (ViewToolTip& toolTip) {

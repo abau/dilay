@@ -42,7 +42,6 @@ class ToolSculptBehavior {
     IMPLEMENTATION
 
     virtual SculptBrush& brush                    () const = 0;
-    virtual void         runSetupBrush            () = 0;
     virtual void         runSetupProperties       (ViewProperties&) = 0;
     virtual void         runSetupToolTip          (ViewToolTip&) = 0;
     virtual void         runMouseLeftPressEvent   (const glm::ivec2&) = 0;
@@ -56,7 +55,6 @@ class ToolSculptBehavior {
     public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
     private: IMPLEMENTATION                                                                 \
              SculptBrush& brush                  () const;                                  \
-             void         runSetupBrush          ();                                        \
              void         runSetupProperties     (ViewProperties&);                         \
              void         runSetupToolTip        (ViewToolTip&);                            \
              void         runMouseLeftPressEvent (const glm::ivec2&);                       \
@@ -73,7 +71,6 @@ class ToolSculptBehavior {
 #define DELEGATE_TOOL_BEHAVIOR(name)                                                        \
   DELEGATE_BIG3_BASE (name, (ConfigProxy& c, State& s), (this), ToolSculptBehavior, (c,s))  \
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
-  DELEGATE       (void, name, runSetupBrush)                                                \
   DELEGATE1      (void, name, runSetupProperties, ViewProperties&);                         \
   DELEGATE1      (void, name, runSetupToolTip, ViewToolTip&);                               \
   DELEGATE1      (void, name, runMouseLeftPressEvent, const glm::ivec2&)                    \
