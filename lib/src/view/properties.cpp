@@ -57,7 +57,7 @@ struct ViewProperties::Impl {
     }
     this->body = new QWidget;
     this->body->setLayout (new QGridLayout);
-    this->body->layout ()->setSpacing         (0);
+    this->body->layout ()->setSpacing         (3);
     this->body->layout ()->setContentsMargins (11,3,0,3);
 
     this->layout ()->insertWidget (1, this->body);
