@@ -1,5 +1,6 @@
 #include <QDoubleSpinBox>
 #include <glm/glm.hpp>
+#include "camera.hpp"
 #include "color.hpp"
 #include "mesh.hpp"
 #include "primitive/ray.hpp"
@@ -26,9 +27,7 @@ struct ToolSculptDrag::Impl {
     : self     (s)
     , movement ( this->self->state ().camera ()
                , glm::vec3 (0.0f)
-               //, MovementConstraint::CameraPlane )
-               //, MovementConstraint::YAxis )
-               , MovementConstraint::XYPlane )
+               , MovementConstraint::Explicit )
   {}
 
   void runSetupBrush () {}
@@ -59,22 +58,46 @@ struct ToolSculptDrag::Impl {
 
   void runMouseLeftPressEvent (const glm::ivec2& pos) {
 
-    WingedFaceIntersection intersection;
-    if (this->self->intersectsSelection (pos, intersection)) {
-      this->self->cursor ().disable ();
-
-      this->movement.resetPosition ( intersection.position ());
-      this->brush.mesh             (&intersection.mesh     ());
-      this->brush.face             (&intersection.face     ());
-      this->brush.setPosition      ( intersection.position ());
-
-      this->draggedVertices.clear        ();
-      this->draggedVertices.emplace_back (intersection.position ());
-      this->draggedVerticesMesh.reset    ();
-    }
-    else {
+    auto noDrag = [this] () {
       this->self->cursor ().enable ();
       this->brush.resetPosition ();
+    };
+
+    WingedFaceIntersection intersection;
+    if (this->self->intersectsSelection (pos, intersection)) {
+      const glm::vec3& normal = intersection.normal ();
+      const glm::vec3  up     = glm::vec3 (0.0f, 1.0f, 0.0f);
+      const glm::vec3  e      = glm::normalize (this->self->state ().camera ().toEyePoint ());
+
+      if (glm::dot (e, normal) > 0.9f) {
+        noDrag ();
+      }
+      else {
+        this->self->cursor ().disable ();
+
+        // setup brush
+        this->movement.resetPosition ( intersection.position ());
+        this->brush.mesh             (&intersection.mesh     ());
+        this->brush.face             (&intersection.face     ());
+        this->brush.setPosition      ( intersection.position ());
+
+        // setup dragged vertices
+        this->draggedVertices.clear        ();
+        this->draggedVertices.emplace_back (intersection.position ());
+        this->draggedVerticesMesh.reset    ();
+
+        // setup movement
+        if (glm::dot (normal, up) > 0.9f) {
+          this->movement.constraint (MovementConstraint::VerticalCameraPlane);
+        }
+        else {
+          this->movement.constraint    (MovementConstraint::Explicit);
+          this->movement.explicitPlane (glm::cross (normal, up));
+        }
+      }
+    }
+    else {
+      noDrag ();
     }
   }
 
@@ -143,13 +166,14 @@ struct ToolSculptDrag::Impl {
       return false;
     };
 
-    this->brush.intensityFactor (1.0f / this->brush.radius ());
-    this->brush.order (20);
+    if (this->draggedVertices.empty () == false) {
+      this->brush.intensityFactor (1.0f / this->brush.radius ());
+      this->brush.order (20);
 
-    initialSculpt ();
+      initialSculpt ();
 
-    while (checkAgainstDraggedVertices ()) {}
-
+      while (checkAgainstDraggedVertices ()) {}
+    }
     this->draggedVertices.clear     ();
     this->draggedVerticesMesh.reset ();
   }
