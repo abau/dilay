@@ -45,6 +45,14 @@ class Maybe {
 
     Maybe <T>& operator= (Maybe<T>&&) = default;
 
+    explicit operator bool () const {
+      return this->isSet ();
+    }
+
+    T& operator* () const {
+      return this->getRef ();
+    }
+
     ~Maybe () = default;
 
     bool isSet () const {
