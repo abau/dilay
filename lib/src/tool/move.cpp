@@ -29,7 +29,6 @@ struct ToolMove::Impl {
   ToolMove*        self;
   Entities         entities;
   ToolUtilMovement movement;
-  unsigned int     numConstraints;
   QButtonGroup&    constraintEdit;
   ViewVectorEdit&  deltaEdit;
 
@@ -37,7 +36,6 @@ struct ToolMove::Impl {
     : self           (s) 
     , entities       (std::move (this->getEntities ()))
     , movement       (s->state ().camera (), this->center (), MovementConstraint::CameraPlane)
-    , numConstraints (0)
     , constraintEdit (*new QButtonGroup)
     , deltaEdit      (*new ViewVectorEdit ("\u0394", glm::vec3 (0.0f)))
   {
@@ -61,7 +59,6 @@ struct ToolMove::Impl {
 
       this->constraintEdit.addButton (&button, id);
       this->self->properties ().addWidget (button);
-      this->numConstraints++;
       id++;
     }
     this->self->properties ().addWidget (this->deltaEdit);
@@ -111,8 +108,6 @@ struct ToolMove::Impl {
       this->self->toolTip ().add ( ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift
                                  , QObject::tr ("Drag to move orthogonally") );
     }
-    this->self->toolTip ().add ( ViewToolTip::MouseEvent::Wheel, ViewToolTip::Modifier::Shift
-                               , QObject::tr ("Change constraint") );
     this->self->showToolTip ();
   }
 
@@ -191,28 +186,9 @@ struct ToolMove::Impl {
   ToolResponse runMousePressEvent (QMouseEvent& e) {
     return this->runMouseMoveEvent (e);
   }
-
-  ToolResponse runWheelEvent (QWheelEvent& e) {
-    if (e.orientation () == Qt::Vertical && e.modifiers () == Qt::ShiftModifier) {
-      const int id    = this->constraintEdit.checkedId ();
-      const int newId = e.delta () > 0 ? id - 1 : id + 1;
-
-      if (newId < 1) {
-        this->constraintEdit.button (1)->click ();
-      }
-      else if (newId > int (this->numConstraints)) {
-        this->constraintEdit.button (this->numConstraints)->click ();
-      }
-      else {
-        this->constraintEdit.button (newId)->click ();
-      }
-    }
-    return ToolResponse::None;
-  }
 };
 
 DELEGATE_TOOL                       (ToolMove)
 DELEGATE_TOOL_RUN_CLOSE             (ToolMove)
 DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT  (ToolMove)
 DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT (ToolMove)
-DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolMove)

@@ -5,8 +5,7 @@
 
 DECLARE_TOOL (ToolMove, "move", DECLARE_TOOL_RUN_CLOSE
                                 DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT
-                                DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT
-                                DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT )
+                                DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT )
 
 DECLARE_TOOL (ToolSculpt, "sculpt", ALLOW_TOOL_UNDO_REDO
                                     DECLARE_TOOL_RUN_RENDER
