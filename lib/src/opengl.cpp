@@ -1,8 +1,9 @@
 #include <QOpenGLContext>
-#include <QOpenGLFunctions_2_1>
 #include <QOpenGLExtensions>
+#include <QOpenGLFunctions_2_1>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <memory>
 #include "opengl.hpp"
 #include "shader.hpp"
 
@@ -28,8 +29,8 @@ namespace OpenGL {
   static_assert (sizeof (int) >= 4, "type does not meet size required by OpenGL");
   static_assert (sizeof (float) >= 4, "type does not meet size required by OpenGL");
 
-  static QOpenGLFunctions_2_1* fun                    = nullptr;
-  static QOpenGLExtension_EXT_geometry_shader4* gsFun = nullptr;
+  static QOpenGLFunctions_2_1* fun = nullptr;
+  static std::unique_ptr <QOpenGLExtension_EXT_geometry_shader4> gsFun;
 
   void setDefaultFormat () {
     QSurfaceFormat format;
@@ -51,7 +52,7 @@ namespace OpenGL {
     fun->initializeOpenGLFunctions ();
 
     if (OpenGL::supportsGeometryShader ()) {
-      gsFun = new QOpenGLExtension_EXT_geometry_shader4 ();
+      gsFun = std::make_unique <QOpenGLExtension_EXT_geometry_shader4> ();
       if (gsFun == false) {
         std::cerr << "Could not initialize GL_EXT_geometry_shader4 extension" << std::endl;
         std::abort ();
