@@ -183,6 +183,6 @@ struct ToolSculptDrag::Impl {
   }
 };
 
-DELEGATE_TOOL_BEHAVIOR                              (ToolSculptDrag)
-DELEGATE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT (ToolSculptDrag)
-DELEGATE_TOOL_BEHAVIOR_RUN_RENDER                   (ToolSculptDrag)
+DELEGATE_TOOL_SCULPT_BEHAVIOR                              (ToolSculptDrag)
+DELEGATE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT (ToolSculptDrag)
+DELEGATE_TOOL_SCULPT_BEHAVIOR_RUN_RENDER                   (ToolSculptDrag)

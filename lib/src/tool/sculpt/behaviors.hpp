@@ -3,8 +3,9 @@
 
 #include "tool/sculpt/behavior.hpp"
 
-DECLARE_TOOL_BEHAVIOR (ToolSculptCarve, )
-DECLARE_TOOL_BEHAVIOR (ToolSculptDrag, DECLARE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT
-                                       DECLARE_TOOL_BEHAVIOR_RUN_RENDER )
+DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarve, )
+DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptDrag, 
+                                DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT
+                                DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_RENDER )
 
 #endif

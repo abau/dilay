@@ -50,7 +50,7 @@ class ToolSculptBehavior {
     virtual void         runRender                () const {}
 };
 
-#define DECLARE_TOOL_BEHAVIOR(name,otherMethods)                                            \
+#define DECLARE_TOOL_SCULPT_BEHAVIOR(name,otherMethods)                                     \
   class name : public ToolSculptBehavior {                                                  \
     public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
     private: IMPLEMENTATION                                                                 \
@@ -62,13 +62,13 @@ class ToolSculptBehavior {
              otherMethods                                                                   \
   };
 
-#define DECLARE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT \
+#define DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT \
   void runMouseLeftReleaseEvent (const glm::ivec2&);
 
-#define DECLARE_TOOL_BEHAVIOR_RUN_RENDER \
+#define DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_RENDER \
   void runRender () const;
 
-#define DELEGATE_TOOL_BEHAVIOR(name)                                                        \
+#define DELEGATE_TOOL_SCULPT_BEHAVIOR(name)                                                 \
   DELEGATE_BIG3_BASE (name, (ConfigProxy& c, State& s), (this), ToolSculptBehavior, (c,s))  \
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
   DELEGATE1      (void, name, runSetupProperties, ViewProperties&);                         \
@@ -76,10 +76,10 @@ class ToolSculptBehavior {
   DELEGATE1      (void, name, runMouseLeftPressEvent, const glm::ivec2&)                    \
   DELEGATE2      (void, name, runMouseMoveEvent, const glm::ivec2&, bool)                    
 
-#define DELEGATE_TOOL_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT(n) \
+#define DELEGATE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT(n) \
   DELEGATE1 (void, n, runMouseLeftReleaseEvent, const glm::ivec2&)
 
-#define DELEGATE_TOOL_BEHAVIOR_RUN_RENDER(n) \
+#define DELEGATE_TOOL_SCULPT_BEHAVIOR_RUN_RENDER(n) \
   DELEGATE_CONST (void, n, runRender)
 
 #endif

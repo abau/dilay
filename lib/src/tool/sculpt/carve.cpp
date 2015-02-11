@@ -56,4 +56,4 @@ struct ToolSculptCarve::Impl {
   }
 };
 
-DELEGATE_TOOL_BEHAVIOR (ToolSculptCarve)
+DELEGATE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarve)
