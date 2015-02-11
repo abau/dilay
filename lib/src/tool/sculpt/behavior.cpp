@@ -137,10 +137,10 @@ struct ToolSculptBehavior::Impl {
   }
 
   void setupBrush (SculptBrush& brush) const {
-    brush.radius          (this->self->config ().get <float> ("radius"           , 10.0f));
-    brush.detailFactor    (this->self->config ().get <float> ("detail-factor"    ,  0.6f));
-    brush.stepWidthFactor (this->self->config ().get <float> ("step-width-factor",  0.3f));
-    brush.subdivide       (this->self->config ().get <bool>  ("subdivide"        ,  true));
+    brush.radius          (this->config.get <float> ("radius"           , 10.0f));
+    brush.detailFactor    (this->config.get <float> ("detail-factor"    ,  0.6f));
+    brush.stepWidthFactor (this->config.get <float> ("step-width-factor",  0.3f));
+    brush.subdivide       (this->config.get <bool>  ("subdivide"        ,  true));
   }
 
   void sculpt (const SculptBrush& brush) {
