@@ -27,6 +27,10 @@ class ConfigProxy {
       assert (p.back () == '/');
     }
 
+    ConfigProxy (ConfigProxy& c, const std::string& p) 
+      : ConfigProxy (c.config, c.prefix + p)
+    {}
+
     std::string key (const std::string& p) const {
       return this->prefix + p;
     }
