@@ -1,7 +1,6 @@
 #ifndef DILAY_TOOL
 #define DILAY_TOOL
 
-#include <string>
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
@@ -19,7 +18,7 @@ enum class ToolResponse {
 
 class Tool {
   public:
-    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&, const std::string&)
+    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&, const char*)
 
     const ViewToolMenuParameters& menuParameters       () const;
     void                          showToolTip          ();
@@ -45,6 +44,7 @@ class Tool {
   private:
     IMPLEMENTATION
 
+    virtual const char*  key                  () const = 0;
     virtual bool         runAllowUndoRedo     () const       { return false; }
     virtual ToolResponse runInitialize        ()             { return ToolResponse::None; }
     virtual void         runRender            () const       {}
@@ -55,10 +55,13 @@ class Tool {
     virtual void         runClose             ()             {}
 };
 
-#define DECLARE_TOOL(name,methods)                     \
+#define DECLARE_TOOL(name,theKey,otherMethods)         \
   class name : public Tool { public:                   \
     DECLARE_BIG3 (name, const ViewToolMenuParameters&) \
-    private: IMPLEMENTATION methods };
+    private:                                           \
+      IMPLEMENTATION                                   \
+      const char* key () const { return theKey ; }     \
+      otherMethods };
 
 #define ALLOW_TOOL_UNDO_REDO                 bool         runAllowUndoRedo     () const { return true; };
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
@@ -70,7 +73,7 @@ class Tool {
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
 
 #define DELEGATE_TOOL(name)\
-  DELEGATE_BIG3_BASE (name, (const ViewToolMenuParameters& p), (this), Tool, (p, #name))
+  DELEGATE_BIG3_BASE (name, (const ViewToolMenuParameters& p), (this), Tool, (p, this->key ()))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE_CONST (void        , n, runRender)

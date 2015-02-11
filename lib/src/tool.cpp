@@ -22,10 +22,10 @@ struct Tool::Impl {
   ConfigProxy            config;
   const Action*          undoLimit;
 
-  Impl (Tool* s, const ViewToolMenuParameters& p, const std::string& key) 
+  Impl (Tool* s, const ViewToolMenuParameters& p, const char* key) 
     : self           (s) 
     , menuParameters (p)
-    , config         (p.state ().config (), "editor/tool/" + key + "/")
+    , config         (p.state ().config (), "editor/tool/" + std::string (key) + "/")
     , undoLimit      (p.state ().history ().recent ())
   {
     QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
@@ -112,7 +112,7 @@ struct Tool::Impl {
   }
 };
 
-DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const std::string&)
+DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const char*)
 GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
 DELEGATE       (void                         , Tool, showToolTip)
 DELEGATE_CONST (bool                         , Tool, allowUndo)
