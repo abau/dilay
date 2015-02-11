@@ -1,6 +1,6 @@
+#include <QAbstractButton>
 #include <QButtonGroup>
 #include <QMouseEvent>
-#include <QRadioButton>
 #include <glm/glm.hpp>
 #include "action/modify-winged-mesh.hpp"
 #include "action/unit.hpp"
@@ -17,7 +17,6 @@
 #include "view/properties.hpp"
 #include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
-#include "view/util.hpp"
 #include "view/vector-edit.hpp"
 #include "winged/mesh.hpp"
 
@@ -44,43 +43,39 @@ struct ToolMove::Impl {
   }
 
   void setupProperties () {
-    std::vector <QString> labels = { QObject::tr ("X-axis")
-                                   , QObject::tr ("Y-axis")
-                                   , QObject::tr ("Z-axis")
-                                   , QObject::tr ("XY-plane")
-                                   , QObject::tr ("XZ-plane")
-                                   , QObject::tr ("YZ-plane")
-                                   , QObject::tr ("Camera-plane")
-                                   , QObject::tr ("Primary plane") };
+    this->self->properties ().addRadioButtons (
+        this->constraintEdit
+      , { QObject::tr ("X-axis")
+        , QObject::tr ("Y-axis")
+        , QObject::tr ("Z-axis")
+        , QObject::tr ("XY-plane")
+        , QObject::tr ("XZ-plane")
+        , QObject::tr ("YZ-plane")
+        , QObject::tr ("Camera-plane")
+        , QObject::tr ("Primary plane") 
+        }
+    );
 
-    int id = 1; // according to documentation, id should be positive
-    for (QString& label : labels) {
-      QRadioButton& button = ViewUtil::radioButton (label);
-
-      this->constraintEdit.addButton (&button, id);
-      this->self->properties ().addWidget (button);
-      id++;
-    }
     this->self->properties ().addWidget (this->deltaEdit);
 
     void (QButtonGroup::* buttonReleased)(int) = &QButtonGroup::buttonReleased;
     QObject::connect (&this->constraintEdit, buttonReleased, [this] (int id) {
       switch (id) {
-        case 1: this->movement.constraint (MovementConstraint::XAxis);
+        case 0: this->movement.constraint (MovementConstraint::XAxis);
                 break;
-        case 2: this->movement.constraint (MovementConstraint::YAxis);
+        case 1: this->movement.constraint (MovementConstraint::YAxis);
                 break;
-        case 3: this->movement.constraint (MovementConstraint::ZAxis);
+        case 2: this->movement.constraint (MovementConstraint::ZAxis);
                 break;
-        case 4: this->movement.constraint (MovementConstraint::XYPlane);
+        case 3: this->movement.constraint (MovementConstraint::XYPlane);
                 break;
-        case 5: this->movement.constraint (MovementConstraint::XZPlane);
+        case 4: this->movement.constraint (MovementConstraint::XZPlane);
                 break;
-        case 6: this->movement.constraint (MovementConstraint::YZPlane);
+        case 5: this->movement.constraint (MovementConstraint::YZPlane);
                 break;
-        case 7: this->movement.constraint (MovementConstraint::CameraPlane);
+        case 6: this->movement.constraint (MovementConstraint::CameraPlane);
                 break;
-        case 8: this->movement.constraint (MovementConstraint::PrimaryPlane);
+        case 7: this->movement.constraint (MovementConstraint::PrimaryPlane);
                 break;
         default:
           std::abort ();
@@ -88,7 +83,7 @@ struct ToolMove::Impl {
       this->setupToolTip ();
       this->self->config ().cache ("constraint", id);
     });
-    this->constraintEdit.button (this->self->config ().get <int> ("constraint", 7))->click ();
+    this->constraintEdit.button (this->self->config ().get <int> ("constraint", 6))->click ();
 
     QObject::connect ( &this->deltaEdit, &ViewVectorEdit::vectorEdited
                      , [this] (const glm::vec3& d) 

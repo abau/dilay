@@ -1,8 +1,11 @@
+#include <QButtonGroup>
 #include <QGridLayout>
 #include <QLabel>
+#include <QRadioButton>
 #include <QVBoxLayout>
 #include "view/properties.hpp"
 #include "view/properties/button.hpp"
+#include "view/util.hpp"
 
 struct ViewProperties::Impl {
   ViewProperties*       self;
@@ -88,6 +91,17 @@ struct ViewProperties::Impl {
     this->numProperties++;
   }
 
+  void addRadioButtons (QButtonGroup& group, const std::vector <QString>& labels) {
+    int id = 0;
+    for (const QString& label : labels) {
+      QRadioButton& button = ViewUtil::radioButton (label);
+
+      group.addButton (&button, id);
+      this->addWidget (button);
+      id++;
+    }
+  }
+
   void setFooter (QWidget& widget) {
     this->resetFooter ();
     this->footer = &widget;
@@ -104,5 +118,6 @@ DELEGATE_BIG3_SELF (ViewProperties)
 DELEGATE1 (void, ViewProperties, setLabel, const QString&)
 DELEGATE2 (void, ViewProperties, addWidget, const QString&, QWidget&)
 DELEGATE1 (void, ViewProperties, addWidget, QWidget&)
+DELEGATE2 (void, ViewProperties, addRadioButtons, QButtonGroup&, const std::vector <QString>&)
 DELEGATE1 (void, ViewProperties, setFooter, QWidget&)
 DELEGATE  (void, ViewProperties, resetWidgets)
