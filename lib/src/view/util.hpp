@@ -5,6 +5,7 @@
 #include <glm/fwd.hpp>
 
 class QAbstractSpinBox;
+class QButtonGroup;
 class QCheckBox;
 class QDoubleSpinBox;
 class QMouseEvent;
@@ -28,6 +29,7 @@ namespace ViewUtil {
   glm::ivec2      toIVec2     (const QMouseEvent&);
   void            connect     (const QSpinBox&, const std::function <void (int)>&);
   void            connect     (const QDoubleSpinBox&, const std::function <void (double)>&);
+  void            connect     (const QButtonGroup&, const std::function <void (int)>&);
   QWidget&        stretcher   (bool, bool);
   void            deselect    (QAbstractSpinBox&);
 };

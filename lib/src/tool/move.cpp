@@ -17,6 +17,7 @@
 #include "view/properties.hpp"
 #include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
+#include "view/util.hpp"
 #include "view/vector-edit.hpp"
 #include "winged/mesh.hpp"
 
@@ -56,10 +57,7 @@ struct ToolMove::Impl {
         }
     );
 
-    this->self->properties ().addWidget (this->deltaEdit);
-
-    void (QButtonGroup::* buttonReleased)(int) = &QButtonGroup::buttonReleased;
-    QObject::connect (&this->constraintEdit, buttonReleased, [this] (int id) {
+    ViewUtil::connect (this->constraintEdit, [this] (int id) {
       switch (id) {
         case 0: this->movement.constraint (MovementConstraint::XAxis);
                 break;
@@ -84,6 +82,8 @@ struct ToolMove::Impl {
       this->self->config ().cache ("constraint", id);
     });
     this->constraintEdit.button (this->self->config ().get <int> ("constraint", 6))->click ();
+
+    this->self->properties ().addWidget (this->deltaEdit);
 
     QObject::connect ( &this->deltaEdit, &ViewVectorEdit::vectorEdited
                      , [this] (const glm::vec3& d) 

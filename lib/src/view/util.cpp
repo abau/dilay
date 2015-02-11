@@ -1,3 +1,4 @@
+#include <QButtonGroup>
 #include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QLineEdit>
@@ -76,6 +77,11 @@ void ViewUtil :: connect (const QSpinBox& s, const std::function <void (int)>& f
 void ViewUtil :: connect (const QDoubleSpinBox& s, const std::function <void (double)>& f) {
   void (QDoubleSpinBox::* ptr)(double) = &QDoubleSpinBox::valueChanged;
   QObject::connect (&s, ptr, f);
+}
+
+void ViewUtil :: connect (const QButtonGroup& g, const std::function <void (int)>& f) {
+  void (QButtonGroup::* ptr)(int) = &QButtonGroup::buttonReleased;
+  QObject::connect (&g, ptr, f);
 }
 
 QWidget& ViewUtil :: stretcher (bool horizontal, bool vertical) {
