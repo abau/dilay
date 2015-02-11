@@ -21,15 +21,15 @@
 
 struct ToolSculptBehavior::Impl {
   ToolSculptBehavior*          self;
-  ConfigProxy&                 config;
+  ConfigProxy                  config;
   State&                       state;
   std::unique_ptr <ActionUnit> actions;
   ViewCursor                   cursor;
   QDoubleSpinBox&              radiusEdit;
 
-  Impl (ToolSculptBehavior* s, ConfigProxy& c, State& st) 
+  Impl (ToolSculptBehavior* s, ConfigProxy& c, State& st, const char* key) 
     : self       (s)
-    , config     (c)
+    , config     (c, std::string (key) + "/")
     , state      (st)
     , actions    (new ActionUnit) 
     , cursor     (1.0f, Color::Red ())
@@ -153,7 +153,7 @@ struct ToolSculptBehavior::Impl {
   }
 };
 
-DELEGATE2_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&)
+DELEGATE3_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 
 GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
 GETTER_CONST    (State&         , ToolSculptBehavior, state)

@@ -16,7 +16,7 @@ class WingedFaceIntersection;
 
 class ToolSculptBehavior {
   public:
-    DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, ConfigProxy&, State&)
+    DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 
     void setupBrushAndCursor   ();
     void setupProperties       (ViewProperties&);
@@ -41,6 +41,7 @@ class ToolSculptBehavior {
   private:
     IMPLEMENTATION
 
+    virtual const char*  key                      () const = 0;
     virtual SculptBrush& brush                    () const = 0;
     virtual void         runSetupProperties       (ViewProperties&) = 0;
     virtual void         runSetupToolTip          (ViewToolTip&) = 0;
@@ -50,10 +51,11 @@ class ToolSculptBehavior {
     virtual void         runRender                () const {}
 };
 
-#define DECLARE_TOOL_SCULPT_BEHAVIOR(name,otherMethods)                                     \
+#define DECLARE_TOOL_SCULPT_BEHAVIOR(name,theKey,otherMethods)                              \
   class name : public ToolSculptBehavior {                                                  \
     public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
     private: IMPLEMENTATION                                                                 \
+             const char*  key                    () const { return theKey ; }               \
              SculptBrush& brush                  () const;                                  \
              void         runSetupProperties     (ViewProperties&);                         \
              void         runSetupToolTip        (ViewToolTip&);                            \
@@ -69,7 +71,8 @@ class ToolSculptBehavior {
   void runRender () const;
 
 #define DELEGATE_TOOL_SCULPT_BEHAVIOR(name)                                                 \
-  DELEGATE_BIG3_BASE (name, (ConfigProxy& c, State& s), (this), ToolSculptBehavior, (c,s))  \
+  DELEGATE_BIG3_BASE ( name, (ConfigProxy& c, State& s), (this)                             \
+                     , ToolSculptBehavior, (c,s,this->key ()) )                             \
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
   DELEGATE1      (void, name, runSetupProperties, ViewProperties&);                         \
   DELEGATE1      (void, name, runSetupToolTip, ViewToolTip&);                               \
