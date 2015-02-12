@@ -41,11 +41,11 @@ struct ViewPropertiesWidget::Impl {
 
   void showTool (const QString& name) {
     this->self->setCurrentIndex (1);
-    this->tool.setLabel         (name);
+    this->tool.label            (name);
   }
 
   void resetTool () {
-    this->tool.resetWidgets ();
+    this->tool.reset ();
     this->self->setCurrentIndex (0);
   }
 };

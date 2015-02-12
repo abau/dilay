@@ -11,7 +11,7 @@ struct ViewPropertiesSelection::Impl {
     : self             (s) 
     , polyMeshButton   (ViewUtil::radioButton (tr ("PolyMesh"), true))
   {
-    this->self->setLabel  (tr ("Selection"));
+    this->self->label     (tr ("Selection"));
     this->self->addWidget (this->polyMeshButton);
 
     QObject::connect (&this->polyMeshButton, &QRadioButton::toggled, [this] (bool checked) {

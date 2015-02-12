@@ -53,6 +53,10 @@ struct ViewProperties::Impl {
     this->layout ()->insertWidget (0, &this->headerButton);
   }
 
+  void label (const QString& label) {
+    this->headerButton.setText (label);
+  }
+
   void resetBody () {
     if (this->body) {
       this->self->layout ()->removeWidget (this->body);
@@ -74,8 +78,9 @@ struct ViewProperties::Impl {
     }
   }
 
-  void setLabel (const QString& label) {
-    this->headerButton.setText (label);
+  void reset () {
+    this->resetBody   ();
+    this->resetFooter ();
   }
 
   void addWidget (const QString& label, QWidget& widget) {
@@ -107,17 +112,14 @@ struct ViewProperties::Impl {
     this->footer = &widget;
     this->layout ()->insertWidget (2, this->footer);
   }
-
-  void resetWidgets () {
-    this->resetBody   ();
-    this->resetFooter ();
-  }
 };
 
 DELEGATE_BIG3_SELF (ViewProperties)
-DELEGATE1 (void, ViewProperties, setLabel, const QString&)
+DELEGATE1 (void, ViewProperties, label, const QString&)
+DELEGATE  (void, ViewProperties, resetBody)
+DELEGATE  (void, ViewProperties, resetFooter)
+DELEGATE  (void, ViewProperties, reset)
 DELEGATE2 (void, ViewProperties, addWidget, const QString&, QWidget&)
 DELEGATE1 (void, ViewProperties, addWidget, QWidget&)
 DELEGATE2 (void, ViewProperties, addRadioButtons, QButtonGroup&, const std::vector <QString>&)
 DELEGATE1 (void, ViewProperties, setFooter, QWidget&)
-DELEGATE  (void, ViewProperties, resetWidgets)
