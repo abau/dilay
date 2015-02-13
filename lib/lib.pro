@@ -85,6 +85,7 @@ SOURCES += \
            src/view/menu/no-selection.cpp \
            src/view/properties.cpp \
            src/view/properties/button.cpp \
+           src/view/properties/part.cpp \
            src/view/properties/selection.cpp \
            src/view/properties/widget.cpp \
            src/view/tool/menu.cpp \
@@ -181,6 +182,7 @@ HEADERS += \
            src/view/menu/no-selection.hpp \
            src/view/properties.hpp \
            src/view/properties/button.hpp \
+           src/view/properties/part.hpp \
            src/view/properties/selection.hpp \
            src/view/properties/widget.hpp \
            src/view/tool/menu.hpp \

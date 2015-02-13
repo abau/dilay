@@ -14,6 +14,7 @@
 #include "tool/sculpt/behavior.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
+#include "view/properties/part.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
@@ -55,28 +56,28 @@ struct ToolSculptBehavior::Impl {
       this->cursor.updateGeometry ();
       this->config.cache ("radius", r);
     });
-    properties.addWidget (QObject::tr ("Radius"), this->radiusEdit);
+    properties.body ().add (QObject::tr ("Radius"), this->radiusEdit);
 
     QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, brush.detailFactor (), 0.95f, 0.1f);
     ViewUtil::connect (detailEdit, [this] (float h) {
       this->self->brush ().detailFactor (h);
       this->config.cache ("detail-factor", h);
     });
-    properties.addWidget (QObject::tr ("Detail"), detailEdit);
+    properties.body ().add (QObject::tr ("Detail"), detailEdit);
 
     QDoubleSpinBox& stepEdit = ViewUtil::spinBox (0.01f, brush.stepWidthFactor (), 1000.0f, 0.1f);
     ViewUtil::connect (stepEdit, [this] (float s) {
       this->self->brush ().stepWidthFactor (s);
       this->config.cache ("step-width-factor", s);
     });
-    properties.addWidget (QObject::tr ("Step width"), stepEdit);
+    properties.body ().add (QObject::tr ("Step width"), stepEdit);
 
     QCheckBox& subdivEdit = ViewUtil::checkBox (QObject::tr ("Subdivide"), brush.subdivide ());
     QObject::connect (&subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
       this->self->brush ().subdivide (bool (s));
       this->config.cache ("subdivide", bool (s));
     });
-    properties.addWidget (subdivEdit);
+    properties.body ().add (subdivEdit);
 
     this->self->runSetupProperties (properties);
   }

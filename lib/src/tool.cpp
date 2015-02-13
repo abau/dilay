@@ -10,6 +10,7 @@
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
+#include "view/properties/part.hpp"
 #include "view/properties/widget.hpp"
 #include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
@@ -29,7 +30,7 @@ struct Tool::Impl {
     , undoLimit      (p.state ().history ().recent ())
   {
     QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
-    this->properties ().setFooter (close);
+    this->properties ().footer ().add (close);
 
     QObject::connect (&close, &QPushButton::clicked, [this] () {
       this->close ();

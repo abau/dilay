@@ -1,5 +1,6 @@
 #include <QRadioButton>
 #include "selection-mode.hpp"
+#include "view/properties/part.hpp"
 #include "view/properties/selection.hpp"
 #include "view/util.hpp"
 
@@ -11,8 +12,8 @@ struct ViewPropertiesSelection::Impl {
     : self             (s) 
     , polyMeshButton   (ViewUtil::radioButton (tr ("PolyMesh"), true))
   {
-    this->self->label     (tr ("Selection"));
-    this->self->addWidget (this->polyMeshButton);
+    this->self->label       (tr ("Selection"));
+    this->self->body ().add (this->polyMeshButton);
 
     QObject::connect (&this->polyMeshButton, &QRadioButton::toggled, [this] (bool checked) {
       if (checked) {

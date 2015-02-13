@@ -15,6 +15,7 @@
 #include "tools.hpp"
 #include "variant.hpp"
 #include "view/properties.hpp"
+#include "view/properties/part.hpp"
 #include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
@@ -44,7 +45,7 @@ struct ToolMove::Impl {
   }
 
   void setupProperties () {
-    this->self->properties ().addRadioButtons (
+    this->self->properties ().body ().add (
         this->constraintEdit
       , { QObject::tr ("X-axis")
         , QObject::tr ("Y-axis")
@@ -83,7 +84,7 @@ struct ToolMove::Impl {
     });
     this->constraintEdit.button (this->self->config ().get <int> ("constraint", 6))->click ();
 
-    this->self->properties ().addWidget (this->deltaEdit);
+    this->self->properties ().body ().add (this->deltaEdit);
 
     QObject::connect ( &this->deltaEdit, &ViewVectorEdit::vectorEdited
                      , [this] (const glm::vec3& d) 

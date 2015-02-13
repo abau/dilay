@@ -8,6 +8,7 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/properties.hpp"
+#include "view/properties/part.hpp"
 #include "view/util.hpp"
 #include "util.hpp"
 
@@ -23,7 +24,7 @@ struct ToolNewWingedMesh::Impl {
                                     , this->self->config ().get <int> ("subdiv", 3)
                                     , 5 ))
   {
-    this->self->properties ().addWidget (QObject::tr ("Subdivisions"), this->subdivEdit);
+    this->self->properties ().body ().add (QObject::tr ("Subdivisions"), this->subdivEdit);
 
     ViewUtil::connect (this->subdivEdit, [this] (int) {
         this->updateMesh           ();
