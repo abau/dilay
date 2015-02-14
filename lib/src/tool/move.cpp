@@ -15,7 +15,6 @@
 #include "tools.hpp"
 #include "variant.hpp"
 #include "view/properties.hpp"
-#include "view/properties/part.hpp"
 #include "view/tool/menu-parameters.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"

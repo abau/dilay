@@ -14,7 +14,6 @@
 #include "tool/sculpt/behavior.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
-#include "view/properties/part.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"

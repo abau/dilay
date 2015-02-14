@@ -1,6 +1,5 @@
 #include <QRadioButton>
 #include "selection-mode.hpp"
-#include "view/properties/part.hpp"
 #include "view/properties/selection.hpp"
 #include "view/util.hpp"
 
