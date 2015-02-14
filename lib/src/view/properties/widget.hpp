@@ -10,7 +10,7 @@ class ViewPropertiesSelection;
 
 class ViewPropertiesWidget : public QStackedWidget {
   public:
-    DECLARE_BIG3 (ViewPropertiesWidget)
+    DECLARE_BIG2 (ViewPropertiesWidget)
 
     ViewPropertiesSelection& selection ();
     ViewProperties&          tool      ();

@@ -57,7 +57,7 @@ class Tool {
 
 #define DECLARE_TOOL(name,theKey,otherMethods)         \
   class name : public Tool { public:                   \
-    DECLARE_BIG3 (name, const ViewToolMenuParameters&) \
+    DECLARE_BIG2 (name, const ViewToolMenuParameters&) \
     private:                                           \
       IMPLEMENTATION                                   \
       const char* key () const { return theKey ; }     \
@@ -73,7 +73,7 @@ class Tool {
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
 
 #define DELEGATE_TOOL(name)\
-  DELEGATE_BIG3_BASE (name, (const ViewToolMenuParameters& p), (this), Tool, (p, this->key ()))
+  DELEGATE_BIG2_BASE (name, (const ViewToolMenuParameters& p), (this), Tool, (p, this->key ()))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE_CONST (void        , n, runRender)

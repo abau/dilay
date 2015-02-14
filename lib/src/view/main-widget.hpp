@@ -11,7 +11,7 @@ class ViewPropertiesWidget;
 
 class ViewMainWidget : public QSplitter {
   public:
-    DECLARE_BIG3 (ViewMainWidget, ViewMainWindow&, Config&)
+    DECLARE_BIG2 (ViewMainWidget, ViewMainWindow&, Config&)
 
     ViewGlWidget&         glWidget    ();
     ViewPropertiesWidget& properties  ();

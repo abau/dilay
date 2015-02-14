@@ -7,17 +7,14 @@
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
-  ViewMainWidget& mainWidget;
-  QToolBar&       statusBar;
-  QLabel&         messageLabel;
-  QLabel&         numSelectionsLabel;
+  ViewMainWidget  mainWidget;
+  QToolBar        statusBar;
+  QLabel          messageLabel;
+  QLabel          numSelectionsLabel;
 
   Impl (ViewMainWindow* s, Config& config) 
     : self               (s) 
-    , mainWidget         (*new ViewMainWidget (*this->self, config))
-    , statusBar          (*new QToolBar       ())
-    , messageLabel       (*new QLabel         ())
-    , numSelectionsLabel (*new QLabel         ())
+    , mainWidget         (*this->self, config)
   {
     this->self->setCentralWidget       (&this->mainWidget);
     this->self->addToolBar             (Qt::BottomToolBarArea, &this->statusBar);
@@ -61,7 +58,7 @@ struct ViewMainWindow :: Impl {
   }
 };
 
-DELEGATE1_BIG3_SELF (ViewMainWindow, Config&)
+DELEGATE1_BIG2_SELF (ViewMainWindow, Config&)
 DELEGATE  (ViewGlWidget&        , ViewMainWindow, glWidget)
 DELEGATE  (ViewPropertiesWidget&, ViewMainWindow, properties)
 DELEGATE1 (void                 , ViewMainWindow, showMessage, const QString&)

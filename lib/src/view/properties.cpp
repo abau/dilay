@@ -5,20 +5,17 @@
 
 struct ViewProperties::Impl {
   ViewProperties*       self;
-  ViewPropertiesButton& headerButton;
-  QVBoxLayout&          layout;
-  QWidget&              partsWidget;
-  QVBoxLayout&          partsLayout;
+  ViewPropertiesButton  headerButton;
+  QVBoxLayout           layout;
+  QWidget               partsWidget;
+  QVBoxLayout           partsLayout;
   ViewPropertiesPart    header;
   ViewPropertiesPart    body;
   ViewPropertiesPart    footer;
 
   Impl (ViewProperties* s) 
     : self          (s) 
-    , headerButton  (*new ViewPropertiesButton ("?"))
-    , layout        (*new QVBoxLayout)
-    , partsWidget   (*new QWidget)
-    , partsLayout   (*new QVBoxLayout)
+    , headerButton  ("?")
     , header        (this->partsLayout, 0)
     , body          (this->partsLayout, 1)
     , footer        (this->partsLayout, 2)
@@ -52,7 +49,7 @@ struct ViewProperties::Impl {
   }
 };
 
-DELEGATE_BIG3_SELF (ViewProperties)
+DELEGATE_BIG2_SELF (ViewProperties)
 DELEGATE1 (void, ViewProperties, label, const QString&)
 DELEGATE  (void, ViewProperties, reset)
 GETTER    (ViewPropertiesPart&, ViewProperties, header)

@@ -30,15 +30,14 @@ struct ToolMove::Impl {
   ToolMove*        self;
   Entities         entities;
   ToolUtilMovement movement;
-  QButtonGroup&    constraintEdit;
-  ViewVectorEdit&  deltaEdit;
+  QButtonGroup     constraintEdit;
+  ViewVectorEdit   deltaEdit;
 
   Impl (ToolMove* s) 
     : self           (s) 
     , entities       (std::move (this->getEntities ()))
     , movement       (s->state ().camera (), this->center (), MovementConstraint::CameraPlane)
-    , constraintEdit (*new QButtonGroup)
-    , deltaEdit      (*new ViewVectorEdit ("\u0394", glm::vec3 (0.0f)))
+    , deltaEdit      ("\u0394", glm::vec3 (0.0f))
   {
     this->setupProperties ();
     this->setupToolTip    ();

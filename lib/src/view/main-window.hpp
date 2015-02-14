@@ -12,7 +12,7 @@ class ViewToolTip;
 class ViewMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    DECLARE_BIG3 (ViewMainWindow, Config&)
+    DECLARE_BIG2 (ViewMainWindow, Config&)
 
     ViewGlWidget&         glWidget           ();
     ViewPropertiesWidget& properties         ();

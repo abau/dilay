@@ -4,14 +4,12 @@
 #include "view/properties/widget.hpp"
 
 struct ViewPropertiesWidget::Impl {
-  ViewPropertiesWidget*    self;
-  ViewPropertiesSelection& selection;
-  ViewProperties&          tool;
+  ViewPropertiesWidget*   self;
+  ViewPropertiesSelection selection;
+  ViewProperties          tool;
 
   Impl (ViewPropertiesWidget* s) 
     : self      (s) 
-    , selection (*new ViewPropertiesSelection)
-    , tool      (*new ViewProperties)
   {
     this->setupNonToolProperties ();
     this->setupToolProperties    ();
@@ -50,7 +48,7 @@ struct ViewPropertiesWidget::Impl {
   }
 };
 
-DELEGATE_BIG3_SELF (ViewPropertiesWidget)
+DELEGATE_BIG2_SELF (ViewPropertiesWidget)
 GETTER    (ViewPropertiesSelection&, ViewPropertiesWidget, selection)
 GETTER    (ViewProperties&, ViewPropertiesWidget, tool)
 DELEGATE1 (void, ViewPropertiesWidget, showTool, const QString&)
