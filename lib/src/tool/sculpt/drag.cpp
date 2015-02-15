@@ -29,7 +29,7 @@ struct ToolSculptDrag::Impl {
                , MovementConstraint::Explicit )
   {}
 
-  void runSetupProperties (ViewProperties&) {}
+  void runSetupProperties (ViewPropertiesPart&) {}
 
   void runSetupToolTip (ViewToolTip& toolTip) {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));

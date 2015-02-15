@@ -45,7 +45,7 @@ struct ToolSculptBehavior::Impl {
    }
 
 
-  void setupProperties (ViewProperties& properties) {
+  void setupProperties (ViewPropertiesPart& properties) {
     SculptBrush& brush = this->self->brush ();
 
     this->radiusEdit.setValue (brush.radius ());
@@ -55,28 +55,28 @@ struct ToolSculptBehavior::Impl {
       this->cursor.updateGeometry ();
       this->config.cache ("radius", r);
     });
-    properties.body ().add (QObject::tr ("Radius"), this->radiusEdit);
+    properties.add (QObject::tr ("Radius"), this->radiusEdit);
 
     QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, brush.detailFactor (), 0.95f, 0.1f);
     ViewUtil::connect (detailEdit, [this] (float h) {
       this->self->brush ().detailFactor (h);
       this->config.cache ("detail-factor", h);
     });
-    properties.body ().add (QObject::tr ("Detail"), detailEdit);
+    properties.add (QObject::tr ("Detail"), detailEdit);
 
     QDoubleSpinBox& stepEdit = ViewUtil::spinBox (0.01f, brush.stepWidthFactor (), 1000.0f, 0.1f);
     ViewUtil::connect (stepEdit, [this] (float s) {
       this->self->brush ().stepWidthFactor (s);
       this->config.cache ("step-width-factor", s);
     });
-    properties.body ().add (QObject::tr ("Step width"), stepEdit);
+    properties.add (QObject::tr ("Step width"), stepEdit);
 
     QCheckBox& subdivEdit = ViewUtil::checkBox (QObject::tr ("Subdivide"), brush.subdivide ());
     QObject::connect (&subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
       this->self->brush ().subdivide (bool (s));
       this->config.cache ("subdivide", bool (s));
     });
-    properties.body ().add (subdivEdit);
+    properties.add (subdivEdit);
 
     this->self->runSetupProperties (properties);
   }
@@ -159,7 +159,7 @@ GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
 GETTER_CONST    (State&         , ToolSculptBehavior, state)
 GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
 DELEGATE        (void           , ToolSculptBehavior, setupBrushAndCursor)
-DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewProperties&)
+DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewPropertiesPart&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
 DELEGATE_CONST  (void           , ToolSculptBehavior, render)
 DELEGATE2       (void           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)

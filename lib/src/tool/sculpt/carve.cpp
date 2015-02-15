@@ -19,14 +19,14 @@ struct ToolSculptCarve::Impl {
     this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" , 0.1f));
   }
 
-  void runSetupProperties (ViewProperties& properties) {
+  void runSetupProperties (ViewPropertiesPart& properties) {
     QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, this->brush.intensityFactor ()
                                                       , 1000.0f, 0.1f );
     ViewUtil::connect (intensityEdit, [this] (float d) {
       this->brush.intensityFactor (d);
       this->self->config ().cache ("intensity", d);
     });
-    properties.body ().add (QObject::tr ("Intensity"), intensityEdit);
+    properties.add (QObject::tr ("Intensity"), intensityEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {

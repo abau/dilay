@@ -1,12 +1,16 @@
+#include <QAbstractButton>
+#include <QButtonGroup>
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
+#include "config.hpp"
 #include "scene.hpp"
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/sculpt/behaviors.hpp"
 #include "tools.hpp"
 #include "view/cursor.hpp"
+#include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "winged/mesh.hpp"
@@ -14,22 +18,48 @@
 struct ToolSculpt::Impl {
   ToolSculpt*                          self;
   std::unique_ptr <ToolSculptBehavior> behavior;
+  QButtonGroup&                        behaviorEdit;
 
-  Impl (ToolSculpt* s) : self (s) {
-    this->setBehavior <ToolSculptCarve> ();
+  Impl (ToolSculpt* s)
+    : self         (s)
+    , behaviorEdit (*new QButtonGroup)
+  {
+    this->setupProperties ();
     this->behavior->mouseMoveEvent (this->self->cursorPosition (), false);
+  }
+
+  void setupProperties () {
+    this->self->properties ().header ().add (
+        this->behaviorEdit
+      , { QObject::tr ("Carve"), QObject::tr ("Drag") }
+    );
+    ViewUtil::connect (this->behaviorEdit, [this] (int id) {
+      switch (id) {
+        case 0: setBehavior <ToolSculptCarve> ();
+                break;
+        case 1: setBehavior <ToolSculptDrag> ();
+                break;
+        default:
+          std::abort ();
+      }
+      this->self->config ().cache ("behavior", id);
+    });
+    this->behaviorEdit.button (this->self->config ().get <int> ("behavior", 0))->click ();
   }
 
   template <typename T>
   void setBehavior () {
+    this->self->properties ().body ().reset ();
+
     this->behavior.reset (new T (this->self->config (), this->self->state ()));
     this->behavior->setupBrushAndCursor ();
-    this->behavior->setupProperties     (this->self->properties ());
+    this->behavior->setupProperties     (this->self->properties ().body ());
 
     this->self->resetToolTip     ();
     this->behavior->setupToolTip (this->self->toolTip ());
     this->self->showToolTip      ();
   }
+
 
   void runRender () const {
     this->behavior->render ();

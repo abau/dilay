@@ -10,7 +10,7 @@ class PrimRay;
 class SculptBrush;
 class State;
 class ViewCursor;
-class ViewProperties;
+class ViewPropertiesPart;
 class ViewToolTip;
 class WingedFaceIntersection;
 
@@ -19,7 +19,7 @@ class ToolSculptBehavior {
     DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 
     void setupBrushAndCursor   ();
-    void setupProperties       (ViewProperties&);
+    void setupProperties       (ViewPropertiesPart&);
     void setupToolTip          (ViewToolTip&);
     void render                () const;
     void mouseMoveEvent        (const glm::ivec2&, bool);
@@ -43,7 +43,7 @@ class ToolSculptBehavior {
 
     virtual const char*  key                      () const = 0;
     virtual SculptBrush& brush                    () const = 0;
-    virtual void         runSetupProperties       (ViewProperties&) = 0;
+    virtual void         runSetupProperties       (ViewPropertiesPart&) = 0;
     virtual void         runSetupToolTip          (ViewToolTip&) = 0;
     virtual void         runMouseLeftPressEvent   (const glm::ivec2&) = 0;
     virtual void         runMouseMoveEvent        (const glm::ivec2&, bool) = 0;
@@ -57,7 +57,7 @@ class ToolSculptBehavior {
     private: IMPLEMENTATION                                                                 \
              const char*  key                    () const { return theKey ; }               \
              SculptBrush& brush                  () const;                                  \
-             void         runSetupProperties     (ViewProperties&);                         \
+             void         runSetupProperties     (ViewPropertiesPart&);                     \
              void         runSetupToolTip        (ViewToolTip&);                            \
              void         runMouseLeftPressEvent (const glm::ivec2&);                       \
              void         runMouseMoveEvent      (const glm::ivec2&, bool);                 \
@@ -74,7 +74,7 @@ class ToolSculptBehavior {
   DELEGATE_BIG3_BASE ( name, (ConfigProxy& c, State& s), (this)                             \
                      , ToolSculptBehavior, (c,s,this->key ()) )                             \
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
-  DELEGATE1      (void, name, runSetupProperties, ViewProperties&);                         \
+  DELEGATE1      (void, name, runSetupProperties, ViewPropertiesPart&);                     \
   DELEGATE1      (void, name, runSetupToolTip, ViewToolTip&);                               \
   DELEGATE1      (void, name, runMouseLeftPressEvent, const glm::ivec2&)                    \
   DELEGATE2      (void, name, runMouseMoveEvent, const glm::ivec2&, bool)                    
