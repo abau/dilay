@@ -18,7 +18,7 @@ class ToolSculptBehavior {
   public:
     DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 
-    void setupBrushAndCursor   ();
+    void setupCursor           ();
     void setupProperties       (ViewPropertiesPart&);
     void setupToolTip          (ViewToolTip&);
     void render                () const;
@@ -34,7 +34,7 @@ class ToolSculptBehavior {
     ViewCursor&  cursor              () const;
     bool         intersectsSelection (const PrimRay&, WingedFaceIntersection&) const;
     bool         intersectsSelection (const glm::ivec2&, WingedFaceIntersection&) const;
-    void         setupBrush          (SculptBrush&) const;
+    void         brushFromCache      (SculptBrush&) const;
     void         sculpt              (const SculptBrush&);
     void         sculpt              ();
 

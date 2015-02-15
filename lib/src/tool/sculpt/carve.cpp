@@ -16,7 +16,13 @@ struct ToolSculptCarve::Impl {
   Impl (ToolSculptCarve* s) 
     : self (s) 
   {
-    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" , 0.1f));
+    this->brush.radius          (20.0f);
+    this->brush.detailFactor    (0.7f);
+    this->brush.stepWidthFactor (0.3f);
+    this->brush.subdivide       (true);
+
+    this->self->brushFromCache  (this->brush);
+    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" , 0.05f));
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {

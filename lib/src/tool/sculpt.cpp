@@ -52,8 +52,8 @@ struct ToolSculpt::Impl {
     this->self->properties ().body ().reset ();
 
     this->behavior.reset (new T (this->self->config (), this->self->state ()));
-    this->behavior->setupBrushAndCursor ();
-    this->behavior->setupProperties     (this->self->properties ().body ());
+    this->behavior->setupCursor     ();
+    this->behavior->setupProperties (this->self->properties ().body ());
 
     this->self->resetToolTip     ();
     this->behavior->setupToolTip (this->self->toolTip ());

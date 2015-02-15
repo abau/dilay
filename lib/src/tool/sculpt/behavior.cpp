@@ -36,8 +36,8 @@ struct ToolSculptBehavior::Impl {
     , radiusEdit (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
   {}
 
-  void setupBrushAndCursor () {
-    this->setupBrush            (this->self->brush ());
+  void setupCursor () {
+    assert (this->self->brush ().radius () > 0.0f);
 
     this->cursor.radius         (this->self->brush ().radius ());
     this->cursor.color          (this->config.get <Color> ("cursor-color", Color::Red ()));
@@ -136,11 +136,11 @@ struct ToolSculptBehavior::Impl {
     return this->intersectsSelection (this->state.camera ().ray (pos), intersection);
   }
 
-  void setupBrush (SculptBrush& brush) const {
-    brush.radius          (this->config.get <float> ("radius"           , 10.0f));
-    brush.detailFactor    (this->config.get <float> ("detail-factor"    ,  0.6f));
-    brush.stepWidthFactor (this->config.get <float> ("step-width-factor",  0.3f));
-    brush.subdivide       (this->config.get <bool>  ("subdivide"        ,  true));
+  void brushFromCache (SculptBrush& brush) const {
+    brush.radius          (this->config.get <float> ("radius"           , brush.radius          ()));
+    brush.detailFactor    (this->config.get <float> ("detail-factor"    , brush.detailFactor    ()));
+    brush.stepWidthFactor (this->config.get <float> ("step-width-factor", brush.stepWidthFactor ()));
+    brush.subdivide       (this->config.get <bool>  ("subdivide"        , brush.subdivide       ()));
   }
 
   void sculpt (const SculptBrush& brush) {
@@ -158,7 +158,7 @@ DELEGATE3_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
 GETTER_CONST    (State&         , ToolSculptBehavior, state)
 GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
-DELEGATE        (void           , ToolSculptBehavior, setupBrushAndCursor)
+DELEGATE        (void           , ToolSculptBehavior, setupCursor)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewPropertiesPart&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
 DELEGATE_CONST  (void           , ToolSculptBehavior, render)
@@ -169,6 +169,6 @@ DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, bool)
 DELEGATE        (void           , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
-DELEGATE1_CONST (void           , ToolSculptBehavior, setupBrush, SculptBrush&)
+DELEGATE1_CONST (void           , ToolSculptBehavior, brushFromCache, SculptBrush&)
 DELEGATE1       (void           , ToolSculptBehavior, sculpt, const SculptBrush&)
 DELEGATE        (void           , ToolSculptBehavior, sculpt)

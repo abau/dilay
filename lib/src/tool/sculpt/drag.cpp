@@ -27,7 +27,14 @@ struct ToolSculptDrag::Impl {
     , movement ( this->self->state ().camera ()
                , glm::vec3 (0.0f)
                , MovementConstraint::Explicit )
-  {}
+  {
+    this->brush.radius          (20.0f);
+    this->brush.detailFactor    (0.7f);
+    this->brush.stepWidthFactor (0.3f);
+    this->brush.subdivide       (true);
+
+    this->self->brushFromCache (this->brush);
+  }
 
   void runSetupProperties (ViewPropertiesPart&) {}
 
