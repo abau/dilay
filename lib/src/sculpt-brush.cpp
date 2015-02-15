@@ -16,8 +16,12 @@ struct SculptBrush :: Impl {
   glm::vec3   _position;
 
   Impl (SculptBrush* s) 
-    : self        (s)
-    , hasPosition (false)
+    : self            (s)
+    , radius          (0.0f)
+    , detailFactor    (0.0f)
+    , stepWidthFactor (0.0f)
+    , subdivide       (false)
+    , hasPosition     (false)
     {}
 
   void sculpt (AffectedFaces& faces, ActionUnitOn <WingedMesh>& actions) const {
