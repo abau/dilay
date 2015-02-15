@@ -12,7 +12,7 @@ struct SculptBrushCarve :: Impl {
 
   SculptBrushCarve* self;
   float             intensityFactor;
-  unsigned int      order;
+  unsigned int      flatness;
   Maybe <glm::vec3> mDirection;
   bool              useLastPosition;
   bool              useIntersection;
@@ -20,7 +20,7 @@ struct SculptBrushCarve :: Impl {
   Impl (SculptBrushCarve* s) 
     : self            (s) 
     , intensityFactor (0.0f)
-    , order           (4)
+    , flatness        (4)
     , useLastPosition (false)
     , useIntersection (false)
   {}
@@ -38,7 +38,7 @@ struct SculptBrushCarve :: Impl {
   }
 
   float sculptDelta (const glm::vec3& v) const {
-    assert (this->order > 2);
+    const float fFlatness = float (this->flatness < 3 ? 3 : this->flatness);
 
     const float x = glm::distance <float> (v, this->getPosition ());
     if (x >= this->self->radius ())
@@ -46,8 +46,8 @@ struct SculptBrushCarve :: Impl {
     else {
       const float normX = x / this->self->radius ();
       return this->intensity ()
-           * ( ((this->order-1.0f) * glm::pow (normX, this->order))
-             - (this->order * glm::pow (normX, this->order-1.0f)) 
+           * ( ((fFlatness-1.0f) * glm::pow (normX, fFlatness))
+             - (fFlatness * glm::pow (normX, fFlatness-1.0f)) 
              + 1.0f );
     }
   }
@@ -97,9 +97,9 @@ struct SculptBrushCarve :: Impl {
 DELEGATE_BIG6_BASE (SculptBrushCarve, (), (this), SculptBrush, ())
   
 GETTER_CONST    (float        , SculptBrushCarve, intensityFactor)
-GETTER_CONST    (unsigned int , SculptBrushCarve, order)
+GETTER_CONST    (unsigned int , SculptBrushCarve, flatness)
 SETTER          (float        , SculptBrushCarve, intensityFactor)
-SETTER          (unsigned int , SculptBrushCarve, order)
+SETTER          (unsigned int , SculptBrushCarve, flatness)
 SETTER          (bool         , SculptBrushCarve, useLastPosition)
 SETTER          (bool         , SculptBrushCarve, useIntersection)
 DELEGATE1       (void         , SculptBrushCarve, direction, const glm::vec3&)

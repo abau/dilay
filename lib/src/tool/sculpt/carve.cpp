@@ -22,17 +22,25 @@ struct ToolSculptCarve::Impl {
     this->brush.subdivide       (true);
 
     this->self->brushFromCache  (this->brush);
-    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" , 0.05f));
+    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" , 0.02f));
+    this->brush.flatness        (this->self->config ().get <int>   ("flatness"         , 50));
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
     QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, this->brush.intensityFactor ()
-                                                      , 1000.0f, 0.1f );
-    ViewUtil::connect (intensityEdit, [this] (float d) {
-      this->brush.intensityFactor (d);
-      this->self->config ().cache ("intensity", d);
+                                                      , 0.1f, 0.01f );
+    ViewUtil::connect (intensityEdit, [this] (float i) {
+      this->brush.intensityFactor (i);
+      this->self->config ().cache ("intensity", i);
     });
     properties.add (QObject::tr ("Intensity"), intensityEdit);
+
+    QSpinBox& flatnessEdit = ViewUtil::spinBox (3, this->brush.flatness (), 1000);
+    ViewUtil::connect (flatnessEdit, [this] (int f) {
+      this->brush.flatness (f);
+      this->self->config ().cache ("flatness", f);
+    });
+    properties.add (QObject::tr ("Flatness"), flatnessEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {

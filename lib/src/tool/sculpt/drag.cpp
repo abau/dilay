@@ -32,6 +32,7 @@ struct ToolSculptDrag::Impl {
     this->brush.detailFactor    (0.7f);
     this->brush.stepWidthFactor (0.3f);
     this->brush.subdivide       (true);
+    this->brush.flatness        (100);
 
     this->self->brushFromCache (this->brush);
   }
@@ -172,7 +173,6 @@ struct ToolSculptDrag::Impl {
 
     if (this->draggedVertices.empty () == false) {
       this->brush.intensityFactor (1.0f / this->brush.radius ());
-      this->brush.order (20);
 
       initialSculpt ();
 

@@ -8,9 +8,9 @@ class SculptBrushCarve : public SculptBrush {
     DECLARE_BIG6 (SculptBrushCarve)
 
     float        intensityFactor     () const;
-    unsigned int order               () const;
+    unsigned int flatness            () const;
     void         intensityFactor     (float);
-    void         order               (unsigned int);
+    void         flatness            (unsigned int);
     void         useLastPosition     (bool);
     void         useIntersection     (bool);
     void         direction           (const glm::vec3&);
