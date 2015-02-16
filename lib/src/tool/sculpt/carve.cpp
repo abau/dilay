@@ -24,8 +24,8 @@ struct ToolSculptCarve::Impl {
     this->brush.subdivide       (true);
 
     this->self->brushFromCache  (this->brush);
-    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.02f));
-    this->brush.flatness        (this->self->config ().get <int>   ("flatness"        , 50));
+    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.03f));
+    this->brush.flatness        (this->self->config ().get <int>   ("flatness"        , 4));
     this->brush.invert          (this->self->config ().get <bool>  ("invert"          , false));
   }
 
