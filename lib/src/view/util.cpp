@@ -84,6 +84,17 @@ void ViewUtil :: connect (const QButtonGroup& g, const std::function <void (int)
   QObject::connect (&g, ptr, f);
 }
 
+void ViewUtil :: connect (const QCheckBox& c, const std::function <void (bool)>& f) {
+  QObject::connect (&c, &QCheckBox::stateChanged, [f] (int state) {
+    if (state == Qt::Unchecked) {
+      f (false);
+    }
+    else if (state == Qt::Checked) {
+      f (true);
+    }
+  });
+}
+
 QWidget& ViewUtil :: stretcher (bool horizontal, bool vertical) {
   assert (horizontal || vertical);
   QWidget& widget = *new QWidget ();

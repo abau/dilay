@@ -1,3 +1,4 @@
+#include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
@@ -23,8 +24,9 @@ struct ToolSculptCarve::Impl {
     this->brush.subdivide       (true);
 
     this->self->brushFromCache  (this->brush);
-    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor" , 0.02f));
-    this->brush.flatness        (this->self->config ().get <int>   ("flatness"         , 50));
+    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.02f));
+    this->brush.flatness        (this->self->config ().get <int>   ("flatness"        , 50));
+    this->brush.invert          (this->self->config ().get <bool>  ("invert"          , false));
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
@@ -42,36 +44,53 @@ struct ToolSculptCarve::Impl {
       this->self->config ().cache ("flatness", f);
     });
     properties.add (QObject::tr ("Flatness"), flatnessEdit);
+
+    QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), this->brush.invert ());
+    ViewUtil::connect (invertEdit, [this] (bool i) {
+      this->brush.invert (i);
+      this->self->config ().cache ("invert", i);
+    });
+    properties.add (invertEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
+    toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
+    toolTip.add ( ViewToolTip::MouseEvent::Left
+                , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to carve inverted"));
   }
 
-  void carve (const glm::ivec2& pos, bool leftButton) {
+  void carve (const QMouseEvent& e) {
     WingedFaceIntersection intersection;
 
-    if (this->self->intersectsSelection (pos, intersection)) {
+    if (this->self->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
       this->self->cursor ().position (intersection.position ());
       this->self->cursor ().normal   (intersection.normal   ());
 
-      if (leftButton) {
+      if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
         this->brush.mesh (&intersection.mesh ());
         this->brush.face (&intersection.face ());
 
         if (this->brush.updatePosition (intersection.position ())) {
-          this->self->sculpt ();
+
+          if (e.modifiers () == Qt::ShiftModifier) {
+            this->brush.toggleInvert ();
+            this->self->sculpt ();
+            this->brush.toggleInvert ();
+          }
+          else {
+            this->self->sculpt ();
+          }
         }
       }
     }
   }
 
   void runMouseMoveEvent (const QMouseEvent& e) {
-    this->carve (ViewUtil::toIVec2 (e), e.buttons () == Qt::LeftButton);
+    this->carve (e);
   }
 
   void runMousePressEvent (const QMouseEvent& e) {
-    this->carve (ViewUtil::toIVec2 (e), e.button () == Qt::LeftButton);
+    this->carve (e);
   }
 };
 

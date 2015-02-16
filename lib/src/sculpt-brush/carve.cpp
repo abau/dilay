@@ -13,6 +13,7 @@ struct SculptBrushCarve :: Impl {
   SculptBrushCarve* self;
   float             intensityFactor;
   unsigned int      flatness;
+  bool              invert;
   Maybe <glm::vec3> mDirection;
   bool              useLastPosition;
   bool              useIntersection;
@@ -21,11 +22,18 @@ struct SculptBrushCarve :: Impl {
     : self            (s) 
     , intensityFactor (0.0f)
     , flatness        (4)
+    , invert          (false)
     , useLastPosition (false)
     , useIntersection (false)
   {}
 
+  void toggleInvert () {
+    this->invert = not this->invert;
+  }
+
   float intensity () const {
+    assert (this->intensityFactor >= 0.0f);
+
     return this->intensityFactor * this->self->radius ();
   }
 
@@ -46,6 +54,7 @@ struct SculptBrushCarve :: Impl {
     else {
       const float normX = x / this->self->radius ();
       return this->intensity ()
+           * (this->invert ? -1.0f : 1.0f)
            * ( ((fFlatness-1.0f) * glm::pow (normX, fFlatness))
              - (fFlatness * glm::pow (normX, fFlatness-1.0f)) 
              + 1.0f );
@@ -98,8 +107,11 @@ DELEGATE_BIG6_BASE (SculptBrushCarve, (), (this), SculptBrush, ())
   
 GETTER_CONST    (float        , SculptBrushCarve, intensityFactor)
 GETTER_CONST    (unsigned int , SculptBrushCarve, flatness)
+GETTER_CONST    (bool         , SculptBrushCarve, invert)
 SETTER          (float        , SculptBrushCarve, intensityFactor)
 SETTER          (unsigned int , SculptBrushCarve, flatness)
+SETTER          (bool         , SculptBrushCarve, invert)
+DELEGATE        (void         , SculptBrushCarve, toggleInvert)
 SETTER          (bool         , SculptBrushCarve, useLastPosition)
 SETTER          (bool         , SculptBrushCarve, useIntersection)
 DELEGATE1       (void         , SculptBrushCarve, direction, const glm::vec3&)

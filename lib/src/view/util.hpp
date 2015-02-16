@@ -30,6 +30,7 @@ namespace ViewUtil {
   void            connect     (const QSpinBox&, const std::function <void (int)>&);
   void            connect     (const QDoubleSpinBox&, const std::function <void (double)>&);
   void            connect     (const QButtonGroup&, const std::function <void (int)>&);
+  void            connect     (const QCheckBox&, const std::function <void (bool)>&);
   QWidget&        stretcher   (bool, bool);
   void            deselect    (QAbstractSpinBox&);
 };
