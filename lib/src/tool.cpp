@@ -59,11 +59,11 @@ struct Tool::Impl {
     return this->self->runRender ( ); 
   }
 
-  ToolResponse mouseMoveEvent (QMouseEvent& e) { 
+  ToolResponse mouseMoveEvent (const QMouseEvent& e) { 
     return this->self->runMouseMoveEvent (e);
   }
 
-  ToolResponse mousePressEvent (QMouseEvent& e) {
+  ToolResponse mousePressEvent (const QMouseEvent& e) {
     if (e.button () == Qt::RightButton) {
       return ToolResponse::None;
     }
@@ -72,7 +72,7 @@ struct Tool::Impl {
     }
   }
 
-  ToolResponse mouseReleaseEvent (QMouseEvent& e) {
+  ToolResponse mouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::RightButton) {
       this->close ();
       return ToolResponse::Terminate;
@@ -82,7 +82,7 @@ struct Tool::Impl {
     }
   }
 
-  ToolResponse wheelEvent (QWheelEvent& e) {
+  ToolResponse wheelEvent (const QWheelEvent& e) {
     return this->self->runWheelEvent (e);
   }
 
@@ -119,10 +119,10 @@ DELEGATE_CONST (bool                         , Tool, allowUndo)
 DELEGATE_CONST (bool                         , Tool, allowRedo)
 DELEGATE       (ToolResponse                 , Tool, initialize)
 DELEGATE_CONST (void                         , Tool, render)
-DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, QMouseEvent&)
-DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, QMouseEvent&)
-DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, QMouseEvent&)
-DELEGATE1      (ToolResponse                 , Tool, wheelEvent, QWheelEvent&)
+DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, const QMouseEvent&)
+DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, const QMouseEvent&)
+DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, const QMouseEvent&)
+DELEGATE1      (ToolResponse                 , Tool, wheelEvent, const QWheelEvent&)
 DELEGATE       (void                         , Tool, close)
 DELEGATE_CONST (State&                       , Tool, state)
 DELEGATE       (void                         , Tool, updateGlWidget)

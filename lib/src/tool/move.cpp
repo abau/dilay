@@ -164,7 +164,7 @@ struct ToolMove::Impl {
     }
   }
 
-  ToolResponse runMouseMoveEvent (QMouseEvent& e) {
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
     const glm::vec3 previousDelta = this->movement.delta ();
 
     if (e.buttons () == Qt::LeftButton && this->movement.move (e)) {
@@ -177,7 +177,7 @@ struct ToolMove::Impl {
     }
   }
 
-  ToolResponse runMousePressEvent (QMouseEvent& e) {
+  ToolResponse runMousePressEvent (const QMouseEvent& e) {
     return this->runMouseMoveEvent (e);
   }
 };

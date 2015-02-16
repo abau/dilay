@@ -65,13 +65,13 @@ struct ToolSculpt::Impl {
     this->behavior->render ();
   }
 
-  ToolResponse runMouseMoveEvent (QMouseEvent& e) {
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
     this->behavior->mouseMoveEvent ( ViewUtil::toIVec2 (e)
                                    , e.buttons () == Qt::LeftButton );
     return ToolResponse::Redraw;
   }
 
-  ToolResponse runMousePressEvent (QMouseEvent& e) {
+  ToolResponse runMousePressEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       this->behavior->mouseLeftPressEvent (ViewUtil::toIVec2 (e));
       return ToolResponse::Redraw;
@@ -81,7 +81,7 @@ struct ToolSculpt::Impl {
     }
   }
 
-  ToolResponse runMouseReleaseEvent (QMouseEvent& e) {
+  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       this->behavior->mouseLeftReleaseEvent (ViewUtil::toIVec2 (e));
       return ToolResponse::Redraw;
@@ -89,7 +89,7 @@ struct ToolSculpt::Impl {
     return ToolResponse::None;
   }
 
-  ToolResponse runWheelEvent (QWheelEvent& e) {
+  ToolResponse runWheelEvent (const QWheelEvent& e) {
     if (e.orientation () == Qt::Vertical && e.modifiers ().testFlag (Qt::ShiftModifier)) {
       this->behavior->mouseWheelEvent (e.delta () > 0);
       return ToolResponse::Redraw;

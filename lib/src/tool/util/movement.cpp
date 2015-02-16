@@ -122,7 +122,7 @@ struct ToolUtilMovement::Impl {
     std::abort ();
   }
 
-  bool move (QMouseEvent& e) {
+  bool move (const QMouseEvent& e) {
     return this->move (ViewUtil::toIVec2 (e), e.modifiers () == Qt::ShiftModifier);
   }
 
@@ -142,5 +142,5 @@ DELEGATE1       (void              , ToolUtilMovement, delta, const glm::vec3&)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
 SETTER          (const glm::vec3&  , ToolUtilMovement, position)
 DELEGATE2       (bool              , ToolUtilMovement, move, const glm::ivec2&, bool)
-DELEGATE1       (bool              , ToolUtilMovement, move, QMouseEvent&)
+DELEGATE1       (bool              , ToolUtilMovement, move, const QMouseEvent&)
 DELEGATE1       (void              , ToolUtilMovement, resetPosition, const glm::vec3&)

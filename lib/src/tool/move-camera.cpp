@@ -22,7 +22,7 @@ struct ToolMoveCamera::Impl {
     this->runFromConfig (config);
   }
 
-  void mouseMoveEvent (State& state, QMouseEvent& event) {
+  void mouseMoveEvent (State& state, const QMouseEvent& event) {
     if (event.buttons () == Qt::MiddleButton) {
             Camera&     cam        = state.camera ();
       const glm::uvec2& resolution = cam.resolution ();
@@ -52,7 +52,7 @@ struct ToolMoveCamera::Impl {
     }
   }
 
-  void mousePressEvent (State& state, QMouseEvent& event) {
+  void mousePressEvent (State& state, const QMouseEvent& event) {
     if (event.button () == Qt::MiddleButton) {
       this->oldPos = ViewUtil::toIVec2 (event);
 
@@ -69,7 +69,7 @@ struct ToolMoveCamera::Impl {
     }
   }
 
-  void wheelEvent (State& state, QWheelEvent& event) {
+  void wheelEvent (State& state, const QWheelEvent& event) {
     if (event.orientation () == Qt::Vertical) {
       if (event.delta () > 0) {
         state.camera ().stepAlongGaze (this->zoomInFactor);
@@ -89,7 +89,7 @@ struct ToolMoveCamera::Impl {
 };
 
 DELEGATE1_BIG3 (ToolMoveCamera, const Config&)
-DELEGATE2 (void, ToolMoveCamera, mouseMoveEvent, State&, QMouseEvent&)
-DELEGATE2 (void, ToolMoveCamera, mousePressEvent, State&, QMouseEvent&)
-DELEGATE2 (void, ToolMoveCamera, wheelEvent, State&, QWheelEvent&)
+DELEGATE2 (void, ToolMoveCamera, mouseMoveEvent, State&, const QMouseEvent&)
+DELEGATE2 (void, ToolMoveCamera, mousePressEvent, State&, const QMouseEvent&)
+DELEGATE2 (void, ToolMoveCamera, wheelEvent, State&, const QWheelEvent&)
 DELEGATE1 (void, ToolMoveCamera, runFromConfig, const Config&)

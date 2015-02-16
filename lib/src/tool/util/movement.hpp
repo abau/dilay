@@ -25,7 +25,7 @@ class ToolUtilMovement {
     const glm::vec3&   position         () const;
           void         position         (const glm::vec3&);
           bool         move             (const glm::ivec2&, bool = false);
-          bool         move             (QMouseEvent&);
+          bool         move             (const QMouseEvent&);
           void         resetPosition    (const glm::vec3&);
 
   private:
