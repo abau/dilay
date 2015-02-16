@@ -1,4 +1,5 @@
 #include <QDoubleSpinBox>
+#include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "config.hpp"
 #include "sculpt-brush/carve.hpp"
@@ -47,11 +48,7 @@ struct ToolSculptCarve::Impl {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
   }
 
-  void runMouseLeftPressEvent (const glm::ivec2& pos) {
-    this->runMouseMoveEvent (pos, true);
-  }
-
-  void runMouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
+  void carve (const glm::ivec2& pos, bool leftButton) {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsSelection (pos, intersection)) {
@@ -67,6 +64,14 @@ struct ToolSculptCarve::Impl {
         }
       }
     }
+  }
+
+  void runMouseMoveEvent (const QMouseEvent& e) {
+    this->carve (ViewUtil::toIVec2 (e), e.buttons () == Qt::LeftButton);
+  }
+
+  void runMousePressEvent (const QMouseEvent& e) {
+    this->carve (ViewUtil::toIVec2 (e), e.button () == Qt::LeftButton);
   }
 };
 

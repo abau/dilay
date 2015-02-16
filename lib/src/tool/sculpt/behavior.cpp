@@ -1,5 +1,7 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include <QMouseEvent>
+#include <QWheelEvent>
 #include "action/sculpt.hpp"
 #include "action/unit.hpp"
 #include "camera.hpp"
@@ -36,9 +38,15 @@ struct ToolSculptBehavior::Impl {
     , radiusEdit (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
   {}
 
-  void setupCursor () {
+  void setupCursor (const glm::ivec2& pos) {
     assert (this->self->brush ().radius () > 0.0f);
 
+    WingedFaceIntersection intersection;
+
+    if (this->self->intersectsSelection (pos, intersection)) {
+      this->cursor.position (intersection.position ());
+      this->cursor.normal   (intersection.normal   ());
+    }
     this->cursor.radius         (this->self->brush ().radius ());
     this->cursor.color          (this->config.get <Color> ("cursor-color", Color::Red ()));
     this->cursor.updateGeometry ();
@@ -92,18 +100,20 @@ struct ToolSculptBehavior::Impl {
     this->self->runRender ();
   }
 
-  void mouseMoveEvent (const glm::ivec2& pos, bool leftButton) {
-    this->self->runMouseMoveEvent (pos, leftButton);
+  void mouseMoveEvent (const QMouseEvent& e) {
+    this->self->runMouseMoveEvent (e);
   }
 
-  void mouseLeftPressEvent (const glm::ivec2& pos) {
-    this->self->runMouseLeftPressEvent (pos);
+  void mousePressEvent (const QMouseEvent& e) {
+    this->self->runMousePressEvent (e);
   }
 
-  void mouseLeftReleaseEvent (const glm::ivec2& pos) {
-    this->self->runMouseLeftReleaseEvent (pos);
-    this->self->brush ().resetPosition ();
-    this->addActionsToHistory ();
+  void mouseReleaseEvent (const QMouseEvent& e) {
+    this->self->runMouseReleaseEvent (e);
+    if (e.button () == Qt::LeftButton) {
+      this->self->brush ().resetPosition ();
+      this->addActionsToHistory ();
+    }
   }
 
   void addActionsToHistory () {
@@ -113,14 +123,16 @@ struct ToolSculptBehavior::Impl {
     }
   }
 
-  void mouseWheelEvent (bool up) {
-    if (up) {
-      this->radiusEdit.stepUp ();
+  void mouseWheelEvent (const QWheelEvent& e) {
+    if (e.orientation () == Qt::Vertical && e.modifiers ().testFlag (Qt::ShiftModifier)) {
+      if (e.delta () > 0) {
+        this->radiusEdit.stepUp ();
+      }
+      else if (e.delta () < 0) {
+        this->radiusEdit.stepDown ();
+      }
+      ViewUtil::deselect (this->radiusEdit);
     }
-    else {
-      this->radiusEdit.stepDown ();
-    }
-    ViewUtil::deselect (this->radiusEdit);
   }
 
   void close () {
@@ -158,14 +170,14 @@ DELEGATE3_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
 GETTER_CONST    (State&         , ToolSculptBehavior, state)
 GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
-DELEGATE        (void           , ToolSculptBehavior, setupCursor)
+DELEGATE1       (void           , ToolSculptBehavior, setupCursor, const glm::ivec2&)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewPropertiesPart&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
 DELEGATE_CONST  (void           , ToolSculptBehavior, render)
-DELEGATE2       (void           , ToolSculptBehavior, mouseMoveEvent, const glm::ivec2&, bool)
-DELEGATE1       (void           , ToolSculptBehavior, mouseLeftPressEvent, const glm::ivec2&)
-DELEGATE1       (void           , ToolSculptBehavior, mouseLeftReleaseEvent, const glm::ivec2&)
-DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, bool)
+DELEGATE1       (void           , ToolSculptBehavior, mouseMoveEvent, const QMouseEvent&)
+DELEGATE1       (void           , ToolSculptBehavior, mousePressEvent, const QMouseEvent&)
+DELEGATE1       (void           , ToolSculptBehavior, mouseReleaseEvent, const QMouseEvent&)
+DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, const QWheelEvent&)
 DELEGATE        (void           , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)

@@ -25,7 +25,6 @@ struct ToolSculpt::Impl {
     , behaviorEdit (*new QButtonGroup)
   {
     this->setupProperties ();
-    this->behavior->mouseMoveEvent (this->self->cursorPosition (), false);
   }
 
   void setupProperties () {
@@ -52,7 +51,7 @@ struct ToolSculpt::Impl {
     this->self->properties ().body ().reset ();
 
     this->behavior.reset (new T (this->self->config (), this->self->state ()));
-    this->behavior->setupCursor     ();
+    this->behavior->setupCursor     (this->self->cursorPosition ());
     this->behavior->setupProperties (this->self->properties ().body ());
 
     this->self->resetToolTip     ();
@@ -60,41 +59,28 @@ struct ToolSculpt::Impl {
     this->self->showToolTip      ();
   }
 
-
   void runRender () const {
     this->behavior->render ();
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    this->behavior->mouseMoveEvent ( ViewUtil::toIVec2 (e)
-                                   , e.buttons () == Qt::LeftButton );
+    this->behavior->mouseMoveEvent (e);
     return ToolResponse::Redraw;
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
-      this->behavior->mouseLeftPressEvent (ViewUtil::toIVec2 (e));
-      return ToolResponse::Redraw;
-    }
-    else {
-      return ToolResponse::None;
-    }
+    this->behavior->mousePressEvent (e);
+    return ToolResponse::Redraw;
   }
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
-      this->behavior->mouseLeftReleaseEvent (ViewUtil::toIVec2 (e));
-      return ToolResponse::Redraw;
-    }
-    return ToolResponse::None;
+    this->behavior->mouseReleaseEvent (e);
+    return ToolResponse::Redraw;
   }
 
   ToolResponse runWheelEvent (const QWheelEvent& e) {
-    if (e.orientation () == Qt::Vertical && e.modifiers ().testFlag (Qt::ShiftModifier)) {
-      this->behavior->mouseWheelEvent (e.delta () > 0);
-      return ToolResponse::Redraw;
-    }
-    return ToolResponse::None;
+    this->behavior->mouseWheelEvent (e);
+    return ToolResponse::Redraw;
   }
 
   void runClose () {

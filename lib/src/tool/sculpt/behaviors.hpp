@@ -5,7 +5,7 @@
 
 DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarve, "carve", )
 DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptDrag, "drag",
-                                DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT
+                                DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_RELEASE_EVENT
                                 DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_RENDER )
 
 #endif

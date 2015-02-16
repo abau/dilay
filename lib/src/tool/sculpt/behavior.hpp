@@ -5,8 +5,9 @@
 #include "macro.hpp"
 
 class ConfigProxy;
-class QDoubleSpinBox;
 class PrimRay;
+class QMouseEvent;
+class QWheelEvent;
 class SculptBrush;
 class State;
 class ViewCursor;
@@ -18,15 +19,15 @@ class ToolSculptBehavior {
   public:
     DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 
-    void setupCursor           ();
-    void setupProperties       (ViewPropertiesPart&);
-    void setupToolTip          (ViewToolTip&);
-    void render                () const;
-    void mouseMoveEvent        (const glm::ivec2&, bool);
-    void mouseLeftPressEvent   (const glm::ivec2&);
-    void mouseLeftReleaseEvent (const glm::ivec2&);
-    void mouseWheelEvent       (bool);
-    void close                 ();
+    void setupCursor       (const glm::ivec2&);
+    void setupProperties   (ViewPropertiesPart&);
+    void setupToolTip      (ViewToolTip&);
+    void render            () const;
+    void mouseMoveEvent    (const QMouseEvent&);
+    void mousePressEvent   (const QMouseEvent&);
+    void mouseReleaseEvent (const QMouseEvent&);
+    void mouseWheelEvent   (const QWheelEvent&);
+    void close             ();
 
   protected:
     ConfigProxy& config              () const;
@@ -41,14 +42,14 @@ class ToolSculptBehavior {
   private:
     IMPLEMENTATION
 
-    virtual const char*  key                      () const = 0;
-    virtual SculptBrush& brush                    () const = 0;
-    virtual void         runSetupProperties       (ViewPropertiesPart&) = 0;
-    virtual void         runSetupToolTip          (ViewToolTip&) = 0;
-    virtual void         runMouseLeftPressEvent   (const glm::ivec2&) = 0;
-    virtual void         runMouseMoveEvent        (const glm::ivec2&, bool) = 0;
-    virtual void         runMouseLeftReleaseEvent (const glm::ivec2&) {}
-    virtual void         runRender                () const {}
+    virtual const char*  key                  () const = 0;
+    virtual SculptBrush& brush                () const = 0;
+    virtual void         runSetupProperties   (ViewPropertiesPart&) = 0;
+    virtual void         runSetupToolTip      (ViewToolTip&) = 0;
+    virtual void         runMouseMoveEvent    (const QMouseEvent&) = 0;
+    virtual void         runMousePressEvent   (const QMouseEvent&) = 0;
+    virtual void         runMouseReleaseEvent (const QMouseEvent&) {}
+    virtual void         runRender            () const {}
 };
 
 #define DECLARE_TOOL_SCULPT_BEHAVIOR(name,theKey,otherMethods)                              \
@@ -59,13 +60,13 @@ class ToolSculptBehavior {
              SculptBrush& brush                  () const;                                  \
              void         runSetupProperties     (ViewPropertiesPart&);                     \
              void         runSetupToolTip        (ViewToolTip&);                            \
-             void         runMouseLeftPressEvent (const glm::ivec2&);                       \
-             void         runMouseMoveEvent      (const glm::ivec2&, bool);                 \
+             void         runMousePressEvent     (const QMouseEvent&);                      \
+             void         runMouseMoveEvent      (const QMouseEvent&);                      \
              otherMethods                                                                   \
   };
 
-#define DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT \
-  void runMouseLeftReleaseEvent (const glm::ivec2&);
+#define DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_RELEASE_EVENT \
+  void runMouseReleaseEvent (const QMouseEvent&);
 
 #define DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_RENDER \
   void runRender () const;
@@ -76,11 +77,11 @@ class ToolSculptBehavior {
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
   DELEGATE1      (void, name, runSetupProperties, ViewPropertiesPart&);                     \
   DELEGATE1      (void, name, runSetupToolTip, ViewToolTip&);                               \
-  DELEGATE1      (void, name, runMouseLeftPressEvent, const glm::ivec2&)                    \
-  DELEGATE2      (void, name, runMouseMoveEvent, const glm::ivec2&, bool)                    
+  DELEGATE1      (void, name, runMousePressEvent, const QMouseEvent&)                       \
+  DELEGATE1      (void, name, runMouseMoveEvent, const QMouseEvent&)                    
 
-#define DELEGATE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_LEFT_RELEASE_EVENT(n) \
-  DELEGATE1 (void, n, runMouseLeftReleaseEvent, const glm::ivec2&)
+#define DELEGATE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_RELEASE_EVENT(n) \
+  DELEGATE1 (void, n, runMouseReleaseEvent, const QMouseEvent&)
 
 #define DELEGATE_TOOL_SCULPT_BEHAVIOR_RUN_RENDER(n) \
   DELEGATE_CONST (void, n, runRender)
