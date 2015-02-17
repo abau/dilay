@@ -5,6 +5,7 @@
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/sphere.hpp"
 #include "sculpt-brush/carve.hpp"
+#include "sculpt-brush/util.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
@@ -46,19 +47,10 @@ struct SculptBrushCarve :: Impl {
   }
 
   float sculptDelta (const glm::vec3& v) const {
-    const float fFlatness = float (this->flatness < 3 ? 3 : this->flatness);
-
-    const float x = glm::distance <float> (v, this->getPosition ());
-    if (x >= this->self->radius ())
-      return 0.0f;
-    else {
-      const float normX = x / this->self->radius ();
-      return this->intensity ()
+    return this->intensity ()
            * (this->invert ? -1.0f : 1.0f)
-           * ( ((fFlatness-1.0f) * glm::pow (normX, fFlatness))
-             - (fFlatness * glm::pow (normX, fFlatness-1.0f)) 
-             + 1.0f );
-    }
+           * SculptBrushUtil::smooth ( v, this->getPosition (), this->self->radius ()
+                                     , this->flatness < 3 ? 3 : this->flatness );
   }
 
   glm::vec3 getDirection (const WingedMesh& mesh, const VertexPtrSet& vertices) const {
