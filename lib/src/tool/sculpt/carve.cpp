@@ -5,11 +5,9 @@
 #include "config.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "tool/sculpt/behaviors.hpp"
-#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
-#include "winged/face-intersection.hpp"
 
 struct ToolSculptCarve::Impl {
   ToolSculptCarve* self;
@@ -60,27 +58,14 @@ struct ToolSculptCarve::Impl {
   }
 
   void carve (const QMouseEvent& e) {
-    WingedFaceIntersection intersection;
-
-    if (this->self->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
-      this->self->cursor ().position (intersection.position ());
-      this->self->cursor ().normal   (intersection.normal   ());
-
-      if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
-        this->brush.mesh (&intersection.mesh ());
-        this->brush.face (&intersection.face ());
-
-        if (this->brush.updatePosition (intersection.position ())) {
-
-          if (e.modifiers () == Qt::ShiftModifier) {
-            this->brush.toggleInvert ();
-            this->self->sculpt ();
-            this->brush.toggleInvert ();
-          }
-          else {
-            this->self->sculpt ();
-          }
-        }
+    if (this->self->updateBrushByIntersection (e)) {
+      if (e.modifiers () == Qt::ShiftModifier) {
+        this->brush.toggleInvert ();
+        this->self->sculpt ();
+        this->brush.toggleInvert ();
+      }
+      else {
+        this->self->sculpt ();
       }
     }
   }

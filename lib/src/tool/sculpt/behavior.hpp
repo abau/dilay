@@ -30,14 +30,15 @@ class ToolSculptBehavior {
     void close             ();
 
   protected:
-    ConfigProxy& config              () const;
-    State&       state               () const;
-    ViewCursor&  cursor              () const;
-    bool         intersectsSelection (const PrimRay&, WingedFaceIntersection&) const;
-    bool         intersectsSelection (const glm::ivec2&, WingedFaceIntersection&) const;
-    void         brushFromCache      (SculptBrush&) const;
-    void         sculpt              (const SculptBrush&);
-    void         sculpt              ();
+    ConfigProxy& config                    () const;
+    State&       state                     () const;
+    ViewCursor&  cursor                    () const;
+    bool         intersectsSelection       (const PrimRay&, WingedFaceIntersection&) const;
+    bool         intersectsSelection       (const glm::ivec2&, WingedFaceIntersection&) const;
+    void         brushFromCache            (SculptBrush&) const;
+    void         sculpt                    (const SculptBrush&);
+    void         sculpt                    ();
+    bool         updateBrushByIntersection (const QMouseEvent&);
 
   private:
     IMPLEMENTATION

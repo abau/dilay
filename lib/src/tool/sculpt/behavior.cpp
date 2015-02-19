@@ -163,6 +163,30 @@ struct ToolSculptBehavior::Impl {
   void sculpt () {
     this->sculpt (this->self->brush ());
   }
+
+  bool updateBrushByIntersection (const QMouseEvent& e) {
+    WingedFaceIntersection intersection;
+
+    if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
+      this->cursor.enable   ();
+      this->cursor.position (intersection.position ());
+      this->cursor.normal   (intersection.normal   ());
+
+      if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
+        this->self->brush ().mesh (&intersection.mesh ());
+        this->self->brush ().face (&intersection.face ());
+
+        return this->self->brush ().updatePosition (intersection.position ());
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      this->cursor.disable ();
+      return false;
+    }
+  }
 };
 
 DELEGATE3_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&, const char*)
@@ -184,3 +208,4 @@ DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const
 DELEGATE1_CONST (void           , ToolSculptBehavior, brushFromCache, SculptBrush&)
 DELEGATE1       (void           , ToolSculptBehavior, sculpt, const SculptBrush&)
 DELEGATE        (void           , ToolSculptBehavior, sculpt)
+DELEGATE1       (bool           , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)
