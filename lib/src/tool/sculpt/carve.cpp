@@ -13,15 +13,9 @@ struct ToolSculptCarve::Impl {
   ToolSculptCarve* self;
   SculptBrushCarve brush;
 
-  Impl (ToolSculptCarve* s) 
-    : self (s) 
-  {
-    this->brush.radius          (20.0f);
-    this->brush.detailFactor    (0.7f);
-    this->brush.stepWidthFactor (0.3f);
-    this->brush.subdivide       (true);
+  Impl (ToolSculptCarve* s) : self (s) {
+    this->self->brushFromCommonCache (this->brush);
 
-    this->self->brushFromCache  (this->brush);
     this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.03f));
     this->brush.flatness        (this->self->config ().get <int>   ("flatness"        , 4));
     this->brush.invert          (this->self->config ().get <bool>  ("invert"          , false));
