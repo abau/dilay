@@ -1,19 +1,11 @@
 #include <QAbstractButton>
 #include <QButtonGroup>
-#include <QDoubleSpinBox>
-#include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "config.hpp"
-#include "scene.hpp"
-#include "sculpt-brush.hpp"
-#include "state.hpp"
 #include "tool/sculpt/behaviors.hpp"
 #include "tools.hpp"
-#include "view/cursor.hpp"
 #include "view/properties.hpp"
-#include "view/tool/tip.hpp"
 #include "view/util.hpp"
-#include "winged/mesh.hpp"
 
 struct ToolSculpt::Impl {
   ToolSculpt*                          self;
