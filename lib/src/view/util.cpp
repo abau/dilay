@@ -1,6 +1,7 @@
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include <QFrame>
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QPushButton>
@@ -49,6 +50,13 @@ QCheckBox& ViewUtil :: checkBox (const QString& label, bool isChecked) {
   QCheckBox& box = *new QCheckBox (label);
   box.setChecked (isChecked);
   return box;
+}
+
+QFrame& ViewUtil :: horizontalLine () {
+  QFrame& frame = *new QFrame;
+  frame.setFrameShape  (QFrame::HLine);
+  frame.setFrameShadow (QFrame::Sunken);
+  return frame;
 }
 
 glm::uvec2 ViewUtil :: toUVec2 (const QPoint& p) {

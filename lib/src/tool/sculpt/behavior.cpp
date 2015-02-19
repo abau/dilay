@@ -1,5 +1,6 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include <QFrame>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
@@ -85,6 +86,8 @@ struct ToolSculptBehavior::Impl {
       this->config.cache ("subdivide", bool (s));
     });
     properties.add (subdivEdit);
+
+    properties.add (ViewUtil::horizontalLine ());
 
     this->self->runSetupProperties (properties);
   }

@@ -1,5 +1,6 @@
 #include <QAbstractButton>
 #include <QButtonGroup>
+#include <QFrame>
 #include <glm/glm.hpp>
 #include "config.hpp"
 #include "tool/sculpt/behaviors.hpp"
@@ -36,6 +37,8 @@ struct ToolSculpt::Impl {
       this->self->config ().cache ("behavior", id);
     });
     this->behaviorEdit.button (this->self->config ().get <int> ("behavior", 0))->click ();
+
+    this->self->properties ().header ().add (ViewUtil::horizontalLine ());
   }
 
   template <typename T>
