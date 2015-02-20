@@ -30,8 +30,8 @@ struct ToolSculptDrag::Impl {
                , glm::vec3 (0.0f)
                , MovementConstraint::Explicit )
   {
+    this->self->brushFromCommonCache ();
     this->brush.flatness (100);
-    this->self->brushFromCommonCache (this->brush);
   }
 
   void runSetupProperties (ViewPropertiesPart&) {}

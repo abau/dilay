@@ -153,20 +153,20 @@ struct ToolSculptBehavior::Impl {
     return this->intersectsSelection (this->state.camera ().ray (pos), intersection);
   }
 
-  void brushFromCommonCache (SculptBrush& brush) const {
+  void brushFromCommonCache () {
+    SculptBrush& brush = this->self->brush ();
+
     brush.radius          (this->commonConfig.get <float> ("radius"           , 20.0f));
     brush.detailFactor    (this->commonConfig.get <float> ("detail-factor"    , 0.7f));
     brush.stepWidthFactor (this->commonConfig.get <float> ("step-width-factor", 0.3f));
     brush.subdivide       (this->commonConfig.get <bool>  ("subdivide"        , true));
   }
 
-  void sculpt (const SculptBrush& brush) {
+  void sculpt () {
+    SculptBrush& brush = this->self->brush ();
+
     this->actions->add <ActionSculpt, WingedMesh> 
       (this->state.scene (), brush.meshRef ()).run (brush);
-  }
-
-  void sculpt () {
-    this->sculpt (this->self->brush ());
   }
 
   bool updateBrushByIntersection (const QMouseEvent& e) {
@@ -210,7 +210,6 @@ DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, const QWh
 DELEGATE        (void           , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
-DELEGATE1_CONST (void           , ToolSculptBehavior, brushFromCommonCache, SculptBrush&)
-DELEGATE1       (void           , ToolSculptBehavior, sculpt, const SculptBrush&)
+DELEGATE        (void           , ToolSculptBehavior, brushFromCommonCache)
 DELEGATE        (void           , ToolSculptBehavior, sculpt)
 DELEGATE1       (bool           , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)

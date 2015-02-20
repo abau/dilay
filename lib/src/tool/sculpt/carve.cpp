@@ -14,7 +14,7 @@ struct ToolSculptCarve::Impl {
   SculptBrushCarve brush;
 
   Impl (ToolSculptCarve* s) : self (s) {
-    this->self->brushFromCommonCache (this->brush);
+    this->self->brushFromCommonCache ();
 
     this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.03f));
     this->brush.flatness        (this->self->config ().get <int>   ("flatness"        , 4));
