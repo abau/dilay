@@ -41,6 +41,17 @@ struct ToolSculptBehavior::Impl {
     , radiusEdit   (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
   {}
 
+  void setupBrush () {
+    SculptBrush& brush = this->self->brush ();
+
+    brush.radius          (this->commonConfig.get <float> ("radius"           , 20.0f));
+    brush.detailFactor    (this->commonConfig.get <float> ("detail-factor"    , 0.7f));
+    brush.stepWidthFactor (this->commonConfig.get <float> ("step-width-factor", 0.3f));
+    brush.subdivide       (this->commonConfig.get <bool>  ("subdivide"        , true));
+
+    this->self->runSetupBrush ();
+  }
+
   void setupCursor (const glm::ivec2& pos) {
     assert (this->self->brush ().radius () > 0.0f);
 
@@ -53,8 +64,7 @@ struct ToolSculptBehavior::Impl {
     this->cursor.radius         (this->self->brush ().radius ());
     this->cursor.color          (this->commonConfig.get <Color> ("cursor-color", Color::Red ()));
     this->cursor.updateGeometry ();
-   }
-
+  }
 
   void setupProperties (ViewPropertiesPart& properties) {
     SculptBrush& brush = this->self->brush ();
@@ -153,15 +163,6 @@ struct ToolSculptBehavior::Impl {
     return this->intersectsSelection (this->state.camera ().ray (pos), intersection);
   }
 
-  void brushFromCommonCache () {
-    SculptBrush& brush = this->self->brush ();
-
-    brush.radius          (this->commonConfig.get <float> ("radius"           , 20.0f));
-    brush.detailFactor    (this->commonConfig.get <float> ("detail-factor"    , 0.7f));
-    brush.stepWidthFactor (this->commonConfig.get <float> ("step-width-factor", 0.3f));
-    brush.subdivide       (this->commonConfig.get <bool>  ("subdivide"        , true));
-  }
-
   void sculpt () {
     SculptBrush& brush = this->self->brush ();
 
@@ -199,6 +200,7 @@ DELEGATE3_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
 GETTER_CONST    (State&         , ToolSculptBehavior, state)
 GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
+DELEGATE        (void           , ToolSculptBehavior, setupBrush)
 DELEGATE1       (void           , ToolSculptBehavior, setupCursor, const glm::ivec2&)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewPropertiesPart&)
 DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
@@ -210,6 +212,5 @@ DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, const QWh
 DELEGATE        (void           , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
-DELEGATE        (void           , ToolSculptBehavior, brushFromCommonCache)
 DELEGATE        (void           , ToolSculptBehavior, sculpt)
 DELEGATE1       (bool           , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)

@@ -29,8 +29,9 @@ struct ToolSculptDrag::Impl {
     , movement ( this->self->state ().camera ()
                , glm::vec3 (0.0f)
                , MovementConstraint::Explicit )
-  {
-    this->self->brushFromCommonCache ();
+  {}
+
+  void runSetupBrush () {
     this->brush.flatness (100);
   }
 

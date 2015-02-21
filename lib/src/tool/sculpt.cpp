@@ -46,6 +46,7 @@ struct ToolSculpt::Impl {
     this->self->properties ().body ().reset ();
 
     this->behavior.reset (new T (this->self->config (), this->self->state ()));
+    this->behavior->setupBrush      ();
     this->behavior->setupCursor     (this->self->cursorPosition ());
     this->behavior->setupProperties (this->self->properties ().body ());
 
