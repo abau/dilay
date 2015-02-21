@@ -23,13 +23,11 @@ struct ActionSculpt::Impl {
 
     brush.sculpt (domain, this->actions);
 
-    if (brush.subdivide ()) {
-      this->subdivideEdges (brush, domain);
-    }
-    this->self->finalize (brush.meshRef (), domain, this->actions);
+    this->postprocessEdges (brush, domain);
+    this->self->finalize   (brush.meshRef (), domain, this->actions);
   }
 
-  void subdivideEdges (const SculptBrush& brush, AffectedFaces& domain) {
+  void postprocessEdges (const SculptBrush& brush, AffectedFaces& domain) {
     const float maxLength    ((4.0f/3.0f) * brush.subdivThreshold ());
     const float maxLengthSqr (maxLength * maxLength);
     WingedMesh& mesh         (brush.meshRef ());
@@ -58,7 +56,9 @@ struct ActionSculpt::Impl {
     };
 
     PASubdivideEdge::extendDomain (domain);
-    subdivideEdges ();
+    if (brush.subdivide ()) {
+      subdivideEdges ();
+    }
     relaxEdges     ();
     smoothVertices ();
   }

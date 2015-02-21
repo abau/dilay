@@ -30,6 +30,7 @@ struct ToolSculptBehavior::Impl {
   std::unique_ptr <ActionUnit> actions;
   ViewCursor                   cursor;
   QDoubleSpinBox&              radiusEdit;
+  QCheckBox&                   subdivEdit;
 
   Impl (ToolSculptBehavior* s, ConfigProxy& c, State& st, const char* key) 
     : self         (s)
@@ -39,6 +40,7 @@ struct ToolSculptBehavior::Impl {
     , actions      (new ActionUnit) 
     , cursor       (1.0f, Color::Red ())
     , radiusEdit   (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
+    , subdivEdit   (ViewUtil::checkBox (QObject::tr ("Subdivide"), true))
   {}
 
   void setupBrush () {
@@ -92,12 +94,12 @@ struct ToolSculptBehavior::Impl {
     });
     properties.add (QObject::tr ("Step width"), stepEdit);
 
-    QCheckBox& subdivEdit = ViewUtil::checkBox (QObject::tr ("Subdivide"), brush.subdivide ());
-    QObject::connect (&subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
+    this->subdivEdit.setChecked (brush.subdivide ());
+    QObject::connect (&this->subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
       this->self->brush ().subdivide (bool (s));
       this->commonConfig.cache ("subdivide", bool (s));
     });
-    properties.add (subdivEdit);
+    properties.add (this->subdivEdit);
 
     properties.add (ViewUtil::horizontalLine ());
 
@@ -163,6 +165,12 @@ struct ToolSculptBehavior::Impl {
     return this->intersectsSelection (this->state.camera ().ray (pos), intersection);
   }
 
+  void forceBrushSubdivision (bool value) {
+    this->self->brush ().subdivide (value);
+    this->subdivEdit.setChecked    (value);
+    this->subdivEdit.setEnabled    (false);
+  }
+
   void sculpt () {
     SculptBrush& brush = this->self->brush ();
 
@@ -212,5 +220,6 @@ DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, const QWh
 DELEGATE        (void           , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
+DELEGATE1       (void           , ToolSculptBehavior, forceBrushSubdivision, bool)
 DELEGATE        (void           , ToolSculptBehavior, sculpt)
 DELEGATE1       (bool           , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)

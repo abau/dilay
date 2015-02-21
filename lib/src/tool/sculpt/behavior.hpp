@@ -36,6 +36,7 @@ class ToolSculptBehavior {
     ViewCursor&  cursor                    () const;
     bool         intersectsSelection       (const PrimRay&, WingedFaceIntersection&) const;
     bool         intersectsSelection       (const glm::ivec2&, WingedFaceIntersection&) const;
+    void         forceBrushSubdivision     (bool);
     void         sculpt                    ();
     bool         updateBrushByIntersection (const QMouseEvent&);
 

@@ -32,7 +32,9 @@ struct ToolSculptDrag::Impl {
   {}
 
   void runSetupBrush () {
-    this->brush.flatness (100);
+    this->self->forceBrushSubdivision (true);
+    this->brush.flatness  (100);
+    this->brush.subdivide (true);
   }
 
   void runSetupProperties (ViewPropertiesPart&) {}
