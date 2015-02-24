@@ -12,10 +12,11 @@
 #include <limits>
 #include "view/util.hpp"
 
-QSpinBox& ViewUtil :: spinBox (int min, int value, int max) {
+QSpinBox& ViewUtil :: spinBox (int min, int value, int max, int stepSize) {
   QSpinBox& spinBox = *new QSpinBox;
-  spinBox.setRange (min, max);
-  spinBox.setValue (value);
+  spinBox.setRange      (min, max);
+  spinBox.setValue      (value);
+  spinBox.setSingleStep (stepSize);
   return spinBox;
 }
 

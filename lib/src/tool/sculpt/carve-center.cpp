@@ -30,7 +30,7 @@ struct ToolSculptCarveCenter::Impl {
     });
     properties.add (QObject::tr ("Intensity"), intensityEdit);
 
-    QSpinBox& flatnessEdit = ViewUtil::spinBox (3, this->brush.flatness (), 1000);
+    QSpinBox& flatnessEdit = ViewUtil::spinBox (3, this->brush.flatness (), 1000, 10);
     ViewUtil::connect (flatnessEdit, [this] (int f) {
       this->brush.flatness (f);
       this->self->config ().cache ("flatness", f);

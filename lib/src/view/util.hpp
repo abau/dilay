@@ -18,7 +18,7 @@ class QString;
 class QToolButton;
 
 namespace ViewUtil {
-  QSpinBox&       spinBox        (int, int, int);
+  QSpinBox&       spinBox        (int, int, int, int = 1);
   QDoubleSpinBox& spinBox        (float, float, float, float);
   QPushButton&    pushButton     (const QString&, bool = false);
   QToolButton&    toolButton     (const QString&);
