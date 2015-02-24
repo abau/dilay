@@ -56,6 +56,7 @@ SOURCES += \
            src/scene.cpp \
            src/sculpt-brush.cpp \
            src/sculpt-brush/carve.cpp \
+           src/sculpt-brush/nothing.cpp \
            src/sculpt-brush/subdivide.cpp \
            src/sculpt-brush/util.cpp \
            src/selection.cpp \
@@ -73,6 +74,7 @@ SOURCES += \
            src/tool/sculpt/behavior.cpp \
            src/tool/sculpt/carve.cpp \
            src/tool/sculpt/drag.cpp \
+           src/tool/sculpt/smooth.cpp \
            src/tool/subdivide-mesh.cpp \
            src/tool/util/movement.cpp \
            src/util.cpp \
@@ -157,6 +159,7 @@ HEADERS += \
            src/scene.hpp \
            src/sculpt-brush.hpp \
            src/sculpt-brush/carve.hpp \
+           src/sculpt-brush/nothing.hpp \
            src/sculpt-brush/subdivide.hpp \
            src/sculpt-brush/util.hpp \
            src/selection.hpp \
