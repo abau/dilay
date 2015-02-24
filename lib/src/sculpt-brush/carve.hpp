@@ -10,11 +10,13 @@ class SculptBrushCarve : public SculptBrush {
     float        intensityFactor     () const;
     unsigned int flatness            () const;
     bool         invert              () const;
+    bool         carvePerimeter      () const;
 
     void         intensityFactor     (float);
     void         flatness            (unsigned int);
     void         invert              (bool);
     void         toggleInvert        ();
+    void         carvePerimeter      (bool);
     void         useLastPosition     (bool);
     void         useIntersection     (bool);
     void         direction           (const glm::vec3&);

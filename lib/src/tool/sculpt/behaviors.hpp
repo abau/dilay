@@ -3,7 +3,8 @@
 
 #include "tool/sculpt/behavior.hpp"
 
-DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarveCenter, "carve-center", )
+DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarveCenter   , "carve-center", )
+DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarvePerimeter, "carve-perimeter", )
 
 DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptDrag, "drag",
                                 DECLARE_TOOL_SCULPT_BEHAVIOR_RUN_MOUSE_RELEASE_EVENT

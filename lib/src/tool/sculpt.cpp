@@ -23,15 +23,19 @@ struct ToolSculpt::Impl {
   void setupProperties () {
     this->self->properties ().header ().add (
         this->behaviorEdit
-      , { QObject::tr ("Carve center"), QObject::tr ("Drag"), QObject::tr ("Smooth") }
+      , { QObject::tr ("Carve center"), QObject::tr ("Carve perimeter")
+        , QObject::tr ("Drag"), QObject::tr ("Smooth") 
+        }
     );
     ViewUtil::connect (this->behaviorEdit, [this] (int id) {
       switch (id) {
         case 0: setBehavior <ToolSculptCarveCenter> ();
                 break;
-        case 1: setBehavior <ToolSculptDrag> ();
+        case 1: setBehavior <ToolSculptCarvePerimeter> ();
                 break;
-        case 2: setBehavior <ToolSculptSmooth> ();
+        case 2: setBehavior <ToolSculptDrag> ();
+                break;
+        case 3: setBehavior <ToolSculptSmooth> ();
                 break;
         default:
           std::abort ();
