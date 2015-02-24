@@ -9,11 +9,11 @@
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 
-struct ToolSculptCarve::Impl {
-  ToolSculptCarve* self;
+struct ToolSculptCarveCenter::Impl {
+  ToolSculptCarveCenter* self;
   SculptBrushCarve brush;
 
-  Impl (ToolSculptCarve* s) : self (s) {}
+  Impl (ToolSculptCarveCenter* s) : self (s) {}
 
   void runSetupBrush () {
     this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.03f));
@@ -73,4 +73,4 @@ struct ToolSculptCarve::Impl {
   }
 };
 
-DELEGATE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarve)
+DELEGATE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarveCenter)

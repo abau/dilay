@@ -72,7 +72,7 @@ SOURCES += \
            src/tool/new-winged-mesh.cpp \
            src/tool/move-camera.cpp \
            src/tool/sculpt/behavior.cpp \
-           src/tool/sculpt/carve.cpp \
+           src/tool/sculpt/carve-center.cpp \
            src/tool/sculpt/drag.cpp \
            src/tool/sculpt/smooth.cpp \
            src/tool/subdivide-mesh.cpp \

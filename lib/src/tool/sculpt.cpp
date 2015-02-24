@@ -23,11 +23,11 @@ struct ToolSculpt::Impl {
   void setupProperties () {
     this->self->properties ().header ().add (
         this->behaviorEdit
-      , { QObject::tr ("Carve"), QObject::tr ("Drag"), QObject::tr ("Smooth") }
+      , { QObject::tr ("Carve center"), QObject::tr ("Drag"), QObject::tr ("Smooth") }
     );
     ViewUtil::connect (this->behaviorEdit, [this] (int id) {
       switch (id) {
-        case 0: setBehavior <ToolSculptCarve> ();
+        case 0: setBehavior <ToolSculptCarveCenter> ();
                 break;
         case 1: setBehavior <ToolSculptDrag> ();
                 break;
