@@ -1,20 +1,19 @@
 #include <glm/glm.hpp>
 #include "sculpt-brush/util.hpp"
+#include "../util.hpp"
 
-float SculptBrushUtil :: smooth ( const glm::vec3& v, const glm::vec3& center
-                                , float radius, unsigned int order)
+float SculptBrushUtil :: smoothStep ( const glm::vec3& v, const glm::vec3& center
+                                    , float innerRadius, float radius )
 {
-  assert (order > 2);
+  assert (innerRadius <= radius);
 
-  const float x = glm::distance <float> (v, center);
-  const float f = float (order);
+  const float d = glm::distance <float> (v, center);
 
-  if (x >= radius)
-    return 0.0f;
+  if (radius - innerRadius < Util::epsilon ()) {
+    return d > radius ? 0.0f : 1.0f;
+  }
   else {
-    const float normX = x / radius;
-    return ( ((f-1.0f) * glm::pow (normX, f))
-           - (f * glm::pow (normX, f-1.0f)) 
-           + 1.0f );
+    const float x = glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
+    return x*x*x * (x * (x*6.0f - 15.0f) + 10.0f);
   }
 }

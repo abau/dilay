@@ -17,11 +17,18 @@ struct ToolSculptCarveCenter::Impl {
 
   void runSetupBrush () {
     this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.03f));
-    this->brush.flatness        (this->self->config ().get <int>   ("flatness"        , 4));
+    this->brush.flatness        (this->self->config ().get <float> ("flatness"        , 0.5f));
     this->brush.invert          (this->self->config ().get <bool>  ("invert"          , false));
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
+    QDoubleSpinBox& flatnessEdit = ViewUtil::spinBox (0.0f, this->brush.flatness (), 1.0f, 0.1f);
+    ViewUtil::connect (flatnessEdit, [this] (float f) {
+      this->brush.flatness (f);
+      this->self->config ().cache ("flatness", f);
+    });
+    properties.add (QObject::tr ("Flatness"), flatnessEdit);
+
     QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, this->brush.intensityFactor ()
                                                       , 0.1f, 0.01f );
     ViewUtil::connect (intensityEdit, [this] (float i) {
@@ -29,13 +36,6 @@ struct ToolSculptCarveCenter::Impl {
       this->self->config ().cache ("intensity", i);
     });
     properties.add (QObject::tr ("Intensity"), intensityEdit);
-
-    QSpinBox& flatnessEdit = ViewUtil::spinBox (3, this->brush.flatness (), 1000, 10);
-    ViewUtil::connect (flatnessEdit, [this] (int f) {
-      this->brush.flatness (f);
-      this->self->config ().cache ("flatness", f);
-    });
-    properties.add (QObject::tr ("Flatness"), flatnessEdit);
 
     QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), this->brush.invert ());
     ViewUtil::connect (invertEdit, [this] (bool i) {

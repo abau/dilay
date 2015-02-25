@@ -4,7 +4,7 @@
 #include <glm/fwd.hpp>
 
 namespace SculptBrushUtil {
-  float smooth (const glm::vec3&, const glm::vec3&, float, unsigned int);
+  float smoothStep (const glm::vec3&, const glm::vec3&, float, float);
 }
 
 #endif

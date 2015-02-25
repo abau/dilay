@@ -14,13 +14,13 @@ struct ToolSculptCarvePerimeter::Impl {
   Impl (ToolSculptCarvePerimeter* s) : self (s) {}
 
   void runSetupBrush () {
-    this->brush.flatness       (this->self->config ().get <int> ("flatness", 4));
+    this->brush.flatness       (this->self->config ().get <float> ("flatness", 0.5f));
     this->brush.carvePerimeter (true);
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    QSpinBox& flatnessEdit = ViewUtil::spinBox (3, this->brush.flatness (), 1000, 10);
-    ViewUtil::connect (flatnessEdit, [this] (int f) {
+    QDoubleSpinBox& flatnessEdit = ViewUtil::spinBox (0.0f, this->brush.flatness (), 1.0f, 0.1f);
+    ViewUtil::connect (flatnessEdit, [this] (float f) {
       this->brush.flatness (f);
       this->self->config ().cache ("flatness", f);
     });

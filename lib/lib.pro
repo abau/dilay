@@ -66,11 +66,11 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
-           src/tool/sculpt.cpp \
            src/tool/delete-mesh.cpp \
            src/tool/move.cpp \
            src/tool/new-winged-mesh.cpp \
            src/tool/move-camera.cpp \
+           src/tool/sculpt.cpp \
            src/tool/sculpt/behavior.cpp \
            src/tool/sculpt/carve-center.cpp \
            src/tool/sculpt/carve-perimeter.cpp \

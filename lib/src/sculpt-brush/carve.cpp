@@ -14,7 +14,7 @@ struct SculptBrushCarve :: Impl {
 
   SculptBrushCarve* self;
   float             intensityFactor;
-  unsigned int      flatness;
+  float             flatness;
   bool              invert;
   Maybe <glm::vec3> mDirection;
   bool              useLastPosition;
@@ -24,7 +24,7 @@ struct SculptBrushCarve :: Impl {
   Impl (SculptBrushCarve* s) 
     : self            (s) 
     , intensityFactor (0.0f)
-    , flatness        (4)
+    , flatness        (0.5f)
     , invert          (false)
     , useLastPosition (false)
     , useIntersection (false)
@@ -37,8 +37,11 @@ struct SculptBrushCarve :: Impl {
     return this->intensityFactor * this->self->radius ();
   }
 
-  unsigned int boundedFlatness () const {
-    return this->flatness < 3 ? 3 : this->flatness;
+  float innerRadius () const {
+    assert (this->flatness >= 0.0f);
+    assert (this->flatness <= 1.0f);
+
+    return this->flatness * this->self->radius ();
   }
 
   void toggleInvert () {
@@ -81,9 +84,10 @@ struct SculptBrushCarve :: Impl {
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos = v->position (mesh);
       const float     delta  = this->intensity ()
-                             * SculptBrushUtil::smooth ( oldPos, this->getPosition ()
-                                                       , this->self->radius ()
-                                                       , this->boundedFlatness () );
+                             * SculptBrushUtil::smoothStep 
+                                 ( oldPos, this->getPosition ()
+                                 , this->innerRadius ()
+                                 , this->self->radius () );
       const glm::vec3 newPos = oldPos + (delta * dir);
 
       actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
@@ -98,10 +102,10 @@ struct SculptBrushCarve :: Impl {
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos  = v->position (mesh);
       const glm::vec3 onPlane = oldPos - (dir * plane.distance (oldPos));
-      const float     delta   = SculptBrushUtil::smooth ( onPlane
-                                                        , this->self->position ()
-                                                        , this->self->radius ()
-                                                        , this->boundedFlatness () );
+      const float     delta   = SculptBrushUtil::smoothStep 
+                                  ( onPlane, this->self->position ()
+                                  , this->innerRadius ()
+                                  , this->self->radius () );
       const glm::vec3 newPos  = oldPos + (delta * (onPlane - oldPos));
 
       actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
@@ -131,17 +135,17 @@ struct SculptBrushCarve :: Impl {
 
 DELEGATE_BIG6_BASE (SculptBrushCarve, (), (this), SculptBrush, ())
   
-GETTER_CONST    (float        , SculptBrushCarve, intensityFactor)
-GETTER_CONST    (unsigned int , SculptBrushCarve, flatness)
-GETTER_CONST    (bool         , SculptBrushCarve, invert)
-GETTER_CONST    (bool         , SculptBrushCarve, carvePerimeter)
-SETTER          (float        , SculptBrushCarve, intensityFactor)
-SETTER          (unsigned int , SculptBrushCarve, flatness)
-SETTER          (bool         , SculptBrushCarve, invert)
-DELEGATE        (void         , SculptBrushCarve, toggleInvert)
-SETTER          (bool         , SculptBrushCarve, carvePerimeter)
-SETTER          (bool         , SculptBrushCarve, useLastPosition)
-SETTER          (bool         , SculptBrushCarve, useIntersection)
-DELEGATE1       (void         , SculptBrushCarve, direction, const glm::vec3&)
-DELEGATE        (void         , SculptBrushCarve, useAverageDirection)
-DELEGATE2_CONST (void         , SculptBrushCarve, runSculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
+GETTER_CONST    (float, SculptBrushCarve, intensityFactor)
+GETTER_CONST    (float, SculptBrushCarve, flatness)
+GETTER_CONST    (bool , SculptBrushCarve, invert)
+GETTER_CONST    (bool , SculptBrushCarve, carvePerimeter)
+SETTER          (float, SculptBrushCarve, intensityFactor)
+SETTER          (float, SculptBrushCarve, flatness)
+SETTER          (bool , SculptBrushCarve, invert)
+DELEGATE        (void , SculptBrushCarve, toggleInvert)
+SETTER          (bool , SculptBrushCarve, carvePerimeter)
+SETTER          (bool , SculptBrushCarve, useLastPosition)
+SETTER          (bool , SculptBrushCarve, useIntersection)
+DELEGATE1       (void , SculptBrushCarve, direction, const glm::vec3&)
+DELEGATE        (void , SculptBrushCarve, useAverageDirection)
+DELEGATE2_CONST (void , SculptBrushCarve, runSculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
