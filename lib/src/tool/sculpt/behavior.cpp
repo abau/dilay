@@ -63,9 +63,8 @@ struct ToolSculptBehavior::Impl {
       this->cursor.position (intersection.position ());
       this->cursor.normal   (intersection.normal   ());
     }
-    this->cursor.radius         (this->self->brush ().radius ());
-    this->cursor.color          (this->commonConfig.get <Color> ("cursor-color", Color::Red ()));
-    this->cursor.updateGeometry ();
+    this->cursor.radius (this->self->brush ().radius ());
+    this->cursor.color  (this->commonConfig.get <Color> ("cursor-color", Color::Red ()));
   }
 
   void setupProperties (ViewPropertiesPart& properties) {
@@ -75,7 +74,6 @@ struct ToolSculptBehavior::Impl {
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
       this->self->brush ().radius (r);
       this->cursor.radius (r);
-      this->cursor.updateGeometry ();
       this->commonConfig.cache ("radius", r);
     });
     properties.add (QObject::tr ("Radius"), this->radiusEdit);

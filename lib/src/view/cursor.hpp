@@ -19,7 +19,6 @@ class ViewCursor {
     void  position       (const glm::vec3&);
     void  normal         (const glm::vec3&);
     void  color          (const Color&);
-    void  updateGeometry ();
     void  render         (const Camera&) const;
     void  enable         ();
     void  disable        ();

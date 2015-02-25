@@ -9,22 +9,29 @@
 #include "view/cursor.hpp"
 
 struct ViewCursor::Impl {
-  Mesh          mesh;
-  float         radius;
-  unsigned int  sectors;
-  bool          isEnabled;
+  Mesh         mesh;
+  unsigned int sectors;
+  bool         isEnabled;
 
   Impl (float r, const Color& c) 
-    : radius    (r)
-    , sectors   (40)
+    : sectors   (40)
     , isEnabled (true) 
   {
     this->updateGeometry ();
+    this->radius         (r);
     this->color          (c);
+  }
+
+  float radius () const {
+    return this->mesh.scaling ().x;
   }
 
   const Color& color    () const { return this->mesh.color    (); }
   glm::vec3    position () const { return this->mesh.position (); }
+
+  void radius (float r) {
+    this->mesh.scaling (glm::vec3 (r));
+  }
 
   void position (const glm::vec3& v) { this->mesh.position (v); }
 
@@ -53,8 +60,8 @@ struct ViewCursor::Impl {
     this->mesh.resetGeometry ();
 
     for (unsigned int s = 0; s < this->sectors; s++) {
-      float x = this->radius * sin (theta);
-      float z = this->radius * cos (theta);
+      float x = sin (theta);
+      float z = cos (theta);
 
       this->mesh.addVertex (glm::vec3 (x,0.0f,z));
       if (s > 0) {
@@ -80,14 +87,13 @@ struct ViewCursor::Impl {
 };
 
 DELEGATE2_BIG6  (ViewCursor, float, const Color&)
-GETTER_CONST    (float       , ViewCursor, radius)
+DELEGATE_CONST  (float       , ViewCursor, radius)
 DELEGATE_CONST  (const Color&, ViewCursor, color)
 DELEGATE_CONST  (glm::vec3   , ViewCursor, position)
-SETTER          (float       , ViewCursor, radius)
+DELEGATE1       (void        , ViewCursor, radius, float)
 DELEGATE1       (void        , ViewCursor, position, const glm::vec3&)
 DELEGATE1       (void        , ViewCursor, normal, const glm::vec3&)
 DELEGATE1       (void        , ViewCursor, color, const Color&)
-DELEGATE        (void        , ViewCursor, updateGeometry)
 DELEGATE1_CONST (void        , ViewCursor, render, const Camera&)
 DELEGATE        (void        , ViewCursor, enable)
 DELEGATE        (void        , ViewCursor, disable)
