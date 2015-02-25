@@ -33,7 +33,6 @@ class ToolSculptBehavior {
   protected:
     ConfigProxy& config                    () const;
     State&       state                     () const;
-    ViewCursor&  cursor                    () const;
     bool         intersectsSelection       (const PrimRay&, WingedFaceIntersection&) const;
     bool         intersectsSelection       (const glm::ivec2&, WingedFaceIntersection&) const;
     void         forceBrushSubdivision     (bool);
@@ -44,6 +43,7 @@ class ToolSculptBehavior {
     IMPLEMENTATION
 
     virtual const char*  key                  () const = 0;
+    virtual ViewCursor&  cursor               () const = 0;
     virtual SculptBrush& brush                () const = 0;
     virtual void         runSetupBrush        () = 0;
     virtual void         runSetupProperties   (ViewPropertiesPart&) = 0;
@@ -59,6 +59,7 @@ class ToolSculptBehavior {
     public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
     private: IMPLEMENTATION                                                                 \
              const char*  key                    () const { return theKey ; }               \
+             ViewCursor&  cursor                 () const;                                  \
              SculptBrush& brush                  () const;                                  \
              void         runSetupBrush          ();                                        \
              void         runSetupProperties     (ViewPropertiesPart&);                     \
@@ -77,6 +78,7 @@ class ToolSculptBehavior {
 #define DELEGATE_TOOL_SCULPT_BEHAVIOR(name)                                                 \
   DELEGATE_BIG3_BASE ( name, (ConfigProxy& c, State& s), (this)                             \
                      , ToolSculptBehavior, (c,s,this->key ()) )                             \
+  GETTER_CONST   (ViewCursor& , name, cursor)                                               \
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
   DELEGATE       (void, name, runSetupBrush);                                               \
   DELEGATE1      (void, name, runSetupProperties, ViewPropertiesPart&);                     \

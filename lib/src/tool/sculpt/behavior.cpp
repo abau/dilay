@@ -28,7 +28,6 @@ struct ToolSculptBehavior::Impl {
   ConfigProxy                  config;
   State&                       state;
   std::unique_ptr <ActionUnit> actions;
-  ViewCursor                   cursor;
   QDoubleSpinBox&              radiusEdit;
   QCheckBox&                   subdivEdit;
 
@@ -38,7 +37,6 @@ struct ToolSculptBehavior::Impl {
     , config       (c, std::string (key) + "/")
     , state        (st)
     , actions      (new ActionUnit) 
-    , cursor       (1.0f, Color::Red ())
     , radiusEdit   (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
     , subdivEdit   (ViewUtil::checkBox (QObject::tr ("Subdivide"), true))
   {}
@@ -60,11 +58,14 @@ struct ToolSculptBehavior::Impl {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsSelection (pos, intersection)) {
-      this->cursor.position (intersection.position ());
-      this->cursor.normal   (intersection.normal   ());
+      this->self->cursor ().position (intersection.position ());
+      this->self->cursor ().normal   (intersection.normal   ());
     }
-    this->cursor.radius (this->self->brush ().radius ());
-    this->cursor.color  (this->commonConfig.get <Color> ("cursor-color", Color::Red ()));
+    else {
+      this->self->cursor ().disable ();
+    }
+    this->self->cursor ().radius (this->self->brush ().radius ());
+    this->self->cursor ().color  (this->commonConfig.get <Color> ("cursor-color", Color::Red ()));
   }
 
   void setupProperties (ViewPropertiesPart& properties) {
@@ -72,8 +73,8 @@ struct ToolSculptBehavior::Impl {
 
     this->radiusEdit.setValue (brush.radius ());
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
-      this->self->brush ().radius (r);
-      this->cursor.radius (r);
+      this->self->brush  ().radius (r);
+      this->self->cursor ().radius (r);
       this->commonConfig.cache ("radius", r);
     });
     properties.add (QObject::tr ("Radius"), this->radiusEdit);
@@ -111,7 +112,7 @@ struct ToolSculptBehavior::Impl {
   }
 
   void render () const {
-    this->cursor.render (this->state.camera ());
+    this->self->cursor ().render (this->state.camera ());
     this->self->runRender ();
   }
 
@@ -180,9 +181,9 @@ struct ToolSculptBehavior::Impl {
     WingedFaceIntersection intersection;
 
     if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
-      this->cursor.enable   ();
-      this->cursor.position (intersection.position ());
-      this->cursor.normal   (intersection.normal   ());
+      this->self->cursor ().enable   ();
+      this->self->cursor ().position (intersection.position ());
+      this->self->cursor ().normal   (intersection.normal   ());
 
       if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
         this->self->brush ().mesh (&intersection.mesh ());
@@ -195,7 +196,7 @@ struct ToolSculptBehavior::Impl {
       }
     }
     else {
-      this->cursor.disable ();
+      this->self->cursor ().disable ();
       return false;
     }
   }
@@ -205,7 +206,6 @@ DELEGATE3_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&, const char*)
 
 GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
 GETTER_CONST    (State&         , ToolSculptBehavior, state)
-GETTER_CONST    (ViewCursor&    , ToolSculptBehavior, cursor)
 DELEGATE        (void           , ToolSculptBehavior, setupBrush)
 DELEGATE1       (void           , ToolSculptBehavior, setupCursor, const glm::ivec2&)
 DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewPropertiesPart&)

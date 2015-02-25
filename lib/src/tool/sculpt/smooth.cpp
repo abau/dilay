@@ -1,10 +1,12 @@
 #include <QObject>
 #include "sculpt-brush/nothing.hpp"
 #include "tool/sculpt/behaviors.hpp"
+#include "view/cursor.hpp"
 #include "view/tool/tip.hpp"
 
 struct ToolSculptSmooth::Impl {
   ToolSculptSmooth*  self;
+  ViewCursor         cursor;
   SculptBrushNothing brush;
 
   Impl (ToolSculptSmooth* s) 

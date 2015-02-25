@@ -19,6 +19,7 @@
 struct ToolSculptDrag::Impl {
   ToolSculptDrag*  self;
   SculptBrushCarve brush;
+  ViewCursor       cursor;
   ToolUtilMovement movement;
 
   std::vector <glm::vec3> draggedVertices;
@@ -56,14 +57,14 @@ struct ToolSculptDrag::Impl {
         }
       }
       this->draggedVerticesMesh.renderMode (RenderMode::Constant);
-      this->draggedVerticesMesh.color      (this->self->cursor ().color ());
+      this->draggedVerticesMesh.color      (this->cursor.color ());
       this->draggedVerticesMesh.bufferData ();
     }
   }
 
   void runMousePressEvent (const QMouseEvent& e) {
     auto noDrag = [this] () {
-      this->self->cursor ().enable ();
+      this->cursor.enable ();
       this->brush.resetPosition ();
     };
 
@@ -78,7 +79,7 @@ struct ToolSculptDrag::Impl {
           noDrag ();
         }
         else {
-          this->self->cursor ().disable ();
+          this->cursor.disable ();
 
           // setup brush
           this->movement.resetPosition ( intersection.position ());
@@ -113,12 +114,12 @@ struct ToolSculptDrag::Impl {
       WingedFaceIntersection intersection;
 
       if (this->self->intersectsSelection (pos, intersection)) {
-        this->self->cursor ().enable   ();
-        this->self->cursor ().position (intersection.position ());
-        this->self->cursor ().normal   (intersection.normal   ());
+        this->cursor.enable   ();
+        this->cursor.position (intersection.position ());
+        this->cursor.normal   (intersection.normal   ());
       }
       else {
-        this->self->cursor ().disable ();
+        this->cursor.disable ();
       }
     }
     else if ( e.buttons () == Qt::LeftButton

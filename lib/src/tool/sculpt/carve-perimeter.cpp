@@ -3,12 +3,14 @@
 #include "config.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "tool/sculpt/behaviors.hpp"
+#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptCarvePerimeter::Impl {
   ToolSculptCarvePerimeter* self;
+  ViewCursor                cursor;
   SculptBrushCarve          brush;
 
   Impl (ToolSculptCarvePerimeter* s) : self (s) {}

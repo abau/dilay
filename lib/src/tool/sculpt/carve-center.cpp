@@ -5,13 +5,15 @@
 #include "config.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "tool/sculpt/behaviors.hpp"
+#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptCarveCenter::Impl {
   ToolSculptCarveCenter* self;
-  SculptBrushCarve brush;
+  ViewCursor             cursor;
+  SculptBrushCarve       brush;
 
   Impl (ToolSculptCarveCenter* s) : self (s) {}
 
