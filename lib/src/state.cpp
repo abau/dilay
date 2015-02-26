@@ -15,8 +15,6 @@
 #include "view/tool/menu-parameters.hpp"
 #include "util.hpp"
 
-#include <iostream>
-
 struct State::Impl {
   ViewMainWindow&        mainWindow;
   Config&                config;
