@@ -22,7 +22,6 @@ SOURCES += \
            src/camera.cpp \
            src/color.cpp \
            src/config.cpp \
-           src/config-conversion.cpp \
            src/configurable.cpp \
            src/dimension.cpp \
            src/history.cpp \
@@ -103,6 +102,7 @@ SOURCES += \
            src/winged/mesh.cpp \
            src/winged/util.cpp \
            src/winged/vertex.cpp \
+           src/xml-conversion.cpp \
 
 HEADERS += \
            src/action.hpp \
@@ -124,7 +124,6 @@ HEADERS += \
            src/camera.hpp \
            src/color.hpp \
            src/config.hpp \
-           src/config-conversion.hpp \
            src/configurable.hpp \
            src/dimension.hpp \
            src/fwd-winged.hpp \
@@ -202,3 +201,4 @@ HEADERS += \
            src/winged/mesh.hpp \
            src/winged/util.hpp \
            src/winged/vertex.hpp \
+           src/xml-conversion.hpp \

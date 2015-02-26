@@ -8,10 +8,10 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 #include "color.hpp"
-#include "config-conversion.hpp"
 #include "config.hpp"
 #include "macro.hpp"
 #include "variant.hpp"
+#include "xml-conversion.hpp"
 
 struct Config::Impl {
   typedef Variant <float,int,bool,glm::vec3,glm::ivec2,Color> Value;
@@ -170,7 +170,7 @@ struct Config::Impl {
   template <typename T>
   bool insertIntoConfigMap (ConfigMap& configMap, const QString& prefix, QDomElement& element) {
     T           t;
-    bool        ok  = ConfigConversion::fromDomElement (element, t);
+    bool        ok  = XmlConversion::fromDomElement (element, t);
     std::string key = (prefix + "/" + element.tagName ()).toStdString ();
 
     if (ok) {
@@ -212,22 +212,22 @@ struct Config::Impl {
       assert (parent.isElement ());
       QDomElement elem = parent.toElement ();
       if (value.is <float> ()) {
-        ConfigConversion::toDomElement (doc, elem, value.get <float> ());
+        XmlConversion::toDomElement (doc, elem, value.get <float> ());
       }
       else if (value.is <int> ()) {
-        ConfigConversion::toDomElement (doc, elem, value.get <int> ());
+        XmlConversion::toDomElement (doc, elem, value.get <int> ());
       }
       else if (value.is <bool> ()) {
-        ConfigConversion::toDomElement (doc, elem, value.get <bool> ());
+        XmlConversion::toDomElement (doc, elem, value.get <bool> ());
       }
       else if (value.is <glm::vec3> ()) {
-        ConfigConversion::toDomElement (doc, elem, value.get <glm::vec3> ());
+        XmlConversion::toDomElement (doc, elem, value.get <glm::vec3> ());
       }
       else if (value.is <glm::ivec2> ()) {
-        ConfigConversion::toDomElement (doc, elem, value.get <glm::ivec2> ());
+        XmlConversion::toDomElement (doc, elem, value.get <glm::ivec2> ());
       }
       else if (value.is <Color> ()) {
-        ConfigConversion::toDomElement (doc, elem, value.get <Color> ());
+        XmlConversion::toDomElement (doc, elem, value.get <Color> ());
       }
       else
         std::abort ();
