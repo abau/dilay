@@ -66,6 +66,8 @@ struct ToolSculptBehavior::Impl {
     }
     this->self->cursor ().radius (this->self->brush ().radius ());
     this->self->cursor ().color  (this->commonConfig.get <Color> ("cursor-color", Color::Red ()));
+
+    this->self->runSetupCursor ();
   }
 
   void setupProperties (ViewPropertiesPart& properties) {

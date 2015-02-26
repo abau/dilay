@@ -14,7 +14,7 @@ struct SculptBrushCarve :: Impl {
 
   SculptBrushCarve* self;
   float             intensityFactor;
-  float             flatness;
+  float             innerRadiusFactor;
   bool              invert;
   Maybe <glm::vec3> mDirection;
   bool              useLastPosition;
@@ -22,13 +22,13 @@ struct SculptBrushCarve :: Impl {
   bool              carvePerimeter;
 
   Impl (SculptBrushCarve* s) 
-    : self            (s) 
-    , intensityFactor (0.0f)
-    , flatness        (0.5f)
-    , invert          (false)
-    , useLastPosition (false)
-    , useIntersection (false)
-    , carvePerimeter  (false)
+    : self              (s) 
+    , intensityFactor   (0.0f)
+    , innerRadiusFactor (0.5f)
+    , invert            (false)
+    , useLastPosition   (false)
+    , useIntersection   (false)
+    , carvePerimeter    (false)
   {}
 
   float intensity () const {
@@ -38,10 +38,10 @@ struct SculptBrushCarve :: Impl {
   }
 
   float innerRadius () const {
-    assert (this->flatness >= 0.0f);
-    assert (this->flatness <= 1.0f);
+    assert (this->innerRadiusFactor >= 0.0f);
+    assert (this->innerRadiusFactor <= 1.0f);
 
-    return this->flatness * this->self->radius ();
+    return this->innerRadiusFactor * this->self->radius ();
   }
 
   void toggleInvert () {
@@ -136,11 +136,11 @@ struct SculptBrushCarve :: Impl {
 DELEGATE_BIG6_BASE (SculptBrushCarve, (), (this), SculptBrush, ())
   
 GETTER_CONST    (float, SculptBrushCarve, intensityFactor)
-GETTER_CONST    (float, SculptBrushCarve, flatness)
+GETTER_CONST    (float, SculptBrushCarve, innerRadiusFactor)
 GETTER_CONST    (bool , SculptBrushCarve, invert)
 GETTER_CONST    (bool , SculptBrushCarve, carvePerimeter)
 SETTER          (float, SculptBrushCarve, intensityFactor)
-SETTER          (float, SculptBrushCarve, flatness)
+SETTER          (float, SculptBrushCarve, innerRadiusFactor)
 SETTER          (bool , SculptBrushCarve, invert)
 DELEGATE        (void , SculptBrushCarve, toggleInvert)
 SETTER          (bool , SculptBrushCarve, carvePerimeter)

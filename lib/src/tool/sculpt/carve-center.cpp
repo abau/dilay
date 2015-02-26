@@ -5,31 +5,37 @@
 #include "config.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "tool/sculpt/behaviors.hpp"
-#include "view/cursor.hpp"
+#include "view/cursor/inner-radius.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptCarveCenter::Impl {
   ToolSculptCarveCenter* self;
-  ViewCursor             cursor;
   SculptBrushCarve       brush;
+  ViewCursorInnerRadius  cursor;
 
   Impl (ToolSculptCarveCenter* s) : self (s) {}
 
   void runSetupBrush () {
-    this->brush.intensityFactor (this->self->config ().get <float> ("intensity-factor", 0.03f));
-    this->brush.flatness        (this->self->config ().get <float> ("flatness"        , 0.5f));
-    this->brush.invert          (this->self->config ().get <bool>  ("invert"          , false));
+    this->brush.intensityFactor   (this->self->config ().get <float> ("intensity-factor"   , 0.03f));
+    this->brush.innerRadiusFactor (this->self->config ().get <float> ("inner-radius-factor", 0.5f));
+    this->brush.invert            (this->self->config ().get <bool>  ("invert"             , false));
+  }
+
+  void runSetupCursor () {
+    this->cursor.innerRadiusFactor (this->brush.innerRadiusFactor ());
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    QDoubleSpinBox& flatnessEdit = ViewUtil::spinBox (0.0f, this->brush.flatness (), 1.0f, 0.1f);
-    ViewUtil::connect (flatnessEdit, [this] (float f) {
-      this->brush.flatness (f);
-      this->self->config ().cache ("flatness", f);
+    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, this->brush.innerRadiusFactor ()
+                                                        , 1.0f, 0.1f );
+    ViewUtil::connect (innerRadiusEdit, [this] (float f) {
+      this->brush.innerRadiusFactor  (f);
+      this->cursor.innerRadiusFactor (f);
+      this->self->config ().cache ("inner-radius-factor", f);
     });
-    properties.add (QObject::tr ("Flatness"), flatnessEdit);
+    properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);
 
     QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, this->brush.intensityFactor ()
                                                       , 0.1f, 0.01f );

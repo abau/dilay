@@ -8,12 +8,12 @@ class SculptBrushCarve : public SculptBrush {
     DECLARE_BIG6 (SculptBrushCarve)
 
     float        intensityFactor     () const;
-    float        flatness            () const;
+    float        innerRadiusFactor   () const;
     bool         invert              () const;
     bool         carvePerimeter      () const;
 
     void         intensityFactor     (float);
-    void         flatness            (float);
+    void         innerRadiusFactor   (float);
     void         invert              (bool);
     void         toggleInvert        ();
     void         carvePerimeter      (bool);

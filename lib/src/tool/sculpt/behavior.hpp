@@ -43,9 +43,10 @@ class ToolSculptBehavior {
     IMPLEMENTATION
 
     virtual const char*  key                  () const = 0;
-    virtual ViewCursor&  cursor               () const = 0;
     virtual SculptBrush& brush                () const = 0;
+    virtual ViewCursor&  cursor               () const = 0;
     virtual void         runSetupBrush        () = 0;
+    virtual void         runSetupCursor       () = 0;
     virtual void         runSetupProperties   (ViewPropertiesPart&) = 0;
     virtual void         runSetupToolTip      (ViewToolTip&) = 0;
     virtual void         runMouseMoveEvent    (const QMouseEvent&) = 0;
@@ -59,9 +60,10 @@ class ToolSculptBehavior {
     public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
     private: IMPLEMENTATION                                                                 \
              const char*  key                    () const { return theKey ; }               \
-             ViewCursor&  cursor                 () const;                                  \
              SculptBrush& brush                  () const;                                  \
+             ViewCursor&  cursor                 () const;                                  \
              void         runSetupBrush          ();                                        \
+             void         runSetupCursor         ();                                        \
              void         runSetupProperties     (ViewPropertiesPart&);                     \
              void         runSetupToolTip        (ViewToolTip&);                            \
              void         runMousePressEvent     (const QMouseEvent&);                      \
@@ -78,9 +80,10 @@ class ToolSculptBehavior {
 #define DELEGATE_TOOL_SCULPT_BEHAVIOR(name)                                                 \
   DELEGATE_BIG3_BASE ( name, (ConfigProxy& c, State& s), (this)                             \
                      , ToolSculptBehavior, (c,s,this->key ()) )                             \
-  GETTER_CONST   (ViewCursor& , name, cursor)                                               \
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
+  GETTER_CONST   (ViewCursor& , name, cursor)                                               \
   DELEGATE       (void, name, runSetupBrush);                                               \
+  DELEGATE       (void, name, runSetupCursor);                                              \
   DELEGATE1      (void, name, runSetupProperties, ViewPropertiesPart&);                     \
   DELEGATE1      (void, name, runSetupToolTip, ViewToolTip&);                               \
   DELEGATE1      (void, name, runMousePressEvent, const QMouseEvent&)                       \

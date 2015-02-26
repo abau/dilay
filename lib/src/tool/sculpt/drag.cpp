@@ -34,9 +34,11 @@ struct ToolSculptDrag::Impl {
 
   void runSetupBrush () {
     this->self->forceBrushSubdivision (true);
-    this->brush.flatness  (0.1);
-    this->brush.subdivide (true);
+    this->brush.innerRadiusFactor (0.1);
+    this->brush.subdivide         (true);
   }
+
+  void runSetupCursor () {}
 
   void runSetupProperties (ViewPropertiesPart&) {}
 

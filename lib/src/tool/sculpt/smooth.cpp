@@ -6,14 +6,16 @@
 
 struct ToolSculptSmooth::Impl {
   ToolSculptSmooth*  self;
-  ViewCursor         cursor;
   SculptBrushNothing brush;
+  ViewCursor         cursor;
 
   Impl (ToolSculptSmooth* s) 
     : self (s) 
   {}
 
   void runSetupBrush () {}
+
+  void runSetupCursor () {}
 
   void runSetupProperties (ViewPropertiesPart&) {}
 
