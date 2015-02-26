@@ -44,7 +44,7 @@ struct State::Impl {
   }
 
   bool hasTool () const { 
-    return this->toolPtr.get (); 
+    return bool (this->toolPtr); 
   }
 
   Tool& tool () { 
@@ -52,19 +52,23 @@ struct State::Impl {
     return *this->toolPtr; 
   }
 
-  void setTool (Tool* tool) { 
-    if (tool) {
-      tool->showToolTip ();
-      this->mainWindow.properties ().showTool (tool->menuParameters ().label ());
-    }
-    else if (this->toolPtr) {
+  void setTool (Tool& tool) { 
+    this->resetTool ();
+    this->toolPtr.reset (&tool); 
+
+    tool.showToolTip ();
+    this->mainWindow.properties ().showTool (tool.menuParameters ().label ());
+    this->handleToolResponse (tool.initialize ());
+  }
+
+  void resetTool () {
+    if (this->hasTool ()) {
+      this->toolPtr->close ();
+
+      // order of destruction is important, because of stack-allocated widgets
+      this->toolPtr.reset (); 
       this->mainWindow.showDefaultToolTip ();
       this->mainWindow.properties ().resetTool ();
-    }
-    this->toolPtr.reset (tool); 
-
-    if (this->toolPtr) {
-      this->handleToolResponse (this->toolPtr->initialize ());
     }
   }
 
@@ -78,7 +82,7 @@ struct State::Impl {
         break;
       case ToolResponse::Terminate:
         this->mainWindow.glWidget ().update ();
-        this->setTool (nullptr);
+        this->resetTool ();
         break;
     }
   }
@@ -94,5 +98,6 @@ GETTER    (History&          , State, history)
 GETTER    (Scene&            , State, scene)
 DELEGATE  (bool              , State, hasTool)
 DELEGATE  (Tool&             , State, tool)
-DELEGATE1 (void              , State, setTool, Tool*)
+DELEGATE1 (void              , State, setTool, Tool&)
+DELEGATE  (void              , State, resetTool)
 DELEGATE1 (void              , State, handleToolResponse, ToolResponse)

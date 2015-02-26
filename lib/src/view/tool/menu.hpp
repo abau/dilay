@@ -19,7 +19,7 @@ class ViewToolMenu : public QMenu {
     void addAction (const QString& label) {
       QAction* a = this->QMenu::addAction (label);
       QObject::connect (a, &QAction::triggered, [this, label] () { 
-          this->state ().setTool (new T (this->menuParameters (label)));
+          this->state ().setTool (*new T (this->menuParameters (label)));
       });
     }
 

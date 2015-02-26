@@ -142,9 +142,8 @@ struct ViewGlWidget::Impl {
     }
     else if (hasTool) {
       if (key == Qt::Key_Escape || key == Qt::Key_Enter) {
-        this->state->tool    ().close ();
-        this->state->setTool (nullptr);
-        this->self->update   ();
+        this->state->resetTool ();
+        this->self->update ();
       }
     }
     else if (key == Qt::Key_Escape) {

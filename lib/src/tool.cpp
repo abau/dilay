@@ -32,8 +32,7 @@ struct Tool::Impl {
     this->properties ().footer ().add (close);
 
     QObject::connect (&close, &QPushButton::clicked, [this] () {
-      this->close ();
-      this->state ().setTool (nullptr);
+      this->state ().resetTool ();
     });
     this->resetToolTip ();
   }

@@ -27,7 +27,8 @@ class State {
     Scene&          scene              ();
     bool            hasTool            ();
     Tool&           tool               ();
-    void            setTool            (Tool*);
+    void            setTool            (Tool&);
+    void            resetTool          ();
 
     void            handleToolResponse (ToolResponse);
 
