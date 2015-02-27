@@ -2,9 +2,11 @@
 #include <QSpinBox>
 #include "action/new-winged-mesh.hpp"
 #include "cache.hpp"
+#include "config.hpp"
 #include "history.hpp"
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
+#include "render-mode.hpp"
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/properties.hpp"
@@ -34,12 +36,18 @@ struct ToolNewWingedMesh::Impl {
 
   void updateMesh () {
     const int numSubdiv = this->subdivEdit.value ();
-    this->definition    = MeshDefinition::Icosphere (numSubdiv);
+
+    this->self->cache ().set ("subdiv", numSubdiv);
+
+    this->definition = MeshDefinition::Icosphere (numSubdiv);
     this->definition.scale (glm::vec3 (Util::defaultScale ()));
 
     this->mesh = Mesh (this->definition);
     this->mesh.bufferData ();
-    this->self->cache ().set ("subdiv", numSubdiv);
+
+    this->mesh.renderMode     (RenderMode::SmoothWireframe);
+    this->mesh.color          (this->self->config ().get <Color> ("editor/poly-mesh/color/normal"));
+    this->mesh.wireframeColor (this->self->config ().get <Color> ("editor/poly-mesh/color/wireframe"));
   }
 
   void runRender () const {
