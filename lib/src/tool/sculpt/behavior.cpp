@@ -5,9 +5,9 @@
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
 #include "action/unit.hpp"
+#include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
-#include "config.hpp"
 #include "history.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
@@ -24,30 +24,30 @@
 
 struct ToolSculptBehavior::Impl {
   ToolSculptBehavior*          self;
-  ConfigProxy                  commonConfig;
-  ConfigProxy                  config;
+  CacheProxy                   commonCache;
+  CacheProxy                   cache;
   State&                       state;
   std::unique_ptr <ActionUnit> actions;
   QDoubleSpinBox&              radiusEdit;
   QCheckBox&                   subdivEdit;
 
-  Impl (ToolSculptBehavior* s, ConfigProxy& c, State& st, const char* key) 
-    : self         (s)
-    , commonConfig (c)
-    , config       (c, std::string (key) + "/")
-    , state        (st)
-    , actions      (new ActionUnit) 
-    , radiusEdit   (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
-    , subdivEdit   (ViewUtil::checkBox (QObject::tr ("Subdivide"), true))
+  Impl (ToolSculptBehavior* s, CacheProxy& c, State& st, const char* key) 
+    : self        (s)
+    , commonCache (c)
+    , cache       (c, std::string (key) + "/")
+    , state       (st)
+    , actions     (new ActionUnit) 
+    , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
+    , subdivEdit  (ViewUtil::checkBox (QObject::tr ("Subdivide"), true))
   {}
 
   void setupBrush () {
     SculptBrush& brush = this->self->brush ();
 
-    brush.radius          (this->commonConfig.get <float> ("radius"           , 20.0f));
-    brush.detailFactor    (this->commonConfig.get <float> ("detail-factor"    , 0.7f));
-    brush.stepWidthFactor (this->commonConfig.get <float> ("step-width-factor", 0.3f));
-    brush.subdivide       (this->commonConfig.get <bool>  ("subdivide"        , true));
+    brush.radius          (this->commonCache.get <float> ("radius"           , 20.0f));
+    brush.detailFactor    (this->commonCache.get <float> ("detail-factor"    , 0.7f));
+    brush.stepWidthFactor (this->commonCache.get <float> ("step-width-factor", 0.3f));
+    brush.subdivide       (this->commonCache.get <bool>  ("subdivide"        , true));
 
     this->self->runSetupBrush ();
   }
@@ -65,7 +65,7 @@ struct ToolSculptBehavior::Impl {
       this->self->cursor ().disable ();
     }
     this->self->cursor ().radius (this->self->brush ().radius ());
-    this->self->cursor ().color  (this->commonConfig.get <Color> ("cursor-color", Color::Red ()));
+    this->self->cursor ().color  (this->commonCache.get <Color> ("cursor-color", Color::Red ()));
 
     this->self->runSetupCursor ();
   }
@@ -77,28 +77,28 @@ struct ToolSculptBehavior::Impl {
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
       this->self->brush  ().radius (r);
       this->self->cursor ().radius (r);
-      this->commonConfig.cache ("radius", r);
+      this->commonCache.set ("radius", r);
     });
     properties.add (QObject::tr ("Radius"), this->radiusEdit);
 
     QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, brush.detailFactor (), 0.95f, 0.1f);
     ViewUtil::connect (detailEdit, [this] (float h) {
       this->self->brush ().detailFactor (h);
-      this->commonConfig.cache ("detail-factor", h);
+      this->commonCache.set ("detail-factor", h);
     });
     properties.add (QObject::tr ("Detail"), detailEdit);
 
     QDoubleSpinBox& stepEdit = ViewUtil::spinBox (0.01f, brush.stepWidthFactor (), 1000.0f, 0.1f);
     ViewUtil::connect (stepEdit, [this] (float s) {
       this->self->brush ().stepWidthFactor (s);
-      this->commonConfig.cache ("step-width-factor", s);
+      this->commonCache.set ("step-width-factor", s);
     });
     properties.add (QObject::tr ("Step width"), stepEdit);
 
     this->subdivEdit.setChecked (brush.subdivide ());
     QObject::connect (&this->subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
       this->self->brush ().subdivide (bool (s));
-      this->commonConfig.cache ("subdivide", bool (s));
+      this->commonCache.set ("subdivide", bool (s));
     });
     properties.add (this->subdivEdit);
 
@@ -204,22 +204,22 @@ struct ToolSculptBehavior::Impl {
   }
 };
 
-DELEGATE3_BIG3_SELF (ToolSculptBehavior, ConfigProxy&, State&, const char*)
+DELEGATE3_BIG3_SELF (ToolSculptBehavior, CacheProxy&, State&, const char*)
 
-GETTER_CONST    (ConfigProxy&   , ToolSculptBehavior, config)
-GETTER_CONST    (State&         , ToolSculptBehavior, state)
-DELEGATE        (void           , ToolSculptBehavior, setupBrush)
-DELEGATE1       (void           , ToolSculptBehavior, setupCursor, const glm::ivec2&)
-DELEGATE1       (void           , ToolSculptBehavior, setupProperties, ViewPropertiesPart&)
-DELEGATE1       (void           , ToolSculptBehavior, setupToolTip, ViewToolTip&)
-DELEGATE_CONST  (void           , ToolSculptBehavior, render)
-DELEGATE1       (void           , ToolSculptBehavior, mouseMoveEvent, const QMouseEvent&)
-DELEGATE1       (void           , ToolSculptBehavior, mousePressEvent, const QMouseEvent&)
-DELEGATE1       (void           , ToolSculptBehavior, mouseReleaseEvent, const QMouseEvent&)
-DELEGATE1       (void           , ToolSculptBehavior, mouseWheelEvent, const QWheelEvent&)
-DELEGATE        (void           , ToolSculptBehavior, close)
-DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
-DELEGATE2_CONST (bool           , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
-DELEGATE1       (void           , ToolSculptBehavior, forceBrushSubdivision, bool)
-DELEGATE        (void           , ToolSculptBehavior, sculpt)
-DELEGATE1       (bool           , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)
+GETTER_CONST    (CacheProxy&, ToolSculptBehavior, cache)
+GETTER_CONST    (State&     , ToolSculptBehavior, state)
+DELEGATE        (void       , ToolSculptBehavior, setupBrush)
+DELEGATE1       (void       , ToolSculptBehavior, setupCursor, const glm::ivec2&)
+DELEGATE1       (void       , ToolSculptBehavior, setupProperties, ViewPropertiesPart&)
+DELEGATE1       (void       , ToolSculptBehavior, setupToolTip, ViewToolTip&)
+DELEGATE_CONST  (void       , ToolSculptBehavior, render)
+DELEGATE1       (void       , ToolSculptBehavior, mouseMoveEvent, const QMouseEvent&)
+DELEGATE1       (void       , ToolSculptBehavior, mousePressEvent, const QMouseEvent&)
+DELEGATE1       (void       , ToolSculptBehavior, mouseReleaseEvent, const QMouseEvent&)
+DELEGATE1       (void       , ToolSculptBehavior, mouseWheelEvent, const QWheelEvent&)
+DELEGATE        (void       , ToolSculptBehavior, close)
+DELEGATE2_CONST (bool       , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2_CONST (bool       , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
+DELEGATE1       (void       , ToolSculptBehavior, forceBrushSubdivision, bool)
+DELEGATE        (void       , ToolSculptBehavior, sculpt)
+DELEGATE1       (bool       , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)

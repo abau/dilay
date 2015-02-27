@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include "action/new-winged-mesh.hpp"
+#include "cache.hpp"
 #include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
@@ -18,18 +19,20 @@
 struct State::Impl {
   ViewMainWindow&        mainWindow;
   Config&                config;
+  Cache&                 cache;
   Renderer               renderer;
   Camera                 camera;
   History                history;
   Scene                  scene;
   std::unique_ptr <Tool> toolPtr;
 
-  Impl (ViewMainWindow& mW, Config& c) 
+  Impl (ViewMainWindow& mW, Config& cfg, Cache& cch) 
     : mainWindow (mW) 
-    , config     (c)
-    , renderer   (config)
-    , camera     (config, renderer)
-    , scene      (ConfigProxy (config, "editor/poly-mesh/"))
+    , config     (cfg)
+    , cache      (cch)
+    , renderer   (this->config)
+    , camera     (this->config, renderer)
+    , scene      (ConfigProxy (this->config, "editor/poly-mesh/"))
   {
     MeshDefinition meshDefinition (MeshDefinition::Icosphere (2));
     meshDefinition.scale          (glm::vec3 (Util::defaultScale ()));
@@ -86,10 +89,11 @@ struct State::Impl {
   }
 };
 
-DELEGATE2_BIG2 (State, ViewMainWindow&, Config&)
+DELEGATE3_BIG2 (State, ViewMainWindow&, Config&, Cache&)
 
 GETTER    (ViewMainWindow&   , State, mainWindow)
 GETTER    (Config&           , State, config)
+GETTER    (Cache&            , State, cache)
 GETTER    (Renderer&         , State, renderer)
 GETTER    (Camera&           , State, camera)
 GETTER    (History&          , State, history)

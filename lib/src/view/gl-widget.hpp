@@ -5,13 +5,14 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
+class Cache;
 class Config;
 class ViewMainWindow;
 
 class ViewGlWidget : public QOpenGLWidget {
     Q_OBJECT
   public:
-    DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&)
+    DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 
     glm::ivec2 cursorPosition       ();
     void       selectIntersection   ();

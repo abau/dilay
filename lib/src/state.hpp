@@ -3,6 +3,7 @@
 
 #include "macro.hpp"
 
+class Cache;
 class Camera;
 class Config;
 class History;
@@ -17,10 +18,11 @@ class WingedMesh;
 
 class State {
   public:                                   
-    DECLARE_BIG2 (State, ViewMainWindow&, Config&)
+    DECLARE_BIG2 (State, ViewMainWindow&, Config&, Cache&)
 
     ViewMainWindow& mainWindow         ();
     Config&         config             ();
+    Cache&          cache              ();
     Renderer&       renderer           ();
     Camera&         camera             ();
     History&        history            ();

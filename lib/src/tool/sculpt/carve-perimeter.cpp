@@ -1,6 +1,6 @@
 #include <QSpinBox>
 #include <glm/glm.hpp>
-#include "config.hpp"
+#include "cache.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "tool/sculpt/behaviors.hpp"
 #include "view/cursor/inner-radius.hpp"
@@ -16,7 +16,7 @@ struct ToolSculptCarvePerimeter::Impl {
   Impl (ToolSculptCarvePerimeter* s) : self (s) {}
 
   void runSetupBrush () {
-    this->brush.innerRadiusFactor (this->self->config ().get <float> ("inner-radius-factor", 0.5f));
+    this->brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
     this->brush.carvePerimeter    (true);
   }
 
@@ -30,7 +30,7 @@ struct ToolSculptCarvePerimeter::Impl {
     ViewUtil::connect (innerRadiusEdit, [this] (float f) {
       this->brush.innerRadiusFactor  (f);
       this->cursor.innerRadiusFactor (f);
-      this->self->config ().cache ("inner-radius-factor", f);
+      this->self->cache ().set ("inner-radius-factor", f);
     });
     properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);
   }

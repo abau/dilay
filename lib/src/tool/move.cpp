@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include "action/modify-winged-mesh.hpp"
 #include "action/unit.hpp"
-#include "config.hpp"
+#include "cache.hpp"
 #include "fwd-winged.hpp"
 #include "history.hpp"
 #include "scene.hpp"
@@ -78,9 +78,9 @@ struct ToolMove::Impl {
           std::abort ();
       }
       this->setupToolTip ();
-      this->self->config ().cache ("constraint", id);
+      this->self->cache ().set ("constraint", id);
     });
-    this->constraintEdit.button (this->self->config ().get <int> ("constraint", 6))->click ();
+    this->constraintEdit.button (this->self->cache ().get <int> ("constraint", 6))->click ();
 
     this->self->properties ().body ().add (this->deltaEdit);
 

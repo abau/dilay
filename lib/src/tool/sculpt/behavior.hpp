@@ -4,7 +4,7 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-class ConfigProxy;
+class CacheProxy;
 class PrimRay;
 class QMouseEvent;
 class QWheelEvent;
@@ -17,7 +17,7 @@ class WingedFaceIntersection;
 
 class ToolSculptBehavior {
   public:
-    DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, ConfigProxy&, State&, const char*)
+    DECLARE_BIG3_VIRTUAL (ToolSculptBehavior, CacheProxy&, State&, const char*)
 
     void setupBrush        ();
     void setupCursor       (const glm::ivec2&);
@@ -31,13 +31,13 @@ class ToolSculptBehavior {
     void close             ();
 
   protected:
-    ConfigProxy& config                    () const;
-    State&       state                     () const;
-    bool         intersectsSelection       (const PrimRay&, WingedFaceIntersection&) const;
-    bool         intersectsSelection       (const glm::ivec2&, WingedFaceIntersection&) const;
-    void         forceBrushSubdivision     (bool);
-    void         sculpt                    ();
-    bool         updateBrushByIntersection (const QMouseEvent&);
+    CacheProxy& cache                     () const;
+    State&      state                     () const;
+    bool        intersectsSelection       (const PrimRay&, WingedFaceIntersection&) const;
+    bool        intersectsSelection       (const glm::ivec2&, WingedFaceIntersection&) const;
+    void        forceBrushSubdivision     (bool);
+    void        sculpt                    ();
+    bool        updateBrushByIntersection (const QMouseEvent&);
 
   private:
     IMPLEMENTATION
@@ -57,7 +57,7 @@ class ToolSculptBehavior {
 
 #define DECLARE_TOOL_SCULPT_BEHAVIOR(name,theKey,otherMethods)                              \
   class name : public ToolSculptBehavior {                                                  \
-    public:  DECLARE_BIG3 (name, ConfigProxy&, State&)                                      \
+    public:  DECLARE_BIG3 (name, CacheProxy&, State&)                                       \
     private: IMPLEMENTATION                                                                 \
              const char*  key                    () const { return theKey ; }               \
              SculptBrush& brush                  () const;                                  \
@@ -78,7 +78,7 @@ class ToolSculptBehavior {
   void runRender () const;
 
 #define DELEGATE_TOOL_SCULPT_BEHAVIOR(name)                                                 \
-  DELEGATE_BIG3_BASE ( name, (ConfigProxy& c, State& s), (this)                             \
+  DELEGATE_BIG3_BASE ( name, (CacheProxy& c, State& s), (this)                              \
                      , ToolSculptBehavior, (c,s,this->key ()) )                             \
   GETTER_CONST   (SculptBrush&, name, brush)                                                \
   GETTER_CONST   (ViewCursor& , name, cursor)                                               \

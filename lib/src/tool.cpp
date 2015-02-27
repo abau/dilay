@@ -2,6 +2,7 @@
 #include <QPushButton>
 #include <glm/glm.hpp>
 #include "action.hpp"
+#include "cache.hpp"
 #include "config.hpp"
 #include "history.hpp"
 #include "scene.hpp"
@@ -19,13 +20,15 @@ struct Tool::Impl {
   Tool*                  self;
   ViewToolMenuParameters menuParameters;
   ViewToolTip            toolTip;
-  ConfigProxy            config;
+  Config&                config;
+  CacheProxy             cache;
   const Action*          undoLimit;
 
   Impl (Tool* s, const ViewToolMenuParameters& p, const char* key) 
     : self           (s) 
     , menuParameters (p)
-    , config         (p.state ().config (), "editor/tool/" + std::string (key) + "/")
+    , config         (p.state ().config ())
+    , cache          (p.state ().cache (), "editor/tool/" + std::string (key) + "/")
     , undoLimit      (p.state ().history ().recent ())
   {
     QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
@@ -128,5 +131,6 @@ DELEGATE       (void                         , Tool, updateGlWidget)
 DELEGATE_CONST (ViewProperties&              , Tool, properties)
 GETTER_CONST   (ViewToolTip&                 , Tool, toolTip)
 DELEGATE       (void                         , Tool, resetToolTip)
-GETTER_CONST   (ConfigProxy&                 , Tool, config)
+GETTER_CONST   (Config&                      , Tool, config)
+GETTER_CONST   (CacheProxy&                  , Tool, cache)
 DELEGATE_CONST (glm::ivec2                   , Tool, cursorPosition)

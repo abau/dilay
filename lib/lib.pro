@@ -21,11 +21,11 @@ SOURCES += \
            src/affected-faces.cpp \
            src/camera.cpp \
            src/color.cpp \
-           src/config.cpp \
            src/configurable.cpp \
            src/dimension.cpp \
            src/history.cpp \
            src/intersection.cpp \
+           src/kvstore.cpp \
            src/mesh.cpp \
            src/mesh-definition.cpp \
            src/octree.cpp \
@@ -121,6 +121,7 @@ HEADERS += \
            src/adjacent-iterator.hpp \
            src/affected-faces.hpp \
            src/bitset.hpp \
+           src/cache.hpp \
            src/camera.hpp \
            src/color.hpp \
            src/config.hpp \
@@ -129,6 +130,7 @@ HEADERS += \
            src/fwd-winged.hpp \
            src/history.hpp \
            src/intersection.hpp \
+           src/kvstore.hpp \
            src/macro.hpp \
            src/maybe.hpp \
            src/mesh.hpp \

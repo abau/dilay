@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include <QSpinBox>
 #include "action/new-winged-mesh.hpp"
-#include "config.hpp"
+#include "cache.hpp"
 #include "history.hpp"
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
@@ -20,7 +20,7 @@ struct ToolNewWingedMesh::Impl {
   Impl (ToolNewWingedMesh* s) 
     : self (s) 
     , subdivEdit (ViewUtil::spinBox ( 1
-                                    , this->self->config ().get <int> ("subdiv", 3)
+                                    , this->self->cache ().get <int> ("subdiv", 3)
                                     , 5 ))
   {
     this->self->properties ().body ().add (QObject::tr ("Subdivisions"), this->subdivEdit);
@@ -39,7 +39,7 @@ struct ToolNewWingedMesh::Impl {
 
     this->mesh = Mesh (this->definition);
     this->mesh.bufferData ();
-    this->self->config ().cache ("subdiv", numSubdiv);
+    this->self->cache ().set ("subdiv", numSubdiv);
   }
 
   void runRender () const {

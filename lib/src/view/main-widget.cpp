@@ -7,15 +7,15 @@ struct ViewMainWidget :: Impl {
   ViewGlWidget         glWidget;
   ViewPropertiesWidget properties;
 
-  Impl (ViewMainWidget* s, ViewMainWindow& mW, Config& config) 
+  Impl (ViewMainWidget* s, ViewMainWindow& mW, Config& config, Cache& cache) 
     : self       (s) 
-    , glWidget   (mW, config)
+    , glWidget   (mW, config, cache)
   {
     this->self->addWidget (&this->properties);
     this->self->addWidget (&this->glWidget);
   }
 };
 
-DELEGATE2_BIG2_SELF (ViewMainWidget, ViewMainWindow&, Config&)
+DELEGATE3_BIG2_SELF (ViewMainWidget, ViewMainWindow&, Config&, Cache&)
 GETTER (ViewGlWidget&        , ViewMainWidget, glWidget)
 GETTER (ViewPropertiesWidget&, ViewMainWidget, properties)

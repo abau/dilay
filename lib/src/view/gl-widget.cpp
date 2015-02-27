@@ -30,15 +30,17 @@ struct ViewGlWidget::Impl {
   ViewGlWidget*   self;
   ViewMainWindow& mainWindow;
   Config&         config;
+  Cache&          cache;
   ToolMoveCamera  toolMoveCamera;
   AxisPtr         axis;
   StatePtr        state;
 
-  Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& c) 
+  Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
     : self           (s)
     , mainWindow     (mW)
-    , config         (c)
-    , toolMoveCamera (c)
+    , config         (cfg)
+    , cache          (cch)
+    , toolMoveCamera (cfg)
     , axis           (nullptr)
     , state          (nullptr)
   {
@@ -73,7 +75,7 @@ struct ViewGlWidget::Impl {
     OpenGL  ::initializeFunctions ();
 
     this->axis .reset (new ViewAxis (this->config));
-    this->state.reset (new State (this->mainWindow, this->config));
+    this->state.reset (new State (this->mainWindow, this->config, this->cache));
 
     this->self->setMouseTracking (true);
     this->self->setFocus         ();
@@ -213,7 +215,7 @@ struct ViewGlWidget::Impl {
   }
 };
 
-DELEGATE2_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&)
+DELEGATE3_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
 DELEGATE  (void      , ViewGlWidget, selectIntersection)
 DELEGATE1 (void      , ViewGlWidget, selectIntersection, const glm::ivec2&)

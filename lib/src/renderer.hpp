@@ -28,8 +28,8 @@ class Renderer : public Configurable {
     void setLightIrradiance   (unsigned int, float);
     void updateLights         (const glm::mat4x4&);
 
-    static bool requiresGeometryShader         (RenderMode);
-    static bool requiresNormalAttribute        (RenderMode);
+    static bool requiresGeometryShader  (RenderMode);
+    static bool requiresNormalAttribute (RenderMode);
 
   private:
     IMPLEMENTATION

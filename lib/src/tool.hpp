@@ -4,7 +4,8 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-class ConfigProxy;
+class CacheProxy;
+class Config;
 class State;
 class ViewProperties;
 class ViewToolMenuParameters;
@@ -38,7 +39,8 @@ class Tool {
     ViewProperties&               properties           () const;
     ViewToolTip&                  toolTip              () const;
     void                          resetToolTip         ();
-    ConfigProxy&                  config               () const;
+    Config&                       config               () const;
+    CacheProxy&                   cache                () const;
     glm::ivec2                    cursorPosition       () const;
 
   private:

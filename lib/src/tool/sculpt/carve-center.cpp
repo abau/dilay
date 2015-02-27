@@ -2,7 +2,7 @@
 #include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "config.hpp"
+#include "cache.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "tool/sculpt/behaviors.hpp"
 #include "view/cursor/inner-radius.hpp"
@@ -18,9 +18,9 @@ struct ToolSculptCarveCenter::Impl {
   Impl (ToolSculptCarveCenter* s) : self (s) {}
 
   void runSetupBrush () {
-    this->brush.intensityFactor   (this->self->config ().get <float> ("intensity-factor"   , 0.03f));
-    this->brush.innerRadiusFactor (this->self->config ().get <float> ("inner-radius-factor", 0.5f));
-    this->brush.invert            (this->self->config ().get <bool>  ("invert"             , false));
+    this->brush.intensityFactor   (this->self->cache ().get <float> ("intensity-factor"   , 0.03f));
+    this->brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
+    this->brush.invert            (this->self->cache ().get <bool>  ("invert"             , false));
   }
 
   void runSetupCursor () {
@@ -33,7 +33,7 @@ struct ToolSculptCarveCenter::Impl {
     ViewUtil::connect (innerRadiusEdit, [this] (float f) {
       this->brush.innerRadiusFactor  (f);
       this->cursor.innerRadiusFactor (f);
-      this->self->config ().cache ("inner-radius-factor", f);
+      this->self->cache ().set ("inner-radius-factor", f);
     });
     properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);
 
@@ -41,14 +41,14 @@ struct ToolSculptCarveCenter::Impl {
                                                       , 0.1f, 0.01f );
     ViewUtil::connect (intensityEdit, [this] (float i) {
       this->brush.intensityFactor (i);
-      this->self->config ().cache ("intensity", i);
+      this->self->cache ().set ("intensity", i);
     });
     properties.add (QObject::tr ("Intensity"), intensityEdit);
 
     QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), this->brush.invert ());
     ViewUtil::connect (invertEdit, [this] (bool i) {
       this->brush.invert (i);
-      this->self->config ().cache ("invert", i);
+      this->self->cache ().set ("invert", i);
     });
     properties.add (invertEdit);
   }

@@ -2,7 +2,7 @@
 #include <QButtonGroup>
 #include <QFrame>
 #include <glm/glm.hpp>
-#include "config.hpp"
+#include "cache.hpp"
 #include "tool/sculpt/behaviors.hpp"
 #include "tools.hpp"
 #include "view/properties.hpp"
@@ -40,9 +40,9 @@ struct ToolSculpt::Impl {
         default:
           std::abort ();
       }
-      this->self->config ().cache ("behavior", id);
+      this->self->cache ().set ("behavior", id);
     });
-    this->behaviorEdit.button (this->self->config ().get <int> ("behavior", 0))->click ();
+    this->behaviorEdit.button (this->self->cache ().get <int> ("behavior", 0))->click ();
 
     this->self->properties ().header ().add (ViewUtil::horizontalLine ());
   }
@@ -51,7 +51,7 @@ struct ToolSculpt::Impl {
   void setBehavior () {
     this->self->properties ().body ().reset ();
 
-    this->behavior.reset (new T (this->self->config (), this->self->state ()));
+    this->behavior.reset (new T (this->self->cache (), this->self->state ()));
     this->behavior->setupBrush      ();
     this->behavior->setupCursor     (this->self->cursorPosition ());
     this->behavior->setupProperties (this->self->properties ().body ());
