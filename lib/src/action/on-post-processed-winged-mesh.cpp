@@ -21,14 +21,14 @@ struct ActionOnPostProcessedWMesh :: Impl {
     this->doBufferData      (false);
   }
 
-  bool doRealignAllFaces () const { return this->flags.get (0);   }
-  void doRealignAllFaces (bool v) {        this->flags.set (0,v); }
-  bool doWriteAllNormals () const { return this->flags.get (1);   }
-  void doWriteAllNormals (bool v) {        this->flags.set (1,v); }
-  bool doWriteAllIndices () const { return this->flags.get (2);   }
-  void doWriteAllIndices (bool v) {        this->flags.set (2,v); }
-  bool doBufferData      () const { return this->flags.get (3);   }
-  void doBufferData      (bool v) {        this->flags.set (3,v); }
+  bool doRealignAllFaces () const { return this->flags.get <0> ( );   }
+  void doRealignAllFaces (bool v) {        this->flags.set <0> (v); }
+  bool doWriteAllNormals () const { return this->flags.get <1> ( ); }
+  void doWriteAllNormals (bool v) {        this->flags.set <1> (v); }
+  bool doWriteAllIndices () const { return this->flags.get <2> ( ); }
+  void doWriteAllIndices (bool v) {        this->flags.set <2> (v); }
+  bool doBufferData      () const { return this->flags.get <3> ( ); }
+  void doBufferData      (bool v) {        this->flags.set <3> (v); }
 
   WingedFace& realignFace (WingedMesh& mesh, WingedFace& face) {
     bool        sameNode  = false;
