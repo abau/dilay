@@ -172,20 +172,20 @@ struct Mesh::Impl {
       OpenGL::glGenBuffers (1, &this->normalBufferId);
     }
 
-    OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId );
-    OpenGL::glBufferData              ( OpenGL::ArrayBuffer (), this->sizeOfVertices ()
-                                      , &this->vertices[0], OpenGL::StaticDraw () );
+    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->vertexBufferId);
+    OpenGL::glBufferData ( OpenGL::ArrayBuffer (), this->sizeOfVertices ()
+                         , &this->vertices[0], OpenGL::StaticDraw () );
 
-    OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indexBufferId );
-    OpenGL::glBufferData              ( OpenGL::ElementArrayBuffer (), this->sizeOfIndices ()
-                                      , &this->indices[0], OpenGL::StaticDraw () );
+    OpenGL::glBindBuffer (OpenGL::ElementArrayBuffer (), this->indexBufferId);
+    OpenGL::glBufferData ( OpenGL::ElementArrayBuffer (), this->sizeOfIndices ()
+                         , &this->indices[0], OpenGL::StaticDraw () );
 
-    OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normalBufferId );
-    OpenGL::glBufferData              ( OpenGL::ArrayBuffer (), this->sizeOfNormals ()
-                                      , &this->normals[0], OpenGL::StaticDraw () );
+    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->normalBufferId);
+    OpenGL::glBufferData ( OpenGL::ArrayBuffer (), this->sizeOfNormals ()
+                         , &this->normals[0], OpenGL::StaticDraw () );
 
-    OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), 0);
-    OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), 0);
+    OpenGL::glBindBuffer (OpenGL::ElementArrayBuffer (), 0);
+    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), 0);
   }
 
   glm::mat4x4 modelMatrix () const {

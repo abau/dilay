@@ -72,7 +72,7 @@ struct ViewGlWidget::Impl {
   }
 
   void initializeGL () {
-    OpenGL  ::initializeFunctions ();
+    OpenGL::initializeFunctions ();
 
     this->axis .reset (new ViewAxis (this->config));
     this->state.reset (new State (this->mainWindow, this->config, this->cache));
