@@ -258,7 +258,7 @@ struct Mesh::Impl {
 
       OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Line ());
       OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                             , OpenGL::UnsignedInt (), (void*)0 );
+                             , OpenGL::UnsignedInt (), nullptr );
       OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Fill ());
 
       camera.renderer ().setProgram (RenderModeUtil::nonWireframe (this->renderMode));
@@ -268,12 +268,12 @@ struct Mesh::Impl {
       OpenGL::glEnable        (OpenGL::PolygonOffsetFill ());
       OpenGL::glPolygonOffset (Util::defaultScale (), Util::defaultScale ());
       OpenGL::glDrawElements  ( OpenGL::Triangles (), this->numIndices ()
-                              , OpenGL::UnsignedInt (), (void*)0 );
+                              , OpenGL::UnsignedInt (), nullptr );
       OpenGL::glDisable       (OpenGL::PolygonOffsetFill ());
     }
     else {
       OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                             , OpenGL::UnsignedInt (), (void*)0 );
+                             , OpenGL::UnsignedInt (), nullptr );
     }
     this->renderEnd ();
   }
@@ -285,7 +285,7 @@ struct Mesh::Impl {
   void renderLines (const Camera& camera, const RenderFlags& flags) const {
     this->renderBegin (camera, flags);
     OpenGL::glDrawElements ( OpenGL::Lines (), this->numIndices ()
-                           , OpenGL::UnsignedInt (), (void*)0 );
+                           , OpenGL::UnsignedInt (), nullptr );
     this->renderEnd ();
   }
 
