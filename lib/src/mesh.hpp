@@ -37,12 +37,12 @@ class Mesh {
     void               bufferData        ();
     glm::mat4x4        modelMatrix       () const;
     glm::mat4x4        worldMatrix       () const;
-    void               renderBegin       (const Camera&, const RenderFlags&) const;
-    void               renderBegin       (const Camera&) const;
+    void               renderBegin       (Camera&, const RenderFlags&) const;
+    void               renderBegin       (Camera&) const;
     void               renderEnd         () const;
-    void               render            (const Camera&, const RenderFlags&) const;
-    void               render            (const Camera&) const;
-    void               renderLines       (const Camera&, const RenderFlags&) const;
+    void               render            (Camera&, const RenderFlags&) const;
+    void               render            (Camera&) const;
+    void               renderLines       (Camera&, const RenderFlags&) const;
     void               reset             ();
     void               resetGeometry     ();
     RenderMode         renderMode        () const;

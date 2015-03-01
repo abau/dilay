@@ -60,7 +60,7 @@ class WingedMesh {
     void               writeAllIndices       (); 
     void               writeAllNormals       (); 
     void               bufferData            ();
-    void               render                (const Camera&) const;
+    void               render                (Camera&) const;
     void               reset                 ();
     void               setupOctreeRoot       (const glm::vec3&, float);
     void               toggleRenderMode      ();

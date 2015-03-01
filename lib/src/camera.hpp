@@ -11,7 +11,7 @@ class Renderer;
 
 class Camera {
   public:
-    DECLARE_BIG3 (Camera, const Config&, Renderer&)
+    DECLARE_BIG3 (Camera, const Config&)
 
           Renderer&    renderer        () const;
     const glm::uvec2&  resolution      () const;
@@ -26,7 +26,7 @@ class Camera {
 
     void        updateResolution       (const glm::uvec2&);
     glm::mat4x4 modelViewProjection    (const glm::mat4x4&, bool) const;
-    void        setModelViewProjection (const glm::mat4x4&, bool) const;
+    void        setModelViewProjection (const glm::mat4x4&, bool);
 
     void        set                    (const glm::vec3&, const glm::vec3&, const glm::vec3&);
     void        setGaze                (const glm::vec3&);

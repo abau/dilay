@@ -21,7 +21,7 @@ class ViewCursor {
     void  color          (const Color&);
     void  position       (const glm::vec3&);
     void  normal         (const glm::vec3&);
-    void  render         (const Camera&) const;
+    void  render         (Camera&) const;
     void  enable         ();
     void  disable        ();
     bool  isEnabled      () const;
@@ -32,8 +32,8 @@ class ViewCursor {
   private:
     IMPLEMENTATION
 
-    virtual void runUpdate ()                    {}
-    virtual void runRender (const Camera&) const {}
+    virtual void runUpdate ()              {}
+    virtual void runRender (Camera&) const {}
 };
 
 #endif

@@ -11,7 +11,7 @@
 
 struct Camera::Impl {
   Camera*      self;
-  Renderer&    renderer;
+  Renderer     renderer;
   glm::vec3    gazePoint;
   glm::vec3    toEyePoint;
   glm::vec3    up;
@@ -23,9 +23,9 @@ struct Camera::Impl {
   float        nearClipping;
   float        farClipping;
 
-  Impl (Camera* s, const Config& config, Renderer& r) 
+  Impl (Camera* s, const Config& config) 
     : self         (s)
-    , renderer     (r)
+    , renderer     (config)
     , resolution   ( 1024, 768 )
     , nearClipping ( config.get <float> ("editor/camera/near-clipping") )
     , farClipping  ( config.get <float> ("editor/camera/far-clipping") ) {
@@ -63,7 +63,7 @@ struct Camera::Impl {
                   : this->projection * this->view       * model;
   }
 
-  void setModelViewProjection (const glm::mat4x4& model, bool noZoom) const {
+  void setModelViewProjection (const glm::mat4x4& model, bool noZoom) {
     glm::mat4x4 mvp = this->modelViewProjection (model, noZoom);
     this->renderer.setMvp   (&mvp  [0][0]);
     this->renderer.setModel (&model[0][0]);
@@ -168,7 +168,7 @@ struct Camera::Impl {
   }
 };
 
-DELEGATE2_BIG3_SELF (Camera, const Config&, Renderer&)
+DELEGATE1_BIG3_SELF (Camera, const Config&)
 
 GETTER_CONST    (Renderer&         , Camera, renderer)
 GETTER_CONST    (const glm::uvec2& , Camera, resolution)
@@ -183,7 +183,7 @@ DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 
 DELEGATE1       (void       , Camera, updateResolution, const glm::uvec2&) 
 DELEGATE2_CONST (glm::mat4x4, Camera, modelViewProjection, const glm::mat4x4&, bool) 
-DELEGATE2_CONST (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
+DELEGATE2       (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
 DELEGATE3       (void       , Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE1       (void       , Camera, setGaze, const glm::vec3&)
 DELEGATE1       (void       , Camera, stepAlongGaze, float) 

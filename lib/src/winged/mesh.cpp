@@ -201,7 +201,7 @@ struct WingedMesh::Impl {
     this->mesh.bufferData (); 
   }
 
-  void render (const Camera& camera) const { 
+  void render (Camera& camera) const { 
     this->mesh.render   (camera); 
 #ifdef DILAY_RENDER_OCTREE
     this->octree.render (camera);
@@ -362,7 +362,7 @@ DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 DELEGATE        (void, WingedMesh, writeAllIndices)
 DELEGATE        (void, WingedMesh, writeAllNormals)
 DELEGATE        (void, WingedMesh, bufferData)
-DELEGATE1_CONST (void, WingedMesh, render, const Camera&)
+DELEGATE1_CONST (void, WingedMesh, render, Camera&)
 DELEGATE        (void, WingedMesh, reset)
 DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE        (void, WingedMesh, toggleRenderMode)

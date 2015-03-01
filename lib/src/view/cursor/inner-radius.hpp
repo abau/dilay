@@ -14,7 +14,7 @@ class ViewCursorInnerRadius : public ViewCursor {
     IMPLEMENTATION
 
     void runUpdate ();
-    void runRender (const Camera&) const;
+    void runRender (Camera&) const;
 };
 
 #endif

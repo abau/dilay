@@ -133,7 +133,7 @@ WingedMesh* Scene::mesh <WingedMesh> (unsigned int index) const {
 }
 
 template <> 
-void Scene::render <WingedMesh> (const Camera& camera) {
+void Scene::render <WingedMesh> (Camera& camera) {
   const Color& normalColor = this->wingedMeshConfig ().get <Color> ("color/normal");
   const Color& selectColor = this->wingedMeshConfig ().get <Color> ("color/selection");
   const Color& wireColor   = this->wingedMeshConfig ().get <Color> ("color/wireframe");

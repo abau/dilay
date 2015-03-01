@@ -198,7 +198,7 @@ struct Mesh::Impl {
           * glm::scale     (glm::mat4x4 (1.0f), 1.0f / this->scaling ());
   }
 
-  void setModelMatrix (const Camera& camera, bool noZoom) const {
+  void setModelMatrix (Camera& camera, bool noZoom) const {
     camera.setModelViewProjection (this->modelMatrix (), noZoom);
   }
 
@@ -208,7 +208,7 @@ struct Mesh::Impl {
         && OpenGL        ::supportsGeometryShader () == false;
   }
 
-  void renderBegin (const Camera& camera, const RenderFlags& flags) const {
+  void renderBegin (Camera& camera, const RenderFlags& flags) const {
     if (this->renderFallbackWireframe ()) {
       camera.renderer ().setProgram (RenderMode::Constant);
     }
@@ -238,7 +238,7 @@ struct Mesh::Impl {
     }
   }
 
-  void renderBegin (const Camera& camera) const {
+  void renderBegin (Camera& camera) const {
     this->renderBegin (camera, RenderFlags ());
   }
 
@@ -250,7 +250,7 @@ struct Mesh::Impl {
     OpenGL::glEnable                   (OpenGL::DepthTest ()); 
   }
 
-  void render (const Camera& camera, const RenderFlags& flags) const {
+  void render (Camera& camera, const RenderFlags& flags) const {
     this->renderBegin (camera, flags);
 
     if (this->renderFallbackWireframe ()) {
@@ -278,11 +278,11 @@ struct Mesh::Impl {
     this->renderEnd ();
   }
 
-  void render (const Camera& camera) const {
+  void render (Camera& camera) const {
     this->render (camera, RenderFlags ());
   }
 
-  void renderLines (const Camera& camera, const RenderFlags& flags) const {
+  void renderLines (Camera& camera, const RenderFlags& flags) const {
     this->renderBegin (camera, flags);
     OpenGL::glDrawElements ( OpenGL::Lines (), this->numIndices ()
                            , OpenGL::UnsignedInt (), nullptr );
@@ -384,12 +384,12 @@ DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, worldMatrix)
-DELEGATE2_CONST  (void              , Mesh, renderBegin, const Camera&, const RenderFlags&)
-DELEGATE1_CONST  (void              , Mesh, renderBegin, const Camera&)
+DELEGATE2_CONST  (void              , Mesh, renderBegin, Camera&, const RenderFlags&)
+DELEGATE1_CONST  (void              , Mesh, renderBegin, Camera&)
 DELEGATE_CONST   (void              , Mesh, renderEnd)
-DELEGATE2_CONST  (void              , Mesh, render, const Camera&, const RenderFlags&)
-DELEGATE1_CONST  (void              , Mesh, render, const Camera&)
-DELEGATE2_CONST  (void              , Mesh, renderLines, const Camera&, const RenderFlags&)
+DELEGATE2_CONST  (void              , Mesh, render, Camera&, const RenderFlags&)
+DELEGATE1_CONST  (void              , Mesh, render, Camera&)
+DELEGATE2_CONST  (void              , Mesh, renderLines, Camera&, const RenderFlags&)
 DELEGATE         (void              , Mesh, reset)
 DELEGATE         (void              , Mesh, resetGeometry)
 GETTER_CONST     (RenderMode        , Mesh, renderMode)

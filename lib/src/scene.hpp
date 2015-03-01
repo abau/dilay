@@ -39,7 +39,7 @@ class Scene {
           void          forEachSelectedMesh  (const std::function <void (WingedMesh&)>&) const;
 
     template <typename T> T*   mesh                  (unsigned int) const;
-    template <typename T> void render                (const Camera&);
+    template <typename T> void render                (Camera&);
     template <typename T> void toggleRenderMode      ();
     template <typename T> void toggleRenderWireframe ();
 

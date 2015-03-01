@@ -9,7 +9,6 @@ class Config;
 class History;
 class Id;
 class Mesh;
-class Renderer;
 class Scene;
 class Tool;
 enum class ToolResponse;
@@ -23,7 +22,6 @@ class State {
     ViewMainWindow& mainWindow         ();
     Config&         config             ();
     Cache&          cache              ();
-    Renderer&       renderer           ();
     Camera&         camera             ();
     History&        history            ();
     Scene&          scene              ();

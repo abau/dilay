@@ -104,7 +104,7 @@ struct ViewAxis::Impl {
     camera.updateResolution (resolution);
   }
 
-  void renderGrid (const Camera& camera, const RenderFlags& flags) {
+  void renderGrid (Camera& camera, const RenderFlags& flags) {
     switch (camera.primaryDimension ()) {
       case Dimension::X:
         this->gridMesh.rotationY (- 0.5f * glm::pi<float> ());

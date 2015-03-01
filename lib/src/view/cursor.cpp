@@ -59,7 +59,7 @@ struct ViewCursor::Impl {
     this->self->runUpdate ();
   }
 
-  void render (const Camera& camera) const {
+  void render (Camera& camera) const {
     if (this->isEnabled) {
       this->mesh.renderLines (camera, RenderFlags::NoDepthTest ());
       this->self->runRender  (camera);
@@ -103,7 +103,7 @@ DELEGATE1        (void              , ViewCursor, radius, float)
 DELEGATE1        (void              , ViewCursor, color, const Color&)
 DELEGATE1        (void              , ViewCursor, position, const glm::vec3&)
 DELEGATE1        (void              , ViewCursor, normal, const glm::vec3&)
-DELEGATE1_CONST  (void              , ViewCursor, render, const Camera&)
+DELEGATE1_CONST  (void              , ViewCursor, render, Camera&)
 DELEGATE         (void              , ViewCursor, enable)
 DELEGATE         (void              , ViewCursor, disable)
 GETTER_CONST     (bool              , ViewCursor, isEnabled)

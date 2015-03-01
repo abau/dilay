@@ -38,7 +38,7 @@ struct ViewCursorInnerRadius::Impl {
     this->mesh.rotationMatrix (this->self->rotationMatrix ());
   }
 
-  void runRender (const Camera& camera) const {
+  void runRender (Camera& camera) const {
     this->mesh.renderLines (camera, RenderFlags::NoDepthTest ());
   }
 };
@@ -47,4 +47,4 @@ DELEGATE_BIG6_BASE (ViewCursorInnerRadius, (), (this), ViewCursor, ())
 DELEGATE_CONST  (float, ViewCursorInnerRadius, innerRadiusFactor)
 DELEGATE1       (void , ViewCursorInnerRadius, innerRadiusFactor, float)
 DELEGATE        (void , ViewCursorInnerRadius, runUpdate)
-DELEGATE1_CONST (void , ViewCursorInnerRadius, runRender, const Camera&)
+DELEGATE1_CONST (void , ViewCursorInnerRadius, runRender, Camera&)

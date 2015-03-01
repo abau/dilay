@@ -94,8 +94,8 @@ struct ViewGlWidget::Impl {
     QPainter painter (this->self);
     painter.beginNativePainting ();
 
-    this->state->renderer ().setupRendering ();
-    this->state->scene    ().render <WingedMesh> (this->state->camera ());
+    this->state->camera ().renderer ().setupRendering ();
+    this->state->scene  ().render <WingedMesh> (this->state->camera ());
 
     if (this->state->hasTool ()) {
       this->state->tool ().render ();
