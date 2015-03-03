@@ -27,7 +27,7 @@ class ViewCursor {
     bool  isEnabled      () const;
 
   protected:
-    static void updateCircleGeometry (Mesh&, float);
+    static void updateCircleMesh (Mesh&, float);
 
   private:
     IMPLEMENTATION

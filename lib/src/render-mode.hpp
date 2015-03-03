@@ -1,21 +1,31 @@
 #ifndef DILAY_RENDER_MODE
 #define DILAY_RENDER_MODE
 
-enum class RenderMode 
-  { Smooth            = 0 // c.f. numRenderModes
-  , Flat              = 1
-  , Constant          = 2
-  , SmoothWireframe   = 3
-  , FlatWireframe     = 4
-  , ConstantWireframe = 5
-  }; 
+#include "bitset.hpp"
 
-namespace RenderModeUtil {
-  const unsigned int numRenderModes = 6;
+class RenderMode {
+  public:
+    RenderMode ();
+    RenderMode (const RenderMode&);
 
-  bool       rendersWireframe (RenderMode);
-  RenderMode nonWireframe     (RenderMode);
-  RenderMode wireframe        (RenderMode);
-}
+    bool        smoothShading      () const;
+    bool        flatShading        () const;
+    bool        constantShading    () const;
+    bool        renderWireframe    () const;
+    bool        cameraRotationOnly () const;
+    bool        noDepthTest        () const;
+    const char* vertexShader       () const;
+    const char* fragmentShader     () const;
+
+    void        smoothShading      (bool);
+    void        flatShading        (bool);
+    void        constantShading    (bool);
+    void        renderWireframe    (bool);
+    void        cameraRotationOnly (bool);
+    void        noDepthTest        (bool);
+
+  private:
+    Bitset <unsigned int> flags;
+};
 
 #endif

@@ -8,7 +8,7 @@ class Camera;
 class Color;
 class MeshDefinition;
 class RenderFlags;
-enum class RenderMode;
+class RenderMode;
 
 class Mesh {
   public:
@@ -37,16 +37,14 @@ class Mesh {
     void               bufferData        ();
     glm::mat4x4        modelMatrix       () const;
     glm::mat4x4        worldMatrix       () const;
-    void               renderBegin       (Camera&, const RenderFlags&) const;
     void               renderBegin       (Camera&) const;
     void               renderEnd         () const;
-    void               render            (Camera&, const RenderFlags&) const;
     void               render            (Camera&) const;
-    void               renderLines       (Camera&, const RenderFlags&) const;
+    void               renderLines       (Camera&) const;
     void               reset             ();
     void               resetGeometry     ();
-    RenderMode         renderMode        () const;
-    void               renderMode        (RenderMode);
+    const RenderMode&  renderMode        () const;
+    RenderMode&        renderMode        ();
 
     void               scale             (const glm::vec3&);
     void               scaling           (const glm::vec3&);

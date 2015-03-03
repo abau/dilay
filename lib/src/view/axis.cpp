@@ -9,7 +9,6 @@
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
-#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "state.hpp"
 #include "view/axis.hpp"
@@ -33,12 +32,14 @@ struct ViewAxis::Impl {
     this->cylinderMesh   = Mesh (MeshDefinition::Cylinder (10));
 
     this->cylinderMesh.scaling    (glm::vec3 (0.01f, 0.3f , 0.01f));
-    this->cylinderMesh.renderMode (RenderMode::Constant);
+    this->cylinderMesh.renderMode ().constantShading (true);
+    this->cylinderMesh.renderMode ().cameraRotationOnly (true);
     this->cylinderMesh.color      (this->axisColor);
     this->cylinderMesh.bufferData ();
 
     this->coneMesh.scaling        (glm::vec3 (0.03f, 0.1f, 0.03f));
-    this->coneMesh.renderMode     (RenderMode::Constant);
+    this->coneMesh.renderMode     ().constantShading (true);
+    this->coneMesh.renderMode     ().cameraRotationOnly (true);
     this->coneMesh.color          (this->axisColor);
     this->coneMesh.bufferData     ();
 
@@ -63,7 +64,8 @@ struct ViewAxis::Impl {
         this->gridMesh.addIndex ((j*gridResolution)+i);
       }
     }
-    this->gridMesh.renderMode (RenderMode::Constant);
+    this->gridMesh.renderMode ().constantShading (true);
+    this->gridMesh.renderMode ().cameraRotationOnly (true);
     this->gridMesh.bufferData ();
     this->gridMesh.color      (this->axisColor);
   }
@@ -72,39 +74,38 @@ struct ViewAxis::Impl {
     OpenGL::glClear (OpenGL::DepthBufferBit ());
 
     const glm::uvec2  resolution = camera.resolution ();
-    const RenderFlags flags      = RenderFlags::NoZoom ();
     camera.updateResolution (glm::uvec2 (200,200));
 
     this->cylinderMesh.position       (glm::vec3 (0.0f, 0.15f, 0.0f));
     this->cylinderMesh.rotationMatrix (glm::mat4x4 (1.0f));
-    this->cylinderMesh.render         (camera, flags);
+    this->cylinderMesh.render         (camera);
 
     this->cylinderMesh.position       (glm::vec3 (0.15f, 0.0f, 0.0f));
     this->cylinderMesh.rotationZ      (0.5f * glm::pi<float> ());
-    this->cylinderMesh.render         (camera, flags);
+    this->cylinderMesh.render         (camera);
 
     this->cylinderMesh.position       (glm::vec3 (0.0f, 0.0f, 0.15f));
     this->cylinderMesh.rotationX      (0.5f * glm::pi<float> ());
-    this->cylinderMesh.render         (camera, flags);
+    this->cylinderMesh.render         (camera);
 
     this->coneMesh.position           (glm::vec3 (0.0f, 0.3f, 0.0f));
     this->coneMesh.rotationMatrix     (glm::mat4x4 (1.0f));
-    this->coneMesh.render             (camera, flags);
+    this->coneMesh.render             (camera);
 
     this->coneMesh.position           (glm::vec3 (0.3f, 0.0f, 0.0f));
     this->coneMesh.rotationZ          (- 0.5f * glm::pi<float> ());
-    this->coneMesh.render             (camera, flags);
+    this->coneMesh.render             (camera);
 
     this->coneMesh.position           (glm::vec3 (0.0f, 0.0f, 0.3f));
     this->coneMesh.rotationX          (0.5f * glm::pi<float> ());
-    this->coneMesh.render             (camera, flags);
+    this->coneMesh.render             (camera);
 
-    this->renderGrid                  (camera, flags);
+    this->renderGrid                  (camera);
 
     camera.updateResolution (resolution);
   }
 
-  void renderGrid (Camera& camera, const RenderFlags& flags) {
+  void renderGrid (Camera& camera) {
     switch (camera.primaryDimension ()) {
       case Dimension::X:
         this->gridMesh.rotationY (- 0.5f * glm::pi<float> ());
@@ -116,7 +117,7 @@ struct ViewAxis::Impl {
         this->gridMesh.rotationMatrix (glm::mat4x4 (1.0f));
         break;
     }
-    this->gridMesh.renderLines (camera, flags);
+    this->gridMesh.renderLines (camera);
   }
 
   void render (Camera& camera, QPainter& painter) {

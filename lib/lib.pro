@@ -49,7 +49,6 @@ SOURCES += \
            src/primitive/ray.cpp \
            src/primitive/sphere.cpp \
            src/primitive/triangle.cpp \
-           src/render-flags.cpp \
            src/render-mode.cpp \
            src/renderer.cpp \
            src/scene.cpp \
@@ -156,7 +155,6 @@ HEADERS += \
            src/primitive/ray.hpp \
            src/primitive/sphere.hpp \
            src/primitive/triangle.hpp \
-           src/render-flags.hpp \
            src/render-mode.hpp \
            src/renderer.hpp \
            src/scene.hpp \

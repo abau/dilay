@@ -221,30 +221,20 @@ struct WingedMesh::Impl {
   }
 
   void toggleRenderMode () { 
-    switch (this->mesh.renderMode ()) {
-      case RenderMode::Smooth:
-        this->mesh.renderMode (RenderMode::Flat);
-        break;
-      case RenderMode::SmoothWireframe:
-        this->mesh.renderMode (RenderMode::FlatWireframe);
-        break;
-      case RenderMode::Flat:
-        this->mesh.renderMode (RenderMode::Smooth);
-        break;
-      case RenderMode::FlatWireframe:
-        this->mesh.renderMode (RenderMode::SmoothWireframe);
-        break;
-      default:
-        std::abort ();
+    if (this->mesh.renderMode ().smoothShading ()) {
+      this->mesh.renderMode ().flatShading (true);
+    }
+    else if (this->mesh.renderMode ().flatShading ()) {
+      this->mesh.renderMode ().smoothShading (true);
     }
   }
 
   void toggleRenderWireframe () { 
-    if (RenderModeUtil::rendersWireframe (this->mesh.renderMode ())) {
-      this->mesh.renderMode (RenderModeUtil::nonWireframe (this->mesh.renderMode ()));
+    if (this->mesh.renderMode ().renderWireframe ()) {
+      this->mesh.renderMode ().renderWireframe (false);
     }
     else {
-      this->mesh.renderMode (RenderModeUtil::wireframe (this->mesh.renderMode ()));
+      this->mesh.renderMode ().renderWireframe (true);
     }
   }
 

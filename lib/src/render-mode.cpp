@@ -1,31 +1,82 @@
+#include <cstdlib>
 #include "render-mode.hpp"
+#include "shader.hpp"
 
-namespace RenderModeUtil {
+RenderMode::RenderMode () {
+  this->smoothShading      (true);
+  this->renderWireframe    (false);
+  this->cameraRotationOnly (false);
+  this->noDepthTest        (false);
+}
 
-  bool rendersWireframe (RenderMode m) {
-    switch (m) {
-      case RenderMode::SmoothWireframe:   return true;
-      case RenderMode::FlatWireframe:     return true;
-      case RenderMode::ConstantWireframe: return true;
-      default:                            return false;
-    }
+RenderMode::RenderMode (const RenderMode& other) 
+  : flags (other.flags)
+{}
+
+bool RenderMode::smoothShading      () const { return this->flags.get <0> (); }
+bool RenderMode::flatShading        () const { return this->flags.get <1> (); }
+bool RenderMode::constantShading    () const { return this->flags.get <2> (); }
+bool RenderMode::renderWireframe    () const { return this->flags.get <3> (); }
+bool RenderMode::cameraRotationOnly () const { return this->flags.get <4> (); }
+bool RenderMode::noDepthTest        () const { return this->flags.get <5> (); }
+
+const char* RenderMode::vertexShader () const {
+  if (this->smoothShading ()) {
+    return Shader::smoothVertexShader ();
   }
-
-  RenderMode nonWireframe (RenderMode m) {
-    switch (m) {
-      case RenderMode::SmoothWireframe:   return RenderMode::Smooth;
-      case RenderMode::FlatWireframe:     return RenderMode::Flat;
-      case RenderMode::ConstantWireframe: return RenderMode::Constant;
-      default:                            return m;
-    }
+  else if (this->flatShading ()) {
+    return Shader::flatVertexShader ();
   }
-
-  RenderMode wireframe (RenderMode m) {
-    switch (m) {
-      case RenderMode::Smooth:   return RenderMode::SmoothWireframe;
-      case RenderMode::Flat:     return RenderMode::FlatWireframe;
-      case RenderMode::Constant: return RenderMode::ConstantWireframe;
-      default:                   return m;
-    }
+  else if (this->constantShading ()) {
+    return Shader::constantVertexShader ();
+  }
+  else {
+    std::abort ();
   }
 }
+
+const char* RenderMode::fragmentShader () const {
+  if (this->smoothShading ()) {
+    return this->renderWireframe () ? Shader::smoothWireframeFragmentShader ()
+                                    : Shader::smoothFragmentShader ();
+  }
+  else if (this->flatShading ()) {
+    return this->renderWireframe () ? Shader::flatWireframeFragmentShader ()
+                                    : Shader::flatFragmentShader ();
+  }
+  else if (this->constantShading ()) {
+    return this->renderWireframe () ? Shader::constantWireframeFragmentShader ()
+                                    : Shader::constantFragmentShader ();
+  }
+  else {
+    std::abort ();
+  }
+}
+
+void RenderMode::smoothShading (bool v) { 
+  this->flags.set <0> (v); 
+  if (v) {
+    this->flags.set <1> (false); 
+    this->flags.set <2> (false); 
+  }
+}
+
+void RenderMode::flatShading (bool v) { 
+  this->flags.set <1> (v); 
+  if (v) {
+    this->flags.set <0> (false); 
+    this->flags.set <2> (false); 
+  }
+}
+
+void RenderMode::constantShading (bool v) { 
+  this->flags.set <2> (v); 
+  if (v) {
+    this->flags.set <0> (false); 
+    this->flags.set <1> (false); 
+  }
+}
+
+void RenderMode::renderWireframe    (bool v) { this->flags.set <3> (v); }
+void RenderMode::cameraRotationOnly (bool v) { this->flags.set <4> (v); }
+void RenderMode::noDepthTest        (bool v) { this->flags.set <5> (v); }

@@ -18,7 +18,7 @@ struct Camera::Impl {
   glm::vec3    right;
   glm::mat4x4  projection;
   glm::mat4x4  view;
-  glm::mat4x4  viewNoZoom;
+  glm::mat4x4  viewRotation;
   glm::uvec2   resolution;
   float        nearClipping;
   float        farClipping;
@@ -58,13 +58,13 @@ struct Camera::Impl {
     this->updateProjection ();
   }
 
-  glm::mat4x4 modelViewProjection (const glm::mat4x4& model, bool noZoom) const {
-    return noZoom ? this->projection * this->viewNoZoom * model
-                  : this->projection * this->view       * model;
+  glm::mat4x4 modelViewProjection (const glm::mat4x4& model, bool onlyRotation) const {
+    return onlyRotation ? this->projection * this->viewRotation * model
+                        : this->projection * this->view         * model;
   }
 
-  void setModelViewProjection (const glm::mat4x4& model, bool noZoom) {
-    glm::mat4x4 mvp = this->modelViewProjection (model, noZoom);
+  void setModelViewProjection (const glm::mat4x4& model, bool onlyRotation) {
+    glm::mat4x4 mvp = this->modelViewProjection (model, onlyRotation);
     this->renderer.setMvp   (&mvp  [0][0]);
     this->renderer.setModel (&model[0][0]);
   }
@@ -114,9 +114,9 @@ struct Camera::Impl {
     return glm::vec4 (0, 0, this->resolution.x, this->resolution.y);
   }
 
-  glm::ivec2 fromWorld (const glm::vec3& p, const glm::mat4x4& model, bool noZoom) const {
-    glm::mat4x4 mv = noZoom ? this->viewNoZoom * model
-                            : this->view       * model;
+  glm::ivec2 fromWorld (const glm::vec3& p, const glm::mat4x4& model, bool onlyRotation) const {
+    glm::mat4x4 mv = onlyRotation ? this->viewRotation * model
+                                  : this->view         * model;
     glm::vec3 w = glm::project (p, mv, this->projection, this->viewport ());
     return glm::ivec2 (int (w.x), int (resolution.y - w.y));
   }
@@ -145,9 +145,9 @@ struct Camera::Impl {
   void updateView () {
     this->view = glm::lookAt ( this->eyePoint (), this->gazePoint, this->up );
 
-    this->viewNoZoom = glm::lookAt ( glm::normalize (this->toEyePoint)
-                                   , glm::vec3 (0.0f)
-                                   , this->up );
+    this->viewRotation = glm::lookAt ( glm::normalize (this->toEyePoint)
+                                     , glm::vec3 (0.0f)
+                                     , this->up );
     this->renderer.setEyePoint  (this->eyePoint ());
     this->renderer.updateLights (this->world    ());
   }
@@ -177,7 +177,7 @@ GETTER_CONST    (const glm::vec3&  , Camera, toEyePoint)
 GETTER_CONST    (const glm::vec3&  , Camera, up)
 GETTER_CONST    (const glm::vec3&  , Camera, right)
 GETTER_CONST    (const glm::mat4x4&, Camera, view)
-GETTER_CONST    (const glm::mat4x4&, Camera, viewNoZoom)
+GETTER_CONST    (const glm::mat4x4&, Camera, viewRotation)
 DELEGATE_CONST  (glm::vec3         , Camera, position)
 DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 

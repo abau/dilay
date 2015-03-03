@@ -5,7 +5,6 @@
 #include "dimension.hpp"
 #include "mesh.hpp"
 #include "primitive/ray.hpp"
-#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "sculpt-brush/carve.hpp"
 #include "state.hpp"
@@ -31,7 +30,10 @@ struct ToolSculptDrag::Impl {
     , movement ( this->self->state ().camera ()
                , glm::vec3 (0.0f)
                , MovementConstraint::Explicit )
-  {}
+  {
+    this->draggedVerticesMesh.renderMode ().constantShading (true);
+    this->draggedVerticesMesh.renderMode ().noDepthTest (true);
+  }
 
   void runSetupBrush () {
     this->self->forceBrushSubdivision (true);
@@ -39,7 +41,9 @@ struct ToolSculptDrag::Impl {
     this->brush.subdivide         (true);
   }
 
-  void runSetupCursor () {}
+  void runSetupCursor () {
+    this->draggedVerticesMesh.color (this->cursor.color ());
+  }
 
   void runSetupProperties (ViewPropertiesPart&) {}
 
@@ -59,8 +63,6 @@ struct ToolSculptDrag::Impl {
           this->draggedVerticesMesh.addIndex (i);
         }
       }
-      this->draggedVerticesMesh.renderMode (RenderMode::Constant);
-      this->draggedVerticesMesh.color      (this->cursor.color ());
       this->draggedVerticesMesh.bufferData ();
     }
   }
@@ -195,8 +197,7 @@ struct ToolSculptDrag::Impl {
 
   void runRender () const {
     if (this->draggedVertices.size () >= 2) {
-      this->draggedVerticesMesh.renderLines ( this->self->state ().camera ()
-                                            , RenderFlags::NoDepthTest () );
+      this->draggedVerticesMesh.renderLines (this->self->state ().camera ());
     }
   }
 };

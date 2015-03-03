@@ -7,7 +7,6 @@
 #include "mesh-definition.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
-#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
 #include "util.hpp"
@@ -38,7 +37,8 @@ struct Mesh::Impl {
     this->vertexBufferId      = 0;
     this->indexBufferId       = 0;
     this->normalBufferId      = 0;
-    this->renderMode          = RenderMode::Smooth;
+
+    this->renderMode.smoothShading (true);
   }
 
   Impl (const MeshDefinition& def) : Impl () { 
@@ -203,14 +203,15 @@ struct Mesh::Impl {
   }
 
   bool renderFallbackWireframe () const {
-    return RenderModeUtil::rendersWireframe       (this->renderMode)
-        && Renderer      ::requiresGeometryShader (this->renderMode)
-        && OpenGL        ::supportsGeometryShader () == false;
+    return this->renderMode.renderWireframe () && OpenGL::supportsGeometryShader () == false;
   }
 
-  void renderBegin (Camera& camera, const RenderFlags& flags) const {
+  void renderBegin (Camera& camera) const {
     if (this->renderFallbackWireframe ()) {
-      camera.renderer ().setProgram (RenderMode::Constant);
+      RenderMode constantRenderMode;
+      constantRenderMode.constantShading (true);
+
+      camera.renderer ().setProgram (constantRenderMode);
     }
     else {
       camera.renderer ().setProgram (this->renderMode);
@@ -218,7 +219,7 @@ struct Mesh::Impl {
     camera.renderer ().setColor3          (this->color);
     camera.renderer ().setWireframeColor3 (this->wireframeColor);
 
-    this->setModelMatrix              (camera, flags.noZoom ());
+    this->setModelMatrix              (camera, this->renderMode.cameraRotationOnly ());
 
     OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId);
     OpenGL::glEnableVertexAttribArray (OpenGL::PositionIndex);
@@ -226,20 +227,16 @@ struct Mesh::Impl {
 
     OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indexBufferId);
 
-    if (Renderer::requiresNormalAttribute (this->renderMode)) {
+    if (this->renderMode.smoothShading ()) {
       OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normalBufferId);
       OpenGL::glEnableVertexAttribArray (OpenGL::NormalIndex);
       OpenGL::glVertexAttribPointer     (OpenGL::NormalIndex, 3, OpenGL::Float (), false, 0, 0);
     }
     OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), 0);
 
-    if (flags.noDepthTest ()) {
+    if (this->renderMode.noDepthTest ()) {
       OpenGL::glDisable (OpenGL::DepthTest ()); 
     }
-  }
-
-  void renderBegin (Camera& camera) const {
-    this->renderBegin (camera, RenderFlags ());
   }
 
   void renderEnd () const { 
@@ -250,8 +247,8 @@ struct Mesh::Impl {
     OpenGL::glEnable                   (OpenGL::DepthTest ()); 
   }
 
-  void render (Camera& camera, const RenderFlags& flags) const {
-    this->renderBegin (camera, flags);
+  void render (Camera& camera) const {
+    this->renderBegin (camera);
 
     if (this->renderFallbackWireframe ()) {
       camera.renderer ().setColor3 (this->wireframeColor);
@@ -261,9 +258,13 @@ struct Mesh::Impl {
                              , OpenGL::UnsignedInt (), nullptr );
       OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Fill ());
 
-      camera.renderer ().setProgram (RenderModeUtil::nonWireframe (this->renderMode));
+      RenderMode nonWireframeRenderMode (this->renderMode);
+      nonWireframeRenderMode.renderWireframe (false);
+
+      camera.renderer ().setProgram (nonWireframeRenderMode);
       camera.renderer ().setColor3  (this->color);
-      this->setModelMatrix (camera, flags.noZoom ());
+
+      this->setModelMatrix (camera, nonWireframeRenderMode.cameraRotationOnly ());
 
       OpenGL::glEnable        (OpenGL::PolygonOffsetFill ());
       OpenGL::glPolygonOffset (Util::defaultScale (), Util::defaultScale ());
@@ -278,12 +279,8 @@ struct Mesh::Impl {
     this->renderEnd ();
   }
 
-  void render (Camera& camera) const {
-    this->render (camera, RenderFlags ());
-  }
-
-  void renderLines (Camera& camera, const RenderFlags& flags) const {
-    this->renderBegin (camera, flags);
+  void renderLines (Camera& camera) const {
+    this->renderBegin (camera);
     OpenGL::glDrawElements ( OpenGL::Lines (), this->numIndices ()
                            , OpenGL::UnsignedInt (), nullptr );
     this->renderEnd ();
@@ -384,16 +381,14 @@ DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, worldMatrix)
-DELEGATE2_CONST  (void              , Mesh, renderBegin, Camera&, const RenderFlags&)
 DELEGATE1_CONST  (void              , Mesh, renderBegin, Camera&)
 DELEGATE_CONST   (void              , Mesh, renderEnd)
-DELEGATE2_CONST  (void              , Mesh, render, Camera&, const RenderFlags&)
 DELEGATE1_CONST  (void              , Mesh, render, Camera&)
-DELEGATE2_CONST  (void              , Mesh, renderLines, Camera&, const RenderFlags&)
+DELEGATE1_CONST  (void              , Mesh, renderLines, Camera&)
 DELEGATE         (void              , Mesh, reset)
 DELEGATE         (void              , Mesh, resetGeometry)
-GETTER_CONST     (RenderMode        , Mesh, renderMode)
-SETTER           (RenderMode        , Mesh, renderMode)
+GETTER_CONST     (const RenderMode& , Mesh, renderMode)
+GETTER           (RenderMode&       , Mesh, renderMode)
 
 DELEGATE1        (void              , Mesh, scale      , const glm::vec3&)
 DELEGATE1        (void              , Mesh, scaling    , const glm::vec3&)

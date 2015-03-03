@@ -4,7 +4,6 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "mesh.hpp"
-#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "view/cursor.hpp"
 
@@ -19,7 +18,7 @@ struct ViewCursor::Impl {
     : self      (s)
     , isEnabled (true) 
   {
-    Impl::updateCircleGeometry (this->mesh, this->radius ());
+    Impl::updateCircleMesh (this->mesh, this->radius ());
   }
 
   float radius () const {
@@ -61,7 +60,7 @@ struct ViewCursor::Impl {
 
   void render (Camera& camera) const {
     if (this->isEnabled) {
-      this->mesh.renderLines (camera, RenderFlags::NoDepthTest ());
+      this->mesh.renderLines (camera);
       this->self->runRender  (camera);
     }
   }
@@ -69,7 +68,7 @@ struct ViewCursor::Impl {
   void enable  () { this->isEnabled = true;  }
   void disable () { this->isEnabled = false; }
 
-  static void updateCircleGeometry (Mesh& mesh, float radius) {
+  static void updateCircleMesh (Mesh& mesh, float radius) {
     static_assert (Impl::numSectors > 2, "");
     float sectorStep = 2.0f * M_PI / float (Impl::numSectors);
     float theta      = 0.0f;
@@ -89,7 +88,8 @@ struct ViewCursor::Impl {
     }
     mesh.addIndex   (0);
     mesh.addIndex   (Impl::numSectors-1);
-    mesh.renderMode (RenderMode::Constant);
+    mesh.renderMode ().constantShading (true);
+    mesh.renderMode ().noDepthTest (true);
     mesh.bufferData ();
   }
 };
@@ -107,4 +107,4 @@ DELEGATE1_CONST  (void              , ViewCursor, render, Camera&)
 DELEGATE         (void              , ViewCursor, enable)
 DELEGATE         (void              , ViewCursor, disable)
 GETTER_CONST     (bool              , ViewCursor, isEnabled)
-DELEGATE2_STATIC (void              , ViewCursor, updateCircleGeometry, Mesh&, float)
+DELEGATE2_STATIC (void              , ViewCursor, updateCircleMesh, Mesh&, float)

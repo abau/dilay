@@ -20,7 +20,7 @@ class Camera {
     const glm::vec3&   up              () const;
     const glm::vec3&   right           () const;
     const glm::mat4x4& view            () const;
-    const glm::mat4x4& viewNoZoom      () const;
+    const glm::mat4x4& viewRotation    () const;
           glm::vec3    position        () const;
           glm::mat4x4  world           () const;
 

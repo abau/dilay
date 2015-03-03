@@ -7,14 +7,14 @@
 
 class Color;
 class Config;
-enum  class RenderMode;
+class RenderMode;
 
 class Renderer : public Configurable {
   public:
     DECLARE_BIG3 (Renderer, const Config&)
 
     void setupRendering       ();
-    void setProgram           (RenderMode);
+    void setProgram           (const RenderMode&);
     void setMvp               (const float*);
     void setModel             (const float*);
     void setColor3            (const Color&);
@@ -27,9 +27,6 @@ class Renderer : public Configurable {
     void setLightColor        (unsigned int, const Color&);
     void setLightIrradiance   (unsigned int, float);
     void updateLights         (const glm::mat4x4&);
-
-    static bool requiresGeometryShader  (RenderMode);
-    static bool requiresNormalAttribute (RenderMode);
 
   private:
     IMPLEMENTATION

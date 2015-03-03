@@ -45,7 +45,9 @@ struct ToolNewWingedMesh::Impl {
     this->mesh = Mesh (this->definition);
     this->mesh.bufferData ();
 
-    this->mesh.renderMode     (RenderMode::SmoothWireframe);
+    this->mesh.renderMode ().smoothShading   (true);
+    this->mesh.renderMode ().renderWireframe (true);
+
     this->mesh.color          (this->self->config ().get <Color> ("editor/poly-mesh/color/normal"));
     this->mesh.wireframeColor (this->self->config ().get <Color> ("editor/poly-mesh/color/wireframe"));
   }

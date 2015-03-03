@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include "camera.hpp"
 #include "mesh.hpp"
-#include "render-flags.hpp"
 #include "render-mode.hpp"
 #include "view/cursor/inner-radius.hpp"
 
@@ -14,7 +13,7 @@ struct ViewCursorInnerRadius::Impl {
     : self               (s)
     , _innerRadiusFactor (1.0f)
   {
-    this->self->updateCircleGeometry (this->mesh, this->_innerRadiusFactor);
+    this->self->updateCircleMesh (this->mesh, this->_innerRadiusFactor);
   }
 
   float innerRadiusFactor () const {
@@ -39,7 +38,7 @@ struct ViewCursorInnerRadius::Impl {
   }
 
   void runRender (Camera& camera) const {
-    this->mesh.renderLines (camera, RenderFlags::NoDepthTest ());
+    this->mesh.renderLines (camera);
   }
 };
 

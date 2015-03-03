@@ -5,7 +5,6 @@
 #include "opengl.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
-#include "shader.hpp"
 
 namespace {
   const unsigned int numLights = 2;
@@ -59,83 +58,24 @@ namespace {
 };
 
 struct Renderer::Impl {
-  ShaderIds      shaderIds [RenderModeUtil :: numRenderModes];
+  static const unsigned int numShaders = 6;
+
+  ShaderIds      shaderIds [Impl::numShaders];
   ShaderIds*     activeShaderIndex;
   GlobalUniforms globalUniforms;
   Color          clearColor;
   glm::vec3      light1LocalPos;
   glm::vec3      light2LocalPos;
 
-  Impl (const Config& config) : activeShaderIndex (nullptr) {
-
-    auto getUniformLocations = [this] (RenderMode mode) {
-      ShaderIds    *s             = &this->shaderIds [static_cast <int> (mode)];
-      unsigned int p              = s->programId;
-      s->mvpId                    = OpenGL::glGetUniformLocation (p, "mvp");
-      s->modelId                  = OpenGL::glGetUniformLocation (p, "model");
-      s->colorId                  = OpenGL::glGetUniformLocation (p, "color");
-      s->wireframeColorId         = OpenGL::glGetUniformLocation (p, "wireframeColor");
-      s->ambientId                = OpenGL::glGetUniformLocation (p, "ambient");
-      s->eyePointId               = OpenGL::glGetUniformLocation (p, "eyePoint");
-      s->barycentricId            = OpenGL::glGetUniformLocation (p, "barycentric");
-      s->lightIds[0].positionId   = OpenGL::glGetUniformLocation (p, "light1Position");
-      s->lightIds[0].colorId      = OpenGL::glGetUniformLocation (p, "light1Color");
-      s->lightIds[0].irradianceId = OpenGL::glGetUniformLocation (p, "light1Irradiance");
-      s->lightIds[1].positionId   = OpenGL::glGetUniformLocation (p, "light2Position");
-      s->lightIds[1].colorId      = OpenGL::glGetUniformLocation (p, "light2Color");
-      s->lightIds[1].irradianceId = OpenGL::glGetUniformLocation (p, "light2Irradiance");
-    };
-
+  Impl (const Config& config) 
+    : activeShaderIndex (nullptr) 
+  {
     this->runFromConfig (config);
-
-    this->shaderIds [static_cast <int> (RenderMode::Smooth)].programId =
-      OpenGL::loadProgram ( Shader::smoothVertexShader   ()
-                          , Shader::smoothFragmentShader ()
-                          , requiresGeometryShader (RenderMode::Smooth)
-                          );
-    getUniformLocations (RenderMode::Smooth);
-
-    this->shaderIds [static_cast <int> (RenderMode::Flat)].programId =
-      OpenGL::loadProgram ( Shader::flatVertexShader   ()
-                          , Shader::flatFragmentShader ()
-                          , requiresGeometryShader (RenderMode::Flat)
-                          );
-    getUniformLocations (RenderMode::Flat);
-
-    this->shaderIds [static_cast <int> (RenderMode::Constant)].programId =
-      OpenGL::loadProgram ( Shader::constantVertexShader   ()
-                          , Shader::constantFragmentShader ()
-                          , requiresGeometryShader (RenderMode::Constant)
-                          );
-    getUniformLocations (RenderMode::Constant);
-
-    if (OpenGL::supportsGeometryShader ()) {
-      this->shaderIds [static_cast <int> (RenderMode::SmoothWireframe)].programId =
-        OpenGL::loadProgram ( Shader::smoothVertexShader            ()
-                            , Shader::smoothWireframeFragmentShader ()
-                            , requiresGeometryShader (RenderMode::SmoothWireframe)
-                            );
-      getUniformLocations (RenderMode::SmoothWireframe);
-
-      this->shaderIds [static_cast <int> (RenderMode::FlatWireframe)].programId =
-        OpenGL::loadProgram ( Shader::flatVertexShader            ()
-                            , Shader::flatWireframeFragmentShader ()
-                            , requiresGeometryShader (RenderMode::FlatWireframe)
-                            );
-      getUniformLocations (RenderMode::FlatWireframe);
-
-      this->shaderIds [static_cast <int> (RenderMode::ConstantWireframe)].programId =
-        OpenGL::loadProgram ( Shader::constantVertexShader            ()
-                            , Shader::constantWireframeFragmentShader ()
-                            , requiresGeometryShader (RenderMode::ConstantWireframe)
-                            );
-      getUniformLocations (RenderMode::ConstantWireframe);
-    }
   }
 
   ~Impl () {
-    for (unsigned int rm = 0; rm < RenderModeUtil :: numRenderModes; rm++) {
-      OpenGL::safeDeleteProgram (this->shaderIds[rm].programId);
+    for (unsigned int i = 0; i < Impl::numShaders; i++) {
+      OpenGL::safeDeleteProgram (this->shaderIds[i].programId);
     }
   }
 
@@ -153,12 +93,59 @@ struct Renderer::Impl {
                         | OpenGL::DepthBufferBit () );
   }
 
-  void setProgram (RenderMode renderMode) {
-    const int shaderIndex = static_cast <int> (renderMode);
+  unsigned int shaderIndex (const RenderMode& renderMode) {
+    if (renderMode.smoothShading ()) {
+      return renderMode.renderWireframe () ? 0 : 1;
+    }
+    else if (renderMode.flatShading ()) {
+      return renderMode.renderWireframe () ? 2 : 3;
+    }
+    else if (renderMode.constantShading ()) {
+      return renderMode.renderWireframe () ? 4 : 5;
+    }
+    else {
+      std::abort ();
+    }
+  }
 
-    assert (this->shaderIds[shaderIndex].programId);
+  void initalizeProgram (const RenderMode& renderMode) {
+    assert ( renderMode.renderWireframe () == false
+          || OpenGL::supportsGeometryShader () );
 
-    this->activeShaderIndex = &this->shaderIds[shaderIndex];
+    const unsigned int id = OpenGL::loadProgram ( renderMode.vertexShader ()
+                                                , renderMode.fragmentShader ()
+                                                , renderMode.renderWireframe () );
+
+    unsigned int index = this->shaderIndex (renderMode);
+    assert (this->shaderIds[index].programId == 0);
+
+    ShaderIds *s = &this->shaderIds [index];
+
+    s->programId                = id;
+    s->mvpId                    = OpenGL::glGetUniformLocation (id, "mvp");
+    s->modelId                  = OpenGL::glGetUniformLocation (id, "model");
+    s->colorId                  = OpenGL::glGetUniformLocation (id, "color");
+    s->wireframeColorId         = OpenGL::glGetUniformLocation (id, "wireframeColor");
+    s->ambientId                = OpenGL::glGetUniformLocation (id, "ambient");
+    s->eyePointId               = OpenGL::glGetUniformLocation (id, "eyePoint");
+    s->barycentricId            = OpenGL::glGetUniformLocation (id, "barycentric");
+    s->lightIds[0].positionId   = OpenGL::glGetUniformLocation (id, "light1Position");
+    s->lightIds[0].colorId      = OpenGL::glGetUniformLocation (id, "light1Color");
+    s->lightIds[0].irradianceId = OpenGL::glGetUniformLocation (id, "light1Irradiance");
+    s->lightIds[1].positionId   = OpenGL::glGetUniformLocation (id, "light2Position");
+    s->lightIds[1].colorId      = OpenGL::glGetUniformLocation (id, "light2Color");
+    s->lightIds[1].irradianceId = OpenGL::glGetUniformLocation (id, "light2Irradiance");
+  }
+
+  void setProgram (const RenderMode& renderMode) {
+    const unsigned int index = this->shaderIndex (renderMode);
+
+    if (this->shaderIds[index].programId == 0) {
+      this->initalizeProgram (renderMode);
+    }
+    assert (this->shaderIds[index].programId);
+
+    this->activeShaderIndex = &this->shaderIds[index];
     OpenGL::glUseProgram (this->activeShaderIndex->programId);
 
     OpenGL::glUniformVec3 
@@ -239,17 +226,6 @@ struct Renderer::Impl {
     this->setLightPosition (1, w * this->light2LocalPos);
   }
 
-  static bool requiresGeometryShader (RenderMode mode) {
-    return mode == RenderMode::SmoothWireframe
-        || mode == RenderMode::FlatWireframe
-        || mode == RenderMode::ConstantWireframe;
-  }
-
-  static bool requiresNormalAttribute (RenderMode mode) {
-    return mode == RenderMode::Smooth
-        || mode == RenderMode::SmoothWireframe;
-  }
-
   void runFromConfig (const Config& config) {
     this->clearColor     = config.get<Color>     ("editor/background");
     this->light1LocalPos = config.get<glm::vec3> ("editor/light/light1/position");
@@ -268,7 +244,7 @@ struct Renderer::Impl {
 DELEGATE1_BIG3 (Renderer, const Config&)
 
 DELEGATE  (void, Renderer, setupRendering)
-DELEGATE1 (void, Renderer, setProgram        , RenderMode)
+DELEGATE1 (void, Renderer, setProgram        , const RenderMode&)
 DELEGATE1 (void, Renderer, setMvp            , const float*)
 DELEGATE1 (void, Renderer, setModel          , const float*)
 DELEGATE1 (void, Renderer, setColor3         , const Color&)
@@ -281,6 +257,4 @@ DELEGATE2 (void, Renderer, setLightPosition  , unsigned int, const glm::vec3&)
 DELEGATE2 (void, Renderer, setLightColor     , unsigned int, const Color&)
 DELEGATE2 (void, Renderer, setLightIrradiance, unsigned int, float)
 DELEGATE1 (void, Renderer, updateLights      , const glm::mat4x4&)
-DELEGATE1_STATIC (bool, Renderer, requiresGeometryShader, RenderMode)
-DELEGATE1_STATIC (bool, Renderer, requiresNormalAttribute, RenderMode)
 DELEGATE1 (void, Renderer, runFromConfig     , const Config&)
