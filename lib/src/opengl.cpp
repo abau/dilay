@@ -148,8 +148,8 @@ namespace OpenGL {
     id = 0;
   }
 
-  unsigned int loadProgram ( const std::string& vertexShader
-                           , const std::string& fragmentShader
+  unsigned int loadProgram ( const char* vertexShader
+                           , const char* fragmentShader
                            , bool loadGeometryShader ) 
   {
     auto showInfoLog = [] (GLuint id) {
@@ -163,11 +163,10 @@ namespace OpenGL {
     };
 
     auto compileShader = [&showInfoLog] 
-                         (GLenum shaderType, const std::string& shaderSource) -> GLuint 
+                         (GLenum shaderType, const char* shaderSource) -> GLuint 
     {
       GLuint      shaderId = fun->glCreateShader (shaderType);
-      const char* code[1]  = { shaderSource.c_str () };
-      fun->glShaderSource  (shaderId, 1, code , NULL);
+      fun->glShaderSource  (shaderId, 1, &shaderSource , NULL);
       fun->glCompileShader (shaderId);
 
       GLint status;
@@ -181,7 +180,7 @@ namespace OpenGL {
     };
 
     GLuint programId = fun->glCreateProgram();
-    GLuint vsId      = compileShader (GL_VERTEX_SHADER,   vertexShader);
+    GLuint vsId      = compileShader (GL_VERTEX_SHADER, vertexShader);
     GLuint fsId      = compileShader (GL_FRAGMENT_SHADER, fragmentShader);
     GLuint gmId      = 0;
 

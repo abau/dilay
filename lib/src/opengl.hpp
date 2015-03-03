@@ -68,7 +68,7 @@ namespace OpenGL {
   void         safeDeleteBuffer       (unsigned int&);
   void         safeDeleteShader       (unsigned int&);
   void         safeDeleteProgram      (unsigned int&);
-  unsigned int loadProgram            (const std::string&, const std::string&, bool);
+  unsigned int loadProgram            (const char*, const char*, bool);
 }
 
 #endif

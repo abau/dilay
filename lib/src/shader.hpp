@@ -1,21 +1,19 @@
 #ifndef DILAY_SHADER
 #define DILAY_SHADER
 
-#include <string>
-
 namespace Shader {
-  const std::string smoothVertexShader              ();
-  const std::string smoothFragmentShader            ();
-  const std::string smoothWireframeFragmentShader   ();
+  const char* smoothVertexShader              ();
+  const char* smoothFragmentShader            ();
+  const char* smoothWireframeFragmentShader   ();
 
-  const std::string flatVertexShader                ();
-  const std::string flatFragmentShader              ();
-  const std::string flatWireframeFragmentShader     ();
+  const char* flatVertexShader                ();
+  const char* flatFragmentShader              ();
+  const char* flatWireframeFragmentShader     ();
 
-  const std::string constantVertexShader            ();
-  const std::string constantFragmentShader          ();
-  const std::string constantWireframeFragmentShader ();
-  const std::string geometryShader                  ();
+  const char* constantVertexShader            ();
+  const char* constantFragmentShader          ();
+  const char* constantWireframeFragmentShader ();
+  const char* geometryShader                  ();
 };
 
 #endif

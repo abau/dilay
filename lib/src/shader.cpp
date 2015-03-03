@@ -138,42 +138,42 @@
   "    EndPrimitive();                                                                     \n" \
   "}                                                                                       \n"
 
-const std::string Shader::smoothVertexShader () {
+const char* Shader::smoothVertexShader () {
   return SMOOTH_VERTEX_SHADER;
 }
 
-const std::string Shader::smoothFragmentShader () {
+const char* Shader::smoothFragmentShader () {
   return SMOOTH_FRAGMENT_SHADER ("vsOut","");
 }
 
-const std::string Shader::smoothWireframeFragmentShader () {
+const char* Shader::smoothWireframeFragmentShader () {
   return SMOOTH_FRAGMENT_SHADER ("gsOut",ADD_WIREFRAME);
 }
 
-const std::string Shader::flatVertexShader () {
+const char* Shader::flatVertexShader () {
   return FLAT_VERTEX_SHADER;
 }
 
-const std::string Shader::flatFragmentShader () {
+const char* Shader::flatFragmentShader () {
   return FLAT_FRAGMENT_SHADER ("vsOut","");
 }
 
-const std::string Shader::flatWireframeFragmentShader () {
+const char* Shader::flatWireframeFragmentShader () {
   return FLAT_FRAGMENT_SHADER ("gsOut",ADD_WIREFRAME);
 }
 
-const std::string Shader::constantVertexShader () {
+const char* Shader::constantVertexShader () {
   return CONSTANT_VERTEX_SHADER;
 }
 
-const std::string Shader::constantFragmentShader () {
+const char* Shader::constantFragmentShader () {
   return CONSTANT_FRAGMENT_SHADER ("");
 }
 
-const std::string Shader::constantWireframeFragmentShader () {
+const char* Shader::constantWireframeFragmentShader () {
   return CONSTANT_FRAGMENT_SHADER (ADD_WIREFRAME);
 }
 
-const std::string Shader::geometryShader () {
+const char* Shader::geometryShader () {
   return GEOMETRY_SHADER;
 }
