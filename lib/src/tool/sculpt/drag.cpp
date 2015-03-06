@@ -2,7 +2,6 @@
 #include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "camera.hpp"
-#include "dimension.hpp"
 #include "mesh.hpp"
 #include "primitive/ray.hpp"
 #include "render-mode.hpp"
@@ -77,6 +76,7 @@ struct ToolSculptDrag::Impl {
       WingedFaceIntersection intersection;
       if (this->self->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
         const glm::vec3& normal = intersection.normal ();
+        const glm::vec3  up     = glm::vec3 (0.0f, 1.0f, 0.0f);
         const glm::vec3  e      = glm::normalize (this->self->state ().camera ().toEyePoint ());
 
         if (glm::abs (glm::dot (e, normal)) > 0.9f) {
@@ -97,16 +97,12 @@ struct ToolSculptDrag::Impl {
           this->draggedVerticesMesh.reset    ();
 
           // setup movement
-          this->movement.constraint (MovementConstraint::Explicit);
-          const Dimension prim  = this->self->state ().camera ().primaryDimension ();
-          const glm::vec3 orth1 = DimensionUtil::orthVector1 (prim);
-          const glm::vec3 orth2 = DimensionUtil::orthVector2 (prim);
-
-          if (glm::abs (glm::dot (normal, orth1)) < glm::abs (glm::dot (normal, orth2))) {
-            this->movement.explicitPlane (glm::cross (normal, orth1));
+          if (glm::abs (glm::dot (normal, up)) > 0.9f) {
+            this->movement.constraint (MovementConstraint::VerticalCameraPlane);
           }
           else {
-            this->movement.explicitPlane (glm::cross (normal, orth2));
+            this->movement.constraint    (MovementConstraint::Explicit);
+            this->movement.explicitPlane (glm::cross (normal, up));
           }
         }
       }
