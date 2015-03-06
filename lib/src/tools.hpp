@@ -20,6 +20,4 @@ DECLARE_TOOL (ToolDeleteMesh, "delete-mesh", DECLARE_TOOL_RUN_INITIALIZE)
 DECLARE_TOOL (ToolNewWingedMesh, "new-winged-mesh", DECLARE_TOOL_RUN_RENDER
                                                     DECLARE_TOOL_RUN_CLOSE )
 
-DECLARE_TOOL (ToolSubdivideMesh, "subdivide-mesh", DECLARE_TOOL_RUN_INITIALIZE)
-
 #endif

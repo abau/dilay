@@ -74,7 +74,6 @@ SOURCES += \
            src/tool/sculpt/carve-perimeter.cpp \
            src/tool/sculpt/drag.cpp \
            src/tool/sculpt/smooth.cpp \
-           src/tool/subdivide-mesh.cpp \
            src/tool/util/movement.cpp \
            src/util.cpp \
            src/view/axis.cpp \

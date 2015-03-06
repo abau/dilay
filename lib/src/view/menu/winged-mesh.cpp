@@ -6,7 +6,6 @@ ViewMenuWingedMesh :: ViewMenuWingedMesh (State& s, const glm::ivec2& p)
 {
   this->addAction <ToolMove>          (QObject::tr ("Move"));
   this->addAction <ToolSculpt>        (QObject::tr ("Sculpt"));
-  this->addAction <ToolSubdivideMesh> (QObject::tr ("Subdivide"));
   this->addAction <ToolDeleteMesh>    (QObject::tr ("Delete"));
   this->addSeparator                  ();
   this->addAction <ToolNewWingedMesh> (QObject::tr ("New"));
