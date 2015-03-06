@@ -79,8 +79,8 @@ struct State::Impl {
         this->mainWindow.glWidget ().update ();
         break;
       case ToolResponse::Terminate:
-        this->mainWindow.glWidget ().update ();
         this->resetTool ();
+        this->mainWindow.glWidget ().update ();
         break;
     }
   }

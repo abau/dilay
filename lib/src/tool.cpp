@@ -76,7 +76,6 @@ struct Tool::Impl {
 
   ToolResponse mouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::RightButton) {
-      this->close ();
       return ToolResponse::Terminate;
     }
     else {
