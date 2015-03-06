@@ -48,8 +48,8 @@ struct ToolNewWingedMesh::Impl {
     this->mesh.renderMode ().smoothShading   (true);
     this->mesh.renderMode ().renderWireframe (true);
 
-    this->mesh.color          (this->self->config ().get <Color> ("editor/poly-mesh/color/normal"));
-    this->mesh.wireframeColor (this->self->config ().get <Color> ("editor/poly-mesh/color/wireframe"));
+    this->mesh.color          (this->self->config ().get <Color> ("editor/freeform-mesh/color/normal"));
+    this->mesh.wireframeColor (this->self->config ().get <Color> ("editor/freeform-mesh/color/wireframe"));
   }
 
   void runRender () const {

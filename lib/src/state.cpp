@@ -29,7 +29,7 @@ struct State::Impl {
     , config     (cfg)
     , cache      (cch)
     , camera     (this->config)
-    , scene      (ConfigProxy (this->config, "editor/poly-mesh/"))
+    , scene      (ConfigProxy (this->config, "editor/freeform-mesh/"))
   {
     MeshDefinition meshDefinition (MeshDefinition::Icosphere (2));
     meshDefinition.scale          (glm::vec3 (Util::defaultScale ()));
