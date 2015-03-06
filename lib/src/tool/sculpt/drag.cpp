@@ -119,16 +119,7 @@ struct ToolSculptDrag::Impl {
     const glm::ivec2& pos = ViewUtil::toIVec2 (e);
 
     if (e.buttons () == Qt::NoButton) {
-      WingedFaceIntersection intersection;
-
-      if (this->self->intersectsSelection (pos, intersection)) {
-        this->cursor.enable   ();
-        this->cursor.position (intersection.position ());
-        this->cursor.normal   (intersection.normal   ());
-      }
-      else {
-        this->cursor.disable ();
-      }
+      this->self->updateCursorByIntersection (e);
     }
     else if ( e.buttons () == Qt::LeftButton
            && this->draggedVertices.empty () == false

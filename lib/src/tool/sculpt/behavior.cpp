@@ -179,6 +179,19 @@ struct ToolSculptBehavior::Impl {
       (this->state.scene (), brush.meshRef ()).run (brush);
   }
 
+  void updateCursorByIntersection (const QMouseEvent& e) {
+    WingedFaceIntersection intersection;
+
+    if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
+      this->self->cursor ().enable   ();
+      this->self->cursor ().position (intersection.position ());
+      this->self->cursor ().normal   (intersection.normal   ());
+    }
+    else {
+      this->self->cursor ().disable ();
+    }
+  }
+
   bool updateBrushByIntersection (const QMouseEvent& e) {
     WingedFaceIntersection intersection;
 
@@ -222,4 +235,5 @@ DELEGATE2_CONST (bool       , ToolSculptBehavior, intersectsSelection, const Pri
 DELEGATE2_CONST (bool       , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
 DELEGATE1       (void       , ToolSculptBehavior, forceBrushSubdivision, bool)
 DELEGATE        (void       , ToolSculptBehavior, sculpt)
+DELEGATE1       (void       , ToolSculptBehavior, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1       (bool       , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)
