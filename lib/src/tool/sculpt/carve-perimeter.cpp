@@ -36,7 +36,7 @@ struct ToolSculptCarvePerimeter::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
+    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
   }
 
   void carve (const QMouseEvent& e) {

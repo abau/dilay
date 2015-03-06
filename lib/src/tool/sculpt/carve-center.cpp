@@ -54,9 +54,9 @@ struct ToolSculptCarveCenter::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to carve"));
+    toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
     toolTip.add ( ViewToolTip::MouseEvent::Left
-                , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to carve inverted"));
+                , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to sculpt inverted"));
   }
 
   void carve (const QMouseEvent& e) {
