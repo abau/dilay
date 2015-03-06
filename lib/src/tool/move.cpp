@@ -120,7 +120,7 @@ struct ToolMove::Impl {
     return entities;
   }
 
-  glm::vec3 center () {
+  glm::vec3 center () const {
     glm::vec3    c (0.0f);
     unsigned int n (0);
     Scene&       scene = this->self->state ().scene ();
