@@ -8,20 +8,19 @@
 #include "view/main-window.hpp"
 
 namespace {
-  std::string standardPathTo (const std::string& file) {
+  QDir standardDirectory (const std::string& file) {
     QString qFile (file.c_str ());
     QDir    qDir;
 
     if (QDir::current ().exists (qFile)) {
-      qDir = QDir::current ();
+      return QDir::current ();
     }
     else if (QStandardPaths::locate (QStandardPaths::DataLocation, qFile).isEmpty () == false) {
-      qDir = QDir (QStandardPaths::writableLocation (QStandardPaths::DataLocation));
+      return QDir (QStandardPaths::writableLocation (QStandardPaths::DataLocation));
     }
     else {
       throw (std::runtime_error ("Can not find path that contains configuration file '" + file + "'"));
     }
-    return qDir.filePath (qFile).toStdString ();
   }
 }
 
@@ -36,8 +35,9 @@ int main (int argv, char **args) {
 
   OpenGL::setDefaultFormat ();
 
-  Config         config     (standardPathTo ("dilay.config"));
-  Cache          cache      (standardPathTo ("dilay.cache" ));
+  QDir           path       (standardDirectory ("dilay.config"));
+  Config         config     (path.filePath ("dilay.config").toStdString ());
+  Cache          cache      (path.filePath ("dilay.cache" ).toStdString ());
   ViewMainWindow mainWindow (config, cache);
   mainWindow.show ();
 
