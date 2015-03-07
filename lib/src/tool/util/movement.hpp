@@ -9,8 +9,7 @@ class QMouseEvent;
 
 enum class MovementConstraint { XAxis, YAxis, ZAxis
                               , XYPlane, XZPlane, YZPlane
-                              , CameraPlane, VerticalCameraPlane
-                              , PrimaryPlane, Explicit
+                              , CameraPlane, PrimaryPlane, Explicit
                               };
 class ToolUtilMovement {
   public:

@@ -104,12 +104,6 @@ struct ToolUtilMovement::Impl {
       case MovementConstraint::CameraPlane: 
         return this->moveOnPlane (this->camera.toEyePoint (), p); 
 
-      case MovementConstraint::VerticalCameraPlane: {
-        glm::vec3 e   = this->camera.toEyePoint ();
-                  e.y = 0.0f;
-        return this->moveOnPlane (e, p); 
-      }
-
       case MovementConstraint::PrimaryPlane: 
         return modify ? this->moveAlong   (this->camera.primaryDimension (), p)
                       : this->moveOnPlane (this->camera.primaryDimension (), p);

@@ -221,9 +221,10 @@ struct ToolSculptBehavior::Impl {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
+        const Camera&    camera = this->state.camera ();
         const glm::vec3& normal = intersection.normal ();
-        const glm::vec3  up     = glm::vec3 (0.0f, 1.0f, 0.0f);
-        const glm::vec3  e      = glm::normalize (this->state.camera ().toEyePoint ());
+        const glm::vec3  e      = glm::normalize (camera.toEyePoint ());
+        const glm::vec3  viewUp = glm::normalize (glm::cross (camera.right (), -e));
 
         if (glm::abs (glm::dot (e, normal)) < 0.9f) {
           this->self->cursor ().disable ();
@@ -235,13 +236,13 @@ struct ToolSculptBehavior::Impl {
 
           // setup movement
           movement.resetPosition (intersection.position ());
+          movement.constraint    (MovementConstraint::Explicit);
 
-          if (glm::abs (glm::dot (normal, up)) > 0.9f) {
-            movement.constraint (MovementConstraint::VerticalCameraPlane);
+          if (glm::abs (glm::dot (normal, viewUp)) > 0.9f) {
+            movement.explicitPlane (e);
           }
           else {
-            movement.constraint    (MovementConstraint::Explicit);
-            movement.explicitPlane (glm::cross (normal, up));
+            movement.explicitPlane (glm::cross (normal, viewUp));
           }
           return true;
         }
