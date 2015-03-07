@@ -3,7 +3,6 @@
 
 #include <functional>
 #include <glm/fwd.hpp>
-#include "fwd-winged.hpp"
 #include "macro.hpp"
 
 class AffectedFaces;

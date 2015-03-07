@@ -125,7 +125,6 @@ HEADERS += \
            src/config.hpp \
            src/configurable.hpp \
            src/dimension.hpp \
-           src/fwd-winged.hpp \
            src/history.hpp \
            src/intersection.hpp \
            src/kvstore.hpp \
@@ -197,6 +196,7 @@ HEADERS += \
            src/winged/edge.hpp \
            src/winged/face.hpp \
            src/winged/face-intersection.hpp \
+           src/winged/fwd.hpp \
            src/winged/mesh.hpp \
            src/winged/util.hpp \
            src/winged/vertex.hpp \

@@ -2,7 +2,7 @@
 #define DILAY_WINGED_UTIL
 
 #include <glm/fwd.hpp>
-#include "fwd-winged.hpp"
+#include "winged/fwd.hpp"
 
 class Octree;
 

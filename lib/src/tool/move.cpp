@@ -5,7 +5,6 @@
 #include "action/modify-winged-mesh.hpp"
 #include "action/unit.hpp"
 #include "cache.hpp"
-#include "fwd-winged.hpp"
 #include "history.hpp"
 #include "scene.hpp"
 #include "selection-mode.hpp"
@@ -19,6 +18,7 @@
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "view/vector-edit.hpp"
+#include "winged/fwd.hpp"
 #include "winged/mesh.hpp"
 
 namespace {

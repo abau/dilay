@@ -2,8 +2,8 @@
 #define DILAY_PARTIAL_ACTION_SMOOTH
 
 #include "action/on.hpp"
-#include "fwd-winged.hpp"
 #include "macro.hpp"
+#include "winged/fwd.hpp"
 
 class AffectedFaces;
 

@@ -1,5 +1,5 @@
-#ifndef DILAY_FWD_WINGED
-#define DILAY_FWD_WINGED
+#ifndef DILAY_WINGED_FWD
+#define DILAY_WINGED_FWD
 
 #include <list>
 #include <unordered_set>

@@ -2,7 +2,6 @@
 #define DILAY_WINGED_EDGE
 
 #include <glm/fwd.hpp>
-#include "fwd-winged.hpp"
 #include "macro.hpp"
 
 class WingedVertex;

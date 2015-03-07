@@ -1,8 +1,8 @@
 #ifndef DILAY_AFFECTED_FACES
 #define DILAY_AFFECTED_FACES
 
-#include "fwd-winged.hpp"
 #include "macro.hpp"
+#include "winged/fwd.hpp"
 
 class AffectedFaces {
   public:

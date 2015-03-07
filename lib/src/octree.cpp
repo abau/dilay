@@ -4,7 +4,6 @@
 #include <vector>
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
-#include "fwd-winged.hpp"
 #include "indexable.hpp"
 #include "octree.hpp"
 #include "primitive/aabox.hpp"
