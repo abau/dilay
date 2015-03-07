@@ -75,15 +75,13 @@ struct ToolSculptDrag::Impl {
   }
 
   void runMouseMoveEvent (const QMouseEvent& e) {
-    const glm::ivec2& pos = ViewUtil::toIVec2 (e);
-
     if (e.buttons () == Qt::NoButton) {
       this->self->updateCursorByIntersection (e);
     }
     else if ( e.buttons () == Qt::LeftButton
            && this->draggedVertices.empty () == false
            && this->brush.hasPosition () 
-           && this->movement.move     (pos)
+           && this->movement.move     (ViewUtil::toIVec2 (e))
            && this->brush.updatePosition (this->movement.position ()) )
     {
       this->draggedVertices.emplace_back (this->movement.position ());
