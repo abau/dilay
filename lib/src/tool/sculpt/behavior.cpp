@@ -5,11 +5,13 @@
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
 #include "action/unit.hpp"
+#include "affected-faces.hpp"
 #include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
 #include "history.hpp"
 #include "primitive/ray.hpp"
+#include "primitive/sphere.hpp"
 #include "scene.hpp"
 #include "sculpt-brush.hpp"
 #include "selection.hpp"
@@ -22,6 +24,7 @@
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
+#include "winged/util.hpp"
 
 struct ToolSculptBehavior::Impl {
   ToolSculptBehavior*          self;
@@ -225,8 +228,17 @@ struct ToolSculptBehavior::Impl {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->intersectsSelection (e, intersection)) {
+        AffectedFaces faces;
+
+        IntersectionUtil::extend ( PrimSphere ( intersection.position ()
+                                              , this->self->brush ().radius () )
+                                 , intersection.mesh ()
+                                 , intersection.face ()
+                                 , faces );
+
+        const glm::vec3& normal = WingedUtil::averageNormal ( intersection.mesh ()
+                                                            , faces.toVertexSet () );
         const Camera&    camera = this->state.camera ();
-        const glm::vec3& normal = intersection.normal ();
         const glm::vec3  e      = glm::normalize (camera.toEyePoint ());
         const glm::vec3  viewUp = glm::normalize (glm::cross (camera.right (), -e));
 

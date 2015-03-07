@@ -12,4 +12,6 @@ DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptDrag, "drag",
 
 DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptSmooth, "smooth", )
 
+DECLARE_TOOL_SCULPT_BEHAVIOR (ToolSculptGrab, "grab", )
+
 #endif

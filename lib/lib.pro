@@ -72,6 +72,7 @@ SOURCES += \
            src/tool/sculpt/carve-center.cpp \
            src/tool/sculpt/carve-perimeter.cpp \
            src/tool/sculpt/drag.cpp \
+           src/tool/sculpt/grab.cpp \
            src/tool/sculpt/smooth.cpp \
            src/tool/util/movement.cpp \
            src/util.cpp \
