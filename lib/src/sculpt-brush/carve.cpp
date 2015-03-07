@@ -8,6 +8,7 @@
 #include "sculpt-brush/carve.hpp"
 #include "sculpt-brush/util.hpp"
 #include "winged/mesh.hpp"
+#include "winged/util.hpp"
 #include "winged/vertex.hpp"
 
 struct SculptBrushCarve :: Impl {
@@ -62,11 +63,7 @@ struct SculptBrushCarve :: Impl {
                           :  this->mDirection.getRef ();
     }
     else {
-      glm::vec3 avgNormal (0.0f);
-      for (WingedVertex* v : vertices) {
-        avgNormal = avgNormal + v->savedNormal (mesh);
-      }
-      avgNormal = avgNormal / float (vertices.size ());
+      const glm::vec3 avgNormal = WingedUtil::averageNormal (mesh, vertices);
       return this->invert ? -avgNormal
                           :  avgNormal;
     }

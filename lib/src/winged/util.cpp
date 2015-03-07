@@ -94,3 +94,13 @@ void WingedUtil :: printStatistics (const Octree& octree) {
     std::cout << "\t" << e.second << "\tfaces at depth\t" << e.first << std::endl;
   }
 }
+
+glm::vec3 WingedUtil :: averageNormal (const WingedMesh& mesh, const VertexPtrSet& vertices) {
+  assert (vertices.size () > 0);
+
+  glm::vec3 avgNormal (0.0f);
+  for (WingedVertex* v : vertices) {
+    avgNormal = avgNormal + v->savedNormal (mesh);
+  }
+  return avgNormal / float (vertices.size ());
+}
