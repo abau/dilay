@@ -167,6 +167,10 @@ struct ToolSculptBehavior::Impl {
     return this->intersectsSelection (this->state.camera ().ray (pos), intersection);
   }
 
+  bool intersectsSelection (const QMouseEvent& e, WingedFaceIntersection& intersection) const {
+    return this->intersectsSelection (ViewUtil::toIVec2 (e), intersection );
+  }
+
   void forceBrushSubdivision (bool value) {
     this->self->brush ().subdivide (value);
     this->subdivEdit.setChecked    (value);
@@ -183,7 +187,7 @@ struct ToolSculptBehavior::Impl {
   void updateCursorByIntersection (const QMouseEvent& e) {
     WingedFaceIntersection intersection;
 
-    if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
+    if (this->intersectsSelection (e, intersection)) {
       this->self->cursor ().enable   ();
       this->self->cursor ().position (intersection.position ());
       this->self->cursor ().normal   (intersection.normal   ());
@@ -196,7 +200,7 @@ struct ToolSculptBehavior::Impl {
   bool updateBrushByIntersection (const QMouseEvent& e) {
     WingedFaceIntersection intersection;
 
-    if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
+    if (this->intersectsSelection (e, intersection)) {
       this->self->cursor ().enable   ();
       this->self->cursor ().position (intersection.position ());
       this->self->cursor ().normal   (intersection.normal   ());
@@ -220,7 +224,7 @@ struct ToolSculptBehavior::Impl {
   bool initializeDragMovement (ToolUtilMovement& movement, const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
-      if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
+      if (this->intersectsSelection (e, intersection)) {
         const Camera&    camera = this->state.camera ();
         const glm::vec3& normal = intersection.normal ();
         const glm::vec3  e      = glm::normalize (camera.toEyePoint ());
@@ -270,6 +274,7 @@ DELEGATE1       (void       , ToolSculptBehavior, mouseWheelEvent, const QWheelE
 DELEGATE        (void       , ToolSculptBehavior, close)
 DELEGATE2_CONST (bool       , ToolSculptBehavior, intersectsSelection, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool       , ToolSculptBehavior, intersectsSelection, const glm::ivec2&, WingedFaceIntersection&)
+DELEGATE2_CONST (bool       , ToolSculptBehavior, intersectsSelection, const QMouseEvent&, WingedFaceIntersection&)
 DELEGATE1       (void       , ToolSculptBehavior, forceBrushSubdivision, bool)
 DELEGATE        (void       , ToolSculptBehavior, sculpt)
 DELEGATE1       (void       , ToolSculptBehavior, updateCursorByIntersection, const QMouseEvent&)
