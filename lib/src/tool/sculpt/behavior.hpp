@@ -10,6 +10,7 @@ class QMouseEvent;
 class QWheelEvent;
 class SculptBrush;
 class State;
+class ToolUtilMovement;
 class ViewCursor;
 class ViewPropertiesPart;
 class ViewToolTip;
@@ -39,6 +40,7 @@ class ToolSculptBehavior {
     void        sculpt                     ();
     void        updateCursorByIntersection (const QMouseEvent&);
     bool        updateBrushByIntersection  (const QMouseEvent&);
+    bool        initializeDragMovement     (ToolUtilMovement& movement, const QMouseEvent& e);
 
   private:
     IMPLEMENTATION

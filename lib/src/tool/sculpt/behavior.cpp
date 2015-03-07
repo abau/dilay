@@ -15,6 +15,7 @@
 #include "selection.hpp"
 #include "state.hpp"
 #include "tool/sculpt/behavior.hpp"
+#include "tool/util/movement.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
@@ -215,6 +216,41 @@ struct ToolSculptBehavior::Impl {
       return false;
     }
   }
+
+  bool initializeDragMovement (ToolUtilMovement& movement, const QMouseEvent& e) {
+    if (e.button () == Qt::LeftButton) {
+      WingedFaceIntersection intersection;
+      if (this->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
+        const glm::vec3& normal = intersection.normal ();
+        const glm::vec3  up     = glm::vec3 (0.0f, 1.0f, 0.0f);
+        const glm::vec3  e      = glm::normalize (this->state.camera ().toEyePoint ());
+
+        if (glm::abs (glm::dot (e, normal)) < 0.9f) {
+          this->self->cursor ().disable ();
+
+          // setup brush
+          this->self->brush ().mesh        (&intersection.mesh     ());
+          this->self->brush ().face        (&intersection.face     ());
+          this->self->brush ().setPosition ( intersection.position ());
+
+          // setup movement
+          movement.resetPosition (intersection.position ());
+
+          if (glm::abs (glm::dot (normal, up)) > 0.9f) {
+            movement.constraint (MovementConstraint::VerticalCameraPlane);
+          }
+          else {
+            movement.constraint    (MovementConstraint::Explicit);
+            movement.explicitPlane (glm::cross (normal, up));
+          }
+          return true;
+        }
+      }
+    }
+    this->self->cursor ().enable ();
+    this->self->brush  ().resetPosition ();
+    return false;
+  }
 };
 
 DELEGATE3_BIG3_SELF (ToolSculptBehavior, CacheProxy&, State&, const char*)
@@ -237,3 +273,4 @@ DELEGATE1       (void       , ToolSculptBehavior, forceBrushSubdivision, bool)
 DELEGATE        (void       , ToolSculptBehavior, sculpt)
 DELEGATE1       (void       , ToolSculptBehavior, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1       (bool       , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)
+DELEGATE2       (bool       , ToolSculptBehavior, initializeDragMovement, ToolUtilMovement&, const QMouseEvent&)

@@ -67,48 +67,11 @@ struct ToolSculptDrag::Impl {
   }
 
   void runMousePressEvent (const QMouseEvent& e) {
-    auto noDrag = [this] () {
-      this->cursor.enable ();
-      this->brush.resetPosition ();
-    };
-
-    if (e.button () == Qt::LeftButton) {
-      WingedFaceIntersection intersection;
-      if (this->self->intersectsSelection (ViewUtil::toIVec2 (e), intersection)) {
-        const glm::vec3& normal = intersection.normal ();
-        const glm::vec3  up     = glm::vec3 (0.0f, 1.0f, 0.0f);
-        const glm::vec3  e      = glm::normalize (this->self->state ().camera ().toEyePoint ());
-
-        if (glm::abs (glm::dot (e, normal)) > 0.9f) {
-          noDrag ();
-        }
-        else {
-          this->cursor.disable ();
-
-          // setup brush
-          this->movement.resetPosition ( intersection.position ());
-          this->brush.mesh             (&intersection.mesh     ());
-          this->brush.face             (&intersection.face     ());
-          this->brush.setPosition      ( intersection.position ());
-
-          // setup dragged vertices
-          this->draggedVertices.clear        ();
-          this->draggedVertices.emplace_back (intersection.position ());
-          this->draggedVerticesMesh.reset    ();
-
-          // setup movement
-          if (glm::abs (glm::dot (normal, up)) > 0.9f) {
-            this->movement.constraint (MovementConstraint::VerticalCameraPlane);
-          }
-          else {
-            this->movement.constraint    (MovementConstraint::Explicit);
-            this->movement.explicitPlane (glm::cross (normal, up));
-          }
-        }
-      }
-      else { noDrag (); }
+    if (this->self->initializeDragMovement (this->movement, e)) {
+      this->draggedVertices.clear        ();
+      this->draggedVertices.emplace_back (this->movement.position ());
+      this->draggedVerticesMesh.reset    ();
     }
-    else { noDrag (); }
   }
 
   void runMouseMoveEvent (const QMouseEvent& e) {
