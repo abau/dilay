@@ -6,10 +6,10 @@
 #include "primitive/plane.hpp"
 #include "primitive/sphere.hpp"
 #include "sculpt-brush/carve.hpp"
-#include "sculpt-brush/util.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
 #include "winged/vertex.hpp"
+#include "util.hpp"
 
 struct SculptBrushCarve :: Impl {
 
@@ -81,7 +81,7 @@ struct SculptBrushCarve :: Impl {
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos = v->position (mesh);
       const float     delta  = this->intensity ()
-                             * SculptBrushUtil::smoothStep 
+                             * Util::smoothStep 
                                  ( oldPos, this->getPosition ()
                                  , this->innerRadius ()
                                  , this->self->radius () );
@@ -99,7 +99,7 @@ struct SculptBrushCarve :: Impl {
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos  = v->position (mesh);
       const glm::vec3 onPlane = oldPos - (dir * plane.distance (oldPos));
-      const float     delta   = SculptBrushUtil::smoothStep 
+      const float     delta   = Util::smoothStep 
                                   ( onPlane, this->self->position ()
                                   , this->innerRadius ()
                                   , this->self->radius () );

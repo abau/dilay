@@ -82,3 +82,19 @@ bool Util :: isNaN (const glm::vec3& v) {
 float Util :: defaultScale () {
   return 100.0f;
 }
+
+float Util :: smoothStep ( const glm::vec3& v, const glm::vec3& center
+                         , float innerRadius, float radius )
+{
+  assert (innerRadius <= radius);
+
+  const float d = glm::distance <float> (v, center);
+
+  if (radius - innerRadius < Util::epsilon ()) {
+    return d > radius ? 0.0f : 1.0f;
+  }
+  else {
+    const float x = glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
+    return x*x*x * (x * (x*6.0f - 15.0f) + 10.0f);
+  }
+}
