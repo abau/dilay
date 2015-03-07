@@ -38,7 +38,7 @@ struct ToolSculptBehavior::Impl {
     , cache       (c, std::string (key) + "/")
     , state       (st)
     , actions     (new ActionUnit) 
-    , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 1.0f))
+    , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 10.0f))
     , subdivEdit  (ViewUtil::checkBox (QObject::tr ("Subdivide"), true))
   {}
 
