@@ -10,6 +10,7 @@
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
+#include "winged/face-intersection.hpp"
 
 struct ToolSculptGrab::Impl {
   ToolSculptGrab*       self;
@@ -67,7 +68,19 @@ struct ToolSculptGrab::Impl {
   }
 
   void runMousePressEvent (const QMouseEvent& e) {
-    this->self->initializeDragMovement (this->movement, e);
+    if (e.button () == Qt::LeftButton) {
+      WingedFaceIntersection intersection;
+      if (this->self->intersectsSelection (e, intersection)) {
+        this->brush.mesh        (&intersection.mesh     ());
+        this->brush.face        (&intersection.face     ());
+        this->brush.setPosition ( intersection.position ());
+
+        movement.resetPosition (intersection.position ());
+        movement.constraint    (MovementConstraint::CameraPlane);
+      }
+    }
+    this->cursor.enable ();
+    this->brush .resetPosition ();
   }
 };
 

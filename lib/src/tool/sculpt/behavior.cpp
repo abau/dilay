@@ -5,26 +5,22 @@
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
 #include "action/unit.hpp"
-#include "affected-faces.hpp"
 #include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
 #include "history.hpp"
 #include "primitive/ray.hpp"
-#include "primitive/sphere.hpp"
 #include "scene.hpp"
 #include "sculpt-brush.hpp"
 #include "selection.hpp"
 #include "state.hpp"
 #include "tool/sculpt/behavior.hpp"
-#include "tool/util/movement.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool/tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
-#include "winged/util.hpp"
 
 struct ToolSculptBehavior::Impl {
   ToolSculptBehavior*          self;
@@ -223,51 +219,6 @@ struct ToolSculptBehavior::Impl {
       return false;
     }
   }
-
-  bool initializeDragMovement (ToolUtilMovement& movement, const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
-      WingedFaceIntersection intersection;
-      if (this->intersectsSelection (e, intersection)) {
-        AffectedFaces faces;
-
-        IntersectionUtil::extend ( PrimSphere ( intersection.position ()
-                                              , this->self->brush ().radius () )
-                                 , intersection.mesh ()
-                                 , intersection.face ()
-                                 , faces );
-
-        const glm::vec3& normal = WingedUtil::averageNormal ( intersection.mesh ()
-                                                            , faces.toVertexSet () );
-        const Camera&    camera = this->state.camera ();
-        const glm::vec3  e      = glm::normalize (camera.toEyePoint ());
-        const glm::vec3  viewUp = glm::normalize (glm::cross (camera.right (), -e));
-
-        if (glm::abs (glm::dot (e, normal)) < 0.9f) {
-          this->self->cursor ().disable ();
-
-          // setup brush
-          this->self->brush ().mesh        (&intersection.mesh     ());
-          this->self->brush ().face        (&intersection.face     ());
-          this->self->brush ().setPosition ( intersection.position ());
-
-          // setup movement
-          movement.resetPosition (intersection.position ());
-          movement.constraint    (MovementConstraint::Explicit);
-
-          if (glm::abs (glm::dot (normal, viewUp)) > 0.9f) {
-            movement.explicitPlane (e);
-          }
-          else {
-            movement.explicitPlane (glm::cross (normal, viewUp));
-          }
-          return true;
-        }
-      }
-    }
-    this->self->cursor ().enable ();
-    this->self->brush  ().resetPosition ();
-    return false;
-  }
 };
 
 DELEGATE3_BIG3_SELF (ToolSculptBehavior, CacheProxy&, State&, const char*)
@@ -291,4 +242,3 @@ DELEGATE1       (void       , ToolSculptBehavior, forceBrushSubdivision, bool)
 DELEGATE        (void       , ToolSculptBehavior, sculpt)
 DELEGATE1       (void       , ToolSculptBehavior, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1       (bool       , ToolSculptBehavior, updateBrushByIntersection, const QMouseEvent&)
-DELEGATE2       (bool       , ToolSculptBehavior, initializeDragMovement, ToolUtilMovement&, const QMouseEvent&)
