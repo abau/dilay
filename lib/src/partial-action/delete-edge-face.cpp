@@ -1,4 +1,4 @@
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/delete-edge-face.hpp"
@@ -12,7 +12,7 @@
 #include "winged/vertex.hpp"
 
 struct PADeleteEdgeFace :: Impl {
-  ActionUnitOn <WingedMesh> actions;
+  ActionUnitOnWMesh actions;
 
   void run (WingedMesh& mesh, WingedEdge& edge, AffectedFaces* affectedFaces) {
     WingedFace& faceToDelete  = *edge.rightFace ();

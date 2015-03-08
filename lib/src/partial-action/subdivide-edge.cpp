@@ -1,5 +1,5 @@
 #include <glm/glm.hpp>
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
@@ -11,7 +11,7 @@
 #include "winged/vertex.hpp"
 
 struct PASubdivideEdge::Impl {
-  ActionUnitOn <WingedMesh> actions;
+  ActionUnitOnWMesh actions;
 
   void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
   void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }

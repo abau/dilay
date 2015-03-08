@@ -110,7 +110,15 @@ class Indexable {
       }
     }
 
-    void forEachElement (const std::function <void (TReference)>& f) const {
+    void forEachElement (const std::function <void (TReference)>& f) {
+      for (unsigned int i = 0; i < this->numIndices (); i++) {
+        if (this->isFree (i) == false) {
+          f (this->getRef (i));
+        }
+      }
+    }
+
+    void forEachConstElement (const std::function <void (const TReference)>& f) const {
       for (unsigned int i = 0; i < this->numIndices (); i++) {
         if (this->isFree (i) == false) {
           f (this->getRef (i));
@@ -186,8 +194,12 @@ class IndexableList {
       this->index.forEachFreeIndex (f);
     }
 
-    void forEachElement (const std::function <void (T&)>& f) const {
+    void forEachElement (const std::function <void (T&)>& f) {
       this->index.forEachElement (f);
+    }
+
+    void forEachConstElement (const std::function <void (const T&)>& f) const {
+      this->index.forEachConstElement (f);
     }
 
   private:

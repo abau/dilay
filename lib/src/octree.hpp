@@ -72,7 +72,8 @@ class Octree {
     WingedFace*      someFace             () const;
     WingedFace*      someDegeneratedFace  () const;
 
-    void             forEachFace          (const std::function <void (WingedFace&)>&) const;
+    void             forEachFace          (const std::function <void (WingedFace&)>&);
+    void             forEachConstFace     (const std::function <void (const WingedFace&)>&) const;
     void             forEachFreeFaceIndex (const std::function <void (unsigned int)>&) const;
 
     SAFE_REF1_CONST (WingedFace,face,unsigned int)

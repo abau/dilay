@@ -6,12 +6,12 @@
 
 class CacheProxy;
 class Config;
-class State;
-class ViewProperties;
-class ViewToolMenuParameters;
-class ViewToolTip;
 class QMouseEvent;
 class QWheelEvent;
+class State;
+class ViewProperties;
+class ViewToolTip;
+class WingedFaceIntersection;
 
 enum class ToolResponse {
   None, Terminate, Redraw
@@ -19,35 +19,35 @@ enum class ToolResponse {
 
 class Tool {
   public:
-    DECLARE_BIG3_VIRTUAL (Tool, const ViewToolMenuParameters&, const char*)
+    DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
 
-    const ViewToolMenuParameters& menuParameters       () const;
-    void                          showToolTip          ();
-    bool                          allowUndo            () const;
-    bool                          allowRedo            () const;
-    ToolResponse                  initialize           ();
-    void                          render               () const;
-    ToolResponse                  mouseMoveEvent       (const QMouseEvent&);
-    ToolResponse                  mousePressEvent      (const QMouseEvent&);
-    ToolResponse                  mouseReleaseEvent    (const QMouseEvent&);
-    ToolResponse                  wheelEvent           (const QWheelEvent&);
-    void                          close                ();
+    bool            allowUndo         () const;
+    bool            allowRedo         () const;
+    ToolResponse    initialize        ();
+    void            render            () const;
+    ToolResponse    mouseMoveEvent    (const QMouseEvent&);
+    ToolResponse    mousePressEvent   (const QMouseEvent&);
+    ToolResponse    mouseReleaseEvent (const QMouseEvent&);
+    ToolResponse    wheelEvent        (const QWheelEvent&);
+    void            close             ();
 
   protected:
-    State&                        state                () const;
-    void                          updateGlWidget       ();
-    ViewProperties&               properties           () const;
-    ViewToolTip&                  toolTip              () const;
-    void                          resetToolTip         ();
-    Config&                       config               () const;
-    CacheProxy&                   cache                () const;
-    glm::ivec2                    cursorPosition       () const;
+    State&          state             () const;
+    void            updateGlWidget    ();
+    ViewProperties& properties        () const;
+    void            showToolTip       (const ViewToolTip&);
+    Config&         config            () const;
+    CacheProxy&     cache             ();
+    CacheProxy      cache             (const char*) const;
+    glm::ivec2      cursorPosition    () const;
+    bool            intersectsScene   (const glm::ivec2&, WingedFaceIntersection&);
+    bool            intersectsScene   (const QMouseEvent&, WingedFaceIntersection&);
 
   private:
     IMPLEMENTATION
 
     virtual const char*  key                  () const = 0;
-    virtual bool         runAllowUndoRedo     () const             { return false; }
+    virtual bool         runAllowUndoRedo     () const = 0;
     virtual ToolResponse runInitialize        ()                   { return ToolResponse::None; }
     virtual void         runRender            () const             {}
     virtual ToolResponse runMouseMoveEvent    (const QMouseEvent&) { return ToolResponse::None; }
@@ -57,15 +57,15 @@ class Tool {
     virtual void         runClose             ()                   {}
 };
 
-#define DECLARE_TOOL(name,theKey,otherMethods)         \
-  class name : public Tool { public:                   \
-    DECLARE_BIG2 (name, const ViewToolMenuParameters&) \
-    private:                                           \
-      IMPLEMENTATION                                   \
-      const char* key () const { return theKey ; }     \
+#define DECLARE_TOOL(name,theKey,otherMethods)                       \
+  class name : public Tool { public:                                 \
+    DECLARE_BIG2 (name, State&)                                      \
+    private:                                                         \
+      IMPLEMENTATION                                                 \
+      const char* key              () const { return theKey ; }      \
+      bool        runAllowUndoRedo () const;                         \
       otherMethods };
 
-#define ALLOW_TOOL_UNDO_REDO                 bool         runAllowUndoRedo     () const { return true; };
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
 #define DECLARE_TOOL_RUN_RENDER              void         runRender            () const;
 #define DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT    ToolResponse runMouseMoveEvent    (const QMouseEvent&);
@@ -74,8 +74,9 @@ class Tool {
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT   ToolResponse runWheelEvent        (const QWheelEvent&);
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
 
-#define DELEGATE_TOOL(name)\
-  DELEGATE_BIG2_BASE (name, (const ViewToolMenuParameters& p), (this), Tool, (p, this->key ()))
+#define DELEGATE_TOOL(name)                                               \
+  DELEGATE_BIG2_BASE (name, (State& s), (this), Tool, (s, this->key ()))  \
+  DELEGATE_CONST (bool, name, runAllowUndoRedo)
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE_CONST (void        , n, runRender)

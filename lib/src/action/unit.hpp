@@ -18,11 +18,11 @@ class ActionUnit : public Action {
       return *action; 
     }
 
-    template <typename A, typename T>
-    A& add (Scene& scene, T& t) { 
-      A* action = new A ();
-      this->addAction (new ActionTransformer <T> (scene, t, action));
-      return *action; 
+    template <typename A>
+    A& add (Scene& scene, WingedMesh& mesh) { 
+      A& action = *new A ();
+      this->addAction (new ActionTransformer (scene, mesh, std::move (action)));
+      return action; 
     }
 
     bool isEmpty () const;

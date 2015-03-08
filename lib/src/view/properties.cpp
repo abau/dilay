@@ -4,7 +4,6 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include "view/properties.hpp"
-#include "view/properties/button.hpp"
 #include "view/util.hpp"
 
 struct ViewPropertiesPart::Impl {
@@ -33,8 +32,7 @@ struct ViewPropertiesPart::Impl {
     this->layout = new QGridLayout;
     this->widget = new QWidget;
     this->widget->setLayout (this->layout);
-    this->widget->layout ()->setSpacing         (3);
-    this->widget->layout ()->setContentsMargins (11,3,0,3);
+    this->widget->layout ()->setContentsMargins (0,0,0,0);
 
     this->numProperties = 0;
 
@@ -71,42 +69,27 @@ DELEGATE2 (void, ViewPropertiesPart, add, const QString&, QWidget&)
 DELEGATE2 (void, ViewPropertiesPart, add, QButtonGroup&, const std::vector <QString>&)
 
 struct ViewProperties::Impl {
-  ViewProperties*       self;
-  ViewPropertiesButton  headerButton;
-  QVBoxLayout           layout;
-  QWidget               partsWidget;
-  QVBoxLayout           partsLayout;
-  ViewPropertiesPart    header;
-  ViewPropertiesPart    body;
-  ViewPropertiesPart    footer;
+  ViewProperties*    self;
+  QVBoxLayout        layout;
+  QWidget            partsWidget;
+  QVBoxLayout        partsLayout;
+  ViewPropertiesPart header;
+  ViewPropertiesPart body;
+  ViewPropertiesPart footer;
 
   Impl (ViewProperties* s) 
     : self          (s) 
-    , headerButton  ("?")
     , header        (this->partsLayout, 0)
     , body          (this->partsLayout, 1)
     , footer        (this->partsLayout, 2)
   {
     this->self->setLayout (&this->layout);
-    this->layout.setSpacing         (0);
-    this->layout.setContentsMargins (0,0,0,0);
 
     this->partsWidget.setLayout (&this->partsLayout);
     this->partsLayout.setSpacing         (0);
     this->partsLayout.setContentsMargins (0,0,0,0);
 
-    QObject::connect (&this->headerButton, &ViewPropertiesButton::expand, [this] () { 
-      this->partsWidget.show ();
-    });
-    QObject::connect (&this->headerButton, &ViewPropertiesButton::collapse, [this] () { 
-      this->partsWidget.hide ();
-    });
-    this->layout.insertWidget (0, &this->headerButton);
-    this->layout.insertWidget (1, &this->partsWidget);
-  }
-
-  void label (const QString& label) {
-    this->headerButton.setText (label);
+    this->layout.insertWidget (0, &this->partsWidget);
   }
 
   void reset () {
@@ -117,8 +100,7 @@ struct ViewProperties::Impl {
 };
 
 DELEGATE_BIG2_SELF (ViewProperties)
-DELEGATE1 (void, ViewProperties, label, const QString&)
-DELEGATE  (void, ViewProperties, reset)
-GETTER    (ViewPropertiesPart&, ViewProperties, header)
-GETTER    (ViewPropertiesPart&, ViewProperties, body)
-GETTER    (ViewPropertiesPart&, ViewProperties, footer)
+DELEGATE (void, ViewProperties, reset)
+GETTER   (ViewPropertiesPart&, ViewProperties, header)
+GETTER   (ViewPropertiesPart&, ViewProperties, body)
+GETTER   (ViewPropertiesPart&, ViewProperties, footer)

@@ -1,13 +1,13 @@
 #ifndef DILAY_PARTIAL_ACTION_SMOOTH
 #define DILAY_PARTIAL_ACTION_SMOOTH
 
-#include "action/on.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 #include "winged/fwd.hpp"
 
 class AffectedFaces;
 
-class PASmooth : public ActionOn <WingedMesh> {
+class PASmooth : public ActionOnWMesh {
   public: 
     DECLARE_BIG3 (PASmooth)
 

@@ -1,15 +1,15 @@
 #ifndef DILAY_ACTION_ON_POST_PROCESSED_WINGED_MESH
 #define DILAY_ACTION_ON_POST_PROCESSED_WINGED_MESH
 
-#include "action/on.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class AffectedFaces;
 class WingedMesh;
 class WingedFace;
-template <typename T> class ActionUnitOn;
+class ActionUnitOnWMesh;
 
-class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
+class ActionOnPostProcessedWMesh : public ActionOnWMesh {
   public:
     DECLARE_BIG3_VIRTUAL (ActionOnPostProcessedWMesh)
 
@@ -26,7 +26,7 @@ class ActionOnPostProcessedWMesh : public ActionOn <WingedMesh> {
      * 3. write normal for each vertex that is either included in `f` 
      * or that has been modified by (2.) 
      * 4. buffer data of `m` */
-    void        finalize        (WingedMesh&, AffectedFaces&, ActionUnitOn <WingedMesh>&);
+    void finalize (WingedMesh&, AffectedFaces&, ActionUnitOnWMesh&);
 
   private:
     void runUndo (WingedMesh&) const;

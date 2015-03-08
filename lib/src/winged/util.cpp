@@ -59,15 +59,15 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printAll) {
             << " (" << mesh.numIndices () / 3  << ")" << std::endl;
 
   if (printAll) {
-    mesh.forEachVertex ([&mesh] (const WingedVertex& v) { 
+    mesh.forEachConstVertex ([&mesh] (const WingedVertex& v) { 
       WingedUtil::printStatistics (mesh,v); 
     });
 
-    mesh.forEachEdge ([] (const WingedEdge& e) {
+    mesh.forEachConstEdge ([] (const WingedEdge& e) {
       WingedUtil :: printStatistics (e);
     });
 
-    mesh.octree ().forEachFace ([] (const WingedFace& face) {
+    mesh.forEachConstFace ([] (const WingedFace& face) {
       WingedUtil :: printStatistics (face);
     });
   }

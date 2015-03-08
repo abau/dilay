@@ -1,5 +1,5 @@
 #include "action/data.hpp"
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "action/util.hpp"
 #include "adjacent-iterator.hpp"
 #include "partial-action/modify-winged-face.hpp"
@@ -14,7 +14,7 @@ namespace {
 
 struct PAModifyWFace :: Impl {
   Operation                         operation;
-  ActionUnitOn <WingedMesh>         actions;
+  ActionUnitOnWMesh                 actions;
   ActionData <Maybe <unsigned int>> data;
 
   void edge (WingedFace& face, WingedEdge* e) {

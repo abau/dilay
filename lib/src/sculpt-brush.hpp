@@ -4,7 +4,7 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
-template <typename T> class ActionUnitOn;
+class ActionUnitOnWMesh;
 class AffectedFaces;
 class WingedFace;
 class WingedMesh;
@@ -27,7 +27,7 @@ class SculptBrush {
     void             mesh            (WingedMesh*);
     void             face            (WingedFace*);
 
-    void             sculpt          (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
+    void             sculpt          (AffectedFaces&, ActionUnitOnWMesh&) const;
     float            subdivThreshold () const;
     bool             hasPosition     () const;
     const glm::vec3& lastPosition    () const;
@@ -43,7 +43,7 @@ class SculptBrush {
   private:
     IMPLEMENTATION
 
-    virtual void runSculpt (AffectedFaces&, ActionUnitOn <WingedMesh>&) const = 0;
+    virtual void runSculpt (AffectedFaces&, ActionUnitOnWMesh&) const = 0;
 };
 
 #endif

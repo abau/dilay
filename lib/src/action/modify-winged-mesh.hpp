@@ -2,12 +2,12 @@
 #define DILAY_ACTION_MODIFY_WINGED_MESH
 
 #include <glm/fwd.hpp>
-#include "action/on.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 
-class ActionModifyWMesh : public ActionOn <WingedMesh> {
+class ActionModifyWMesh : public ActionOnWMesh {
   public: 
     DECLARE_BIG3 (ActionModifyWMesh)
 

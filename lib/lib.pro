@@ -15,7 +15,9 @@ SOURCES += \
            src/action/on-post-processed-winged-mesh.cpp \
            src/action/sculpt.cpp \
            src/action/subdivide-mesh.cpp \
+           src/action/transformer.cpp \
            src/action/unit.cpp \
+           src/action/unit/on-winged-mesh.cpp \
            src/action/util.cpp \
            src/adjacent-iterator.cpp \
            src/affected-faces.cpp \
@@ -56,21 +58,17 @@ SOURCES += \
            src/sculpt-brush/carve.cpp \
            src/sculpt-brush/nothing.cpp \
            src/sculpt-brush/subdivide.cpp \
-           src/selection.cpp \
-           src/selection-mode.cpp \
            src/shader.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/delete-mesh.cpp \
-           src/tool/move.cpp \
-           src/tool/new-winged-mesh.cpp \
+           src/tool/move-mesh.cpp \
            src/tool/move-camera.cpp \
+           src/tool/new-mesh.cpp \
            src/tool/sculpt.cpp \
-           src/tool/sculpt/behavior.cpp \
-           src/tool/sculpt/carve-center.cpp \
-           src/tool/sculpt/carve-perimeter.cpp \
+           src/tool/sculpt/carve.cpp \
            src/tool/sculpt/grab.cpp \
            src/tool/sculpt/smooth.cpp \
            src/tool/util/movement.cpp \
@@ -82,17 +80,9 @@ SOURCES += \
            src/view/light.cpp \
            src/view/main-widget.cpp \
            src/view/main-window.cpp \
-           src/view/menu/winged-mesh.cpp \
-           src/view/menu/no-selection.cpp \
            src/view/properties.cpp \
-           src/view/properties/button.cpp \
-           src/view/properties/selection.cpp \
-           src/view/properties/widget.cpp \
-           src/view/tool/menu.cpp \
-           src/view/tool/menu-parameters.cpp \
-           src/view/tool/tip.cpp \
+           src/view/tool-tip.cpp \
            src/view/util.cpp \
-           src/view/vector-edit.cpp \
            src/winged/edge.cpp \
            src/winged/face.cpp \
            src/winged/face-intersection.cpp \
@@ -107,13 +97,13 @@ HEADERS += \
            src/action/delete-winged-mesh.hpp \
            src/action/modify-winged-mesh.hpp \
            src/action/new-winged-mesh.hpp \
-           src/action/on.hpp \
            src/action/on-post-processed-winged-mesh.hpp \
+           src/action/on-winged-mesh.hpp \
            src/action/sculpt.hpp \
            src/action/subdivide-mesh.hpp \
            src/action/transformer.hpp \
            src/action/unit.hpp \
-           src/action/unit/on.hpp \
+           src/action/unit/on-winged-mesh.hpp \
            src/action/util.hpp \
            src/adjacent-iterator.hpp \
            src/affected-faces.hpp \
@@ -159,16 +149,13 @@ HEADERS += \
            src/sculpt-brush/carve.hpp \
            src/sculpt-brush/nothing.hpp \
            src/sculpt-brush/subdivide.hpp \
-           src/selection.hpp \
-           src/selection-mode.hpp \
            src/shader.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/move-camera.hpp \
-           src/tool/sculpt/behavior.hpp \
-           src/tool/sculpt/behaviors.hpp \
+           src/tool/sculpt.hpp \
            src/tool/util/movement.hpp \
            src/tools.hpp \
            src/util.hpp \
@@ -180,17 +167,9 @@ HEADERS += \
            src/view/light.hpp \
            src/view/main-widget.hpp \
            src/view/main-window.hpp \
-           src/view/menu/winged-mesh.hpp \
-           src/view/menu/no-selection.hpp \
            src/view/properties.hpp \
-           src/view/properties/button.hpp \
-           src/view/properties/selection.hpp \
-           src/view/properties/widget.hpp \
-           src/view/tool/menu.hpp \
-           src/view/tool/menu-parameters.hpp \
-           src/view/tool/tip.hpp \
+           src/view/tool-tip.hpp \
            src/view/util.hpp \
-           src/view/vector-edit.hpp \
            src/winged/edge.hpp \
            src/winged/face.hpp \
            src/winged/face-intersection.hpp \

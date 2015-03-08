@@ -7,7 +7,7 @@ struct SculptBrushSubdivide :: Impl {
 
   Impl (SculptBrushSubdivide* s) : self (s) {}
 
-  void runSculpt (AffectedFaces& faces, ActionUnitOn <WingedMesh>&) const {
+  void runSculpt (AffectedFaces& faces, ActionUnitOnWMesh&) const {
     PrimSphere  sphere (this->self->position (), this->self->radius ());
 
     this->self->meshRef ().intersects (sphere, faces);
@@ -15,4 +15,4 @@ struct SculptBrushSubdivide :: Impl {
 };
 
 DELEGATE_BIG6_BASE (SculptBrushSubdivide, (), (this), SculptBrush, ())
-DELEGATE2_CONST (void , SculptBrushSubdivide, runSculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
+DELEGATE2_CONST (void , SculptBrushSubdivide, runSculpt, AffectedFaces&, ActionUnitOnWMesh&)

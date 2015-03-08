@@ -4,39 +4,27 @@
 #include <memory>
 #include "action.hpp"
 
-template <typename T> class ActionOn;
+class ActionOnWMesh;
 class Scene;
+class WingedMesh;
 
-template <typename T>
 class ActionTransformer : public Action {
   public:
-    ActionTransformer (Scene& s, T& t, ActionOn <T>* a) 
-      : scene     (s)
-      , actionPtr (a) 
-      , index     (t.index ())
-    {}
+          ActionTransformer            (Scene&, WingedMesh&, ActionOnWMesh&&);
+          ActionTransformer            (      ActionTransformer&&) = default;
+          ActionTransformer            (const ActionTransformer&)  = delete;
+    const ActionTransformer& operator= (const ActionTransformer&)  = delete;
+    const ActionTransformer& operator= (ActionTransformer&&)       = delete;
 
-    ActionTransformer (ActionTransformer&&) = default;
-
-    ActionTransformer (const ActionTransformer&) = delete;
-
-    virtual ~ActionTransformer () {}
-
-    const ActionTransformer& operator= (const ActionTransformer&) = delete;
-    const ActionTransformer& operator= (ActionTransformer&&)      = delete;
+    virtual ~ActionTransformer ();
 
   private:
-    void runUndo () const { 
-      this->actionPtr->undo (*this->scene.template mesh <T> (this->index));
-    }
+    void runUndo () const;
+    void runRedo () const;
 
-    void runRedo () const {
-      this->actionPtr->redo (*this->scene.template mesh <T> (this->index));
-    }
-
-    Scene&                         scene;
-    std::unique_ptr <ActionOn <T>> actionPtr;
-    const unsigned int             index;
+    Scene&                          scene;
+    std::unique_ptr <ActionOnWMesh> actionPtr;
+    const unsigned int              index;
 };
 
 #endif

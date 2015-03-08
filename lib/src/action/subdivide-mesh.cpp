@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include "affected-faces.hpp"
 #include "action/subdivide-mesh.hpp"
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "octree.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
@@ -10,8 +10,8 @@
 #include "winged/mesh.hpp"
 
 struct ActionSubdivideMesh::Impl {
-  ActionSubdivideMesh*      self;
-  ActionUnitOn <WingedMesh> actions;
+  ActionSubdivideMesh* self;
+  ActionUnitOnWMesh    actions;
 
   Impl (ActionSubdivideMesh* s) : self (s) {}
 
@@ -20,7 +20,7 @@ struct ActionSubdivideMesh::Impl {
 
   void run (WingedMesh& mesh) {
     AffectedFaces affected;
-    mesh.octree ().forEachFace ([&affected] (WingedFace& f) {
+    mesh.forEachFace ([&affected] (WingedFace& f) {
       affected.insert (f);
     });
     affected.commit ();

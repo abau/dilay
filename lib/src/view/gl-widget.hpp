@@ -7,6 +7,7 @@
 
 class Cache;
 class Config;
+class State;
 class ViewMainWindow;
 
 class ViewGlWidget : public QOpenGLWidget {
@@ -14,9 +15,8 @@ class ViewGlWidget : public QOpenGLWidget {
   public:
     DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 
-    glm::ivec2 cursorPosition       ();
-    void       selectIntersection   ();
-    void       selectIntersection   (const glm::ivec2&);
+    State&     state          ();
+    glm::ivec2 cursorPosition ();
        
   protected:
     void initializeGL       ();

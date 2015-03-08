@@ -1,5 +1,5 @@
 #include "action/delete-winged-mesh.hpp"
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "maybe.hpp"
 #include "octree.hpp"
 #include "partial-action/modify-winged-edge.hpp"
@@ -13,16 +13,16 @@
 #include "winged/vertex.hpp"
 
 struct ActionDeleteWMesh::Impl {
-  Scene*                      scene;
-  ActionUnitOn <WingedMesh>   actions;
-  Maybe        <unsigned int> index;
+  Scene*               scene;
+  ActionUnitOnWMesh    actions;
+  Maybe <unsigned int> index;
   
   void run (Scene& s, WingedMesh& mesh) {
     this->scene = &s;
     this->index.set (mesh.index ());
 
     // reset entities
-    mesh.octree ().forEachFace ([this] (WingedFace& f) {
+    mesh.forEachFace ([this] (WingedFace& f) {
       this->actions.add <PAModifyWFace> ().reset (f);
     });
     mesh.forEachVertex ([this] (WingedVertex& v) {
@@ -33,7 +33,7 @@ struct ActionDeleteWMesh::Impl {
     });
 
     // delete entities
-    mesh.octree ().forEachFace ([this,&mesh] (WingedFace& f) {
+    mesh.forEachFace ([this,&mesh] (WingedFace& f) {
       this->actions.add <PAModifyWMesh> ().deleteFace (mesh, f);
     });
     mesh.forEachVertex ([this,&mesh] (WingedVertex& v) {

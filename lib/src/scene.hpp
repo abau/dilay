@@ -5,10 +5,7 @@
 
 class Camera;
 class ConfigProxy;
-class Intersection;
 class PrimRay;
-class Selection;
-enum class SelectionMode;
 class WingedFaceIntersection;
 class WingedMesh;
 
@@ -16,32 +13,16 @@ class Scene {
   public: 
     DECLARE_BIG3 (Scene, const ConfigProxy&)
 
-    const ConfigProxy&  wingedMeshConfig     () const;
-
-          WingedMesh&   newWingedMesh        ();
-          WingedMesh&   newWingedMesh        (unsigned int);
-          void          deleteMesh           (WingedMesh&);
-          WingedMesh*   wingedMesh           (unsigned int) const;
-
-          bool          intersects           (SelectionMode, const PrimRay&, WingedFaceIntersection&);
-          bool          intersects           (const PrimRay&, WingedFaceIntersection&);
-          bool          intersects           (const PrimRay&, Intersection&);
-
-          SelectionMode selectionMode        () const;
-          void          changeSelectionMode  (SelectionMode);
-    const Selection&    selection            () const;
-          void          unselectAll          ();
-          bool          selectIntersection   (const PrimRay&);
-          unsigned int  numSelections        () const;
-
-          void          printStatistics      (bool) const;
-          void          forEachMesh          (const std::function <void (WingedMesh&)>&) const;
-          void          forEachSelectedMesh  (const std::function <void (WingedMesh&)>&) const;
-
-    template <typename T> T*   mesh                  (unsigned int) const;
-    template <typename T> void render                (Camera&);
-    template <typename T> void toggleRenderMode      ();
-    template <typename T> void toggleRenderWireframe ();
+    WingedMesh&       newWingedMesh    ();
+    WingedMesh&       newWingedMesh    (unsigned int);
+    void              deleteMesh       (WingedMesh&);
+    WingedMesh*       wingedMesh       (unsigned int) const;
+    void              render           (Camera&);
+    bool              intersects       (const PrimRay&, WingedFaceIntersection&);
+    void              printStatistics  (bool) const;
+    void              forEachMesh      (const std::function <void (WingedMesh&)>&);
+    void              forEachConstMesh (const std::function <void (const WingedMesh&)>&) const;
+    const WingedMesh* someWingedMesh   () const;
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:

@@ -3,12 +3,12 @@
 #include <glm/glm.hpp>
 #include "cache.hpp"
 #include "sculpt-brush/carve.hpp"
+#include "tools.hpp"
 #include "state.hpp"
-#include "tool/sculpt/behaviors.hpp"
 #include "tool/util/movement.hpp"
 #include "view/cursor/inner-radius.hpp"
 #include "view/properties.hpp"
-#include "view/tool/tip.hpp"
+#include "view/tool-tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 
@@ -50,7 +50,7 @@ struct ToolSculptGrab::Impl {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
   }
 
-  void runMouseMoveEvent (const QMouseEvent& e) {
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
     if (e.buttons () == Qt::NoButton) {
       this->self->updateCursorByIntersection (e);
     }
@@ -65,12 +65,13 @@ struct ToolSculptGrab::Impl {
         this->self->sculpt ();
       }
     }
+    return ToolResponse::Redraw;
   }
 
-  void runMousePressEvent (const QMouseEvent& e) {
+  ToolResponse runMousePressEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
-      if (this->self->intersectsSelection (e, intersection)) {
+      if (this->self->intersectsScene (e, intersection)) {
         this->brush.mesh        (&intersection.mesh     ());
         this->brush.face        (&intersection.face     ());
         this->brush.setPosition ( intersection.position ());
@@ -78,10 +79,17 @@ struct ToolSculptGrab::Impl {
         movement.resetPosition (intersection.position ());
         movement.constraint    (MovementConstraint::CameraPlane);
       }
+      else {
+        this->cursor.enable ();
+        this->brush.resetPosition ();
+      }
     }
-    this->cursor.enable ();
-    this->brush .resetPosition ();
+    else {
+      this->cursor.enable ();
+      this->brush.resetPosition ();
+    }
+    return ToolResponse::Redraw;
   }
 };
 
-DELEGATE_TOOL_SCULPT_BEHAVIOR (ToolSculptGrab)
+DELEGATE_TOOL_SCULPT (ToolSculptGrab)

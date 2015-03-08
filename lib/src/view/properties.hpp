@@ -25,7 +25,6 @@ class ViewProperties : public QWidget {
   public:
     DECLARE_BIG2 (ViewProperties)
 
-    void                label  (const QString&);
     void                reset  ();
     ViewPropertiesPart& header ();
     ViewPropertiesPart& body   ();

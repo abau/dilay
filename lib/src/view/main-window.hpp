@@ -7,7 +7,7 @@
 class Cache;
 class Config;
 class ViewGlWidget;
-class ViewPropertiesWidget;
+class ViewProperties;
 class ViewToolTip;
 
 class ViewMainWindow : public QMainWindow {
@@ -15,12 +15,12 @@ class ViewMainWindow : public QMainWindow {
   public:
     DECLARE_BIG2 (ViewMainWindow, Config&, Cache&)
 
-    ViewGlWidget&         glWidget           ();
-    ViewPropertiesWidget& properties         ();
-    void                  showMessage        (const QString&);
-    void                  showToolTip        (const ViewToolTip&);
-    void                  showDefaultToolTip ();
-    void                  showNumSelections  (unsigned int);
+    ViewGlWidget&   glWidget           ();
+    ViewProperties& properties         ();
+    void            deselectTool       ();
+    void            showMessage        (const QString&);
+    void            showToolTip        (const ViewToolTip&);
+    void            showDefaultToolTip ();
 
   private:
     IMPLEMENTATION

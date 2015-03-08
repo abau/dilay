@@ -1,4 +1,4 @@
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
 #include "partial-action/modify-winged-mesh.hpp"
@@ -9,7 +9,7 @@
 #include "winged/mesh.hpp"
 
 struct PAInsertEdgeFace :: Impl {
-  ActionUnitOn <WingedMesh> actions;
+  ActionUnitOnWMesh actions;
 
   WingedEdge& run (WingedMesh& mesh, WingedFace& face) {
     WingedEdge&   edge        = face.edgeRef ();

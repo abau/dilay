@@ -1,4 +1,4 @@
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/insert-edge-face.hpp"
 #include "partial-action/modify-winged-face.hpp"
@@ -7,7 +7,7 @@
 #include "winged/face.hpp"
 
 struct PATriangulateQuad :: Impl {
-  ActionUnitOn <WingedMesh> actions;
+  ActionUnitOnWMesh actions;
 
   WingedEdge& run (WingedMesh& mesh, WingedFace& face, AffectedFaces* affectedFaces) {
     assert (face.numEdges () == 4);

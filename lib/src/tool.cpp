@@ -1,51 +1,39 @@
 #include <QMouseEvent>
-#include <QPushButton>
 #include <glm/glm.hpp>
 #include "action.hpp"
 #include "cache.hpp"
+#include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
+#include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
-#include "view/properties/widget.hpp"
-#include "view/tool/menu-parameters.hpp"
-#include "view/tool/tip.hpp"
+#include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct Tool::Impl {
-  Tool*                  self;
-  ViewToolMenuParameters menuParameters;
-  ViewToolTip            toolTip;
-  Config&                config;
-  CacheProxy             cache;
-  const Action*          undoLimit;
+  Tool*         self;
+  State&        state;
+  Config&       config;
+  CacheProxy   _cache;
+  const Action* undoLimit;
 
-  Impl (Tool* s, const ViewToolMenuParameters& p, const char* key) 
+  Impl (Tool* s, State& st, const char* key) 
     : self           (s) 
-    , menuParameters (p)
-    , config         (p.state ().config ())
-    , cache          (p.state ().cache (), "editor/tool/" + std::string (key) + "/")
-    , undoLimit      (p.state ().history ().recent ())
+    , state          (st)
+    , config         (this->state.config ())
+    ,_cache          (this->cache (key))
+    , undoLimit      (this->state.history ().recent ())
   {
-    QPushButton& close = ViewUtil::pushButton (QObject::tr ("Close"));
-    this->properties ().footer ().add (close);
-
-    QObject::connect (&close, &QPushButton::clicked, [this] () {
-      this->state ().resetTool ();
-    });
-    this->resetToolTip ();
-  }
-
-  void showToolTip () {
-    this->state ().mainWindow ().showToolTip (this->toolTip);
+    this->state.mainWindow ().showToolTip (ViewToolTip ());
   }
 
   bool allowUndo () const {
-    return ( this->menuParameters.state ().history ().recent () != this->undoLimit )
+    return ( this->state.history ().recent () != this->undoLimit )
         && ( this->self->runAllowUndoRedo () );
   }
 
@@ -66,21 +54,11 @@ struct Tool::Impl {
   }
 
   ToolResponse mousePressEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::RightButton) {
-      return ToolResponse::None;
-    }
-    else {
-      return this->self->runMousePressEvent (e);
-    }
+    return this->self->runMousePressEvent (e);
   }
 
   ToolResponse mouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::RightButton) {
-      return ToolResponse::Terminate;
-    }
-    else {
-      return this->self->runMouseReleaseEvent (e);
-    }
+    return this->self->runMouseReleaseEvent (e);
   }
 
   ToolResponse wheelEvent (const QWheelEvent& e) {
@@ -91,45 +69,57 @@ struct Tool::Impl {
     return this->self->runClose (); 
   }
 
-  State& state () const {
-    return this->menuParameters.state ();
-  }
-
   void updateGlWidget () {
-    this->state ().mainWindow ().glWidget ().update ();
+    this->state.mainWindow ().glWidget ().update ();
   }
 
   ViewProperties& properties () const {
-    return this->state ().mainWindow ().properties ().tool ();
+    return this->state.mainWindow ().properties ();
   }
 
-  void resetToolTip () {
-    this->toolTip.reset ();
-    this->toolTip.add   (ViewToolTip::MouseEvent::Right, QObject::tr ("Close"));
+  void showToolTip (const ViewToolTip& toolTip) {
+    this->state.mainWindow ().showToolTip (toolTip);
+  }
+
+  CacheProxy& cache () {
+    return this->_cache;
+  }
+
+  CacheProxy cache (const char* key) const {
+    return CacheProxy (this->state.cache (), "editor/tool/" + std::string (key) + "/");
   }
 
   glm::ivec2 cursorPosition () {
-    return this->state ().mainWindow ().glWidget ().cursorPosition ();
+    return this->state.mainWindow ().glWidget ().cursorPosition ();
+  }
+
+  bool intersectsScene (const glm::ivec2& pos, WingedFaceIntersection& intersection) {
+    return this->state.scene ().intersects ( this->state.camera ().ray (pos)
+                                           , intersection );
+  }
+
+  bool intersectsScene (const QMouseEvent& e, WingedFaceIntersection& intersection) {
+    return this->intersectsScene (ViewUtil::toIVec2 (e), intersection);
   }
 };
 
-DELEGATE2_BIG3_SELF (Tool, const ViewToolMenuParameters&, const char*)
-GETTER_CONST   (const ViewToolMenuParameters&, Tool, menuParameters)
-DELEGATE       (void                         , Tool, showToolTip)
-DELEGATE_CONST (bool                         , Tool, allowUndo)
-DELEGATE_CONST (bool                         , Tool, allowRedo)
-DELEGATE       (ToolResponse                 , Tool, initialize)
-DELEGATE_CONST (void                         , Tool, render)
-DELEGATE1      (ToolResponse                 , Tool, mouseMoveEvent, const QMouseEvent&)
-DELEGATE1      (ToolResponse                 , Tool, mousePressEvent, const QMouseEvent&)
-DELEGATE1      (ToolResponse                 , Tool, mouseReleaseEvent, const QMouseEvent&)
-DELEGATE1      (ToolResponse                 , Tool, wheelEvent, const QWheelEvent&)
-DELEGATE       (void                         , Tool, close)
-DELEGATE_CONST (State&                       , Tool, state)
-DELEGATE       (void                         , Tool, updateGlWidget)
-DELEGATE_CONST (ViewProperties&              , Tool, properties)
-GETTER_CONST   (ViewToolTip&                 , Tool, toolTip)
-DELEGATE       (void                         , Tool, resetToolTip)
-GETTER_CONST   (Config&                      , Tool, config)
-GETTER_CONST   (CacheProxy&                  , Tool, cache)
-DELEGATE_CONST (glm::ivec2                   , Tool, cursorPosition)
+DELEGATE2_BIG3_SELF (Tool, State&, const char*)
+DELEGATE_CONST  (bool           , Tool, allowUndo)
+DELEGATE_CONST  (bool           , Tool, allowRedo)
+DELEGATE        (ToolResponse   , Tool, initialize)
+DELEGATE_CONST  (void           , Tool, render)
+DELEGATE1       (ToolResponse   , Tool, mouseMoveEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse   , Tool, mousePressEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse   , Tool, mouseReleaseEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse   , Tool, wheelEvent, const QWheelEvent&)
+DELEGATE        (void           , Tool, close)
+GETTER_CONST    (State&         , Tool, state)
+DELEGATE        (void           , Tool, updateGlWidget)
+DELEGATE_CONST  (ViewProperties&, Tool, properties)
+DELEGATE1       (void           , Tool, showToolTip, const ViewToolTip&)
+GETTER_CONST    (Config&        , Tool, config)
+DELEGATE        (CacheProxy&    , Tool, cache)
+DELEGATE1_CONST (CacheProxy     , Tool, cache, const char*)
+DELEGATE_CONST  (glm::ivec2     , Tool, cursorPosition)
+DELEGATE2       (bool           , Tool, intersectsScene, const glm::ivec2&, WingedFaceIntersection&)
+DELEGATE2       (bool           , Tool, intersectsScene, const QMouseEvent&, WingedFaceIntersection&)

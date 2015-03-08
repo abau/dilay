@@ -24,7 +24,7 @@ struct SculptBrush :: Impl {
     , hasPosition     (false)
     {}
 
-  void sculpt (AffectedFaces& faces, ActionUnitOn <WingedMesh>& actions) const {
+  void sculpt (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
     this->self->runSculpt (faces, actions);
   }
 
@@ -98,7 +98,7 @@ SETTER          (float            , SculptBrush, stepWidthFactor)
 SETTER          (bool             , SculptBrush, subdivide)
 SETTER          (WingedMesh*      , SculptBrush, mesh)
 SETTER          (WingedFace*      , SculptBrush, face)
-DELEGATE2_CONST (void             , SculptBrush, sculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
+DELEGATE2_CONST (void             , SculptBrush, sculpt, AffectedFaces&, ActionUnitOnWMesh&)
 DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
 GETTER_CONST    (bool             , SculptBrush, hasPosition)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, lastPosition)

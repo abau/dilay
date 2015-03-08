@@ -2,14 +2,14 @@
 #define DILAY_PARTIAL_ACTION_MODIFY_WINGED_VERTEX
 
 #include <glm/fwd.hpp>
-#include "action/on.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedEdge;
 class WingedVertex;
 
-class PAModifyWVertex : public ActionOn <WingedMesh> {
+class PAModifyWVertex : public ActionOnWMesh {
   public: 
     DECLARE_BIG3 (PAModifyWVertex)
 

@@ -1,4 +1,4 @@
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/modify-winged-edge.hpp"
 #include "partial-action/modify-winged-face.hpp"
@@ -11,7 +11,7 @@
 #include "winged/vertex.hpp"
 
 struct PATriangulate6Gon :: Impl {
-  ActionUnitOn <WingedMesh> actions;
+  ActionUnitOnWMesh actions;
 
   void run (WingedMesh& mesh, WingedFace& f, AffectedFaces* affectedFaces) {
     assert (f.numEdges () == 6);

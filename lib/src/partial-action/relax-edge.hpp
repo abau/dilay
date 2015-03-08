@@ -1,14 +1,14 @@
 #ifndef DILAY_PARTIAL_ACTION_RELAX_EDGE
 #define DILAY_PARTIAL_ACTION_RELAX_EDGE
 
-#include "action/on.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedEdge;
 class AffectedFaces;
 
-class PARelaxEdge : public ActionOn <WingedMesh> {
+class PARelaxEdge : public ActionOnWMesh {
   public: 
     DECLARE_BIG3 (PARelaxEdge)
 

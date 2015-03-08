@@ -1,5 +1,5 @@
 #include <glm/glm.hpp>
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/flip-edge.hpp"
 #include "partial-action/relax-edge.hpp"
@@ -7,7 +7,7 @@
 #include "winged/vertex.hpp"
 
 struct PARelaxEdge::Impl {
-  ActionUnitOn <WingedMesh> actions;
+  ActionUnitOnWMesh actions;
 
   void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
   void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }

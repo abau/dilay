@@ -10,7 +10,7 @@ class SculptBrushSubdivide : public SculptBrush {
   private:
     IMPLEMENTATION
 
-    void runSculpt (AffectedFaces&, ActionUnitOn <WingedMesh>&) const;
+    void runSculpt (AffectedFaces&, ActionUnitOnWMesh&) const;
 };
 
 #endif

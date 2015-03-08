@@ -2,7 +2,7 @@
 #include <limits>
 #include <map>
 #include "action/new-winged-mesh.hpp"
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "maybe.hpp"
 #include "mesh-definition.hpp"
 #include "partial-action/modify-winged-edge.hpp"
@@ -10,14 +10,15 @@
 #include "partial-action/modify-winged-mesh.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/triangle.hpp"
+#include "render-mode.hpp"
 #include "scene.hpp"
 #include "winged/edge.hpp"
 #include "winged/mesh.hpp"
 
 struct ActionNewWingedMesh :: Impl {
-  Scene*                      scene;
-  ActionUnitOn <WingedMesh>   actions;
-  Maybe        <unsigned int> index;
+  Scene*               scene;
+  ActionUnitOnWMesh    actions;
+  Maybe <unsigned int> index;
 
   typedef std::pair <unsigned int,unsigned int> UIPair;
   typedef std::map <UIPair, WingedEdge*>        EdgeMap;
@@ -25,8 +26,9 @@ struct ActionNewWingedMesh :: Impl {
   WingedMesh& run (Scene& s, const MeshDefinition& def) {
     assert (this->actions.isEmpty ());
 
-    this->scene      = &s;
-    WingedMesh& mesh = this->scene->newWingedMesh ();
+    this->scene             = &s;
+    const WingedMesh* other = this->scene->someWingedMesh ();
+          WingedMesh& mesh  = this->scene->newWingedMesh ();
     this->index.set (mesh.index ());
 
     // octree
@@ -70,6 +72,11 @@ struct ActionNewWingedMesh :: Impl {
       this->actions.add <PAModifyWEdge> ().successor   (e2, f, &e3);
       this->actions.add <PAModifyWEdge> ().predecessor (e3, f, &e2);
       this->actions.add <PAModifyWEdge> ().successor   (e3, f, &e1);
+    }
+
+    // render mode
+    if (other) {
+      mesh.renderMode () = other->renderMode ();
     }
 
     // write & buffer

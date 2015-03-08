@@ -1,43 +1,33 @@
-#include <QObject>
+#include <QMouseEvent>
 #include "action/delete-winged-mesh.hpp"
-#include "action/unit.hpp"
 #include "history.hpp"
 #include "scene.hpp"
-#include "selection.hpp"
-#include "selection-mode.hpp"
 #include "state.hpp"
 #include "tools.hpp"
+#include "winged/face-intersection.hpp"
 
 struct ToolDeleteMesh::Impl {
   ToolDeleteMesh* self;
 
   Impl (ToolDeleteMesh* s) : self (s) {}
 
-  ToolResponse runInitialize () {
-    ActionUnit unit;
-
-    switch (this->self->state ().scene ().selectionMode ()) {
-      case SelectionMode::WingedMesh:
-        this->runDeleteWingedMesh (unit);
-        break;
-    }
-
-    if (unit.isEmpty () == false) {
-      this->self->state ().history ().addUnit     (std::move (unit));
-      this->self->state ().scene   ().unselectAll ();
-    }
-    return ToolResponse::Terminate;
+  bool runAllowUndoRedo () const {
+    return true;
   }
 
-  void runDeleteWingedMesh (ActionUnit& unit) {
-    this->self->state ().scene ().selection ().forEachMajor ([this,&unit]
-      (unsigned int index) {
-        WingedMesh& mesh = this->self->state ().scene ().wingedMeshRef (index);
-        unit.add <ActionDeleteWMesh> ().run (this->self->state ().scene (), mesh);
+  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
+    if (e.button () == Qt::LeftButton) {
+      WingedFaceIntersection intersection;
+      if (this->self->intersectsScene (e, intersection)) {
+        this->self->state ().history ().add <ActionDeleteWMesh> ()
+                                       .run ( this->self->state ().scene ()
+                                            , intersection.mesh () );
+        return ToolResponse::Redraw;
       }
-    );
+    }
+    return ToolResponse::None;
   }
 };
 
-DELEGATE_TOOL                (ToolDeleteMesh)
-DELEGATE_TOOL_RUN_INITIALIZE (ToolDeleteMesh)
+DELEGATE_TOOL                         (ToolDeleteMesh)
+DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolDeleteMesh)

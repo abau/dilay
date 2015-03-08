@@ -4,18 +4,18 @@
 #include <glm/glm.hpp>
 #include "cache.hpp"
 #include "sculpt-brush/carve.hpp"
-#include "tool/sculpt/behaviors.hpp"
+#include "tools.hpp"
 #include "view/cursor/inner-radius.hpp"
 #include "view/properties.hpp"
-#include "view/tool/tip.hpp"
+#include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
-struct ToolSculptCarveCenter::Impl {
-  ToolSculptCarveCenter* self;
-  SculptBrushCarve       brush;
-  ViewCursorInnerRadius  cursor;
+struct ToolSculptCarve::Impl {
+  ToolSculptCarve*      self;
+  SculptBrushCarve      brush;
+  ViewCursorInnerRadius cursor;
 
-  Impl (ToolSculptCarveCenter* s) : self (s) {}
+  Impl (ToolSculptCarve* s) : self (s) {}
 
   void runSetupBrush () {
     this->brush.intensityFactor   (this->self->cache ().get <float> ("intensity-factor"   , 0.03f));
@@ -59,7 +59,7 @@ struct ToolSculptCarveCenter::Impl {
                 , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to sculpt inverted"));
   }
 
-  void carve (const QMouseEvent& e) {
+  ToolResponse carve (const QMouseEvent& e) {
     if (this->self->updateBrushByIntersection (e)) {
       if (e.modifiers () == Qt::ShiftModifier) {
         this->brush.toggleInvert ();
@@ -70,15 +70,16 @@ struct ToolSculptCarveCenter::Impl {
         this->self->sculpt ();
       }
     }
+    return ToolResponse::Redraw;
   }
 
-  void runMouseMoveEvent (const QMouseEvent& e) {
-    this->carve (e);
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
+    return this->carve (e);
   }
 
-  void runMousePressEvent (const QMouseEvent& e) {
-    this->carve (e);
+  ToolResponse runMousePressEvent (const QMouseEvent& e) {
+    return this->carve (e);
   }
 };
 
-DELEGATE_TOOL_SCULPT_BEHAVIOR (ToolSculptCarveCenter)
+DELEGATE_TOOL_SCULPT (ToolSculptCarve)

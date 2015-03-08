@@ -8,14 +8,15 @@ class Cache;
 class Config;
 class ViewMainWindow;
 class ViewGlWidget;
-class ViewPropertiesWidget;
+class ViewProperties;
 
 class ViewMainWidget : public QSplitter {
   public:
     DECLARE_BIG2 (ViewMainWidget, ViewMainWindow&, Config&, Cache&)
 
-    ViewGlWidget&         glWidget    ();
-    ViewPropertiesWidget& properties  ();
+    ViewGlWidget&   glWidget     ();
+    ViewProperties& properties   ();
+    void            deselectTool ();
 
   private:
     IMPLEMENTATION

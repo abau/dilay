@@ -1,6 +1,6 @@
 #include <unordered_set>
 #include "action/on-post-processed-winged-mesh.hpp"
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "affected-faces.hpp"
 #include "bitset.hpp"
 #include "octree.hpp"
@@ -84,9 +84,7 @@ struct ActionOnPostProcessedWMesh :: Impl {
     }
   }
 
-  void finalize ( WingedMesh& mesh, AffectedFaces& affectedFaces
-                , ActionUnitOn <WingedMesh>& actions )
-  {
+  void finalize (WingedMesh& mesh, AffectedFaces& affectedFaces, ActionUnitOnWMesh& actions) {
     // realign
     for (auto it = affectedFaces.faces ().begin (); it != affectedFaces.faces ().end (); ) {
       WingedFace& face = **it;
@@ -128,7 +126,7 @@ DELEGATE1 (void       , ActionOnPostProcessedWMesh, realignAllFaces, WingedMesh&
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllNormals, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, writeAllIndices, WingedMesh&)
 DELEGATE1 (void       , ActionOnPostProcessedWMesh, bufferData, WingedMesh&)
-DELEGATE3 (void       , ActionOnPostProcessedWMesh, finalize, WingedMesh&, AffectedFaces&, ActionUnitOn<WingedMesh>&)
+DELEGATE3 (void       , ActionOnPostProcessedWMesh, finalize, WingedMesh&, AffectedFaces&, ActionUnitOnWMesh&)
 
 void ActionOnPostProcessedWMesh :: runUndo (WingedMesh& mesh) const {
   this->runUndoBeforePostProcessing (mesh);

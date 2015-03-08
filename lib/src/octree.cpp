@@ -603,8 +603,11 @@ struct Octree::Impl {
     }
   }
 
-  void forEachFace (const std::function <void (WingedFace&)>& f) const {
+  void forEachFace (const std::function <void (WingedFace&)>& f) {
     this->faceIndex.forEachElement (f);
+  }
+  void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
+    this->faceIndex.forEachConstElement (f);
   }
   void forEachFreeFaceIndex (const std::function <void (unsigned int)>& f) const {
     this->faceIndex.forEachFreeIndex (f);
@@ -632,5 +635,6 @@ DELEGATE_CONST  (unsigned int, Octree, numIndices)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE_CONST  (WingedFace* , Octree, someFace)
 DELEGATE_CONST  (WingedFace* , Octree, someDegeneratedFace)
-DELEGATE1_CONST (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
+DELEGATE1       (void        , Octree, forEachFace, const std::function <void (WingedFace&)>&)
+DELEGATE1_CONST (void        , Octree, forEachConstFace, const std::function <void (const WingedFace&)>&)
 DELEGATE1_CONST (void        , Octree, forEachFreeFaceIndex, const std::function <void (unsigned int)>&)

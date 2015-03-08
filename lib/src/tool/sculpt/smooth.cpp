@@ -1,8 +1,8 @@
 #include <QObject>
 #include "sculpt-brush/nothing.hpp"
-#include "tool/sculpt/behaviors.hpp"
+#include "tools.hpp"
 #include "view/cursor.hpp"
-#include "view/tool/tip.hpp"
+#include "view/tool-tip.hpp"
 
 struct ToolSculptSmooth::Impl {
   ToolSculptSmooth*  self;
@@ -23,19 +23,20 @@ struct ToolSculptSmooth::Impl {
     toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to smooth"));
   }
 
-  void carve (const QMouseEvent& e) {
+  ToolResponse carve (const QMouseEvent& e) {
     if (this->self->updateBrushByIntersection (e)) {
       this->self->sculpt ();
     }
+    return ToolResponse::Redraw;
   }
 
-  void runMouseMoveEvent (const QMouseEvent& e) {
-    this->carve (e);
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
+    return this->carve (e);
   }
 
-  void runMousePressEvent (const QMouseEvent& e) {
-    this->carve (e);
+  ToolResponse runMousePressEvent (const QMouseEvent& e) {
+    return this->carve (e);
   }
 };
 
-DELEGATE_TOOL_SCULPT_BEHAVIOR (ToolSculptSmooth)
+DELEGATE_TOOL_SCULPT (ToolSculptSmooth)

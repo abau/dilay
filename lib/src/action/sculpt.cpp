@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "action/sculpt.hpp"
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "affected-faces.hpp"
 #include "sculpt-brush.hpp"
 #include "partial-action/relax-edge.hpp"
@@ -10,8 +10,8 @@
 #include "winged/edge.hpp"
 
 struct ActionSculpt::Impl {
-  ActionSculpt*             self;
-  ActionUnitOn <WingedMesh> actions;
+  ActionSculpt*     self;
+  ActionUnitOnWMesh actions;
 
   Impl (ActionSculpt* s) : self (s) {}
 

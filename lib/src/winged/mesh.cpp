@@ -220,23 +220,8 @@ struct WingedMesh::Impl {
     this->octree.setupRoot (center,width);
   }
 
-  void toggleRenderMode () { 
-    if (this->mesh.renderMode ().smoothShading ()) {
-      this->mesh.renderMode ().flatShading (true);
-    }
-    else if (this->mesh.renderMode ().flatShading ()) {
-      this->mesh.renderMode ().smoothShading (true);
-    }
-  }
-
-  void toggleRenderWireframe () { 
-    if (this->mesh.renderMode ().renderWireframe ()) {
-      this->mesh.renderMode ().renderWireframe (false);
-    }
-    else {
-      this->mesh.renderMode ().renderWireframe (true);
-    }
-  }
+  const RenderMode& renderMode () const { return this->mesh.renderMode (); }
+  RenderMode&       renderMode ()       { return this->mesh.renderMode (); }
 
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
     return this->octree.intersects (*this->self, ray, intersection);
@@ -305,12 +290,28 @@ struct WingedMesh::Impl {
     this->mesh.wireframeColor (c);
   }
 
-  void forEachVertex (const std::function <void (WingedVertex&)>& f) const {
+  void forEachVertex (const std::function <void (WingedVertex&)>& f) {
     this->vertices.forEachElement (f);
   }
 
-  void forEachEdge (const std::function <void (WingedEdge&)>& f) const {
+  void forEachConstVertex (const std::function <void (const WingedVertex&)>& f) const {
+    this->vertices.forEachConstElement (f);
+  }
+
+  void forEachEdge (const std::function <void (WingedEdge&)>& f) {
     this->edges.forEachElement (f);
+  }
+
+  void forEachConstEdge (const std::function <void (const WingedEdge&)>& f) const {
+    this->edges.forEachConstElement (f);
+  }
+
+  void forEachFace (const std::function <void (WingedFace&)>& f) {
+    this->octree.forEachFace (f);
+  }
+
+  void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
+    this->octree.forEachConstFace (f);
   }
 };
 
@@ -349,14 +350,14 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 
-DELEGATE        (void, WingedMesh, writeAllIndices)
-DELEGATE        (void, WingedMesh, writeAllNormals)
-DELEGATE        (void, WingedMesh, bufferData)
-DELEGATE1_CONST (void, WingedMesh, render, Camera&)
-DELEGATE        (void, WingedMesh, reset)
-DELEGATE2       (void, WingedMesh, setupOctreeRoot, const glm::vec3&, float)
-DELEGATE        (void, WingedMesh, toggleRenderMode)
-DELEGATE        (void, WingedMesh, toggleRenderWireframe)
+DELEGATE        (void             , WingedMesh, writeAllIndices)
+DELEGATE        (void             , WingedMesh, writeAllNormals)
+DELEGATE        (void             , WingedMesh, bufferData)
+DELEGATE1_CONST (void             , WingedMesh, render, Camera&)
+DELEGATE        (void             , WingedMesh, reset)
+DELEGATE2       (void             , WingedMesh, setupOctreeRoot, const glm::vec3&, float)
+DELEGATE_CONST  (const RenderMode&, WingedMesh, renderMode)
+DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
@@ -378,5 +379,9 @@ DELEGATE_CONST  (const Color&      , WingedMesh, color)
 DELEGATE1       (void              , WingedMesh, color, const Color&)
 DELEGATE_CONST  (const Color&      , WingedMesh, wireframeColor)
 DELEGATE1       (void              , WingedMesh, wireframeColor, const Color&)
-DELEGATE1_CONST (void              , WingedMesh, forEachVertex, const std::function <void (WingedVertex&)>&)
-DELEGATE1_CONST (void              , WingedMesh, forEachEdge  , const std::function <void (WingedEdge&)>&)
+DELEGATE1       (void              , WingedMesh, forEachVertex, const std::function <void (WingedVertex&)>&)
+DELEGATE1_CONST (void              , WingedMesh, forEachConstVertex, const std::function <void (const WingedVertex&)>&)
+DELEGATE1       (void              , WingedMesh, forEachEdge, const std::function <void (WingedEdge&)>&)
+DELEGATE1_CONST (void              , WingedMesh, forEachConstEdge  , const std::function <void (const WingedEdge&)>&)
+DELEGATE1       (void              , WingedMesh, forEachFace, const std::function <void (WingedFace&)>&)
+DELEGATE1_CONST (void              , WingedMesh, forEachConstFace, const std::function <void (const WingedFace&)>&)

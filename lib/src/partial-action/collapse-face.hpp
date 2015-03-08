@@ -1,14 +1,14 @@
 #ifndef DILAY_PARTIAL_ACTION_COLLAPSE_FACE
 #define DILAY_PARTIAL_ACTION_COLLAPSE_FACE
 
-#include "action/on.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedFace;
 class AffectedFaces;
 
-class PACollapseFace : public ActionOn <WingedMesh> {
+class PACollapseFace : public ActionOnWMesh {
   public:
     DECLARE_BIG3 (PACollapseFace)
 

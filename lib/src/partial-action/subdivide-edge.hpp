@@ -1,14 +1,14 @@
 #ifndef DILAY_PARTIAL_ACTION_SUBDIVIDE_EDGE
 #define DILAY_PARTIAL_ACTION_SUBDIVIDE_EDGE
 
-#include "action/on.hpp"
+#include "action/on-winged-mesh.hpp"
 #include "macro.hpp"
 
 class WingedMesh;
 class WingedEdge;
 class AffectedFaces;
 
-class PASubdivideEdge : public ActionOn <WingedMesh> {
+class PASubdivideEdge : public ActionOnWMesh {
   public: 
     DECLARE_BIG3 (PASubdivideEdge)
 

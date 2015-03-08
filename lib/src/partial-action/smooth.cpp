@@ -1,5 +1,5 @@
 #include <glm/glm.hpp>
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
@@ -13,7 +13,7 @@
 #include "winged/vertex.hpp"
 
 struct PASmooth::Impl {
-  ActionUnitOn <WingedMesh> actions;
+  ActionUnitOnWMesh actions;
 
   void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
   void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }

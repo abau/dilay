@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <tuple>
 #include <vector>
-#include "view/tool/tip.hpp"
+#include "view/tool-tip.hpp"
 
 namespace {
   typedef std::tuple <ViewToolTip::MouseEvent, ViewToolTip::Modifier, QString> Tip;

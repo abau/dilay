@@ -1,4 +1,4 @@
-#include "action/unit/on.hpp"
+#include "action/unit/on-winged-mesh.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
 #include "maybe.hpp"
@@ -74,7 +74,7 @@ struct SculptBrushCarve :: Impl {
                                  : this->self->position     ();
   }
 
-  void runCarveCenter (VertexPtrSet& vertices, ActionUnitOn <WingedMesh>& actions) const {
+  void runCarveCenter (VertexPtrSet& vertices, ActionUnitOnWMesh& actions) const {
           WingedMesh& mesh (this->self->meshRef ());
     const glm::vec3   dir  (this->getDirection (mesh, vertices));
 
@@ -91,7 +91,7 @@ struct SculptBrushCarve :: Impl {
     }
   }
 
-  void runCarvePerimeter (VertexPtrSet& vertices, ActionUnitOn <WingedMesh>& actions) const {
+  void runCarvePerimeter (VertexPtrSet& vertices, ActionUnitOnWMesh& actions) const {
           WingedMesh& mesh  (this->self->meshRef ());
     const glm::vec3   dir   (this->getDirection (mesh, vertices));
     const PrimPlane   plane (this->self->position (), dir);
@@ -109,7 +109,7 @@ struct SculptBrushCarve :: Impl {
     }
   }
 
-  void runSculpt (AffectedFaces& faces, ActionUnitOn <WingedMesh>& actions) const {
+  void runSculpt (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
     PrimSphere sphere (this->getPosition (), this->self->radius ());
 
     if (this->useIntersection) {
@@ -145,4 +145,4 @@ SETTER          (bool , SculptBrushCarve, useLastPosition)
 SETTER          (bool , SculptBrushCarve, useIntersection)
 DELEGATE1       (void , SculptBrushCarve, direction, const glm::vec3&)
 DELEGATE        (void , SculptBrushCarve, useAverageDirection)
-DELEGATE2_CONST (void , SculptBrushCarve, runSculpt, AffectedFaces&, ActionUnitOn <WingedMesh>&)
+DELEGATE2_CONST (void , SculptBrushCarve, runSculpt, AffectedFaces&, ActionUnitOnWMesh&)

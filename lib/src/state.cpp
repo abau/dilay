@@ -11,8 +11,7 @@
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/properties/widget.hpp"
-#include "view/tool/menu-parameters.hpp"
+#include "view/properties.hpp"
 #include "util.hpp"
 
 struct State::Impl {
@@ -29,7 +28,7 @@ struct State::Impl {
     , config     (cfg)
     , cache      (cch)
     , camera     (this->config)
-    , scene      (ConfigProxy (this->config, "editor/freeform-mesh/"))
+    , scene      (ConfigProxy (this->config, "editor/mesh/"))
   {
     MeshDefinition meshDefinition (MeshDefinition::Icosphere (2));
     meshDefinition.scale          (glm::vec3 (Util::defaultScale ()));
@@ -50,23 +49,35 @@ struct State::Impl {
     return *this->toolPtr; 
   }
 
-  void setTool (Tool& tool) { 
-    this->resetTool ();
+  void setTool (Tool&& tool) { 
+    assert (this->toolPtr == false);
+
     this->toolPtr.reset (&tool); 
 
-    tool.showToolTip ();
-    this->mainWindow.properties ().showTool (tool.menuParameters ().label ());
-    this->handleToolResponse (tool.initialize ());
+    ToolResponse initResponse = tool.initialize ();
+    switch (initResponse) {
+      case ToolResponse::None:
+        this->handleToolResponse (ToolResponse::Redraw);
+        break;
+      default:
+        this->handleToolResponse (initResponse);
+        break;
+    }
   }
 
-  void resetTool () {
+  void resetTool (bool deselect) {
     if (this->hasTool ()) {
       this->toolPtr->close ();
 
       // order of destruction is important, because of stack-allocated widgets
       this->toolPtr.reset (); 
       this->mainWindow.showDefaultToolTip ();
-      this->mainWindow.properties ().resetTool ();
+      this->mainWindow.properties ().reset ();
+
+      if (deselect) {
+        this->mainWindow.deselectTool ();
+      }
+      this->mainWindow.update ();
     }
   }
 
@@ -76,11 +87,10 @@ struct State::Impl {
       case ToolResponse::None:
         break;
       case ToolResponse::Redraw:
-        this->mainWindow.glWidget ().update ();
+        this->mainWindow.update ();
         break;
       case ToolResponse::Terminate:
-        this->resetTool ();
-        this->mainWindow.glWidget ().update ();
+        this->resetTool (true);
         break;
     }
   }
@@ -96,6 +106,6 @@ GETTER    (History&          , State, history)
 GETTER    (Scene&            , State, scene)
 DELEGATE  (bool              , State, hasTool)
 DELEGATE  (Tool&             , State, tool)
-DELEGATE1 (void              , State, setTool, Tool&)
-DELEGATE  (void              , State, resetTool)
+DELEGATE1 (void              , State, setTool, Tool&&)
+DELEGATE1 (void              , State, resetTool, bool)
 DELEGATE1 (void              , State, handleToolResponse, ToolResponse)
