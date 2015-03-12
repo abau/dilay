@@ -20,7 +20,6 @@ struct SculptBrushCarve :: Impl {
   Maybe <glm::vec3> mDirection;
   bool              useLastPosition;
   bool              useIntersection;
-  bool              carvePerimeter;
 
   Impl (SculptBrushCarve* s) 
     : self              (s) 
@@ -29,7 +28,6 @@ struct SculptBrushCarve :: Impl {
     , invert            (false)
     , useLastPosition   (false)
     , useIntersection   (false)
-    , carvePerimeter    (false)
   {}
 
   float intensity () const {
@@ -74,9 +72,19 @@ struct SculptBrushCarve :: Impl {
                                  : this->self->position     ();
   }
 
-  void runCarveCenter (VertexPtrSet& vertices, ActionUnitOnWMesh& actions) const {
-          WingedMesh& mesh (this->self->meshRef ());
-    const glm::vec3   dir  (this->getDirection (mesh, vertices));
+  void runSculpt (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
+    PrimSphere  sphere (this->getPosition (), this->self->radius ());
+    WingedMesh& mesh   (this->self->meshRef ());
+
+    if (this->useIntersection) {
+      this->self->meshRef ().intersects (sphere, faces);
+    }
+    else {
+      IntersectionUtil::extend ( sphere, this->self->meshRef ()
+                               , this->self->faceRef (), faces );
+    }
+    VertexPtrSet    vertices (faces.toVertexSet ());
+    const glm::vec3 dir      (this->getDirection (mesh, vertices));
 
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos = v->position (mesh);
@@ -90,44 +98,6 @@ struct SculptBrushCarve :: Impl {
       actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
     }
   }
-
-  void runCarvePerimeter (VertexPtrSet& vertices, ActionUnitOnWMesh& actions) const {
-          WingedMesh& mesh  (this->self->meshRef ());
-    const glm::vec3   dir   (this->getDirection (mesh, vertices));
-    const PrimPlane   plane (this->self->position (), dir);
-
-    for (WingedVertex* v : vertices) {
-      const glm::vec3 oldPos  = v->position (mesh);
-      const glm::vec3 onPlane = oldPos - (dir * plane.distance (oldPos));
-      const float     delta   = Util::smoothStep 
-                                  ( onPlane, this->self->position ()
-                                  , this->innerRadius ()
-                                  , this->self->radius () );
-      const glm::vec3 newPos  = oldPos + (delta * (onPlane - oldPos));
-
-      actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
-    }
-  }
-
-  void runSculpt (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
-    PrimSphere sphere (this->getPosition (), this->self->radius ());
-
-    if (this->useIntersection) {
-      this->self->meshRef ().intersects (sphere, faces);
-    }
-    else {
-      IntersectionUtil::extend ( sphere, this->self->meshRef ()
-                               , this->self->faceRef (), faces );
-    }
-    VertexPtrSet vertices (faces.toVertexSet ());
-
-    if (this->carvePerimeter) {
-      this->runCarvePerimeter (vertices, actions);
-    }
-    else {
-      this->runCarveCenter (vertices, actions);
-    }
-  }
 };
 
 DELEGATE_BIG6_BASE (SculptBrushCarve, (), (this), SculptBrush, ())
@@ -135,12 +105,10 @@ DELEGATE_BIG6_BASE (SculptBrushCarve, (), (this), SculptBrush, ())
 GETTER_CONST    (float, SculptBrushCarve, intensityFactor)
 GETTER_CONST    (float, SculptBrushCarve, innerRadiusFactor)
 GETTER_CONST    (bool , SculptBrushCarve, invert)
-GETTER_CONST    (bool , SculptBrushCarve, carvePerimeter)
 SETTER          (float, SculptBrushCarve, intensityFactor)
 SETTER          (float, SculptBrushCarve, innerRadiusFactor)
 SETTER          (bool , SculptBrushCarve, invert)
 DELEGATE        (void , SculptBrushCarve, toggleInvert)
-SETTER          (bool , SculptBrushCarve, carvePerimeter)
 SETTER          (bool , SculptBrushCarve, useLastPosition)
 SETTER          (bool , SculptBrushCarve, useIntersection)
 DELEGATE1       (void , SculptBrushCarve, direction, const glm::vec3&)
