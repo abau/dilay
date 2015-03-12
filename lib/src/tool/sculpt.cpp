@@ -180,7 +180,7 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool updateBrushByIntersection (const QMouseEvent& e) {
+  bool updateBrushAndCursorByIntersection (const QMouseEvent& e) {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsScene (e, intersection)) {
@@ -208,7 +208,7 @@ struct ToolSculpt::Impl {
 DELEGATE_BIG2_BASE (ToolSculpt, (State& s, const char* k), (this), Tool, (s, k))
 DELEGATE       (void        , ToolSculpt, sculpt)
 DELEGATE1      (void        , ToolSculpt, updateCursorByIntersection, const QMouseEvent&)
-DELEGATE1      (bool        , ToolSculpt, updateBrushByIntersection, const QMouseEvent&)
+DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, const QMouseEvent&)
 DELEGATE_CONST (bool        , ToolSculpt, runAllowUndoRedo)
 DELEGATE       (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST (void        , ToolSculpt, runRender)

@@ -60,7 +60,7 @@ struct ToolSculptCarve::Impl {
   }
 
   ToolResponse carve (const QMouseEvent& e) {
-    if (this->self->updateBrushByIntersection (e)) {
+    if (this->self->updateBrushAndCursorByIntersection (e)) {
       if (e.modifiers () == Qt::ShiftModifier) {
         this->brush.toggleInvert ();
         this->self->sculpt ();

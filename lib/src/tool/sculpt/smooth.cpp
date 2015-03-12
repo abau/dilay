@@ -24,7 +24,7 @@ struct ToolSculptSmooth::Impl {
   }
 
   ToolResponse carve (const QMouseEvent& e) {
-    if (this->self->updateBrushByIntersection (e)) {
+    if (this->self->updateBrushAndCursorByIntersection (e)) {
       this->self->sculpt ();
     }
     return ToolResponse::Redraw;

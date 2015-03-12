@@ -12,9 +12,9 @@ class ToolSculpt : public Tool {
     DECLARE_BIG2 (ToolSculpt, State&, const char*)
 
   protected:
-    void sculpt                     ();
-    void updateCursorByIntersection (const QMouseEvent&);
-    bool updateBrushByIntersection  (const QMouseEvent&);
+    void sculpt                             ();
+    void updateCursorByIntersection         (const QMouseEvent&);
+    bool updateBrushAndCursorByIntersection (const QMouseEvent&);
 
   private:
     IMPLEMENTATION
