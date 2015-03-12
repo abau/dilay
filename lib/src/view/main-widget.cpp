@@ -46,6 +46,7 @@ struct ViewMainWidget :: Impl {
     this->addToolButton <ToolNewMesh>      (toolPaneLayout, QObject::tr ("New mesh"));
     this->addToolButton <ToolSculptCarve>  (toolPaneLayout, QObject::tr ("Carve"));
     this->addToolButton <ToolSculptGrab>   (toolPaneLayout, QObject::tr ("Grab"));
+    this->addToolButton <ToolSculptDrag>   (toolPaneLayout, QObject::tr ("Drag"));
     this->addToolButton <ToolSculptSmooth> (toolPaneLayout, QObject::tr ("Smooth"));
     return toolPane;
   }
