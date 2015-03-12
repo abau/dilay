@@ -19,6 +19,7 @@ class SculptBrushCarve : public SculptBrush {
     void         useIntersection     (bool);
     void         direction           (const glm::vec3&);
     void         useAverageDirection ();
+    void         linearStep          (bool);
 
   private:
     IMPLEMENTATION

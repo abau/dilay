@@ -1,4 +1,3 @@
-#include <QDoubleSpinBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "cache.hpp"
@@ -6,17 +5,17 @@
 #include "tools.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
-#include "view/cursor/inner-radius.hpp"
+#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 
 struct ToolSculptGrab::Impl {
-  ToolSculptGrab*       self;
-  SculptBrushCarve      brush;
-  ToolUtilMovement      movement;
-  ViewCursorInnerRadius cursor;
+  ToolSculptGrab*  self;
+  SculptBrushCarve brush;
+  ToolUtilMovement movement;
+  ViewCursor       cursor;
 
   Impl (ToolSculptGrab* s) 
     : self (s)
@@ -26,25 +25,15 @@ struct ToolSculptGrab::Impl {
   {}
 
   void runSetupBrush () {
-    this->brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
     this->brush.useLastPosition   (true);
     this->brush.useIntersection   (true);
+    this->brush.linearStep        (true);
+    this->brush.innerRadiusFactor (0.0f);
   }
 
-  void runSetupCursor () {
-    this->cursor.innerRadiusFactor (this->brush.innerRadiusFactor ());
-  }
+  void runSetupCursor () {}
 
-  void runSetupProperties (ViewPropertiesPart& properties) {
-    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, this->brush.innerRadiusFactor ()
-                                                        , 1.0f, 0.1f );
-    ViewUtil::connect (innerRadiusEdit, [this] (float f) {
-      this->brush.innerRadiusFactor  (f);
-      this->cursor.innerRadiusFactor (f);
-      this->self->cache ().set ("inner-radius-factor", f);
-    });
-    properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);
-  }
+  void runSetupProperties (ViewPropertiesPart&) {}
 
   void runSetupToolTip (ViewToolTip& toolTip) {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));

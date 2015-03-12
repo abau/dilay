@@ -20,6 +20,7 @@ struct SculptBrushCarve :: Impl {
   Maybe <glm::vec3> mDirection;
   bool              useLastPosition;
   bool              useIntersection;
+  bool              linearStep;
 
   Impl (SculptBrushCarve* s) 
     : self              (s) 
@@ -28,6 +29,7 @@ struct SculptBrushCarve :: Impl {
     , invert            (false)
     , useLastPosition   (false)
     , useIntersection   (false)
+    , linearStep        (false)
   {}
 
   float intensity () const {
@@ -72,6 +74,10 @@ struct SculptBrushCarve :: Impl {
                                  : this->self->position     ();
   }
 
+  float (*getStepFunction () const) (const glm::vec3&, const glm::vec3&, float, float) {
+    return this->linearStep ? Util::linearStep : Util::smoothStep;
+  }
+
   void runSculpt (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
     PrimSphere  sphere (this->getPosition (), this->self->radius ());
     WingedMesh& mesh   (this->self->meshRef ());
@@ -89,7 +95,7 @@ struct SculptBrushCarve :: Impl {
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos = v->position (mesh);
       const float     delta  = this->intensity ()
-                             * Util::smoothStep 
+                             * this->getStepFunction ()
                                  ( oldPos, this->getPosition ()
                                  , this->innerRadius ()
                                  , this->self->radius () );
@@ -113,4 +119,5 @@ SETTER          (bool , SculptBrushCarve, useLastPosition)
 SETTER          (bool , SculptBrushCarve, useIntersection)
 DELEGATE1       (void , SculptBrushCarve, direction, const glm::vec3&)
 DELEGATE        (void , SculptBrushCarve, useAverageDirection)
+SETTER          (bool , SculptBrushCarve, linearStep)
 DELEGATE2_CONST (void , SculptBrushCarve, runSculpt, AffectedFaces&, ActionUnitOnWMesh&)

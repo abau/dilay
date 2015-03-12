@@ -19,6 +19,7 @@ namespace Util {
   bool         isNaN              (const glm::vec3&);
   float        defaultScale       ();
   float        smoothStep         (const glm::vec3&, const glm::vec3&, float, float);
+  float        linearStep         (const glm::vec3&, const glm::vec3&, float, float);
 }
 
 #endif
