@@ -1,19 +1,21 @@
 #include <QObject>
-#include "sculpt-brush/nothing.hpp"
+#include "sculpt-brush.hpp"
 #include "tools.hpp"
 #include "view/cursor.hpp"
 #include "view/tool-tip.hpp"
 
 struct ToolSculptSmooth::Impl {
   ToolSculptSmooth*  self;
-  SculptBrushNothing brush;
   ViewCursor         cursor;
 
   Impl (ToolSculptSmooth* s) 
     : self (s) 
   {}
 
-  void runSetupBrush () {}
+  void runSetupBrush (SculptBrush& brush) {
+    brush.useIntersection (true);
+    brush.intensityFactor (0.0f);
+  }
 
   void runSetupCursor () {}
 

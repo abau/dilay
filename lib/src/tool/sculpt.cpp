@@ -14,6 +14,7 @@
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/sculpt.hpp"
+#include "tool/util/movement.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
@@ -23,6 +24,7 @@
 
 struct ToolSculpt::Impl {
   ToolSculpt*                  self;
+  SculptBrush                  brush;
   CacheProxy                   commonCache;
   std::unique_ptr <ActionUnit> actions;
   QDoubleSpinBox&              radiusEdit;
@@ -48,18 +50,16 @@ struct ToolSculpt::Impl {
   }
 
   void setupBrush () {
-    SculptBrush& brush = this->self->brush ();
+    this->brush.radius          (this->commonCache.get <float> ("radius"           , 20.0f));
+    this->brush.detailFactor    (this->commonCache.get <float> ("detail-factor"    , 0.7f));
+    this->brush.stepWidthFactor (this->commonCache.get <float> ("step-width-factor", 0.3f));
+    this->brush.subdivide       (this->commonCache.get <bool>  ("subdivide"        , true));
 
-    brush.radius          (this->commonCache.get <float> ("radius"           , 20.0f));
-    brush.detailFactor    (this->commonCache.get <float> ("detail-factor"    , 0.7f));
-    brush.stepWidthFactor (this->commonCache.get <float> ("step-width-factor", 0.3f));
-    brush.subdivide       (this->commonCache.get <bool>  ("subdivide"        , true));
-
-    this->self->runSetupBrush ();
+    this->self->runSetupBrush (this->brush);
   }
 
   void setupCursor () {
-    assert (this->self->brush ().radius () > 0.0f);
+    assert (this->brush.radius () > 0.0f);
 
     WingedFaceIntersection intersection;
     if (this->self->intersectsScene (this->self->cursorPosition (), intersection)) {
@@ -69,7 +69,7 @@ struct ToolSculpt::Impl {
     else {
       this->self->cursor ().disable ();
     }
-    this->self->cursor ().radius (this->self->brush ().radius ());
+    this->self->cursor ().radius (this->brush.radius ());
     this->self->cursor ().color  (this->commonCache.get <Color> ("cursor-color", Color::Red ()));
 
     this->self->runSetupCursor ();
@@ -77,33 +77,35 @@ struct ToolSculpt::Impl {
 
   void setupProperties () {
     ViewPropertiesPart& properties = this->self->properties ().body ();
-    SculptBrush&        brush      = this->self->brush ();
 
-    this->radiusEdit.setValue (brush.radius ());
+    this->radiusEdit.setValue (this->brush.radius ());
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
-      this->self->brush  ().radius (r);
+      this->brush.radius (r);
       this->self->cursor ().radius (r);
       this->commonCache.set ("radius", r);
     });
     properties.add (QObject::tr ("Radius"), this->radiusEdit);
 
-    QDoubleSpinBox& detailEdit = ViewUtil::spinBox (0.01f, brush.detailFactor (), 0.95f, 0.1f);
+    QDoubleSpinBox& detailEdit = ViewUtil::spinBox ( 0.01f, this->brush.detailFactor ()
+                                                   , 0.95f, 0.1f );
     ViewUtil::connect (detailEdit, [this] (float h) {
-      this->self->brush ().detailFactor (h);
+      this->brush.detailFactor (h);
       this->commonCache.set ("detail-factor", h);
     });
     properties.add (QObject::tr ("Detail"), detailEdit);
 
-    QDoubleSpinBox& stepEdit = ViewUtil::spinBox (0.01f, brush.stepWidthFactor (), 1000.0f, 0.1f);
+    QDoubleSpinBox& stepEdit = ViewUtil::spinBox ( 0.01f, this->brush.stepWidthFactor ()
+                                                 , 1000.0f, 0.1f );
     ViewUtil::connect (stepEdit, [this] (float s) {
-      this->self->brush ().stepWidthFactor (s);
+      this->brush.stepWidthFactor (s);
       this->commonCache.set ("step-width-factor", s);
     });
     properties.add (QObject::tr ("Step width"), stepEdit);
 
-    QCheckBox& subdivEdit = ViewUtil::checkBox (QObject::tr ("Subdivide"), brush.subdivide ());
+    QCheckBox& subdivEdit = ViewUtil::checkBox ( QObject::tr ("Subdivide")
+                                               , this->brush.subdivide () );
     QObject::connect (&subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
-      this->self->brush ().subdivide (bool (s));
+      this->brush.subdivide (bool (s));
       this->commonCache.set ("subdivide", bool (s));
     });
     properties.add (subdivEdit);
@@ -129,9 +131,10 @@ struct ToolSculpt::Impl {
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
-      this->self->brush ().resetPosition ();
+      this->brush.resetPosition ();
       this->addActionsToHistory ();
     }
+    this->self->cursor ().enable ();
     return ToolResponse::None;
   }
 
@@ -161,10 +164,8 @@ struct ToolSculpt::Impl {
   }
 
   void sculpt () {
-    SculptBrush& brush = this->self->brush ();
-
     this->actions->add <ActionSculpt> ( this->self->state ().scene ()
-                                      , brush.meshRef () ).run (brush);
+                                      , this->brush.meshRef () ).run (this->brush);
   }
 
   void updateCursorByIntersection (const QMouseEvent& e) {
@@ -189,10 +190,10 @@ struct ToolSculpt::Impl {
       this->self->cursor ().normal   (intersection.normal   ());
 
       if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
-        this->self->brush ().mesh (&intersection.mesh ());
-        this->self->brush ().face (&intersection.face ());
+        this->brush.mesh (&intersection.mesh ());
+        this->brush.face (&intersection.face ());
 
-        return this->self->brush ().updatePosition (intersection.position ());
+        return this->brush.updatePosition (intersection.position ());
       }
       else {
         return false;
@@ -203,12 +204,56 @@ struct ToolSculpt::Impl {
       return false;
     }
   }
+
+  void initializeDrag (const QMouseEvent& e, ToolUtilMovement& movement) {
+    if (e.button () == Qt::LeftButton) {
+      WingedFaceIntersection intersection;
+      if (this->self->intersectsScene (e, intersection)) {
+        this->brush.mesh        (&intersection.mesh     ());
+        this->brush.face        (&intersection.face     ());
+        this->brush.setPosition ( intersection.position ());
+        
+        this->self->cursor ().disable ();
+
+        movement.resetPosition (intersection.position ());
+        movement.constraint    (MovementConstraint::CameraPlane);
+      }
+      else {
+        this->self->cursor ().enable ();
+        this->brush.resetPosition ();
+      }
+    }
+    else {
+      this->self->cursor ().enable ();
+      this->brush.resetPosition ();
+    }
+  }
+
+  void drag (const QMouseEvent& e, ToolUtilMovement& movement) {
+    if (e.buttons () == Qt::NoButton) {
+      this->updateCursorByIntersection (e);
+    }
+    else if (e.buttons () == Qt::LeftButton && this->brush.hasPosition ()) {
+      const glm::vec3 oldBrushPos = this->brush.position ();
+
+      if ( movement.move (ViewUtil::toIVec2 (e))
+        && this->brush.updatePosition (movement.position ()) )
+      {
+        this->brush.direction       (this->brush.position () - oldBrushPos);
+        this->brush.intensityFactor (1.0f / this->brush.radius ());
+        this->sculpt ();
+      }
+    }
+  }
 };
 
 DELEGATE_BIG2_BASE (ToolSculpt, (State& s, const char* k), (this), Tool, (s, k))
+GETTER         (SculptBrush&, ToolSculpt, brush)
 DELEGATE       (void        , ToolSculpt, sculpt)
 DELEGATE1      (void        , ToolSculpt, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, const QMouseEvent&)
+DELEGATE2      (void        , ToolSculpt, initializeDrag, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE2      (void        , ToolSculpt, drag, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE_CONST (bool        , ToolSculpt, runAllowUndoRedo)
 DELEGATE       (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST (void        , ToolSculpt, runRender)

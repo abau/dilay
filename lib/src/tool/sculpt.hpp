@@ -4,6 +4,7 @@
 #include "tool.hpp"
 
 class SculptBrush;
+class ToolUtilMovement;
 class ViewCursor;
 class ViewPropertiesPart;
 
@@ -12,9 +13,12 @@ class ToolSculpt : public Tool {
     DECLARE_BIG2 (ToolSculpt, State&, const char*)
 
   protected:
-    void sculpt                             ();
-    void updateCursorByIntersection         (const QMouseEvent&);
-    bool updateBrushAndCursorByIntersection (const QMouseEvent&);
+    SculptBrush& brush                              ();
+    void         sculpt                             ();
+    void         updateCursorByIntersection         (const QMouseEvent&);
+    bool         updateBrushAndCursorByIntersection (const QMouseEvent&);
+    void         initializeDrag                     (const QMouseEvent&, ToolUtilMovement&);
+    void         drag                               (const QMouseEvent&, ToolUtilMovement&);
 
   private:
     IMPLEMENTATION
@@ -27,9 +31,8 @@ class ToolSculpt : public Tool {
     void         runClose             ();
 
     virtual const char*  key                  () const = 0;
-    virtual SculptBrush& brush                () const = 0;
     virtual ViewCursor&  cursor               () const = 0;
-    virtual void         runSetupBrush        () = 0;
+    virtual void         runSetupBrush        (SculptBrush&) = 0;
     virtual void         runSetupCursor       () = 0;
     virtual void         runSetupProperties   (ViewPropertiesPart&) = 0;
     virtual void         runSetupToolTip      (ViewToolTip&) = 0;
@@ -43,9 +46,8 @@ class ToolSculpt : public Tool {
     private:                                                                         \
       IMPLEMENTATION                                                                 \
       const char* key                     () const { return theKey ; }               \
-      SculptBrush& brush                  () const;                                  \
       ViewCursor&  cursor                 () const;                                  \
-      void         runSetupBrush          ();                                        \
+      void         runSetupBrush          (SculptBrush&);                            \
       void         runSetupCursor         ();                                        \
       void         runSetupProperties     (ViewPropertiesPart&);                     \
       void         runSetupToolTip        (ViewToolTip&);                            \
@@ -56,9 +58,8 @@ class ToolSculpt : public Tool {
 #define DELEGATE_TOOL_SCULPT(name)                                                   \
   DELEGATE_BIG2_BASE ( name, (State& s), (this)                                      \
                      , ToolSculpt, (s,this->key ()) )                                \
-  GETTER_CONST   (SculptBrush&, name, brush)                                         \
   GETTER_CONST   (ViewCursor& , name, cursor)                                        \
-  DELEGATE       (void        , name, runSetupBrush);                                \
+  DELEGATE1      (void        , name, runSetupBrush, SculptBrush&);                  \
   DELEGATE       (void        , name, runSetupCursor);                               \
   DELEGATE1      (void        , name, runSetupProperties, ViewPropertiesPart&);      \
   DELEGATE1      (void        , name, runSetupToolTip, ViewToolTip&);                \

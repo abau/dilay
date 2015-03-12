@@ -55,9 +55,6 @@ SOURCES += \
            src/renderer.cpp \
            src/scene.cpp \
            src/sculpt-brush.cpp \
-           src/sculpt-brush/carve.cpp \
-           src/sculpt-brush/nothing.cpp \
-           src/sculpt-brush/subdivide.cpp \
            src/shader.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
@@ -147,9 +144,6 @@ HEADERS += \
            src/renderer.hpp \
            src/scene.hpp \
            src/sculpt-brush.hpp \
-           src/sculpt-brush/carve.hpp \
-           src/sculpt-brush/nothing.hpp \
-           src/sculpt-brush/subdivide.hpp \
            src/shader.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \

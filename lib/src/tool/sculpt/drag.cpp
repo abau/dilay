@@ -1,20 +1,17 @@
 #include <QDoubleSpinBox>
-#include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "cache.hpp"
-#include "sculpt-brush/carve.hpp"
 #include "tools.hpp"
+#include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "view/cursor/inner-radius.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
-#include "winged/face-intersection.hpp"
 
 struct ToolSculptDrag::Impl {
   ToolSculptDrag*       self;
-  SculptBrushCarve      brush;
   ToolUtilMovement      movement;
   ViewCursorInnerRadius cursor;
 
@@ -25,21 +22,23 @@ struct ToolSculptDrag::Impl {
                , MovementConstraint::Explicit )
   {}
 
-  void runSetupBrush () {
-    this->brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
-    this->brush.useLastPosition   (true);
-    this->brush.useIntersection   (true);
+  void runSetupBrush (SculptBrush& brush) {
+    brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
+    brush.useLastPosition   (true);
+    brush.useIntersection   (true);
   }
 
   void runSetupCursor () {
-    this->cursor.innerRadiusFactor (this->brush.innerRadiusFactor ());
+    this->cursor.innerRadiusFactor (this->self->brush ().innerRadiusFactor ());
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, this->brush.innerRadiusFactor ()
+    SculptBrush& brush = this->self->brush ();
+
+    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, brush.innerRadiusFactor ()
                                                         , 1.0f, 0.1f );
-    ViewUtil::connect (innerRadiusEdit, [this] (float f) {
-      this->brush.innerRadiusFactor  (f);
+    ViewUtil::connect (innerRadiusEdit, [this,&brush] (float f) {
+      brush.innerRadiusFactor (f);
       this->cursor.innerRadiusFactor (f);
       this->self->cache ().set ("inner-radius-factor", f);
     });
@@ -51,43 +50,12 @@ struct ToolSculptDrag::Impl {
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    if (e.buttons () == Qt::NoButton) {
-      this->self->updateCursorByIntersection (e);
-    }
-    else if (e.buttons () == Qt::LeftButton && this->brush.hasPosition ()) {
-      const glm::vec3 oldBrushPos = this->brush.position ();
-
-      if ( this->movement.move (ViewUtil::toIVec2 (e))
-        && this->brush.updatePosition (this->movement.position ()) )
-      {
-        this->brush.direction       (this->brush.position () - oldBrushPos);
-        this->brush.intensityFactor (1.0f / this->brush.radius ());
-        this->self->sculpt ();
-      }
-    }
+    this->self->drag (e, this->movement);
     return ToolResponse::Redraw;
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
-      WingedFaceIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
-        this->brush.mesh        (&intersection.mesh     ());
-        this->brush.face        (&intersection.face     ());
-        this->brush.setPosition ( intersection.position ());
-
-        movement.resetPosition (intersection.position ());
-        movement.constraint    (MovementConstraint::CameraPlane);
-      }
-      else {
-        this->cursor.enable ();
-        this->brush.resetPosition ();
-      }
-    }
-    else {
-      this->cursor.enable ();
-      this->brush.resetPosition ();
-    }
+    this->self->initializeDrag (e, this->movement);
     return ToolResponse::Redraw;
   }
 };

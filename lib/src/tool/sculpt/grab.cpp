@@ -1,19 +1,15 @@
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "cache.hpp"
-#include "sculpt-brush/carve.hpp"
 #include "tools.hpp"
+#include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
-#include "view/util.hpp"
-#include "winged/face-intersection.hpp"
 
 struct ToolSculptGrab::Impl {
   ToolSculptGrab*  self;
-  SculptBrushCarve brush;
   ToolUtilMovement movement;
   ViewCursor       cursor;
 
@@ -24,11 +20,11 @@ struct ToolSculptGrab::Impl {
                , MovementConstraint::Explicit )
   {}
 
-  void runSetupBrush () {
-    this->brush.useLastPosition   (true);
-    this->brush.useIntersection   (true);
-    this->brush.linearStep        (true);
-    this->brush.innerRadiusFactor (0.0f);
+  void runSetupBrush (SculptBrush& brush) {
+    brush.useLastPosition   (true);
+    brush.useIntersection   (true);
+    brush.linearStep        (true);
+    brush.innerRadiusFactor (0.0f);
   }
 
   void runSetupCursor () {}
@@ -40,43 +36,12 @@ struct ToolSculptGrab::Impl {
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    if (e.buttons () == Qt::NoButton) {
-      this->self->updateCursorByIntersection (e);
-    }
-    else if (e.buttons () == Qt::LeftButton && this->brush.hasPosition ()) {
-      const glm::vec3 oldBrushPos = this->brush.position ();
-
-      if ( this->movement.move (ViewUtil::toIVec2 (e))
-        && this->brush.updatePosition (this->movement.position ()) )
-      {
-        this->brush.direction       (this->brush.position () - oldBrushPos);
-        this->brush.intensityFactor (1.0f / this->brush.radius ());
-        this->self->sculpt ();
-      }
-    }
+    this->self->drag (e, this->movement);
     return ToolResponse::Redraw;
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
-      WingedFaceIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
-        this->brush.mesh        (&intersection.mesh     ());
-        this->brush.face        (&intersection.face     ());
-        this->brush.setPosition ( intersection.position ());
-
-        movement.resetPosition (intersection.position ());
-        movement.constraint    (MovementConstraint::CameraPlane);
-      }
-      else {
-        this->cursor.enable ();
-        this->brush.resetPosition ();
-      }
-    }
-    else {
-      this->cursor.enable ();
-      this->brush.resetPosition ();
-    }
+    this->self->initializeDrag (e, this->movement);
     return ToolResponse::Redraw;
   }
 };
