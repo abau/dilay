@@ -1,12 +1,10 @@
 #include <QObject>
 #include "sculpt-brush.hpp"
 #include "tools.hpp"
-#include "view/cursor.hpp"
 #include "view/tool-tip.hpp"
 
 struct ToolSculptSmooth::Impl {
-  ToolSculptSmooth*  self;
-  ViewCursor         cursor;
+  ToolSculptSmooth* self;
 
   Impl (ToolSculptSmooth* s) 
     : self (s) 
@@ -17,7 +15,7 @@ struct ToolSculptSmooth::Impl {
     brush.intensityFactor (0.0f);
   }
 
-  void runSetupCursor () {}
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewPropertiesPart&) {}
 

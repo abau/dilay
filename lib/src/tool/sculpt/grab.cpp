@@ -4,14 +4,12 @@
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
-#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 
 struct ToolSculptGrab::Impl {
   ToolSculptGrab*  self;
   ToolUtilMovement movement;
-  ViewCursor       cursor;
 
   Impl (ToolSculptGrab* s) 
     : self (s)
@@ -24,10 +22,9 @@ struct ToolSculptGrab::Impl {
     brush.useLastPosition   (true);
     brush.useIntersection   (true);
     brush.linearStep        (true);
-    brush.innerRadiusFactor (0.0f);
   }
 
-  void runSetupCursor () {}
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewPropertiesPart&) {}
 

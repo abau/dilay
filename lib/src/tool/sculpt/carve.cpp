@@ -5,14 +5,13 @@
 #include "cache.hpp"
 #include "tools.hpp"
 #include "sculpt-brush.hpp"
-#include "view/cursor/inner-radius.hpp"
+#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptCarve::Impl {
-  ToolSculptCarve*      self;
-  ViewCursorInnerRadius cursor;
+  ToolSculptCarve* self;
 
   Impl (ToolSculptCarve* s) : self (s) {}
 
@@ -22,18 +21,20 @@ struct ToolSculptCarve::Impl {
     brush.invert            (this->self->cache ().get <bool>  ("invert"             , false));
   }
 
-  void runSetupCursor () {
-    this->cursor.innerRadiusFactor (this->self->brush ().innerRadiusFactor ());
+  void runSetupCursor (ViewCursor& cursor) {
+    cursor.hasInnerRadius    (true);
+    cursor.innerRadiusFactor (this->self->brush ().innerRadiusFactor ());
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    SculptBrush& brush = this->self->brush ();
+    SculptBrush& brush  = this->self->brush ();
+    ViewCursor&  cursor = this->self->cursor ();
 
     QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, brush.innerRadiusFactor ()
                                                         , 1.0f, 0.1f );
-    ViewUtil::connect (innerRadiusEdit, [this,&brush] (float f) {
-      brush.innerRadiusFactor (f);
-      this->cursor.innerRadiusFactor (f);
+    ViewUtil::connect (innerRadiusEdit, [this,&brush,&cursor] (float f) {
+      brush .innerRadiusFactor (f);
+      cursor.innerRadiusFactor (f);
       this->self->cache ().set ("inner-radius-factor", f);
     });
     properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);

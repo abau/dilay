@@ -25,6 +25,7 @@
 struct ToolSculpt::Impl {
   ToolSculpt*                  self;
   SculptBrush                  brush;
+  ViewCursor                   cursor;
   CacheProxy                   commonCache;
   std::unique_ptr <ActionUnit> actions;
   QDoubleSpinBox&              radiusEdit;
@@ -63,16 +64,17 @@ struct ToolSculpt::Impl {
 
     WingedFaceIntersection intersection;
     if (this->self->intersectsScene (this->self->cursorPosition (), intersection)) {
-      this->self->cursor ().position (intersection.position ());
-      this->self->cursor ().normal   (intersection.normal   ());
+      this->cursor.enable   ();
+      this->cursor.position (intersection.position ());
+      this->cursor.normal   (intersection.normal   ());
     }
     else {
-      this->self->cursor ().disable ();
+      this->cursor.disable ();
     }
-    this->self->cursor ().radius (this->brush.radius ());
-    this->self->cursor ().color  (this->commonCache.get <Color> ("cursor-color", Color::Red ()));
+    this->cursor.radius (this->brush.radius ());
+    this->cursor.color  (this->commonCache.get <Color> ("cursor-color", Color::Red ()));
 
-    this->self->runSetupCursor ();
+    this->self->runSetupCursor (this->cursor);
   }
 
   void setupProperties () {
@@ -81,7 +83,7 @@ struct ToolSculpt::Impl {
     this->radiusEdit.setValue (this->brush.radius ());
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
       this->brush.radius (r);
-      this->self->cursor ().radius (r);
+      this->cursor.radius (r);
       this->commonCache.set ("radius", r);
     });
     properties.add (QObject::tr ("Radius"), this->radiusEdit);
@@ -126,7 +128,7 @@ struct ToolSculpt::Impl {
   }
 
   void runRender () const {
-    this->self->cursor ().render (this->self->state ().camera ());
+    this->cursor.render (this->self->state ().camera ());
   }
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
@@ -134,7 +136,7 @@ struct ToolSculpt::Impl {
       this->brush.resetPosition ();
       this->addActionsToHistory ();
     }
-    this->self->cursor ().enable ();
+    this->cursor.enable ();
     return ToolResponse::None;
   }
 
@@ -172,12 +174,12 @@ struct ToolSculpt::Impl {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsScene (e, intersection)) {
-      this->self->cursor ().enable   ();
-      this->self->cursor ().position (intersection.position ());
-      this->self->cursor ().normal   (intersection.normal   ());
+      this->cursor.enable   ();
+      this->cursor.position (intersection.position ());
+      this->cursor.normal   (intersection.normal   ());
     }
     else {
-      this->self->cursor ().disable ();
+      this->cursor.disable ();
     }
   }
 
@@ -185,9 +187,9 @@ struct ToolSculpt::Impl {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsScene (e, intersection)) {
-      this->self->cursor ().enable   ();
-      this->self->cursor ().position (intersection.position ());
-      this->self->cursor ().normal   (intersection.normal   ());
+      this->cursor.enable   ();
+      this->cursor.position (intersection.position ());
+      this->cursor.normal   (intersection.normal   ());
 
       if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
         this->brush.mesh (&intersection.mesh ());
@@ -200,7 +202,7 @@ struct ToolSculpt::Impl {
       }
     }
     else {
-      this->self->cursor ().disable ();
+      this->cursor.disable ();
       return false;
     }
   }
@@ -213,18 +215,18 @@ struct ToolSculpt::Impl {
         this->brush.face        (&intersection.face     ());
         this->brush.setPosition ( intersection.position ());
         
-        this->self->cursor ().disable ();
+        this->cursor.disable ();
 
         movement.resetPosition (intersection.position ());
         movement.constraint    (MovementConstraint::CameraPlane);
       }
       else {
-        this->self->cursor ().enable ();
+        this->cursor.enable ();
         this->brush.resetPosition ();
       }
     }
     else {
-      this->self->cursor ().enable ();
+      this->cursor.enable ();
       this->brush.resetPosition ();
     }
   }
@@ -249,6 +251,7 @@ struct ToolSculpt::Impl {
 
 DELEGATE_BIG2_BASE (ToolSculpt, (State& s, const char* k), (this), Tool, (s, k))
 GETTER         (SculptBrush&, ToolSculpt, brush)
+GETTER         (ViewCursor& , ToolSculpt, cursor)
 DELEGATE       (void        , ToolSculpt, sculpt)
 DELEGATE1      (void        , ToolSculpt, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, const QMouseEvent&)

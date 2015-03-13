@@ -5,15 +5,14 @@
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
-#include "view/cursor/inner-radius.hpp"
+#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptDrag::Impl {
-  ToolSculptDrag*       self;
-  ToolUtilMovement      movement;
-  ViewCursorInnerRadius cursor;
+  ToolSculptDrag*  self;
+  ToolUtilMovement movement;
 
   Impl (ToolSculptDrag* s) 
     : self (s)
@@ -28,8 +27,9 @@ struct ToolSculptDrag::Impl {
     brush.useIntersection   (true);
   }
 
-  void runSetupCursor () {
-    this->cursor.innerRadiusFactor (this->self->brush ().innerRadiusFactor ());
+  void runSetupCursor (ViewCursor& cursor) {
+    cursor.hasInnerRadius    (true);
+    cursor.innerRadiusFactor (this->self->brush ().innerRadiusFactor ());
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
@@ -39,7 +39,7 @@ struct ToolSculptDrag::Impl {
                                                         , 1.0f, 0.1f );
     ViewUtil::connect (innerRadiusEdit, [this,&brush] (float f) {
       brush.innerRadiusFactor (f);
-      this->cursor.innerRadiusFactor (f);
+      this->self->cursor ().innerRadiusFactor (f);
       this->self->cache ().set ("inner-radius-factor", f);
     });
     properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);

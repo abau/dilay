@@ -14,6 +14,7 @@ class ToolSculpt : public Tool {
 
   protected:
     SculptBrush& brush                              ();
+    ViewCursor&  cursor                             ();
     void         sculpt                             ();
     void         updateCursorByIntersection         (const QMouseEvent&);
     bool         updateBrushAndCursorByIntersection (const QMouseEvent&);
@@ -31,9 +32,8 @@ class ToolSculpt : public Tool {
     void         runClose             ();
 
     virtual const char*  key                  () const = 0;
-    virtual ViewCursor&  cursor               () const = 0;
     virtual void         runSetupBrush        (SculptBrush&) = 0;
-    virtual void         runSetupCursor       () = 0;
+    virtual void         runSetupCursor       (ViewCursor&) = 0;
     virtual void         runSetupProperties   (ViewPropertiesPart&) = 0;
     virtual void         runSetupToolTip      (ViewToolTip&) = 0;
     virtual ToolResponse runMouseMoveEvent    (const QMouseEvent&) = 0;
@@ -45,25 +45,23 @@ class ToolSculpt : public Tool {
     DECLARE_BIG2 (name, State&)                                                      \
     private:                                                                         \
       IMPLEMENTATION                                                                 \
-      const char* key                     () const { return theKey ; }               \
-      ViewCursor&  cursor                 () const;                                  \
-      void         runSetupBrush          (SculptBrush&);                            \
-      void         runSetupCursor         ();                                        \
-      void         runSetupProperties     (ViewPropertiesPart&);                     \
-      void         runSetupToolTip        (ViewToolTip&);                            \
-      ToolResponse runMouseMoveEvent      (const QMouseEvent&);                      \
-      ToolResponse runMousePressEvent     (const QMouseEvent&);                      \
+      const char*  key                () const { return theKey ; }                   \
+      void         runSetupBrush      (SculptBrush&);                                \
+      void         runSetupCursor     (ViewCursor&);                                 \
+      void         runSetupProperties (ViewPropertiesPart&);                         \
+      void         runSetupToolTip    (ViewToolTip&);                                \
+      ToolResponse runMouseMoveEvent  (const QMouseEvent&);                          \
+      ToolResponse runMousePressEvent (const QMouseEvent&);                          \
   };
 
 #define DELEGATE_TOOL_SCULPT(name)                                                   \
   DELEGATE_BIG2_BASE ( name, (State& s), (this)                                      \
                      , ToolSculpt, (s,this->key ()) )                                \
-  GETTER_CONST   (ViewCursor& , name, cursor)                                        \
-  DELEGATE1      (void        , name, runSetupBrush, SculptBrush&);                  \
-  DELEGATE       (void        , name, runSetupCursor);                               \
-  DELEGATE1      (void        , name, runSetupProperties, ViewPropertiesPart&);      \
-  DELEGATE1      (void        , name, runSetupToolTip, ViewToolTip&);                \
-  DELEGATE1      (ToolResponse, name, runMouseMoveEvent, const QMouseEvent&)         \
-  DELEGATE1      (ToolResponse, name, runMousePressEvent, const QMouseEvent&)
+  DELEGATE1 (void        , name, runSetupBrush, SculptBrush&);                       \
+  DELEGATE1 (void        , name, runSetupCursor, ViewCursor&);                       \
+  DELEGATE1 (void        , name, runSetupProperties, ViewPropertiesPart&);           \
+  DELEGATE1 (void        , name, runSetupToolTip, ViewToolTip&);                     \
+  DELEGATE1 (ToolResponse, name, runMouseMoveEvent, const QMouseEvent&)              \
+  DELEGATE1 (ToolResponse, name, runMousePressEvent, const QMouseEvent&)
 
 #endif
