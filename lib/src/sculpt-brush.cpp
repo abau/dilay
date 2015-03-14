@@ -53,8 +53,8 @@ struct SculptBrush :: Impl {
   void sculpt (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
     switch (this->mode) {
       case SculptBrush::Mode::Nothing:   return;
-      case SculptBrush::Mode::Translate: this->sculptTranslate (faces, actions);
-      case SculptBrush::Mode::Smooth:    this->sculptSmooth    (faces, actions);
+      case SculptBrush::Mode::Translate: return this->sculptTranslate (faces, actions);
+      case SculptBrush::Mode::Smooth:    return this->sculptSmooth    (faces, actions);
     }
   }
 
