@@ -22,6 +22,7 @@ struct ToolSculptDrag::Impl {
   {}
 
   void runSetupBrush (SculptBrush& brush) {
+    brush.mode              (SculptBrush::Mode::Translate);
     brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
     brush.useLastPosition   (true);
     brush.useIntersection   (true);

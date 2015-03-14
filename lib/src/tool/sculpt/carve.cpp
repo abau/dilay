@@ -14,6 +14,7 @@ struct ToolSculptCarve::Impl {
   Impl (ToolSculptCarve* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
+    brush.mode              (SculptBrush::Mode::Translate);
     brush.intensityFactor   (this->self->cache ().get <float> ("intensity-factor"   , 0.03f));
     brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
     brush.invert            (this->self->cache ().get <bool>  ("invert"             , false));

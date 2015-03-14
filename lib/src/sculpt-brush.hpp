@@ -11,8 +11,14 @@ class WingedMesh;
 
 class SculptBrush {
   public:
-    DECLARE_BIG6_VIRTUAL (SculptBrush)
+    DECLARE_BIG6 (SculptBrush)
 
+    enum class Mode { Nothing, Translate, Smooth };
+
+    void             sculpt              (AffectedFaces&, ActionUnitOnWMesh&) const;
+
+    // General parameters
+    Mode             mode                () const;
     float            radius              () const;
     float            detailFactor        () const;
     float            stepWidthFactor     () const;
@@ -20,6 +26,7 @@ class SculptBrush {
     WingedMesh*      mesh                () const;
     WingedFace*      face                () const;
 
+    void             mode                (Mode);
     void             radius              (float);
     void             detailFactor        (float);
     void             stepWidthFactor     (float);
@@ -37,6 +44,7 @@ class SculptBrush {
     bool             updatePosition      (const glm::vec3&);
     void             resetPosition       ();
 
+    // Mode::Translate parameters
     float            intensityFactor     () const;
     float            innerRadiusFactor   () const;
     bool             invert              () const;
@@ -50,8 +58,6 @@ class SculptBrush {
     void             direction           (const glm::vec3&);
     void             useAverageDirection ();
     void             linearStep          (bool);
-
-    void             sculpt              (AffectedFaces&, ActionUnitOnWMesh&) const;
 
     SAFE_REF_CONST (WingedMesh, mesh)
     SAFE_REF_CONST (WingedFace, face)

@@ -19,6 +19,7 @@ struct ToolSculptGrab::Impl {
   {}
 
   void runSetupBrush (SculptBrush& brush) {
+    brush.mode              (SculptBrush::Mode::Translate);
     brush.useLastPosition   (true);
     brush.useIntersection   (true);
     brush.linearStep        (true);
