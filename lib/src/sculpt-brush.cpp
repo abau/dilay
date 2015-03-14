@@ -94,8 +94,8 @@ struct SculptBrush :: Impl {
 
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos      = v->position (mesh);
-      const float     intensity   = this->intensityFactor   * this->self->radius ();
-      const float     innerRadius = this->innerRadiusFactor * this->self->radius ();
+      const float     intensity   = this->intensity   ();
+      const float     innerRadius = this->innerRadius ();
       const float     delta       = intensity
                                   * stepFunction ( oldPos, position
                                                  , innerRadius, this->radius );
@@ -111,6 +111,14 @@ struct SculptBrush :: Impl {
 
     IntersectionUtil::extend ( sphere, this->self->meshRef ()
                              , this->self->faceRef (), faces );
+  }
+
+  float intensity () const {
+    return this->intensityFactor * this->radius;
+  }
+
+  float innerRadius () const {
+    return this->innerRadiusFactor * this->radius;
   }
 
   float subdivThreshold () const {
