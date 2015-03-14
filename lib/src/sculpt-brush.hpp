@@ -17,7 +17,6 @@ class SculptBrush {
 
     void             sculpt              (AffectedFaces&, ActionUnitOnWMesh&) const;
 
-    // General parameters
     Mode             mode                () const;
     float            radius              () const;
     float            detailFactor        () const;
@@ -44,7 +43,6 @@ class SculptBrush {
     bool             updatePosition      (const glm::vec3&);
     void             resetPosition       ();
 
-    // Mode::Translate parameters
     float            intensityFactor     () const;
     float            innerRadiusFactor   () const;
     bool             invert              () const;
