@@ -18,8 +18,9 @@ class ToolSculpt : public Tool {
     void         sculpt                             ();
     void         updateCursorByIntersection         (const QMouseEvent&);
     bool         updateBrushAndCursorByIntersection (const QMouseEvent&);
-    void         initializeDrag                     (const QMouseEvent&, ToolUtilMovement&);
-    void         drag                               (const QMouseEvent&, ToolUtilMovement&);
+    void         carvelikeStroke                    (const QMouseEvent&, bool = false);
+    void         initializeDraglikeStroke           (const QMouseEvent&, ToolUtilMovement&);
+    void         draglikeStroke                     (const QMouseEvent&, ToolUtilMovement&);
 
   private:
     IMPLEMENTATION

@@ -1,7 +1,5 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
-#include <QMouseEvent>
-#include <glm/glm.hpp>
 #include "cache.hpp"
 #include "tools.hpp"
 #include "sculpt-brush.hpp"
@@ -61,26 +59,14 @@ struct ToolSculptCarve::Impl {
                 , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to sculpt inverted"));
   }
 
-  ToolResponse carve (const QMouseEvent& e) {
-    if (this->self->updateBrushAndCursorByIntersection (e)) {
-      if (e.modifiers () == Qt::ShiftModifier) {
-        this->self->brush ().toggleInvert ();
-        this->self->sculpt ();
-        this->self->brush ().toggleInvert ();
-      }
-      else {
-        this->self->sculpt ();
-      }
-    }
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
+    this->self->carvelikeStroke (e, true);
     return ToolResponse::Redraw;
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    return this->carve (e);
-  }
-
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    return this->carve (e);
+    this->self->carvelikeStroke (e, true);
+    return ToolResponse::Redraw;
   }
 };
 

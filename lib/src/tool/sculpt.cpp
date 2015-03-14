@@ -207,7 +207,20 @@ struct ToolSculpt::Impl {
     }
   }
 
-  void initializeDrag (const QMouseEvent& e, ToolUtilMovement& movement) {
+  void carvelikeStroke (const QMouseEvent& e, bool invertable) {
+    if (this->updateBrushAndCursorByIntersection (e)) {
+      if (invertable && e.modifiers () == Qt::ShiftModifier) {
+        this->brush.toggleInvert ();
+        this->sculpt ();
+        this->brush.toggleInvert ();
+      }
+      else {
+        this->sculpt ();
+      }
+    }
+  }
+
+  void initializeDraglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
@@ -231,7 +244,7 @@ struct ToolSculpt::Impl {
     }
   }
 
-  void drag (const QMouseEvent& e, ToolUtilMovement& movement) {
+  void draglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
     if (e.buttons () == Qt::NoButton) {
       this->updateCursorByIntersection (e);
     }
@@ -255,8 +268,9 @@ GETTER         (ViewCursor& , ToolSculpt, cursor)
 DELEGATE       (void        , ToolSculpt, sculpt)
 DELEGATE1      (void        , ToolSculpt, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, const QMouseEvent&)
-DELEGATE2      (void        , ToolSculpt, initializeDrag, const QMouseEvent&, ToolUtilMovement&)
-DELEGATE2      (void        , ToolSculpt, drag, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE2      (void        , ToolSculpt, carvelikeStroke, const QMouseEvent&, bool)
+DELEGATE2      (void        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE2      (void        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE_CONST (bool        , ToolSculpt, runAllowUndoRedo)
 DELEGATE       (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST (void        , ToolSculpt, runRender)

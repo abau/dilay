@@ -33,12 +33,12 @@ struct ToolSculptGrab::Impl {
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    this->self->drag (e, this->movement);
+    this->self->draglikeStroke (e, this->movement);
     return ToolResponse::Redraw;
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->initializeDrag (e, this->movement);
+    this->self->initializeDraglikeStroke (e, this->movement);
     return ToolResponse::Redraw;
   }
 };
