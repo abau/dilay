@@ -7,10 +7,10 @@
   "attribute vec3  position;                                                               \n" \
   "attribute vec3  normal;                                                                 \n" \
   "uniform   vec3  ambient;                                                                \n" \
-  "uniform   vec3  light1Position;                                                         \n" \
+  "uniform   vec3  light1Direction;                                                        \n" \
   "uniform   vec3  light1Color;                                                            \n" \
   "uniform   float light1Irradiance;                                                       \n" \
-  "uniform   vec3  light2Position;                                                         \n" \
+  "uniform   vec3  light2Direction;                                                        \n" \
   "uniform   vec3  light2Color;                                                            \n" \
   "uniform   float light2Irradiance;                                                       \n" \
   "                                                                                        \n" \
@@ -18,8 +18,8 @@
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
   "  gl_Position        = mvp * vec4 (position,1);                                         \n" \
-  "  float light1Factor = light1Irradiance * max (0.0, dot (light1Position, normal));      \n" \
-  "  float light2Factor = light2Irradiance * max (0.0, dot (light2Position, normal));      \n" \
+  "  float light1Factor = light1Irradiance * max (0.0, dot (light1Direction, normal));     \n" \
+  "  float light2Factor = light2Irradiance * max (0.0, dot (light2Direction, normal));     \n" \
   "  vec3  light1       = light1Color * vec3 (light1Factor);                               \n" \
   "  vec3  light2       = light2Color * vec3 (light2Factor);                               \n" \
   "        vsOut        = ambient + light1 + light2;                                       \n" \
@@ -60,10 +60,10 @@
   "uniform vec3  color;                                                                    \n" \
   "uniform vec3  wireframeColor;                                                           \n" \
   "uniform vec3  ambient;                                                                  \n" \
-  "uniform vec3  light1Position;                                                           \n" \
+  "uniform vec3  light1Direction;                                                          \n" \
   "uniform vec3  light1Color;                                                              \n" \
   "uniform float light1Irradiance;                                                         \n" \
-  "uniform vec3  light2Position;                                                           \n" \
+  "uniform vec3  light2Direction;                                                          \n" \
   "uniform vec3  light2Color;                                                              \n" \
   "uniform float light2Irradiance;                                                         \n" \
   "                                                                                        \n" \
@@ -73,8 +73,8 @@
   "void main () {                                                                          \n" \
   "  vec3  normal       = normalize(cross(dFdx(" OUT "),dFdy(" OUT ")));                   \n" \
   "                                                                                        \n" \
-  "  float light1Factor = light1Irradiance * max (0.0, dot  (light1Position, normal));     \n" \
-  "  float light2Factor = light2Irradiance * max (0.0, dot  (light2Position, normal));     \n" \
+  "  float light1Factor = light1Irradiance * max (0.0, dot  (light1Direction, normal));    \n" \
+  "  float light2Factor = light2Irradiance * max (0.0, dot  (light2Direction, normal));    \n" \
   "  vec3  light1       = light1Color * vec3 (light1Factor);                               \n" \
   "  vec3  light2       = light2Color * vec3 (light2Factor);                               \n" \
   "                                                                                        \n" \

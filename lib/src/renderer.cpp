@@ -10,12 +10,12 @@ namespace {
   const unsigned int numLights = 2;
 
   struct LightIds {
-    int positionId;
+    int directionId;
     int colorId;
     int irradianceId;
 
     LightIds () {
-      this->positionId   = 0;
+      this->directionId  = 0;
       this->colorId      = 0;
       this->irradianceId = 0;
     }
@@ -45,7 +45,8 @@ namespace {
   };
 
   struct GlobalLightUniforms {
-    glm::vec3 position;
+    glm::vec3 direction;
+    glm::vec3 transformedDirection;
     Color     color;
     float     irradiance;
   };
@@ -64,8 +65,6 @@ struct Renderer::Impl {
   ShaderIds*     activeShaderIndex;
   GlobalUniforms globalUniforms;
   Color          clearColor;
-  glm::vec3      light1LocalPos;
-  glm::vec3      light2LocalPos;
 
   Impl (const Config& config) 
     : activeShaderIndex (nullptr) 
@@ -129,10 +128,10 @@ struct Renderer::Impl {
     s->ambientId                = OpenGL::glGetUniformLocation (id, "ambient");
     s->eyePointId               = OpenGL::glGetUniformLocation (id, "eyePoint");
     s->barycentricId            = OpenGL::glGetUniformLocation (id, "barycentric");
-    s->lightIds[0].positionId   = OpenGL::glGetUniformLocation (id, "light1Position");
+    s->lightIds[0].directionId  = OpenGL::glGetUniformLocation (id, "light1Direction");
     s->lightIds[0].colorId      = OpenGL::glGetUniformLocation (id, "light1Color");
     s->lightIds[0].irradianceId = OpenGL::glGetUniformLocation (id, "light1Irradiance");
-    s->lightIds[1].positionId   = OpenGL::glGetUniformLocation (id, "light2Position");
+    s->lightIds[1].directionId  = OpenGL::glGetUniformLocation (id, "light2Direction");
     s->lightIds[1].colorId      = OpenGL::glGetUniformLocation (id, "light2Color");
     s->lightIds[1].irradianceId = OpenGL::glGetUniformLocation (id, "light2Irradiance");
   }
@@ -156,8 +155,8 @@ struct Renderer::Impl {
 
     for (unsigned int i = 0; i < numLights; i++) {
       OpenGL::glUniformVec3 
-        ( this->activeShaderIndex->lightIds[i].positionId
-        , this->globalUniforms.lightUniforms[i].position);
+        ( this->activeShaderIndex->lightIds[i].directionId
+        , this->globalUniforms.lightUniforms[i].transformedDirection);
       OpenGL::glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].colorId
         , this->globalUniforms.lightUniforms[i].color.vec3 ());
@@ -204,9 +203,9 @@ struct Renderer::Impl {
     this->globalUniforms.eyePoint = e;
   }
 
-  void setLightPosition (unsigned int i, const glm::vec3& p) {
+  void setLightDirection (unsigned int i, const glm::vec3& d) {
     assert (i < numLights);
-    this->globalUniforms.lightUniforms[i].position = glm::normalize (p);
+    this->globalUniforms.lightUniforms[i].direction = d;
   }
 
   void setLightColor (unsigned int i, const Color& c) {
@@ -222,20 +221,23 @@ struct Renderer::Impl {
   void updateLights (const glm::mat4x4& world) {
     const glm::mat3x3 w (world);
 
-    this->setLightPosition (0, w * this->light1LocalPos);
-    this->setLightPosition (1, w * this->light2LocalPos);
+    this->globalUniforms.lightUniforms[0].transformedDirection = 
+      w * this->globalUniforms.lightUniforms[0].direction;
+
+    this->globalUniforms.lightUniforms[1].transformedDirection = 
+      w * this->globalUniforms.lightUniforms[1].direction;
   }
 
   void runFromConfig (const Config& config) {
     this->clearColor     = config.get<Color>     ("editor/background");
-    this->light1LocalPos = config.get<glm::vec3> ("editor/light/light1/position");
-    this->light2LocalPos = config.get<glm::vec3> ("editor/light/light2/position");
+    const glm::vec3 dir1 = config.get<glm::vec3> ("editor/light/light1/direction");
+    const glm::vec3 dir2 = config.get<glm::vec3> ("editor/light/light2/direction");
 
     this->setAmbient         (   config.get<Color>     ("editor/light/ambient"));
-    this->setLightPosition   (0, this->light1LocalPos);
+    this->setLightDirection  (0, glm::normalize (dir1));
     this->setLightColor      (0, config.get<Color>     ("editor/light/light1/color"));
     this->setLightIrradiance (0, config.get<float>     ("editor/light/light1/irradiance"));
-    this->setLightPosition   (1, this->light2LocalPos);
+    this->setLightDirection  (1, glm::normalize (dir2));
     this->setLightColor      (1, config.get<Color>     ("editor/light/light2/color"));
     this->setLightIrradiance (1, config.get<float>     ("editor/light/light2/irradiance"));
   }
@@ -253,7 +255,7 @@ DELEGATE1 (void, Renderer, setWireframeColor3, const Color&)
 DELEGATE1 (void, Renderer, setWireframeColor4, const Color&)
 DELEGATE1 (void, Renderer, setAmbient        , const Color&)
 DELEGATE1 (void, Renderer, setEyePoint       , const glm::vec3&)
-DELEGATE2 (void, Renderer, setLightPosition  , unsigned int, const glm::vec3&)
+DELEGATE2 (void, Renderer, setLightDirection , unsigned int, const glm::vec3&)
 DELEGATE2 (void, Renderer, setLightColor     , unsigned int, const Color&)
 DELEGATE2 (void, Renderer, setLightIrradiance, unsigned int, float)
 DELEGATE1 (void, Renderer, updateLights      , const glm::mat4x4&)

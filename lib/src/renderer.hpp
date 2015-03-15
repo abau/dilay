@@ -23,7 +23,7 @@ class Renderer : public Configurable {
     void setWireframeColor4   (const Color&);
     void setAmbient           (const Color&);
     void setEyePoint          (const glm::vec3&);
-    void setLightPosition     (unsigned int, const glm::vec3&);
+    void setLightDirection    (unsigned int, const glm::vec3&);
     void setLightColor        (unsigned int, const Color&);
     void setLightIrradiance   (unsigned int, float);
     void updateLights         (const glm::mat4x4&);
