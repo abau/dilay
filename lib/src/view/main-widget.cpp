@@ -41,13 +41,14 @@ struct ViewMainWidget :: Impl {
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
     toolPane->setLayout (toolPaneLayout);
-    this->addToolButton <ToolMoveMesh>     (toolPaneLayout, QObject::tr ("Move mesh"));
-    this->addToolButton <ToolDeleteMesh>   (toolPaneLayout, QObject::tr ("Delete mesh"));
-    this->addToolButton <ToolNewMesh>      (toolPaneLayout, QObject::tr ("New mesh"));
-    this->addToolButton <ToolSculptCarve>  (toolPaneLayout, QObject::tr ("Carve"));
-    this->addToolButton <ToolSculptGrab>   (toolPaneLayout, QObject::tr ("Grab"));
-    this->addToolButton <ToolSculptDrag>   (toolPaneLayout, QObject::tr ("Drag"));
-    this->addToolButton <ToolSculptSmooth> (toolPaneLayout, QObject::tr ("Smooth"));
+    this->addToolButton <ToolMoveMesh>      (toolPaneLayout, QObject::tr ("Move mesh"));
+    this->addToolButton <ToolDeleteMesh>    (toolPaneLayout, QObject::tr ("Delete mesh"));
+    this->addToolButton <ToolNewMesh>       (toolPaneLayout, QObject::tr ("New mesh"));
+    this->addToolButton <ToolSculptCarve>   (toolPaneLayout, QObject::tr ("Carve"));
+    this->addToolButton <ToolSculptGrab>    (toolPaneLayout, QObject::tr ("Grab"));
+    this->addToolButton <ToolSculptDrag>    (toolPaneLayout, QObject::tr ("Drag"));
+    this->addToolButton <ToolSculptSmooth>  (toolPaneLayout, QObject::tr ("Smooth"));
+    this->addToolButton <ToolSculptFlatten> (toolPaneLayout, QObject::tr ("Flatten"));
     return toolPane;
   }
 

@@ -67,6 +67,7 @@ SOURCES += \
            src/tool/sculpt.cpp \
            src/tool/sculpt/carve.cpp \
            src/tool/sculpt/drag.cpp \
+           src/tool/sculpt/flatten.cpp \
            src/tool/sculpt/grab.cpp \
            src/tool/sculpt/smooth.cpp \
            src/tool/util/movement.cpp \

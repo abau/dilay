@@ -5,6 +5,7 @@
 #include "intersection.hpp"
 #include "maybe.hpp"
 #include "partial-action/modify-winged-vertex.hpp"
+#include "primitive/plane.hpp"
 #include "primitive/sphere.hpp"
 #include "sculpt-brush.hpp"
 #include "util.hpp"
@@ -55,6 +56,7 @@ struct SculptBrush :: Impl {
       case SculptBrush::Mode::Nothing:   return;
       case SculptBrush::Mode::Translate: return this->sculptTranslate (faces, actions);
       case SculptBrush::Mode::Smooth:    return this->sculptSmooth    (faces, actions);
+      case SculptBrush::Mode::Flatten:   return this->sculptFlatten   (faces, actions);
     }
   }
 
@@ -73,8 +75,8 @@ struct SculptBrush :: Impl {
       }
     };
 
-    const glm::vec3 position = this->useLastPosition ? this->_lastPosition
-                                                     : this->_position;
+    const glm::vec3 position = this->useLastPosition ? this->lastPosition ()
+                                                     : this->position     ();
 
     float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
       this->linearStep ? Util::linearStep : Util::smoothStep;
@@ -111,6 +113,29 @@ struct SculptBrush :: Impl {
 
     IntersectionUtil::extend ( sphere, this->self->meshRef ()
                              , this->self->faceRef (), faces );
+  }
+
+  void sculptFlatten (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
+    PrimSphere  sphere (this->_position, this->radius);
+    WingedMesh& mesh   (this->self->meshRef ());
+
+    IntersectionUtil::extend (sphere, mesh, this->self->faceRef (), faces);
+
+    VertexPtrSet    vertices (faces.toVertexSet ());
+    const glm::vec3 normal   (WingedUtil::averageNormal (mesh, vertices));
+    const PrimPlane plane    ( this->position () - (normal * this->intensity ())
+                             , normal );
+
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 oldPos   = v->position (mesh);
+      const float     factor   = Util::smoothStep ( oldPos, this->position ()
+                                                  , 0.0f, this->radius );
+      const float     distance = glm::max (0.0f, plane.distance (oldPos));
+
+      const glm::vec3 newPos = oldPos - (normal * factor * distance);
+
+      actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
+    }
   }
 
   float intensity () const {

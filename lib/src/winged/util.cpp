@@ -104,3 +104,13 @@ glm::vec3 WingedUtil :: averageNormal (const WingedMesh& mesh, const VertexPtrSe
   }
   return avgNormal / float (vertices.size ());
 }
+
+glm::vec3 WingedUtil :: center (const WingedMesh& mesh, const VertexPtrSet& vertices) {
+  assert (vertices.size () > 0);
+
+  glm::vec3 c (0.0f);
+  for (WingedVertex* v : vertices) {
+    c += v->position (mesh);
+  }
+  return c / float (vertices.size ());
+}

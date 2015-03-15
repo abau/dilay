@@ -13,7 +13,7 @@ class SculptBrush {
   public:
     DECLARE_BIG6 (SculptBrush)
 
-    enum class Mode { Nothing, Translate, Smooth };
+    enum class Mode { Nothing, Translate, Smooth, Flatten };
 
     void             sculpt              (AffectedFaces&, ActionUnitOnWMesh&) const;
 
