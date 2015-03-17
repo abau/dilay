@@ -1,4 +1,3 @@
-#include <QCheckBox>
 #include <QDoubleSpinBox>
 #include "cache.hpp"
 #include "tools.hpp"
@@ -14,8 +13,8 @@ struct ToolSculptFlatten::Impl {
   Impl (ToolSculptFlatten* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    brush.mode              (SculptBrush::Mode::Flatten);
-    brush.intensityFactor   (this->self->cache ().get <float> ("intensity-factor"   , 0.03f));
+    brush.mode            (SculptBrush::Mode::Flatten);
+    brush.intensityFactor (this->self->cache ().get <float> ("intensity-factor", 0.5f));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -23,8 +22,8 @@ struct ToolSculptFlatten::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     SculptBrush& brush = this->self->brush ();
 
-    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, brush.intensityFactor ()
-                                                      , 0.1f, 0.01f );
+    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.1f, brush.intensityFactor ()
+                                                      , 1.0f, 0.1f );
     ViewUtil::connect (intensityEdit, [this,&brush] (float i) {
       brush.intensityFactor (i);
       this->self->cache ().set ("intensity", i);

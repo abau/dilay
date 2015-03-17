@@ -123,12 +123,13 @@ struct SculptBrush :: Impl {
 
     VertexPtrSet    vertices (faces.toVertexSet ());
     const glm::vec3 normal   (WingedUtil::averageNormal (mesh, vertices));
-    const PrimPlane plane    ( this->position () - (normal * this->intensity ())
+    const PrimPlane plane    ( WingedUtil::center (mesh, vertices)
                              , normal );
 
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos   = v->position (mesh);
-      const float     factor   = Util::smoothStep ( oldPos, this->position ()
+      const float     factor   = this->intensityFactor
+                               * Util::linearStep ( oldPos, this->position ()
                                                   , 0.0f, this->radius );
       const float     distance = glm::max (0.0f, plane.distance (oldPos));
 
