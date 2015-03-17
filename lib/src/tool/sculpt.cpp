@@ -8,6 +8,7 @@
 #include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
+#include "config.hpp"
 #include "history.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
@@ -51,8 +52,9 @@ struct ToolSculpt::Impl {
   }
 
   void setupBrush () {
+    this->brush.detailFactor (this->self->config ().get <float> ("editor/tool/sculpt/detail-factor"));
+
     this->brush.radius          (this->commonCache.get <float> ("radius"           , 20.0f));
-    this->brush.detailFactor    (this->commonCache.get <float> ("detail-factor"    , 0.7f));
     this->brush.stepWidthFactor (this->commonCache.get <float> ("step-width-factor", 0.3f));
     this->brush.subdivide       (this->commonCache.get <bool>  ("subdivide"        , true));
 
@@ -87,14 +89,6 @@ struct ToolSculpt::Impl {
       this->commonCache.set ("radius", r);
     });
     properties.add (QObject::tr ("Radius"), this->radiusEdit);
-
-    QDoubleSpinBox& detailEdit = ViewUtil::spinBox ( 0.01f, this->brush.detailFactor ()
-                                                   , 0.95f, 0.1f );
-    ViewUtil::connect (detailEdit, [this] (float h) {
-      this->brush.detailFactor (h);
-      this->commonCache.set ("detail-factor", h);
-    });
-    properties.add (QObject::tr ("Detail"), detailEdit);
 
     QDoubleSpinBox& stepEdit = ViewUtil::spinBox ( 0.01f, this->brush.stepWidthFactor ()
                                                  , 1000.0f, 0.1f );
