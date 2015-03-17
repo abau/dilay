@@ -3,10 +3,12 @@
 #define SMOOTH_VERTEX_SHADER                                                                   \
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
-  "uniform   mat4  mvp;                                                                    \n" \
+  "uniform   mat4  model;                                                                  \n" \
+  "uniform   mat4  view;                                                                   \n" \
+  "uniform   mat4  projection;                                                             \n" \
   "attribute vec3  position;                                                               \n" \
   "attribute vec3  normal;                                                                 \n" \
-  "uniform   vec3  ambient;                                                                \n" \
+  "uniform   vec3  color;                                                                  \n" \
   "uniform   vec3  light1Direction;                                                        \n" \
   "uniform   vec3  light1Color;                                                            \n" \
   "uniform   float light1Irradiance;                                                       \n" \
@@ -17,49 +19,49 @@
   "varying vec3 vsOut;                                                                     \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
-  "  gl_Position        = mvp * vec4 (position,1);                                         \n" \
-  "  float light1Factor = light1Irradiance * max (0.0, dot (light1Direction, normal));     \n" \
-  "  float light2Factor = light2Irradiance * max (0.0, dot (light2Direction, normal));     \n" \
-  "  vec3  light1       = light1Color * vec3 (light1Factor);                               \n" \
-  "  vec3  light2       = light2Color * vec3 (light2Factor);                               \n" \
-  "        vsOut        = ambient + light1 + light2;                                       \n" \
+  "  gl_Position      = (projection * view * model) * vec4 (position,1.0);                 \n" \
+  "  vec3  viewNormal = vec3 (view * model * vec4 (normal,0.0));                           \n" \
+  "  float light1Diff = max (0.0, dot (light1Direction, viewNormal));                      \n" \
+  "  float light2Diff = max (0.0, dot (light2Direction, viewNormal));                      \n" \
+  "  vec3  light1     = light1Irradiance * light1Color * light1Diff;                       \n" \
+  "  vec3  light2     = light2Irradiance * light2Color * light2Diff;                       \n" \
+  "        vsOut      = color * (light1 + light2);                                         \n" \
   "}                                                                                       \n"
 
 #define SMOOTH_FRAGMENT_SHADER(OUT,FINAL)                                                      \
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
-  "uniform vec3 color;                                                                     \n" \
   "uniform vec3 wireframeColor;                                                            \n" \
   "                                                                                        \n" \
   "varying vec3 " OUT ";                                                                   \n" \
   "varying vec3 barycentric;                                                               \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
-  "  gl_FragColor = vec4 (color * " OUT ", 1.0);                                           \n" \
+  "  gl_FragColor = vec4 (" OUT ", 1.0);                                                   \n" \
      FINAL                                                                                     \
   "}                                                                                       \n"
 
 #define FLAT_VERTEX_SHADER                                                                     \
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
-  "uniform   mat4 mvp;                                                                     \n" \
   "uniform   mat4 model;                                                                   \n" \
+  "uniform   mat4 view;                                                                    \n" \
+  "uniform   mat4 projection;                                                              \n" \
   "attribute vec3 position;                                                                \n" \
-  "attribute vec3 normal;                                                                  \n" \
   "                                                                                        \n" \
   "varying vec3 vsOut;                                                                     \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
-  "  gl_Position = mvp * vec4 (position,1);                                                \n" \
-  "  vsOut       = vec3 (model * vec4 (position, 1));                                      \n" \
+  "  gl_Position = (projection * view * model) * vec4 (position,1.0);                      \n" \
+  "  vsOut       = vec3 (model * vec4 (position, 1.0));                                    \n" \
   "}                                                                                       \n"
 
 #define FLAT_FRAGMENT_SHADER(OUT,FINAL)                                                        \
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
+  "uniform mat4  view;                                                                     \n" \
   "uniform vec3  color;                                                                    \n" \
   "uniform vec3  wireframeColor;                                                           \n" \
-  "uniform vec3  ambient;                                                                  \n" \
   "uniform vec3  light1Direction;                                                          \n" \
   "uniform vec3  light1Color;                                                              \n" \
   "uniform float light1Irradiance;                                                         \n" \
@@ -71,26 +73,28 @@
   "varying vec3 barycentric;                                                               \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
-  "  vec3  normal       = normalize(cross(dFdx(" OUT "),dFdy(" OUT ")));                   \n" \
+  "  vec3  normal     = normalize(cross(dFdx(" OUT "),dFdy(" OUT ")));                     \n" \
+  "  vec3  viewNormal = vec3 (view * vec4 (normal,0.0));                                   \n" \
   "                                                                                        \n" \
-  "  float light1Factor = light1Irradiance * max (0.0, dot  (light1Direction, normal));    \n" \
-  "  float light2Factor = light2Irradiance * max (0.0, dot  (light2Direction, normal));    \n" \
-  "  vec3  light1       = light1Color * vec3 (light1Factor);                               \n" \
-  "  vec3  light2       = light2Color * vec3 (light2Factor);                               \n" \
+  "  float light1Diff = max (0.0, dot (light1Direction, viewNormal));                      \n" \
+  "  float light2Diff = max (0.0, dot (light2Direction, viewNormal));                      \n" \
+  "  vec3  light1     = light1Irradiance * light1Color * vec3 (light1Diff);                \n" \
+  "  vec3  light2     = light2Irradiance * light2Color * vec3 (light2Diff);                \n" \
   "                                                                                        \n" \
-  "  vec3  light        = ambient + light1 + light2;                                       \n" \
-  "  gl_FragColor       = vec4 (color * light, 1.0);                                       \n" \
+  "  gl_FragColor     = vec4 (color * (light1 + light2), 1.0);                             \n" \
      FINAL                                                                                     \
   "}                                                                                       \n"
 
 #define CONSTANT_VERTEX_SHADER                                                                 \
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
-  "uniform   mat4 mvp;                                                                     \n" \
+  "uniform   mat4 model;                                                                   \n" \
+  "uniform   mat4 view;                                                                    \n" \
+  "uniform   mat4 projection;                                                              \n" \
   "attribute vec3 position;                                                                \n" \
   "                                                                                        \n" \
   "void main(){                                                                            \n" \
-  "  gl_Position = mvp * vec4 (position,1);                                                \n" \
+  "  gl_Position = (projection * view * model) * vec4 (position,1.0);                      \n" \
   "}                                                                                       \n"
 
 #define CONSTANT_FRAGMENT_SHADER(FINAL)                                                        \

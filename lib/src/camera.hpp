@@ -25,7 +25,6 @@ class Camera {
           glm::mat4x4  world           () const;
 
     void        updateResolution       (const glm::uvec2&);
-    glm::mat4x4 modelViewProjection    (const glm::mat4x4&, bool) const;
     void        setModelViewProjection (const glm::mat4x4&, bool);
 
     void        set                    (const glm::vec3&, const glm::vec3&, const glm::vec3&);

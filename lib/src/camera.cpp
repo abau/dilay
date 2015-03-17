@@ -58,15 +58,16 @@ struct Camera::Impl {
     this->updateProjection ();
   }
 
-  glm::mat4x4 modelViewProjection (const glm::mat4x4& model, bool onlyRotation) const {
-    return onlyRotation ? this->projection * this->viewRotation * model
-                        : this->projection * this->view         * model;
-  }
-
   void setModelViewProjection (const glm::mat4x4& model, bool onlyRotation) {
-    glm::mat4x4 mvp = this->modelViewProjection (model, onlyRotation);
-    this->renderer.setMvp   (&mvp  [0][0]);
-    this->renderer.setModel (&model[0][0]);
+    this->renderer.setModel      (&model[0][0]);
+    this->renderer.setProjection (&this->projection [0][0]);
+
+    if (onlyRotation) {
+      this->renderer.setView (&this->viewRotation[0][0]);
+    }
+    else {
+      this->renderer.setView (&this->view[0][0]);
+    }
   }
 
   void set (const glm::vec3& g, const glm::vec3& e, const glm::vec3& u, bool update = true) {
@@ -148,8 +149,7 @@ struct Camera::Impl {
     this->viewRotation = glm::lookAt ( glm::normalize (this->toEyePoint)
                                      , glm::vec3 (0.0f)
                                      , this->up );
-    this->renderer.setEyePoint  (this->eyePoint ());
-    this->renderer.updateLights (this->world    ());
+    this->renderer.setEyePoint (this->eyePoint ());
   }
 
   glm::vec3 eyePoint () const {
@@ -182,7 +182,6 @@ DELEGATE_CONST  (glm::vec3         , Camera, position)
 DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 
 DELEGATE1       (void       , Camera, updateResolution, const glm::uvec2&) 
-DELEGATE2_CONST (glm::mat4x4, Camera, modelViewProjection, const glm::mat4x4&, bool) 
 DELEGATE2       (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
 DELEGATE3       (void       , Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE1       (void       , Camera, setGaze, const glm::vec3&)

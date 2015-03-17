@@ -14,46 +14,42 @@ namespace {
     int colorId;
     int irradianceId;
 
-    LightIds () {
-      this->directionId  = 0;
-      this->colorId      = 0;
-      this->irradianceId = 0;
-    }
+    LightIds () : directionId  (0)
+                , colorId      (0)
+                , irradianceId (0)
+    {}
   };
-
+  
   struct ShaderIds {
     unsigned int programId;
-    int          mvpId;
     int          modelId;
+    int          viewId;
+    int          projectionId;
     int          colorId;
     int          wireframeColorId;
-    int          ambientId;
     int          eyePointId;
     int          barycentricId;
     LightIds     lightIds [numLights];
 
-    ShaderIds () {
-      this->programId        = 0;
-      this->mvpId            = 0;
-      this->modelId          = 0;
-      this->colorId          = 0;
-      this->wireframeColorId = 0;
-      this->ambientId        = 0;
-      this->eyePointId       = 0;
-      this->barycentricId    = 0;
-    }
+    ShaderIds () : programId        (0)
+                 , modelId          (0)
+                 , viewId           (0)
+                 , projectionId     (0)
+                 , colorId          (0)
+                 , wireframeColorId (0)
+                 , eyePointId       (0)
+                 , barycentricId    (0)
+    {}
   };
 
   struct GlobalLightUniforms {
     glm::vec3 direction;
-    glm::vec3 transformedDirection;
     Color     color;
     float     irradiance;
   };
 
   struct GlobalUniforms {
     GlobalLightUniforms lightUniforms [numLights];
-    Color               ambient;
     glm::vec3           eyePoint;
   };
 };
@@ -121,11 +117,11 @@ struct Renderer::Impl {
     ShaderIds *s = &this->shaderIds [index];
 
     s->programId                = id;
-    s->mvpId                    = OpenGL::glGetUniformLocation (id, "mvp");
     s->modelId                  = OpenGL::glGetUniformLocation (id, "model");
+    s->viewId                   = OpenGL::glGetUniformLocation (id, "view");
+    s->projectionId             = OpenGL::glGetUniformLocation (id, "projection");
     s->colorId                  = OpenGL::glGetUniformLocation (id, "color");
     s->wireframeColorId         = OpenGL::glGetUniformLocation (id, "wireframeColor");
-    s->ambientId                = OpenGL::glGetUniformLocation (id, "ambient");
     s->eyePointId               = OpenGL::glGetUniformLocation (id, "eyePoint");
     s->barycentricId            = OpenGL::glGetUniformLocation (id, "barycentric");
     s->lightIds[0].directionId  = OpenGL::glGetUniformLocation (id, "light1Direction");
@@ -148,15 +144,12 @@ struct Renderer::Impl {
     OpenGL::glUseProgram (this->activeShaderIndex->programId);
 
     OpenGL::glUniformVec3 
-      (this->activeShaderIndex->ambientId, this->globalUniforms.ambient.vec3 ());
-
-    OpenGL::glUniformVec3 
       (this->activeShaderIndex->eyePointId, this->globalUniforms.eyePoint);
 
     for (unsigned int i = 0; i < numLights; i++) {
       OpenGL::glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].directionId
-        , this->globalUniforms.lightUniforms[i].transformedDirection);
+        , this->globalUniforms.lightUniforms[i].direction);
       OpenGL::glUniformVec3 
         ( this->activeShaderIndex->lightIds[i].colorId
         , this->globalUniforms.lightUniforms[i].color.vec3 ());
@@ -165,14 +158,19 @@ struct Renderer::Impl {
     }
   }
 
-  void setMvp (const float* mvp) {
-    assert (this->activeShaderIndex);
-    OpenGL::glUniformMatrix4fv (this->activeShaderIndex->mvpId, 1, false, mvp);
-  }
-
   void setModel (const float* model) {
     assert (this->activeShaderIndex);
     OpenGL::glUniformMatrix4fv (this->activeShaderIndex->modelId, 1, false, model);
+  }
+
+  void setView (const float* view) {
+    assert (this->activeShaderIndex);
+    OpenGL::glUniformMatrix4fv (this->activeShaderIndex->viewId, 1, false, view);
+  }
+
+  void setProjection (const float* projection) {
+    assert (this->activeShaderIndex);
+    OpenGL::glUniformMatrix4fv (this->activeShaderIndex->projectionId, 1, false, projection);
   }
 
   void setColor3 (const Color& c) {
@@ -195,10 +193,6 @@ struct Renderer::Impl {
     OpenGL::glUniformVec4 (this->activeShaderIndex->wireframeColorId, c.vec4 ());
   }
 
-  void setAmbient (const Color& c) {
-    this->globalUniforms.ambient = c;
-  }
-
   void setEyePoint (const glm::vec3& e) {
     this->globalUniforms.eyePoint = e;
   }
@@ -218,28 +212,17 @@ struct Renderer::Impl {
     this->globalUniforms.lightUniforms[i].irradiance = irr;
   }
 
-  void updateLights (const glm::mat4x4& world) {
-    const glm::mat3x3 w (world);
-
-    this->globalUniforms.lightUniforms[0].transformedDirection = 
-      w * this->globalUniforms.lightUniforms[0].direction;
-
-    this->globalUniforms.lightUniforms[1].transformedDirection = 
-      w * this->globalUniforms.lightUniforms[1].direction;
-  }
-
   void runFromConfig (const Config& config) {
-    this->clearColor     = config.get<Color>     ("editor/background");
-    const glm::vec3 dir1 = config.get<glm::vec3> ("editor/light/light1/direction");
-    const glm::vec3 dir2 = config.get<glm::vec3> ("editor/light/light2/direction");
+    this->clearColor = config.get<Color> ("editor/background");
 
-    this->setAmbient         (   config.get<Color>     ("editor/light/ambient"));
-    this->setLightDirection  (0, glm::normalize (dir1));
-    this->setLightColor      (0, config.get<Color>     ("editor/light/light1/color"));
-    this->setLightIrradiance (0, config.get<float>     ("editor/light/light1/irradiance"));
-    this->setLightDirection  (1, glm::normalize (dir2));
-    this->setLightColor      (1, config.get<Color>     ("editor/light/light2/color"));
-    this->setLightIrradiance (1, config.get<float>     ("editor/light/light2/irradiance"));
+    for (unsigned int i = 0; i < numLights; i++) {
+      const std::string key = "editor/light/light" + std::to_string (i+1) + "/";
+
+      const glm::vec3 dir = config.get<glm::vec3> (key + "direction");
+      this->setLightDirection  (i, glm::normalize (dir));
+      this->setLightColor      (i, config.get<Color> (key + "color"));
+      this->setLightIrradiance (i, config.get<float> (key + "irradiance"));
+    }
   }
 };
 
@@ -247,16 +230,15 @@ DELEGATE1_BIG3 (Renderer, const Config&)
 
 DELEGATE  (void, Renderer, setupRendering)
 DELEGATE1 (void, Renderer, setProgram        , const RenderMode&)
-DELEGATE1 (void, Renderer, setMvp            , const float*)
 DELEGATE1 (void, Renderer, setModel          , const float*)
+DELEGATE1 (void, Renderer, setView           , const float*)
+DELEGATE1 (void, Renderer, setProjection     , const float*)
 DELEGATE1 (void, Renderer, setColor3         , const Color&)
 DELEGATE1 (void, Renderer, setColor4         , const Color&)
 DELEGATE1 (void, Renderer, setWireframeColor3, const Color&)
 DELEGATE1 (void, Renderer, setWireframeColor4, const Color&)
-DELEGATE1 (void, Renderer, setAmbient        , const Color&)
 DELEGATE1 (void, Renderer, setEyePoint       , const glm::vec3&)
 DELEGATE2 (void, Renderer, setLightDirection , unsigned int, const glm::vec3&)
 DELEGATE2 (void, Renderer, setLightColor     , unsigned int, const Color&)
 DELEGATE2 (void, Renderer, setLightIrradiance, unsigned int, float)
-DELEGATE1 (void, Renderer, updateLights      , const glm::mat4x4&)
 DELEGATE1 (void, Renderer, runFromConfig     , const Config&)
