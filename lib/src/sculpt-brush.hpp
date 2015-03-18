@@ -1,7 +1,7 @@
 #ifndef DILAY_SCULPT_BRUSH
 #define DILAY_SCULPT_BRUSH
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 #include "macro.hpp"
 
 class ActionUnitOnWMesh;
@@ -9,15 +9,65 @@ class AffectedFaces;
 class WingedFace;
 class WingedMesh;
 
+class SBMoveDirectionalParameters {
+  public:
+    SBMoveDirectionalParameters ();
+
+    float            intensityFactor     () const { return this->_intensityFactor; }
+    float            innerRadiusFactor   () const { return this->_innerRadiusFactor; }
+    bool             invert              () const { return this->_invert; }
+    const glm::vec3& direction           () const { return this->_direction; }
+    bool             useAverageDirection () const { return this->_useAverageDirection; }
+    bool             useLastPosition     () const { return this->_useLastPosition; }
+    bool             useIntersection     () const { return this->_useIntersection; }
+    bool             linearStep          () const { return this->_linearStep; }
+
+    void intensityFactor     (float v)            { this->_intensityFactor = v; }
+    void innerRadiusFactor   (float v)            { this->_innerRadiusFactor = v; }
+    void invert              (bool v)             { this->_invert = v; }
+    void direction           (const glm::vec3& v) { this->_direction = v
+                                                  ; this->_useAverageDirection = false;
+                                                  }
+    void useAverageDirection (bool v)             { this->_useAverageDirection = v; }
+    void useLastPosition     (bool v)             { this->_useLastPosition = v; }
+    void useIntersection     (bool v)             { this->_useIntersection = v; }
+    void linearStep          (bool v)             { this->_linearStep = v; }
+
+    void toggleInvert        ()                   { this->_invert = ! this->_invert; }
+
+  private:
+    float     _intensityFactor;
+    float     _innerRadiusFactor;
+    bool      _invert;
+    glm::vec3 _direction;
+    bool      _useAverageDirection;
+    bool      _useLastPosition;
+    bool      _useIntersection;
+    bool      _linearStep;
+};
+
+class SBSmoothParameters {
+  public:
+    SBSmoothParameters ();
+};
+
+class SBFlattenParameters {
+  public:
+    SBFlattenParameters ();
+
+    float intensity () const  { return this->_intensity; }
+    void  intensity (float v) { this->_intensity = v; }
+
+  private:
+    float _intensity;
+};
+
 class SculptBrush {
   public:
     DECLARE_BIG6 (SculptBrush)
 
-    enum class Mode { Nothing, Translate, Smooth, Flatten };
-
     void             sculpt              (AffectedFaces&, ActionUnitOnWMesh&) const;
 
-    Mode             mode                () const;
     float            radius              () const;
     float            detailFactor        () const;
     float            stepWidthFactor     () const;
@@ -25,7 +75,6 @@ class SculptBrush {
     WingedMesh*      mesh                () const;
     WingedFace*      face                () const;
 
-    void             mode                (Mode);
     void             radius              (float);
     void             detailFactor        (float);
     void             stepWidthFactor     (float);
@@ -43,19 +92,8 @@ class SculptBrush {
     bool             updatePosition      (const glm::vec3&);
     void             resetPosition       ();
 
-    float            intensityFactor     () const;
-    float            innerRadiusFactor   () const;
-    bool             invert              () const;
-
-    void             intensityFactor     (float);
-    void             innerRadiusFactor   (float);
-    void             invert              (bool);
-    void             toggleInvert        ();
-    void             useLastPosition     (bool);
-    void             useIntersection     (bool);
-    void             direction           (const glm::vec3&);
-    void             useAverageDirection ();
-    void             linearStep          (bool);
+    template <typename T> const T& constParameters () const;
+    template <typename T>       T& parameters      ();
 
     SAFE_REF_CONST (WingedMesh, mesh)
     SAFE_REF_CONST (WingedFace, face)

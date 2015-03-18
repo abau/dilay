@@ -22,24 +22,27 @@ struct ToolSculptDrag::Impl {
   {}
 
   void runSetupBrush (SculptBrush& brush) {
-    brush.mode              (SculptBrush::Mode::Translate);
-    brush.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
-    brush.useLastPosition   (true);
-    brush.useIntersection   (true);
+    auto& params = brush.parameters <SBMoveDirectionalParameters> ();
+
+    params.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
+    params.useLastPosition   (true);
+    params.useIntersection   (true);
   }
 
   void runSetupCursor (ViewCursor& cursor) {
+    auto& params = this->self->brush ().constParameters <SBMoveDirectionalParameters> ();
+
     cursor.hasInnerRadius    (true);
-    cursor.innerRadiusFactor (this->self->brush ().innerRadiusFactor ());
+    cursor.innerRadiusFactor (params.innerRadiusFactor ());
   }
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    SculptBrush& brush = this->self->brush ();
+    auto& params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
 
-    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, brush.innerRadiusFactor ()
+    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, params.innerRadiusFactor ()
                                                         , 1.0f, 0.1f );
-    ViewUtil::connect (innerRadiusEdit, [this,&brush] (float f) {
-      brush.innerRadiusFactor (f);
+    ViewUtil::connect (innerRadiusEdit, [this,&params] (float f) {
+      params.innerRadiusFactor (f);
       this->self->cursor ().innerRadiusFactor (f);
       this->self->cache ().set ("inner-radius-factor", f);
     });

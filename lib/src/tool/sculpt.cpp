@@ -201,12 +201,12 @@ struct ToolSculpt::Impl {
     }
   }
 
-  void carvelikeStroke (const QMouseEvent& e, bool invertable) {
+  void carvelikeStroke (const QMouseEvent& e, const std::function <void ()>* toggle) {
     if (this->updateBrushAndCursorByIntersection (e)) {
-      if (invertable && e.modifiers () == Qt::ShiftModifier) {
-        this->brush.toggleInvert ();
+      if (toggle && e.modifiers () == Qt::ShiftModifier) {
+        (*toggle) ();
         this->sculpt ();
-        this->brush.toggleInvert ();
+        (*toggle) ();
       }
       else {
         this->sculpt ();
@@ -248,8 +248,10 @@ struct ToolSculpt::Impl {
       if ( movement.move (ViewUtil::toIVec2 (e))
         && this->brush.updatePosition (movement.position ()) )
       {
-        this->brush.direction       (this->brush.position () - oldBrushPos);
-        this->brush.intensityFactor (1.0f / this->brush.radius ());
+        auto& params = this->brush.parameters <SBMoveDirectionalParameters> ();
+
+        params.direction       (this->brush.position () - oldBrushPos);
+        params.intensityFactor (1.0f / this->brush.radius ());
         this->sculpt ();
       }
     }
@@ -262,7 +264,7 @@ GETTER         (ViewCursor& , ToolSculpt, cursor)
 DELEGATE       (void        , ToolSculpt, sculpt)
 DELEGATE1      (void        , ToolSculpt, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, const QMouseEvent&)
-DELEGATE2      (void        , ToolSculpt, carvelikeStroke, const QMouseEvent&, bool)
+DELEGATE2      (void        , ToolSculpt, carvelikeStroke, const QMouseEvent&, const std::function <void ()>*)
 DELEGATE2      (void        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE2      (void        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE_CONST (bool        , ToolSculpt, runAllowUndoRedo)

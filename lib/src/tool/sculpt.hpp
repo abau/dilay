@@ -18,7 +18,8 @@ class ToolSculpt : public Tool {
     void         sculpt                             ();
     void         updateCursorByIntersection         (const QMouseEvent&);
     bool         updateBrushAndCursorByIntersection (const QMouseEvent&);
-    void         carvelikeStroke                    (const QMouseEvent&, bool = false);
+    void         carvelikeStroke                    ( const QMouseEvent&
+                                                    , const std::function <void ()>* = nullptr );
     void         initializeDraglikeStroke           (const QMouseEvent&, ToolUtilMovement&);
     void         draglikeStroke                     (const QMouseEvent&, ToolUtilMovement&);
 

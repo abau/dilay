@@ -11,9 +11,7 @@ struct ToolSculptSmooth::Impl {
   {}
 
   void runSetupBrush (SculptBrush& brush) {
-    brush.mode            (SculptBrush::Mode::Smooth);
-    brush.useIntersection (true);
-    brush.intensityFactor (0.0f);
+    brush.parameters <SBSmoothParameters> ();
   }
 
   void runSetupCursor (ViewCursor&) {}

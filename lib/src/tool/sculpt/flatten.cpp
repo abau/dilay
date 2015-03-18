@@ -13,19 +13,20 @@ struct ToolSculptFlatten::Impl {
   Impl (ToolSculptFlatten* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    brush.mode            (SculptBrush::Mode::Flatten);
-    brush.intensityFactor (this->self->cache ().get <float> ("intensity-factor", 0.5f));
+    auto& params = brush.parameters <SBFlattenParameters> ();
+
+    params.intensity (this->self->cache ().get <float> ("intensity-factor", 0.5f));
   }
 
   void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    SculptBrush& brush = this->self->brush ();
+    auto& params = this->self->brush ().parameters <SBFlattenParameters> ();
 
-    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.1f, brush.intensityFactor ()
+    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.1f, params.intensity ()
                                                       , 1.0f, 0.1f );
-    ViewUtil::connect (intensityEdit, [this,&brush] (float i) {
-      brush.intensityFactor (i);
+    ViewUtil::connect (intensityEdit, [this,&params] (float i) {
+      params.intensity (i);
       this->self->cache ().set ("intensity", i);
     });
     properties.add (QObject::tr ("Intensity"), intensityEdit);
