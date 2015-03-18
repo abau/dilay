@@ -49,6 +49,16 @@ class SBMoveDirectionalParameters {
 class SBSmoothParameters {
   public:
     SBSmoothParameters ();
+
+    bool  relaxOnly () const { return this->_relaxOnly; }
+    float intensity () const { return this->_intensity; }
+
+    void  relaxOnly (bool v)  { this->_relaxOnly = v; }
+    void  intensity (float v) { this->_intensity = v; }
+
+  private:
+    bool  _relaxOnly;
+    float _intensity;
 };
 
 class SBFlattenParameters {

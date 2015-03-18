@@ -23,7 +23,10 @@ SBMoveDirectionalParameters::SBMoveDirectionalParameters ()
   , _linearStep          (false)
 {}
 
-SBSmoothParameters::SBSmoothParameters () {}
+SBSmoothParameters::SBSmoothParameters ()
+  : _relaxOnly (false)
+  , _intensity (0.0f)
+{}
 
 SBFlattenParameters::SBFlattenParameters ()
   : _intensity (0.0f)
@@ -120,11 +123,29 @@ struct SculptBrush :: Impl {
     }
   }
 
-  void sculpt (const SBSmoothParameters&, AffectedFaces& faces, ActionUnitOnWMesh&) const {
-    PrimSphere sphere (this->_position, this->radius);
+  void sculpt ( const SBSmoothParameters& parameters
+              , AffectedFaces& faces, ActionUnitOnWMesh& actions) const 
+  {
+    PrimSphere  sphere (this->_position, this->radius);
+    WingedMesh& mesh   (this->self->meshRef ());
 
     IntersectionUtil::extend ( sphere, this->self->meshRef ()
                              , this->self->faceRef (), faces );
+
+    if (parameters.relaxOnly () == false) {
+      VertexPtrSet vertices (faces.toVertexSet ());
+
+      for (WingedVertex* v : vertices) {
+        const glm::vec3 oldPos = v->position (mesh);
+        const float     delta  = parameters.intensity ()
+                               * Util::smoothStep ( oldPos, this->position ()
+                                                  , 0.0f, this->radius);
+
+        const glm::vec3 newPos = oldPos + (delta * (WingedUtil::center (mesh, *v) - oldPos));
+
+        actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
+      }
+    }
   }
 
   void sculpt ( const SBFlattenParameters& parameters

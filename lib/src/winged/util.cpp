@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include "../util.hpp"
+#include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
@@ -113,4 +114,15 @@ glm::vec3 WingedUtil :: center (const WingedMesh& mesh, const VertexPtrSet& vert
     c += v->position (mesh);
   }
   return c / float (vertices.size ());
+}
+
+glm::vec3 WingedUtil :: center (const WingedMesh& mesh, const WingedVertex& vertex) {
+  glm::vec3    c (0.0f);
+  unsigned int n (0);
+
+  for (const WingedVertex& v : vertex.adjacentVertices ()) {
+    c += v.position (mesh);
+    n++;
+  }
+  return c / float (n);
 }
