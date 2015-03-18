@@ -1,4 +1,3 @@
-#include <cassert>
 #include <cstdlib>
 #include <glm/glm.hpp>
 #include "dimension.hpp"
