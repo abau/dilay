@@ -15,7 +15,7 @@ struct ToolSculptFlatten::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBFlattenParameters> ();
 
-    params.intensity (this->self->cache ().get <float> ("intensity-factor", 0.5f));
+    params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
   }
 
   void runSetupCursor (ViewCursor&) {}
