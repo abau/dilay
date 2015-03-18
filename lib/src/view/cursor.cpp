@@ -8,16 +8,18 @@
 #include "view/cursor.hpp"
 
 struct ViewCursor::Impl {
-  Mesh   mesh;
-  float _radius;
-  bool   isEnabled;
-  bool   hasInnerRadius;
-  float _innerRadiusFactor;
+  Mesh       mesh;
+  float     _radius;
+  glm::vec3 _normal;
+  bool       isEnabled;
+  bool       hasInnerRadius;
+  float     _innerRadiusFactor;
 
   static const unsigned int numSectors = 40;
 
   Impl () 
     : _radius            (0.0f)
+    , _normal            (0.0f)
     ,  isEnabled         (false) 
     ,  hasInnerRadius    (false)
     , _innerRadiusFactor (0.0f)
@@ -27,9 +29,17 @@ struct ViewCursor::Impl {
     return this->_radius;
   }
 
-  const Color&       color          () const { return this->mesh.color          (); }
-        glm::vec3    position       () const { return this->mesh.position       (); }
-  const glm::mat4x4& rotationMatrix () const { return this->mesh.rotationMatrix (); }
+  glm::vec3 position () const {
+    return this->mesh.position ();
+  }
+
+  const glm::vec3& normal () {
+    return this->_normal;
+  }
+
+  const Color& color () const {
+    return this->mesh.color ();
+  }
 
   float innerRadiusFactor () const {
     assert (this->hasInnerRadius);
@@ -41,25 +51,26 @@ struct ViewCursor::Impl {
     this->update ();
   }
 
-  void color (const Color& color) {
-    this->mesh.color (color);
+  void position (const glm::vec3& p) { 
+    this->mesh.position (p); 
   }
 
-  void position (const glm::vec3& v) { 
-    this->mesh.position (v); 
-  }
-
-  void normal (const glm::vec3& v) {
-    const float d   = glm::dot (v, glm::vec3 (0.0f,1.0f,0.0f));
+  void normal (const glm::vec3& n) {
+    this->_normal   = n;
+    const float d   = glm::dot (n, glm::vec3 (0.0f,1.0f,0.0f));
     const float eps = Util::epsilon ();
     if (d >= 1.0f - eps || d <= -1.0f + eps) {
       this->mesh.rotationMatrix (glm::mat4(1.0f));
     }
     else {
-      const glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),v);
+      const glm::vec3 axis  = glm::cross   (glm::vec3 (0.0f,1.0f,0.0f),n);
       const float     angle = glm::acos (d);
       this->mesh.rotationMatrix (glm::rotate (glm::mat4(1.0f), angle, axis));
     }
+  }
+
+  void color (const Color& color) {
+    this->mesh.color (color);
   }
 
   void enable  () { this->isEnabled = true;  }
@@ -116,19 +127,19 @@ struct ViewCursor::Impl {
 };
 
 DELEGATE_BIG6    (ViewCursor)
-DELEGATE_CONST   (float             , ViewCursor, radius)
-DELEGATE_CONST   (const Color&      , ViewCursor, color)
-DELEGATE_CONST   (glm::vec3         , ViewCursor, position)
-DELEGATE_CONST   (const glm::mat4x4&, ViewCursor, rotationMatrix)
-GETTER_CONST     (bool              , ViewCursor, isEnabled)
-GETTER_CONST     (bool              , ViewCursor, hasInnerRadius)
-DELEGATE_CONST   (float             , ViewCursor, innerRadiusFactor)
-DELEGATE1        (void              , ViewCursor, radius, float)
-DELEGATE1        (void              , ViewCursor, color, const Color&)
-DELEGATE1        (void              , ViewCursor, position, const glm::vec3&)
-DELEGATE1        (void              , ViewCursor, normal, const glm::vec3&)
-DELEGATE         (void              , ViewCursor, enable)
-DELEGATE         (void              , ViewCursor, disable)
-SETTER           (bool              , ViewCursor, hasInnerRadius)
-DELEGATE1        (void              , ViewCursor, innerRadiusFactor, float)
-DELEGATE1_CONST  (void              , ViewCursor, render, Camera&)
+DELEGATE_CONST   (float           , ViewCursor, radius)
+DELEGATE_CONST   (glm::vec3       , ViewCursor, position)
+DELEGATE_CONST   (const glm::vec3&, ViewCursor, normal)
+DELEGATE_CONST   (const Color&    , ViewCursor, color)
+GETTER_CONST     (bool            , ViewCursor, isEnabled)
+GETTER_CONST     (bool            , ViewCursor, hasInnerRadius)
+DELEGATE_CONST   (float           , ViewCursor, innerRadiusFactor)
+DELEGATE1        (void            , ViewCursor, radius, float)
+DELEGATE1        (void            , ViewCursor, position, const glm::vec3&)
+DELEGATE1        (void            , ViewCursor, normal, const glm::vec3&)
+DELEGATE1        (void            , ViewCursor, color, const Color&)
+DELEGATE         (void            , ViewCursor, enable)
+DELEGATE         (void            , ViewCursor, disable)
+SETTER           (bool            , ViewCursor, hasInnerRadius)
+DELEGATE1        (void            , ViewCursor, innerRadiusFactor, float)
+DELEGATE1_CONST  (void            , ViewCursor, render, Camera&)

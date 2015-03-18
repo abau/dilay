@@ -12,18 +12,18 @@ class ViewCursor {
   public: 
     DECLARE_BIG6 (ViewCursor)
 
-          float        radius            () const;
-    const Color&       color             () const;
-          glm::vec3    position          () const;
-    const glm::mat4x4& rotationMatrix    () const;
-          bool         isEnabled         () const;
-          bool         hasInnerRadius    () const;
-          float        innerRadiusFactor () const;
+          float      radius            () const;
+          glm::vec3  position          () const;
+    const glm::vec3& normal            () const;
+    const Color&     color             () const;
+          bool       isEnabled         () const;
+          bool       hasInnerRadius    () const;
+          float      innerRadiusFactor () const;
 
     void  radius            (float);
-    void  color             (const Color&);
     void  position          (const glm::vec3&);
     void  normal            (const glm::vec3&);
+    void  color             (const Color&);
     void  enable            ();
     void  disable           ();
     void  hasInnerRadius    (bool);
