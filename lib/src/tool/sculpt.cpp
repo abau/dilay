@@ -100,9 +100,9 @@ struct ToolSculpt::Impl {
 
     QCheckBox& subdivEdit = ViewUtil::checkBox ( QObject::tr ("Subdivide")
                                                , this->brush.subdivide () );
-    QObject::connect (&subdivEdit, &QCheckBox::stateChanged, [this] (int s) {
-      this->brush.subdivide (bool (s));
-      this->commonCache.set ("subdivide", bool (s));
+    ViewUtil::connect (subdivEdit, [this] (bool s) {
+      this->brush.subdivide (s);
+      this->commonCache.set ("subdivide", s);
     });
     properties.add (subdivEdit);
 
