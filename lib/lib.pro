@@ -9,16 +9,10 @@ INCLUDEPATH            += src
 CONFIG                 += staticlib
 
 SOURCES += \
-           src/action/delete-winged-mesh.cpp \
-           src/action/modify-winged-mesh.cpp \
+           src/action/finalize.cpp \
            src/action/new-winged-mesh.cpp \
-           src/action/on-post-processed-winged-mesh.cpp \
            src/action/sculpt.cpp \
            src/action/subdivide-mesh.cpp \
-           src/action/transformer.cpp \
-           src/action/unit.cpp \
-           src/action/unit/on-winged-mesh.cpp \
-           src/action/util.cpp \
            src/adjacent-iterator.cpp \
            src/affected-faces.cpp \
            src/camera.cpp \
@@ -37,10 +31,6 @@ SOURCES += \
            src/partial-action/flip-edge.cpp \
            src/partial-action/insert-edge-face.cpp \
            src/partial-action/insert-edge-vertex.cpp \
-           src/partial-action/modify-winged-edge.cpp \
-           src/partial-action/modify-winged-face.cpp \
-           src/partial-action/modify-winged-mesh.cpp \
-           src/partial-action/modify-winged-vertex.cpp \
            src/partial-action/relax-edge.cpp \
            src/partial-action/smooth.cpp \
            src/partial-action/subdivide-edge.cpp \
@@ -90,19 +80,10 @@ SOURCES += \
            src/xml-conversion.cpp \
 
 HEADERS += \
-           src/action.hpp \
-           src/action/data.hpp \
-           src/action/delete-winged-mesh.hpp \
-           src/action/modify-winged-mesh.hpp \
+           src/action/finalize.hpp \
            src/action/new-winged-mesh.hpp \
-           src/action/on-post-processed-winged-mesh.hpp \
-           src/action/on-winged-mesh.hpp \
            src/action/sculpt.hpp \
            src/action/subdivide-mesh.hpp \
-           src/action/transformer.hpp \
-           src/action/unit.hpp \
-           src/action/unit/on-winged-mesh.hpp \
-           src/action/util.hpp \
            src/adjacent-iterator.hpp \
            src/affected-faces.hpp \
            src/bitset.hpp \
@@ -126,10 +107,6 @@ HEADERS += \
            src/partial-action/flip-edge.hpp \
            src/partial-action/insert-edge-face.hpp \
            src/partial-action/insert-edge-vertex.hpp \
-           src/partial-action/modify-winged-edge.hpp \
-           src/partial-action/modify-winged-face.hpp \
-           src/partial-action/modify-winged-mesh.hpp \
-           src/partial-action/modify-winged-vertex.hpp \
            src/partial-action/relax-edge.hpp \
            src/partial-action/smooth.hpp \
            src/partial-action/subdivide-edge.hpp \

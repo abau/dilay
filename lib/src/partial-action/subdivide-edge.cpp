@@ -1,5 +1,4 @@
 #include <glm/glm.hpp>
-#include "action/unit/on-winged-mesh.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
@@ -10,19 +9,8 @@
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
 
-struct PASubdivideEdge::Impl {
-  ActionUnitOnWMesh actions;
-
-  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
-
-  static void extendDomain (AffectedFaces& domain) {
-    Impl::addOneRing            (domain);
-    Impl::addOneRing            (domain);
-    Impl::extendToNeighbourhood (domain);
-  }
-
-  static void addOneRing (AffectedFaces& domain) {
+namespace {
+  void addOneRing (AffectedFaces& domain) {
     for (WingedFace* d : domain.faces ()) {
       for (WingedFace& f : d->adjacentFaces ()) {
         domain.insert (f);
@@ -31,7 +19,7 @@ struct PASubdivideEdge::Impl {
     domain.commit ();
   }
 
-  static void extendToNeighbourhood (AffectedFaces& domain) {
+  void extendToNeighbourhood (AffectedFaces& domain) {
     auto hasAtLeast2NeighboursInDomain = [&domain] (WingedFace& face) -> bool {
       unsigned int numInDomain = 0;
 
@@ -70,17 +58,18 @@ struct PASubdivideEdge::Impl {
     }
     domain.commit ();
   }
+}
 
-  void run (WingedMesh& mesh, WingedEdge& edge, AffectedFaces& affectedFaces) {
-    this->actions.add <PAInsertEdgeVertex> ().run 
-      (mesh, edge, SubdivisionButterfly::subdivideEdge (mesh, edge) );
-    this->actions.add <PATriangulateQuad>  ().run (mesh, edge.leftFaceRef  (), &affectedFaces);
-    this->actions.add <PATriangulateQuad>  ().run (mesh, edge.rightFaceRef (), &affectedFaces);
-  }
-};
+void PartialAction :: extendDomain (AffectedFaces& domain) {
+  addOneRing            (domain);
+  addOneRing            (domain);
+  extendToNeighbourhood (domain);
+}
 
-DELEGATE_BIG3 (PASubdivideEdge)
-DELEGATE1_STATIC (void, PASubdivideEdge, extendDomain, AffectedFaces&)
-DELEGATE3        (void, PASubdivideEdge, run, WingedMesh&, WingedEdge&, AffectedFaces&)
-DELEGATE1_CONST  (void, PASubdivideEdge, runUndo, WingedMesh&)
-DELEGATE1_CONST  (void, PASubdivideEdge, runRedo, WingedMesh&)
+void PartialAction :: subdivideEdge ( WingedMesh& mesh, WingedEdge& edge
+                                    , AffectedFaces& affectedFaces )
+{
+  PartialAction::insertEdgeVertex (mesh, edge, SubdivisionButterfly::subdivideEdge (mesh, edge) );
+  PartialAction::triangulateQuad  (mesh, edge.leftFaceRef  (), &affectedFaces);
+  PartialAction::triangulateQuad  (mesh, edge.rightFaceRef (), &affectedFaces);
+}

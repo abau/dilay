@@ -1,29 +1,18 @@
 #ifndef DILAY_PARTIAL_ACTION_TRIANGULATE_6_GON
 #define DILAY_PARTIAL_ACTION_TRIANGULATE_6_GON
 
-#include "action/on-winged-mesh.hpp"
-#include "macro.hpp"
-
 class WingedMesh;
 class WingedFace;
 class AffectedFaces;
 
-class PATriangulate6Gon : public ActionOnWMesh {
-  public: 
-    DECLARE_BIG3 (PATriangulate6Gon)
+namespace PartialAction {
 
-  /** `run (m,f,n)` triangulates the 6-gon `f`.
+  /** `triangulate6Gon (m,f,n)` triangulates the 6-gon `f`.
    * Note thate `f.edge ()->firstVertex (f)` must be an even vertex, i.e.
    * it must not be generated during the current subdivision step.
    * The new faces are adjacent to `f`.
    * `f` and the new faces are added to `n` if `n` is not `nullptr`.
    */
-    void run (WingedMesh&, WingedFace&, AffectedFaces*);
-
-  private:
-    void runUndo (WingedMesh&) const;
-    void runRedo (WingedMesh&) const;
-
-    IMPLEMENTATION
-};
+  void triangulate6Gon (WingedMesh&, WingedFace&, AffectedFaces*);
+}
 #endif

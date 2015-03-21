@@ -1,5 +1,4 @@
 #include <QMouseEvent>
-#include "action/delete-winged-mesh.hpp"
 #include "history.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -19,9 +18,7 @@ struct ToolDeleteMesh::Impl {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
-        this->self->state ().history ().add <ActionDeleteWMesh> ()
-                                       .run ( this->self->state ().scene ()
-                                            , intersection.mesh () );
+        this->self->state ().scene ().deleteMesh (intersection.mesh ());
         return ToolResponse::Redraw;
       }
     }

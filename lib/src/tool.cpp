@@ -1,6 +1,5 @@
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "action.hpp"
 #include "cache.hpp"
 #include "camera.hpp"
 #include "config.hpp"
@@ -16,25 +15,24 @@
 #include "view/util.hpp"
 
 struct Tool::Impl {
-  Tool*         self;
-  State&        state;
-  Config&       config;
-  CacheProxy   _cache;
-  const Action* undoLimit;
+  Tool*       self;
+  State&      state;
+  Config&     config;
+  CacheProxy _cache;
 
   Impl (Tool* s, State& st, const char* key) 
     : self           (s) 
     , state          (st)
     , config         (this->state.config ())
     ,_cache          (this->cache (key))
-    , undoLimit      (this->state.history ().recent ())
+   // , undoLimit      (this->state.history ().recent ())
   {
     this->state.mainWindow ().showToolTip (ViewToolTip ());
   }
 
   bool allowUndo () const {
-    return ( this->state.history ().recent () != this->undoLimit )
-        && ( this->self->runAllowUndoRedo () );
+    return /*( this->state.history ().recent () != this->undoLimit )
+        && */ ( this->self->runAllowUndoRedo () );
   }
 
   bool allowRedo () const {

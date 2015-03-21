@@ -82,6 +82,48 @@ void WingedEdge :: setGeometry ( WingedVertex* v1, WingedVertex* v2
   this->rightSuccessor   (rightSucc);
 }
 
+void WingedEdge :: firstVertex (const WingedFace& f, WingedVertex* v) {
+  if (this->isLeftFace (f))
+    this->vertex1 (v);
+  else
+    this->vertex2 (v);
+}
+
+void WingedEdge :: secondVertex (const WingedFace& f, WingedVertex* v) {
+  if (this->isLeftFace (f))
+    this->vertex2 (v);
+  else
+    this->vertex1 (v);
+}
+
+void WingedEdge :: vertex (const WingedVertex& vertex, WingedVertex* v) {
+  if (this->isVertex1 (vertex))
+    this->vertex1 (v);
+  else 
+    this->vertex2 (v);
+}
+
+void WingedEdge :: face (const WingedFace& fOld, WingedFace* fNew) {
+  if (this->isLeftFace (fOld))
+    this->leftFace (fNew);
+  else
+    this->rightFace (fNew);
+}
+
+void WingedEdge :: predecessor (const WingedFace& f, WingedEdge* e) {
+  if (this->isLeftFace (f)) 
+    this->leftPredecessor  (e);
+  else 
+    this->rightPredecessor (e);
+}
+
+void WingedEdge :: successor (const WingedFace& f, WingedEdge* e) {
+  if (this->isLeftFace (f)) 
+    this->leftSuccessor  (e);
+  else 
+    this->rightSuccessor (e);
+}
+
 glm::vec3 WingedEdge :: vector (const WingedMesh& mesh) const {
   glm::vec3 a = this->_vertex1->position (mesh);
   glm::vec3 b = this->_vertex2->position (mesh);

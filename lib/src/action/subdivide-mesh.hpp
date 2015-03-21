@@ -1,22 +1,11 @@
 #ifndef DILAY_ACTION_SUBDIVIDE_MESH
 #define DILAY_ACTION_SUBDIVIDE_MESH
 
-#include "action/on-post-processed-winged-mesh.hpp"
-#include "macro.hpp"
-
 class WingedMesh;
 
-class ActionSubdivideMesh : public ActionOnPostProcessedWMesh {
-  public: 
-    DECLARE_BIG3 (ActionSubdivideMesh)
+namespace Action {
 
-    void run (WingedMesh&);
-
-  private:
-    void runUndoBeforePostProcessing (WingedMesh&) const;
-    void runRedoBeforePostProcessing (WingedMesh&) const;
-
-    IMPLEMENTATION
+  void subdivideMesh (WingedMesh&);
 };
 
 #endif

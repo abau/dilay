@@ -1,9 +1,7 @@
 #include <glm/glm.hpp>
-#include "action/unit/on-winged-mesh.hpp"
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
-#include "partial-action/modify-winged-vertex.hpp"
 #include "partial-action/smooth.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
@@ -12,39 +10,7 @@
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
-struct PASmooth::Impl {
-  ActionUnitOnWMesh actions;
-
-  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
-
-  void run ( WingedMesh& mesh, const VertexPtrSet& vertices, unsigned int numIterations
-           , AffectedFaces& affectedFaces ) 
-  {
-    std::vector <glm::vec3> originalPositions;
-    originalPositions.reserve (vertices.size ());
-
-    for (WingedVertex* v : vertices) {
-      originalPositions.push_back (v->position (mesh));
-    }
-
-    for (unsigned int i = 0; i < numIterations; i++) {
-      this->iteration (mesh, vertices);
-    }
-
-    auto posIt = originalPositions.begin ();
-    for (WingedVertex* v : vertices) {
-      assert (posIt != originalPositions.end ());
-
-      this->actions.add <PAModifyWVertex> ().moved (mesh, *v, *posIt);
-
-      for (WingedFace& f : v->adjacentFaces ()) {
-        affectedFaces.insert (f);
-      }
-      ++posIt;
-    }
-  }
-
+namespace {
   void iteration (WingedMesh& mesh, const VertexPtrSet& vertices) {
     typedef std::vector <PrimTriangle> AdjTriangles;
 
@@ -128,9 +94,19 @@ struct PASmooth::Impl {
       ++posIt;
     }
   }
-};
 
-DELEGATE_BIG3   (PASmooth)
-DELEGATE4       (void, PASmooth, run, WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&)
-DELEGATE1_CONST (void, PASmooth, runUndo, WingedMesh&)
-DELEGATE1_CONST (void, PASmooth, runRedo, WingedMesh&)
+}
+
+void PartialAction :: smooth ( WingedMesh& mesh, const VertexPtrSet& vertices
+                             , unsigned int numIterations, AffectedFaces& affectedFaces ) 
+{
+  for (unsigned int i = 0; i < numIterations; i++) {
+    iteration (mesh, vertices);
+  }
+
+  for (WingedVertex* v : vertices) {
+    for (WingedFace& f : v->adjacentFaces ()) {
+      affectedFaces.insert (f);
+    }
+  }
+}

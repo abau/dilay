@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include "macro.hpp"
 
-class ActionUnitOnWMesh;
 class AffectedFaces;
 class WingedFace;
 class WingedMesh;
@@ -76,7 +75,7 @@ class SculptBrush {
   public:
     DECLARE_BIG6 (SculptBrush)
 
-    void             sculpt              (AffectedFaces&, ActionUnitOnWMesh&) const;
+    void             sculpt              (AffectedFaces&) const;
 
     float            radius              () const;
     float            detailFactor        () const;

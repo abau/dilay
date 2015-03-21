@@ -4,7 +4,6 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
-#include "action/unit.hpp"
 #include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
@@ -24,17 +23,15 @@
 #include "winged/mesh.hpp"
 
 struct ToolSculpt::Impl {
-  ToolSculpt*                  self;
-  SculptBrush                  brush;
-  ViewCursor                   cursor;
-  CacheProxy                   commonCache;
-  std::unique_ptr <ActionUnit> actions;
-  QDoubleSpinBox&              radiusEdit;
+  ToolSculpt*     self;
+  SculptBrush     brush;
+  ViewCursor      cursor;
+  CacheProxy      commonCache;
+  QDoubleSpinBox& radiusEdit;
 
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
-    , actions     (new ActionUnit) 
     , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 10.0f))
   {}
 
@@ -128,18 +125,9 @@ struct ToolSculpt::Impl {
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       this->brush.resetPosition ();
-      this->addActionsToHistory ();
     }
     this->cursor.enable ();
     return ToolResponse::None;
-  }
-
-  void addActionsToHistory () {
-    assert (this->actions);
-    if (this->actions->isEmpty () == false) {
-      this->self->state ().history ().addUnit (std::move (*this->actions));
-      this->actions.reset (new ActionUnit ());
-    }
   }
 
   ToolResponse runWheelEvent (const QWheelEvent& e) {
@@ -155,13 +143,10 @@ struct ToolSculpt::Impl {
     return ToolResponse::Redraw;
   }
 
-  void runClose () {
-    this->addActionsToHistory ();
-  }
+  void runClose () {}
 
   void sculpt () {
-    this->actions->add <ActionSculpt> ( this->self->state ().scene ()
-                                      , this->brush.meshRef () ).run (this->brush);
+    Action::sculpt (this->brush);
   }
 
   void updateCursorByIntersection (const QMouseEvent& e) {

@@ -46,6 +46,10 @@ void WingedVertex :: writeNormal (WingedMesh& mesh, const glm::vec3& normal) {
   mesh.setNormal (this->_index, normal);
 }
 
+void WingedVertex :: writeInterpolatedNormal (WingedMesh& mesh) {
+  this->writeNormal (mesh, this->interpolatedNormal (mesh));
+}
+
 unsigned int WingedVertex :: valence () const {
   unsigned int i             = 0;
   AdjEdges     adjacentEdges = this->adjacentEdges ();

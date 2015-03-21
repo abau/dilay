@@ -2,7 +2,6 @@
 #include <QButtonGroup>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "action/modify-winged-mesh.hpp"
 #include "cache.hpp"
 #include "history.hpp"
 #include "scene.hpp"
@@ -111,10 +110,8 @@ struct ToolMoveMesh::Impl {
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton && this->mesh) {
-      this->mesh->translate (- this->movement.delta ());
-      this->self->state ().history ()
-                          .add <ActionModifyWMesh> (this->self->state ().scene (), *this->mesh)
-                          .translate (*this->mesh, this->movement.delta ());
+      this->mesh->normalize  ();
+      this->mesh->bufferData ();
       this->mesh = nullptr;
     }
     return ToolResponse::None;

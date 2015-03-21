@@ -1,8 +1,6 @@
 #include <glm/gtx/norm.hpp>
-#include "action/unit/on-winged-mesh.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
-#include "partial-action/modify-winged-vertex.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/sphere.hpp"
 #include "sculpt-brush.hpp"
@@ -58,25 +56,23 @@ struct SculptBrush :: Impl {
 
   {}
 
-  void sculpt (AffectedFaces& faces, ActionUnitOnWMesh& actions) const {
+  void sculpt (AffectedFaces& faces) const {
     assert (this->parameters.isSet ());
 
     this->parameters.caseOf <void>
-      ( [this,&faces,&actions] (const SBMoveDirectionalParameters& p) {
-          this->sculpt (p, faces, actions); 
+      ( [this,&faces] (const SBMoveDirectionalParameters& p) {
+          this->sculpt (p, faces); 
         }
-      , [this,&faces,&actions] (const SBSmoothParameters& p) {
-          this->sculpt (p, faces, actions);
+      , [this,&faces] (const SBSmoothParameters& p) {
+          this->sculpt (p, faces);
         }
-      , [this,&faces,&actions] (const SBFlattenParameters& p) {
-          this->sculpt (p, faces, actions);
+      , [this,&faces] (const SBFlattenParameters& p) {
+          this->sculpt (p, faces);
         }
       );
   }
 
-  void sculpt ( const SBMoveDirectionalParameters& parameters
-              , AffectedFaces& faces, ActionUnitOnWMesh& actions) const 
-  {
+  void sculpt (const SBMoveDirectionalParameters& parameters, AffectedFaces& faces) const {
     auto getSculptDirection = [this,&parameters] (const VertexPtrSet& vertices) -> glm::vec3 {
       if (parameters.useAverageDirection ()) {
         const glm::vec3 avgNormal = WingedUtil::averageNormal ( this->self->meshRef ()
@@ -119,13 +115,11 @@ struct SculptBrush :: Impl {
 
       const glm::vec3 newPos = oldPos + (delta * dir);
 
-      actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
+      v->writePosition (mesh, newPos);
     }
   }
 
-  void sculpt ( const SBSmoothParameters& parameters
-              , AffectedFaces& faces, ActionUnitOnWMesh& actions) const 
-  {
+  void sculpt (const SBSmoothParameters& parameters, AffectedFaces& faces) const {
     PrimSphere  sphere (this->_position, this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
@@ -143,14 +137,12 @@ struct SculptBrush :: Impl {
 
         const glm::vec3 newPos = oldPos + (delta * (WingedUtil::center (mesh, *v) - oldPos));
 
-        actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
+        v->writePosition (mesh, newPos);
       }
     }
   }
 
-  void sculpt ( const SBFlattenParameters& parameters
-              , AffectedFaces& faces, ActionUnitOnWMesh& actions) const 
-  {
+  void sculpt (const SBFlattenParameters& parameters, AffectedFaces& faces) const {
     PrimSphere  sphere (this->_position, this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
@@ -170,7 +162,7 @@ struct SculptBrush :: Impl {
 
       const glm::vec3 newPos = oldPos - (normal * factor * distance);
 
-      actions.add <PAModifyWVertex> ().move (mesh, *v, newPos);
+      v->writePosition (mesh, newPos);
     }
   }
 
@@ -231,7 +223,7 @@ struct SculptBrush :: Impl {
 
 DELEGATE_BIG6_SELF (SculptBrush)
   
-DELEGATE2_CONST (void             , SculptBrush, sculpt, AffectedFaces&, ActionUnitOnWMesh&)
+DELEGATE1_CONST (void             , SculptBrush, sculpt, AffectedFaces&)
 GETTER_CONST    (float            , SculptBrush, radius)
 GETTER_CONST    (float            , SculptBrush, detailFactor)
 GETTER_CONST    (float            , SculptBrush, stepWidthFactor)

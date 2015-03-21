@@ -1,63 +1,48 @@
-#include "action/unit/on-winged-mesh.hpp"
 #include "partial-action/flip-edge.hpp"
-#include "partial-action/modify-winged-edge.hpp"
-#include "partial-action/modify-winged-face.hpp"
-#include "partial-action/modify-winged-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
+#include "winged/vertex.hpp"
 
-struct PAFlipEdge :: Impl {
-  ActionUnitOnWMesh actions;
+void PartialAction :: flipEdge (WingedMesh& mesh, WingedEdge& edge) {
+  assert (edge.leftFaceRef  ().numEdges () == 3);
+  assert (edge.rightFaceRef ().numEdges () == 3);
 
-  void run (WingedMesh& mesh, WingedEdge& edge) {
-    assert (edge.leftFaceRef  ().numEdges () == 3);
-    assert (edge.rightFaceRef ().numEdges () == 3);
+  WingedVertex* v1 = edge.vertex1          ();
+  WingedVertex* v2 = edge.vertex2          ();
+  WingedFace*   lf = edge.leftFace         ();
+  WingedFace*   rf = edge.rightFace        ();
+  WingedEdge*   lp = edge.leftPredecessor  ();
+  WingedEdge*   ls = edge.leftSuccessor    ();
+  WingedEdge*   rp = edge.rightPredecessor ();
+  WingedEdge*   rs = edge.rightSuccessor   ();
 
-    WingedVertex* v1 = edge.vertex1          ();
-    WingedVertex* v2 = edge.vertex2          ();
-    WingedFace*   lf = edge.leftFace         ();
-    WingedFace*   rf = edge.rightFace        ();
-    WingedEdge*   lp = edge.leftPredecessor  ();
-    WingedEdge*   ls = edge.leftSuccessor    ();
-    WingedEdge*   rp = edge.rightPredecessor ();
-    WingedEdge*   rs = edge.rightSuccessor   ();
+  WingedVertex* v3 = edge.vertex           (*lf, 2);
+  WingedVertex* v4 = edge.vertex           (*rf, 2);
 
-    WingedVertex* v3 = edge.vertex           (*lf, 2);
-    WingedVertex* v4 = edge.vertex           (*rf, 2);
+  lf->edge (&edge);
+  rf->edge (&edge);
 
-    this->actions.add <PAModifyWFace> ().edge (*lf, &edge);
-    this->actions.add <PAModifyWFace> ().edge (*rf, &edge);
+  v1->edge (lp);
+  v2->edge (rp);
 
-    this->actions.add <PAModifyWVertex> ().edge (*v1, lp);
-    this->actions.add <PAModifyWVertex> ().edge (*v2, rp);
+  ls->face (*lf, rf);
+  rs->face (*rf, lf);
 
-    this->actions.add <PAModifyWEdge> ().face (*ls, *lf, rf);
-    this->actions.add <PAModifyWEdge> ().face (*rs, *rf, lf);
+  lp->predecessor (*lf, &edge);
+  lp->successor   (*lf, rs);
+  ls->predecessor (*rf, rp);
+  ls->successor   (*rf, &edge);
+  rp->predecessor (*rf, &edge);
+  rp->successor   (*rf, ls);
+  rs->predecessor (*lf, lp);
+  rs->successor   (*lf, &edge);
 
-    this->actions.add <PAModifyWEdge> ().predecessor (*lp, *lf, &edge);
-    this->actions.add <PAModifyWEdge> ().successor   (*lp, *lf, rs);
-    this->actions.add <PAModifyWEdge> ().predecessor (*ls, *rf, rp);
-    this->actions.add <PAModifyWEdge> ().successor   (*ls, *rf, &edge);
-    this->actions.add <PAModifyWEdge> ().predecessor (*rp, *rf, &edge);
-    this->actions.add <PAModifyWEdge> ().successor   (*rp, *rf, ls);
-    this->actions.add <PAModifyWEdge> ().predecessor (*rs, *lf, lp);
-    this->actions.add <PAModifyWEdge> ().successor   (*rs, *lf, &edge);
+  edge.setGeometry (v4, v3, lf, rf, rs, lp, ls, rp);
 
-    this->actions.add <PAModifyWEdge> ().setGeometry (edge, v4, v3, lf, rf, rs, lp, ls, rp);
+  edge.leftFaceRef  ().writeIndices (mesh);
+  edge.rightFaceRef ().writeIndices (mesh);
 
-    this->actions.add <PAModifyWFace> ().writeIndices (mesh, edge.leftFaceRef  ());
-    this->actions.add <PAModifyWFace> ().writeIndices (mesh, edge.rightFaceRef ());
+  assert (edge.leftFaceRef  ().numEdges () == 3);
+  assert (edge.rightFaceRef ().numEdges () == 3);
+}
 
-    assert (edge.leftFaceRef  ().numEdges () == 3);
-    assert (edge.rightFaceRef ().numEdges () == 3);
-  }
-
-  void runUndo (WingedMesh& mesh) const { this->actions.undo (mesh); }
-  void runRedo (WingedMesh& mesh) const { this->actions.redo (mesh); }
-};
-
-DELEGATE_BIG3 (PAFlipEdge)
-
-DELEGATE2       (void, PAFlipEdge, run, WingedMesh&, WingedEdge&)
-DELEGATE1_CONST (void, PAFlipEdge, runUndo, WingedMesh&)
-DELEGATE1_CONST (void, PAFlipEdge, runRedo, WingedMesh&)

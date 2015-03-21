@@ -50,6 +50,13 @@ class WingedEdge {
     void            rightPredecessor (WingedEdge* e)   { this->_rightPredecessor = e; }
     void            rightSuccessor   (WingedEdge* e)   { this->_rightSuccessor   = e; }
 
+    void            firstVertex      (const WingedFace&, WingedVertex*);
+    void            secondVertex     (const WingedFace&, WingedVertex*);
+    void            vertex           (const WingedVertex&, WingedVertex*);
+    void            face             (const WingedFace&, WingedFace*);
+    void            predecessor      (const WingedFace&, WingedEdge*);
+    void            successor        (const WingedFace&, WingedEdge*);
+
     glm::vec3       vector           (const WingedMesh&) const;
     glm::vec3       vector           (const WingedMesh&, const WingedVertex&) const;
     float           length           (const WingedMesh&) const;

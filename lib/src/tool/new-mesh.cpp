@@ -17,8 +17,7 @@ struct ToolNewMesh::Impl {
     MeshDefinition meshDefinition (MeshDefinition::Icosphere (3));
     meshDefinition.scale          (glm::vec3 (Util::defaultScale ()));
 
-    this->self->state ().history ().add <ActionNewWingedMesh> ()
-                        .run (this->self->state ().scene (), meshDefinition);
+    Action::newWingedMesh (this->self->state ().scene (), meshDefinition);
 
     return ToolResponse::Terminate;
   }
