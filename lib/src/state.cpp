@@ -1,18 +1,17 @@
 #include <glm/glm.hpp>
 #include <memory>
-#include "action/new-winged-mesh.hpp"
 #include "cache.hpp"
 #include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
 #include "mesh-definition.hpp"
+#include "mesh.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
-#include "util.hpp"
 
 struct State::Impl {
   ViewMainWindow&        mainWindow;
@@ -30,10 +29,7 @@ struct State::Impl {
     , camera     (this->config)
     , scene      (ConfigProxy (this->config, "editor/mesh/"))
   {
-    MeshDefinition meshDefinition (MeshDefinition::Icosphere (3));
-    meshDefinition.scale          (glm::vec3 (Util::defaultScale ()));
-
-    Action::newWingedMesh (this->scene, meshDefinition);
+    this->scene.newWingedMesh (MeshDefinition::icosphere (3));
   }
 
   ~Impl () {

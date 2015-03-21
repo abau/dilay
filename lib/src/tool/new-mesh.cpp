@@ -1,10 +1,10 @@
 #include <glm/glm.hpp>
-#include "action/new-winged-mesh.hpp"
 #include "history.hpp"
 #include "mesh-definition.hpp"
+#include "mesh.hpp"
+#include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"
-#include "util.hpp"
 
 struct ToolNewMesh::Impl {
   ToolNewMesh* self;
@@ -14,10 +14,7 @@ struct ToolNewMesh::Impl {
   bool runAllowUndoRedo () const { return false; }
 
   ToolResponse runInitialize () const {
-    MeshDefinition meshDefinition (MeshDefinition::Icosphere (3));
-    meshDefinition.scale          (glm::vec3 (Util::defaultScale ()));
-
-    Action::newWingedMesh (this->self->state ().scene (), meshDefinition);
+    this->self->state ().scene ().newWingedMesh (MeshDefinition::icosphere (3));
 
     return ToolResponse::Terminate;
   }

@@ -367,14 +367,14 @@ struct Octree::Impl {
   Impl () : rootWasSetup (false) {}
 
   void setupRoot (const glm::vec3& position, float width) {
-    assert (this->root == false);
+    assert (this->hasRoot () == false);
     this->rootWasSetup = true;
     this->rootPosition = position;
     this->rootWidth    = width;
   }
 
   void initRoot (const FaceToInsert& faceToInsert) {
-    assert (this->root == false);
+    assert (this->hasRoot () == false);
     assert (faceToInsert.isDegenerated == false);
 
     if (this->rootWasSetup == false) {
@@ -459,7 +459,7 @@ struct Octree::Impl {
   }
 
   void makeParent (const FaceToInsert& f) {
-    assert (this->root);
+    assert (this->hasRoot ());
     assert (f.isDegenerated == false);
 
     glm::vec3 parentCenter;

@@ -1,310 +1,268 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <tuple>
 #include <unordered_map>
-#include <vector>
 #include "mesh-definition.hpp"
+#include "mesh.hpp"
 #include "util.hpp"
 
-struct MeshDefinition::Impl {
-  typedef std::tuple <unsigned int, unsigned int, unsigned int> Indices3;
-
-  std::vector <glm::vec3> vertices;
-  std::vector <Indices3>  indices3;
-
-  unsigned int addVertex (const glm::vec3& v) {
-    this->vertices.push_back (v);
-    return this->numVertices () - 1;
-  }
-
-  void addFace (unsigned int i1, unsigned int i2, unsigned int i3) {
-    this->indices3.push_back (Indices3 (i1,i2,i3));
-  }
-
-  void addFace (unsigned int i1, unsigned int i2, unsigned int i3, unsigned int i4) {
-    this->indices3.push_back (Indices3 (i1,i2,i3));
-    this->indices3.push_back (Indices3 (i4,i1,i3));
-  }
-
-  unsigned int numVertices () const {
-    return this->vertices.size ();
-  }
-
-  unsigned int numFace3 () const {
-    return this->indices3.size ();
-  }
-
-  const glm::vec3& vertex (unsigned int i) const {
-    assert (i < this->numVertices ());
-    return this->vertices[i];
-  }
-
-  void face (unsigned int i, unsigned int& i1, unsigned int& i2, unsigned int& i3) const {
-    assert (i < this->numFace3 ());
-    i1 = std::get <0> (this->indices3[i]);
-    i2 = std::get <1> (this->indices3[i]);
-    i3 = std::get <2> (this->indices3[i]);
-  }
-
-  void scale (const glm::vec3& s) {
-    this->transform (glm::scale (glm::mat4x4 (1.0f), s));
-  }
-
-  void translate (const glm::vec3& t) {
-    this->transform (glm::translate (glm::mat4x4 (1.0f), t));
-  }
-
-  void transform (const glm::mat4x4& matrix) {
-    for (glm::vec3& v : this->vertices) {
-      v = Util::transformPosition (matrix, v);
+namespace {
+  Mesh& finalized (Mesh& mesh) {
+    for (unsigned int i = 0; i < mesh.numVertices (); i++) {
+      mesh.setNormal (i, glm::normalize (mesh.vertex (i)));
     }
+    mesh.bufferData ();
+    return mesh;
   }
 
-  static MeshDefinition Cube () {
-    MeshDefinition m;
-    const float d = 0.5f;
-
-    m.addVertex ( glm::vec3 (-d, -d, -d) );
-    m.addVertex ( glm::vec3 (-d, -d, +d) );
-    m.addVertex ( glm::vec3 (-d, +d, -d) );
-    m.addVertex ( glm::vec3 (-d, +d, +d) );
-    m.addVertex ( glm::vec3 (+d, -d, -d) );
-    m.addVertex ( glm::vec3 (+d, -d, +d) );
-    m.addVertex ( glm::vec3 (+d, +d, -d) );
-    m.addVertex ( glm::vec3 (+d, +d, +d) );
-
-    m.addFace (0, 1, 3, 2);
-    m.addFace (1, 5, 7, 3);
-    m.addFace (5, 4, 6, 7);
-    m.addFace (4, 0, 2, 6);
-    m.addFace (3, 7, 6, 2);
-    m.addFace (0, 4, 5, 1);
-    return m;
+  unsigned int addVertex (Mesh& mesh, const glm::vec3& v) {
+    return mesh.addVertex (v);
   }
 
-  static MeshDefinition Sphere (unsigned int rings, unsigned int sectors) {
-    assert (rings > 1 && sectors > 2);
-    MeshDefinition m;
+  void addFace (Mesh& mesh, unsigned int i1, unsigned int i2, unsigned int i3) {
+    mesh.addIndex (i1);
+    mesh.addIndex (i2);
+    mesh.addIndex (i3);
+  }
 
-    const float radius     = 1.0f;
-    const float ringStep   =        M_PI / float (rings);
-    const float sectorStep = 2.0f * M_PI / float (sectors);
-          float phi        = ringStep;
-          float theta      = 0.0f;
+  void addFace (Mesh& mesh, unsigned int i1, unsigned int i2, unsigned int i3, unsigned int i4) {
+    mesh.addIndex (i1);
+    mesh.addIndex (i2);
+    mesh.addIndex (i3);
+    mesh.addIndex (i4);
+    mesh.addIndex (i1);
+    mesh.addIndex (i3);
+  }
+}
 
-    // inner rings vertices
-    for (unsigned int r = 0; r < rings - 1; r++) {
-      for (unsigned int s = 0; s < sectors; s++) {
-        const float x = radius * sin (theta) * sin (phi);
-        const float y = radius * cos (phi);
-        const float z = radius * cos (theta) * sin (phi);
+Mesh MeshDefinition :: cube () {
+  Mesh mesh;
+  const float d = 0.5f;
 
-        m.addVertex (glm::vec3 (x,y,z));
+  addVertex (mesh, glm::vec3 (-d, -d, -d));
+  addVertex (mesh, glm::vec3 (-d, -d, +d));
+  addVertex (mesh, glm::vec3 (-d, +d, -d));
+  addVertex (mesh, glm::vec3 (-d, +d, +d));
+  addVertex (mesh, glm::vec3 (+d, -d, -d));
+  addVertex (mesh, glm::vec3 (+d, -d, +d));
+  addVertex (mesh, glm::vec3 (+d, +d, -d));
+  addVertex (mesh, glm::vec3 (+d, +d, +d));
 
-        theta += sectorStep;
-      }
-      phi += ringStep;
-    }
+  addFace (mesh, 0, 1, 3, 2);
+  addFace (mesh, 1, 5, 7, 3);
+  addFace (mesh, 5, 4, 6, 7);
+  addFace (mesh, 4, 0, 2, 6);
+  addFace (mesh, 3, 7, 6, 2);
+  addFace (mesh, 0, 4, 5, 1);
 
-    // caps vertices
-    const unsigned int topCapIndex = m.addVertex (glm::vec3 (0.0f, radius, 0.0f));
-    const unsigned int botCapIndex = m.addVertex (glm::vec3 (0.0f,-radius, 0.0f));
+  return finalized (mesh);
+}
 
-    // inner rings indices
-    for (unsigned int r = 0; r < rings - 2; r++) {
-      for (unsigned int s = 0; s < sectors; s++) {
-        m.addFace ( (sectors * r) + s
-                  , (sectors * (r+1)) + s
-                  , (sectors * (r+1)) + ((s+1) % sectors) 
-                  , (sectors * r) + ((s+1) % sectors) );
-      }
-    }
+Mesh MeshDefinition :: sphere (unsigned int rings, unsigned int sectors) {
+  assert (rings > 1 && sectors > 2);
+  Mesh mesh;
 
-    // caps indices
+  const float radius     = 1.0f;
+  const float ringStep   =        M_PI / float (rings);
+  const float sectorStep = 2.0f * M_PI / float (sectors);
+        float phi        = ringStep;
+        float theta      = 0.0f;
+
+  // inner rings vertices
+  for (unsigned int r = 0; r < rings - 1; r++) {
     for (unsigned int s = 0; s < sectors; s++) {
-      m.addFace (topCapIndex, s, (s+1) % sectors);
+      const float x = radius * sin (theta) * sin (phi);
+      const float y = radius * cos (phi);
+      const float z = radius * cos (theta) * sin (phi);
 
-      m.addFace ( botCapIndex
-                , (sectors * (rings-2)) + ((s+1) % sectors)
-                , (sectors * (rings-2)) + s);
+      addVertex (mesh, glm::vec3 (x,y,z));
+
+      theta += sectorStep;
     }
-    return m;
+    phi += ringStep;
   }
 
-  static MeshDefinition Icosphere (unsigned int numSubdivisions) {
-    MeshDefinition m;
-    typedef unsigned long                          Key;
-    typedef std::unordered_map <Key, unsigned int> VertexCache;
+  // caps vertices
+  const unsigned int topCapIndex = addVertex (mesh, glm::vec3 (0.0f, radius, 0.0f));
+  const unsigned int botCapIndex = addVertex (mesh, glm::vec3 (0.0f,-radius, 0.0f));
 
-    VertexCache vertexCache;
+  // inner rings indices
+  for (unsigned int r = 0; r < rings - 2; r++) {
+    for (unsigned int s = 0; s < sectors; s++) {
+      addFace ( mesh
+              , (sectors * r) + s
+              , (sectors * (r+1)) + s
+              , (sectors * (r+1)) + ((s+1) % sectors) 
+              , (sectors * r) + ((s+1) % sectors) );
+    }
+  }
 
-    // adds new vertex to ico-sphere
-    auto addIcoVertex = [&m] (const glm::vec3& v) -> unsigned int {
-      return m.addVertex (glm::normalize (v));
+  // caps indices
+  for (unsigned int s = 0; s < sectors; s++) {
+    addFace (mesh, topCapIndex, s, (s+1) % sectors);
+
+    addFace ( mesh
+            , botCapIndex
+            , (sectors * (rings-2)) + ((s+1) % sectors)
+            , (sectors * (rings-2)) + s);
+  }
+  return finalized (mesh);
+}
+
+Mesh MeshDefinition :: icosphere (unsigned int numSubdivisions) {
+  Mesh mesh;
+  typedef unsigned long                          Key;
+  typedef std::unordered_map <Key, unsigned int> VertexCache;
+
+  VertexCache vertexCache;
+
+  // adds new vertex to ico-sphere
+  auto addIcoVertex = [&mesh] (const glm::vec3& v) -> unsigned int {
+    return addVertex (mesh, glm::normalize (v));
+  };
+
+  // computes key for vertex cache
+  auto getKey = [] (unsigned int i1, unsigned i2) -> Key {
+    return (Key (i1) << 8 * sizeof (int)) + Key (i2);
+  };
+
+  // looks up vertex in cache or computes a new one
+  auto lookupVertex = [&vertexCache,&addIcoVertex,&getKey,&mesh] 
+    (unsigned int i1, unsigned int i2) -> unsigned int 
+    {
+      const unsigned int lowerI = i1 < i2 ? i1 : i2;
+      const unsigned int upperI = i1 < i2 ? i2 : i1;
+      const Key          key    = getKey (lowerI, upperI);
+
+      VertexCache::iterator it = vertexCache.find (key);
+      if (it == vertexCache.end ()) {
+        const unsigned int n = addIcoVertex (Util::between ( mesh.vertex (lowerI)
+                                                           , mesh.vertex (upperI)));
+        vertexCache.emplace (key, n);
+        return n;
+      }
+      else {
+        return it->second;
+      }
     };
 
-    // computes key for vertex cache
-    auto getKey = [] (unsigned int i1, unsigned i2) -> Key {
-      return (Key (i1) << 8 * sizeof (int)) + Key (i2);
+  // subdivides a face of the ico-sphere
+  std::function <void (unsigned int,unsigned int,unsigned int,unsigned int)> subdivide =
+    [&mesh,&subdivide,&lookupVertex] 
+    (unsigned int s,unsigned int i1, unsigned int i2, unsigned int i3) -> void 
+    {
+      if (s == 0) {
+        addFace (mesh, i1, i2, i3); 
+      }
+      else {
+        const unsigned int i12 = lookupVertex (i1,i2);
+        const unsigned int i23 = lookupVertex (i2,i3);
+        const unsigned int i31 = lookupVertex (i3,i1);
+
+        subdivide (s-1, i1 , i12, i31);
+        subdivide (s-1, i2 , i23, i12);
+        subdivide (s-1, i3 , i31, i23);
+        subdivide (s-1, i12, i23, i31);
+      }
     };
 
-    // looks up vertex in cache or computes a new one
-    auto lookupVertex = [&vertexCache,&addIcoVertex,&getKey,&m] 
-      (unsigned int i1, unsigned int i2) -> unsigned int 
-      {
-        const unsigned int lowerI = i1 < i2 ? i1 : i2;
-        const unsigned int upperI = i1 < i2 ? i2 : i1;
-        const Key          key    = getKey (lowerI, upperI);
+  const float t = (1.0f + glm::sqrt (5.0f)) * 0.5f;
 
-        VertexCache::iterator it = vertexCache.find (key);
-        if (it == vertexCache.end ()) {
-          const unsigned int n = addIcoVertex (Util::between ( m.vertex (lowerI)
-                                                             , m.vertex (upperI)));
-          vertexCache.emplace (key, n);
-          return n;
-        }
-        else {
-          return it->second;
-        }
-      };
+  addIcoVertex (glm::vec3 (-1.0f, +t   ,  0.0f));
+  addIcoVertex (glm::vec3 (+1.0f, +t   ,  0.0f));
+  addIcoVertex (glm::vec3 (-1.0f, -t   ,  0.0f));
+  addIcoVertex (glm::vec3 (+1.0f, -t   ,  0.0f));
 
-    // subdivides a face of the ico-sphere
-    std::function <void (unsigned int,unsigned int,unsigned int,unsigned int)> subdivide =
-      [&m,&subdivide,&lookupVertex] 
-      (unsigned int s,unsigned int i1, unsigned int i2, unsigned int i3) -> void 
-      {
-        if (s == 0) {
-          m.addFace (i1, i2, i3); 
-        }
-        else {
-          const unsigned int i12 = lookupVertex (i1,i2);
-          const unsigned int i23 = lookupVertex (i2,i3);
-          const unsigned int i31 = lookupVertex (i3,i1);
+  addIcoVertex (glm::vec3 ( 0.0f, -1.0f, +t   ));
+  addIcoVertex (glm::vec3 ( 0.0f, +1.0f, +t   ));
+  addIcoVertex (glm::vec3 ( 0.0f, -1.0f, -t   ));
+  addIcoVertex (glm::vec3 ( 0.0f, +1.0f, -t   ));
 
-          subdivide (s-1, i1 , i12, i31);
-          subdivide (s-1, i2 , i23, i12);
-          subdivide (s-1, i3 , i31, i23);
-          subdivide (s-1, i12, i23, i31);
-        }
-      };
+  addIcoVertex (glm::vec3 (+t   ,  0.0f, -1.0f));
+  addIcoVertex (glm::vec3 (+t   ,  0.0f, +1.0f));
+  addIcoVertex (glm::vec3 (-t   ,  0.0f, -1.0f));
+  addIcoVertex (glm::vec3 (-t   ,  0.0f, +1.0f));
 
-    const float t = (1.0f + glm::sqrt (5.0f)) * 0.5f;
+  subdivide (numSubdivisions, 0 ,11,5 ); 
+  subdivide (numSubdivisions, 0 ,5 ,1 ); 
+  subdivide (numSubdivisions, 0 ,1 ,7 ); 
+  subdivide (numSubdivisions, 0 ,7 ,10); 
+  subdivide (numSubdivisions, 0 ,10,11); 
 
-    addIcoVertex (glm::vec3 (-1.0f, +t   ,  0.0f));
-    addIcoVertex (glm::vec3 (+1.0f, +t   ,  0.0f));
-    addIcoVertex (glm::vec3 (-1.0f, -t   ,  0.0f));
-    addIcoVertex (glm::vec3 (+1.0f, -t   ,  0.0f));
+  subdivide (numSubdivisions, 1 ,5 ,9 ); 
+  subdivide (numSubdivisions, 5 ,11,4 ); 
+  subdivide (numSubdivisions, 11,10,2 ); 
+  subdivide (numSubdivisions, 10,7 ,6 ); 
+  subdivide (numSubdivisions, 7 ,1 ,8 ); 
 
-    addIcoVertex (glm::vec3 ( 0.0f, -1.0f, +t   ));
-    addIcoVertex (glm::vec3 ( 0.0f, +1.0f, +t   ));
-    addIcoVertex (glm::vec3 ( 0.0f, -1.0f, -t   ));
-    addIcoVertex (glm::vec3 ( 0.0f, +1.0f, -t   ));
+  subdivide (numSubdivisions, 3 ,9 ,4 ); 
+  subdivide (numSubdivisions, 3 ,4 ,2 ); 
+  subdivide (numSubdivisions, 3 ,2 ,6 ); 
+  subdivide (numSubdivisions, 3 ,6 ,8 ); 
+  subdivide (numSubdivisions, 3 ,8 ,9 ); 
 
-    addIcoVertex (glm::vec3 (+t   ,  0.0f, -1.0f));
-    addIcoVertex (glm::vec3 (+t   ,  0.0f, +1.0f));
-    addIcoVertex (glm::vec3 (-t   ,  0.0f, -1.0f));
-    addIcoVertex (glm::vec3 (-t   ,  0.0f, +1.0f));
+  subdivide (numSubdivisions, 4 ,9 ,5 ); 
+  subdivide (numSubdivisions, 2 ,4 ,11); 
+  subdivide (numSubdivisions, 6 ,2 ,10); 
+  subdivide (numSubdivisions, 8 ,6 ,7 ); 
+  subdivide (numSubdivisions, 9 ,8 ,1 ); 
 
-    subdivide (numSubdivisions, 0 ,11,5 ); 
-    subdivide (numSubdivisions, 0 ,5 ,1 ); 
-    subdivide (numSubdivisions, 0 ,1 ,7 ); 
-    subdivide (numSubdivisions, 0 ,7 ,10); 
-    subdivide (numSubdivisions, 0 ,10,11); 
+  return finalized (mesh);
+}
 
-    subdivide (numSubdivisions, 1 ,5 ,9 ); 
-    subdivide (numSubdivisions, 5 ,11,4 ); 
-    subdivide (numSubdivisions, 11,10,2 ); 
-    subdivide (numSubdivisions, 10,7 ,6 ); 
-    subdivide (numSubdivisions, 7 ,1 ,8 ); 
+Mesh MeshDefinition :: cone (unsigned int numBaseVertices) {
+  assert (numBaseVertices >= 3);
 
-    subdivide (numSubdivisions, 3 ,9 ,4 ); 
-    subdivide (numSubdivisions, 3 ,4 ,2 ); 
-    subdivide (numSubdivisions, 3 ,2 ,6 ); 
-    subdivide (numSubdivisions, 3 ,6 ,8 ); 
-    subdivide (numSubdivisions, 3 ,8 ,9 ); 
+  Mesh mesh;
+  const float c = 2.0f * glm::pi <float> () / float (numBaseVertices);
 
-    subdivide (numSubdivisions, 4 ,9 ,5 ); 
-    subdivide (numSubdivisions, 2 ,4 ,11); 
-    subdivide (numSubdivisions, 6 ,2 ,10); 
-    subdivide (numSubdivisions, 8 ,6 ,7 ); 
-    subdivide (numSubdivisions, 9 ,8 ,1 ); 
-
-    return m;
+  for (unsigned int i = 0; i < numBaseVertices; i++) {
+    addVertex (mesh, glm::vec3 ( glm::sin (float (i) * c)
+                               , -0.5f
+                               , glm::cos (float (i) * c)));
   }
+  addVertex (mesh, glm::vec3 (0.0f, -0.5f, 0.0f));
+  addVertex (mesh, glm::vec3 (0.0f,  0.5f, 0.0f));
 
-  static MeshDefinition Cone (unsigned int numBaseVertices) {
-    assert (numBaseVertices >= 3);
-
-    MeshDefinition m;
-    const float    c = 2.0f * glm::pi <float> () / float (numBaseVertices);
-
-    for (unsigned int i = 0; i < numBaseVertices; i++) {
-      m.addVertex (glm::vec3 ( glm::sin (float (i) * c)
-                             , -0.5f
-                             , glm::cos (float (i) * c)));
-    }
-    m.addVertex (glm::vec3 (0.0f, -0.5f, 0.0f));
-    m.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
-
-    for (unsigned int i = 0; i < numBaseVertices - 1; i++) {
-      m.addFace (i, i + 1, numBaseVertices + 1);
-      m.addFace (i + 1, i, numBaseVertices);
-    }
-    m.addFace (numBaseVertices - 1, 0, numBaseVertices + 1);
-    m.addFace (0, numBaseVertices - 1, numBaseVertices);
-    return m;
+  for (unsigned int i = 0; i < numBaseVertices - 1; i++) {
+    addFace (mesh, i, i + 1, numBaseVertices + 1);
+    addFace (mesh, i + 1, i, numBaseVertices);
   }
+  addFace (mesh, numBaseVertices - 1, 0, numBaseVertices + 1);
+  addFace (mesh, 0, numBaseVertices - 1, numBaseVertices);
 
-  static MeshDefinition Cylinder (unsigned int numVertices) {
-    assert (numVertices >= 3);
+  return finalized (mesh);
+}
 
-    MeshDefinition m;
-    const float    c = 2.0f * glm::pi <float> () / float (numVertices);
+Mesh MeshDefinition :: cylinder (unsigned int numVertices) {
+  assert (numVertices >= 3);
 
-    for (unsigned int i = 0; i < numVertices; i++) {
-      m.addVertex (glm::vec3 ( glm::sin (float (i) * c)
-                             , -0.5f
-                             , glm::cos (float (i) * c)));
-    }
-    for (unsigned int i = 0; i < numVertices; i++) {
-      m.addVertex (glm::vec3 ( glm::sin (float (i) * c)
-                             , 0.5f
-                             , glm::cos (float (i) * c)));
-    }
-    m.addVertex (glm::vec3 (0.0f, -0.5f, 0.0f));
-    m.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
+  Mesh mesh;
+  const float c = 2.0f * glm::pi <float> () / float (numVertices);
 
-    for (unsigned int i = 0; i < numVertices - 1; i++) {
-      m.addFace (i, i + 1, i + numVertices + 1, i + numVertices);
-
-      m.addFace (i + 1, i, 2 * numVertices);
-      m.addFace (i + numVertices, i + numVertices + 1, (2 * numVertices) + 1);
-    }
-    m.addFace (numVertices - 1, 0, numVertices, (2 * numVertices) - 1);
-
-    m.addFace (0, numVertices - 1, 2 * numVertices);
-    m.addFace ((2 * numVertices) - 1, numVertices, (2 * numVertices) + 1);
-    return m;
+  for (unsigned int i = 0; i < numVertices; i++) {
+    addVertex (mesh, glm::vec3 ( glm::sin (float (i) * c)
+                               , -0.5f
+                               , glm::cos (float (i) * c)));
   }
-};
+  for (unsigned int i = 0; i < numVertices; i++) {
+    addVertex (mesh, glm::vec3 ( glm::sin (float (i) * c)
+                               , 0.5f
+                               , glm::cos (float (i) * c)));
+  }
+  addVertex (mesh, glm::vec3 (0.0f, -0.5f, 0.0f));
+  addVertex (mesh, glm::vec3 (0.0f,  0.5f, 0.0f));
 
+  for (unsigned int i = 0; i < numVertices - 1; i++) {
+    addFace (mesh, i, i + 1, i + numVertices + 1, i + numVertices);
 
-DELEGATE_BIG6   (MeshDefinition)
-DELEGATE1       (unsigned int, MeshDefinition, addVertex, const glm::vec3&)
-DELEGATE3       (void        , MeshDefinition, addFace, unsigned int, unsigned int, unsigned int)
-DELEGATE4       (void        , MeshDefinition, addFace, unsigned int, unsigned int, unsigned int, unsigned int)
-DELEGATE_CONST  (unsigned int, MeshDefinition, numVertices)
-DELEGATE_CONST  (unsigned int, MeshDefinition, numFace3)
-DELEGATE1_CONST (const glm::vec3&, MeshDefinition, vertex, unsigned int)
-DELEGATE4_CONST (void, MeshDefinition, face, unsigned int, unsigned int&, unsigned int&, unsigned int&)
-DELEGATE1       (void, MeshDefinition, scale, const glm::vec3&)
-DELEGATE1       (void, MeshDefinition, translate, const glm::vec3&)
-DELEGATE1       (void, MeshDefinition, transform, const glm::mat4x4&)
+    addFace (mesh, i + 1, i, 2 * numVertices);
+    addFace (mesh, i + numVertices, i + numVertices + 1, (2 * numVertices) + 1);
+  }
+  addFace (mesh, numVertices - 1, 0, numVertices, (2 * numVertices) - 1);
 
-DELEGATE_STATIC  (MeshDefinition, MeshDefinition, Cube)
-DELEGATE2_STATIC (MeshDefinition, MeshDefinition, Sphere, unsigned int, unsigned int)
-DELEGATE1_STATIC (MeshDefinition, MeshDefinition, Icosphere, unsigned int)
-DELEGATE1_STATIC (MeshDefinition, MeshDefinition, Cone, unsigned int)
-DELEGATE1_STATIC (MeshDefinition, MeshDefinition, Cylinder, unsigned int)
+  addFace (mesh, 0, numVertices - 1, 2 * numVertices);
+  addFace (mesh, (2 * numVertices) - 1, numVertices, (2 * numVertices) + 1);
+
+  return finalized (mesh);
+}

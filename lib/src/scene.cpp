@@ -2,6 +2,7 @@
 #include "indexable.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
+#include "util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
@@ -16,6 +17,16 @@ struct Scene :: Impl {
 
   WingedMesh& newWingedMesh () {
     return this->wingedMeshes.emplace ();
+  }
+
+  WingedMesh& newWingedMesh (Mesh&& mesh) {
+    WingedMesh& wingedMesh = this->newWingedMesh ();
+    wingedMesh.fromMesh   (std::move (mesh));
+    wingedMesh.scale      (glm::vec3 (Util::defaultScale ()));
+    wingedMesh.normalize  ();
+    wingedMesh.bufferData ();
+
+    return wingedMesh;
   }
 
   void deleteMesh (WingedMesh& mesh) {
@@ -66,6 +77,7 @@ struct Scene :: Impl {
 DELEGATE1_BIG3 (Scene, const ConfigProxy&)
 
 DELEGATE        (WingedMesh&      , Scene, newWingedMesh)
+DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, Mesh&&)
 DELEGATE1       (void             , Scene, deleteMesh, WingedMesh&)
 DELEGATE1_CONST (WingedMesh*      , Scene, wingedMesh, unsigned int)
 DELEGATE1       (void             , Scene, render, Camera&)

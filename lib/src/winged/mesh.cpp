@@ -1,5 +1,5 @@
 #include <glm/glm.hpp>
-#include <set>
+#include <map>
 #include "../mesh.hpp"
 #include "../util.hpp"
 #include "adjacent-iterator.hpp"
@@ -154,6 +154,97 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
+  void fromMesh (Mesh&& m) {
+    typedef std::pair <unsigned int,unsigned int> UIPair;
+    typedef std::map  <UIPair, WingedEdge*>       EdgeMap;
+
+    /** `findOrAddEdge (m,i1,i2,f)` searches an edge with indices `(i2,i1)` 
+     * (in that order) in `m`.
+     * If such an edge exists, `f` becomes its new right face.
+     * Otherwise a new edge is added to `this` and `m` with `f` being its left face.
+     * The found (resp. created) edge is returned
+     */
+    auto findOrAddEdge = [this] ( EdgeMap& map
+                                , unsigned int index1, unsigned int index2
+                                , WingedFace& face) -> WingedEdge&
+    {
+      auto result = map.find (UIPair (index2, index1));
+      if (result == map.end ()) {
+        WingedVertex* v1    = this->vertex (index1);
+        WingedVertex* v2    = this->vertex (index2);
+        WingedEdge& newEdge = this->addEdge ();
+          
+        map.insert (std::pair <UIPair,WingedEdge*> ( UIPair (index1,index2)
+                                                   , &newEdge ));
+        newEdge.vertex1  (v1);
+        newEdge.vertex2  (v2);
+        newEdge.leftFace (&face);
+
+        v1-> edge (&newEdge);
+        v2-> edge (&newEdge);
+        face.edge (&newEdge);
+
+        return newEdge;
+      }
+      else {
+        WingedEdge* existingEdge = result->second;
+
+        existingEdge->rightFace (&face);
+        face.edge (existingEdge);
+
+        return *existingEdge;
+      }
+    };
+
+    // mesh
+    this->reset ();
+    this->mesh = std::move (m);
+
+    // octree
+    glm::vec3 minVertex, maxVertex;
+    this->mesh.minMax (minVertex, maxVertex);
+
+    const glm::vec3 center = (maxVertex + minVertex) * glm::vec3 (0.5f);
+    const glm::vec3 delta  =  maxVertex - minVertex;
+    const float     width  = glm::max (glm::max (delta.x, delta.y), delta.z);
+
+    this->setupOctreeRoot (center, width);
+
+    // vertices
+    this->vertices.reserveIndices (this->mesh.numVertices ());
+    for (unsigned int i = 0; i < this->mesh.numVertices (); i++) {
+      this->vertices.emplace ();
+    }
+
+    // faces & edges
+    EdgeMap edgeMap;
+
+    assert (this->mesh.numIndices () % 3 == 0);
+
+    for (unsigned int i = 0; i < this->mesh.numIndices (); i += 3) {
+      unsigned int index1 = this->mesh.index (i + 0);
+      unsigned int index2 = this->mesh.index (i + 1);
+      unsigned int index3 = this->mesh.index (i + 2);
+
+      WingedFace& f = this->addFace (PrimTriangle (*this->self
+                                                  , this->self->vertexRef (index1)
+                                                  , this->self->vertexRef (index2)
+                                                  , this->self->vertexRef (index3) ));
+      WingedEdge& e1 = findOrAddEdge (edgeMap, index1, index2, f);
+      WingedEdge& e2 = findOrAddEdge (edgeMap, index2, index3, f);
+      WingedEdge& e3 = findOrAddEdge (edgeMap, index3, index1, f);
+
+      e1.predecessor (f, &e3);
+      e1.successor   (f, &e2);
+      e2.predecessor (f, &e1);
+      e2.successor   (f, &e3);
+      e3.predecessor (f, &e2);
+      e3.successor   (f, &e1);
+    }
+
+    this->forEachVertex ([this] (WingedVertex& v) { v.writeInterpolatedNormal (*this->self); });
+  }
+
   void writeAllIndices () {
     this->octree.forEachFace ([this] (WingedFace& face) {
       face.writeIndices (*this->self);
@@ -197,7 +288,7 @@ struct WingedMesh::Impl {
   }
 
   void setupOctreeRoot (const glm::vec3& center, float width) {
-    assert (this->isEmpty ());
+    assert (this->octree.hasRoot () == false);
     this->octree.setupRoot (center,width);
   }
 
@@ -225,7 +316,9 @@ struct WingedMesh::Impl {
   void               rotationZ      (float v)              { return this->mesh.rotationZ (v); }
 
   void normalize () {
-    glm::mat4x4 model = this->mesh.modelMatrix ();
+    const glm::mat4x4  model    = this->mesh.modelMatrix ();
+    const glm::mat4x4& rotation = this->mesh.rotationMatrix ();
+
     glm::vec3   maxVertex (std::numeric_limits <float>::lowest ());
     glm::vec3   minVertex (std::numeric_limits <float>::max    ());
 
@@ -235,7 +328,7 @@ struct WingedMesh::Impl {
             minVertex   = glm::min (minVertex, v);
 
       this->setVertex (i, v);
-      this->setNormal (i, Util::transformDirection (model, this->normal (i)));
+      this->setNormal (i, Util::transformDirection (rotation, this->normal (i)));
     }
 
     Octree newOctree;
@@ -328,6 +421,7 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 
+DELEGATE1       (void             , WingedMesh, fromMesh, Mesh&&)
 DELEGATE        (void             , WingedMesh, writeAllIndices)
 DELEGATE        (void             , WingedMesh, writeAllNormals)
 DELEGATE        (void             , WingedMesh, bufferData)

@@ -5,6 +5,7 @@
 
 class Camera;
 class ConfigProxy;
+class Mesh;
 class PrimRay;
 class WingedFaceIntersection;
 class WingedMesh;
@@ -14,6 +15,7 @@ class Scene {
     DECLARE_BIG3 (Scene, const ConfigProxy&)
 
     WingedMesh&       newWingedMesh    ();
+    WingedMesh&       newWingedMesh    (Mesh&&);
     void              deleteMesh       (WingedMesh&);
     WingedMesh*       wingedMesh       (unsigned int) const;
     void              render           (Camera&);

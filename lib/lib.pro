@@ -10,7 +10,6 @@ CONFIG                 += staticlib
 
 SOURCES += \
            src/action/finalize.cpp \
-           src/action/new-winged-mesh.cpp \
            src/action/sculpt.cpp \
            src/action/subdivide-mesh.cpp \
            src/adjacent-iterator.cpp \
@@ -81,7 +80,6 @@ SOURCES += \
 
 HEADERS += \
            src/action/finalize.hpp \
-           src/action/new-winged-mesh.hpp \
            src/action/sculpt.hpp \
            src/action/subdivide-mesh.hpp \
            src/adjacent-iterator.hpp \

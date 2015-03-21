@@ -4,7 +4,6 @@
 #include <vector>
 #include "camera.hpp"
 #include "color.hpp"
-#include "mesh-definition.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
@@ -39,21 +38,6 @@ struct Mesh::Impl {
     this->normalBufferId      = 0;
 
     this->renderMode.smoothShading (true);
-  }
-
-  Impl (const MeshDefinition& def) : Impl () { 
-    for (unsigned int i = 0; i < def.numVertices (); i++) {
-      this->addVertex (def.vertex (i));
-      this->setNormal (i, glm::normalize (def.vertex (i)));
-    }
-
-    for (unsigned int i = 0; i < def.numFace3 (); i++) {
-      unsigned int i1,i2,i3;
-      def.face (i, i1,i2,i3);
-      this->addIndex (i1);
-      this->addIndex (i2);
-      this->addIndex (i3);
-    }
   }
 
   Impl (const Impl& source)
@@ -347,18 +331,30 @@ struct Mesh::Impl {
   }
 
   glm::vec3 center () const {
-    glm::vec3 c (0.0f);
+    glm::vec3 min, max;
+
+    this->minMax (min, max);
+
+    return (min + max) * 0.5f;
+  }
+
+  void minMax (glm::vec3& min, glm::vec3& max) const {
+    min = glm::vec3 (std::numeric_limits <float>::max    ());
+    max = glm::vec3 (std::numeric_limits <float>::lowest ());
+
     for (unsigned int i = 0; i < this->numVertices (); i++) {
-      c.x += this->vertices [(3 * i) + 0];
-      c.y += this->vertices [(3 * i) + 1];
-      c.z += this->vertices [(3 * i) + 2];
+      min.x = glm::min (min.x, this->vertices [(3 * i) + 0]);
+      min.y = glm::min (min.y, this->vertices [(3 * i) + 1]);
+      min.z = glm::min (min.z, this->vertices [(3 * i) + 2]);
+
+      max.x = glm::max (max.x, this->vertices [(3 * i) + 0]);
+      max.y = glm::max (max.y, this->vertices [(3 * i) + 1]);
+      max.z = glm::max (max.z, this->vertices [(3 * i) + 2]);
     }
-    return c / float (this->numVertices ());
   }
 };
 
-DELEGATE_BIG6         (Mesh)
-DELEGATE1_CONSTRUCTOR (Mesh, const MeshDefinition&)
+DELEGATE_BIG6 (Mesh)
 
 DELEGATE_CONST   (unsigned int      , Mesh, numVertices)
 DELEGATE_CONST   (unsigned int      , Mesh, numIndices)
@@ -402,6 +398,7 @@ DELEGATE1        (void              , Mesh, rotationX, float)
 DELEGATE1        (void              , Mesh, rotationY, float)
 DELEGATE1        (void              , Mesh, rotationZ, float)
 DELEGATE_CONST   (glm::vec3         , Mesh, center)
+DELEGATE2_CONST  (void              , Mesh, minMax, glm::vec3&, glm::vec3&)
 GETTER_CONST     (const Color&      , Mesh, color)
 SETTER           (const Color&      , Mesh, color)
 GETTER_CONST     (const Color&      , Mesh, wireframeColor)

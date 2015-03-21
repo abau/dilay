@@ -6,7 +6,6 @@
 
 class Camera;
 class Color;
-class MeshDefinition;
 class RenderFlags;
 class RenderMode;
 
@@ -14,8 +13,6 @@ class Mesh {
   public:
     /** `bufferData` must be called on the mutated mesh after copy or assignment */
     DECLARE_BIG6 (Mesh)
-
-    Mesh (const MeshDefinition&);
 
     unsigned int       numVertices       () const;
     unsigned int       numIndices        () const;
@@ -58,6 +55,7 @@ class Mesh {
     void               rotationY         (float);
     void               rotationZ         (float);
     glm::vec3          center            () const;
+    void               minMax            (glm::vec3&, glm::vec3&) const;
     const Color&       color             () const;
     void               color             (const Color&);
     const Color&       wireframeColor    () const;
