@@ -18,10 +18,6 @@ struct Scene :: Impl {
     return this->wingedMeshes.emplace ();
   }
 
-  WingedMesh& newWingedMesh (unsigned int index) {
-    return this->wingedMeshes.emplaceAt (index);
-  }
-
   void deleteMesh (WingedMesh& mesh) {
     return this->wingedMeshes.deleteElement (mesh);
   }
@@ -70,7 +66,6 @@ struct Scene :: Impl {
 DELEGATE1_BIG3 (Scene, const ConfigProxy&)
 
 DELEGATE        (WingedMesh&      , Scene, newWingedMesh)
-DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, unsigned int)
 DELEGATE1       (void             , Scene, deleteMesh, WingedMesh&)
 DELEGATE1_CONST (WingedMesh*      , Scene, wingedMesh, unsigned int)
 DELEGATE1       (void             , Scene, render, Camera&)

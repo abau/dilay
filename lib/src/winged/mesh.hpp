@@ -31,11 +31,8 @@ class WingedMesh {
     WingedEdge*        edge               (unsigned int) const;
     WingedFace*        face               (unsigned int) const;
     WingedVertex&      addVertex          (const glm::vec3&);
-    WingedVertex&      addVertex          (unsigned int, const glm::vec3&);
     WingedEdge&        addEdge            ();
-    WingedEdge&        addEdge            (unsigned int);
     WingedFace&        addFace            (const PrimTriangle&);
-    WingedFace&        addFace            (unsigned int, const PrimTriangle&);
     void               setIndex           (unsigned int, unsigned int);
     void               setVertex          (unsigned int, const glm::vec3&);
     void               setNormal          (unsigned int, const glm::vec3&);

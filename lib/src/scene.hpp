@@ -14,7 +14,6 @@ class Scene {
     DECLARE_BIG3 (Scene, const ConfigProxy&)
 
     WingedMesh&       newWingedMesh    ();
-    WingedMesh&       newWingedMesh    (unsigned int);
     void              deleteMesh       (WingedMesh&);
     WingedMesh*       wingedMesh       (unsigned int) const;
     void              render           (Camera&);

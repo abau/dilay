@@ -50,12 +50,6 @@ struct WingedMesh::Impl {
     return vertex;
   }
 
-  WingedVertex& addVertex (unsigned int index, const glm::vec3& pos) {
-    WingedVertex& vertex = this->vertices.emplaceAt (index);
-    this->addVertexToInternalMesh (vertex, pos);
-    return vertex;
-  }
-
   void addVertexToInternalMesh (WingedVertex& vertex, const glm::vec3& pos) {
     if (vertex.index () == this->mesh.numVertices ()) {
       this->mesh.addVertex (pos);
@@ -72,24 +66,11 @@ struct WingedMesh::Impl {
     return this->edges.emplace ();
   }
 
-  WingedEdge& addEdge (unsigned int index) {
-    return this->edges.emplaceAt (index);
-  }
-
   WingedFace& addFace (const PrimTriangle& geometry) {
     WingedFace& face = this->octree.addFace (geometry);
 
     if ((3 * face.index ()) + 2 >= this->mesh.numIndices ()) {
       this->mesh.resizeIndices ((3 * face.index ()) + 3);
-    }
-    return face;
-  }
-
-  WingedFace& addFace (unsigned int index, const PrimTriangle& geometry) {
-    WingedFace& face = this->octree.addFace (index, nullptr, geometry);
-
-    if ((3 * face.index ()) + 2 >= this->mesh.numIndices ()) {
-      this->mesh.resizeIndices ((3 * index) + 3);
     }
     return face;
   }
@@ -326,11 +307,8 @@ DELEGATE1_CONST (WingedEdge*    , WingedMesh, edge, unsigned int)
 DELEGATE1_CONST (WingedFace*    , WingedMesh, face, unsigned int)
 
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
-DELEGATE2       (WingedVertex&  , WingedMesh, addVertex, unsigned int, const glm::vec3&)
 DELEGATE        (WingedEdge&    , WingedMesh, addEdge)
-DELEGATE1       (WingedEdge&    , WingedMesh, addEdge, unsigned int)
 DELEGATE1       (WingedFace&    , WingedMesh, addFace, const PrimTriangle&)
-DELEGATE2       (WingedFace&    , WingedMesh, addFace, unsigned int, const PrimTriangle&)
 DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned int)
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
