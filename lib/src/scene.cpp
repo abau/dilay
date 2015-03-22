@@ -2,7 +2,6 @@
 #include "indexable.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
-#include "util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
@@ -23,9 +22,7 @@ struct Scene :: Impl {
 
   WingedMesh& newWingedMesh (Mesh&& mesh) {
     WingedMesh& wingedMesh = this->newWingedMesh ();
-    wingedMesh.fromMesh   (std::move (mesh));
-    wingedMesh.scale      (glm::vec3 (Util::defaultScale ()));
-    wingedMesh.normalize  ();
+    wingedMesh.fromMesh (std::move (mesh));
     wingedMesh.bufferData ();
 
     this->runFromConfig (wingedMesh);

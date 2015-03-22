@@ -4,6 +4,7 @@
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "primitive/triangle.hpp"
+#include "util.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -125,4 +126,10 @@ glm::vec3 WingedUtil :: center (const WingedMesh& mesh, const WingedVertex& vert
     n++;
   }
   return c / float (n);
+}
+
+void WingedUtil :: defaultScale (WingedMesh& mesh) {
+  mesh.scale      (glm::vec3 (Util::defaultScale ()));
+  mesh.normalize  ();
+  mesh.bufferData ();
 }

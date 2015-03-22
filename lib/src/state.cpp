@@ -12,6 +12,7 @@
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
+#include "winged/util.hpp"
 
 struct State::Impl {
   ViewMainWindow&        mainWindow;
@@ -29,7 +30,7 @@ struct State::Impl {
     , camera     (this->config)
     , scene      (this->config)
   {
-    this->scene.newWingedMesh (MeshDefinition::icosphere (3));
+    WingedUtil::defaultScale (this->scene.newWingedMesh (MeshDefinition::icosphere (3)));
   }
 
   ~Impl () {

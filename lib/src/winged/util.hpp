@@ -19,6 +19,8 @@ namespace WingedUtil {
   glm::vec3 averageNormal   (const WingedMesh&, const VertexPtrSet&);
   glm::vec3 center          (const WingedMesh&, const VertexPtrSet&);
   glm::vec3 center          (const WingedMesh&, const WingedVertex&);
+
+  void      defaultScale    (WingedMesh&);
 }
 
 #endif

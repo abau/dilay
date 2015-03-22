@@ -5,6 +5,7 @@
 #include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"
+#include "winged/util.hpp"
 
 struct ToolNewMesh::Impl {
   ToolNewMesh* self;
@@ -14,7 +15,9 @@ struct ToolNewMesh::Impl {
   bool runAllowUndoRedo () const { return false; }
 
   ToolResponse runInitialize () const {
-    this->self->state ().scene ().newWingedMesh (MeshDefinition::icosphere (3));
+    WingedMesh& mesh = this->self->state ().scene ().newWingedMesh (MeshDefinition::icosphere (3));
+
+    WingedUtil::defaultScale (mesh);
 
     return ToolResponse::Terminate;
   }
