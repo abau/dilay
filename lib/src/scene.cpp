@@ -20,9 +20,9 @@ struct Scene :: Impl {
     return this->wingedMeshes.emplace ();
   }
 
-  WingedMesh& newWingedMesh (Mesh&& mesh) {
+  WingedMesh& newWingedMesh (const Mesh& mesh) {
     WingedMesh& wingedMesh = this->newWingedMesh ();
-    wingedMesh.fromMesh (std::move (mesh));
+    wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
 
     this->runFromConfig (wingedMesh);
@@ -85,7 +85,7 @@ struct Scene :: Impl {
 DELEGATE1_BIG3 (Scene, const Config&)
 
 DELEGATE        (WingedMesh&      , Scene, newWingedMesh)
-DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, Mesh&&)
+DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, const Mesh&)
 DELEGATE1       (void             , Scene, deleteMesh, WingedMesh&)
 DELEGATE1_CONST (WingedMesh*      , Scene, wingedMesh, unsigned int)
 DELEGATE1       (void             , Scene, render, Camera&)

@@ -15,7 +15,7 @@ class Scene : public Configurable {
     DECLARE_BIG3 (Scene, const Config&)
 
     WingedMesh&       newWingedMesh    ();
-    WingedMesh&       newWingedMesh    (Mesh&&);
+    WingedMesh&       newWingedMesh    (const Mesh&);
     void              deleteMesh       (WingedMesh&);
     WingedMesh*       wingedMesh       (unsigned int) const;
     void              render           (Camera&);

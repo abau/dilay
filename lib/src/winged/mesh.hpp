@@ -54,7 +54,7 @@ class WingedMesh {
     unsigned int       numFreeFaceIndices () const;
     bool               isEmpty            () const;
 
-    void               fromMesh           (Mesh&&);
+    void               fromMesh           (const Mesh&);
     void               writeAllIndices    (); 
     void               writeAllNormals    (); 
     void               bufferData         ();

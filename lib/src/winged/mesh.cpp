@@ -154,7 +154,7 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  void fromMesh (Mesh&& m) {
+  void fromMesh (const Mesh& mesh) {
     typedef std::pair <unsigned int,unsigned int> UIPair;
     typedef std::map  <UIPair, WingedEdge*>       EdgeMap;
 
@@ -198,7 +198,7 @@ struct WingedMesh::Impl {
 
     // mesh
     this->reset ();
-    this->mesh = std::move (m);
+    this->mesh = mesh;
 
     // octree
     glm::vec3 minVertex, maxVertex;
@@ -421,7 +421,7 @@ DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
 DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
 
-DELEGATE1       (void             , WingedMesh, fromMesh, Mesh&&)
+DELEGATE1       (void             , WingedMesh, fromMesh, const Mesh&)
 DELEGATE        (void             , WingedMesh, writeAllIndices)
 DELEGATE        (void             , WingedMesh, writeAllNormals)
 DELEGATE        (void             , WingedMesh, bufferData)
