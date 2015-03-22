@@ -17,14 +17,14 @@ class Config {
 
 class ConfigProxy {
   public:
-    ConfigProxy (Config& c, const std::string& p) 
+    ConfigProxy (const Config& c, const std::string& p) 
       : config (c)
       , prefix (p) 
     {
       assert (p.back () == '/');
     }
 
-    ConfigProxy (ConfigProxy& c, const std::string& p) 
+    ConfigProxy (const ConfigProxy& c, const std::string& p) 
       : ConfigProxy (c.config, c.prefix + p)
     {}
 
@@ -38,7 +38,7 @@ class ConfigProxy {
     }
 
   private:
-    Config&           config;
+    const Config&     config;
     const std::string prefix;
 };
 
