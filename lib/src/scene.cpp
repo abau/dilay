@@ -11,9 +11,11 @@ struct Scene :: Impl {
   const ConfigProxy          wingedMeshConfig;
   IndexableList <WingedMesh> wingedMeshes;
 
-  Impl (const ConfigProxy& wmConfig)
-    : wingedMeshConfig (wmConfig)
-  {}
+  Impl (const Config& config) 
+    : wingedMeshConfig (ConfigProxy (config, "editor/mesh/"))
+  {
+    this->runFromConfig (config);
+  }
 
   WingedMesh& newWingedMesh () {
     return this->wingedMeshes.emplace ();
@@ -26,6 +28,7 @@ struct Scene :: Impl {
     wingedMesh.normalize  ();
     wingedMesh.bufferData ();
 
+    this->runFromConfig (wingedMesh);
     return wingedMesh;
   }
 
@@ -38,13 +41,8 @@ struct Scene :: Impl {
   }
 
   void render (Camera& camera) {
-    const Color& normalColor = this->wingedMeshConfig.get <Color> ("color/normal");
-    const Color& wireColor   = this->wingedMeshConfig.get <Color> ("color/wireframe");
-
     this->forEachMesh ([&] (WingedMesh& m) {
-      m.color          (normalColor);
-      m.wireframeColor (wireColor);
-      m.render         (camera);
+      m.render (camera);
     });
   }
 
@@ -72,9 +70,22 @@ struct Scene :: Impl {
   const WingedMesh* someWingedMesh () const {
     return this->wingedMeshes.getSome ();
   }
+
+  void runFromConfig (WingedMesh& mesh) {
+    mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
+    mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
+  }
+
+  void runFromConfig (const Config& config) {
+    assert (&config == &this->wingedMeshConfig.config ());
+
+    this->forEachMesh ([this] (WingedMesh& mesh) {
+      this->runFromConfig (mesh);
+    });
+  }
 };
 
-DELEGATE1_BIG3 (Scene, const ConfigProxy&)
+DELEGATE1_BIG3 (Scene, const Config&)
 
 DELEGATE        (WingedMesh&      , Scene, newWingedMesh)
 DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, Mesh&&)
@@ -86,3 +97,4 @@ DELEGATE1_CONST (void             , Scene, printStatistics, bool)
 DELEGATE1       (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1_CONST (void             , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
 DELEGATE_CONST  (const WingedMesh*, Scene, someWingedMesh)
+DELEGATE1       (void             , Scene, runFromConfig, const Config&)

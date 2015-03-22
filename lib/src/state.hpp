@@ -29,6 +29,7 @@ class State {
     Tool&           tool               ();
     void            setTool            (Tool&&);
     void            resetTool          (bool = true);
+    void            fromConfig         ();
 
     void            handleToolResponse (ToolResponse);
 

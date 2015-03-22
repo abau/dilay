@@ -27,7 +27,7 @@ struct State::Impl {
     , config     (cfg)
     , cache      (cch)
     , camera     (this->config)
-    , scene      (ConfigProxy (this->config, "editor/mesh/"))
+    , scene      (this->config)
   {
     this->scene.newWingedMesh (MeshDefinition::icosphere (3));
   }
@@ -77,6 +77,11 @@ struct State::Impl {
     }
   }
 
+  void fromConfig () {
+    this->camera.fromConfig (this->config);
+    this->scene .fromConfig (this->config);
+  }
+
   void handleToolResponse (ToolResponse response) {
     assert (this->hasTool ());
     switch (response) {
@@ -104,4 +109,5 @@ DELEGATE  (bool              , State, hasTool)
 DELEGATE  (Tool&             , State, tool)
 DELEGATE1 (void              , State, setTool, Tool&&)
 DELEGATE1 (void              , State, resetTool, bool)
+DELEGATE  (void              , State, fromConfig)
 DELEGATE1 (void              , State, handleToolResponse, ToolResponse)

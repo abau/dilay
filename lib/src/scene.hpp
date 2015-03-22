@@ -1,18 +1,18 @@
 #ifndef DILAY_SCENE
 #define DILAY_SCENE
 
+#include "configurable.hpp"
 #include "macro.hpp"
 
 class Camera;
-class ConfigProxy;
 class Mesh;
 class PrimRay;
 class WingedFaceIntersection;
 class WingedMesh;
 
-class Scene {
+class Scene : public Configurable {
   public: 
-    DECLARE_BIG3 (Scene, const ConfigProxy&)
+    DECLARE_BIG3 (Scene, const Config&)
 
     WingedMesh&       newWingedMesh    ();
     WingedMesh&       newWingedMesh    (Mesh&&);
@@ -28,6 +28,8 @@ class Scene {
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:
     IMPLEMENTATION
+
+    void runFromConfig (const Config&);
 };
 
 #endif
