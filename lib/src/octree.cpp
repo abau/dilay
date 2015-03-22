@@ -417,20 +417,14 @@ struct Octree::Impl {
     }
   }
 
-  WingedFace& realignFace (WingedFace& face, const PrimTriangle& geometry, bool* sameNode) {
+  WingedFace& realignFace (WingedFace& face, const PrimTriangle& geometry) {
     assert (face.octreeNode ()); 
 
     unsigned int index = face.index ();
     WingedEdge*  edge  = face.edge  ();
-    OctreeNode*  node  = face.octreeNode ();
 
     this->deleteFace (face);
-    WingedFace& newFace = this->addFace (index, edge, geometry);
-
-    if (sameNode) {
-      *sameNode = node == newFace.octreeNode ();
-    }
-    return newFace;
+    return this->addFace (index, edge, geometry);
   }
 
   void deleteFace (WingedFace& face) {
@@ -619,7 +613,7 @@ DELEGATE_BIG4MOVE (Octree)
 DELEGATE2       (void        , Octree, setupRoot, const glm::vec3&, float)
 DELEGATE1       (WingedFace& , Octree, addFace, const PrimTriangle&)
 DELEGATE3       (WingedFace& , Octree, addFace, unsigned int, WingedEdge*, const PrimTriangle&)
-DELEGATE3       (WingedFace& , Octree, realignFace, WingedFace&, const PrimTriangle&, bool*)
+DELEGATE2       (WingedFace& , Octree, realignFace, WingedFace&, const PrimTriangle&)
 DELEGATE1       (void        , Octree, deleteFace, WingedFace&)
 DELEGATE1_CONST (WingedFace* , Octree, face, unsigned int)
 DELEGATE1_CONST (void, Octree, render, const Camera&)

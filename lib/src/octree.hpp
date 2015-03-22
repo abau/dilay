@@ -55,7 +55,7 @@ class Octree {
     void             setupRoot            (const glm::vec3&, float);
     WingedFace&      addFace              (const PrimTriangle&);
     WingedFace&      addFace              (unsigned int, WingedEdge*, const PrimTriangle&);
-    WingedFace&      realignFace          (WingedFace&, const PrimTriangle&, bool* = nullptr);
+    WingedFace&      realignFace          (WingedFace&, const PrimTriangle&);
     void             deleteFace           (WingedFace&);
     WingedFace*      face                 (unsigned int) const;
     void             render               (const Camera&) const;
