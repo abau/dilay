@@ -34,7 +34,7 @@ namespace {
       domain.commit ();
     };
     auto smoothVertices = [&] () {
-      PartialAction::smooth (mesh, domain.toVertexSet (), 5, domain);
+      PartialAction::smooth (mesh, domain.toVertexSet (), 1, domain);
       domain.commit ();
     };
 
