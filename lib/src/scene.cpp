@@ -68,6 +68,10 @@ struct Scene :: Impl {
     return this->wingedMeshes.getSome ();
   }
 
+  void reset () {
+    this->wingedMeshes.reset ();
+  }
+
   void runFromConfig (WingedMesh& mesh) {
     mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
     mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
@@ -94,4 +98,5 @@ DELEGATE1_CONST (void             , Scene, printStatistics, bool)
 DELEGATE1       (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1_CONST (void             , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
 DELEGATE_CONST  (const WingedMesh*, Scene, someWingedMesh)
+DELEGATE        (void             , Scene, reset)
 DELEGATE1       (void             , Scene, runFromConfig, const Config&)

@@ -24,6 +24,7 @@ class Scene : public Configurable {
     void              forEachMesh      (const std::function <void (WingedMesh&)>&);
     void              forEachConstMesh (const std::function <void (const WingedMesh&)>&) const;
     const WingedMesh* someWingedMesh   () const;
+    void              reset            ();
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:

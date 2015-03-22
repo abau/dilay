@@ -30,6 +30,8 @@ class State {
     void            setTool            (Tool&&);
     void            resetTool          (bool = true);
     void            fromConfig         ();
+    void            undo               ();
+    void            redo               ();
 
     void            handleToolResponse (ToolResponse);
 

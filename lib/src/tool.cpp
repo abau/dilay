@@ -25,18 +25,8 @@ struct Tool::Impl {
     , state          (st)
     , config         (this->state.config ())
     ,_cache          (this->cache (key))
-   // , undoLimit      (this->state.history ().recent ())
   {
     this->state.mainWindow ().showToolTip (ViewToolTip ());
-  }
-
-  bool allowUndo () const {
-    return /*( this->state.history ().recent () != this->undoLimit )
-        && */ ( this->self->runAllowUndoRedo () );
-  }
-
-  bool allowRedo () const {
-    return this->self->runAllowUndoRedo ();
   }
 
   ToolResponse initialize () { 
@@ -99,11 +89,13 @@ struct Tool::Impl {
   bool intersectsScene (const QMouseEvent& e, WingedFaceIntersection& intersection) {
     return this->intersectsScene (ViewUtil::toIVec2 (e), intersection);
   }
+
+  void snapshotScene () {
+    this->state.history ().snapshot (this->state.scene ());
+  }
 };
 
 DELEGATE2_BIG3_SELF (Tool, State&, const char*)
-DELEGATE_CONST  (bool           , Tool, allowUndo)
-DELEGATE_CONST  (bool           , Tool, allowRedo)
 DELEGATE        (ToolResponse   , Tool, initialize)
 DELEGATE_CONST  (void           , Tool, render)
 DELEGATE1       (ToolResponse   , Tool, mouseMoveEvent, const QMouseEvent&)
@@ -121,3 +113,4 @@ DELEGATE1_CONST (CacheProxy     , Tool, cache, const char*)
 DELEGATE_CONST  (glm::ivec2     , Tool, cursorPosition)
 DELEGATE2       (bool           , Tool, intersectsScene, const glm::ivec2&, WingedFaceIntersection&)
 DELEGATE2       (bool           , Tool, intersectsScene, const QMouseEvent&, WingedFaceIntersection&)
+DELEGATE        (void           , Tool, snapshotScene)

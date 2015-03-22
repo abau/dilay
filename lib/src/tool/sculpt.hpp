@@ -26,7 +26,6 @@ class ToolSculpt : public Tool {
   private:
     IMPLEMENTATION
 
-    bool         runAllowUndoRedo     () const;
     ToolResponse runInitialize        ();
     void         runRender            () const;
     ToolResponse runMouseMoveEvent    (const QMouseEvent&);

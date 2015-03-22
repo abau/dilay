@@ -35,10 +35,6 @@ struct ToolSculpt::Impl {
     , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 10.0f))
   {}
 
-  bool runAllowUndoRedo () const {
-    return true;
-  }
-
   ToolResponse runInitialize () {
     this->setupBrush      ();
     this->setupCursor     ();
@@ -128,7 +124,11 @@ struct ToolSculpt::Impl {
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->runSculptMousePressEvent (e);
+    this->self->snapshotScene ();
+
+    if (this->self->runSculptMousePressEvent (e) == false) {
+      this->self->state ().history ().dropSnapshot ();
+    }
     return ToolResponse::Redraw;
   }
 
@@ -277,7 +277,6 @@ DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, co
 DELEGATE2      (bool        , ToolSculpt, carvelikeStroke, const QMouseEvent&, const std::function <void ()>*)
 DELEGATE2      (bool        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE2      (bool        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
-DELEGATE_CONST (bool        , ToolSculpt, runAllowUndoRedo)
 DELEGATE       (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST (void        , ToolSculpt, runRender)
 DELEGATE1      (ToolResponse, ToolSculpt, runMouseMoveEvent, const QMouseEvent&)

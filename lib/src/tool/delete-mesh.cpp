@@ -10,14 +10,11 @@ struct ToolDeleteMesh::Impl {
 
   Impl (ToolDeleteMesh* s) : self (s) {}
 
-  bool runAllowUndoRedo () const {
-    return true;
-  }
-
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
+        this->self->snapshotScene ();
         this->self->state ().scene ().deleteMesh (intersection.mesh ());
         return ToolResponse::Redraw;
       }

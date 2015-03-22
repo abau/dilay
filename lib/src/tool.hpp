@@ -21,8 +21,6 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
 
-    bool            allowUndo         () const;
-    bool            allowRedo         () const;
     ToolResponse    initialize        ();
     void            render            () const;
     ToolResponse    mouseMoveEvent    (const QMouseEvent&);
@@ -42,12 +40,12 @@ class Tool {
     glm::ivec2      cursorPosition    () const;
     bool            intersectsScene   (const glm::ivec2&, WingedFaceIntersection&);
     bool            intersectsScene   (const QMouseEvent&, WingedFaceIntersection&);
+    void            snapshotScene     ();
 
   private:
     IMPLEMENTATION
 
     virtual const char*  key                  () const = 0;
-    virtual bool         runAllowUndoRedo     () const = 0;
     virtual ToolResponse runInitialize        ()                   { return ToolResponse::None; }
     virtual void         runRender            () const             {}
     virtual ToolResponse runMouseMoveEvent    (const QMouseEvent&) { return ToolResponse::None; }
@@ -62,8 +60,7 @@ class Tool {
     DECLARE_BIG2 (name, State&)                                      \
     private:                                                         \
       IMPLEMENTATION                                                 \
-      const char* key              () const { return theKey ; }      \
-      bool        runAllowUndoRedo () const;                         \
+      const char* key () const { return theKey ; }                   \
       otherMethods };
 
 #define DECLARE_TOOL_RUN_INITIALIZE          ToolResponse runInitialize        ();
@@ -74,9 +71,8 @@ class Tool {
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT   ToolResponse runWheelEvent        (const QWheelEvent&);
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
 
-#define DELEGATE_TOOL(name)                                               \
-  DELEGATE_BIG2_BASE (name, (State& s), (this), Tool, (s, this->key ()))  \
-  DELEGATE_CONST (bool, name, runAllowUndoRedo)
+#define DELEGATE_TOOL(name) \
+  DELEGATE_BIG2_BASE (name, (State& s), (this), Tool, (s, this->key ()))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n)          DELEGATE       (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n)              DELEGATE_CONST (void        , n, runRender)

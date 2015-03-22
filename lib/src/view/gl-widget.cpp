@@ -120,16 +120,12 @@ struct ViewGlWidget::Impl {
     else if (key == Qt::Key_I) {
       this->state ().scene ().printStatistics (false);
     }
-    else if (key == Qt::Key_Z && mod == Qt::ControlModifier
-         && (hasTool == false || this->state ().tool ().allowUndo ()))
-    {
-      this->state ().history ().undo ();
+    else if (key == Qt::Key_Z && mod == Qt::ControlModifier) {
+      this->state ().undo ();
       this->self->update ();
     }
-    else if (key == Qt::Key_Y && mod == Qt::ControlModifier
-         && (hasTool == false || this->state ().tool ().allowRedo ()))
-    {
-      this->state ().history ().redo ();
+    else if (key == Qt::Key_Y && mod == Qt::ControlModifier) {
+      this->state ().redo ();
       this->self->update ();
     }
     else if (hasTool) {

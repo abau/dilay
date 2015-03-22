@@ -26,6 +26,8 @@ struct ToolMoveMesh::Impl {
   {
     this->setupProperties ();
     this->setupToolTip    ();
+
+    this->self->snapshotScene ();
   }
 
   void setupProperties () {
@@ -79,10 +81,6 @@ struct ToolMoveMesh::Impl {
                   , QObject::tr ("Drag to move orthogonally") );
     }
     this->self->showToolTip (toolTip);
-  }
-
-  bool runAllowUndoRedo () const {
-    return this->mesh == nullptr;
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {

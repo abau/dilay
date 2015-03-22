@@ -15,6 +15,7 @@
 #include "winged/util.hpp"
 
 struct State::Impl {
+  State*                 self;
   ViewMainWindow&        mainWindow;
   Config&                config;
   Cache&                 cache;
@@ -23,11 +24,13 @@ struct State::Impl {
   Scene                  scene;
   std::unique_ptr <Tool> toolPtr;
 
-  Impl (ViewMainWindow& mW, Config& cfg, Cache& cch) 
-    : mainWindow (mW) 
+  Impl (State* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
+    : self       (s)
+    , mainWindow (mW) 
     , config     (cfg)
     , cache      (cch)
     , camera     (this->config)
+    , history    (this->config)
     , scene      (this->config)
   {
     WingedUtil::defaultScale (this->scene.newWingedMesh (MeshDefinition::icosphere (3)));
@@ -83,6 +86,14 @@ struct State::Impl {
     this->scene .fromConfig (this->config);
   }
 
+  void undo () {
+    this->history.undo (*this->self);
+  }
+
+  void redo () {
+    this->history.redo (*this->self);
+  }
+
   void handleToolResponse (ToolResponse response) {
     assert (this->hasTool ());
     switch (response) {
@@ -98,7 +109,7 @@ struct State::Impl {
   }
 };
 
-DELEGATE3_BIG2 (State, ViewMainWindow&, Config&, Cache&)
+DELEGATE3_BIG2_SELF (State, ViewMainWindow&, Config&, Cache&)
 
 GETTER    (ViewMainWindow&   , State, mainWindow)
 GETTER    (Config&           , State, config)
@@ -111,4 +122,6 @@ DELEGATE  (Tool&             , State, tool)
 DELEGATE1 (void              , State, setTool, Tool&&)
 DELEGATE1 (void              , State, resetTool, bool)
 DELEGATE  (void              , State, fromConfig)
+DELEGATE  (void              , State, undo)
+DELEGATE  (void              , State, redo)
 DELEGATE1 (void              , State, handleToolResponse, ToolResponse)

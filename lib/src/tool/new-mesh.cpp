@@ -12,9 +12,9 @@ struct ToolNewMesh::Impl {
 
   Impl (ToolNewMesh* s) : self (s) {}
 
-  bool runAllowUndoRedo () const { return false; }
-
   ToolResponse runInitialize () const {
+    this->self->snapshotScene ();
+
     WingedMesh& mesh = this->self->state ().scene ().newWingedMesh (MeshDefinition::icosphere (3));
 
     WingedUtil::defaultScale (mesh);
