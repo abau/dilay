@@ -122,6 +122,16 @@ struct ToolSculpt::Impl {
     this->cursor.render (this->self->state ().camera ());
   }
 
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
+    this->self->runSculptMouseMoveEvent (e);
+    return ToolResponse::Redraw;
+  }
+
+  ToolResponse runMousePressEvent (const QMouseEvent& e) {
+    this->self->runSculptMousePressEvent (e);
+    return ToolResponse::Redraw;
+  }
+
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       this->brush.resetPosition ();
@@ -186,7 +196,7 @@ struct ToolSculpt::Impl {
     }
   }
 
-  void carvelikeStroke (const QMouseEvent& e, const std::function <void ()>* toggle) {
+  bool carvelikeStroke (const QMouseEvent& e, const std::function <void ()>* toggle) {
     if (this->updateBrushAndCursorByIntersection (e)) {
       if (toggle && e.modifiers () == Qt::ShiftModifier) {
         (*toggle) ();
@@ -196,10 +206,14 @@ struct ToolSculpt::Impl {
       else {
         this->sculpt ();
       }
+      return true;
+    }
+    else {
+      return false;
     }
   }
 
-  void initializeDraglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
+  bool initializeDraglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
@@ -211,21 +225,25 @@ struct ToolSculpt::Impl {
 
         movement.resetPosition (intersection.position ());
         movement.constraint    (MovementConstraint::CameraPlane);
+        return true;
       }
       else {
         this->cursor.enable ();
         this->brush.resetPosition ();
+        return false;
       }
     }
     else {
       this->cursor.enable ();
       this->brush.resetPosition ();
+      return false;
     }
   }
 
-  void draglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
+  bool draglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
     if (e.buttons () == Qt::NoButton) {
       this->updateCursorByIntersection (e);
+      return false;
     }
     else if (e.buttons () == Qt::LeftButton && this->brush.hasPosition ()) {
       const glm::vec3 oldBrushPos = this->brush.position ();
@@ -238,7 +256,14 @@ struct ToolSculpt::Impl {
         params.direction       (this->brush.position () - oldBrushPos);
         params.intensityFactor (1.0f / this->brush.radius ());
         this->sculpt ();
+        return true;
       }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
     }
   }
 };
@@ -249,12 +274,14 @@ GETTER         (ViewCursor& , ToolSculpt, cursor)
 DELEGATE       (void        , ToolSculpt, sculpt)
 DELEGATE1      (void        , ToolSculpt, updateCursorByIntersection, const QMouseEvent&)
 DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, const QMouseEvent&)
-DELEGATE2      (void        , ToolSculpt, carvelikeStroke, const QMouseEvent&, const std::function <void ()>*)
-DELEGATE2      (void        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
-DELEGATE2      (void        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE2      (bool        , ToolSculpt, carvelikeStroke, const QMouseEvent&, const std::function <void ()>*)
+DELEGATE2      (bool        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE2      (bool        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE_CONST (bool        , ToolSculpt, runAllowUndoRedo)
 DELEGATE       (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST (void        , ToolSculpt, runRender)
+DELEGATE1      (ToolResponse, ToolSculpt, runMouseMoveEvent, const QMouseEvent&)
+DELEGATE1      (ToolResponse, ToolSculpt, runMousePressEvent, const QMouseEvent&)
 DELEGATE1      (ToolResponse, ToolSculpt, runMouseReleaseEvent, const QMouseEvent&)
 DELEGATE1      (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
 DELEGATE       (void        , ToolSculpt, runClose)

@@ -63,19 +63,18 @@ struct ToolSculptCarve::Impl {
                 , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to sculpt inverted"));
   }
 
-  ToolResponse runMouseEvent (const QMouseEvent& e) {
+  bool runMouseEvent (const QMouseEvent& e) {
     const std::function <void ()> toggleInvert = [this] () {
       this->self->brush ().parameters <SBMoveDirectionalParameters> ().toggleInvert ();
     };
-    this->self->carvelikeStroke (e, &toggleInvert);
-    return ToolResponse::Redraw;
+    return this->self->carvelikeStroke (e, &toggleInvert);
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    return this->runMouseEvent (e);
+  void runSculptMouseMoveEvent (const QMouseEvent& e) {
+    this->runMouseEvent (e);
   }
 
-  ToolResponse runMousePressEvent (const QMouseEvent& e) {
+  bool runSculptMousePressEvent (const QMouseEvent& e) {
     return this->runMouseEvent (e);
   }
 };

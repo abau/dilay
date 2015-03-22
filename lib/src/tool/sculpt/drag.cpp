@@ -53,14 +53,12 @@ struct ToolSculptDrag::Impl {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
+  void runSculptMouseMoveEvent (const QMouseEvent& e) {
     this->self->draglikeStroke (e, this->movement);
-    return ToolResponse::Redraw;
   }
 
-  ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->initializeDraglikeStroke (e, this->movement);
-    return ToolResponse::Redraw;
+  bool runSculptMousePressEvent (const QMouseEvent& e) {
+    return this->self->initializeDraglikeStroke (e, this->movement);
   }
 };
 

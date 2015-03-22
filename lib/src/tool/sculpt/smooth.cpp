@@ -46,14 +46,12 @@ struct ToolSculptSmooth::Impl {
     toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to smooth"));
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
+  void runSculptMouseMoveEvent (const QMouseEvent& e) {
     this->self->carvelikeStroke (e);
-    return ToolResponse::Redraw;
   }
 
-  ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->carvelikeStroke (e);
-    return ToolResponse::Redraw;
+  bool runSculptMousePressEvent (const QMouseEvent& e) {
+    return this->self->carvelikeStroke (e);
   }
 };
 
