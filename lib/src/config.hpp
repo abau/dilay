@@ -18,15 +18,19 @@ class Config {
 class ConfigProxy {
   public:
     ConfigProxy (const Config& c, const std::string& p) 
-      : config (c)
-      , prefix (p) 
+      : _config (c)
+      ,  prefix (p) 
     {
       assert (p.back () == '/');
     }
 
     ConfigProxy (const ConfigProxy& c, const std::string& p) 
-      : ConfigProxy (c.config, c.prefix + p)
+      : ConfigProxy (c._config, c.prefix + p)
     {}
+
+    const Config& config () const {
+      return this->_config;
+    }
 
     std::string key (const std::string& p) const {
       return this->prefix + p;
@@ -34,12 +38,12 @@ class ConfigProxy {
 
     template <class T> 
     const T& get (const std::string& p) const { 
-      return this->config.get <T> (this->key(p));
+      return this->_config.get <T> (this->key(p));
     }
 
   private:
-    const Config&     config;
-    const std::string prefix;
+    const Config&     _config;
+    const std::string  prefix;
 };
 
 #endif

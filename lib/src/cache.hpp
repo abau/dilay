@@ -26,15 +26,19 @@ class Cache {
 class CacheProxy {
   public:
     CacheProxy (Cache& c, const std::string& p) 
-      : cache  (c)
-      , prefix (p) 
+      : _cache  (c)
+      ,  prefix (p) 
     {
       assert (p.back () == '/');
     }
 
     CacheProxy (CacheProxy& c, const std::string& p) 
-      : CacheProxy (c.cache, c.prefix + p)
+      : CacheProxy (c._cache, c.prefix + p)
     {}
+
+    Cache& cache () const {
+      return this->_cache;
+    }
 
     std::string key (const std::string& p) const {
       return this->prefix + p;
@@ -42,17 +46,17 @@ class CacheProxy {
 
     template <class T> 
     const T& get (const std::string& p, const T& v) const {
-      return this->cache.get <T> (this->key (p), v);
+      return this->_cache.get <T> (this->key (p), v);
     }
 
     template <class T> 
     void set (const std::string& p, const T& v) const {
-      return this->cache.set <T> (this->key (p), v);
+      return this->_cache.set <T> (this->key (p), v);
     }
 
   private:
-    Cache&            cache;
-    const std::string prefix;
+    Cache&            _cache;
+    const std::string  prefix;
 };
 
 #endif
