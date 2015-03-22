@@ -38,6 +38,10 @@ struct AffectedFaces::Impl {
     this->uncommitedFaces.clear ();
   }
 
+  bool isEmpty () const {
+    return this->faces.empty () && this->uncommitedFaces.empty ();
+  }
+
   bool contains (WingedFace& face) const { 
     return this->contains (&face);
   }
@@ -76,6 +80,7 @@ DELEGATE1       (void, AffectedFaces, insert, const AffectedFaces&)
 DELEGATE1       (void, AffectedFaces, remove, WingedFace&)
 DELEGATE        (void, AffectedFaces, reset)
 DELEGATE        (void, AffectedFaces, commit)
+DELEGATE_CONST  (bool, AffectedFaces, isEmpty)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace*)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)

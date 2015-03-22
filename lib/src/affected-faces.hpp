@@ -13,6 +13,7 @@ class AffectedFaces {
     void remove   (WingedFace&);
     void reset    ();
     void commit   ();
+    bool isEmpty  () const;
     bool contains (WingedFace&) const;
     bool contains (WingedFace*) const;
 

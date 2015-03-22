@@ -265,22 +265,35 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
 void IntersectionUtil :: extend ( const PrimSphere& sphere, const WingedMesh& mesh
                                 , WingedFace& face, AffectedFaces& faces ) 
 {
+  assert (faces.isEmpty ());
+
   const glm::vec3 normal (face.triangle (mesh).cross ());
+  FacePtrVec candidates;
+  FacePtrSet rejected;
 
-  std::function <void (WingedFace&)> go = [&sphere,&mesh,&faces,&normal] 
-                                          (WingedFace& f) 
-  {
-    if ( faces.contains (f) == false
-      && IntersectionUtil::intersects (sphere, mesh, f)
-      && glm::dot (normal, f.triangle (mesh).cross ()) > 0.0f ) 
-    {
-      faces.insert (f);
-      faces.commit ();
+  candidates.push_back (&face);
 
-      for (WingedFace& a : f.adjacentFaces ()) {
-        IntersectionUtil::extend (sphere, mesh, a, faces);
+  while (candidates.empty () == false) {
+    WingedFace& f = *candidates.back ();
+    candidates.pop_back ();
+
+    if (faces.contains (f) == false && rejected.count (&f) == 0) {
+
+      if ( glm::dot (normal, f.triangle (mesh).cross ()) > 0.0f
+        && IntersectionUtil::intersects (sphere, mesh, f) )
+      {
+        faces.insert (f);
+        faces.commit ();
+
+        for (WingedFace& a : f.adjacentFaces ()) {
+          if (faces.contains (a) == false) {
+            candidates.push_back (&a);
+          }
+        }
+      }
+      else {
+        rejected.insert (&f);
       }
     }
-  };
-  go (face);
+  }
 }
