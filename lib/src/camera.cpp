@@ -27,16 +27,8 @@ struct Camera::Impl {
     : self         (s)
     , renderer     (config)
     , resolution   ( 1024, 768 )
-    , nearClipping ( config.get <float> ("editor/camera/near-clipping") )
-    , farClipping  ( config.get <float> ("editor/camera/far-clipping") ) {
-
-    this->set ( config.get <glm::vec3> ("editor/camera/gaze-point")
-              , config.get <glm::vec3> ("editor/camera/eye-point")
-              , config.get <glm::vec3> ("editor/camera/up")
-              , false);
-
-    this->updateView       ();
-    this->updateProjection ();
+  {
+    this->runFromConfig (config);
   }
 
   glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
@@ -70,14 +62,13 @@ struct Camera::Impl {
     }
   }
 
-  void set (const glm::vec3& g, const glm::vec3& e, const glm::vec3& u, bool update = true) {
+  void set (const glm::vec3& g, const glm::vec3& e, const glm::vec3& u) {
     this->gazePoint  = g;
     this->toEyePoint = e;
     this->up         = u;
     this->right      = glm::normalize ( glm::cross (this->up, this->toEyePoint) );
-    if (update) {
-      this->updateView ();
-    }
+
+    this->updateView ();
   }
 
   void setGaze (const glm::vec3& g) {
@@ -166,6 +157,19 @@ struct Camera::Impl {
     }
     return Dimension::Z;
   }
+
+  void runFromConfig (const Config& config) {
+    this->renderer.fromConfig (config);
+
+    this->nearClipping = config.get <float> ("editor/camera/near-clipping");
+    this->farClipping  = config.get <float> ("editor/camera/far-clipping");
+
+    this->set ( config.get <glm::vec3> ("editor/camera/gaze-point")
+              , config.get <glm::vec3> ("editor/camera/eye-point")
+              , config.get <glm::vec3> ("editor/camera/up") );
+
+    this->updateProjection ();
+  }
 };
 
 DELEGATE1_BIG3_SELF (Camera, const Config&)
@@ -192,3 +196,4 @@ DELEGATE3_CONST (glm::ivec2 , Camera, fromWorld, const glm::vec3&, const glm::ma
 DELEGATE2_CONST (glm::vec3  , Camera, toWorld, const glm::ivec2&, float)
 DELEGATE1_CONST (PrimRay    , Camera, ray, const glm::ivec2&)
 DELEGATE_CONST  (Dimension  , Camera, primaryDimension)
+DELEGATE1       (void       , Camera, runFromConfig, const Config&)

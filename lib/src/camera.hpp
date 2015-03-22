@@ -2,14 +2,14 @@
 #define DILAY_CAMERA
 
 #include <glm/fwd.hpp>
+#include "configurable.hpp"
 #include "macro.hpp"
 
-class Config;
 enum class Dimension;
 class PrimRay;
 class Renderer;
 
-class Camera {
+class Camera : public Configurable {
   public:
     DECLARE_BIG3 (Camera, const Config&)
 
@@ -39,6 +39,8 @@ class Camera {
 
   private:
     IMPLEMENTATION
+
+    void runFromConfig (const Config&);
 };
 
 #endif
