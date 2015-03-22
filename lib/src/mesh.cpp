@@ -41,19 +41,19 @@ struct Mesh::Impl {
   }
 
   Impl (const Impl& source)
-              : scalingMatrix       (source.scalingMatrix)
-              , rotationMatrix      (source.rotationMatrix)
-              , translationMatrix   (source.translationMatrix)
-              , vertices            (source.vertices)
-              , indices             (source.indices)
-              , normals             (source.normals)
-              , color               (source.color)
-              , wireframeColor      (source.wireframeColor)
-              , vertexBufferId      (0)
-              , indexBufferId       (0)
-              , normalBufferId      (0)
-              , renderMode          (source.renderMode) 
-              {}
+    : scalingMatrix       (source.scalingMatrix)
+    , rotationMatrix      (source.rotationMatrix)
+    , translationMatrix   (source.translationMatrix)
+    , vertices            (source.vertices)
+    , indices             (source.indices)
+    , normals             (source.normals)
+    , color               (source.color)
+    , wireframeColor      (source.wireframeColor)
+    , vertexBufferId      (0)
+    , indexBufferId       (0)
+    , normalBufferId      (0)
+    , renderMode          (source.renderMode) 
+  {}
 
   ~Impl () { this->reset (); }
 
