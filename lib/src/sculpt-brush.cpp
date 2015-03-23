@@ -191,24 +191,18 @@ struct SculptBrush :: Impl {
     this->_position     = p;
   }
 
-  bool updateDelta (const glm::vec3& delta) {
-    assert (this->hasPosition);
-
-    const float stepWidth = this->stepWidthFactor * this->self->radius ();
-
-    if (glm::length2 (delta) > stepWidth * stepWidth) {
-      this->_lastPosition = this->_position;
-      this->_position     = this->_position + delta;
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-
   bool updatePosition (const glm::vec3& p) {
     if (this->hasPosition) {
-      return this->updateDelta (p - this->_position);
+      const float stepWidth = this->stepWidthFactor * this->self->radius ();
+
+      if (glm::distance2 (p, this->_position) > stepWidth * stepWidth) {
+        this->_lastPosition = this->_position;
+        this->_position     = p;
+        return true;
+      }
+      else {
+        return false;
+      }
     }
     else {
       this->setPosition (p);
@@ -242,7 +236,6 @@ DELEGATE_CONST  (const glm::vec3& , SculptBrush, lastPosition)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, position)
 DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
 DELEGATE1       (void             , SculptBrush, setPosition, const glm::vec3&)
-DELEGATE1       (bool             , SculptBrush, updateDelta, const glm::vec3&)
 DELEGATE1       (bool             , SculptBrush, updatePosition, const glm::vec3&)
 DELEGATE        (void             , SculptBrush, resetPosition)
 
