@@ -23,6 +23,7 @@ SOURCES += \
            src/kvstore.cpp \
            src/mesh.cpp \
            src/mesh-definition.cpp \
+           src/mirror.cpp \
            src/octree.cpp \
            src/opengl.cpp \
            src/partial-action/collapse-face.cpp \
@@ -99,6 +100,7 @@ HEADERS += \
            src/maybe.hpp \
            src/mesh.hpp \
            src/mesh-definition.hpp \
+           src/mirror.hpp \
            src/octree.hpp \
            src/opengl.hpp \
            src/partial-action/collapse-face.hpp \

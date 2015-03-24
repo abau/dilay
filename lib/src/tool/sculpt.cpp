@@ -7,7 +7,9 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "config.hpp"
+#include "dimension.hpp"
 #include "history.hpp"
+#include "mirror.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "sculpt-brush.hpp"
@@ -23,17 +25,27 @@
 #include "winged/mesh.hpp"
 
 struct ToolSculpt::Impl {
-  ToolSculpt*       self;
-  SculptBrush       brush;
-  ViewCursor        cursor;
-  CacheProxy        commonCache;
-  ViewDoubleSlider& radiusEdit;
+  ToolSculpt*              self;
+  SculptBrush              brush;
+  ViewCursor               cursor;
+  CacheProxy               commonCache;
+  ViewDoubleSlider&        radiusEdit;
+  std::unique_ptr <Mirror> mirror;
 
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
     , radiusEdit  (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f))
-  {}
+  {
+    const Config& config = this->self->config ();
+
+    switch (this->commonCache.get <int> ("mirror", 1)) {
+      case 1:  this->mirror.reset (new Mirror (config, Dimension::X)); break;
+      case 2:  this->mirror.reset (new Mirror (config, Dimension::Y)); break;
+      case 3:  this->mirror.reset (new Mirror (config, Dimension::Z)); break;
+      default: break;
+    }
+  }
 
   ToolResponse runInitialize () {
     this->setupBrush      ();
@@ -93,6 +105,21 @@ struct ToolSculpt::Impl {
     });
     properties.add (subdivEdit);
 
+    QCheckBox& mirrorEdit = ViewUtil::checkBox ( QObject::tr ("Mirror")
+                                               , bool (this->mirror) );
+    ViewUtil::connect (mirrorEdit, [this] (bool m) {
+      if (m) {
+        this->mirror.reset (new Mirror (this->self->config (), Dimension::X));
+        this->commonCache.set ("mirror", 1);
+      }
+      else {
+        this->mirror.reset ();
+        this->commonCache.set ("mirror", 0);
+      }
+      this->self->updateGlWidget ();
+    });
+    properties.add (mirrorEdit);
+
     properties.add (ViewUtil::horizontalLine ());
 
     this->self->runSetupProperties (properties);
@@ -109,7 +136,14 @@ struct ToolSculpt::Impl {
   }
 
   void runRender () const {
-    this->cursor.render (this->self->state ().camera ());
+    Camera& camera = this->self->state ().camera ();
+
+    if (this->cursor.isEnabled ()) {
+      this->cursor.render (camera);
+    }
+    if (this->mirror) {
+      this->mirror->render (camera);
+    }
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
@@ -152,6 +186,12 @@ struct ToolSculpt::Impl {
 
   void sculpt () {
     Action::sculpt (this->brush);
+
+    if (this->mirror) {
+      this->brush.mirror (*this->mirror);
+      Action::sculpt (this->brush);
+      this->brush.mirror (*this->mirror);
+    }
   }
 
   void updateCursorByIntersection (const QMouseEvent& e) {

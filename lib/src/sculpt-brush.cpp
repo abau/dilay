@@ -1,6 +1,7 @@
 #include <glm/gtx/norm.hpp>
 #include "affected-faces.hpp"
 #include "intersection.hpp"
+#include "mirror.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/sphere.hpp"
 #include "sculpt-brush.hpp"
@@ -225,6 +226,14 @@ struct SculptBrush :: Impl {
   void resetPointOfAction () {
     this->hasPosition = false;
   }
+
+  void mirror (const Mirror& mirror) {
+    if (this->hasPosition) {
+      this->_lastPosition = mirror.mirror (this->_lastPosition);
+      this->_position     = mirror.mirror (this->_position);
+      this->_direction    = mirror.mirror (this->_direction);
+    }
+  }
 };
 
 DELEGATE_BIG6_SELF (SculptBrush)
@@ -249,6 +258,7 @@ DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
 DELEGATE2       (void             , SculptBrush, setPointOfAction, const glm::vec3&, const glm::vec3&)
 DELEGATE2       (bool             , SculptBrush, updatePointOfAction, const glm::vec3&, const glm::vec3&)
 DELEGATE        (void             , SculptBrush, resetPointOfAction)
+DELEGATE1       (void             , SculptBrush, mirror, const Mirror&)
 
 template <typename T> 
 const T& SculptBrush::constParameters () const {
