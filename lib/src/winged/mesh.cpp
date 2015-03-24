@@ -241,8 +241,6 @@ struct WingedMesh::Impl {
       e3.predecessor (f, &e2);
       e3.successor   (f, &e1);
     }
-
-    this->forEachVertex ([this] (WingedVertex& v) { v.writeInterpolatedNormal (*this->self); });
   }
 
   void writeAllIndices () {
