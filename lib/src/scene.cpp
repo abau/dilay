@@ -1,6 +1,7 @@
 #include "config.hpp"
 #include "indexable.hpp"
 #include "primitive/ray.hpp"
+#include "render-mode.hpp"
 #include "scene.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
@@ -17,13 +18,22 @@ struct Scene :: Impl {
   }
 
   WingedMesh& newWingedMesh () {
-    return this->wingedMeshes.emplace ();
+    const WingedMesh* other    = this->wingedMeshes.getSome ();
+          WingedMesh& newWMesh = this->wingedMeshes.emplace ();
+
+    if (other) {
+      newWMesh.renderMode () = other->renderMode ();
+    }
+    return newWMesh;
   }
 
   WingedMesh& newWingedMesh (const Mesh& mesh) {
     WingedMesh& wingedMesh = this->newWingedMesh ();
+    RenderMode  renderMode = wingedMesh.renderMode ();
+
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
+    wingedMesh.renderMode () = renderMode;
 
     this->runFromConfig (wingedMesh);
     return wingedMesh;
@@ -64,10 +74,6 @@ struct Scene :: Impl {
     this->wingedMeshes.forEachConstElement (f);
   }
 
-  const WingedMesh* someWingedMesh () const {
-    return this->wingedMeshes.getSome ();
-  }
-
   void reset () {
     this->wingedMeshes.reset ();
   }
@@ -97,6 +103,5 @@ DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFac
 DELEGATE1_CONST (void             , Scene, printStatistics, bool)
 DELEGATE1       (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1_CONST (void             , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
-DELEGATE_CONST  (const WingedMesh*, Scene, someWingedMesh)
 DELEGATE        (void             , Scene, reset)
 DELEGATE1       (void             , Scene, runFromConfig, const Config&)
