@@ -8,11 +8,13 @@ class QColor;
 
 class Color {
   public: 
-    Color (float,float,float,float);
-    Color ();
-    Color (float,float,float);
-    Color (const glm::vec3&);
-    Color (const glm::vec4&);
+             Color ();
+             Color (float);
+             Color (float,float,float);
+             Color (float,float,float,float);
+    explicit Color (const glm::vec3&);
+    explicit Color (const glm::vec4&);
+
     // copies and scales a color using `scale`
     Color (const Color&, float);
 
