@@ -1,5 +1,7 @@
+#include <glm/glm.hpp>
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
+#include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
@@ -50,6 +52,29 @@ struct AffectedFaces::Impl {
     return this->faces.count (face) > 0 || this->uncommitedFaces.count (face) > 0;
   }
 
+  void discardBackfaces (const WingedMesh& mesh, const glm::vec3& normal) {
+    auto discard = [&mesh, &normal] (WingedFace* f) {
+      return glm::dot (normal, f->triangle (mesh).cross ()) <= 0.0f;
+    };
+
+    for (auto it = faces.begin (); it != faces.end (); ) {
+      if (discard (*it)) {
+        it = this->faces.erase (it);
+      }
+      else {
+        ++it;
+      }
+    }
+    for (auto it = uncommitedFaces.begin (); it != uncommitedFaces.end (); ) {
+      if (discard (*it)) {
+        it = this->uncommitedFaces.erase (it);
+      }
+      else {
+        ++it;
+      }
+    }
+  }
+
   VertexPtrSet toVertexSet () const {
     VertexPtrSet vertices;
     for (WingedFace* f : this->faces) {
@@ -83,6 +108,7 @@ DELEGATE        (void, AffectedFaces, commit)
 DELEGATE_CONST  (bool, AffectedFaces, isEmpty)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool, AffectedFaces, contains, WingedFace*)
+DELEGATE2       (void, AffectedFaces, discardBackfaces, const WingedMesh&, const glm::vec3&)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommitedFaces)
 DELEGATE_CONST  (VertexPtrSet, AffectedFaces, toVertexSet)

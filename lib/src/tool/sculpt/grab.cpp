@@ -21,9 +21,9 @@ struct ToolSculptGrab::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBMoveDirectionalParameters> ();
 
-    params.useLastPosition (true);
-    params.useIntersection (true);
-    params.linearStep      (true);
+    params.useLastPosition  (true);
+    params.discardBackfaces (false);
+    params.linearStep       (true);
   }
 
   void runSetupCursor (ViewCursor&) {}

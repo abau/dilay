@@ -26,7 +26,7 @@ struct ToolSculptDrag::Impl {
 
     params.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
     params.useLastPosition   (true);
-    params.useIntersection   (true);
+    params.discardBackfaces  (false);
   }
 
   void runSetupCursor (ViewCursor& cursor) {

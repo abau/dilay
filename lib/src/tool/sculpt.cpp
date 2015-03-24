@@ -134,7 +134,7 @@ struct ToolSculpt::Impl {
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
-      this->brush.resetPosition ();
+      this->brush.resetPointOfAction ();
     }
     this->cursor.enable ();
     return ToolResponse::None;
@@ -182,9 +182,8 @@ struct ToolSculpt::Impl {
 
       if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
         this->brush.mesh (&intersection.mesh ());
-        this->brush.face (&intersection.face ());
 
-        return this->brush.updatePosition (intersection.position ());
+        return this->brush.updatePointOfAction (intersection.position (), intersection.normal ());
       }
       else {
         return false;
@@ -217,9 +216,8 @@ struct ToolSculpt::Impl {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
-        this->brush.mesh        (&intersection.mesh     ());
-        this->brush.face        (&intersection.face     ());
-        this->brush.setPosition ( intersection.position ());
+        this->brush.mesh (&intersection.mesh ());
+        this->brush.setPointOfAction (intersection.position (), intersection.normal ());
         
         this->cursor.disable ();
 
@@ -229,13 +227,13 @@ struct ToolSculpt::Impl {
       }
       else {
         this->cursor.enable ();
-        this->brush.resetPosition ();
+        this->brush.resetPointOfAction ();
         return false;
       }
     }
     else {
       this->cursor.enable ();
-      this->brush.resetPosition ();
+      this->brush.resetPointOfAction ();
       return false;
     }
   }
@@ -249,12 +247,13 @@ struct ToolSculpt::Impl {
       const glm::vec3 oldBrushPos = this->brush.position ();
 
       if ( movement.move (ViewUtil::toIVec2 (e))
-        && this->brush.updatePosition (movement.position ()) )
+        && this->brush.updatePointOfAction ( movement.position ()
+                                           , movement.position () - oldBrushPos ) )
       {
         auto& params = this->brush.parameters <SBMoveDirectionalParameters> ();
 
-        params.direction       (this->brush.position () - oldBrushPos);
-        params.intensityFactor (1.0f / this->brush.radius ());
+        params.useAverageNormal (false);
+        params.intensityFactor  (1.0f / this->brush.radius ());
         this->sculpt ();
         return true;
       }

@@ -11,14 +11,13 @@
 #include "variant.hpp"
 
 SBMoveDirectionalParameters::SBMoveDirectionalParameters ()
-  : _intensityFactor     (0.0f)
-  , _innerRadiusFactor   (0.0f)
-  , _invert              (false)
-  , _direction           (0.0f)
-  , _useAverageDirection (true)
-  , _useLastPosition     (false)
-  , _useIntersection     (false)
-  , _linearStep          (false)
+  : _intensityFactor   (0.0f)
+  , _innerRadiusFactor (0.0f)
+  , _invert            (false)
+  , _useAverageNormal  (true)
+  , _useLastPosition   (false)
+  , _discardBackfaces  (true)
+  , _linearStep        (false)
 {}
 
 SBSmoothParameters::SBSmoothParameters ()
@@ -41,6 +40,7 @@ struct SculptBrush :: Impl {
   bool          hasPosition;
   glm::vec3    _lastPosition;
   glm::vec3    _position;
+  glm::vec3    _direction;
 
   Variant < SBMoveDirectionalParameters
           , SBSmoothParameters
@@ -53,7 +53,6 @@ struct SculptBrush :: Impl {
     , stepWidthFactor (0.0f)
     , subdivide       (false)
     , hasPosition     (false)
-
   {}
 
   void sculpt (AffectedFaces& faces) const {
@@ -74,15 +73,15 @@ struct SculptBrush :: Impl {
 
   void sculpt (const SBMoveDirectionalParameters& parameters, AffectedFaces& faces) const {
     auto getSculptDirection = [this,&parameters] (const VertexPtrSet& vertices) -> glm::vec3 {
-      if (parameters.useAverageDirection ()) {
+      if (parameters.useAverageNormal ()) {
         const glm::vec3 avgNormal = WingedUtil::averageNormal ( this->self->meshRef ()
                                                               , vertices);
         return parameters.invert () ? -avgNormal
                                     :  avgNormal;
       }
       else {
-        return parameters.invert () ? -parameters.direction ()
-                                    :  parameters.direction ();
+        return parameters.invert () ? -this->direction ()
+                                    :  this->direction ();
       }
     };
 
@@ -95,11 +94,10 @@ struct SculptBrush :: Impl {
     PrimSphere  sphere (position, this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
-    if (parameters.useIntersection ()) {
-      mesh.intersects (sphere, faces);
-    }
-    else {
-      IntersectionUtil::extend (sphere, mesh, this->self->faceRef (), faces);
+    mesh.intersects (sphere, faces);
+
+    if (parameters.discardBackfaces ()) {
+      faces.discardBackfaces (mesh, this->direction ());
     }
 
     VertexPtrSet    vertices (faces.toVertexSet ());
@@ -123,8 +121,8 @@ struct SculptBrush :: Impl {
     PrimSphere  sphere (this->_position, this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
-    IntersectionUtil::extend ( sphere, this->self->meshRef ()
-                             , this->self->faceRef (), faces );
+    mesh .intersects (sphere, faces);
+    faces.discardBackfaces (mesh, this->direction ());
 
     if (parameters.relaxOnly () == false) {
       VertexPtrSet vertices (faces.toVertexSet ());
@@ -146,12 +144,12 @@ struct SculptBrush :: Impl {
     PrimSphere  sphere (this->_position, this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
-    IntersectionUtil::extend (sphere, mesh, this->self->faceRef (), faces);
+    mesh.intersects (sphere, faces);
+    faces.discardBackfaces (mesh, this->direction ());
 
     VertexPtrSet    vertices (faces.toVertexSet ());
     const glm::vec3 normal   (WingedUtil::averageNormal (mesh, vertices));
-    const PrimPlane plane    ( WingedUtil::center (mesh, vertices)
-                             , normal );
+    const PrimPlane plane    (WingedUtil::center (mesh, vertices), normal);
 
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos   = v->position (mesh);
@@ -180,24 +178,31 @@ struct SculptBrush :: Impl {
     return this->_position;
   }
 
+  const glm::vec3& direction () const {
+    assert (this->hasPosition);
+    return this->_direction;
+  }
+
   glm::vec3 delta () const {
     assert (this->hasPosition);
     return this->_position - this->_lastPosition;
   }
 
-  void setPosition (const glm::vec3& p) {
+  void setPointOfAction (const glm::vec3& p, const glm::vec3& d) {
     this->hasPosition   = true;
     this->_lastPosition = p;
     this->_position     = p;
+    this->_direction    = d;
   }
 
-  bool updatePosition (const glm::vec3& p) {
+  bool updatePointOfAction (const glm::vec3& p, const glm::vec3& d) {
     if (this->hasPosition) {
       const float stepWidth = this->stepWidthFactor * this->self->radius ();
 
       if (glm::distance2 (p, this->_position) > stepWidth * stepWidth) {
         this->_lastPosition = this->_position;
         this->_position     = p;
+        this->_direction    = d;
         return true;
       }
       else {
@@ -205,12 +210,12 @@ struct SculptBrush :: Impl {
       }
     }
     else {
-      this->setPosition (p);
+      this->setPointOfAction (p, d);
       return true;
     }
   }
 
-  void resetPosition () {
+  void resetPointOfAction () {
     this->hasPosition = false;
   }
 };
@@ -223,21 +228,20 @@ GETTER_CONST    (float            , SculptBrush, detailFactor)
 GETTER_CONST    (float            , SculptBrush, stepWidthFactor)
 GETTER_CONST    (bool             , SculptBrush, subdivide)
 GETTER_CONST    (WingedMesh*      , SculptBrush, mesh)
-GETTER_CONST    (WingedFace*      , SculptBrush, face)
 SETTER          (float            , SculptBrush, radius)
 SETTER          (float            , SculptBrush, detailFactor)
 SETTER          (float            , SculptBrush, stepWidthFactor)
 SETTER          (bool             , SculptBrush, subdivide)
 SETTER          (WingedMesh*      , SculptBrush, mesh)
-SETTER          (WingedFace*      , SculptBrush, face)
 DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
 GETTER_CONST    (bool             , SculptBrush, hasPosition)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, lastPosition)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, position)
+DELEGATE_CONST  (const glm::vec3& , SculptBrush, direction)
 DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
-DELEGATE1       (void             , SculptBrush, setPosition, const glm::vec3&)
-DELEGATE1       (bool             , SculptBrush, updatePosition, const glm::vec3&)
-DELEGATE        (void             , SculptBrush, resetPosition)
+DELEGATE2       (void             , SculptBrush, setPointOfAction, const glm::vec3&, const glm::vec3&)
+DELEGATE2       (bool             , SculptBrush, updatePointOfAction, const glm::vec3&, const glm::vec3&)
+DELEGATE        (void             , SculptBrush, resetPointOfAction)
 
 template <typename T> 
 const T& SculptBrush::constParameters () const {
