@@ -52,6 +52,7 @@ namespace OpenGL {
   void glPolygonMode              (unsigned int, unsigned int);
   void glPolygonOffset            (float, float);
   void glUniform1f                (int, float);
+  void glUniformMatrix3fv         (int, unsigned int, bool, const float*);
   void glUniformMatrix4fv         (int, unsigned int, bool, const float*);
   void glUseProgram               (unsigned int);
   void glVertexAttribPointer      (unsigned int, int, unsigned int, bool, unsigned int, const void*);

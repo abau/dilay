@@ -102,6 +102,7 @@ namespace OpenGL {
   DELEGATE2_GL (void, glPolygonMode, unsigned int, unsigned int)
   DELEGATE2_GL (void, glPolygonOffset, float, float)
   DELEGATE2_GL (void, glUniform1f, int, float)
+  DELEGATE4_GL (void, glUniformMatrix3fv, int, unsigned int, bool, const float*)
   DELEGATE4_GL (void, glUniformMatrix4fv, int, unsigned int, bool, const float*)
   DELEGATE1_GL (void, glUseProgram, unsigned int)
   DELEGATE6_GL (void, glVertexAttribPointer, unsigned int, int, unsigned int, bool, unsigned int, const void*)

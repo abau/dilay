@@ -50,8 +50,10 @@ struct Camera::Impl {
     this->updateProjection ();
   }
 
-  void setModelViewProjection (const glm::mat4x4& model, bool onlyRotation) {
-    this->renderer.setModel      (&model[0][0]);
+  void setModelViewProjection ( const glm::mat4x4& model, const glm::mat3x3& modelNormal
+                              , bool onlyRotation ) 
+  {
+    this->renderer.setModel      (&model[0][0], &modelNormal[0][0]);
     this->renderer.setProjection (&this->projection [0][0]);
 
     if (onlyRotation) {
@@ -186,7 +188,7 @@ DELEGATE_CONST  (glm::vec3         , Camera, position)
 DELEGATE_CONST  (glm::mat4x4       , Camera, world)
 
 DELEGATE1       (void       , Camera, updateResolution, const glm::uvec2&) 
-DELEGATE2       (void       , Camera, setModelViewProjection, const glm::mat4x4&, bool) 
+DELEGATE3       (void       , Camera, setModelViewProjection, const glm::mat4x4&, const glm::mat3x3&, bool) 
 DELEGATE3       (void       , Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&)
 DELEGATE1       (void       , Camera, setGaze, const glm::vec3&)
 DELEGATE1       (void       , Camera, stepAlongGaze, float) 

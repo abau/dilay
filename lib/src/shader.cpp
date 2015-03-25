@@ -4,6 +4,7 @@
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
   "uniform   mat4  model;                                                                  \n" \
+  "uniform   mat3  modelNormal;                                                            \n" \
   "uniform   mat4  view;                                                                   \n" \
   "uniform   mat4  projection;                                                             \n" \
   "attribute vec3  position;                                                               \n" \
@@ -19,8 +20,8 @@
   "varying vec3 vsOut;                                                                     \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
-  "  gl_Position      = (projection * view * model) * vec4 (position,1.0);                 \n" \
-  "  vec3  viewNormal = vec3 (view * model * vec4 (normal,0.0));                           \n" \
+  "  gl_Position      = (projection * view * model) * vec4 (position, 1.0);                \n" \
+  "  vec3  viewNormal = vec3 (view * vec4 (normalize (modelNormal * normal), 0.0));        \n" \
   "  float light1Diff = max (0.0, dot (light1Direction, viewNormal));                      \n" \
   "  float light2Diff = max (0.0, dot (light2Direction, viewNormal));                      \n" \
   "  vec3  light1     = light1Irradiance * light1Color * light1Diff;                       \n" \

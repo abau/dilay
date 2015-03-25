@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
 #include <vector>
@@ -176,6 +177,10 @@ struct Mesh::Impl {
     return this->translationMatrix * this->rotationMatrix * this->scalingMatrix;
   }
 
+  glm::mat3x3 modelNormalMatrix () const {
+    return glm::inverseTranspose (glm::mat3x3 (this->modelMatrix ()));
+  }
+
   glm::mat4x4 worldMatrix () const {
      return glm::translate (glm::mat4x4 (1.0f), - this->position ())
           * glm::transpose (this->rotationMatrix)
@@ -183,7 +188,7 @@ struct Mesh::Impl {
   }
 
   void setModelMatrix (Camera& camera, bool noZoom) const {
-    camera.setModelViewProjection (this->modelMatrix (), noZoom);
+    camera.setModelViewProjection (this->modelMatrix (), this->modelNormalMatrix (), noZoom);
   }
 
   bool renderFallbackWireframe () const {
@@ -376,6 +381,7 @@ DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::
 
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)
+DELEGATE_CONST   (glm::mat3x3       , Mesh, modelNormalMatrix)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, worldMatrix)
 DELEGATE1_CONST  (void              , Mesh, renderBegin, Camera&)
 DELEGATE_CONST   (void              , Mesh, renderEnd)

@@ -15,7 +15,7 @@ class Renderer : public Configurable {
 
     void setupRendering       ();
     void setProgram           (const RenderMode&);
-    void setModel             (const float*);
+    void setModel             (const float*, const float*);
     void setView              (const float*);
     void setProjection        (const float*);
     void setColor3            (const Color&);

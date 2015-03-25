@@ -314,8 +314,8 @@ struct WingedMesh::Impl {
   void               rotationZ      (float v)              { return this->mesh.rotationZ (v); }
 
   void normalize () {
-    const glm::mat4x4  model    = this->mesh.modelMatrix ();
-    const glm::mat4x4& rotation = this->mesh.rotationMatrix ();
+    const glm::mat4x4 model       = this->mesh.modelMatrix ();
+    const glm::mat3x3 modelNormal = this->mesh.modelNormalMatrix ();
 
     glm::vec3   maxVertex (std::numeric_limits <float>::lowest ());
     glm::vec3   minVertex (std::numeric_limits <float>::max    ());
@@ -326,7 +326,7 @@ struct WingedMesh::Impl {
             minVertex   = glm::min (minVertex, v);
 
       this->setVertex (i, v);
-      this->setNormal (i, Util::transformDirection (rotation, this->normal (i)));
+      this->setNormal (i, glm::normalize (modelNormal * this->normal (i)));
     }
 
     Octree newOctree;

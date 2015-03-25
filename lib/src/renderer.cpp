@@ -23,6 +23,7 @@ namespace {
   struct ShaderIds {
     unsigned int programId;
     int          modelId;
+    int          modelNormalId;
     int          viewId;
     int          projectionId;
     int          colorId;
@@ -33,6 +34,7 @@ namespace {
 
     ShaderIds () : programId        (0)
                  , modelId          (0)
+                 , modelNormalId    (0)
                  , viewId           (0)
                  , projectionId     (0)
                  , colorId          (0)
@@ -118,6 +120,7 @@ struct Renderer::Impl {
 
     s->programId                = id;
     s->modelId                  = OpenGL::glGetUniformLocation (id, "model");
+    s->modelNormalId            = OpenGL::glGetUniformLocation (id, "modelNormal");
     s->viewId                   = OpenGL::glGetUniformLocation (id, "view");
     s->projectionId             = OpenGL::glGetUniformLocation (id, "projection");
     s->colorId                  = OpenGL::glGetUniformLocation (id, "color");
@@ -158,9 +161,10 @@ struct Renderer::Impl {
     }
   }
 
-  void setModel (const float* model) {
+  void setModel (const float* model, const float* modelNormal) {
     assert (this->activeShaderIndex);
     OpenGL::glUniformMatrix4fv (this->activeShaderIndex->modelId, 1, false, model);
+    OpenGL::glUniformMatrix3fv (this->activeShaderIndex->modelNormalId, 1, false, modelNormal);
   }
 
   void setView (const float* view) {
@@ -230,7 +234,7 @@ DELEGATE1_BIG3 (Renderer, const Config&)
 
 DELEGATE  (void, Renderer, setupRendering)
 DELEGATE1 (void, Renderer, setProgram        , const RenderMode&)
-DELEGATE1 (void, Renderer, setModel          , const float*)
+DELEGATE2 (void, Renderer, setModel          , const float*, const float*)
 DELEGATE1 (void, Renderer, setView           , const float*)
 DELEGATE1 (void, Renderer, setProjection     , const float*)
 DELEGATE1 (void, Renderer, setColor3         , const Color&)
