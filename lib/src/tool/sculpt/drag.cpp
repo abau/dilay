@@ -5,7 +5,6 @@
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
-#include "view/cursor.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -29,12 +28,7 @@ struct ToolSculptDrag::Impl {
     params.discardBackfaces  (false);
   }
 
-  void runSetupCursor (ViewCursor& cursor) {
-    auto& params = this->self->brush ().constParameters <SBMoveDirectionalParameters> ();
-
-    cursor.hasInnerRadius    (true);
-    cursor.innerRadiusFactor (params.innerRadiusFactor ());
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
@@ -43,7 +37,6 @@ struct ToolSculptDrag::Impl {
                                                         , 1.0f, 0.1f );
     ViewUtil::connect (innerRadiusEdit, [this,&params] (float f) {
       params.innerRadiusFactor (f);
-      this->self->cursor ().innerRadiusFactor (f);
       this->self->cache ().set ("inner-radius-factor", f);
     });
     properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);

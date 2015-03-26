@@ -35,10 +35,11 @@ namespace OpenGL {
   void setDefaultFormat () {
     QSurfaceFormat format;
 
-    format.setVersion         (2, 1);
-    format.setDepthBufferSize (24);
-    format.setProfile         (QSurfaceFormat::NoProfile);
-    format.setRenderableType  (QSurfaceFormat::OpenGL);
+    format.setVersion           (2, 1);
+    format.setDepthBufferSize   (24);
+    format.setStencilBufferSize (1);
+    format.setProfile           (QSurfaceFormat::NoProfile);
+    format.setRenderableType    (QSurfaceFormat::OpenGL);
 
     QSurfaceFormat::setDefaultFormat (format);
   }
@@ -61,34 +62,55 @@ namespace OpenGL {
     }
   }
 
+  DELEGATE_GL_CONSTANT (Always, GL_ALWAYS);
   DELEGATE_GL_CONSTANT (ArrayBuffer, GL_ARRAY_BUFFER);
   DELEGATE_GL_CONSTANT (Back, GL_BACK);
+  DELEGATE_GL_CONSTANT (Blend, GL_BLEND);
   DELEGATE_GL_CONSTANT (ColorBufferBit, GL_COLOR_BUFFER_BIT);
   DELEGATE_GL_CONSTANT (CullFace, GL_CULL_FACE);
   DELEGATE_GL_CONSTANT (CW, GL_CW);
   DELEGATE_GL_CONSTANT (CCW, GL_CCW);
+  DELEGATE_GL_CONSTANT (Decr, GL_DECR);
+  DELEGATE_GL_CONSTANT (DecrWrap, GL_DECR_WRAP);
   DELEGATE_GL_CONSTANT (DepthBufferBit, GL_DEPTH_BUFFER_BIT);
   DELEGATE_GL_CONSTANT (DepthTest, GL_DEPTH_TEST);
+  DELEGATE_GL_CONSTANT (DstColor, GL_DST_COLOR);
   DELEGATE_GL_CONSTANT (ElementArrayBuffer, GL_ELEMENT_ARRAY_BUFFER);
+  DELEGATE_GL_CONSTANT (Equal, GL_EQUAL);
   DELEGATE_GL_CONSTANT (Fill, GL_FILL);
   DELEGATE_GL_CONSTANT (Float, GL_FLOAT);
   DELEGATE_GL_CONSTANT (Front, GL_FRONT);
   DELEGATE_GL_CONSTANT (FrontAndBack, GL_FRONT_AND_BACK);
+  DELEGATE_GL_CONSTANT (FuncAdd, GL_FUNC_ADD);
+  DELEGATE_GL_CONSTANT (Greater, GL_GREATER);
+  DELEGATE_GL_CONSTANT (Incr, GL_INCR);
+  DELEGATE_GL_CONSTANT (IncrWrap, GL_INCR_WRAP);
+  DELEGATE_GL_CONSTANT (Invert, GL_INVERT);
+  DELEGATE_GL_CONSTANT (Keep, GL_KEEP);
   DELEGATE_GL_CONSTANT (LEqual, GL_LEQUAL);
   DELEGATE_GL_CONSTANT (Line, GL_LINE);
   DELEGATE_GL_CONSTANT (Lines, GL_LINES);
+  DELEGATE_GL_CONSTANT (Never, GL_NEVER);
   DELEGATE_GL_CONSTANT (PolygonOffsetFill, GL_POLYGON_OFFSET_FILL);
+  DELEGATE_GL_CONSTANT (Replace, GL_REPLACE);
   DELEGATE_GL_CONSTANT (StaticDraw, GL_STATIC_DRAW);
   DELEGATE_GL_CONSTANT (StencilBufferBit, GL_STENCIL_BUFFER_BIT);
+  DELEGATE_GL_CONSTANT (StencilTest, GL_STENCIL_TEST);
   DELEGATE_GL_CONSTANT (Triangles, GL_TRIANGLES);
   DELEGATE_GL_CONSTANT (UnsignedInt, GL_UNSIGNED_INT);
+  DELEGATE_GL_CONSTANT (Zero, GL_ZERO);
 
   DELEGATE2_GL (void, glBindBuffer, unsigned int, unsigned int)
+  DELEGATE1_GL (void, glBlendEquation, unsigned int)
+  DELEGATE2_GL (void, glBlendFunc, unsigned int, unsigned int)
   DELEGATE4_GL (void, glBufferData, unsigned int, unsigned int, const void*, unsigned int)
   DELEGATE1_GL (void, glClear, unsigned int)
   DELEGATE4_GL (void, glClearColor, float, float, float, float)
+  DELEGATE1_GL (void, glClearStencil, int)
+  DELEGATE4_GL (void, glColorMask, bool, bool, bool, bool)
   DELEGATE1_GL (void, glCullFace, unsigned int)
   DELEGATE1_GL (void, glDepthFunc, unsigned int)
+  DELEGATE1_GL (void, glDepthMask, bool)
   DELEGATE1_GL (void, glDisable, unsigned int)
   DELEGATE1_GL (void, glDisableVertexAttribArray, unsigned int)
   DELEGATE4_GL (void, glDrawElements, unsigned int, unsigned int, unsigned int, const void*)
@@ -101,6 +123,8 @@ namespace OpenGL {
   DELEGATE1_GL (bool, glIsProgram, unsigned int)
   DELEGATE2_GL (void, glPolygonMode, unsigned int, unsigned int)
   DELEGATE2_GL (void, glPolygonOffset, float, float)
+  DELEGATE3_GL (void, glStencilFunc, unsigned int, int, unsigned int)
+  DELEGATE3_GL (void, glStencilOp, unsigned int, unsigned int, unsigned int)
   DELEGATE2_GL (void, glUniform1f, int, float)
   DELEGATE4_GL (void, glUniformMatrix3fv, int, unsigned int, bool, const float*)
   DELEGATE4_GL (void, glUniformMatrix4fv, int, unsigned int, bool, const float*)

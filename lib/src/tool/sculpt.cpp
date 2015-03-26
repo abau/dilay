@@ -61,13 +61,12 @@ struct ToolSculpt::Impl {
     if (this->self->intersectsScene (this->self->cursorPosition (), intersection)) {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
-      this->cursor.normal   (intersection.normal   ());
     }
     else {
       this->cursor.disable ();
     }
     this->cursor.radius (this->brush.radius ());
-    this->cursor.color  (this->commonCache.get <Color> ("cursor-color", Color::Red ()));
+    this->cursor.color  (this->self->config ().get <Color> ("editor/tool/sculpt/cursor-color"));
 
     this->self->runSetupCursor (this->cursor);
   }
@@ -165,7 +164,6 @@ struct ToolSculpt::Impl {
     if (this->self->intersectsScene (e, intersection)) {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
-      this->cursor.normal   (intersection.normal   ());
     }
     else {
       this->cursor.disable ();
@@ -178,7 +176,6 @@ struct ToolSculpt::Impl {
     if (this->self->intersectsScene (e, intersection)) {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
-      this->cursor.normal   (intersection.normal   ());
 
       if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
         this->brush.mesh (&intersection.mesh ());

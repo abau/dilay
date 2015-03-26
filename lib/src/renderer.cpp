@@ -77,17 +77,18 @@ struct Renderer::Impl {
   }
 
   void setupRendering () {
-    OpenGL::glClearColor ( this->clearColor.r ()
-                         , this->clearColor.g ()
-                         , this->clearColor.b (), 0.0f);
-        
-    OpenGL::glFrontFace (OpenGL::CCW       ());
-    OpenGL::glEnable    (OpenGL::CullFace  ());
-    OpenGL::glCullFace  (OpenGL::Back      ());
-    OpenGL::glEnable    (OpenGL::DepthTest ()); 
-    OpenGL::glDepthFunc (OpenGL::LEqual    ()); 
-    OpenGL::glClear     ( OpenGL::ColorBufferBit ()
-                        | OpenGL::DepthBufferBit () );
+    OpenGL::glClearColor   ( this->clearColor.r ()
+                           , this->clearColor.g ()
+                           , this->clearColor.b (), 0.0f);
+    OpenGL::glClearStencil (0);
+    OpenGL::glFrontFace    (OpenGL::CCW       ());
+    OpenGL::glEnable       (OpenGL::CullFace  ());
+    OpenGL::glCullFace     (OpenGL::Back      ());
+    OpenGL::glEnable       (OpenGL::DepthTest ()); 
+    OpenGL::glDepthFunc    (OpenGL::LEqual    ()); 
+    OpenGL::glClear        ( OpenGL::ColorBufferBit   ()
+                           | OpenGL::DepthBufferBit   () 
+                           | OpenGL::StencilBufferBit () );
   }
 
   unsigned int shaderIndex (const RenderMode& renderMode) {
