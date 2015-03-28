@@ -3,12 +3,19 @@
 #include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"
+#include "view/tool-tip.hpp"
 #include "winged/face-intersection.hpp"
 
 struct ToolDeleteMesh::Impl {
   ToolDeleteMesh* self;
 
-  Impl (ToolDeleteMesh* s) : self (s) {}
+  Impl (ToolDeleteMesh* s) 
+    : self (s)
+  {
+    ViewToolTip toolTip;
+    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Delete selection"));
+    this->self->showToolTip (toolTip);
+  }
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
