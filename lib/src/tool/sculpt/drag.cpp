@@ -23,9 +23,9 @@ struct ToolSculptDrag::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBMoveDirectionalParameters> ();
 
-    params.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
-    params.useLastPosition   (true);
-    params.discardBackfaces  (false);
+    params.smoothness       (this->self->cache ().get <float> ("smoothness", 0.5f));
+    params.useLastPosition  (true);
+    params.discardBackfaces (false);
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -33,13 +33,13 @@ struct ToolSculptDrag::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
 
-    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, params.innerRadiusFactor ()
+    QDoubleSpinBox& smoothnessEdit = ViewUtil::spinBox ( 0.0f, params.smoothness ()
                                                         , 1.0f, 0.1f );
-    ViewUtil::connect (innerRadiusEdit, [this,&params] (float f) {
-      params.innerRadiusFactor (f);
-      this->self->cache ().set ("inner-radius-factor", f);
+    ViewUtil::connect (smoothnessEdit, [this,&params] (float f) {
+      params.smoothness (f);
+      this->self->cache ().set ("smoothness", f);
     });
-    properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);
+    properties.add (QObject::tr ("Smoothness"), smoothnessEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {

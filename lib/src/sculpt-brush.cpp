@@ -11,13 +11,13 @@
 #include "variant.hpp"
 
 SBMoveDirectionalParameters::SBMoveDirectionalParameters ()
-  : _intensityFactor   (0.0f)
-  , _innerRadiusFactor (0.0f)
-  , _invert            (false)
-  , _useAverageNormal  (true)
-  , _useLastPosition   (false)
-  , _discardBackfaces  (true)
-  , _linearStep        (false)
+  : _intensityFactor  (0.0f)
+  , _smoothness       (1.0f)
+  , _invert           (false)
+  , _useAverageNormal (true)
+  , _useLastPosition  (false)
+  , _discardBackfaces (true)
+  , _linearStep       (false)
 {}
 
 SBSmoothParameters::SBSmoothParameters ()
@@ -72,6 +72,9 @@ struct SculptBrush :: Impl {
   }
 
   void sculpt (const SBMoveDirectionalParameters& parameters, AffectedFaces& faces) const {
+    assert (parameters.smoothness () >= 0.0f);
+    assert (parameters.smoothness () <= 1.0f);
+
     auto getSculptDirection = [this,&parameters] (const VertexPtrSet& vertices) -> glm::vec3 {
       if (parameters.useAverageNormal ()) {
         const glm::vec3 avgNormal = WingedUtil::averageNormal ( this->self->meshRef ()
@@ -105,8 +108,8 @@ struct SculptBrush :: Impl {
 
     for (WingedVertex* v : vertices) {
       const glm::vec3 oldPos      = v->position (mesh);
-      const float     intensity   = parameters.intensityFactor   () * this->radius;
-      const float     innerRadius = parameters.innerRadiusFactor () * this->radius;
+      const float     intensity   = parameters.intensityFactor () * this->radius;
+      const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
       const float     delta       = intensity
                                   * stepFunction ( oldPos, position
                                                  , innerRadius, this->radius );

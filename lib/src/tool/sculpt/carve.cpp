@@ -15,9 +15,9 @@ struct ToolSculptCarve::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBMoveDirectionalParameters> ();
 
-    params.intensityFactor   (this->self->cache ().get <float> ("intensity-factor"   , 0.03f));
-    params.innerRadiusFactor (this->self->cache ().get <float> ("inner-radius-factor", 0.5f));
-    params.invert            (this->self->cache ().get <bool>  ("invert"             , false));
+    params.intensityFactor (this->self->cache ().get <float> ("intensity-factor", 0.03f));
+    params.smoothness      (this->self->cache ().get <float> ("smoothness"      , 0.5f));
+    params.invert          (this->self->cache ().get <bool>  ("invert"          , false));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -26,13 +26,13 @@ struct ToolSculptCarve::Impl {
     auto&       params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
     ViewCursor& cursor = this->self->cursor ();
 
-    QDoubleSpinBox& innerRadiusEdit = ViewUtil::spinBox ( 0.0f, params.innerRadiusFactor ()
+    QDoubleSpinBox& smoothnessEdit = ViewUtil::spinBox ( 0.0f, params.smoothness ()
                                                         , 1.0f, 0.1f );
-    ViewUtil::connect (innerRadiusEdit, [this,&params,&cursor] (float f) {
-      params.innerRadiusFactor (f);
-      this->self->cache ().set ("inner-radius-factor", f);
+    ViewUtil::connect (smoothnessEdit, [this,&params,&cursor] (float f) {
+      params.smoothness (f);
+      this->self->cache ().set ("smoothness", f);
     });
-    properties.add (QObject::tr ("Inner radius"), innerRadiusEdit);
+    properties.add (QObject::tr ("Smoothness"), smoothnessEdit);
 
     QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, params.intensityFactor ()
                                                       , 0.1f, 0.01f );

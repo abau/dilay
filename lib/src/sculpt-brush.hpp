@@ -12,27 +12,27 @@ class SBMoveDirectionalParameters {
   public:
     SBMoveDirectionalParameters ();
 
-    float            intensityFactor   () const { return this->_intensityFactor; }
-    float            innerRadiusFactor () const { return this->_innerRadiusFactor; }
-    bool             invert            () const { return this->_invert; }
-    bool             useAverageNormal  () const { return this->_useAverageNormal; }
-    bool             useLastPosition   () const { return this->_useLastPosition; }
-    bool             discardBackfaces  () const { return this->_discardBackfaces; }
-    bool             linearStep        () const { return this->_linearStep; }
+    float intensityFactor  () const  { return this->_intensityFactor; }
+    float smoothness       () const  { return this->_smoothness; }
+    bool  invert           () const  { return this->_invert; }
+    bool  useAverageNormal () const  { return this->_useAverageNormal; }
+    bool  useLastPosition  () const  { return this->_useLastPosition; }
+    bool  discardBackfaces () const  { return this->_discardBackfaces; }
+    bool  linearStep       () const  { return this->_linearStep; }
 
-    void intensityFactor   (float v)            { this->_intensityFactor = v; }
-    void innerRadiusFactor (float v)            { this->_innerRadiusFactor = v; }
-    void invert            (bool v)             { this->_invert = v; }
-    void useAverageNormal  (bool v)             { this->_useAverageNormal = v; }
-    void useLastPosition   (bool v)             { this->_useLastPosition = v; }
-    void discardBackfaces  (bool v)             { this->_discardBackfaces = v; }
-    void linearStep        (bool v)             { this->_linearStep = v; }
+    void  intensityFactor  (float v) { this->_intensityFactor = v; }
+    void  smoothness       (float v) { this->_smoothness = v; }
+    void  invert           (bool v)  { this->_invert = v; }
+    void  useAverageNormal (bool v)  { this->_useAverageNormal = v; }
+    void  useLastPosition  (bool v)  { this->_useLastPosition = v; }
+    void  discardBackfaces (bool v)  { this->_discardBackfaces = v; }
+    void  linearStep       (bool v)  { this->_linearStep = v; }
 
-    void toggleInvert      ()                   { this->_invert = ! this->_invert; }
+    void  toggleInvert     ()        { this->_invert = ! this->_invert; }
 
   private:
     float     _intensityFactor;
-    float     _innerRadiusFactor;
+    float     _smoothness;
     bool      _invert;
     bool      _useAverageNormal;
     bool      _useLastPosition;
