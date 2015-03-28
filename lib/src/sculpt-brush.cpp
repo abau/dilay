@@ -103,20 +103,22 @@ struct SculptBrush :: Impl {
       faces.discardBackfaces (mesh, this->direction ());
     }
 
-    VertexPtrSet    vertices (faces.toVertexSet ());
-    const glm::vec3 dir      (getSculptDirection (vertices));
+    if (faces.isEmpty () == false) {
+      VertexPtrSet    vertices (faces.toVertexSet ());
+      const glm::vec3 dir      (getSculptDirection (vertices));
 
-    for (WingedVertex* v : vertices) {
-      const glm::vec3 oldPos      = v->position (mesh);
-      const float     intensity   = parameters.intensityFactor () * this->radius;
-      const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
-      const float     delta       = intensity
-                                  * stepFunction ( oldPos, position
-                                                 , innerRadius, this->radius );
+      for (WingedVertex* v : vertices) {
+        const glm::vec3 oldPos      = v->position (mesh);
+        const float     intensity   = parameters.intensityFactor () * this->radius;
+        const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
+        const float     delta       = intensity
+                                    * stepFunction ( oldPos, position
+                                                   , innerRadius, this->radius );
 
-      const glm::vec3 newPos = oldPos + (delta * dir);
+        const glm::vec3 newPos = oldPos + (delta * dir);
 
-      v->writePosition (mesh, newPos);
+        v->writePosition (mesh, newPos);
+      }
     }
   }
 
@@ -127,7 +129,7 @@ struct SculptBrush :: Impl {
     mesh .intersects (sphere, faces);
     faces.discardBackfaces (mesh, this->direction ());
 
-    if (parameters.relaxOnly () == false) {
+    if (faces.isEmpty () == false && parameters.relaxOnly () == false) {
       VertexPtrSet vertices (faces.toVertexSet ());
 
       for (WingedVertex* v : vertices) {
@@ -150,20 +152,22 @@ struct SculptBrush :: Impl {
     mesh.intersects (sphere, faces);
     faces.discardBackfaces (mesh, this->direction ());
 
-    VertexPtrSet    vertices (faces.toVertexSet ());
-    const glm::vec3 normal   (WingedUtil::averageNormal (mesh, vertices));
-    const PrimPlane plane    (WingedUtil::center (mesh, vertices), normal);
+    if (faces.isEmpty () == false) {
+      VertexPtrSet    vertices (faces.toVertexSet ());
+      const glm::vec3 normal   (WingedUtil::averageNormal (mesh, vertices));
+      const PrimPlane plane    (WingedUtil::center (mesh, vertices), normal);
 
-    for (WingedVertex* v : vertices) {
-      const glm::vec3 oldPos   = v->position (mesh);
-      const float     factor   = parameters.intensity ()
-                               * Util::linearStep ( oldPos, this->position ()
-                                                  , 0.0f, this->radius );
-      const float     distance = glm::max (0.0f, plane.distance (oldPos));
+      for (WingedVertex* v : vertices) {
+        const glm::vec3 oldPos   = v->position (mesh);
+        const float     factor   = parameters.intensity ()
+                                 * Util::linearStep ( oldPos, this->position ()
+                                                    , 0.0f, this->radius );
+        const float     distance = glm::max (0.0f, plane.distance (oldPos));
 
-      const glm::vec3 newPos = oldPos - (normal * factor * distance);
+        const glm::vec3 newPos = oldPos - (normal * factor * distance);
 
-      v->writePosition (mesh, newPos);
+        v->writePosition (mesh, newPos);
+      }
     }
   }
 
