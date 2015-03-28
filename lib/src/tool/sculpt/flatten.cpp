@@ -1,8 +1,8 @@
-#include <QDoubleSpinBox>
 #include "cache.hpp"
 #include "tools.hpp"
 #include "sculpt-brush.hpp"
 #include "view/cursor.hpp"
+#include "view/double-slider.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -23,13 +23,13 @@ struct ToolSculptFlatten::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBFlattenParameters> ();
 
-    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.1f, params.intensity ()
-                                                      , 1.0f, 0.1f );
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.1f, params.intensity ()
+                                                       , 1.0f, 0.1f );
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);
     });
-    properties.add (QObject::tr ("Intensity"), intensityEdit);
+    properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {

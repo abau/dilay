@@ -1,5 +1,4 @@
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 #include <QFrame>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -16,6 +15,7 @@
 #include "tool/sculpt.hpp"
 #include "tool/util/movement.hpp"
 #include "view/cursor.hpp"
+#include "view/double-slider.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -23,16 +23,16 @@
 #include "winged/mesh.hpp"
 
 struct ToolSculpt::Impl {
-  ToolSculpt*     self;
-  SculptBrush     brush;
-  ViewCursor      cursor;
-  CacheProxy      commonCache;
-  QDoubleSpinBox& radiusEdit;
+  ToolSculpt*       self;
+  SculptBrush       brush;
+  ViewCursor        cursor;
+  CacheProxy        commonCache;
+  ViewDoubleSlider& radiusEdit;
 
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
-    , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 5.0f))
+    , radiusEdit  (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f))
   {}
 
   ToolResponse runInitialize () {
@@ -83,7 +83,7 @@ struct ToolSculpt::Impl {
       this->cursor.radius (r);
       this->commonCache.set ("radius", r);
     });
-    properties.add (QObject::tr ("Radius"), this->radiusEdit);
+    properties.addStacked (QObject::tr ("Radius"), this->radiusEdit);
 
     QCheckBox& subdivEdit = ViewUtil::checkBox ( QObject::tr ("Subdivide")
                                                , this->brush.subdivide () );
@@ -137,12 +137,13 @@ struct ToolSculpt::Impl {
   ToolResponse runWheelEvent (const QWheelEvent& e) {
     if (e.orientation () == Qt::Vertical && e.modifiers () == Qt::ShiftModifier) {
       if (e.delta () > 0) {
-        this->radiusEdit.stepUp ();
+        this->radiusEdit.setValue ( this->radiusEdit.doubleValue ()
+                                  + this->radiusEdit.doubleSingleStep () );
       }
       else if (e.delta () < 0) {
-        this->radiusEdit.stepDown ();
+        this->radiusEdit.setValue ( this->radiusEdit.doubleValue ()
+                                  - this->radiusEdit.doubleSingleStep () );
       }
-      ViewUtil::deselect (this->radiusEdit);
     }
     return ToolResponse::Redraw;
   }

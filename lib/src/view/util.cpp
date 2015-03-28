@@ -10,6 +10,7 @@
 #include <QToolButton>
 #include <glm/glm.hpp>
 #include <limits>
+#include "view/double-slider.hpp"
 #include "view/util.hpp"
 
 QSpinBox& ViewUtil :: spinBox (int min, int value, int max, int stepSize) {
@@ -51,6 +52,17 @@ QCheckBox& ViewUtil :: checkBox (const QString& label, bool isChecked) {
   QCheckBox& box = *new QCheckBox (label);
   box.setChecked (isChecked);
   return box;
+}
+
+ViewDoubleSlider& ViewUtil :: slider (float min, float value, float max, float stepSize) {
+  ViewDoubleSlider& slider = *new ViewDoubleSlider (2);
+  slider.setValue       (value);
+  slider.setRange       (min, max);
+  slider.setSingleStep  (stepSize);
+  slider.setPageStep    (max);
+  slider.setTracking    (true);
+  slider.setOrientation (Qt::Horizontal);
+  return slider;
 }
 
 QFrame& ViewUtil :: horizontalLine () {
@@ -106,6 +118,10 @@ void ViewUtil :: connect (const QCheckBox& c, const std::function <void (bool)>&
 
 void ViewUtil :: connect (const QRadioButton& r, const std::function <void (bool)>& f) {
   QObject::connect (&r, &QRadioButton::clicked, f);
+}
+
+void ViewUtil :: connect (const ViewDoubleSlider& s, const std::function <void (float)>& f) {
+  QObject::connect (&s, &ViewDoubleSlider::doubleValueChanged, f);
 }
 
 QWidget& ViewUtil :: stretcher (bool horizontal, bool vertical) {

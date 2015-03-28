@@ -1,8 +1,8 @@
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 #include "cache.hpp"
 #include "tools.hpp"
 #include "sculpt-brush.hpp"
+#include "view/double-slider.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -26,21 +26,21 @@ struct ToolSculptCarve::Impl {
     auto&       params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
     ViewCursor& cursor = this->self->cursor ();
 
-    QDoubleSpinBox& smoothnessEdit = ViewUtil::spinBox ( 0.0f, params.smoothness ()
+    ViewDoubleSlider& smoothnessEdit = ViewUtil::slider ( 0.0f, params.smoothness ()
                                                         , 1.0f, 0.1f );
     ViewUtil::connect (smoothnessEdit, [this,&params,&cursor] (float f) {
       params.smoothness (f);
       this->self->cache ().set ("smoothness", f);
     });
-    properties.add (QObject::tr ("Smoothness"), smoothnessEdit);
+    properties.addStacked (QObject::tr ("Smoothness"), smoothnessEdit);
 
-    QDoubleSpinBox& intensityEdit = ViewUtil::spinBox ( 0.0f, params.intensityFactor ()
-                                                      , 0.1f, 0.01f );
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.01f, params.intensityFactor ()
+                                                       , 0.1f, 0.01f );
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensityFactor (i);
       this->self->cache ().set ("intensity", i);
     });
-    properties.add (QObject::tr ("Intensity"), intensityEdit);
+    properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
 
     QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), params.invert ());
     ViewUtil::connect (invertEdit, [this,&params] (bool i) {

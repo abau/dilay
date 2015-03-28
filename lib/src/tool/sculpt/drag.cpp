@@ -1,10 +1,10 @@
-#include <QDoubleSpinBox>
 #include <glm/glm.hpp>
 #include "cache.hpp"
 #include "tools.hpp"
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
+#include "view/double-slider.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -33,13 +33,13 @@ struct ToolSculptDrag::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
 
-    QDoubleSpinBox& smoothnessEdit = ViewUtil::spinBox ( 0.0f, params.smoothness ()
+    ViewDoubleSlider& smoothnessEdit = ViewUtil::slider ( 0.0f, params.smoothness ()
                                                         , 1.0f, 0.1f );
     ViewUtil::connect (smoothnessEdit, [this,&params] (float f) {
       params.smoothness (f);
       this->self->cache ().set ("smoothness", f);
     });
-    properties.add (QObject::tr ("Smoothness"), smoothnessEdit);
+    properties.addStacked (QObject::tr ("Smoothness"), smoothnessEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {

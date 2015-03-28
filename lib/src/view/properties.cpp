@@ -44,9 +44,21 @@ struct ViewPropertiesPart::Impl {
     this->numProperties++;
   }
 
-  void add(const QString& label, QWidget& w) {
+  void add (const QString& label, QWidget& w) {
     this->layout->addWidget (new QLabel (label), this->numProperties, 0);
     this->layout->addWidget (&w                , this->numProperties, 1);
+    this->numProperties++;
+  }
+
+  void addStacked (const QString& l, QWidget& w) {
+    QVBoxLayout& stack = *new QVBoxLayout;
+    QLabel&      label = *new QLabel (l);
+
+    label.setAlignment (Qt::AlignHCenter);
+    stack.addWidget (&label);
+    stack.addWidget (&w);
+
+    this->layout->addLayout (&stack, this->numProperties, 0, 1, 2);
     this->numProperties++;
   }
 
@@ -66,6 +78,7 @@ DELEGATE2_BIG3 (ViewPropertiesPart, QVBoxLayout&, unsigned int)
 DELEGATE  (void, ViewPropertiesPart, reset)
 DELEGATE1 (void, ViewPropertiesPart, add, QWidget&)
 DELEGATE2 (void, ViewPropertiesPart, add, const QString&, QWidget&)
+DELEGATE2 (void, ViewPropertiesPart, addStacked, const QString&, QWidget&)
 DELEGATE2 (void, ViewPropertiesPart, add, QButtonGroup&, const std::vector <QString>&)
 
 struct ViewProperties::Impl {
