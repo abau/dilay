@@ -45,11 +45,14 @@ struct ToolSculpt::Impl {
   }
 
   void setupBrush () {
-    this->brush.detailFactor (this->self->config ().get <float> ("editor/tool/sculpt/detail-factor"));
+    const Config&     config = this->self->config ();
+    const CacheProxy& cCache = this->commonCache;
 
-    this->brush.radius          (this->commonCache.get <float> ("radius"           , 20.0f));
-    this->brush.stepWidthFactor (this->commonCache.get <float> ("step-width-factor", 0.3f));
-    this->brush.subdivide       (this->commonCache.get <bool>  ("subdivide"        , true));
+    this->brush.detailFactor    (config.get <float> ("editor/tool/sculpt/detail-factor"));
+    this->brush.stepWidthFactor (config.get <float> ("editor/tool/sculpt/step-width-factor"));
+
+    this->brush.radius          (cCache.get <float> ("radius"   , 20.0f));
+    this->brush.subdivide       (cCache.get <bool>  ("subdivide", true));
 
     this->self->runSetupBrush (this->brush);
   }
@@ -81,14 +84,6 @@ struct ToolSculpt::Impl {
       this->commonCache.set ("radius", r);
     });
     properties.add (QObject::tr ("Radius"), this->radiusEdit);
-
-    QDoubleSpinBox& stepEdit = ViewUtil::spinBox ( 0.01f, this->brush.stepWidthFactor ()
-                                                 , 1000.0f, 0.1f );
-    ViewUtil::connect (stepEdit, [this] (float s) {
-      this->brush.stepWidthFactor (s);
-      this->commonCache.set ("step-width-factor", s);
-    });
-    properties.add (QObject::tr ("Step width"), stepEdit);
 
     QCheckBox& subdivEdit = ViewUtil::checkBox ( QObject::tr ("Subdivide")
                                                , this->brush.subdivide () );
