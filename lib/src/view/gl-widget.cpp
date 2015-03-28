@@ -99,23 +99,21 @@ struct ViewGlWidget::Impl {
     const bool                  hasTool = this->state ().hasTool ();
 
     if (key == Qt::Key_W) {
+      RenderMode mode = this->state ().scene ().commonRenderMode ();
+
       if (mod == Qt::ControlModifier) {
-        this->state ().scene ().forEachMesh ([] (WingedMesh& m) {
-          if (m.renderMode ().smoothShading ()) {
-            m.renderMode ().flatShading (true);
-          }
-          else if (m.renderMode ().flatShading ()) {
-            m.renderMode ().smoothShading (true);
-          }
-        });
-        this->self->update ();
+        if (mode.smoothShading ()) {
+          mode.flatShading (true);
+        }
+        else if (mode.flatShading ()) {
+          mode.smoothShading (true);
+        }
       }
       else if (mod == Qt::NoModifier) {
-        this->state ().scene ().forEachMesh ([] (WingedMesh& m) {
-          m.renderMode ().renderWireframe (! m.renderMode ().renderWireframe ());
-        });
-        this->self->update ();
+        mode.renderWireframe (! mode.renderWireframe ());
       }
+      this->state ().scene ().commonRenderMode (mode);
+      this->self->update ();
     }
     else if (key == Qt::Key_I) {
       this->state ().scene ().printStatistics (false);

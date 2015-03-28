@@ -10,30 +10,29 @@
 struct Scene :: Impl {
   const ConfigProxy          wingedMeshConfig;
   IndexableList <WingedMesh> wingedMeshes;
+  RenderMode                _commonRenderMode;
 
   Impl (const Config& config) 
     : wingedMeshConfig (ConfigProxy (config, "editor/mesh/"))
   {
     this->runFromConfig (config);
+
+    this->_commonRenderMode.smoothShading (true);
   }
 
   WingedMesh& newWingedMesh () {
-    const WingedMesh* other    = this->wingedMeshes.getSome ();
-          WingedMesh& newWMesh = this->wingedMeshes.emplace ();
+    WingedMesh& newWMesh = this->wingedMeshes.emplace ();
 
-    if (other) {
-      newWMesh.renderMode () = other->renderMode ();
-    }
+    newWMesh.renderMode () = this->_commonRenderMode;
     return newWMesh;
   }
 
   WingedMesh& newWingedMesh (const Mesh& mesh) {
     WingedMesh& wingedMesh = this->newWingedMesh ();
-    RenderMode  renderMode = wingedMesh.renderMode ();
 
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
-    wingedMesh.renderMode () = renderMode;
+    wingedMesh.renderMode () = this->_commonRenderMode;
 
     this->runFromConfig (wingedMesh);
     return wingedMesh;
@@ -83,6 +82,17 @@ struct Scene :: Impl {
     mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
   }
 
+  const RenderMode& commonRenderMode () {
+    return this->_commonRenderMode;
+  }
+
+  void commonRenderMode (const RenderMode& mode) {
+    this->_commonRenderMode = mode;
+    this->forEachMesh ([&mode] (WingedMesh& mesh) {
+      mesh.renderMode () = mode; 
+    });
+  }
+
   void runFromConfig (const Config& config) {
     assert (&config == &this->wingedMeshConfig.config ());
 
@@ -104,4 +114,6 @@ DELEGATE1_CONST (void             , Scene, printStatistics, bool)
 DELEGATE1       (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1_CONST (void             , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
 DELEGATE        (void             , Scene, reset)
+DELEGATE_CONST  (const RenderMode&, Scene, commonRenderMode)
+DELEGATE1       (void             , Scene, commonRenderMode, const RenderMode&)
 DELEGATE1       (void             , Scene, runFromConfig, const Config&)

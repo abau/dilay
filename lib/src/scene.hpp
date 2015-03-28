@@ -7,6 +7,7 @@
 class Camera;
 class Mesh;
 class PrimRay;
+class RenderMode;
 class WingedFaceIntersection;
 class WingedMesh;
 
@@ -24,6 +25,8 @@ class Scene : public Configurable {
     void              forEachMesh      (const std::function <void (WingedMesh&)>&);
     void              forEachConstMesh (const std::function <void (const WingedMesh&)>&) const;
     void              reset            ();
+    const RenderMode& commonRenderMode () const;
+    void              commonRenderMode (const RenderMode&);
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:
