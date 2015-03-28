@@ -32,7 +32,7 @@ struct ToolSculpt::Impl {
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
-    , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 10.0f))
+    , radiusEdit  (ViewUtil::spinBox (0.01f, 1.0f, 1000.0f, 5.0f))
   {}
 
   ToolResponse runInitialize () {
