@@ -86,9 +86,8 @@ struct Renderer::Impl {
     OpenGL::glCullFace     (OpenGL::Back      ());
     OpenGL::glEnable       (OpenGL::DepthTest ()); 
     OpenGL::glDepthFunc    (OpenGL::LEqual    ()); 
-    OpenGL::glClear        ( OpenGL::ColorBufferBit   ()
-                           | OpenGL::DepthBufferBit   () 
-                           | OpenGL::StencilBufferBit () );
+    OpenGL::glClear        ( OpenGL::ColorBufferBit ()
+                           | OpenGL::DepthBufferBit () );
   }
 
   unsigned int shaderIndex (const RenderMode& renderMode) {

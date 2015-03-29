@@ -53,6 +53,9 @@ struct ViewCursor::Impl {
 
   void render (Camera& camera) const {
     if (this->isEnabled) {
+      OpenGL::glClear         (OpenGL::StencilBufferBit ());
+
+      OpenGL::glDepthMask     (false);
       OpenGL::glColorMask     (false, false, false, false);
       OpenGL::glEnable        (OpenGL::StencilTest ());
 
@@ -78,6 +81,7 @@ struct ViewCursor::Impl {
 
       OpenGL::glDisable       (OpenGL::Blend ());
       OpenGL::glDisable       (OpenGL::StencilTest ());
+      OpenGL::glDepthMask     (true);
     }
   }
 
