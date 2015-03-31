@@ -105,15 +105,20 @@ struct Mesh::Impl {
   }
 
   unsigned int addVertex (const glm::vec3& v) { 
+    return this->addVertex (v, glm::vec3 (0.0f));
+  }
+
+  unsigned int addVertex (const glm::vec3& v, const glm::vec3& n) { 
     assert (Util::isNaN (v) == false);
+    assert (Util::isNaN (n) == false);
 
     this->vertices.push_back (v.x);
     this->vertices.push_back (v.y);
     this->vertices.push_back (v.z);
 
-    this->normals.push_back (0.0f);
-    this->normals.push_back (0.0f);
-    this->normals.push_back (0.0f);
+    this->normals.push_back (n.x);
+    this->normals.push_back (n.y);
+    this->normals.push_back (n.z);
 
     return this->numVertices () - 1;
   }
@@ -368,6 +373,7 @@ DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
 DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
+DELEGATE2        (unsigned int      , Mesh, addVertex, const glm::vec3&, const glm::vec3&)
 DELEGATE1        (void              , Mesh, resizeVertices, unsigned int)
 DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
 DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)

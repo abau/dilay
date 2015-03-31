@@ -26,6 +26,7 @@ class Mesh {
     unsigned int       addIndex          (unsigned int);
     void               resizeIndices     (unsigned int);
     unsigned int       addVertex         (const glm::vec3&);
+    unsigned int       addVertex         (const glm::vec3&, const glm::vec3&);
     void               resizeVertices    (unsigned int);
     void               setIndex          (unsigned int, unsigned int);
     void               setVertex         (unsigned int, const glm::vec3&);
