@@ -69,4 +69,14 @@ void TestIntersection::test () {
   assert (intersects (PrimRay ( true
                               , glm::vec3 (0.0f, 0.0f,-1.0f)
                               , glm::vec3 (0.0f, 0.0f,-1.0f) ), abx));
+
+  assert (intersects (PrimPlane ( glm::vec3 (0.0f, 0.0f, 0.0f)
+                                , glm::vec3 (0.0f, 1.0f, 0.0f) ), abx));
+  assert (intersects (PrimPlane ( glm::vec3 (0.0f, 0.5f, 0.0f)
+                                , glm::vec3 (0.0f, 1.0f, 0.0f) ), abx));
+  assert (intersects (PrimPlane ( glm::vec3 (0.0f, 0.6f, 0.0f)
+                                , glm::vec3 (0.0f, 1.0f, 0.0f) ), abx) == false);
+
+  assert (intersects (PrimPlane ( glm::vec3 (0.0f, 2.0f, 0.0f)
+                                , glm::vec3 (0.0f, 1.0f, 0.0f) ), tri));
 }

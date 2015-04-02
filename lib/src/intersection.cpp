@@ -252,3 +252,65 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
 
   return (tMax >= 0.0f || ray.isLine ()) && tMin <= tMax;
 }
+
+bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimAABox& box) {
+  const float x  = box.xWidth () * 0.5f;
+  const float y  = box.yWidth () * 0.5f;
+  const float z  = box.zWidth () * 0.5f;
+  const float d1 = plane.distance (box.center () + glm::vec3 ( x  , 0.0f, 0.0f));
+  const float d2 = plane.distance (box.center () + glm::vec3 (-x  , 0.0f, 0.0f));
+  const float d3 = plane.distance (box.center () + glm::vec3 (0.0f,    y, 0.0f));
+  const float d4 = plane.distance (box.center () + glm::vec3 (0.0f,   -y, 0.0f));
+  const float d5 = plane.distance (box.center () + glm::vec3 (0.0f, 0.0f,    z));
+  const float d6 = plane.distance (box.center () + glm::vec3 (0.0f, 0.0f,   -z));
+
+  const bool less    = d1 < Util::epsilon ()
+                    || d2 < Util::epsilon ()
+                    || d3 < Util::epsilon ()
+                    || d4 < Util::epsilon ()
+                    || d5 < Util::epsilon ()
+                    || d6 < Util::epsilon ();
+
+  const bool greater = d1 > -Util::epsilon ()
+                    || d2 > -Util::epsilon ()
+                    || d3 > -Util::epsilon ()
+                    || d4 > -Util::epsilon ()
+                    || d5 > -Util::epsilon ()
+                    || d6 > -Util::epsilon ();
+
+  return less && greater;
+}
+
+
+namespace {
+  bool planeTriangleIntersection ( const PrimPlane& plane, const glm::vec3& v1
+                                 , const glm::vec3& v2, const glm::vec3& v3 )
+  {
+    const float d1 = plane.distance (v1);
+    const float d2 = plane.distance (v2);
+    const float d3 = plane.distance (v3);
+
+    const bool less    = d1 < Util::epsilon ()
+                      || d2 < Util::epsilon ()
+                      || d3 < Util::epsilon ();
+
+    const bool greater = d1 > -Util::epsilon ()
+                      || d2 > -Util::epsilon ()
+                      || d3 > -Util::epsilon ();
+
+    return less && greater;
+  }
+}
+
+bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimTriangle& tri) {
+  return planeTriangleIntersection (plane, tri.vertex1 (), tri.vertex2 (), tri.vertex3 ());
+}
+
+bool IntersectionUtil :: intersects ( const PrimPlane& plane, const WingedMesh& mesh
+                                    , const WingedFace& face )
+{
+  return planeTriangleIntersection ( plane
+                                   , face.vertexRef (0).position (mesh)
+                                   , face.vertexRef (1).position (mesh)
+                                   , face.vertexRef (2).position (mesh) );
+}
