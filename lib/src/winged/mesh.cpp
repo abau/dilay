@@ -6,6 +6,7 @@
 #include "indexable.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
+#include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
@@ -298,7 +299,27 @@ struct WingedMesh::Impl {
   }
 
   bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
-    return this->octree.intersects (*this->self, sphere, faces);
+    OctreeIntersection intersection
+      ( [&sphere] (const PrimAABox& box) {
+          return IntersectionUtil::intersects (sphere, box);
+        }
+      , [this,&sphere] (const WingedFace& face) {
+          return IntersectionUtil::intersects (sphere, *this->self, face);
+        }
+      );
+    return this->octree.intersects (intersection, faces);
+  }
+
+  bool intersects (const PrimPlane& plane, AffectedFaces& faces) {
+    OctreeIntersection intersection
+      ( [&plane] (const PrimAABox& box) {
+          return IntersectionUtil::intersects (plane, box);
+        }
+      , [this,&plane] (const WingedFace& face) {
+          return IntersectionUtil::intersects (plane, *this->self, face);
+        }
+      );
+    return this->octree.intersects (intersection, faces);
   }
 
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
@@ -431,6 +452,7 @@ DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimPlane&, AffectedFaces&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
 DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)

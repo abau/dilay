@@ -10,6 +10,7 @@ class Camera;
 class Color;
 class Mesh;
 class Octree;
+class PrimPlane;
 class PrimRay;
 class PrimSphere;
 class PrimTriangle;
@@ -66,6 +67,7 @@ class WingedMesh {
     
     bool               intersects         (const PrimRay&, WingedFaceIntersection&);
     bool               intersects         (const PrimSphere&, AffectedFaces&);
+    bool               intersects         (const PrimPlane&, AffectedFaces&);
 
     void               scale              (const glm::vec3&);
     void               scaling            (const glm::vec3&);

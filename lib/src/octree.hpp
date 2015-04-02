@@ -10,6 +10,7 @@ class AffectedFaces;
 class Camera;
 class Id;
 class OctreeNode;
+class PrimAABox;
 class PrimRay;
 class PrimSphere;
 class PrimTriangle;
@@ -30,6 +31,17 @@ struct OctreeStatistics {
   unsigned int maxFacesPerNode;
   DepthMap     numFacesPerDepth;
   DepthMap     numNodesPerDepth;
+};
+
+struct OctreeIntersection {
+  std::function <bool (const PrimAABox&) > aabox;
+  std::function <bool (const WingedFace&)> face;
+
+  OctreeIntersection ( const std::function <bool (const PrimAABox&) >& a
+                     , const std::function <bool (const WingedFace&)>& f )
+    : aabox (a)
+    , face  (f)
+  {}
 };
 
 class OctreeNode {
@@ -60,7 +72,7 @@ class Octree {
     WingedFace*      face                 (unsigned int) const;
     void             render               (const Camera&) const;
     bool             intersects           (WingedMesh&, const PrimRay&, WingedFaceIntersection&);
-    bool             intersects           (const WingedMesh&, const PrimSphere&, AffectedFaces&);
+    bool             intersects           (const OctreeIntersection&, AffectedFaces&);
     void             reset                ();
     void             shrinkRoot           ();
     bool             hasRoot              () const;

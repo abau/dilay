@@ -293,19 +293,19 @@ struct OctreeNode::Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, AffectedFaces& afFaces) {
+  bool intersects (const OctreeIntersection& intersection, AffectedFaces& afFaces ) {
     assert (this->storeDegenerated == false);
     bool hasIntersection = false;
-    if (IntersectionUtil :: intersects (sphere, this->looseAABox ())) {
+    if (intersection.aabox (this->looseAABox ())) {
       for (WingedFace& face : this->faces) {
-        if (IntersectionUtil :: intersects (sphere, mesh, face)) {
+        if (intersection.face (face)) {
           afFaces.insert (face);
           hasIntersection = true;
         }
       }
       afFaces.commit ();
       for (Child& c : this->children) {
-        hasIntersection = c->intersects (mesh, sphere, afFaces) || hasIntersection;
+        hasIntersection = c->intersects (intersection, afFaces) || hasIntersection;
       }
     }
     return hasIntersection;
@@ -509,9 +509,9 @@ struct Octree::Impl {
     return false;
   }
 
-  bool intersects (const WingedMesh& mesh, const PrimSphere& sphere, AffectedFaces& faces) {
+  bool intersects (const OctreeIntersection& intersection, AffectedFaces& faces) {
     if (this->hasRoot ()) {
-      return this->root->intersects (mesh,sphere,faces);
+      return this->root->intersects (intersection, faces);
     }
     return false;
   }
@@ -618,7 +618,7 @@ DELEGATE1       (void        , Octree, deleteFace, WingedFace&)
 DELEGATE1_CONST (WingedFace* , Octree, face, unsigned int)
 DELEGATE1_CONST (void, Octree, render, const Camera&)
 DELEGATE3       (bool, Octree, intersects, WingedMesh&, const PrimRay&, WingedFaceIntersection&)
-DELEGATE3       (bool, Octree, intersects, const WingedMesh&, const PrimSphere&, AffectedFaces&)
+DELEGATE2       (bool, Octree, intersects, const OctreeIntersection&, AffectedFaces&)
 DELEGATE        (void, Octree, reset)
 DELEGATE        (void, Octree, shrinkRoot)
 DELEGATE_CONST  (bool, Octree, hasRoot)
