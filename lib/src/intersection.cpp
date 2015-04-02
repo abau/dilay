@@ -1,8 +1,5 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
-#include <limits>
-#include "adjacent-iterator.hpp"
-#include "affected-faces.hpp"
 #include "intersection.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/plane.hpp"
@@ -215,17 +212,11 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
   }
 }
 
-bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
-                                    , glm::vec3* intersection) 
-{
-  return IntersectionUtil::intersects (ray, tri, tri.normal (), intersection);
-}
-
 // see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
-                                    , const glm::vec3& normal, glm::vec3* intersection) 
+                                    , glm::vec3* intersection ) 
 {
-  const float dot = glm::dot (ray.direction (), normal);
+  const float dot = glm::dot (ray.direction (), tri.normal ());
 
   if (glm::epsilonEqual (dot, 0.0f, Util::epsilon ())) {
     return false;
@@ -260,40 +251,4 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
   const float tMax = glm::min ( glm::min (max.x, max.y), max.z );
 
   return (tMax >= 0.0f || ray.isLine ()) && tMin <= tMax;
-}
-
-void IntersectionUtil :: extend ( const PrimSphere& sphere, const WingedMesh& mesh
-                                , WingedFace& face, AffectedFaces& faces ) 
-{
-  assert (faces.isEmpty ());
-
-  const glm::vec3 normal (face.triangle (mesh).cross ());
-  FacePtrVec candidates;
-  FacePtrSet rejected;
-
-  candidates.push_back (&face);
-
-  while (candidates.empty () == false) {
-    WingedFace& f = *candidates.back ();
-    candidates.pop_back ();
-
-    if (faces.contains (f) == false && rejected.count (&f) == 0) {
-
-      if ( glm::dot (normal, f.triangle (mesh).cross ()) > 0.0f
-        && IntersectionUtil::intersects (sphere, mesh, f) )
-      {
-        faces.insert (f);
-        faces.commit ();
-
-        for (WingedFace& a : f.adjacentFaces ()) {
-          if (faces.contains (a) == false) {
-            candidates.push_back (&a);
-          }
-        }
-      }
-      else {
-        rejected.insert (&f);
-      }
-    }
-  }
 }
