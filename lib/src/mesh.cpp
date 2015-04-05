@@ -190,16 +190,12 @@ struct Mesh::Impl {
     camera.setModelViewProjection (this->modelMatrix (), this->modelNormalMatrix (), noZoom);
   }
 
-  bool renderFallbackWireframe () const {
-    return this->renderMode.renderWireframe () && OpenGL::supportsGeometryShader () == false;
-  }
-
   void renderBegin (Camera& camera) const {
-    if (this->renderFallbackWireframe ()) {
-      RenderMode constantRenderMode;
-      constantRenderMode.constantShading (true);
+    if (this->renderMode.renderWireframe () && OpenGL::supportsGeometryShader () == false) {
+      RenderMode nonWireframeRenderMode (this->renderMode);
+      nonWireframeRenderMode.renderWireframe (false);
 
-      camera.renderer ().setProgram (constantRenderMode);
+      camera.renderer ().setProgram (nonWireframeRenderMode);
     }
     else {
       camera.renderer ().setProgram (this->renderMode);
@@ -238,32 +234,9 @@ struct Mesh::Impl {
   void render (Camera& camera) const {
     this->renderBegin (camera);
 
-    if (this->renderFallbackWireframe ()) {
-      camera.renderer ().setColor3 (this->wireframeColor);
+    OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
+                           , OpenGL::UnsignedInt (), nullptr );
 
-      OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Line ());
-      OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                             , OpenGL::UnsignedInt (), nullptr );
-      OpenGL::glPolygonMode  (OpenGL::FrontAndBack (), OpenGL::Fill ());
-
-      RenderMode nonWireframeRenderMode (this->renderMode);
-      nonWireframeRenderMode.renderWireframe (false);
-
-      camera.renderer ().setProgram (nonWireframeRenderMode);
-      camera.renderer ().setColor3  (this->color);
-
-      this->setModelMatrix (camera, nonWireframeRenderMode.cameraRotationOnly ());
-
-      OpenGL::glEnable        (OpenGL::PolygonOffsetFill ());
-      OpenGL::glPolygonOffset (Util::defaultScale (), Util::defaultScale ());
-      OpenGL::glDrawElements  ( OpenGL::Triangles (), this->numIndices ()
-                              , OpenGL::UnsignedInt (), nullptr );
-      OpenGL::glDisable       (OpenGL::PolygonOffsetFill ());
-    }
-    else {
-      OpenGL::glDrawElements ( OpenGL::Triangles (), this->numIndices ()
-                             , OpenGL::UnsignedInt (), nullptr );
-    }
     this->renderEnd ();
   }
 
