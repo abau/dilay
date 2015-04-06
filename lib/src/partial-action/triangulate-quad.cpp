@@ -11,6 +11,9 @@ WingedEdge& PartialAction :: triangulateQuad ( WingedMesh& mesh, WingedFace& fac
 
   WingedEdge& newEdge = PartialAction::insertEdgeFace (mesh, face);
 
+  newEdge.leftFaceRef  ().writeIndices (mesh);
+  newEdge.rightFaceRef ().writeIndices (mesh);
+
   if (affectedFaces) {
     affectedFaces->insert (newEdge.leftFaceRef  ());
     affectedFaces->insert (newEdge.rightFaceRef ());
