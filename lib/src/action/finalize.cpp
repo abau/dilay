@@ -9,10 +9,9 @@
 
 void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces) {
   // realign
-  for (auto it = affectedFaces.faces ().begin (); it != affectedFaces.faces ().end (); ) {
+  for (FacePtrSet::const_iterator it = affectedFaces.faces ().begin (); it != affectedFaces.faces ().end (); ) {
     WingedFace& face = **it;
-    ++it;
-    affectedFaces.remove (face);
+    it = affectedFaces.removeCommited (it);
     affectedFaces.insert (mesh.realignFace (face, face.triangle (mesh)));
   }
   affectedFaces.commit ();
