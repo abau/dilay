@@ -11,6 +11,7 @@ CONFIG                 += staticlib
 SOURCES += \
            src/action/finalize.cpp \
            src/action/sculpt.cpp \
+           src/action/split-mesh.cpp \
            src/action/subdivide-mesh.cpp \
            src/adjacent-iterator.cpp \
            src/affected-faces.cpp \
@@ -83,6 +84,7 @@ SOURCES += \
 HEADERS += \
            src/action/finalize.hpp \
            src/action/sculpt.hpp \
+           src/action/split-mesh.hpp \
            src/action/subdivide-mesh.hpp \
            src/adjacent-iterator.hpp \
            src/affected-faces.hpp \
