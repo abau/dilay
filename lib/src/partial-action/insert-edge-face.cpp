@@ -39,15 +39,14 @@ namespace {
   }
 }
 
-WingedEdge& PartialAction :: insertEdgeFace ( WingedMesh& mesh, WingedFace& face
-                                            , WingedEdge& edge, WingedVertex& vertex )
-{
+WingedEdge& PartialAction :: insertEdgeFace (WingedMesh& mesh, WingedFace& face, WingedEdge& edge) {
   assert (edge.isLeftFace (face) || edge.isRightFace (face));
 
-  WingedEdge& predecessor    = edge.predecessorRef (face);
-  WingedEdge& prePredecessor = predecessor.predecessorRef (face);
-  WingedEdge& successor      = edge.successorRef   (face);
-  WingedEdge& sucSuccessor   = successor.successorRef (face);
+  WingedEdge&   predecessor    = edge.predecessorRef (face);
+  WingedEdge&   prePredecessor = predecessor.predecessorRef (face);
+  WingedEdge&   successor      = edge.successorRef   (face);
+  WingedEdge&   sucSuccessor   = successor.successorRef (face);
+  WingedVertex& vertex         = predecessor.firstVertexRef (face);
 
   if (predecessor.firstVertexRef (face).index () == vertex.index ()) {
     PrimTriangle newLeftGeometry (mesh, predecessor.vertexRef (face, 0)
@@ -73,7 +72,5 @@ WingedEdge& PartialAction :: insertEdgeFace ( WingedMesh& mesh, WingedFace& face
 }
 
 WingedEdge& PartialAction :: insertEdgeFace (WingedMesh& mesh, WingedFace& face) {
-  return PartialAction::insertEdgeFace 
-    ( mesh, face, face.edgeRef ()
-    , face.edgeRef ().predecessorRef (face).firstVertexRef (face) );
+  return PartialAction::insertEdgeFace (mesh, face, face.edgeRef ());
 }

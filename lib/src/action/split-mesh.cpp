@@ -25,17 +25,21 @@ void Action :: splitMesh (WingedMesh& mesh, const PrimPlane& plane) {
       const float d2 = plane.distance (face.vertexRef (1).position (mesh));
       const float d3 = plane.distance (face.vertexRef (2).position (mesh));
 
-      const bool  b1 = glm::epsilonEqual (d1, 0.0f, Util::epsilon ());
-      const bool  b2 = glm::epsilonEqual (d2, 0.0f, Util::epsilon ());
-      const bool  b3 = glm::epsilonEqual (d3, 0.0f, Util::epsilon ());
+      const bool  e1 = glm::epsilonEqual (d1, 0.0f, Util::epsilon ());
+      const bool  e2 = glm::epsilonEqual (d2, 0.0f, Util::epsilon ());
+      const bool  e3 = glm::epsilonEqual (d3, 0.0f, Util::epsilon ());
 
-      const bool  none       = !(b1 || b2 || b3);
+      const bool  g1 = d1 > Util::epsilon ();
+      const bool  g2 = d2 > Util::epsilon ();
+      const bool  g3 = d3 > Util::epsilon ();
 
-      const bool  exactlyOne = (b1 && !b2 && !b3)
-                            || (b2 && !b1 && !b3)
-                            || (b3 && !b1 && !b2);
+      const bool  noneOnePlane = !(e1 || e2 || e3);
 
-      if (none || exactlyOne) {
+      const bool  exactlyOneOnPlane = (e1 && !e2 && !e3 && (g2 != g3))
+                                   || (e2 && !e1 && !e3 && (g1 != g3))
+                                   || (e3 && !e1 && !e2 && (g1 != g2));
+
+      if (noneOnePlane || exactlyOneOnPlane) {
         ++it;
       }
       else {
@@ -71,9 +75,7 @@ void Action :: splitMesh (WingedMesh& mesh, const PrimPlane& plane) {
     for (WingedFace* f : affectedFaces.faces ()) {
       const unsigned int numEdges = f->numEdges ();
 
-      if (numEdges == 3) {
-      }
-      else if (numEdges == 4) {
+      if (numEdges == 4) {
         WingedEdge& newEdge = PartialAction::insertEdgeFace (mesh, *f);
         affectedFaces.insert (newEdge.otherFaceRef (*f));
 
@@ -92,14 +94,14 @@ void Action :: splitMesh (WingedMesh& mesh, const PrimPlane& plane) {
         assert (newVertices.count (&newV) > 0);
         
         if (newVertices.count (&maybeNew1) > 0) {
-          WingedEdge& newEdge = PartialAction::insertEdgeFace (mesh, *f, edge, maybeNew1);
+          WingedEdge& newEdge = PartialAction::insertEdgeFace (mesh, *f, edge);
           affectedFaces.insert (newEdge.otherFaceRef (*f));
 
           assert (f->numEdges () == 4);
           assert (newEdge.otherFaceRef (*f).numEdges () == 3);
         }
         else if (newVertices.count (&maybeNew2) > 0) {
-          WingedEdge& newEdge = PartialAction::insertEdgeFace (mesh, *f, sucSuc, newV);
+          WingedEdge& newEdge = PartialAction::insertEdgeFace (mesh, *f, sucSuc);
           affectedFaces.insert (newEdge.otherFaceRef (*f));
 
           assert (f->numEdges () == 4);
