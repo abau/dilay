@@ -2,8 +2,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <unordered_map>
-#include "mesh-definition.hpp"
 #include "mesh.hpp"
+#include "mesh-util.hpp"
 #include "util.hpp"
 
 namespace {
@@ -35,7 +35,7 @@ namespace {
   }
 }
 
-Mesh MeshDefinition :: cube () {
+Mesh MeshUtil :: cube () {
   Mesh mesh;
   const float d = 0.5f;
 
@@ -58,7 +58,7 @@ Mesh MeshDefinition :: cube () {
   return finalized (mesh);
 }
 
-Mesh MeshDefinition :: sphere (unsigned int rings, unsigned int sectors) {
+Mesh MeshUtil :: sphere (unsigned int rings, unsigned int sectors) {
   assert (rings > 1 && sectors > 2);
   Mesh mesh;
 
@@ -109,7 +109,7 @@ Mesh MeshDefinition :: sphere (unsigned int rings, unsigned int sectors) {
   return finalized (mesh);
 }
 
-Mesh MeshDefinition :: icosphere (unsigned int numSubdivisions) {
+Mesh MeshUtil :: icosphere (unsigned int numSubdivisions) {
   Mesh mesh;
   typedef unsigned long                          Key;
   typedef std::unordered_map <Key, unsigned int> VertexCache;
@@ -210,7 +210,7 @@ Mesh MeshDefinition :: icosphere (unsigned int numSubdivisions) {
   return finalized (mesh);
 }
 
-Mesh MeshDefinition :: cone (unsigned int numBaseVertices) {
+Mesh MeshUtil :: cone (unsigned int numBaseVertices) {
   assert (numBaseVertices >= 3);
 
   Mesh mesh;
@@ -234,7 +234,7 @@ Mesh MeshDefinition :: cone (unsigned int numBaseVertices) {
   return finalized (mesh);
 }
 
-Mesh MeshDefinition :: cylinder (unsigned int numVertices) {
+Mesh MeshUtil :: cylinder (unsigned int numVertices) {
   assert (numVertices >= 3);
 
   Mesh mesh;

@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include "history.hpp"
-#include "mesh-definition.hpp"
 #include "mesh.hpp"
+#include "mesh-util.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"
@@ -15,7 +15,7 @@ struct ToolNewMesh::Impl {
   ToolResponse runInitialize () const {
     this->self->snapshotScene ();
 
-    WingedMesh& mesh = this->self->state ().scene ().newWingedMesh (MeshDefinition::icosphere (3));
+    WingedMesh& mesh = this->self->state ().scene ().newWingedMesh (MeshUtil::icosphere (3));
 
     WingedUtil::defaultScale (mesh);
 

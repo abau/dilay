@@ -23,7 +23,7 @@ SOURCES += \
            src/intersection.cpp \
            src/kvstore.cpp \
            src/mesh.cpp \
-           src/mesh-definition.cpp \
+           src/mesh-util.cpp \
            src/mirror.cpp \
            src/octree.cpp \
            src/opengl.cpp \
@@ -101,7 +101,7 @@ HEADERS += \
            src/macro.hpp \
            src/maybe.hpp \
            src/mesh.hpp \
-           src/mesh-definition.hpp \
+           src/mesh-util.hpp \
            src/mirror.hpp \
            src/octree.hpp \
            src/opengl.hpp \

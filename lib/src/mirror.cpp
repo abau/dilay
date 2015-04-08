@@ -4,7 +4,7 @@
 #include "config.hpp"
 #include "dimension.hpp"
 #include "mesh.hpp"
-#include "mesh-definition.hpp"
+#include "mesh-util.hpp"
 #include "mirror.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
@@ -18,7 +18,7 @@ struct Mirror::Impl {
     : dimension   (d)
     , mirrorWidth (1.0f)
   {
-    this->mirrorMesh = MeshDefinition::cube ();
+    this->mirrorMesh = MeshUtil::cube ();
     this->mirrorMesh.renderMode ().constantShading (true);
     this->mirrorMesh.bufferData ();
 

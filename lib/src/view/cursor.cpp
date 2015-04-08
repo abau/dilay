@@ -2,7 +2,7 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "mesh.hpp"
-#include "mesh-definition.hpp"
+#include "mesh-util.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
 #include "view/cursor.hpp"
@@ -18,7 +18,7 @@ struct ViewCursor::Impl {
     : _radius            (0.0f)
     ,  isEnabled         (false) 
   {
-    this->radiusMesh = MeshDefinition::icosphere (2);
+    this->radiusMesh = MeshUtil::icosphere (2);
     this->radiusMesh.renderMode ().constantShading (true);
     this->radiusMesh.bufferData ();
   }

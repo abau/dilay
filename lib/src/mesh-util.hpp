@@ -1,9 +1,9 @@
-#ifndef DILAY_MESH_DEFINITION
-#define DILAY_MESH_DEFINITION
+#ifndef DILAY_MESH_UTIL
+#define DILAY_MESH_UTIL
 
 class Mesh;
 
-namespace MeshDefinition {
+namespace MeshUtil {
   Mesh cube      ();
   Mesh sphere    (unsigned int, unsigned int);
   Mesh icosphere (unsigned int);

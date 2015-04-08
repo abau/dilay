@@ -4,8 +4,8 @@
 #include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
-#include "mesh-definition.hpp"
 #include "mesh.hpp"
+#include "mesh-util.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -33,7 +33,7 @@ struct State::Impl {
     , history    (this->config)
     , scene      (this->config)
   {
-    WingedUtil::defaultScale (this->scene.newWingedMesh (MeshDefinition::icosphere (3)));
+    WingedUtil::defaultScale (this->scene.newWingedMesh (MeshUtil::icosphere (3)));
   }
 
   ~Impl () {

@@ -6,8 +6,8 @@
 #include "config.hpp"
 #include "dimension.hpp"
 #include "macro.hpp"
-#include "mesh-definition.hpp"
 #include "mesh.hpp"
+#include "mesh-util.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
 #include "state.hpp"
@@ -28,8 +28,8 @@ struct ViewAxis::Impl {
     this->axisResolution = glm::uvec2 (200,200);
     this->gridResolution = 6;
 
-    this->coneMesh       = MeshDefinition::cone     (10);
-    this->cylinderMesh   = MeshDefinition::cylinder (10);
+    this->coneMesh       = MeshUtil::cone     (10);
+    this->cylinderMesh   = MeshUtil::cylinder (10);
 
     this->cylinderMesh.scaling    (glm::vec3 (0.01f, 0.3f , 0.01f));
     this->cylinderMesh.renderMode ().constantShading (true);
