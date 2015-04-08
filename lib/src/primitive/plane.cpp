@@ -11,6 +11,10 @@ float PrimPlane :: distance (const glm::vec3& p) const {
   return glm::dot (this->_normal, p - this->_point);
 }
 
+glm::vec3 PrimPlane :: project (const glm::vec3& p) const {
+  return p - (this->_normal * this->distance (p));
+}
+
 std::ostream& operator<<(std::ostream& os, const PrimPlane& plane) {
   os << "PrimPlane { point = "  << (plane.point  ())
                << ", normal = " << (plane.normal ()) << " }";

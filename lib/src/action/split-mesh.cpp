@@ -17,6 +17,16 @@
 
 void Action :: splitMesh (WingedMesh& mesh, const PrimPlane& plane) {
 
+  auto correctVertices = [&mesh, &plane] (const AffectedFaces& affectedFaces) {
+    for (WingedVertex* v : affectedFaces.toVertexSet ()) {
+      const glm::vec3 pos = v->position (mesh);
+
+      if (glm::epsilonEqual (plane.distance (pos), 0.0f, Util::epsilon ())) {
+        v->writePosition (mesh, plane.project (pos));
+      }
+    }
+  };
+
   auto discardFacesInPlane = [&mesh, &plane] (AffectedFaces& affectedFaces) {
     for (auto it = affectedFaces.faces ().begin (); it != affectedFaces.faces ().end (); ) {
       WingedFace& face = **it;
@@ -137,6 +147,7 @@ void Action :: splitMesh (WingedMesh& mesh, const PrimPlane& plane) {
   if (mesh.intersects (plane, affectedFaces)) {
     VertexPtrSet newVertices;
 
+    correctVertices     (affectedFaces);
     discardFacesInPlane (affectedFaces);
     splitEdges          (affectedFaces, newVertices);
     connectNewVertices  (affectedFaces, newVertices);
