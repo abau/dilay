@@ -93,6 +93,7 @@ HEADERS += \
            src/config.hpp \
            src/configurable.hpp \
            src/dimension.hpp \
+           src/hash.hpp \
            src/history.hpp \
            src/intersection.hpp \
            src/kvstore.hpp \

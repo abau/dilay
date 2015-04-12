@@ -1,8 +1,9 @@
 #include <glm/glm.hpp>
-#include <map>
+#include <unordered_map>
 #include "../mesh.hpp"
 #include "../util.hpp"
 #include "adjacent-iterator.hpp"
+#include "hash.hpp"
 #include "indexable.hpp"
 #include "intersection.hpp"
 #include "octree.hpp"
@@ -156,8 +157,8 @@ struct WingedMesh::Impl {
   }
 
   void fromMesh (const Mesh& mesh) {
-    typedef std::pair <unsigned int,unsigned int> UIPair;
-    typedef std::map  <UIPair, WingedEdge*>       EdgeMap;
+    typedef std::pair <unsigned int,unsigned int>    UIPair;
+    typedef std::unordered_map <UIPair, WingedEdge*> EdgeMap;
 
     /** `findOrAddEdge (m,i1,i2,f)` searches an edge with indices `(i2,i1)` 
      * (in that order) in `m`.
