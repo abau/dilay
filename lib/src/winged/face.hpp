@@ -22,7 +22,6 @@ class WingedFace {
     WingedEdge*            edge             () const { return this->_edge; }
     OctreeNode*            octreeNode       () const { return this->_octreeNode; }
 
-    void                   index            (unsigned int i) { this->_index      = i; }
     void                   edge             (WingedEdge*  e) { this->_edge       = e; }
     void                   octreeNode       (OctreeNode*  n) { this->_octreeNode = n; }
 
@@ -44,9 +43,9 @@ class WingedFace {
     SAFE_REF_CONST  (OctreeNode  , octreeNode)
     SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)
   private:
-    unsigned int    _index;
-    WingedEdge*     _edge;
-    OctreeNode*     _octreeNode;
+    const unsigned int _index;
+    WingedEdge*        _edge;
+    OctreeNode*        _octreeNode;
 };
 
 #endif
