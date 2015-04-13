@@ -157,8 +157,7 @@ struct WingedMesh::Impl {
   }
 
   void fromMesh (const Mesh& mesh) {
-    typedef std::pair <unsigned int,unsigned int>    UIPair;
-    typedef std::unordered_map <UIPair, WingedEdge*> EdgeMap;
+    typedef std::unordered_map <ui_pair, WingedEdge*> EdgeMap;
 
     /** `findOrAddEdge (m,i1,i2,f)` searches an edge with indices `(i2,i1)` 
      * (in that order) in `m`.
@@ -170,14 +169,14 @@ struct WingedMesh::Impl {
                                 , unsigned int index1, unsigned int index2
                                 , WingedFace& face) -> WingedEdge&
     {
-      auto result = map.find (UIPair (index2, index1));
+      auto result = map.find (std::make_pair (index2, index1));
       if (result == map.end ()) {
         WingedVertex* v1    = this->vertex (index1);
         WingedVertex* v2    = this->vertex (index2);
         WingedEdge& newEdge = this->addEdge ();
           
-        map.insert (std::pair <UIPair,WingedEdge*> ( UIPair (index1,index2)
-                                                   , &newEdge ));
+        map.insert (std::pair <ui_pair,WingedEdge*> ( std::make_pair (index1,index2)
+                                                    , &newEdge ));
         newEdge.vertex1  (v1);
         newEdge.vertex2  (v2);
         newEdge.leftFace (&face);

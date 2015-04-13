@@ -3,11 +3,14 @@
 
 #include <glm/fwd.hpp>
 #include <iosfwd>
+#include <utility>
 
 std::ostream& operator<<(std::ostream&, const glm::ivec2&);
 std::ostream& operator<<(std::ostream&, const glm::uvec2&);
 std::ostream& operator<<(std::ostream&, const glm::vec3&);
 std::ostream& operator<<(std::ostream&, const glm::vec4&);
+
+typedef std::pair <unsigned int, unsigned int> ui_pair;
 
 namespace Util {
   glm::vec3    between            (const glm::vec3&, const glm::vec3&);
