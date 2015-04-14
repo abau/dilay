@@ -41,13 +41,16 @@ struct Mesh::Impl {
     this->renderMode.smoothShading (true);
   }
 
-  Impl (const Impl& source)
+  Impl (const Impl& source) : Impl (source, true)
+  {}
+
+  Impl (const Impl& source, bool copyGeometry)
     : scalingMatrix       (source.scalingMatrix)
     , rotationMatrix      (source.rotationMatrix)
     , translationMatrix   (source.translationMatrix)
-    , vertices            (source.vertices)
-    , indices             (source.indices)
-    , normals             (source.normals)
+    , vertices            (copyGeometry ? source.vertices : std::vector <float>        ())
+    , indices             (copyGeometry ? source.indices  : std::vector <unsigned int> ())
+    , normals             (copyGeometry ? source.normals  : std::vector <float>        ())
     , color               (source.color)
     , wireframeColor      (source.wireframeColor)
     , vertexBufferId      (0)
@@ -332,6 +335,10 @@ struct Mesh::Impl {
 };
 
 DELEGATE_BIG6 (Mesh)
+
+Mesh :: Mesh (const Mesh& source, bool copyGeometry)
+  : impl (new Impl (*source.impl, copyGeometry))
+{}
 
 DELEGATE_CONST   (unsigned int      , Mesh, numVertices)
 DELEGATE_CONST   (unsigned int      , Mesh, numIndices)

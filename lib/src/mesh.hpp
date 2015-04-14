@@ -14,6 +14,10 @@ class Mesh {
     /** `bufferData` must be called on the mutated mesh after copy or assignment */
     DECLARE_BIG6 (Mesh)
 
+    /** `Mesh (m,b)` calls copy constructor, but only copies
+     * vertices, indices, and normals, if `b == true`. */
+    Mesh (const Mesh&, bool);
+
     unsigned int       numVertices       () const;
     unsigned int       numIndices        () const;
     unsigned int       numNormals        () const;
