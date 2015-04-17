@@ -107,6 +107,10 @@ struct Mesh::Impl {
     this->indices.resize (n, std::numeric_limits <unsigned int>::max ());
   }
 
+  void reserveIndices (unsigned int n) { 
+    this->indices.reserve (n);
+  }
+
   unsigned int addVertex (const glm::vec3& v) { 
     return this->addVertex (v, glm::vec3 (0.0f));
   }
@@ -129,6 +133,11 @@ struct Mesh::Impl {
   void resizeVertices (unsigned int n) { 
     this->vertices.resize (3*n, std::numeric_limits <float>::quiet_NaN ());
     this->normals .resize (3*n, std::numeric_limits <float>::quiet_NaN ());
+  }
+
+  void reserveVertices (unsigned int n) { 
+    this->vertices.reserve (3*n);
+    this->normals .reserve (3*n);
   }
 
   void setIndex (unsigned int index, unsigned int vertexIndex) {
@@ -352,9 +361,11 @@ DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
 
 DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
 DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
+DELEGATE1        (void              , Mesh, reserveIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
 DELEGATE2        (unsigned int      , Mesh, addVertex, const glm::vec3&, const glm::vec3&)
 DELEGATE1        (void              , Mesh, resizeVertices, unsigned int)
+DELEGATE1        (void              , Mesh, reserveVertices, unsigned int)
 DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
 DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)

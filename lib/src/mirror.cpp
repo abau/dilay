@@ -7,40 +7,47 @@
 #include "mesh-util.hpp"
 #include "mirror.hpp"
 #include "opengl.hpp"
+#include "primitive/plane.hpp"
 #include "render-mode.hpp"
 
 struct Mirror::Impl {
-  Dimension dimension;
-  float     mirrorWidth;
-  Mesh      mirrorMesh;
+  Dimension                   _dimension;
+  float                        mirrorWidth;
+  Mesh                         mirrorMesh;
+  std::unique_ptr <PrimPlane> _plane;
 
   Impl (const Config& config, Dimension d)
-    : dimension   (d)
-    , mirrorWidth (1.0f)
+    : _dimension   (d)
+    ,  mirrorWidth (1.0f)
   {
     this->mirrorMesh = MeshUtil::cube ();
     this->mirrorMesh.renderMode ().constantShading (true);
     this->mirrorMesh.bufferData ();
 
     this->runFromConfig (config);
+    this->dimension     (d);
   }
 
-  glm::vec3 mirror (const glm::vec3& p) {
-    switch (this->dimension) {
-      case Dimension::X: return glm::vec3 (-p.x, p.y, p.z);
-      case Dimension::Y: return glm::vec3 ( p.x,-p.y, p.z);
-      case Dimension::Z: return glm::vec3 ( p.x, p.y,-p.z);
-    }
-    std::abort ();
+  Dimension dimension () const {
+    return this->_dimension;
+  }
+
+  void dimension (Dimension d) {
+    this->_dimension = d;
+    this->_plane     = std::make_unique <PrimPlane> (glm::vec3 (0.0f), DimensionUtil::vector (d));
+  }
+
+  const PrimPlane& plane () const {
+    return *this->_plane;
   }
 
   void render (Camera& camera) const {
     const glm::vec3 pos    = camera.position ();
     const float     width2 = this->mirrorWidth * 0.5f;
     const bool      inside = 
-        (this->dimension == Dimension::X && glm::abs (pos.x) <= width2)
-     || (this->dimension == Dimension::Y && glm::abs (pos.y) <= width2)
-     || (this->dimension == Dimension::Z && glm::abs (pos.z) <= width2);
+        (this->_dimension == Dimension::X && glm::abs (pos.x) <= width2)
+     || (this->_dimension == Dimension::Y && glm::abs (pos.y) <= width2)
+     || (this->_dimension == Dimension::Z && glm::abs (pos.z) <= width2);
 
     OpenGL::glClear         (OpenGL::StencilBufferBit ());
     OpenGL::glDepthMask     (false);
@@ -87,7 +94,7 @@ struct Mirror::Impl {
   void updateMesh () {
     const float extent = 10000.0f;
 
-    switch (this->dimension) {
+    switch (this->_dimension) {
       case Dimension::X:
         this->mirrorMesh.scaling (glm::vec3 (this->mirrorWidth, extent, extent));
         break;
@@ -107,9 +114,9 @@ struct Mirror::Impl {
   }
 };
 
-DELEGATE2_BIG6 (Mirror, const Config&, Dimension)
-GETTER_CONST    (Dimension, Mirror, dimension)
-SETTER          (Dimension, Mirror, dimension)
-DELEGATE1_CONST (glm::vec3, Mirror, mirror, const glm::vec3&)
-DELEGATE1_CONST (void     , Mirror, render, Camera&)
+DELEGATE2_BIG2 (Mirror, const Config&, Dimension)
+DELEGATE_CONST  (Dimension       , Mirror, dimension)
+DELEGATE1       (void            , Mirror, dimension, Dimension)
+DELEGATE_CONST  (const PrimPlane&, Mirror, plane)
+DELEGATE1_CONST (void            , Mirror, render, Camera&)
 DELEGATE1       (void     , Mirror, runFromConfig, const Config&)

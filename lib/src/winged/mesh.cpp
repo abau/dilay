@@ -2,10 +2,12 @@
 #include <unordered_map>
 #include "../mesh.hpp"
 #include "../util.hpp"
+#include "action/finalize.hpp"
 #include "adjacent-iterator.hpp"
 #include "hash.hpp"
 #include "indexable.hpp"
 #include "intersection.hpp"
+#include "mesh-util.hpp"
 #include "octree.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
@@ -19,12 +21,13 @@
 #include "winged/vertex.hpp"
 
 struct WingedMesh::Impl {
-  WingedMesh*                  self;
+  WingedMesh*                   self;
   const unsigned int           _index;
-  Mesh                         mesh;
-  IndexableList <WingedVertex> vertices;
-  IndexableList <WingedEdge>   edges;
-  Octree                       octree;
+  Mesh                          mesh;
+  IndexableList <WingedVertex>  vertices;
+  IndexableList <WingedEdge>    edges;
+  Octree                        octree;
+  std::unique_ptr <PrimPlane>  _mirrorPlane;
 
   Impl (WingedMesh* s, unsigned int i) 
     : self   (s)
@@ -156,27 +159,70 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  void fromMesh (const Mesh& mesh) {
-    typedef std::unordered_map <ui_pair, WingedEdge*> EdgeMap;
+  bool hasMirrorPlane () const {
+    return bool (this->_mirrorPlane);
+  }
 
-    /** `findOrAddEdge (m,i1,i2,f)` searches an edge with indices `(i2,i1)` 
-     * (in that order) in `m`.
+  const PrimPlane& mirrorPlane () const {
+    return *this->_mirrorPlane;
+  }
+
+  Mesh makePrunedMesh () const {
+    Mesh prunedMesh (this->mesh, false);
+
+    if (this->vertices.numFreeIndices () == 0 && this->octree.numFreeFaceIndices () == 0) {
+      prunedMesh = this->mesh;
+    }
+    else {
+      std::unordered_map <unsigned int, unsigned int> newIndices;
+
+      prunedMesh.reserveIndices  (this->mesh.numIndices  ());
+      prunedMesh.reserveVertices (this->mesh.numVertices ());
+
+      this->forEachConstVertex ([&prunedMesh, &newIndices, this] (const WingedVertex& v) {
+        const unsigned int newIndex = prunedMesh.addVertex ( v.position    (*this->self)
+                                                           , v.savedNormal (*this->self) );
+        newIndices.emplace (v.index (), newIndex);
+      });
+      this->forEachConstFace ([&prunedMesh, &newIndices] (const WingedFace& f) {
+        const auto it1 = newIndices.find (f.vertexRef (0).index ());
+        const auto it2 = newIndices.find (f.vertexRef (1).index ());
+        const auto it3 = newIndices.find (f.vertexRef (2).index ());
+
+        assert (it1 != newIndices.end ());
+        assert (it2 != newIndices.end ());
+        assert (it3 != newIndices.end ());
+
+        prunedMesh.addIndex (it1->second);
+        prunedMesh.addIndex (it2->second);
+        prunedMesh.addIndex (it3->second);
+      });
+    }
+    return prunedMesh;
+  }
+
+  void fromMesh (const Mesh& mesh, const PrimPlane* mirror) {
+    std::unordered_map <ui_pair, WingedEdge*> edgeMap;
+
+    /** `findOrAddEdge (m,i1,i2,f)` searches an edge between vertices 
+     * `i1` and `i2` in `m`.
      * If such an edge exists, `f` becomes its new right face.
-     * Otherwise a new edge is added to `this` and `m` with `f` being its left face.
-     * The found (resp. created) edge is returned
+     * Otherwise a new edge is added to `this` and `m`, with `f` being its left face.
+     * The found (resp. created) edge is returned.
      */
-    auto findOrAddEdge = [this] ( EdgeMap& map
-                                , unsigned int index1, unsigned int index2
-                                , WingedFace& face) -> WingedEdge&
+    auto findOrAddEdge = [this, &edgeMap] ( unsigned int index1, unsigned int index2
+                                          , WingedFace& face ) -> WingedEdge&
     {
-      auto result = map.find (std::make_pair (index2, index1));
-      if (result == map.end ()) {
+      const ui_pair key = std::make_pair ( glm::min (index1, index2)
+                                         , glm::max (index1, index2) );
+      const auto result = edgeMap.find (key);
+
+      if (result == edgeMap.end ()) {
         WingedVertex* v1    = this->vertex (index1);
         WingedVertex* v2    = this->vertex (index2);
         WingedEdge& newEdge = this->addEdge ();
           
-        map.insert (std::pair <ui_pair,WingedEdge*> ( std::make_pair (index1,index2)
-                                                    , &newEdge ));
+        edgeMap.insert (std::make_pair (key, &newEdge));
         newEdge.vertex1  (v1);
         newEdge.vertex2  (v2);
         newEdge.leftFace (&face);
@@ -199,7 +245,15 @@ struct WingedMesh::Impl {
 
     // mesh
     this->reset ();
-    this->mesh = mesh;
+
+    if (mirror) {
+      this->_mirrorPlane = std::make_unique <PrimPlane> (*mirror);
+      this->mesh         = MeshUtil::mirror (mesh, *mirror);
+    }
+    else {
+      this->_mirrorPlane.reset ();
+      this->mesh = mesh;
+    }
 
     // octree
     glm::vec3 minVertex, maxVertex;
@@ -218,8 +272,6 @@ struct WingedMesh::Impl {
     }
 
     // faces & edges
-    EdgeMap edgeMap;
-
     assert (this->mesh.numIndices () % 3 == 0);
 
     for (unsigned int i = 0; i < this->mesh.numIndices (); i += 3) {
@@ -231,9 +283,10 @@ struct WingedMesh::Impl {
                                                   , this->self->vertexRef (index1)
                                                   , this->self->vertexRef (index2)
                                                   , this->self->vertexRef (index3) ));
-      WingedEdge& e1 = findOrAddEdge (edgeMap, index1, index2, f);
-      WingedEdge& e2 = findOrAddEdge (edgeMap, index2, index3, f);
-      WingedEdge& e3 = findOrAddEdge (edgeMap, index3, index1, f);
+
+      WingedEdge& e1 = findOrAddEdge (index1, index2, f);
+      WingedEdge& e2 = findOrAddEdge (index2, index3, f);
+      WingedEdge& e3 = findOrAddEdge (index3, index1, f);
 
       e1.predecessor (f, &e3);
       e1.successor   (f, &e2);
@@ -242,7 +295,12 @@ struct WingedMesh::Impl {
       e3.predecessor (f, &e2);
       e3.successor   (f, &e1);
     }
+
+    if (this->octree.numDegeneratedFaces () > 0) {
+      Action::collapseDegeneratedFaces (*this->self);
+    }
     this->writeAllNormals ();
+    this->bufferData      ();
   }
 
   void writeAllIndices () {
@@ -281,10 +339,21 @@ struct WingedMesh::Impl {
   }
 
   void reset () {
-    this->mesh    .reset ();
-    this->vertices.reset ();
-    this->edges   .reset ();
-    this->octree  .reset ();
+    this->mesh        .reset ();
+    this->vertices    .reset ();
+    this->edges       .reset ();
+    this->octree      .reset ();
+    this->_mirrorPlane.reset ();
+  }
+
+  void mirror (const PrimPlane& plane) {
+    this->fromMesh (this->makePrunedMesh (), &plane);
+  }
+
+  void deleteMirrorPlane () {
+    if (this->hasMirrorPlane ()) {
+      this->_mirrorPlane.reset ();
+    }
   }
 
   void setupOctreeRoot (const glm::vec3& center, float width) {
@@ -435,18 +504,23 @@ DELEGATE1       (void        , WingedMesh, deleteVertex, WingedVertex&)
 DELEGATE2       (WingedFace& , WingedMesh, realignFace, WingedFace&, const PrimTriangle&)
 DELEGATE        (void        , WingedMesh, realignAllFaces)
  
-DELEGATE_CONST  (unsigned int, WingedMesh, numVertices)
-DELEGATE_CONST  (unsigned int, WingedMesh, numEdges)
-DELEGATE_CONST  (unsigned int, WingedMesh, numFaces)
-DELEGATE_CONST  (unsigned int, WingedMesh, numIndices)
-DELEGATE_CONST  (bool        , WingedMesh, isEmpty)
+DELEGATE_CONST  (unsigned int     , WingedMesh, numVertices)
+DELEGATE_CONST  (unsigned int     , WingedMesh, numEdges)
+DELEGATE_CONST  (unsigned int     , WingedMesh, numFaces)
+DELEGATE_CONST  (unsigned int     , WingedMesh, numIndices)
+DELEGATE_CONST  (bool             , WingedMesh, isEmpty)
+DELEGATE_CONST  (bool             , WingedMesh, hasMirrorPlane)
+DELEGATE_CONST  (const PrimPlane& , WingedMesh, mirrorPlane)
 
-DELEGATE1       (void             , WingedMesh, fromMesh, const Mesh&)
+DELEGATE_CONST  (Mesh             , WingedMesh, makePrunedMesh)
+DELEGATE2       (void             , WingedMesh, fromMesh, const Mesh&, const PrimPlane*)
 DELEGATE        (void             , WingedMesh, writeAllIndices)
 DELEGATE        (void             , WingedMesh, writeAllNormals)
 DELEGATE        (void             , WingedMesh, bufferData)
 DELEGATE1_CONST (void             , WingedMesh, render, Camera&)
 DELEGATE        (void             , WingedMesh, reset)
+DELEGATE1       (void             , WingedMesh, mirror, const PrimPlane&)
+DELEGATE        (void             , WingedMesh, deleteMirrorPlane)
 DELEGATE2       (void             , WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE_CONST  (const RenderMode&, WingedMesh, renderMode)
 DELEGATE        (RenderMode&      , WingedMesh, renderMode)

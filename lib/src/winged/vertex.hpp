@@ -16,25 +16,26 @@ class WingedVertex {
     WingedVertex (const WingedVertex&)  = default;
     WingedVertex (      WingedVertex&&) = default;
 
-    unsigned int index () const { return this->_index; }
-    WingedEdge*  edge  () const { return this->_edge;  }
+    unsigned int  index    () const { return this->_index; }
+    WingedEdge*   edge     () const { return this->_edge; }
 
-    void         edge                    (WingedEdge*);
-    void         writeIndex              (WingedMesh&, unsigned int);
-    glm::vec3    position                (const WingedMesh&) const;
-    glm::vec3    savedNormal             (const WingedMesh&) const;
-    glm::vec3    interpolatedNormal      (const WingedMesh&) const;
-    void         writePosition           (WingedMesh&, const glm::vec3&);
-    void         writeNormal             (WingedMesh&, const glm::vec3&);
-    void         writeInterpolatedNormal (WingedMesh&);
-    unsigned int valence                 () const;
+    void          edge     (WingedEdge* e) { this->_edge = e; }
 
-    AdjEdges     adjacentEdges    (WingedEdge&) const;
-    AdjEdges     adjacentEdges    ()            const;
-    AdjVertices  adjacentVertices (WingedEdge&) const;
-    AdjVertices  adjacentVertices ()            const;
-    AdjFaces     adjacentFaces    (WingedEdge&) const;
-    AdjFaces     adjacentFaces    ()            const;
+    void          writeIndex              (WingedMesh&, unsigned int);
+    glm::vec3     position                (const WingedMesh&) const;
+    glm::vec3     savedNormal             (const WingedMesh&) const;
+    glm::vec3     interpolatedNormal      (const WingedMesh&) const;
+    void          writePosition           (WingedMesh&, const glm::vec3&);
+    void          writeNormal             (WingedMesh&, const glm::vec3&);
+    void          writeInterpolatedNormal (WingedMesh&);
+    unsigned int  valence                 () const;
+
+    AdjEdges      adjacentEdges    (WingedEdge&) const;
+    AdjEdges      adjacentEdges    ()            const;
+    AdjVertices   adjacentVertices (WingedEdge&) const;
+    AdjVertices   adjacentVertices ()            const;
+    AdjFaces      adjacentFaces    (WingedEdge&) const;
+    AdjFaces      adjacentFaces    ()            const;
 
     SAFE_REF_CONST (WingedEdge, edge)
   private:

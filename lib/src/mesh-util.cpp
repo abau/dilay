@@ -1,9 +1,13 @@
-#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <unordered_map>
+#include <vector>
+#include "hash.hpp"
+#include "intersection.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
+#include "primitive/plane.hpp"
+#include "primitive/ray.hpp"
 #include "util.hpp"
 
 namespace {
@@ -265,4 +269,401 @@ Mesh MeshUtil :: cylinder (unsigned int numVertices) {
   addFace (mesh, (2 * numVertices) - 1, numVertices, (2 * numVertices) + 1);
 
   return finalized (mesh);
+}
+
+Mesh MeshUtil :: testCaseValcence3_1 () {
+  Mesh mesh;
+
+  addVertex (mesh, glm::vec3 (0.0f,  1.0f, -1.0f));
+  addVertex (mesh, glm::vec3 (0.0f,  1.0f,  1.0f));
+  addVertex (mesh, glm::vec3 (3.0f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 (1.5f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 (0.0f, -1.0f,  0.0f));
+
+  addFace (mesh, 0, 1, 3);
+  addFace (mesh, 1, 2, 3);
+  addFace (mesh, 2, 0, 3);
+
+  addFace (mesh, 1, 4, 2);
+  addFace (mesh, 2, 4, 0);
+  addFace (mesh, 0, 4, 1);
+
+  return finalized (mesh);
+}
+
+Mesh MeshUtil :: testCaseValcence3_2 () {
+  Mesh mesh;
+
+  addVertex (mesh, glm::vec3 (0.0f,  1.0f, -1.0f));
+  addVertex (mesh, glm::vec3 (0.0f,  1.0f,  1.0f));
+  addVertex (mesh, glm::vec3 (3.0f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 (1.0f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 (2.0f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 (0.0f, -1.0f,  0.0f));
+
+  addFace (mesh, 0, 1, 3);
+  addFace (mesh, 0, 3, 4);
+  addFace (mesh, 1, 4, 3);
+  addFace (mesh, 1, 2, 4);
+  addFace (mesh, 0, 4, 2);
+
+
+  addFace (mesh, 1, 5, 2);
+  addFace (mesh, 2, 5, 0);
+  addFace (mesh, 0, 5, 1);
+
+  return finalized (mesh);
+}
+
+Mesh MeshUtil :: testCaseValcence3_3 () {
+  Mesh mesh;
+
+  addVertex (mesh, glm::vec3 ( 0.0f,  1.0f, -1.0f));
+  addVertex (mesh, glm::vec3 (-1.0f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 ( 0.0f,  1.0f,  1.0f));
+  addVertex (mesh, glm::vec3 ( 3.0f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 ( 1.5f,  1.0f,  0.0f));
+  addVertex (mesh, glm::vec3 ( 0.0f, -1.0f,  0.0f));
+
+  addFace (mesh, 0, 1, 2);
+  addFace (mesh, 2, 4, 0);
+  addFace (mesh, 2, 3, 4);
+  addFace (mesh, 0, 4, 3);
+
+  addFace (mesh, 1, 5, 2);
+  addFace (mesh, 2, 5, 3);
+  addFace (mesh, 3, 5, 0);
+  addFace (mesh, 0, 5, 1);
+
+  return finalized (mesh);
+}
+
+Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
+  assert (MeshUtil::checkConsistency (mesh));
+
+  enum class Side       { Negative, Border, Positive };
+  enum class BorderFlag { NoBorder, ConnectsNegative, ConnectsPositive, ConnectsBoth };
+
+  auto side = [&plane] (const glm::vec3& v) -> Side {
+    const float eps = Util::epsilon () * 0.5f;
+    const float d   = plane.distance (v);
+
+    return d < -eps ? Side::Negative
+                   : ( d > eps ? Side::Positive 
+                               : Side::Border );
+  };
+
+  Mesh                                       m (mesh, false);
+  std::vector        <glm::vec3>             positions;
+  std::vector        <Side>                  sides;
+  std::vector        <BorderFlag>            borderFlags;
+  std::vector        <ui_pair>               newIndices;
+  std::unordered_map <ui_pair, unsigned int> newBorderVertices;
+
+  auto updateBorderFlag = [&borderFlags] (unsigned int i, Side side) {
+    BorderFlag& current = borderFlags [i];
+
+    if (side == Side::Border) {}
+    else if (side == Side::Negative) {
+      if (current == BorderFlag::NoBorder) {
+        current = BorderFlag::ConnectsNegative;
+      }
+      else if (current == BorderFlag::ConnectsPositive) {
+        current = BorderFlag::ConnectsBoth;
+      }
+    }
+    else if (side == Side::Positive) {
+      if (current == BorderFlag::NoBorder) {
+        current = BorderFlag::ConnectsPositive;
+      }
+      else if (current == BorderFlag::ConnectsNegative) {
+        current = BorderFlag::ConnectsBoth;
+      }
+    }
+  };
+
+  auto newBorderVertex = [&mesh, &plane, &newBorderVertices, &m] 
+                         (unsigned int i1, unsigned int i2) -> unsigned int 
+  {
+    const ui_pair key = std::make_pair ( glm::min (i1, i2)
+                                       , glm::max (i1, i2) );
+    auto it = newBorderVertices.find (key);
+    if (it != newBorderVertices.end ()) {
+      return it->second;
+    }
+    else {
+      const glm::vec3 v1 (mesh.vertex (i1));
+      const glm::vec3 v2 (mesh.vertex (i2));
+      const PrimRay ray  (true, v1, v2 - v1);
+
+      float     t;
+      glm::vec3 position;
+
+      if (IntersectionUtil::intersects (ray, plane, &t)) {
+        position = ray.pointAt (t);
+      }
+      else {
+        std::abort ();
+        position = (v1 + v2) * 0.5f; 
+      }
+      const unsigned int newIndex = m.addVertex (position);
+
+      newBorderVertices.emplace (key, newIndex);
+      return newIndex;
+    }
+  };
+
+  positions  .reserve (mesh.numVertices ());
+  sides      .reserve (mesh.numVertices ());
+  borderFlags.reserve (mesh.numVertices ());
+
+  newIndices.resize ( mesh.numVertices ()
+                    , std::make_pair ( std::numeric_limits <unsigned int>::max ()
+                                     , std::numeric_limits <unsigned int>::max () ) );
+
+  // cache data
+  for (unsigned int i = 0; i < mesh.numVertices (); i++) {
+    positions  .push_back (mesh.vertex (i));
+    sides      .push_back (side (positions.back ()));
+    borderFlags.push_back (BorderFlag::NoBorder);
+  }
+
+  // update border flags
+  for (unsigned int i = 0; i < mesh.numIndices (); i += 3) {
+    const unsigned int i1 = mesh.index (i + 0);
+    const unsigned int i2 = mesh.index (i + 1);
+    const unsigned int i3 = mesh.index (i + 2);
+
+    assert (sides[i1] != Side::Border || sides[i2] != Side::Border || sides[i3] != Side::Border);
+
+    updateBorderFlag (i1, sides [i2]);
+    updateBorderFlag (i1, sides [i3]);
+    updateBorderFlag (i2, sides [i1]);
+    updateBorderFlag (i2, sides [i3]);
+    updateBorderFlag (i3, sides [i1]);
+    updateBorderFlag (i3, sides [i2]);
+  }
+
+  // mirror vertices
+  for (unsigned int i = 0; i < mesh.numVertices (); i++) {
+    const glm::vec3& v = positions [i];
+
+    switch (sides [i]) {
+      case Side::Negative: break;
+
+      case Side::Border: {
+        switch (borderFlags [i]) {
+          case BorderFlag::NoBorder:
+            std::abort ();
+            break;
+          case BorderFlag::ConnectsNegative:
+            break;
+          case BorderFlag::ConnectsPositive: {
+            const unsigned int index1 = m.addVertex (v);
+            const unsigned int index2 = m.addVertex (v);
+
+            newIndices [i] = std::make_pair (index1, index2);
+            break;
+          }
+          case BorderFlag::ConnectsBoth: {
+            const unsigned int index = m.addVertex (v);
+
+            newIndices [i] = std::make_pair (index, index);
+            break;
+          }
+        }
+        break;
+      }
+      case Side::Positive: {
+        const unsigned int index1 = m.addVertex (v);
+        const unsigned int index2 = m.addVertex (plane.mirror (v));
+
+        newIndices [i] = std::make_pair (index1, index2);
+      }
+    }
+  }
+
+  // mirror faces
+  for (unsigned int i = 0; i < mesh.numIndices (); i += 3) {
+    const unsigned int oldIndex1 = mesh.index (i + 0);
+    const unsigned int oldIndex2 = mesh.index (i + 1);
+    const unsigned int oldIndex3 = mesh.index (i + 2);
+
+    const Side s1 = sides [oldIndex1];
+    const Side s2 = sides [oldIndex2];
+    const Side s3 = sides [oldIndex3];
+
+    if (s1 == Side::Positive || s2 == Side::Positive || s3 == Side::Positive) {
+      const ui_pair& new1 = newIndices [oldIndex1];
+      const ui_pair& new2 = newIndices [oldIndex2];
+      const ui_pair& new3 = newIndices [oldIndex3];
+
+      // 3 non-negative
+      if (s1 != Side::Negative && s2 != Side::Negative && s3 != Side::Negative) {
+        addFace (m, new1.first, new2.first, new3.first);
+        addFace (m, new3.second, new2.second, new1.second);
+      }
+      // 1 negative - 2 positive
+      else if (s1 == Side::Positive && s2 == Side::Positive && s3 == Side::Negative) {
+        unsigned int b1 = newBorderVertex (oldIndex1, oldIndex3);
+        unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
+
+        addFace (m, new2.first, b2, new1.first);
+        addFace (m, new1.second, b2, new2.second);
+
+        addFace (m, new1.first, b2, b1);
+        addFace (m, b1, b2, new1.second);
+      }
+      else if (s1 == Side::Positive && s2 == Side::Negative && s3 == Side::Positive) {
+        unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
+        unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
+
+        addFace (m, new1.first, b1, new3.first);
+        addFace (m, new3.second, b1, new1.second);
+
+        addFace (m, new3.first, b1, b2);
+        addFace (m, b2, b1, new3.second);
+      }
+      else if (s1 == Side::Negative && s2 == Side::Positive && s3 == Side::Positive) {
+        unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
+        unsigned int b2 = newBorderVertex (oldIndex1, oldIndex3);
+
+        addFace (m, new3.first, b2, new2.first);
+        addFace (m, new2.second, b2, new3.second);
+
+        addFace (m, new2.first, b2, b1);
+        addFace (m, b1, b2, new2.second);
+      }
+      // 1 positive - 2 negative
+      else if (s1 == Side::Positive && s2 == Side::Negative && s3 == Side::Negative) {
+        unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
+        unsigned int b2 = newBorderVertex (oldIndex1, oldIndex3);
+
+        addFace (m, new1.first, b1, b2);
+        addFace (m, b2, b1, new1.second);
+      }
+      else if (s1 == Side::Negative && s2 == Side::Positive && s3 == Side::Negative) {
+        unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
+        unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
+
+        addFace (m, new2.first, b2, b1);
+        addFace (m, b1, b2, new2.second);
+      }
+      else if (s1 == Side::Negative && s2 == Side::Negative && s3 == Side::Positive) {
+        unsigned int b1 = newBorderVertex (oldIndex1, oldIndex3);
+        unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
+
+        addFace (m, new3.first, b1, b2);
+        addFace (m, b2, b1, new3.second);
+      }
+      // 1 positive - 1 border - 1 negative
+      else if (s1 == Side::Positive && s2 == Side::Border && s3 == Side::Negative) {
+        assert (borderFlags [oldIndex2] == BorderFlag::ConnectsBoth);
+
+        unsigned int b = newBorderVertex (oldIndex1, oldIndex3);
+
+        addFace (m, new1.first, new2.first, b);
+        addFace (m, b, new2.second, new1.second);
+      }
+      else if (s1 == Side::Border && s2 == Side::Positive && s3 == Side::Negative) {
+        assert (borderFlags [oldIndex1] == BorderFlag::ConnectsBoth);
+
+        unsigned int b = newBorderVertex (oldIndex2, oldIndex3);
+
+        addFace (m, new1.first, new2.first, b);
+        addFace (m, b, new2.second, new1.second);
+      }
+      else if (s1 == Side::Positive && s2 == Side::Negative && s3 == Side::Border) {
+        assert (borderFlags [oldIndex3] == BorderFlag::ConnectsBoth);
+
+        unsigned int b = newBorderVertex (oldIndex1, oldIndex2);
+
+        addFace (m, new1.first, b, new3.first);
+        addFace (m, new3.second, b, new1.second);
+      }
+      else if (s1 == Side::Border && s2 == Side::Negative && s3 == Side::Positive) {
+        assert (borderFlags [oldIndex1] == BorderFlag::ConnectsBoth);
+
+        unsigned int b = newBorderVertex (oldIndex2, oldIndex3);
+
+        addFace (m, new1.first, b, new3.first);
+        addFace (m, new3.second, b, new1.second);
+      }
+      else if (s1 == Side::Negative && s2 == Side::Positive && s3 == Side::Border) {
+        assert (borderFlags [oldIndex3] == BorderFlag::ConnectsBoth);
+
+        unsigned int b = newBorderVertex (oldIndex1, oldIndex2);
+
+        addFace (m, new2.first, new3.first, b);
+        addFace (m, b, new3.second, new2.second);
+      }
+      else if (s1 == Side::Negative && s2 == Side::Border && s3 == Side::Positive) {
+        assert (borderFlags [oldIndex2] == BorderFlag::ConnectsBoth);
+
+        unsigned int b = newBorderVertex (oldIndex1, oldIndex3);
+
+        addFace (m, new2.first, new3.first, b);
+        addFace (m, b, new3.second, new2.second);
+      }
+      else {
+        std::abort ();
+      }
+    }
+  }
+  assert (MeshUtil::checkConsistency (m));
+  return m;
+}
+
+bool MeshUtil :: checkConsistency (const Mesh& mesh) {
+  std::unordered_map <ui_pair, unsigned int> numEdgeAdjacentFaces;
+  std::vector        <unsigned int>          numVertexAdjacentFaces;
+
+  numVertexAdjacentFaces.resize (mesh.numVertices (), 0);
+
+  auto addEdgeAdjFace = [&numEdgeAdjacentFaces] (unsigned int i, unsigned int j) {
+    ui_pair key (glm::min (i,j), glm::max (i,j));
+
+    auto it = numEdgeAdjacentFaces.find (key);
+    if (it == numEdgeAdjacentFaces.end ()) {
+      numEdgeAdjacentFaces.emplace (key, 1);
+    }
+    else {
+      it->second += 1;
+    }
+  };
+
+  auto addVertexAdjFace = [&numVertexAdjacentFaces] (unsigned int i) {
+    numVertexAdjacentFaces [i] += 1;
+  };
+
+  for (unsigned int i = 0; i < mesh.numIndices (); i+=3) {
+    const unsigned int i1 = mesh.index (i+0);
+    const unsigned int i2 = mesh.index (i+1);
+    const unsigned int i3 = mesh.index (i+2);
+
+    addVertexAdjFace (i1);
+    addVertexAdjFace (i2);
+    addVertexAdjFace (i3);
+
+    addEdgeAdjFace (i1,i2);
+    addEdgeAdjFace (i2,i3);
+    addEdgeAdjFace (i1,i3);
+  }
+
+  for (unsigned int v = 0; v < numVertexAdjacentFaces.size (); v++) {
+    if (numVertexAdjacentFaces [v] < 4) {
+      DILAY_WARN ("inconsistent vertex %u with %u adjacent faces", v, numVertexAdjacentFaces [v]);
+      return false;
+    }
+  }
+  for (auto it : numEdgeAdjacentFaces) {
+    if (it.second != 2) {
+      const unsigned int first  = it.first.first;
+      const unsigned int second = it.first.second;
+
+      DILAY_WARN ("inconsistent edge (%u,%u) with %u adjacent faces", first, second, it.second);
+      return false;
+    }
+  }
+  return true;
 }

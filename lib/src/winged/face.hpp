@@ -18,25 +18,25 @@ class WingedFace {
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
 
-    unsigned int           index            () const { return this->_index; }
-    WingedEdge*            edge             () const { return this->_edge; }
-    OctreeNode*            octreeNode       () const { return this->_octreeNode; }
+    unsigned int  index            () const { return this->_index; }
+    WingedEdge*   edge             () const { return this->_edge; }
+    OctreeNode*   octreeNode       () const { return this->_octreeNode; }
 
-    void                   edge             (WingedEdge*  e) { this->_edge       = e; }
-    void                   octreeNode       (OctreeNode*  n) { this->_octreeNode = n; }
+    void          edge             (WingedEdge*  e) { this->_edge       = e; }
+    void          octreeNode       (OctreeNode*  n) { this->_octreeNode = n; }
 
-    WingedVertex*          vertex           (unsigned int) const;
-    void                   writeIndices     (WingedMesh&);
-    PrimTriangle           triangle         (const WingedMesh&) const;
-    unsigned int           numEdges         () const;
-    bool                   isTriangle       () const;
+    WingedVertex* vertex           (unsigned int) const;
+    void          writeIndices     (WingedMesh&);
+    PrimTriangle  triangle         (const WingedMesh&) const;
+    unsigned int  numEdges         () const;
+    bool          isTriangle       () const;
 
-    AdjEdges               adjacentEdges    (WingedEdge&) const;
-    AdjEdges               adjacentEdges    ()            const;
-    AdjVertices            adjacentVertices (WingedEdge&) const;
-    AdjVertices            adjacentVertices ()            const;
-    AdjFaces               adjacentFaces    (WingedEdge&) const;
-    AdjFaces               adjacentFaces    ()            const;
+    AdjEdges      adjacentEdges    (WingedEdge&) const;
+    AdjEdges      adjacentEdges    ()            const;
+    AdjVertices   adjacentVertices (WingedEdge&) const;
+    AdjVertices   adjacentVertices ()            const;
+    AdjFaces      adjacentFaces    (WingedEdge&) const;
+    AdjFaces      adjacentFaces    ()            const;
 
     SAFE_REF_CONST  (WingedEdge  , edge)
     SAFE_REF_CONST  (OctreeNode  , octreeNode)

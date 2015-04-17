@@ -10,6 +10,7 @@
 #include "dimension.hpp"
 #include "history.hpp"
 #include "mirror.hpp"
+#include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "sculpt-brush.hpp"
@@ -37,12 +38,10 @@ struct ToolSculpt::Impl {
     , commonCache (this->self->cache ("sculpt"))
     , radiusEdit  (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f))
   {
-    const Config& config = this->self->config ();
-
     switch (this->commonCache.get <int> ("mirror", 1)) {
-      case 1:  this->mirror.reset (new Mirror (config, Dimension::X)); break;
-      case 2:  this->mirror.reset (new Mirror (config, Dimension::Y)); break;
-      case 3:  this->mirror.reset (new Mirror (config, Dimension::Z)); break;
+      case 1:  this->setupMirror (Dimension::X); break;
+      case 2:  this->setupMirror (Dimension::Y); break;
+      case 3:  this->setupMirror (Dimension::Z); break;
       default: break;
     }
   }
@@ -109,12 +108,10 @@ struct ToolSculpt::Impl {
                                                , bool (this->mirror) );
     ViewUtil::connect (mirrorEdit, [this] (bool m) {
       if (m) {
-        this->mirror.reset (new Mirror (this->self->config (), Dimension::X));
-        this->commonCache.set ("mirror", 1);
+        this->setupMirror (Dimension::X);
       }
       else {
-        this->mirror.reset ();
-        this->commonCache.set ("mirror", 0);
+        this->deleteMirror ();
       }
       this->self->updateGlWidget ();
     });
@@ -133,6 +130,29 @@ struct ToolSculpt::Impl {
                 , QObject::tr ("Change radius") );
 
     this->self->showToolTip (toolTip);
+  }
+
+  void setupMirror (Dimension d) {
+    this->self->snapshotScene ();
+
+    this->mirror.reset (new Mirror (this->self->config (), d));
+
+    this->self->state ().scene ().forEachMesh (
+      [this] (WingedMesh& mesh) {
+        mesh.mirror (this->mirror->plane ());
+        mesh.bufferData ();
+      }
+    );
+    this->commonCache.set ("mirror", 1);
+  }
+
+  void deleteMirror () {
+    this->mirror.reset ();
+
+    this->self->state ().scene ().forEachMesh ([] (WingedMesh& mesh) {
+      mesh.deleteMirrorPlane ();
+    });
+    this->commonCache.set ("mirror", 0);
   }
 
   void runRender () const {
@@ -162,10 +182,14 @@ struct ToolSculpt::Impl {
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
+      if (this->brush.mesh () && this->mirror) {
+        this->brush.meshRef ().mirror     (this->mirror->plane ());
+        this->brush.meshRef ().bufferData ();
+      }
       this->brush.resetPointOfAction ();
     }
     this->cursor.enable ();
-    return ToolResponse::None;
+    return ToolResponse::Redraw;
   }
 
   ToolResponse runWheelEvent (const QWheelEvent& e) {
@@ -186,12 +210,6 @@ struct ToolSculpt::Impl {
 
   void sculpt () {
     Action::sculpt (this->brush);
-
-    if (this->mirror) {
-      this->brush.mirror (*this->mirror);
-      Action::sculpt (this->brush);
-      this->brush.mirror (*this->mirror);
-    }
   }
 
   void updateCursorByIntersection (const QMouseEvent& e) {

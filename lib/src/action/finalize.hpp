@@ -6,7 +6,9 @@ class WingedMesh;
 
 namespace Action {
 
-  void finalize (WingedMesh&, AffectedFaces&);
+  void collapseDegeneratedFaces (WingedMesh&);
+  void collapseDegeneratedFaces (WingedMesh&, AffectedFaces&);
+  void finalize                 (WingedMesh&, AffectedFaces&);
 }
 
 #endif

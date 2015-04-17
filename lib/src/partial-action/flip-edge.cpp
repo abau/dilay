@@ -15,9 +15,17 @@ void PartialAction :: flipEdge (WingedMesh& mesh, WingedEdge& edge) {
   WingedEdge*   ls = edge.leftSuccessor    ();
   WingedEdge*   rp = edge.rightPredecessor ();
   WingedEdge*   rs = edge.rightSuccessor   ();
-
   WingedVertex* v3 = edge.vertex           (*lf, 2);
   WingedVertex* v4 = edge.vertex           (*rf, 2);
+
+#ifndef NDEBUG
+  const unsigned int valence1 = v1->valence ();
+  const unsigned int valence2 = v2->valence ();
+  const unsigned int valence3 = v3->valence ();
+  const unsigned int valence4 = v4->valence ();
+#endif
+  assert (valence1 > 4);
+  assert (valence2 > 4);
 
   lf->edge (&edge);
   rf->edge (&edge);
@@ -44,5 +52,6 @@ void PartialAction :: flipEdge (WingedMesh& mesh, WingedEdge& edge) {
 
   assert (edge.leftFaceRef  ().numEdges () == 3);
   assert (edge.rightFaceRef ().numEdges () == 3);
+  assert (edge.vertex1Ref ().valence () == valence4 + 1);
+  assert (edge.vertex2Ref ().valence () == valence3 + 1);
 }
-

@@ -5,7 +5,6 @@
 #include "macro.hpp"
 
 class AffectedFaces;
-class Mirror;
 class WingedFace;
 class WingedMesh;
 
@@ -94,7 +93,6 @@ class SculptBrush {
     void             setPointOfAction    (const glm::vec3&, const glm::vec3&);
     bool             updatePointOfAction (const glm::vec3&, const glm::vec3&);
     void             resetPointOfAction  ();
-    void             mirror              (const Mirror&);
 
     template <typename T> const T& constParameters () const;
     template <typename T>       T& parameters      ();

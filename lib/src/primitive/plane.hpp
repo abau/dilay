@@ -11,8 +11,11 @@ class PrimPlane {
     const glm::vec3& point  () const { return this->_point ; }
     const glm::vec3& normal () const { return this->_normal; }
 
-    float     distance (const glm::vec3&) const;
-    glm::vec3 project  (const glm::vec3&) const;
+    float     distance         (const glm::vec3&) const;
+    glm::vec3 project          (const glm::vec3&) const;
+    glm::vec3 projectDirection (const glm::vec3&) const;
+    glm::vec3 mirror           (const glm::vec3&) const;
+    glm::vec3 mirrorDirection  (const glm::vec3&) const;
 
   private:
     const glm::vec3 _point;

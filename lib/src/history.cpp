@@ -14,7 +14,7 @@ namespace {
     SceneSnapshot snapshot;
 
     scene.forEachConstMesh ([&snapshot] (const WingedMesh& mesh) {
-      snapshot.push_front (mesh.mesh ());
+      snapshot.push_front (mesh.makePrunedMesh ());
     });
     return snapshot;
   }

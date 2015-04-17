@@ -108,8 +108,9 @@ struct ToolMoveMesh::Impl {
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton && this->mesh) {
-      this->mesh->normalize  ();
-      this->mesh->bufferData ();
+      this->mesh->deleteMirrorPlane ();
+      this->mesh->normalize         ();
+      this->mesh->bufferData        ();
       this->mesh = nullptr;
     }
     return ToolResponse::None;

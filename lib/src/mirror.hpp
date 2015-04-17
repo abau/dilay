@@ -1,22 +1,22 @@
 #ifndef DILAY_MIRROR
 #define DILAY_MIRROR
 
-#include <glm/fwd.hpp>
 #include "configurable.hpp"
 #include "macro.hpp"
 
 class Camera;
 enum class Dimension;
+class PrimPlane;
 
 class Mirror : public Configurable {
   public:
-    DECLARE_BIG6 (Mirror, const Config&, Dimension)
+    DECLARE_BIG2 (Mirror, const Config&, Dimension)
 
-    Dimension dimension () const;
+    Dimension        dimension () const;
+    const PrimPlane& plane     () const;
 
-    void      dimension (Dimension);
-    glm::vec3 mirror    (const glm::vec3&) const;
-    void      render    (Camera&) const;
+    void             dimension (Dimension);
+    void             render    (Camera&) const;
 
   private:
     IMPLEMENTATION

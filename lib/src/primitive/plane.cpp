@@ -15,6 +15,18 @@ glm::vec3 PrimPlane :: project (const glm::vec3& p) const {
   return p - (this->_normal * this->distance (p));
 }
 
+glm::vec3 PrimPlane :: projectDirection (const glm::vec3& d) const {
+  return this->project (d + this->_point) - this->_point;
+}
+
+glm::vec3 PrimPlane :: mirror (const glm::vec3& p) const {
+  return p - (2.0f * this->_normal * this->distance (p));
+}
+
+glm::vec3 PrimPlane :: mirrorDirection (const glm::vec3& d) const {
+  return this->mirror (d + this->_point) - this->_point;
+}
+
 std::ostream& operator<<(std::ostream& os, const PrimPlane& plane) {
   os << "PrimPlane { point = "  << (plane.point  ())
                << ", normal = " << (plane.normal ()) << " }";

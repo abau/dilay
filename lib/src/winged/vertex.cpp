@@ -7,9 +7,9 @@
 #include "winged/vertex.hpp"
 
 WingedVertex :: WingedVertex (unsigned int i) 
-  : _index (i), _edge (nullptr) {}
-
-void WingedVertex :: edge (WingedEdge* e) { this->_edge = e; }
+  : _index    (i)
+  , _edge     (nullptr) 
+{}
 
 void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int index) {
   mesh.setIndex (index, this->_index);
