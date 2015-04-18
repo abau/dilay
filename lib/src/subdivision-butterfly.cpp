@@ -98,10 +98,10 @@ namespace {
 };
 
 glm::vec3 SubdivisionButterfly::subdivideEdge (const WingedMesh& mesh, WingedEdge& edge) {
-  WingedVertex& v1            = edge.vertex1Ref ();
-  WingedVertex& v2            = edge.vertex2Ref ();
-  Adjacents     a1            = adjacents (mesh, edge, v1);
-  Adjacents     a2            = adjacents (mesh, edge, v2);
+  WingedVertex& v1 = edge.vertex1Ref ();
+  WingedVertex& v2 = edge.vertex2Ref ();
+  Adjacents     a1 = adjacents (mesh, edge, v1);
+  Adjacents     a2 = adjacents (mesh, edge, v2);
 
   return subdivide (v1.position (mesh), a1, v2.position (mesh), a2);
 }
