@@ -15,22 +15,18 @@ WingedVertex* WingedFace :: vertex (unsigned int index) const {
   return this->_edge->vertex (*this, index);
 }
 
-unsigned int WingedFace :: vertexIndex (unsigned int vIndex) const { 
-  return (3 * this->_index) + vIndex;
-}
-
 void WingedFace :: writeIndices (WingedMesh& mesh) {
   assert (this->isTriangle ());
 
-  this->vertex (0)->writeIndex (mesh, this->vertexIndex (0));
-  this->vertex (1)->writeIndex (mesh, this->vertexIndex (1));
-  this->vertex (2)->writeIndex (mesh, this->vertexIndex (2));
+  this->vertex (0)->writeIndex (mesh, (3 * this->_index) + 0);
+  this->vertex (1)->writeIndex (mesh, (3 * this->_index) + 1);
+  this->vertex (2)->writeIndex (mesh, (3 * this->_index) + 2);
 }
 
 PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
-  return PrimTriangle ( mesh.vector (mesh.index (this->vertexIndex (0)))
-                      , mesh.vector (mesh.index (this->vertexIndex (1)))
-                      , mesh.vector (mesh.index (this->vertexIndex (2))) );
+  return PrimTriangle ( mesh.vector (mesh.index ((3 * this->_index) + 0))
+                      , mesh.vector (mesh.index ((3 * this->_index) + 1))
+                      , mesh.vector (mesh.index ((3 * this->_index) + 2)) );
 }
 
 unsigned int WingedFace :: numEdges () const {

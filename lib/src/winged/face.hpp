@@ -26,7 +26,6 @@ class WingedFace {
     void                   octreeNode       (OctreeNode*  n) { this->_octreeNode = n; }
 
     WingedVertex*          vertex           (unsigned int) const;
-    unsigned int           vertexIndex      (unsigned int) const;
     void                   writeIndices     (WingedMesh&);
     PrimTriangle           triangle         (const WingedMesh&) const;
     unsigned int           numEdges         () const;
