@@ -52,7 +52,6 @@ class WingedMesh {
     unsigned int       numEdges           () const;
     unsigned int       numFaces           () const;
     unsigned int       numIndices         () const;
-    unsigned int       numFreeFaceIndices () const;
     bool               isEmpty            () const;
 
     void               fromMesh           (const Mesh&);
