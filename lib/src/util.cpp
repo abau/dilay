@@ -1,6 +1,9 @@
+#include <cstdarg>
 #include <fstream>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <sstream>
+#include <vector>
 #include "util.hpp"
 
 std::ostream& operator<<(std::ostream& os, const glm::ivec2& v) {
@@ -113,4 +116,20 @@ float Util :: linearStep ( const glm::vec3& v, const glm::vec3& center
     const float x = glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
     return glm::mix (0.0f, 1.0f, x);
   }
+}
+
+void Util :: warn (const char* file, unsigned int line, const char* format, ...) {
+  va_list args1;
+  va_list args2;
+
+  va_start (args1, format);
+  va_copy  (args2, args1);
+
+  std::vector<char> buffer (1 + std::vsnprintf (nullptr, 0, format, args1));
+  va_end (args1);
+
+  std::vsnprintf (buffer.data (), buffer.size (), format, args2);
+  va_end (args2);
+
+  std::fprintf (stderr, "[WARNING] %s (%u): %s\n", file, line, buffer.data ());
 }
