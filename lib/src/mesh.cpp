@@ -7,6 +7,7 @@
 #include "color.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
+#include "opengl-buffer-id.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
 #include "util.hpp"
@@ -22,22 +23,19 @@ struct Mesh::Impl {
   Color                       color;
   Color                       wireframeColor;
 
-  unsigned int                vertexBufferId;
-  unsigned int                indexBufferId;
-  unsigned int                normalBufferId;
+  OpenGLBufferId              vertexBufferId;
+  OpenGLBufferId              indexBufferId;
+  OpenGLBufferId              normalBufferId;
 
   RenderMode                  renderMode;
 
-  Impl () { 
-    this->scalingMatrix       = glm::mat4x4 (1.0f);
-    this->rotationMatrix      = glm::mat4x4 (1.0f);
-    this->translationMatrix   = glm::mat4x4 (1.0f);
-    this->color               = Color::White ();
-    this->wireframeColor      = Color::Black ();
-    this->vertexBufferId      = 0;
-    this->indexBufferId       = 0;
-    this->normalBufferId      = 0;
-
+  Impl ()
+    : scalingMatrix     (glm::mat4x4 (1.0f))
+    , rotationMatrix    (glm::mat4x4 (1.0f))
+    , translationMatrix (glm::mat4x4 (1.0f))
+    , color             (Color::White ())
+    , wireframeColor    (Color::Black ())
+  {
     this->renderMode.smoothShading (true);
   }
 
@@ -53,9 +51,6 @@ struct Mesh::Impl {
     , normals             (copyGeometry ? source.normals  : std::vector <float>        ())
     , color               (source.color)
     , wireframeColor      (source.wireframeColor)
-    , vertexBufferId      (0)
-    , indexBufferId       (0)
-    , normalBufferId      (0)
     , renderMode          (source.renderMode) 
   {}
 
@@ -164,25 +159,25 @@ struct Mesh::Impl {
   }
 
   void bufferData () {
-    if (OpenGL::glIsBuffer (this->vertexBufferId) == false) {
-      OpenGL::glGenBuffers (1, &this->vertexBufferId);
+    if (this->vertexBufferId.isValid () == false) {
+      this->vertexBufferId.allocate ();
     }
-    if (OpenGL::glIsBuffer (this->indexBufferId) == false) {
-      OpenGL::glGenBuffers (1, &this->indexBufferId);
+    if (this->indexBufferId.isValid () == false) {
+      this->indexBufferId.allocate ();
     }
-    if (OpenGL::glIsBuffer (this->normalBufferId) == false) {
-      OpenGL::glGenBuffers (1, &this->normalBufferId);
+    if (this->normalBufferId.isValid () == false) {
+      this->normalBufferId.allocate ();
     }
 
-    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->vertexBufferId);
+    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->vertexBufferId.id ());
     OpenGL::glBufferData ( OpenGL::ArrayBuffer (), this->sizeOfVertices ()
                          , &this->vertices[0], OpenGL::StaticDraw () );
 
-    OpenGL::glBindBuffer (OpenGL::ElementArrayBuffer (), this->indexBufferId);
+    OpenGL::glBindBuffer (OpenGL::ElementArrayBuffer (), this->indexBufferId.id ());
     OpenGL::glBufferData ( OpenGL::ElementArrayBuffer (), this->sizeOfIndices ()
                          , &this->indices[0], OpenGL::StaticDraw () );
 
-    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->normalBufferId);
+    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->normalBufferId.id ());
     OpenGL::glBufferData ( OpenGL::ArrayBuffer (), this->sizeOfNormals ()
                          , &this->normals[0], OpenGL::StaticDraw () );
 
@@ -217,14 +212,14 @@ struct Mesh::Impl {
 
     this->setModelMatrix              (camera, this->renderMode.cameraRotationOnly ());
 
-    OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId);
+    OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId.id ());
     OpenGL::glEnableVertexAttribArray (OpenGL::PositionIndex);
     OpenGL::glVertexAttribPointer     (OpenGL::PositionIndex, 3, OpenGL::Float (), false, 0, 0);
 
-    OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indexBufferId);
+    OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indexBufferId.id ());
 
     if (this->renderMode.smoothShading ()) {
-      OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normalBufferId);
+      OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normalBufferId.id ());
       OpenGL::glEnableVertexAttribArray (OpenGL::NormalIndex);
       OpenGL::glVertexAttribPointer     (OpenGL::NormalIndex, 3, OpenGL::Float (), false, 0, 0);
     }
@@ -263,12 +258,12 @@ struct Mesh::Impl {
     this->scalingMatrix     = glm::mat4x4 (1.0f);
     this->rotationMatrix    = glm::mat4x4 (1.0f);
     this->translationMatrix = glm::mat4x4 (1.0f);
-    this->vertices.clear ();
-    this->indices .clear ();
-    this->normals .clear ();
-    OpenGL::safeDeleteBuffer (this->vertexBufferId);
-    OpenGL::safeDeleteBuffer (this->indexBufferId);
-    OpenGL::safeDeleteBuffer (this->normalBufferId);
+    this->vertices      .clear ();
+    this->indices       .clear ();
+    this->normals       .clear ();
+    this->vertexBufferId.reset ();
+    this->indexBufferId .reset ();
+    this->normalBufferId.reset ();
   }
 
   void resetGeometry () {
