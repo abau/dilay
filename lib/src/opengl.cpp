@@ -145,7 +145,7 @@ namespace OpenGL {
   }
 
   void safeDeleteBuffer (unsigned int& id) {
-    if (id > 0 && fun->glIsBuffer (id) == GL_TRUE) {
+    if (id > 0) {
       fun->glDeleteBuffers (1,&id);
     }
     id = 0;
