@@ -174,28 +174,33 @@ struct WingedMesh::Impl {
       prunedMesh = this->mesh;
     }
     else {
-      std::unordered_map <unsigned int, unsigned int> newIndices;
+      std::vector <unsigned int> newIndices;
 
-      prunedMesh.reserveIndices  (this->mesh.numIndices  ());
+      const unsigned int defaultIndex = std::numeric_limits <unsigned int>::max ();
+
+      newIndices.resize          (this->mesh.numVertices (), defaultIndex);
       prunedMesh.reserveVertices (this->mesh.numVertices ());
+      prunedMesh.reserveIndices  (this->mesh.numIndices  ());
 
       this->forEachConstVertex ([&prunedMesh, &newIndices, this] (const WingedVertex& v) {
         const unsigned int newIndex = prunedMesh.addVertex ( v.position    (*this->self)
                                                            , v.savedNormal (*this->self) );
-        newIndices.emplace (v.index (), newIndex);
+        newIndices [v.index ()] = newIndex;
       });
-      this->forEachConstFace ([&prunedMesh, &newIndices] (const WingedFace& f) {
-        const auto it1 = newIndices.find (f.vertexRef (0).index ());
-        const auto it2 = newIndices.find (f.vertexRef (1).index ());
-        const auto it3 = newIndices.find (f.vertexRef (2).index ());
+      this->forEachConstFace ( [&prunedMesh, defaultIndex, &newIndices] 
+                               (const WingedFace& f) 
+      {
+        const unsigned int new1 = newIndices [f.vertexRef (0).index ()];
+        const unsigned int new2 = newIndices [f.vertexRef (1).index ()];
+        const unsigned int new3 = newIndices [f.vertexRef (2).index ()];
 
-        assert (it1 != newIndices.end ());
-        assert (it2 != newIndices.end ());
-        assert (it3 != newIndices.end ());
+        assert (new1 != defaultIndex);
+        assert (new2 != defaultIndex);
+        assert (new3 != defaultIndex);
 
-        prunedMesh.addIndex (it1->second);
-        prunedMesh.addIndex (it2->second);
-        prunedMesh.addIndex (it3->second);
+        prunedMesh.addIndex (new1);
+        prunedMesh.addIndex (new2);
+        prunedMesh.addIndex (new3);
       });
     }
     return prunedMesh;
