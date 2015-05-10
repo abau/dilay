@@ -54,14 +54,16 @@ QCheckBox& ViewUtil :: checkBox (const QString& label, bool isChecked) {
   return box;
 }
 
-ViewDoubleSlider& ViewUtil :: slider (float min, float value, float max, float stepSize) {
-  ViewDoubleSlider& slider = *new ViewDoubleSlider (2);
-  slider.setValue       (value);
-  slider.setRange       (min, max);
-  slider.setSingleStep  (stepSize);
-  slider.setPageStep    (max);
-  slider.setTracking    (true);
-  slider.setOrientation (Qt::Horizontal);
+ViewDoubleSlider& ViewUtil :: slider ( float min, float value, float max
+                                     , float stepSize, unsigned short order )
+{
+  ViewDoubleSlider& slider = *new ViewDoubleSlider (2, order);
+  slider.setDoubleValue       (value);
+  slider.setDoubleRange       (min, max);
+  slider.setDoubleSingleStep  (stepSize);
+  slider.setDoublePageStep    (max);
+  slider.setTracking          (true);
+  slider.setOrientation       (Qt::Horizontal);
   return slider;
 }
 

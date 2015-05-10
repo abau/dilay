@@ -7,20 +7,36 @@
 class ViewDoubleSlider : public QSlider {
   Q_OBJECT
   public:
-    DECLARE_BIG2 (ViewDoubleSlider, unsigned short)
+    DECLARE_BIG2 (ViewDoubleSlider, unsigned short, unsigned short)
 
     double doubleValue      () const;
     double doubleSingleStep () const;
 
-    void  setValue      (double);
-    void  setRange      (double, double);
-    void  setSingleStep (double);
-    void  setPageStep   (double);
+    void setDoubleValue      (double);
+    void setDoubleRange      (double, double);
+    void setDoubleSingleStep (double);
+    void setDoublePageStep   (double);
+
+    int intValue      () const;
+    int intSingleStep () const;
+
+    void setIntValue      (int);
+    void setIntRange      (int, int);
+    void setIntSingleStep (int);
+    void setIntPageStep   (int);
 
   signals:
     void doubleValueChanged (double);
 
   private:
+    int value      () const;
+    int singleStep () const;
+
+    void setValue      (int);
+    void setRange      (int, int);
+    void setSingleStep (int);
+    void setPageStep   (int);
+
     IMPLEMENTATION
 };
 

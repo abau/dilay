@@ -2,47 +2,144 @@
 #include "view/double-slider.hpp"
 
 struct ViewDoubleSlider::Impl {
-  ViewDoubleSlider*  self;
-  const unsigned int factor;
+  ViewDoubleSlider*    self;
+  const unsigned int   factor;
+  const unsigned short order;      
 
-  Impl (ViewDoubleSlider* s, unsigned short numDecimals) 
+  Impl (ViewDoubleSlider* s, unsigned short numDecimals, unsigned short o)
     : self   (s)
     , factor (glm::pow (10, numDecimals))
+    , order  (o)
   {
+    assert (this->order > 0);
+
     QObject::connect (this->self, &QSlider::valueChanged, [this] (int i) {
-      emit this->self->doubleValueChanged (double (i) / this->factor);
+      emit this->self->doubleValueChanged (this->toDouble (i, false));
     });
+  }
+  
+  double toDouble (int value, bool forceLinear) const {
+    const unsigned short o = forceLinear ? 1 : this->order;
+
+    if (o == 1) {
+      return double (value) / this->factor;
+    }
+    else {
+      const double min    = double (this->self->minimum ()) / this->factor;
+      const double max    = double (this->self->maximum ()) / this->factor;
+      const double d      = double (value) / this->factor;
+      const double norm   = (d - min) / (max - min);
+      const double result = min + (glm::pow (norm, float (o)) * (max - min));
+
+      return result;
+    }
+  }
+
+  int toInt (double value, bool forceLinear) const {
+    const unsigned short o = forceLinear ? 1 : this->order;
+
+    if (o == 1) {
+      return int (value * this->factor);
+    }
+    else {
+      const double min    = double (this->self->minimum ()) / this->factor;
+      const double max    = double (this->self->maximum ()) / this->factor;
+      const double norm   = (value - min) / (max - min);
+      const int    result = int ( this->factor 
+                                * (min + (glm::pow (norm, 1.0f / float (o)) * (max - min))) );
+      return result;
+    }
   }
 
   double doubleValue () const {
-    return double (this->self->value ()) / this->factor;
+    return this->toDouble (this->self->value (), false);
   }
 
   double doubleSingleStep () const {
-    return double (this->self->singleStep ()) / this->factor;
+    return this->toDouble (this->self->singleStep (), true);
   }
 
-  void setValue (double v) {
-    this->self->QSlider::setValue (int (v * this->factor));
+  void setDoubleValue (double v) {
+    this->self->setValue (this->toInt (v, false));
   }
 
-  void setRange (double min, double max) {
-    this->self->QSlider::setRange (int (min * this->factor), int (max * this->factor));
+  void setDoubleRange (double min, double max) {
+    this->self->setRange (this->toInt (min,true), this->toInt (max,true));
   }
 
-  void setSingleStep (double v) {
-    this->self->QSlider::setSingleStep (int (v * this->factor));
+  void setDoubleSingleStep (double v) {
+    this->self->setSingleStep (this->toInt (v,true));
   }
 
-  void setPageStep (double v) {
-    this->self->QSlider::setPageStep (int (v * this->factor));
+  void setDoublePageStep (double v) {
+    this->self->setPageStep (this->toInt (v,true));
+  }
+
+  int intValue () const {
+    return this->self->QSlider::value ();
+  }
+
+  int intSingleStep () const {
+    return this->self->QSlider::singleStep ();
+  }
+
+  void setIntValue (int v) {
+    this->self->QSlider::setValue (v);
+  }
+
+  void setIntRange (int min, int max) {
+    this->self->QSlider::setRange (min, max);
+  }
+
+  void setIntSingleStep (int v) {
+    this->self->QSlider::setSingleStep (v);
+  }
+
+  void setIntPageStep (int v) {
+    this->self->QSlider::setPageStep (v);
+  }
+
+  int value () const {
+    return this->intValue ();
+  }
+
+  int singleStep () const {
+    return this->intSingleStep ();
+  }
+
+  void setValue (int v) {
+    this->setIntValue (v);
+  }
+
+  void setRange (int min, int max) {
+    this->setIntRange (min, max);
+  }
+
+  void setSingleStep (int v) {
+    this->setIntSingleStep (v);
+  }
+
+  void setPageStep (int v) {
+    this->setIntPageStep (v);
   }
 };
 
-DELEGATE1_BIG2_SELF (ViewDoubleSlider, unsigned short)
+DELEGATE2_BIG2_SELF (ViewDoubleSlider, unsigned short, unsigned short)
 DELEGATE_CONST (double, ViewDoubleSlider, doubleValue)
 DELEGATE_CONST (double, ViewDoubleSlider, doubleSingleStep)
-DELEGATE1      (void  , ViewDoubleSlider, setValue, double)
-DELEGATE2      (void  , ViewDoubleSlider, setRange, double, double)
-DELEGATE1      (void  , ViewDoubleSlider, setSingleStep, double)
-DELEGATE1      (void  , ViewDoubleSlider, setPageStep, double)
+DELEGATE1      (void  , ViewDoubleSlider, setDoubleValue, double)
+DELEGATE2      (void  , ViewDoubleSlider, setDoubleRange, double, double)
+DELEGATE1      (void  , ViewDoubleSlider, setDoubleSingleStep, double)
+DELEGATE1      (void  , ViewDoubleSlider, setDoublePageStep, double)
+DELEGATE_CONST (int   , ViewDoubleSlider, intValue)
+DELEGATE_CONST (int   , ViewDoubleSlider, intSingleStep)
+DELEGATE1      (void  , ViewDoubleSlider, setIntValue, int)
+DELEGATE2      (void  , ViewDoubleSlider, setIntRange, int, int)
+DELEGATE1      (void  , ViewDoubleSlider, setIntSingleStep, int)
+DELEGATE1      (void  , ViewDoubleSlider, setIntPageStep, int)
+DELEGATE_CONST (int   , ViewDoubleSlider, value)
+DELEGATE_CONST (int   , ViewDoubleSlider, singleStep)
+DELEGATE1      (void  , ViewDoubleSlider, setValue, int)
+DELEGATE2      (void  , ViewDoubleSlider, setRange, int, int)
+DELEGATE1      (void  , ViewDoubleSlider, setSingleStep, int)
+DELEGATE1      (void  , ViewDoubleSlider, setPageStep, int)

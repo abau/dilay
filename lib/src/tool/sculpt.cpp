@@ -36,7 +36,7 @@ struct ToolSculpt::Impl {
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
-    , radiusEdit  (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f))
+    , radiusEdit  (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f, 3))
   {
     switch (this->commonCache.get <int> ("mirror", 1)) {
       case 1:  this->setupMirror (Dimension::X); break;
@@ -88,7 +88,7 @@ struct ToolSculpt::Impl {
   void setupProperties () {
     ViewPropertiesPart& properties = this->self->properties ().body ();
 
-    this->radiusEdit.setValue (this->brush.radius ());
+    this->radiusEdit.setDoubleValue (this->brush.radius ());
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
       this->brush.radius (r);
       this->cursor.radius (r);
@@ -195,12 +195,12 @@ struct ToolSculpt::Impl {
   ToolResponse runWheelEvent (const QWheelEvent& e) {
     if (e.orientation () == Qt::Vertical && e.modifiers () == Qt::ShiftModifier) {
       if (e.delta () > 0) {
-        this->radiusEdit.setValue ( this->radiusEdit.doubleValue ()
-                                  + this->radiusEdit.doubleSingleStep () );
+        this->radiusEdit.setIntValue ( this->radiusEdit.intValue ()
+                                     + this->radiusEdit.intSingleStep () );
       }
       else if (e.delta () < 0) {
-        this->radiusEdit.setValue ( this->radiusEdit.doubleValue ()
-                                  - this->radiusEdit.doubleSingleStep () );
+        this->radiusEdit.setIntValue ( this->radiusEdit.intValue ()
+                                     - this->radiusEdit.intSingleStep () );
       }
     }
     return ToolResponse::Redraw;
