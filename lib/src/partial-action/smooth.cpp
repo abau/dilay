@@ -17,9 +17,10 @@ namespace {
     auto getData = [&mesh] ( const WingedVertex& v
                            , glm::vec3& position, glm::vec3& delta, AdjTriangles& adjTriangles ) 
     {
+      assert (adjTriangles.empty ());
+
       position = v.position (mesh);
       delta    = glm::vec3 (0.0f);
-      adjTriangles.clear ();
 
       AdjFaces     adjFaces (v.adjacentFaces ());
       unsigned int valence  (0);
@@ -94,7 +95,6 @@ namespace {
       ++posIt;
     }
   }
-
 }
 
 void PartialAction :: smooth ( WingedMesh& mesh, const VertexPtrSet& vertices
