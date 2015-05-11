@@ -403,7 +403,6 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
         position = ray.pointAt (t);
       }
       else {
-        std::abort ();
         position = (v1 + v2) * 0.5f; 
       }
       const unsigned int newIndex = m.addVertex (position);
@@ -454,7 +453,7 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
       case Side::Border: {
         switch (borderFlags [i]) {
           case BorderFlag::NoBorder:
-            std::abort ();
+            DILAY_IMPOSSIBLE
             break;
           case BorderFlag::ConnectsNegative:
             break;
@@ -606,7 +605,7 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
         addFace (m, b, new3.second, new2.second);
       }
       else {
-        std::abort ();
+        DILAY_IMPOSSIBLE
       }
     }
   }

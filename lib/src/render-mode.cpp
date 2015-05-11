@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include "render-mode.hpp"
 #include "shader.hpp"
+#include "util.hpp"
 
 RenderMode::RenderMode () {
   this->smoothShading      (true);
@@ -31,7 +32,7 @@ const char* RenderMode::vertexShader () const {
     return Shader::constantVertexShader ();
   }
   else {
-    std::abort ();
+    DILAY_IMPOSSIBLE
   }
 }
 
@@ -49,7 +50,7 @@ const char* RenderMode::fragmentShader () const {
                                     : Shader::constantFragmentShader ();
   }
   else {
-    std::abort ();
+    DILAY_IMPOSSIBLE
   }
 }
 

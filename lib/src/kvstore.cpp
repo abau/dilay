@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "color.hpp"
 #include "kvstore.hpp"
+#include "util.hpp"
 #include "variant.hpp"
 #include "xml-conversion.hpp"
 
@@ -205,7 +206,7 @@ struct KVStore::Impl {
         XmlConversion::toDomElement (doc, elem, value.get <Color> ());
       }
       else
-        std::abort ();
+        DILAY_IMPOSSIBLE
     }
     else {
       const QString& head  = path.first ();

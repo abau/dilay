@@ -2,6 +2,7 @@
 #include <QButtonGroup>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
+#include "../util.hpp"
 #include "cache.hpp"
 #include "history.hpp"
 #include "scene.hpp"
@@ -64,7 +65,7 @@ struct ToolMoveMesh::Impl {
         case 7: this->movement.constraint (MovementConstraint::PrimaryPlane);
                 break;
         default:
-          std::abort ();
+          DILAY_IMPOSSIBLE
       }
       this->setupToolTip ();
       this->self->cache ().set ("constraint", id);

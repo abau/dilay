@@ -4,6 +4,7 @@
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
+#include "util.hpp"
 
 namespace {
   WingedEdge& splitFaceWith ( WingedMesh& mesh
@@ -67,7 +68,7 @@ WingedEdge& PartialAction :: insertEdgeFace (WingedMesh& mesh, WingedFace& face,
                          , sucSuccessor, successor );
   }
   else {
-    std::abort ();
+    DILAY_IMPOSSIBLE
   }
 }
 

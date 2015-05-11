@@ -26,7 +26,7 @@ bool WingedEdge :: isLeftFace (const WingedFace& face) const {
     return false;
   }
   else {
-    std::abort ();
+    DILAY_IMPOSSIBLE
   }
 }
 
@@ -42,7 +42,7 @@ bool WingedEdge :: isVertex1 (const WingedVertex& vertex) const {
     return false;
   }
   else {
-    std::abort ();
+    DILAY_IMPOSSIBLE
   }
 }
 

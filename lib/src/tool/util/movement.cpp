@@ -1,5 +1,6 @@
 #include <QMouseEvent>
 #include <glm/glm.hpp>
+#include "../../util.hpp"
 #include "camera.hpp"
 #include "dimension.hpp"
 #include "intersection.hpp"
@@ -112,8 +113,10 @@ struct ToolUtilMovement::Impl {
         assert (this->mExplicitPlane);
 
         return this->moveOnPlane (*this->mExplicitPlane, p);
+
+      default:
+        DILAY_IMPOSSIBLE
     }
-    std::abort ();
   }
 
   bool move (const QMouseEvent& e) {

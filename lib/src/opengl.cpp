@@ -2,10 +2,10 @@
 #include <QOpenGLExtensions>
 #include <QOpenGLFunctions_2_1>
 #include <glm/glm.hpp>
-#include <iostream>
 #include <memory>
 #include "opengl.hpp"
 #include "shader.hpp"
+#include "util.hpp"
 
 #define DELEGATE_GL_CONSTANT(method,constant) \
   unsigned int method () { return constant; }
@@ -47,16 +47,14 @@ namespace OpenGL {
   void initializeFunctions () {
     fun = QOpenGLContext::currentContext ()->versionFunctions <QOpenGLFunctions_2_1> ();
     if (fun == false) {
-      std::cerr << "Could not obtain OpenGL 2.1 context" << std::endl;
-      std::abort ();
+      DILAY_PANIC ("could not obtain OpenGL 2.1 context")
     }
     fun->initializeOpenGLFunctions ();
 
     if (OpenGL::supportsGeometryShader ()) {
       gsFun = std::make_unique <QOpenGLExtension_EXT_geometry_shader4> ();
       if (gsFun == false) {
-        std::cerr << "Could not initialize GL_EXT_geometry_shader4 extension" << std::endl;
-        std::abort ();
+        DILAY_PANIC ("could not initialize GL_EXT_geometry_shader4 extension")
       }
       gsFun->initializeOpenGLFunctions ();
     }
@@ -183,7 +181,7 @@ namespace OpenGL {
       GLsizei   logLength;
       fun->glGetShaderInfoLog(id, maxLogLength, &logLength, logBuffer);
       if (logLength > 0) {
-        std::cerr << logBuffer << std::endl;
+        DILAY_WARN ("%s", logBuffer)
       }
     };
 
@@ -198,8 +196,7 @@ namespace OpenGL {
       fun->glGetShaderiv (shaderId, GL_COMPILE_STATUS, &status);
       if (status == GL_FALSE) {
         showInfoLog (shaderId);
-        std::cerr << "Can not compile shader: see info log" << std::endl;
-        std::abort ();
+        DILAY_PANIC ("can not compile shader: see info log above")
       }
       return shaderId;
     };
@@ -234,8 +231,7 @@ namespace OpenGL {
     if (status == GL_FALSE) {
       showInfoLog               (programId);
       OpenGL::safeDeleteProgram (programId);
-      std::cerr << "Can not link shader program: see info log" << std::endl;
-      std::abort ();
+      DILAY_PANIC ("can not link shader program: see info log above")
     }
     OpenGL::safeDeleteShader (vsId);
     OpenGL::safeDeleteShader (fsId);

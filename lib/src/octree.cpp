@@ -161,7 +161,7 @@ struct OctreeNode::Impl {
     }
   }
 #else
-  void render (const Camera&) const { std::abort (); }
+  void render (const Camera&) const { DILAY_IMPOSSIBLE }
 #endif
 
   bool approxContains (const glm::vec3& v) const {

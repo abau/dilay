@@ -5,6 +5,7 @@
 #include "opengl.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
+#include "util.hpp"
 
 namespace {
   const unsigned int numLights = 2;
@@ -101,7 +102,7 @@ struct Renderer::Impl {
       return renderMode.renderWireframe () ? 4 : 5;
     }
     else {
-      std::abort ();
+      DILAY_IMPOSSIBLE
     }
   }
 

@@ -191,7 +191,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& spher
       return false;
     }
     default:
-      std::abort ();
+      DILAY_IMPOSSIBLE
   }
 }
 

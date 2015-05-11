@@ -121,7 +121,7 @@ struct WingedMesh::Impl {
       else if (e->rightFace () == &face)
         e->rightFace (&newFace);
       else
-        std::abort ();
+        DILAY_IMPOSSIBLE
     }
     return newFace;
   }
