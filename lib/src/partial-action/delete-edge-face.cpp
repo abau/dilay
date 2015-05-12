@@ -31,17 +31,16 @@ namespace {
 }
 
 void PartialAction :: deleteEdgeFace ( WingedMesh& mesh, WingedEdge& edge
-                                     , AffectedFaces* affectedFaces) 
+                                     , AffectedFaces& affectedFaces) 
 {
   WingedFace& faceToDelete  = *edge.rightFace ();
   WingedFace& remainingFace = *edge.leftFace ();
 
   assert (faceToDelete != remainingFace);
 
-  if (affectedFaces) {
-    affectedFaces->remove (faceToDelete);
-    affectedFaces->insert (remainingFace);
-  }
+  affectedFaces.remove (faceToDelete);
+  affectedFaces.insert (remainingFace);
+
   dissolveEdgeFace (edge);
 
   mesh.deleteEdge (edge);

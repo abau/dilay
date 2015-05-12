@@ -8,9 +8,9 @@ class WingedMesh;
 namespace PartialAction {
 
   /* `deleteEdgeFace (m,e,a)` deletes edge `e` and its _right_ face of mesh `m`. 
-   * `e` and its right face are also deleted from `a` if `a != nullptr`.
+   * `e` and its right face are also deleted from `a`.
    */
-  void deleteEdgeFace (WingedMesh&, WingedEdge&, AffectedFaces*);
+  void deleteEdgeFace (WingedMesh&, WingedEdge&, AffectedFaces&);
 }
 
 #endif

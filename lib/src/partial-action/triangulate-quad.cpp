@@ -5,7 +5,7 @@
 #include "winged/face.hpp"
 
 WingedEdge& PartialAction :: triangulateQuad ( WingedMesh& mesh, WingedFace& face
-                                             , AffectedFaces* affectedFaces ) 
+                                             , AffectedFaces& affectedFaces ) 
 {
   assert (face.numEdges () == 4);
 
@@ -14,9 +14,8 @@ WingedEdge& PartialAction :: triangulateQuad ( WingedMesh& mesh, WingedFace& fac
   newEdge.leftFaceRef  ().writeIndices (mesh);
   newEdge.rightFaceRef ().writeIndices (mesh);
 
-  if (affectedFaces) {
-    affectedFaces->insert (newEdge.leftFaceRef  ());
-    affectedFaces->insert (newEdge.rightFaceRef ());
-  }
+  affectedFaces.insert (newEdge.leftFaceRef  ());
+  affectedFaces.insert (newEdge.rightFaceRef ());
+
   return newEdge;
 }

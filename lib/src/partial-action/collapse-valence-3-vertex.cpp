@@ -12,13 +12,13 @@ void PartialAction :: collapseValence3Vertex ( WingedMesh& mesh, WingedVertex& v
 {
   assert (vertex.valence () == 3);
 
-  PartialAction::deleteEdgeFace (mesh, vertex.edgeRef (), &affectedFaces);
+  PartialAction::deleteEdgeFace (mesh, vertex.edgeRef (), affectedFaces);
 
   WingedEdge& edgeToDelete  = PartialAction::collapseValence2Vertex ( mesh, vertex 
                                                                     , false, affectedFaces);
   WingedFace& remainingFace = edgeToDelete.leftFaceRef ();
 
-  PartialAction::deleteEdgeFace (mesh, edgeToDelete, &affectedFaces);
+  PartialAction::deleteEdgeFace (mesh, edgeToDelete, affectedFaces);
 
   assert (remainingFace.numEdges () == 3);
 

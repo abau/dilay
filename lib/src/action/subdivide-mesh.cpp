@@ -23,7 +23,7 @@ void Action::subdivideMesh (WingedMesh& mesh) {
 
   // triangulate faces
   for (WingedFace* f : affected.faces ()) {
-    PartialAction::triangulate6Gon (mesh, *f, nullptr);
+    PartialAction::triangulate6Gon (mesh, *f, affected);
   }
 
   mesh.writeAllIndices ();

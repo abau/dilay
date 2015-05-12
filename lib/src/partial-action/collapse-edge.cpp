@@ -39,8 +39,8 @@ void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
   const unsigned int newVertexIndex = newVertex.index ();
 #endif
 
-  PartialAction::deleteEdgeFace (mesh, edgeToDelete1, &affectedFaces);
-  PartialAction::deleteEdgeFace (mesh, edgeToDelete2, &affectedFaces);
+  PartialAction::deleteEdgeFace (mesh, edgeToDelete1, affectedFaces);
+  PartialAction::deleteEdgeFace (mesh, edgeToDelete2, affectedFaces);
 
   EdgePtrVec remainingEdges1 = vertex1.adjacentEdges ().collect ();
   EdgePtrVec remainingEdges2 = vertex2.adjacentEdges ().collect ();

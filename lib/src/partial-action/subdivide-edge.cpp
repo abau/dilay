@@ -83,8 +83,8 @@ void PartialAction :: subdivideEdge ( WingedMesh& mesh, WingedEdge& edge
   const glm::vec3 newPos  = SubdivisionButterfly::subdivideEdge (mesh, edge);
   WingedEdge&     newEdge = PartialAction::insertEdgeVertex (mesh, edge, newPos);
 
-  PartialAction::triangulateQuad  (mesh, edge.leftFaceRef  (), &affectedFaces);
-  PartialAction::triangulateQuad  (mesh, edge.rightFaceRef (), &affectedFaces);
+  PartialAction::triangulateQuad  (mesh, edge.leftFaceRef  (), affectedFaces);
+  PartialAction::triangulateQuad  (mesh, edge.rightFaceRef (), affectedFaces);
 
   assert (newEdge.vertex2Ref ().valence () == 4);
   assert (newEdge.vertex1Ref ().valence () == valence1);

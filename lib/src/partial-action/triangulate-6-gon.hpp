@@ -11,8 +11,8 @@ namespace PartialAction {
    * Note thate `f.edge ()->firstVertex (f)` must be an even vertex, i.e.
    * it must not be generated during the current subdivision step.
    * The new faces are adjacent to `f`.
-   * `f` and the new faces are added to `n` if `n` is not `nullptr`.
+   * `f` and the new faces are added to `n`.
    */
-  void triangulate6Gon (WingedMesh&, WingedFace&, AffectedFaces*);
+  void triangulate6Gon (WingedMesh&, WingedFace&, AffectedFaces&);
 }
 #endif

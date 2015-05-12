@@ -7,7 +7,7 @@
 #include "winged/vertex.hpp"
 
 void PartialAction :: triangulate6Gon ( WingedMesh& mesh, WingedFace& f
-                                      , AffectedFaces* affectedFaces ) 
+                                      , AffectedFaces& affectedFaces ) 
 {
   assert (f.numEdges () == 6);
   /*     4
@@ -77,10 +77,8 @@ void PartialAction :: triangulate6Gon ( WingedMesh& mesh, WingedFace& f
   b.writeIndices (mesh);
   c.writeIndices (mesh);
 
-  if (affectedFaces) {
-    affectedFaces->insert (f);
-    affectedFaces->insert (a);
-    affectedFaces->insert (b);
-    affectedFaces->insert (c);
-  }
+  affectedFaces.insert (f);
+  affectedFaces.insert (a);
+  affectedFaces.insert (b);
+  affectedFaces.insert (c);
 }

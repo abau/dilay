@@ -9,8 +9,8 @@ namespace PartialAction {
 
   /* `triangulateQuad (m,f,n)` triangulates the quad `f` by inserting an edge from 
    * `f.edge ()->secondVertex (f)`.
-   * `f` and the new face are added to `n` if `n` is not `nullptr`.
+   * `f` and the new face are added to `n`.
    */
-  WingedEdge& triangulateQuad (WingedMesh&, WingedFace&, AffectedFaces*);
+  WingedEdge& triangulateQuad (WingedMesh&, WingedFace&, AffectedFaces&);
 }
 #endif
