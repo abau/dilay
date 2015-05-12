@@ -49,7 +49,7 @@ WingedEdge& PartialAction :: insertEdgeFace (WingedMesh& mesh, WingedFace& face,
   WingedEdge&   sucSuccessor   = successor.successorRef (face);
   WingedVertex& vertex         = predecessor.firstVertexRef (face);
 
-  if (predecessor.firstVertexRef (face).index () == vertex.index ()) {
+  if (predecessor.firstVertexRef (face) == vertex) {
     PrimTriangle newLeftGeometry (mesh, predecessor.vertexRef (face, 0)
                                       , predecessor.vertexRef (face, 1)
                                       , predecessor.vertexRef (face, 2));
@@ -58,7 +58,7 @@ WingedEdge& PartialAction :: insertEdgeFace (WingedMesh& mesh, WingedFace& face,
                          , edge, predecessor
                          , prePredecessor, successor );
   }
-  else if (sucSuccessor.secondVertexRef (face).index () == vertex.index ()) {
+  else if (sucSuccessor.secondVertexRef (face) == vertex) {
     PrimTriangle newLeftGeometry (mesh, successor.vertexRef (face, 0)
                                       , successor.vertexRef (face, 1)
                                       , successor.vertexRef (face, 2));

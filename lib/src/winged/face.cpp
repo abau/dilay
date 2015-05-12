@@ -11,6 +11,14 @@ WingedFace :: WingedFace (unsigned int i)
   , _octreeNode (nullptr) 
   {}
 
+bool WingedFace::operator== (const WingedFace& other) const {
+  return this->_index == other._index;
+}
+
+bool WingedFace::operator!= (const WingedFace& other) const {
+  return ! this->operator== (other);
+}
+
 WingedVertex* WingedFace :: vertex (unsigned int index) const { 
   return this->_edge->vertex (*this, index);
 }

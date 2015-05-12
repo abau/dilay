@@ -34,6 +34,14 @@ struct WingedMesh::Impl {
     , _index (i)
   {}
 
+  bool operator== (const WingedMesh& other) const {
+    return this->_index == other.index ();
+  }
+
+  bool operator!= (const WingedMesh& other) const {
+    return ! this->operator== (other);
+  }
+
   unsigned int index  ()               const { return this->_index;          }
   glm::vec3    vector (unsigned int i) const { return this->mesh.vertex (i); }
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
@@ -484,6 +492,9 @@ struct WingedMesh::Impl {
 };
 
 DELEGATE1_BIG3_SELF (WingedMesh, unsigned int)
+
+DELEGATE1_CONST (bool           , WingedMesh, operator==, const WingedMesh&)
+DELEGATE1_CONST (bool           , WingedMesh, operator!=, const WingedMesh&)
 
 DELEGATE_CONST  (unsigned int   , WingedMesh, index)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vector, unsigned int)

@@ -19,10 +19,8 @@ WingedEdge& PartialAction :: collapseValence2Vertex ( WingedMesh& mesh
                             ? remainingEdge.leftPredecessorRef ()
                             : remainingEdge.leftSuccessorRef ();
 
-  assert ( (left .index () == edgeToDelete.leftFaceRef  ().index ())
-        || (left .index () == edgeToDelete.rightFaceRef ().index ()) );
-  assert ( (right.index () == edgeToDelete.leftFaceRef  ().index ())
-        || (right.index () == edgeToDelete.rightFaceRef ().index ()) );
+  assert ((left  == edgeToDelete.leftFaceRef ()) || (left  == edgeToDelete.rightFaceRef ()));
+  assert ((right == edgeToDelete.leftFaceRef ()) || (right == edgeToDelete.rightFaceRef ()));
 
   if (remainingEdge.isVertex1 (vertex)) {
     remainingEdge.leftPredecessor (edgeToDelete.predecessor (left));

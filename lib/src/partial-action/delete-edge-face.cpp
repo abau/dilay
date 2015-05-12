@@ -36,7 +36,7 @@ void PartialAction :: deleteEdgeFace ( WingedMesh& mesh, WingedEdge& edge
   WingedFace& faceToDelete  = *edge.rightFace ();
   WingedFace& remainingFace = *edge.leftFace ();
 
-  assert (faceToDelete.index () != remainingFace.index ());
+  assert (faceToDelete != remainingFace);
 
   if (affectedFaces) {
     affectedFaces->remove (faceToDelete);

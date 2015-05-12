@@ -24,6 +24,9 @@ class WingedMesh {
   public: 
     DECLARE_BIG3 (WingedMesh, unsigned int);
 
+    bool               operator==         (const WingedMesh&) const;
+    bool               operator!=         (const WingedMesh&) const;
+
     unsigned int       index              () const;
     glm::vec3          vector             (unsigned int) const;
     unsigned int       index              (unsigned int) const;

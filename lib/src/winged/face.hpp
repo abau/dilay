@@ -18,6 +18,9 @@ class WingedFace {
     WingedFace (const WingedFace&)  = default;
     WingedFace (      WingedFace&&) = default;
 
+    bool          operator==       (const WingedFace&) const;
+    bool          operator!=       (const WingedFace&) const;
+
     unsigned int  index            () const { return this->_index; }
     WingedEdge*   edge             () const { return this->_edge; }
     OctreeNode*   octreeNode       () const { return this->_octreeNode; }

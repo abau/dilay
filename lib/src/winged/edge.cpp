@@ -18,11 +18,19 @@ WingedEdge :: WingedEdge (unsigned int i)
   , _rightSuccessor   (nullptr)
   {}
 
+bool WingedEdge::operator== (const WingedEdge& other) const {
+  return this->_index == other._index;
+}
+
+bool WingedEdge::operator!= (const WingedEdge& other) const {
+  return ! this->operator== (other);
+}
+
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
-  if (face.index () == this->_leftFace->index ()) {
+  if (face == *this->_leftFace) {
     return true;
   }
-  else if (face.index () == this->_rightFace->index ()) {
+  else if (face == *this->_rightFace) {
     return false;
   }
   else {
@@ -35,10 +43,10 @@ bool WingedEdge :: isRightFace (const WingedFace& face) const {
 }
 
 bool WingedEdge :: isVertex1 (const WingedVertex& vertex) const {
-  if (vertex.index () == this->_vertex1->index ()) {
+  if (vertex == *this->_vertex1) {
     return true;
   }
-  else if (vertex.index () == this->_vertex2->index ()) {
+  else if (vertex == *this->_vertex2) {
     return false;
   }
   else {

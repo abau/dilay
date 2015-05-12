@@ -16,6 +16,9 @@ class WingedVertex {
     WingedVertex (const WingedVertex&)  = default;
     WingedVertex (      WingedVertex&&) = default;
 
+    bool          operator== (const WingedVertex&) const;
+    bool          operator!= (const WingedVertex&) const;
+
     unsigned int  index    () const { return this->_index; }
     WingedEdge*   edge     () const { return this->_edge; }
 

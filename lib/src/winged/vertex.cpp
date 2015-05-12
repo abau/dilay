@@ -11,6 +11,14 @@ WingedVertex :: WingedVertex (unsigned int i)
   , _edge     (nullptr) 
 {}
 
+bool WingedVertex::operator== (const WingedVertex& other) const {
+  return this->_index == other._index;
+}
+
+bool WingedVertex::operator!= (const WingedVertex& other) const {
+  return ! this->operator== (other);
+}
+
 void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int index) {
   mesh.setIndex (index, this->_index);
 }
