@@ -74,16 +74,8 @@ unsigned int Util :: solveQuadraticEq (float a, float b, float c, float& s1, flo
   }
 }
 
-float Util :: epsilon () {
-  return 0.0001f;
-}
-
 bool Util :: isNaN (const glm::vec3& v) {
   return glm::isnan (v.x) || glm::isnan (v.y) || glm::isnan (v.z);
-}
-
-float Util :: defaultScale () {
-  return 100.0f;
 }
 
 float Util :: smoothStep ( const glm::vec3& v, const glm::vec3& center

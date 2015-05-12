@@ -24,12 +24,13 @@ namespace Util {
   glm::vec3    transformDirection (const glm::mat4x4&, const glm::vec3&);
   std::string  readFile           (const std::string&); 
   unsigned int solveQuadraticEq   (float, float, float, float&, float&);
-  float        epsilon            ();
   bool         isNaN              (const glm::vec3&);
-  float        defaultScale       ();
   float        smoothStep         (const glm::vec3&, const glm::vec3&, float, float);
   float        linearStep         (const glm::vec3&, const glm::vec3&, float, float);
   void         warn               (const char*, unsigned int, const char*, ...);
+
+  constexpr float epsilon      () { return 0.0001f; }
+  constexpr float defaultScale () { return 100.0f; }
 }
 
 #endif
