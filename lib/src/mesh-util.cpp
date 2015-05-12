@@ -15,7 +15,6 @@ namespace {
     for (unsigned int i = 0; i < mesh.numVertices (); i++) {
       mesh.setNormal (i, glm::normalize (mesh.vertex (i)));
     }
-    mesh.bufferData ();
     return mesh;
   }
 
