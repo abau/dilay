@@ -39,15 +39,16 @@ struct ViewDoubleSlider::Impl {
     const unsigned short o = forceLinear ? 1 : this->order;
 
     if (o == 1) {
-      return int (value * this->factor);
+      return int (std::round (value * this->factor));
     }
     else {
-      const double min    = double (this->self->minimum ()) / this->factor;
-      const double max    = double (this->self->maximum ()) / this->factor;
-      const double norm   = (value - min) / (max - min);
-      const int    result = int ( this->factor 
-                                * (min + (glm::pow (norm, 1.0f / float (o)) * (max - min))) );
-      return result;
+      const double min  = double (this->self->minimum ()) / this->factor;
+      const double max  = double (this->self->maximum ()) / this->factor;
+      const double norm = (value - min) / (max - min);
+
+      return int (std::round ( this->factor 
+                             * (min + (glm::pow (norm, 1.0f / float (o)) * (max - min))) 
+                             ));
     }
   }
 
