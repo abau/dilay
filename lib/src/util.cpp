@@ -105,8 +105,7 @@ float Util :: linearStep ( const glm::vec3& v, const glm::vec3& center
     return d > radius ? 0.0f : 1.0f;
   }
   else {
-    const float x = glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
-    return glm::mix (0.0f, 1.0f, x);
+    return glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
   }
 }
 
