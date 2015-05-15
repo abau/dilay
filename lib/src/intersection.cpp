@@ -20,6 +20,10 @@ struct Intersection :: Impl {
 
   Impl () : isIntersection (false) {}
 
+  void reset () {
+    this->isIntersection = false;
+  }
+
   bool update (float d, const glm::vec3& p, const glm::vec3& n) {
     if (this->isIntersection == false || d < this->distance) {
       this->isIntersection = true;
@@ -29,10 +33,6 @@ struct Intersection :: Impl {
       return true;
     }
     return false;
-  }
-
-  void reset () {
-    this->isIntersection = false;
   }
 
   static Intersection& min (Intersection& a, Intersection& b) {
@@ -46,11 +46,12 @@ struct Intersection :: Impl {
 };
 
 DELEGATE_BIG6    (Intersection)
-DELEGATE3        (bool            , Intersection, update, float, const glm::vec3&, const glm::vec3&)
+DELEGATE         (void            , Intersection, reset)
 GETTER_CONST     (bool            , Intersection, isIntersection)
 GETTER_CONST     (float           , Intersection, distance)
 GETTER_CONST     (const glm::vec3&, Intersection, position)
 GETTER_CONST     (const glm::vec3&, Intersection, normal)
+DELEGATE3        (bool            , Intersection, update, float, const glm::vec3&, const glm::vec3&)
 DELEGATE2_STATIC (Intersection&   , Intersection, min, Intersection&, Intersection&)
 
 namespace {
