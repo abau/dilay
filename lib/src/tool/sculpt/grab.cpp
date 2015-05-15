@@ -1,9 +1,9 @@
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "tools.hpp"
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
+#include "tools.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 

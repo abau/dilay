@@ -1,7 +1,7 @@
 #include <QCheckBox>
 #include "cache.hpp"
-#include "tools.hpp"
 #include "sculpt-brush.hpp"
+#include "tools.hpp"
 #include "view/double-slider.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"

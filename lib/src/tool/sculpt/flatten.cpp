@@ -1,6 +1,6 @@
 #include "cache.hpp"
-#include "tools.hpp"
 #include "sculpt-brush.hpp"
+#include "tools.hpp"
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/properties.hpp"
