@@ -2,7 +2,6 @@
 #include <glm/gtx/norm.hpp>
 #include <sstream>
 #include "primitive/triangle.hpp"
-#include "ray.hpp"
 #include "util.hpp"
 #include "winged/vertex.hpp"
 

@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <iosfwd>
 
-class Ray;
 class WingedMesh;
 class WingedVertex;
 
