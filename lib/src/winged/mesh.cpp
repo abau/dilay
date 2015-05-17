@@ -457,14 +457,17 @@ struct WingedMesh::Impl {
     glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
     glm::vec3 minVertex (std::numeric_limits <float>::max    ());
 
-    for (unsigned int i = 0; i < this->numVertices (); ++i) {
-      const glm::vec3 v = Util::transformPosition  (model, this->vector (i));
+    this->forEachVertex ([this, &model, &modelNormal, &maxVertex, &minVertex] 
+                         (WingedVertex& vertex)
+    { 
+      const glm::vec3 v = Util::transformPosition  (model, vertex.position (*this->self));
+      const glm::vec3 n = glm::normalize (modelNormal * vertex.savedNormal (*this->self));
             maxVertex   = glm::max (maxVertex, v);
             minVertex   = glm::min (minVertex, v);
 
-      this->setVertex (i, v);
-      this->setNormal (i, glm::normalize (modelNormal * this->normal (i)));
-    }
+      vertex.writePosition (*this->self, v);
+      vertex.writeNormal   (*this->self, n);
+    });
 
     this->octree.reset ();
 
