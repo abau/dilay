@@ -7,10 +7,6 @@
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
 #include "util.hpp"
-#include "winged/edge.hpp"
-#include "winged/face.hpp"
-#include "winged/mesh.hpp"
-#include "winged/vertex.hpp"
 
 struct Intersection :: Impl {
   bool      isIntersection;
@@ -69,12 +65,6 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& 
   return glm::dot (d,d) <= r * r;
 }
 
-bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
-                                    , const WingedVertex& vertex) 
-{
-  return IntersectionUtil :: intersects (sphere, vertex.position (mesh));
-}
-
 // see http://realtimecollisiondetection.net/blog/?p=103
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimTriangle& triangle) {
   const glm::vec3 A    = triangle.vertex1 () - sphere.center ();
@@ -120,17 +110,6 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimTriangl
   const bool      sep7 = (glm::dot (Q3, Q3) > rr * e3 * e3) && (glm::dot (Q3, QB) > 0.0f);
 
   return (sep1 || sep2 || sep3 || sep4 || sep5 || sep6 || sep7) == false;
-}
-
-bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
-                                    , const WingedEdge& edge ) 
-{
-  float t;
-  const PrimRay ray (edge.vertex1Ref ().position (mesh), edge.vertex2Ref ().position (mesh)
-                                                       - edge.vertex1Ref ().position (mesh));
-  return IntersectionUtil::intersects (ray, sphere, &t)
-       ? t <= 1.0f
-       : false;
 }
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& box) {
@@ -279,36 +258,18 @@ bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimAABox& bo
   return less && greater;
 }
 
-
-namespace {
-  bool planeTriangleIntersection ( const PrimPlane& plane, const glm::vec3& v1
-                                 , const glm::vec3& v2, const glm::vec3& v3 )
-  {
-    const float d1 = plane.distance (v1);
-    const float d2 = plane.distance (v2);
-    const float d3 = plane.distance (v3);
-
-    const bool less    = d1 < Util::epsilon ()
-                      || d2 < Util::epsilon ()
-                      || d3 < Util::epsilon ();
-
-    const bool greater = d1 > -Util::epsilon ()
-                      || d2 > -Util::epsilon ()
-                      || d3 > -Util::epsilon ();
-
-    return less && greater;
-  }
-}
-
 bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimTriangle& tri) {
-  return planeTriangleIntersection (plane, tri.vertex1 (), tri.vertex2 (), tri.vertex3 ());
-}
+  const float d1 = plane.distance (tri.vertex1 ());
+  const float d2 = plane.distance (tri.vertex2 ());
+  const float d3 = plane.distance (tri.vertex3 ());
 
-bool IntersectionUtil :: intersects ( const PrimPlane& plane, const WingedMesh& mesh
-                                    , const WingedFace& face )
-{
-  return planeTriangleIntersection ( plane
-                                   , face.vertexRef (0).position (mesh)
-                                   , face.vertexRef (1).position (mesh)
-                                   , face.vertexRef (2).position (mesh) );
+  const bool less    = d1 < Util::epsilon ()
+                    || d2 < Util::epsilon ()
+                    || d3 < Util::epsilon ();
+
+  const bool greater = d1 > -Util::epsilon ()
+                    || d2 > -Util::epsilon ()
+                    || d3 > -Util::epsilon ();
+
+  return less && greater;
 }
