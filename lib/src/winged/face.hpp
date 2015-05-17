@@ -7,7 +7,6 @@ class AdjEdges;
 class AdjVertices;
 class AdjFaces;
 class PrimTriangle;
-class OctreeNode;
 class WingedEdge;
 class WingedVertex;
 class WingedMesh;
@@ -23,10 +22,8 @@ class WingedFace {
 
     unsigned int  index            () const { return this->_index; }
     WingedEdge*   edge             () const { return this->_edge; }
-    OctreeNode*   octreeNode       () const { return this->_octreeNode; }
 
-    void          edge             (WingedEdge*  e) { this->_edge       = e; }
-    void          octreeNode       (OctreeNode*  n) { this->_octreeNode = n; }
+    void          edge             (WingedEdge*  e) { this->_edge = e; }
 
     WingedVertex* vertex           (unsigned int) const;
     void          writeIndices     (WingedMesh&);
@@ -42,12 +39,10 @@ class WingedFace {
     AdjFaces      adjacentFaces    ()            const;
 
     SAFE_REF_CONST  (WingedEdge  , edge)
-    SAFE_REF_CONST  (OctreeNode  , octreeNode)
     SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)
   private:
     const unsigned int _index;
     WingedEdge*        _edge;
-    OctreeNode*        _octreeNode;
 };
 
 #endif

@@ -2,13 +2,15 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <random>
+#include "mesh.hpp"
 #include "octree.hpp"
 #include "primitive/triangle.hpp"
 #include "test-octree.hpp"
 #include "winged/util.hpp"
 
 void TestOctree::test1 () {
-  Octree octree;
+  Mesh   mesh;
+  Octree octree (mesh);
   octree.setupRoot (glm::vec3 (0.0f), 10.0f);
        
   std::default_random_engine gen; 
@@ -47,7 +49,7 @@ void TestOctree::test1 () {
     glm::vec3 w2 = glm::vec3 (modelMatrix * glm::vec4 (m2, 1.0f));
     glm::vec3 w3 = glm::vec3 (modelMatrix * glm::vec4 (m3, 1.0f));
 
-    octree.addFace (PrimTriangle (w1,w2,w3));
+    octree.addFace (i, PrimTriangle (w1,w2,w3));
   }
   //WingedUtil::printStatistics (octree);
 }

@@ -76,13 +76,10 @@ bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh
 }
 
 // see http://realtimecollisiondetection.net/blog/?p=103
-bool IntersectionUtil :: intersects ( const PrimSphere& sphere, const WingedMesh& mesh
-                                    , const WingedFace& face) {
-  assert (face.isTriangle ());
-
-  const glm::vec3 A    = face.vertexRef (0).position (mesh) - sphere.center ();
-  const glm::vec3 B    = face.vertexRef (1).position (mesh) - sphere.center ();
-  const glm::vec3 C    = face.vertexRef (2).position (mesh) - sphere.center ();
+bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimTriangle& triangle) {
+  const glm::vec3 A    = triangle.vertex1 () - sphere.center ();
+  const glm::vec3 B    = triangle.vertex2 () - sphere.center ();
+  const glm::vec3 C    = triangle.vertex3 () - sphere.center ();
 
   const float     rr   = sphere.radius () * sphere.radius ();
   const glm::vec3 V    = glm::cross (B-A, C-A);

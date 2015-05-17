@@ -14,28 +14,22 @@ void Action :: collapseDegeneratedFaces (WingedMesh& mesh) {
 
 void Action :: collapseDegeneratedFaces (WingedMesh& mesh, AffectedFaces& affectedFaces) {
   WingedFace* degenerated = nullptr;
-  while ((degenerated = mesh.octree ().someDegeneratedFace ()) != nullptr) {
+  while ((degenerated = mesh.someDegeneratedFace ()) != nullptr) {
     PartialAction::collapseFace (mesh, *degenerated, affectedFaces);
 
     FacePtrSet affectedByCollapse = affectedFaces.uncommitedFaces ();
     for (WingedFace* f : affectedByCollapse) {
       f->writeIndices (mesh);
-
-      affectedFaces.remove (*f);
-      affectedFaces.insert (mesh.realignFace (*f, f->triangle (mesh)));
+      mesh.realignFace (*f);
     }
     affectedFaces.commit ();
   }
 }
 
 void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces) {
-  for (FacePtrSet::const_iterator it = affectedFaces.faces ().begin (); it != affectedFaces.faces ().end (); ) {
-    WingedFace& face = **it;
-    it = affectedFaces.removeCommited (it);
-    affectedFaces.insert (mesh.realignFace (face, face.triangle (mesh)));
+  for (WingedFace* f : affectedFaces.faces ()) {
+    mesh.realignFace (*f);
   }
-  affectedFaces.commit ();
-
   Action::collapseDegeneratedFaces (mesh, affectedFaces);
 
   for (WingedVertex* v : affectedFaces.toVertexSet ()) {

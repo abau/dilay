@@ -8,7 +8,6 @@
 WingedFace :: WingedFace (unsigned int i)
   : _index      (i)
   , _edge       (nullptr)
-  , _octreeNode (nullptr) 
   {}
 
 bool WingedFace::operator== (const WingedFace& other) const {

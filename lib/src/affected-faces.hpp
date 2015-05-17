@@ -9,16 +9,15 @@ class AffectedFaces {
   public:
     DECLARE_BIG6 (AffectedFaces)
 
-    void                 insert           (WingedFace&);
-    void                 insert           (const AffectedFaces&);
-    void                 remove           (WingedFace&);
-    FacePtrSet::iterator removeCommited   (FacePtrSet::const_iterator&);
-    void                 reset            ();
-    void                 commit           ();
-    bool                 isEmpty          () const;
-    bool                 contains         (WingedFace&) const;
-    bool                 contains         (WingedFace*) const;
-    void                 discardBackfaces (const WingedMesh&, const glm::vec3&);
+    void insert           (WingedFace&);
+    void insert           (const AffectedFaces&);
+    void remove           (WingedFace&);
+    void reset            ();
+    void commit           ();
+    bool isEmpty          () const;
+    bool contains         (WingedFace&) const;
+    bool contains         (WingedFace*) const;
+    void discardBackfaces (const WingedMesh&, const glm::vec3&);
 
     const FacePtrSet&    faces            () const;
     const FacePtrSet&    uncommitedFaces  () const;

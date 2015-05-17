@@ -28,10 +28,6 @@ struct AffectedFaces::Impl {
     this->faces          .erase (&face);
   }
 
-  FacePtrSet::iterator removeCommited (FacePtrSet::const_iterator& it) {
-    return this->faces.erase (it);
-  }
-
   void reset () {
     this->faces          .clear ();
     this->uncommitedFaces.clear ();
@@ -104,17 +100,16 @@ struct AffectedFaces::Impl {
 };
 
 DELEGATE_BIG6   (AffectedFaces)
-DELEGATE1       (void                , AffectedFaces, insert, WingedFace&)
-DELEGATE1       (void                , AffectedFaces, insert, const AffectedFaces&)
-DELEGATE1       (void                , AffectedFaces, remove, WingedFace&)
-DELEGATE1       (FacePtrSet::iterator, AffectedFaces, removeCommited, FacePtrSet::const_iterator&)
-DELEGATE        (void                , AffectedFaces, reset)
-DELEGATE        (void                , AffectedFaces, commit)
-DELEGATE_CONST  (bool                , AffectedFaces, isEmpty)
-DELEGATE1_CONST (bool                , AffectedFaces, contains, WingedFace&)
-DELEGATE1_CONST (bool                , AffectedFaces, contains, WingedFace*)
-DELEGATE2       (void                , AffectedFaces, discardBackfaces, const WingedMesh&, const glm::vec3&)
-GETTER_CONST    (const FacePtrSet&   , AffectedFaces, faces)
-GETTER_CONST    (const FacePtrSet&   , AffectedFaces, uncommitedFaces)
-DELEGATE_CONST  (VertexPtrSet        , AffectedFaces, toVertexSet)
-DELEGATE_CONST  (EdgePtrVec          , AffectedFaces, toEdgeVec)
+DELEGATE1       (void,              AffectedFaces, insert, WingedFace&)
+DELEGATE1       (void,              AffectedFaces, insert, const AffectedFaces&)
+DELEGATE1       (void,              AffectedFaces, remove, WingedFace&)
+DELEGATE        (void,              AffectedFaces, reset)
+DELEGATE        (void,              AffectedFaces, commit)
+DELEGATE_CONST  (bool,              AffectedFaces, isEmpty)
+DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace&)
+DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace*)
+DELEGATE2       (void,              AffectedFaces, discardBackfaces, const WingedMesh&, const glm::vec3&)
+GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)
+GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommitedFaces)
+DELEGATE_CONST  (VertexPtrSet,      AffectedFaces, toVertexSet)
+DELEGATE_CONST  (EdgePtrVec,        AffectedFaces, toEdgeVec)

@@ -11,8 +11,6 @@ namespace {
     WingedFace& faceToDelete  = *edge.rightFace ();
     WingedFace& remainingFace = *edge.leftFace ();
 
-    assert (faceToDelete.octreeNode ());
-
     for (WingedEdge* adjacent : faceToDelete.adjacentEdges ().collect ()) {
       adjacent->face (faceToDelete, &remainingFace);
     }

@@ -48,7 +48,6 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
 void WingedUtil :: printStatistics (const WingedFace& f) {
   std::cout   << "Face "                << f.index () 
               << "\n\tedge:\t\t\t"      << f.edgeRef ().index ()
-              << "\n\toctree node:\t\t" << f.octreeNode ()
               << std::endl;
 }
 
@@ -82,7 +81,6 @@ void WingedUtil :: printStatistics (const Octree& octree) {
             << "\n\tnum nodes:\t\t"           << oStats.numNodes
             << "\n\tnum faces:\t\t"           << oStats.numFaces
             << "\n\tnum degenerated faces:\t" << oStats.numDegeneratedFaces
-            << "\n\tnum free face-indices:\t" << oStats.numFreeFaceIndices
             << "\n\tmax faces per node:\t"    << oStats.maxFacesPerNode
             << "\n\tmin depth:\t\t"           << oStats.minDepth
             << "\n\tmax depth:\t\t"           << oStats.maxDepth
