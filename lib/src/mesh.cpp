@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <limits>
 #include <vector>
 #include "camera.hpp"
 #include "color.hpp"
@@ -99,7 +98,7 @@ struct Mesh::Impl {
   }
 
   void resizeIndices (unsigned int n) { 
-    this->indices.resize (n, std::numeric_limits <unsigned int>::max ());
+    this->indices.resize (n, Util::invalidIndex ());
   }
 
   void reserveIndices (unsigned int n) { 

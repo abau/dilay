@@ -416,8 +416,7 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
   borderFlags.reserve (mesh.numVertices ());
 
   newIndices.resize ( mesh.numVertices ()
-                    , std::make_pair ( std::numeric_limits <unsigned int>::max ()
-                                     , std::numeric_limits <unsigned int>::max () ) );
+                    , std::make_pair (Util::invalidIndex (), Util::invalidIndex ()) );
 
   // cache data
   for (unsigned int i = 0; i < mesh.numVertices (); i++) {

@@ -3,6 +3,7 @@
 
 #include <glm/fwd.hpp>
 #include <iosfwd>
+#include <limits>
 #include <utility>
 
 #define DILAY_WARN(fmt, ...)  Util::warn (__FILE__, __LINE__, fmt, ##__VA_ARGS__);
@@ -29,8 +30,9 @@ namespace Util {
   float        linearStep         (const glm::vec3&, const glm::vec3&, float, float);
   void         warn               (const char*, unsigned int, const char*, ...);
 
-  constexpr float epsilon      () { return 0.0001f; }
-  constexpr float defaultScale () { return 100.0f; }
+  constexpr float        epsilon      () { return 0.0001f; }
+  constexpr float        defaultScale () { return 100.0f; }
+  constexpr unsigned int invalidIndex () { return std::numeric_limits <unsigned int>::max (); }
 }
 
 #endif
