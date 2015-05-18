@@ -344,6 +344,17 @@ namespace {
         }
       }
     }
+
+    void rewriteIndices (const std::vector <unsigned int>& map) {
+      for (unsigned int& i : this->faceIndices) {
+        assert (map.size () > i);
+        assert (map [i] != Util::invalidIndex ());
+        i = map [i];
+      }
+      for (const Child& c : this->children) {
+        c->rewriteIndices (map);
+      }
+    }
   };
 }
 
@@ -595,6 +606,15 @@ struct Octree::Impl {
     }
     return stats;
   }
+
+  void rewriteIndices (const std::vector <unsigned int>& map) {
+    if (this->hasRoot ()) {
+      this->root->rewriteIndices (map);
+    }
+    if (this->degeneratedFaces) {
+      this->degeneratedFaces->rewriteIndices (map);
+    }
+  }
 };
 
 DELEGATE1_BIG3 (Octree, const Mesh&)
@@ -612,3 +632,4 @@ DELEGATE_CONST  (bool,             Octree, hasRoot)
 DELEGATE_CONST  (unsigned int,     Octree, numDegeneratedFaces)
 DELEGATE_CONST  (OctreeStatistics, Octree, statistics)
 DELEGATE_CONST  (unsigned int,     Octree, someDegeneratedIndex)
+DELEGATE1       (void,             Octree, rewriteIndices, const std::vector <unsigned int>&)

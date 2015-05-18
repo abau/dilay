@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <glm/fwd.hpp>
+#include <vector>
 #include "macro.hpp"
 
 class AffectedFaces;
@@ -61,7 +62,7 @@ class WingedMesh {
     bool               hasMirrorPlane      () const;
     const PrimPlane&   mirrorPlane         () const;
 
-    Mesh               makePrunedMesh      () const;
+    Mesh               makePrunedMesh      (std::vector <unsigned int>* = nullptr) const;
     void               fromMesh            (const Mesh&, const PrimPlane* = nullptr);
     void               writeAllIndices     (); 
     void               writeAllNormals     (); 

@@ -67,6 +67,7 @@ class Octree {
     unsigned int     numDegeneratedFaces  () const;
     unsigned int     someDegeneratedIndex () const;
     OctreeStatistics statistics           () const;
+    void             rewriteIndices       (const std::vector <unsigned int>&);
 
   private:
     IMPLEMENTATION
