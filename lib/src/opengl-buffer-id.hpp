@@ -5,8 +5,6 @@
 
 class OpenGLBufferId {
   public:
-    enum class Type { Buffer, Shader, Program };
-
     DECLARE_BIG6 (OpenGLBufferId)
 
     unsigned int id      () const;

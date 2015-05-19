@@ -3,22 +3,23 @@
 #include "util.hpp"
 
 OpenGLBufferId :: OpenGLBufferId () 
-  : _id   (0)
+  : _id (0)
 {}
 
 OpenGLBufferId :: OpenGLBufferId (const OpenGLBufferId&) 
   : OpenGLBufferId () 
 {}
 
-OpenGLBufferId :: OpenGLBufferId (OpenGLBufferId&&) 
-  : OpenGLBufferId () 
+OpenGLBufferId :: OpenGLBufferId (OpenGLBufferId&& other) 
+  : _id (other._id)
 {}
 
 const OpenGLBufferId& OpenGLBufferId :: operator= (const OpenGLBufferId&) {
   return *this;
 }
 
-const OpenGLBufferId& OpenGLBufferId :: operator= (OpenGLBufferId&&) {
+const OpenGLBufferId& OpenGLBufferId :: operator= (OpenGLBufferId&& other) {
+  this->_id = other._id;
   return *this;
 }
 
