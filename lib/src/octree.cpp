@@ -393,7 +393,6 @@ DELEGATE4      (void        , OctreeIntersection, update, float, const glm::vec3
 DELEGATE_CONST (unsigned int, OctreeIntersection, index)
 
 struct Octree::Impl {
-  const Mesh*              _mesh;
   Child                     root;
   Child                     degeneratedFaces;
   glm::vec3                 rootPosition;
@@ -401,14 +400,12 @@ struct Octree::Impl {
   bool                      rootWasSetup;
   std::vector <OctreeNode*> nodeMap;
 
-  Impl (const Mesh& m) 
-    : _mesh         (&m)
-    ,  rootWasSetup (false)
+  Impl () 
+    : rootWasSetup (false)
   {}
 
   Impl (const Impl& other)
-    : _mesh             (other._mesh)
-    ,  root             (other.root)
+    :  root             (other.root)
     ,  degeneratedFaces (other.degeneratedFaces)
     ,  rootPosition     (other.rootPosition)
     ,  rootWidth        (other.rootWidth)
@@ -431,10 +428,6 @@ struct Octree::Impl {
     this->nodeMap.resize (other.nodeMap.size (), nullptr);
     copyNodeMap (this->root);
     copyNodeMap (this->degeneratedFaces);
-  }
-
-  void mesh (const Mesh& mesh) {
-    this->_mesh = &mesh;
   }
 
   void setupRoot (const glm::vec3& position, float width) {
@@ -568,20 +561,20 @@ struct Octree::Impl {
   }
 #endif
 
-  bool intersects (const PrimRay& ray, OctreeIntersection& intersection) const {
+  bool intersects (const Mesh& mesh, const PrimRay& ray, OctreeIntersection& intersection) const {
     if (this->hasRoot ()) {
-      return this->root->intersects (*this->_mesh, ray, intersection);
+      return this->root->intersects (mesh, ray, intersection);
     }
     else {
       return false;
     }
   }
 
-  bool intersects ( const OctreeIntersectionFunctional& f
+  bool intersects ( const Mesh& mesh, const OctreeIntersectionFunctional& f
                   , std::vector <unsigned int>& afFaces ) const
   {
     if (this->hasRoot ()) {
-      return this->root->intersects (*this->_mesh, f, afFaces);
+      return this->root->intersects (mesh, f, afFaces);
     }
     else {
       return false;
@@ -662,16 +655,15 @@ struct Octree::Impl {
   }
 };
 
-DELEGATE1_BIG4COPY (Octree, const Mesh&)
+DELEGATE_BIG4COPY (Octree)
 
-DELEGATE1       (void,             Octree, mesh, const Mesh&)
 DELEGATE2       (void,             Octree, setupRoot, const glm::vec3&, float)
 DELEGATE2       (void,             Octree, addFace, unsigned int, const PrimTriangle&)
 DELEGATE2       (void,             Octree, realignFace, unsigned int, const PrimTriangle&)
 DELEGATE1       (void,             Octree, deleteFace, unsigned int)
 DELEGATE1_CONST (void,             Octree, render, Camera&)
-DELEGATE2_CONST (bool,             Octree, intersects, const PrimRay&, OctreeIntersection&)
-DELEGATE2_CONST (bool,             Octree, intersects, const OctreeIntersectionFunctional&, std::vector <unsigned int>&)
+DELEGATE3_CONST (bool,             Octree, intersects, const Mesh&, const PrimRay&, OctreeIntersection&)
+DELEGATE3_CONST (bool,             Octree, intersects, const Mesh&, const OctreeIntersectionFunctional&, std::vector <unsigned int>&)
 DELEGATE        (void,             Octree, reset)
 DELEGATE        (void,             Octree, shrinkRoot)
 DELEGATE_CONST  (bool,             Octree, hasRoot)

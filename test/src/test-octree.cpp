@@ -2,7 +2,6 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <random>
-#include "mesh.hpp"
 #include "octree.hpp"
 #include "primitive/triangle.hpp"
 #include "test-octree.hpp"
@@ -11,8 +10,7 @@
 void TestOctree::test1 () {
   const unsigned int numSamples = 10000;
 
-  Mesh   mesh;
-  Octree octree (mesh);
+  Octree octree;
   octree.setupRoot (glm::vec3 (0.0f), 10.0f);
        
   std::default_random_engine gen; 

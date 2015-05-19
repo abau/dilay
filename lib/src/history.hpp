@@ -4,6 +4,7 @@
 #include "configurable.hpp"
 #include "macro.hpp"
 
+class Mesh;
 class Octree;
 class Scene;
 
@@ -16,7 +17,7 @@ class History : public Configurable {
     void undo                (Scene&);
     void redo                (Scene&);
     bool hasRecentOctrees    () const;
-    void forEachRecentOctree (const std::function <void (const Octree&)>) const;
+    void forEachRecentOctree (const std::function <void (const Mesh&, const Octree&)>) const;
 
   private:
     IMPLEMENTATION

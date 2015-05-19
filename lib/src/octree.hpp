@@ -51,16 +51,16 @@ class OctreeIntersection : public Intersection {
 
 class Octree { 
   public: 
-    DECLARE_BIG4COPY (Octree, const Mesh&)
+    DECLARE_BIG4COPY (Octree)
 
-    void             mesh                 (const Mesh&);
     void             setupRoot            (const glm::vec3&, float);
     void             addFace              (unsigned int, const PrimTriangle&);
     void             realignFace          (unsigned int, const PrimTriangle&);
     void             deleteFace           (unsigned int);
     void             render               (Camera&) const;
-    bool             intersects           (const PrimRay&, OctreeIntersection&) const;
-    bool             intersects           ( const OctreeIntersectionFunctional&
+    bool             intersects           ( const Mesh&, const PrimRay&
+                                          , OctreeIntersection& ) const;
+    bool             intersects           ( const Mesh&, const OctreeIntersectionFunctional&
                                           , std::vector <unsigned int>& ) const;
     void             reset                ();
     void             shrinkRoot           ();

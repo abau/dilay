@@ -27,8 +27,6 @@ namespace {
         MeshSnapshot meshSnapshot = { mesh.makePrunedMesh (&newFaceIndices)
                                     , mesh.octree () };
 
-        meshSnapshot.octree->mesh (meshSnapshot.mesh);
-
         if (newFaceIndices.empty () == false) {
           meshSnapshot.octree->rewriteIndices (newFaceIndices);
         }
@@ -108,11 +106,11 @@ struct History::Impl {
     return this->past.empty () == false && bool (this->past.front ().front ().octree);
   }
 
-  void forEachRecentOctree (const std::function <void (const Octree&)> f) const {
+  void forEachRecentOctree (const std::function <void (const Mesh& m, const Octree&)> f) const {
     assert (this->hasRecentOctrees ());
     for (const MeshSnapshot& s : this->past.front ()) {
       assert (s.octree);
-      f (s.octree.getRef ());
+      f (s.mesh, s.octree.getRef ());
     }
   }
 
@@ -128,4 +126,4 @@ DELEGATE1       (void, History, undo, Scene&)
 DELEGATE1       (void, History, redo, Scene&)
 DELEGATE1       (void, History, runFromConfig, const Config&)
 DELEGATE_CONST  (bool, History, hasRecentOctrees)
-DELEGATE1_CONST (void, History, forEachRecentOctree, const std::function <void (const Octree&)>)
+DELEGATE1_CONST (void, History, forEachRecentOctree, const std::function <void (const Mesh&, const Octree&)>)

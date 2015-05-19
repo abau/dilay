@@ -34,7 +34,6 @@ struct WingedMesh::Impl {
   Impl (WingedMesh* s, unsigned int i) 
     :  self   (s)
     , _index  (i)
-    ,  octree (this->mesh)
   {}
 
   bool operator== (const WingedMesh& other) const {
@@ -385,7 +384,7 @@ struct WingedMesh::Impl {
 
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
     OctreeIntersection octreeIntersection;
-    if (this->octree.intersects (ray, octreeIntersection)) {
+    if (this->octree.intersects (this->mesh, ray, octreeIntersection)) {
       intersection.update ( octreeIntersection.distance ()
                           , octreeIntersection.position ()
                           , octreeIntersection.normal ()
@@ -399,7 +398,7 @@ struct WingedMesh::Impl {
   }
 
   bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
-    OctreeIntersectionFunctional intersection
+    OctreeIntersectionFunctional functional
       ( [&sphere] (const PrimAABox& box) {
           return IntersectionUtil::intersects (sphere, box);
         }
@@ -409,7 +408,7 @@ struct WingedMesh::Impl {
       );
     std::vector <unsigned int> indices;
 
-    if (this->octree.intersects (intersection, indices)) {
+    if (this->octree.intersects (this->mesh, functional, indices)) {
       for (unsigned int index : indices) {
         faces.insert (this->self->faceRef (index));
       }
@@ -422,7 +421,7 @@ struct WingedMesh::Impl {
   }
 
   bool intersects (const PrimPlane& plane, AffectedFaces& faces) {
-    OctreeIntersectionFunctional intersection
+    OctreeIntersectionFunctional functional
       ( [&plane] (const PrimAABox& box) {
           return IntersectionUtil::intersects (plane, box);
         }
@@ -432,7 +431,7 @@ struct WingedMesh::Impl {
       );
     std::vector <unsigned int> indices;
 
-    if (this->octree.intersects (intersection, indices)) {
+    if (this->octree.intersects (this->mesh, functional, indices)) {
       for (unsigned int index : indices) {
         faces.insert (this->self->faceRef (index));
       }
