@@ -13,15 +13,13 @@ class ToolSculpt : public Tool {
     DECLARE_BIG2 (ToolSculpt, State&, const char*)
 
   protected:
-    SculptBrush& brush                              ();
-    ViewCursor&  cursor                             ();
-    void         sculpt                             ();
-    void         updateCursorByIntersection         (const QMouseEvent&);
-    bool         updateBrushAndCursorByIntersection (const QMouseEvent&);
-    bool         carvelikeStroke                    ( const QMouseEvent&
-                                                    , const std::function <void ()>* = nullptr );
-    bool         initializeDraglikeStroke           (const QMouseEvent&, ToolUtilMovement&);
-    bool         draglikeStroke                     (const QMouseEvent&, ToolUtilMovement&);
+    SculptBrush& brush                    ();
+    ViewCursor&  cursor                   ();
+    void         sculpt                   ();
+    bool         carvelikeStroke          ( const QMouseEvent&, bool
+                                          , const std::function <void ()>* = nullptr );
+    bool         initializeDraglikeStroke (const QMouseEvent&, ToolUtilMovement&);
+    bool         draglikeStroke           (const QMouseEvent&, ToolUtilMovement&);
 
   private:
     IMPLEMENTATION

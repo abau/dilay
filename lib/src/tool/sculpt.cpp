@@ -236,7 +236,7 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool updateBrushAndCursorByIntersection (const QMouseEvent& e) {
+  bool updateBrushAndCursorByIntersection (const QMouseEvent& e, bool useRecentOctree) {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsScene (e, intersection)) {
@@ -246,7 +246,21 @@ struct ToolSculpt::Impl {
       if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
         this->brush.mesh (&intersection.mesh ());
 
-        return this->brush.updatePointOfAction (intersection.position (), intersection.normal ());
+        if (useRecentOctree) {
+          Intersection octreeIntersection;
+          if (this->self->intersectsRecentOctree (e, octreeIntersection)) {
+            return this->brush.updatePointOfAction ( octreeIntersection.position ()
+                                                   , octreeIntersection.normal () );
+          }
+          else {
+            return this->brush.updatePointOfAction ( intersection.position ()
+                                                   , intersection.normal () );
+          }
+        }
+        else {
+          return this->brush.updatePointOfAction ( intersection.position ()
+                                                 , intersection.normal () );
+        }
       }
       else {
         return false;
@@ -258,8 +272,10 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool carvelikeStroke (const QMouseEvent& e, const std::function <void ()>* toggle) {
-    if (this->updateBrushAndCursorByIntersection (e)) {
+  bool carvelikeStroke ( const QMouseEvent& e, bool useRecentOctree
+                       , const std::function <void ()>* toggle )
+  {
+    if (this->updateBrushAndCursorByIntersection (e, useRecentOctree)) {
       if (toggle && e.modifiers () == Qt::ShiftModifier) {
         (*toggle) ();
         this->sculpt ();
@@ -334,9 +350,7 @@ DELEGATE_BIG2_BASE (ToolSculpt, (State& s, const char* k), (this), Tool, (s, k))
 GETTER         (SculptBrush&, ToolSculpt, brush)
 GETTER         (ViewCursor& , ToolSculpt, cursor)
 DELEGATE       (void        , ToolSculpt, sculpt)
-DELEGATE1      (void        , ToolSculpt, updateCursorByIntersection, const QMouseEvent&)
-DELEGATE1      (bool        , ToolSculpt, updateBrushAndCursorByIntersection, const QMouseEvent&)
-DELEGATE2      (bool        , ToolSculpt, carvelikeStroke, const QMouseEvent&, const std::function <void ()>*)
+DELEGATE3      (bool        , ToolSculpt, carvelikeStroke, const QMouseEvent&, bool, const std::function <void ()>*)
 DELEGATE2      (bool        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE2      (bool        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
 DELEGATE       (ToolResponse, ToolSculpt, runInitialize)

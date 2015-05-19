@@ -4,6 +4,7 @@
 #include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
+#include "octree.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -90,6 +91,24 @@ struct Tool::Impl {
     return this->intersectsScene (ViewUtil::toIVec2 (e), intersection);
   }
 
+  bool intersectsRecentOctree (const QMouseEvent& e, Intersection& intersection) const {
+    if (this->state.history ().hasRecentOctrees ()) {
+      const PrimRay ray = this->state.camera ().ray (ViewUtil::toIVec2 (e));
+      OctreeIntersection octreeIntersection;
+
+      this->state.history ().forEachRecentOctree (
+        [&ray, &octreeIntersection] (const Mesh& mesh, const Octree& octree) {
+          octree.intersects (mesh, ray, octreeIntersection);
+        }
+      );
+      intersection = octreeIntersection;
+      return intersection.isIntersection ();
+    }
+    else {
+      return false;
+    }
+  }
+
   void snapshotScene () {
     this->state.history ().snapshot (this->state.scene ());
   }
@@ -113,4 +132,5 @@ DELEGATE1_CONST (CacheProxy     , Tool, cache, const char*)
 DELEGATE_CONST  (glm::ivec2     , Tool, cursorPosition)
 DELEGATE2       (bool           , Tool, intersectsScene, const glm::ivec2&, WingedFaceIntersection&)
 DELEGATE2       (bool           , Tool, intersectsScene, const QMouseEvent&, WingedFaceIntersection&)
+DELEGATE2_CONST (bool           , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)
 DELEGATE        (void           , Tool, snapshotScene)

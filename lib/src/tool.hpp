@@ -6,6 +6,7 @@
 
 class CacheProxy;
 class Config;
+class Intersection;
 class QMouseEvent;
 class QWheelEvent;
 class State;
@@ -21,26 +22,27 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
 
-    ToolResponse    initialize        ();
-    void            render            () const;
-    ToolResponse    mouseMoveEvent    (const QMouseEvent&);
-    ToolResponse    mousePressEvent   (const QMouseEvent&);
-    ToolResponse    mouseReleaseEvent (const QMouseEvent&);
-    ToolResponse    wheelEvent        (const QWheelEvent&);
-    void            close             ();
+    ToolResponse    initialize             ();
+    void            render                 () const;
+    ToolResponse    mouseMoveEvent         (const QMouseEvent&);
+    ToolResponse    mousePressEvent        (const QMouseEvent&);
+    ToolResponse    mouseReleaseEvent      (const QMouseEvent&);
+    ToolResponse    wheelEvent             (const QWheelEvent&);
+    void            close                  ();
 
   protected:
-    State&          state             () const;
-    void            updateGlWidget    ();
-    ViewProperties& properties        () const;
-    void            showToolTip       (const ViewToolTip&);
-    Config&         config            () const;
-    CacheProxy&     cache             ();
-    CacheProxy      cache             (const char*) const;
-    glm::ivec2      cursorPosition    () const;
-    bool            intersectsScene   (const glm::ivec2&, WingedFaceIntersection&);
-    bool            intersectsScene   (const QMouseEvent&, WingedFaceIntersection&);
-    void            snapshotScene     ();
+    State&          state                  () const;
+    void            updateGlWidget         ();
+    ViewProperties& properties             () const;
+    void            showToolTip            (const ViewToolTip&);
+    Config&         config                 () const;
+    CacheProxy&     cache                  ();
+    CacheProxy      cache                  (const char*) const;
+    glm::ivec2      cursorPosition         () const;
+    bool            intersectsScene        (const glm::ivec2&, WingedFaceIntersection&);
+    bool            intersectsScene        (const QMouseEvent&, WingedFaceIntersection&);
+    bool            intersectsRecentOctree (const QMouseEvent&, Intersection&) const;
+    void            snapshotScene          ();
 
   private:
     IMPLEMENTATION

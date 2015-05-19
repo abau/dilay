@@ -37,11 +37,11 @@ struct ToolSculptFlatten::Impl {
   }
 
   void runSculptMouseMoveEvent (const QMouseEvent& e) {
-    this->self->carvelikeStroke (e);
+    this->self->carvelikeStroke (e, false);
   }
 
   bool runSculptMousePressEvent (const QMouseEvent& e) {
-    return this->self->carvelikeStroke (e);
+    return this->self->carvelikeStroke (e, false);
   }
 };
 

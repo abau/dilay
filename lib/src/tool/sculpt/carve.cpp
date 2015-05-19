@@ -60,7 +60,7 @@ struct ToolSculptCarve::Impl {
     const std::function <void ()> toggleInvert = [this] () {
       this->self->brush ().parameters <SBMoveDirectionalParameters> ().toggleInvert ();
     };
-    return this->self->carvelikeStroke (e, &toggleInvert);
+    return this->self->carvelikeStroke (e, false, &toggleInvert);
   }
 
   void runSculptMouseMoveEvent (const QMouseEvent& e) {
