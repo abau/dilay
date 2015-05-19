@@ -15,7 +15,6 @@
 #include "winged/util.hpp"
 
 struct State::Impl {
-  State*                 self;
   ViewMainWindow&        mainWindow;
   Config&                config;
   Cache&                 cache;
@@ -24,9 +23,8 @@ struct State::Impl {
   Scene                  scene;
   std::unique_ptr <Tool> toolPtr;
 
-  Impl (State* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
-    : self       (s)
-    , mainWindow (mW) 
+  Impl (ViewMainWindow& mW, Config& cfg, Cache& cch) 
+    : mainWindow (mW) 
     , config     (cfg)
     , cache      (cch)
     , camera     (this->config)
@@ -87,11 +85,11 @@ struct State::Impl {
   }
 
   void undo () {
-    this->history.undo (*this->self);
+    this->history.undo (this->scene);
   }
 
   void redo () {
-    this->history.redo (*this->self);
+    this->history.redo (this->scene);
   }
 
   void handleToolResponse (ToolResponse response) {
@@ -109,7 +107,7 @@ struct State::Impl {
   }
 };
 
-DELEGATE3_BIG2_SELF (State, ViewMainWindow&, Config&, Cache&)
+DELEGATE3_BIG2 (State, ViewMainWindow&, Config&, Cache&)
 
 GETTER    (ViewMainWindow&   , State, mainWindow)
 GETTER    (Config&           , State, config)

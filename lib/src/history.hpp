@@ -5,7 +5,6 @@
 #include "macro.hpp"
 
 class Scene;
-class State;
 
 class History : public Configurable {
   public: 
@@ -13,8 +12,8 @@ class History : public Configurable {
 
     void snapshot     (const Scene&);
     void dropSnapshot ();
-    void undo         (State&);
-    void redo         (State&);
+    void undo         (Scene&);
+    void redo         (Scene&);
 
   private:
     IMPLEMENTATION

@@ -77,11 +77,6 @@ struct Scene :: Impl {
     this->wingedMeshes.reset ();
   }
 
-  void runFromConfig (WingedMesh& mesh) {
-    mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
-    mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
-  }
-
   const RenderMode& commonRenderMode () {
     return this->_commonRenderMode;
   }
@@ -91,6 +86,15 @@ struct Scene :: Impl {
     this->forEachMesh ([&mode] (WingedMesh& mesh) {
       mesh.renderMode () = mode; 
     });
+  }
+
+  unsigned int numWingedMeshes () const {
+    return this->wingedMeshes.numElements ();
+  }
+
+  void runFromConfig (WingedMesh& mesh) {
+    mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
+    mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
   }
 
   void runFromConfig (const Config& config) {
@@ -116,4 +120,5 @@ DELEGATE1_CONST (void             , Scene, forEachConstMesh, const std::function
 DELEGATE        (void             , Scene, reset)
 DELEGATE_CONST  (const RenderMode&, Scene, commonRenderMode)
 DELEGATE1       (void             , Scene, commonRenderMode, const RenderMode&)
+DELEGATE_CONST  (unsigned int     , Scene, numWingedMeshes)
 DELEGATE1       (void             , Scene, runFromConfig, const Config&)

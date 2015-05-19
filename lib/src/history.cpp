@@ -3,7 +3,6 @@
 #include "history.hpp"
 #include "mesh.hpp"
 #include "scene.hpp"
-#include "state.hpp"
 #include "winged/mesh.hpp"
 
 namespace {
@@ -30,12 +29,14 @@ struct History::Impl {
   }
 
   void snapshot (const Scene& scene) {
-    this->future.clear ();
+    if (scene.numWingedMeshes () > 0) {
+      this->future.clear ();
 
-    while (this->past.size () >= this->undoDepth) {
-      this->past.pop_back ();
+      while (this->past.size () >= this->undoDepth) {
+        this->past.pop_back ();
+      }
+      this->past.push_front (std::move (sceneSnapshot (scene)));
     }
-    this->past.push_front (std::move (sceneSnapshot (scene)));
   }
 
   void dropSnapshot () {
@@ -52,18 +53,18 @@ struct History::Impl {
     }
   }
 
-  void undo (State& state) {
+  void undo (Scene& scene) {
     if (this->past.empty () == false) {
-      this->future.push_front (std::move (sceneSnapshot (state.scene ())));
-      this->resetToSnapshot (this->past.front (), state.scene ());
+      this->future.push_front (std::move (sceneSnapshot (scene)));
+      this->resetToSnapshot (this->past.front (), scene);
       this->past.pop_front ();
     }
   }
 
-  void redo (State& state) {
+  void redo (Scene& scene) {
     if (this->future.empty () == false) {
-      this->past.push_front (std::move (sceneSnapshot (state.scene ())));
-      this->resetToSnapshot (this->future.front (), state.scene ());
+      this->past.push_front (std::move (sceneSnapshot (scene)));
+      this->resetToSnapshot (this->future.front (), scene);
       this->future.pop_front ();
     }
   }
@@ -76,6 +77,6 @@ struct History::Impl {
 DELEGATE1_BIG3 (History, const Config&)
 DELEGATE1 (void, History, snapshot, const Scene&)
 DELEGATE  (void, History, dropSnapshot)
-DELEGATE1 (void, History, undo, State&)
-DELEGATE1 (void, History, redo, State&)
+DELEGATE1 (void, History, undo, Scene&)
+DELEGATE1 (void, History, redo, Scene&)
 DELEGATE1 (void, History, runFromConfig, const Config&)
