@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <limits>
 #include "indexable.hpp"
+#include "maybe.hpp"
 #include "mesh.hpp"
 #include "octree.hpp"
 #include "primitive/aabox.hpp"
@@ -34,7 +35,7 @@ namespace {
 
   /** Octree node */
   struct OctreeNode;
-  typedef std::unique_ptr <OctreeNode> Child;
+  typedef Maybe <OctreeNode> Child;
 
   struct OctreeNode {
     const glm::vec3            center;
@@ -44,7 +45,7 @@ namespace {
     std::vector <unsigned int> faceIndices;
     OctreeNode*                parent;
     const bool                 storeDegenerated;
-    // cf. move constructor
+    // cf. copy constructor
 
     static constexpr float relativeMinFaceExtent = 0.1f;
 
@@ -107,23 +108,30 @@ namespace {
         this->nodeMesh.color      (Color (1.0f, 1.0f, 0.0f));
 #endif
     }
-          OctreeNode            (const OctreeNode&) = delete;
-    const OctreeNode& operator= (const OctreeNode&) = delete;
 
-    OctreeNode (OctreeNode&& source) 
-      : center           (std::move (source.center))
-      , width            (std::move (source.width))
-      , children         (std::move (source.children))
-      , depth            (std::move (source.depth))
-      , faceIndices      (std::move (source.faceIndices))
-      , parent           (std::move (source.parent))
-      , storeDegenerated (std::move (source.storeDegenerated))
+    OctreeNode (OctreeNode&&) = default; 
+
+    OctreeNode (const OctreeNode& other) 
+      : center           (other.center)
+      , width            (other.width)
+      , children         (other.children)
+      , depth            (other.depth)
+      , faceIndices      (other.faceIndices)
+      , parent           (nullptr)
+      , storeDegenerated (other.storeDegenerated)
 #ifdef DILAY_RENDER_OCTREE
-      , nodeMesh         (std::move (source.nodeMesh))
-    { this->nodeMesh.bufferData (); }
+      , nodeMesh         (std::move (other.nodeMesh))
+    { this->nodeMesh.bufferData ();
 #else
-    {}
+    {
 #endif
+      for (Child& c : this->children) {
+        c->parent = this;
+      }
+    }
+
+    const OctreeNode& operator= (const OctreeNode&) = delete;
+    const OctreeNode& operator= (OctreeNode&&)      = delete;
 
 #ifdef DILAY_RENDER_OCTREE
     void render (Camera& camera) const {
@@ -381,7 +389,7 @@ DELEGATE4      (void        , OctreeIntersection, update, float, const glm::vec3
 DELEGATE_CONST (unsigned int, OctreeIntersection, index)
 
 struct Octree::Impl {
-  const Mesh&               mesh;
+  const Mesh*              _mesh;
   Child                     root;
   Child                     degeneratedFaces;
   glm::vec3                 rootPosition;
@@ -390,9 +398,40 @@ struct Octree::Impl {
   std::vector <OctreeNode*> nodeMap;
 
   Impl (const Mesh& m) 
-    : mesh         (m)
-    , rootWasSetup (false)
+    : _mesh         (&m)
+    ,  rootWasSetup (false)
   {}
+
+  Impl (const Impl& other)
+    : _mesh             (other._mesh)
+    ,  root             (other.root)
+    ,  degeneratedFaces (other.degeneratedFaces)
+    ,  rootPosition     (other.rootPosition)
+    ,  rootWidth        (other.rootWidth)
+    ,  rootWasSetup     (other.rootWasSetup)
+  {
+    std::function <void (const Child&)> copyNodeMap = 
+      [this, &copyNodeMap] (const Child& node) 
+    {
+      if (node) {
+        for (unsigned i : node->faceIndices) {
+          assert (this->nodeMap [i] == nullptr);
+          this->nodeMap [i] = &*node;
+        }
+        for (const Child& c : node->children) {
+          copyNodeMap (c);
+        }
+      }
+    };
+
+    this->nodeMap.resize (other.nodeMap.size (), nullptr);
+    copyNodeMap (this->root);
+    copyNodeMap (this->degeneratedFaces);
+  }
+
+  void mesh (const Mesh& mesh) {
+    this->_mesh = &mesh;
+  }
 
   void setupRoot (const glm::vec3& position, float width) {
     assert (this->hasRoot () == false);
@@ -527,7 +566,7 @@ struct Octree::Impl {
 
   bool intersects (const PrimRay& ray, OctreeIntersection& intersection) {
     if (this->hasRoot ()) {
-      return this->root->intersects (this->mesh, ray, intersection);
+      return this->root->intersects (*this->_mesh, ray, intersection);
     }
     else {
       return false;
@@ -536,7 +575,7 @@ struct Octree::Impl {
 
   bool intersects (const OctreeIntersectionFunctional& f, std::vector <unsigned int>& afFaces) {
     if (this->hasRoot ()) {
-      return this->root->intersects (this->mesh, f, afFaces);
+      return this->root->intersects (*this->_mesh, f, afFaces);
     }
     else {
       return false;
@@ -617,8 +656,9 @@ struct Octree::Impl {
   }
 };
 
-DELEGATE1_BIG3 (Octree, const Mesh&)
+DELEGATE1_BIG4COPY (Octree, const Mesh&)
 
+DELEGATE1       (void,             Octree, mesh, const Mesh&)
 DELEGATE2       (void,             Octree, setupRoot, const glm::vec3&, float)
 DELEGATE2       (void,             Octree, addFace, unsigned int, const PrimTriangle&)
 DELEGATE2       (void,             Octree, realignFace, unsigned int, const PrimTriangle&)

@@ -9,6 +9,8 @@
 #include "winged/util.hpp"
 
 void TestOctree::test1 () {
+  const unsigned int numSamples = 10000;
+
   Mesh   mesh;
   Octree octree (mesh);
   octree.setupRoot (glm::vec3 (0.0f), 10.0f);
@@ -19,7 +21,7 @@ void TestOctree::test1 () {
   std::uniform_real_distribution <float> scaleD  (0.00001f, 10.0f);
   std::uniform_real_distribution <float> twoPiD  (0.0f, 2.0f * glm::pi<float> ());
 
-  for (unsigned int i = 0; i < 10000; i++) {
+  for (unsigned int i = 0; i < numSamples; i++) {
     glm::vec3 m1 (-1.0f, 0.0f, 0.0f);
     glm::vec3 m2 ( 1.0f, 0.0f, 0.0f);
     glm::vec3 m3 ( 0.0f,-1.0f, 0.0f);
@@ -52,6 +54,27 @@ void TestOctree::test1 () {
     octree.addFace (i, PrimTriangle (w1,w2,w3));
   }
   //WingedUtil::printStatistics (octree);
+
+  Octree octree2 (octree);
+
+  OctreeStatistics statistics1 = octree.statistics ();
+  OctreeStatistics statistics2 = octree2.statistics ();
+
+  assert (statistics1.numNodes == statistics2.numNodes);
+  assert (statistics1.numFaces == statistics2.numFaces);
+  assert (statistics1.numDegeneratedFaces == statistics2.numDegeneratedFaces);
+  assert (statistics1.minDepth == statistics2.minDepth);
+  assert (statistics1.maxDepth == statistics2.maxDepth);
+  assert (statistics1.maxFacesPerNode == statistics2.maxFacesPerNode);
+  assert (statistics1.numFacesPerDepth == statistics2.numFacesPerDepth);
+  assert (statistics1.numNodesPerDepth == statistics2.numNodesPerDepth);
+
+  for (unsigned int i = 0; i < numSamples; i++) {
+    octree.deleteFace (i);
+  }
+  for (unsigned int i = 0; i < numSamples; i++) {
+    octree2.deleteFace (i);
+  }
 }
 
 void TestOctree::test2 () {

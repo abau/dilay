@@ -51,8 +51,9 @@ class OctreeIntersection : public Intersection {
 
 class Octree { 
   public: 
-    DECLARE_BIG3 (Octree, const Mesh&)
+    DECLARE_BIG4COPY (Octree, const Mesh&)
 
+    void             mesh                 (const Mesh&);
     void             setupRoot            (const glm::vec3&, float);
     void             addFace              (unsigned int, const PrimTriangle&);
     void             realignFace          (unsigned int, const PrimTriangle&);
