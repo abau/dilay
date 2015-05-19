@@ -49,8 +49,16 @@ class Maybe {
       return this->isSet ();
     }
 
+    bool operator== (bool v) const {
+      return this->operator bool () == v;
+    }
+
     T& operator* () const {
       return this->getRef ();
+    }
+
+    T* operator-> () const {
+      return this->get ();
     }
 
     ~Maybe () = default;
@@ -72,8 +80,8 @@ class Maybe {
       this->value.reset (new T (newValue));
     }
 
-    void reset () {
-      this->value.reset ();
+    void reset (T* newValue = nullptr) {
+      this->value.reset (newValue);
     }
 
   private:
