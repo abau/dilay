@@ -24,6 +24,7 @@
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
+#include "util.hpp"
 
 struct ToolSculpt::Impl {
   ToolSculpt*              self;
@@ -32,17 +33,23 @@ struct ToolSculpt::Impl {
   CacheProxy               commonCache;
   ViewDoubleSlider&        radiusEdit;
   std::unique_ptr <Mirror> mirror;
+  bool                     snapshotOnNextMousePress;
 
   Impl (ToolSculpt* s) 
-    : self        (s) 
-    , commonCache (this->self->cache ("sculpt"))
-    , radiusEdit  (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f, 3))
+    : self                     (s) 
+    , commonCache              (this->self->cache ("sculpt"))
+    , radiusEdit               (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f, 3))
+    , snapshotOnNextMousePress (true)
   {
-    switch (this->commonCache.get <int> ("mirror", 1)) {
-      case 1:  this->setupMirror (Dimension::X); break;
-      case 2:  this->setupMirror (Dimension::Y); break;
-      case 3:  this->setupMirror (Dimension::Z); break;
-      default: break;
+    const int mirrorCache = this->commonCache.get <int> ("mirror", 0);
+    if (mirrorCache >= 0 && mirrorCache <= 2) {
+      this->snapshotOnNextMousePress = false;
+      switch (mirrorCache) {
+        case 0:  this->setupMirror (Dimension::X); break;
+        case 1:  this->setupMirror (Dimension::Y); break;
+        case 2:  this->setupMirror (Dimension::Z); break;
+        default: DILAY_IMPOSSIBLE
+      }
     }
   }
 
@@ -143,7 +150,7 @@ struct ToolSculpt::Impl {
         mesh.bufferData ();
       }
     );
-    this->commonCache.set ("mirror", 1);
+    this->commonCache.set ("mirror", int (DimensionUtil::index (d)));
   }
 
   void deleteMirror () {
@@ -152,7 +159,7 @@ struct ToolSculpt::Impl {
     this->self->state ().scene ().forEachMesh ([] (WingedMesh& mesh) {
       mesh.deleteMirrorPlane ();
     });
-    this->commonCache.set ("mirror", 0);
+    this->commonCache.set ("mirror", -1);
   }
 
   void runRender () const {
@@ -172,7 +179,12 @@ struct ToolSculpt::Impl {
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->snapshotScene ();
+    if (this->snapshotOnNextMousePress) {
+      this->self->snapshotScene ();
+    }
+    else {
+      this->snapshotOnNextMousePress = true;
+    }
 
     if (this->self->runSculptMousePressEvent (e) == false) {
       this->self->state ().history ().dropSnapshot ();
