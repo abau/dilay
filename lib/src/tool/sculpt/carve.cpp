@@ -38,7 +38,7 @@ struct ToolSculptCarve::Impl {
                                                        , 0.1f, 0.01f );
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensityFactor (i);
-      this->self->cache ().set ("intensity", i);
+      this->self->cache ().set ("intensity-factor", i);
     });
     properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
 
