@@ -59,9 +59,9 @@ class Octree {
     void             realignFace          (unsigned int, const PrimTriangle&);
     void             deleteFace           (unsigned int);
     void             render               (Camera&) const;
-    bool             intersects           (const PrimRay&, OctreeIntersection&);
+    bool             intersects           (const PrimRay&, OctreeIntersection&) const;
     bool             intersects           ( const OctreeIntersectionFunctional&
-                                          , std::vector <unsigned int>& );
+                                          , std::vector <unsigned int>& ) const;
     void             reset                ();
     void             shrinkRoot           ();
     bool             hasRoot              () const;

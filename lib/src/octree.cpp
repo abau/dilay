@@ -273,7 +273,9 @@ namespace {
                           , mesh.vertex (mesh.index ((3 * index) + 2)) );
     }
 
-    void facesIntersectRay (const Mesh& mesh, const PrimRay& ray, OctreeIntersection& intersection) {
+    void facesIntersectRay ( const Mesh& mesh
+                           , const PrimRay& ray, OctreeIntersection& intersection ) const
+    {
       assert (this->storeDegenerated == false);
 
       for (unsigned int index : this->faceIndices) {
@@ -286,11 +288,13 @@ namespace {
       }
     }
 
-    bool intersects (const Mesh& mesh, const PrimRay& ray, OctreeIntersection& intersection) {
+    bool intersects ( const Mesh& mesh, const PrimRay& ray
+                    , OctreeIntersection& intersection ) const
+    {
       assert (this->storeDegenerated == false);
       if (IntersectionUtil::intersects (ray, this->looseAABox ())) {
         this->facesIntersectRay (mesh, ray, intersection);
-        for (Child& c : this->children) {
+        for (const Child& c : this->children) {
           c->intersects (mesh, ray, intersection);
         }
       }
@@ -298,7 +302,7 @@ namespace {
     }
 
     bool intersects ( const Mesh& mesh, const OctreeIntersectionFunctional& f
-                    , std::vector <unsigned int>& afFaces )
+                    , std::vector <unsigned int>& afFaces ) const
     {
       assert (this->storeDegenerated == false);
       bool hasIntersection = false;
@@ -309,7 +313,7 @@ namespace {
             hasIntersection = true;
           }
         }
-        for (Child& c : this->children) {
+        for (const Child& c : this->children) {
           hasIntersection = c->intersects (mesh, f, afFaces) || hasIntersection;
         }
       }
@@ -564,7 +568,7 @@ struct Octree::Impl {
   }
 #endif
 
-  bool intersects (const PrimRay& ray, OctreeIntersection& intersection) {
+  bool intersects (const PrimRay& ray, OctreeIntersection& intersection) const {
     if (this->hasRoot ()) {
       return this->root->intersects (*this->_mesh, ray, intersection);
     }
@@ -573,7 +577,9 @@ struct Octree::Impl {
     }
   }
 
-  bool intersects (const OctreeIntersectionFunctional& f, std::vector <unsigned int>& afFaces) {
+  bool intersects ( const OctreeIntersectionFunctional& f
+                  , std::vector <unsigned int>& afFaces ) const
+  {
     if (this->hasRoot ()) {
       return this->root->intersects (*this->_mesh, f, afFaces);
     }
@@ -664,8 +670,8 @@ DELEGATE2       (void,             Octree, addFace, unsigned int, const PrimTria
 DELEGATE2       (void,             Octree, realignFace, unsigned int, const PrimTriangle&)
 DELEGATE1       (void,             Octree, deleteFace, unsigned int)
 DELEGATE1_CONST (void,             Octree, render, Camera&)
-DELEGATE2       (bool,             Octree, intersects, const PrimRay&, OctreeIntersection&)
-DELEGATE2       (bool,             Octree, intersects, const OctreeIntersectionFunctional&, std::vector <unsigned int>&)
+DELEGATE2_CONST (bool,             Octree, intersects, const PrimRay&, OctreeIntersection&)
+DELEGATE2_CONST (bool,             Octree, intersects, const OctreeIntersectionFunctional&, std::vector <unsigned int>&)
 DELEGATE        (void,             Octree, reset)
 DELEGATE        (void,             Octree, shrinkRoot)
 DELEGATE_CONST  (bool,             Octree, hasRoot)
