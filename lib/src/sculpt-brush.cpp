@@ -36,7 +36,6 @@ struct SculptBrush :: Impl {
   float         stepWidthFactor;
   bool          subdivide;
   WingedMesh*   mesh;
-  WingedFace*   face;
   bool          hasPosition;
   glm::vec3    _lastPosition;
   glm::vec3    _position;
