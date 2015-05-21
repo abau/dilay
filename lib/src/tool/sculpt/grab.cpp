@@ -1,11 +1,14 @@
+#include <QCheckBox>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
+#include "cache.hpp"
 #include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
+#include "view/util.hpp"
 
 struct ToolSculptGrab::Impl {
   ToolSculptGrab*  self;
@@ -22,13 +25,23 @@ struct ToolSculptGrab::Impl {
     auto& params = brush.parameters <SBDraglikeParameters> ();
 
     params.smoothness       (1.0f);
-    params.discardBackfaces (false);
     params.linearStep       (true);
+    params.discardBackfaces (this->self->cache ().get <bool>  ("discard-backfaces", false));
   }
 
   void runSetupCursor (ViewCursor&) {}
 
-  void runSetupProperties (ViewPropertiesPart&) {}
+  void runSetupProperties (ViewPropertiesPart& properties) {
+    auto& params = this->self->brush ().parameters <SBDraglikeParameters> ();
+  
+    QCheckBox& discardEdit = ViewUtil::checkBox ( QObject::tr ("Discard backfaces")
+                                                , params.discardBackfaces () );
+    ViewUtil::connect (discardEdit, [this,&params] (bool d) {
+      params.discardBackfaces (d);
+      this->self->cache ().set ("discard-backfaces", d);
+    });
+    properties.add (discardEdit);
+  }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));

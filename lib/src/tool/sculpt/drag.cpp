@@ -1,3 +1,4 @@
+#include <QCheckBox>
 #include <glm/glm.hpp>
 #include "cache.hpp"
 #include "sculpt-brush.hpp"
@@ -24,8 +25,8 @@ struct ToolSculptDrag::Impl {
     auto& params = brush.parameters <SBDraglikeParameters> ();
 
     params.smoothness       (this->self->cache ().get <float> ("smoothness", 0.5f));
-    params.discardBackfaces (false);
     params.linearStep       (false);
+    params.discardBackfaces (this->self->cache ().get <bool>  ("discard-backfaces", false));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -40,6 +41,14 @@ struct ToolSculptDrag::Impl {
       this->self->cache ().set ("smoothness", f);
     });
     properties.addStacked (QObject::tr ("Smoothness"), smoothnessEdit);
+
+    QCheckBox& discardEdit = ViewUtil::checkBox ( QObject::tr ("Discard backfaces")
+                                                , params.discardBackfaces () );
+    ViewUtil::connect (discardEdit, [this,&params] (bool d) {
+      params.discardBackfaces (d);
+      this->self->cache ().set ("discard-backfaces", d);
+    });
+    properties.add (discardEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
