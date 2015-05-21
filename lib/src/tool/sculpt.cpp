@@ -329,10 +329,6 @@ struct ToolSculpt::Impl {
         && this->brush.updatePointOfAction ( movement.position ()
                                            , movement.position () - oldBrushPos ) )
       {
-        auto& params = this->brush.parameters <SBMoveDirectionalParameters> ();
-
-        params.useAverageNormal (false);
-        params.intensityFactor  (1.0f / this->brush.radius ());
         this->sculpt ();
         return true;
       }

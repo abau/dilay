@@ -13,17 +13,17 @@ struct ToolSculptCarve::Impl {
   Impl (ToolSculptCarve* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBMoveDirectionalParameters> ();
+    auto& params = brush.parameters <SBCarveParameters> ();
 
-    params.intensityFactor (this->self->cache ().get <float> ("intensity-factor", 0.03f));
-    params.smoothness      (this->self->cache ().get <float> ("smoothness"      , 0.5f));
-    params.invert          (this->self->cache ().get <bool>  ("invert"          , false));
+    params.intensity  (this->self->cache ().get <float> ("intensity",  0.03f));
+    params.smoothness (this->self->cache ().get <float> ("smoothness", 0.5f));
+    params.invert     (this->self->cache ().get <bool>  ("invert",     false));
   }
 
   void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    auto&       params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
+    auto&       params = this->self->brush ().parameters <SBCarveParameters> ();
     ViewCursor& cursor = this->self->cursor ();
 
     ViewDoubleSlider& smoothnessEdit = ViewUtil::slider ( 0.0f, params.smoothness ()
@@ -34,11 +34,11 @@ struct ToolSculptCarve::Impl {
     });
     properties.addStacked (QObject::tr ("Smoothness"), smoothnessEdit);
 
-    ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.01f, params.intensityFactor ()
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.01f, params.intensity ()
                                                        , 0.1f, 0.01f );
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
-      params.intensityFactor (i);
-      this->self->cache ().set ("intensity-factor", i);
+      params.intensity (i);
+      this->self->cache ().set ("intensity", i);
     });
     properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
 
@@ -58,7 +58,7 @@ struct ToolSculptCarve::Impl {
 
   bool runMouseEvent (const QMouseEvent& e) {
     const std::function <void ()> toggleInvert = [this] () {
-      this->self->brush ().parameters <SBMoveDirectionalParameters> ().toggleInvert ();
+      this->self->brush ().parameters <SBCarveParameters> ().toggleInvert ();
     };
     return this->self->carvelikeStroke (e, false, &toggleInvert);
   }

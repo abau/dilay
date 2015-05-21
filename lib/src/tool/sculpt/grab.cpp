@@ -19,9 +19,9 @@ struct ToolSculptGrab::Impl {
   {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBMoveDirectionalParameters> ();
+    auto& params = brush.parameters <SBDraglikeParameters> ();
 
-    params.useLastPosition  (true);
+    params.smoothness       (1.0f);
     params.discardBackfaces (false);
     params.linearStep       (true);
   }

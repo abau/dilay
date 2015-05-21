@@ -10,23 +10,23 @@
 #include "winged/vertex.hpp"
 #include "variant.hpp"
 
-SBMoveDirectionalParameters::SBMoveDirectionalParameters ()
-  : _intensityFactor  (0.0f)
-  , _smoothness       (1.0f)
-  , _invert           (false)
-  , _useAverageNormal (true)
-  , _useLastPosition  (false)
+SBIntensityParameters::SBIntensityParameters ()
+  : _intensity (0.0f)
+{}
+
+SBCarveParameters::SBCarveParameters ()
+  : _smoothness (1.0f)
+  , _invert     (false)
+{}
+
+SBDraglikeParameters::SBDraglikeParameters ()
+  : _smoothness       (1.0f)
   , _discardBackfaces (true)
   , _linearStep       (false)
 {}
 
 SBSmoothParameters::SBSmoothParameters ()
   : _relaxOnly (false)
-  , _intensity (0.0f)
-{}
-
-SBFlattenParameters::SBFlattenParameters ()
-  : _intensity (0.0f)
 {}
 
 struct SculptBrush :: Impl {
@@ -41,7 +41,8 @@ struct SculptBrush :: Impl {
   glm::vec3    _position;
   glm::vec3    _direction;
 
-  Variant < SBMoveDirectionalParameters
+  Variant < SBCarveParameters
+          , SBDraglikeParameters
           , SBSmoothParameters
           , SBFlattenParameters > parameters;
 
@@ -58,42 +59,45 @@ struct SculptBrush :: Impl {
     assert (this->parameters.isSet ());
 
     this->parameters.caseOf <void>
-      ( [this,&faces] (const SBMoveDirectionalParameters& p) {
-          this->sculpt (p, faces); 
-        }
-      , [this,&faces] (const SBSmoothParameters& p) {
-          this->sculpt (p, faces);
-        }
-      , [this,&faces] (const SBFlattenParameters& p) {
-          this->sculpt (p, faces);
-        }
+      ( [this,&faces] (const SBCarveParameters&    p) { this->sculpt (p, faces); }
+      , [this,&faces] (const SBDraglikeParameters& p) { this->sculpt (p, faces); }
+      , [this,&faces] (const SBSmoothParameters&   p) { this->sculpt (p, faces); }
+      , [this,&faces] (const SBFlattenParameters&  p) { this->sculpt (p, faces); }
       );
   }
 
-  void sculpt (const SBMoveDirectionalParameters& parameters, AffectedFaces& faces) const {
+  void sculpt (const SBCarveParameters& parameters, AffectedFaces& faces) const {
     assert (parameters.smoothness () >= 0.0f);
     assert (parameters.smoothness () <= 1.0f);
 
-    auto getSculptDirection = [this,&parameters] (const VertexPtrSet& vertices) -> glm::vec3 {
-      if (parameters.useAverageNormal ()) {
-        const glm::vec3 avgNormal = WingedUtil::averageNormal ( this->self->meshRef ()
-                                                              , vertices);
-        return parameters.invert () ? -avgNormal
-                                    :  avgNormal;
+    PrimSphere  sphere (this->position (), this->radius);
+    WingedMesh& mesh   (this->self->meshRef ());
+
+    mesh.intersects (sphere, faces);
+    faces.discardBackfaces (mesh, this->direction ());
+
+    if (faces.isEmpty () == false) {
+      VertexPtrSet    vertices (faces.toVertexSet ());
+      const glm::vec3 dir      ( parameters.invert () 
+                               ? - WingedUtil::averageNormal (mesh, vertices)
+                               :   WingedUtil::averageNormal (mesh, vertices) );
+
+      for (WingedVertex* v : vertices) {
+        const glm::vec3 oldPos      = v->position (mesh);
+        const float     intensity   = parameters.intensity () * this->radius;
+        const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
+        const float     delta       = intensity
+                                    * Util::smoothStep ( oldPos, this->position ()
+                                                       , innerRadius, this->radius );
+        const glm::vec3 newPos      = oldPos + (delta * dir);
+
+        v->writePosition (mesh, newPos);
       }
-      else {
-        return parameters.invert () ? -this->direction ()
-                                    :  this->direction ();
-      }
-    };
+    }
+  }
 
-    const glm::vec3 position = parameters.useLastPosition () ? this->lastPosition ()
-                                                             : this->position     ();
-
-    float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
-      parameters.linearStep () ? Util::linearStep : Util::smoothStep;
-
-    PrimSphere  sphere (position, this->radius);
+  void sculpt (const SBDraglikeParameters& parameters, AffectedFaces& faces) const {
+    PrimSphere  sphere (this->lastPosition (), this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
     mesh.intersects (sphere, faces);
@@ -103,18 +107,17 @@ struct SculptBrush :: Impl {
     }
 
     if (faces.isEmpty () == false) {
-      VertexPtrSet    vertices (faces.toVertexSet ());
-      const glm::vec3 dir      (getSculptDirection (vertices));
+      VertexPtrSet vertices (faces.toVertexSet ());
+
+      float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
+        parameters.linearStep () ? Util::linearStep : Util::smoothStep;
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos      = v->position (mesh);
-        const float     intensity   = parameters.intensityFactor () * this->radius;
         const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
-        const float     delta       = intensity
-                                    * stepFunction ( oldPos, position
+        const float     delta       = stepFunction ( oldPos, this->lastPosition ()
                                                    , innerRadius, this->radius );
-
-        const glm::vec3 newPos = oldPos + (delta * dir);
+        const glm::vec3 newPos      = oldPos + (delta * this->direction ());
 
         v->writePosition (mesh, newPos);
       }
@@ -263,10 +266,15 @@ T& SculptBrush::parameters () {
   return this->impl->parameters.get <T> ();
 }
 
-template const SBMoveDirectionalParameters& 
-SculptBrush::constParameters <SBMoveDirectionalParameters> () const;
-template SBMoveDirectionalParameters& 
-SculptBrush::parameters <SBMoveDirectionalParameters> ();
+template const SBCarveParameters& 
+SculptBrush::constParameters <SBCarveParameters> () const;
+template SBCarveParameters& 
+SculptBrush::parameters <SBCarveParameters> ();
+
+template const SBDraglikeParameters& 
+SculptBrush::constParameters <SBDraglikeParameters> () const;
+template SBDraglikeParameters& 
+SculptBrush::parameters <SBDraglikeParameters> ();
 
 template const SBSmoothParameters& 
 SculptBrush::constParameters <SBSmoothParameters> () const;

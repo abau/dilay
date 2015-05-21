@@ -8,56 +8,9 @@ class AffectedFaces;
 class WingedFace;
 class WingedMesh;
 
-class SBMoveDirectionalParameters {
+class SBIntensityParameters {
   public:
-    SBMoveDirectionalParameters ();
-
-    float intensityFactor  () const  { return this->_intensityFactor; }
-    float smoothness       () const  { return this->_smoothness; }
-    bool  invert           () const  { return this->_invert; }
-    bool  useAverageNormal () const  { return this->_useAverageNormal; }
-    bool  useLastPosition  () const  { return this->_useLastPosition; }
-    bool  discardBackfaces () const  { return this->_discardBackfaces; }
-    bool  linearStep       () const  { return this->_linearStep; }
-
-    void  intensityFactor  (float v) { this->_intensityFactor = v; }
-    void  smoothness       (float v) { this->_smoothness = v; }
-    void  invert           (bool v)  { this->_invert = v; }
-    void  useAverageNormal (bool v)  { this->_useAverageNormal = v; }
-    void  useLastPosition  (bool v)  { this->_useLastPosition = v; }
-    void  discardBackfaces (bool v)  { this->_discardBackfaces = v; }
-    void  linearStep       (bool v)  { this->_linearStep = v; }
-
-    void  toggleInvert     ()        { this->_invert = ! this->_invert; }
-
-  private:
-    float     _intensityFactor;
-    float     _smoothness;
-    bool      _invert;
-    bool      _useAverageNormal;
-    bool      _useLastPosition;
-    bool      _discardBackfaces;
-    bool      _linearStep;
-};
-
-class SBSmoothParameters {
-  public:
-    SBSmoothParameters ();
-
-    bool  relaxOnly () const { return this->_relaxOnly; }
-    float intensity () const { return this->_intensity; }
-
-    void  relaxOnly (bool v)  { this->_relaxOnly = v; }
-    void  intensity (float v) { this->_intensity = v; }
-
-  private:
-    bool  _relaxOnly;
-    float _intensity;
-};
-
-class SBFlattenParameters {
-  public:
-    SBFlattenParameters ();
+    SBIntensityParameters ();
 
     float intensity () const  { return this->_intensity; }
     void  intensity (float v) { this->_intensity = v; }
@@ -65,6 +18,53 @@ class SBFlattenParameters {
   private:
     float _intensity;
 };
+
+class SBCarveParameters : public SBIntensityParameters {
+  public:
+    SBCarveParameters ();
+
+    float smoothness   () const { return this->_smoothness; }
+    bool  invert       () const { return this->_invert; }
+
+    void  smoothness   (float v) { this->_smoothness = v; }
+    void  invert       (bool v)  { this->_invert     = v; }
+    void  toggleInvert ()        { this->_invert     = ! this->_invert; }
+
+  private:
+    float _smoothness;
+    bool  _invert;
+};
+
+class SBDraglikeParameters {
+  public:
+    SBDraglikeParameters ();
+
+    float smoothness       () const { return this->_smoothness; }
+    bool  discardBackfaces () const { return this->_discardBackfaces; }
+    bool  linearStep       () const { return this->_linearStep; }
+
+    void  smoothness       (float v) { this->_smoothness = v; }
+    void  discardBackfaces (bool v)  { this->_discardBackfaces = v; }
+    void  linearStep       (bool v)  { this->_linearStep       = v; }
+
+  private:
+    float _smoothness;
+    bool  _discardBackfaces;
+    bool  _linearStep;
+};
+
+class SBSmoothParameters : public SBIntensityParameters {
+  public:
+    SBSmoothParameters ();
+
+    bool relaxOnly () const { return this->_relaxOnly; }
+    void relaxOnly (bool v) { this->_relaxOnly = v; }
+
+  private:
+    bool  _relaxOnly;
+};
+
+class SBFlattenParameters : public SBIntensityParameters {};
 
 class SculptBrush {
   public:

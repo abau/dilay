@@ -21,17 +21,17 @@ struct ToolSculptDrag::Impl {
   {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBMoveDirectionalParameters> ();
+    auto& params = brush.parameters <SBDraglikeParameters> ();
 
     params.smoothness       (this->self->cache ().get <float> ("smoothness", 0.5f));
-    params.useLastPosition  (true);
     params.discardBackfaces (false);
+    params.linearStep       (false);
   }
 
   void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    auto& params = this->self->brush ().parameters <SBMoveDirectionalParameters> ();
+    auto& params = this->self->brush ().parameters <SBDraglikeParameters> ();
 
     ViewDoubleSlider& smoothnessEdit = ViewUtil::slider ( 0.0f, params.smoothness ()
                                                         , 1.0f, 0.1f );
