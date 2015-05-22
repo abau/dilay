@@ -15,8 +15,7 @@ SBIntensityParameters::SBIntensityParameters ()
 {}
 
 SBCarveParameters::SBCarveParameters ()
-  : _smoothness (1.0f)
-  , _invert     (false)
+  : _invert (false)
 {}
 
 SBDraglikeParameters::SBDraglikeParameters ()
@@ -67,9 +66,6 @@ struct SculptBrush :: Impl {
   }
 
   void sculpt (const SBCarveParameters& parameters, AffectedFaces& faces) const {
-    assert (parameters.smoothness () >= 0.0f);
-    assert (parameters.smoothness () <= 1.0f);
-
     PrimSphere  sphere (this->position (), this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
@@ -82,14 +78,15 @@ struct SculptBrush :: Impl {
                                ? - WingedUtil::averageNormal (mesh, vertices)
                                :   WingedUtil::averageNormal (mesh, vertices) );
 
+      PrimPlane plane (this->position (), dir);
+
       for (WingedVertex* v : vertices) {
-        const glm::vec3 oldPos      = v->position (mesh);
-        const float     intensity   = parameters.intensity () * this->radius;
-        const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
-        const float     delta       = intensity
-                                    * Util::smoothStep ( oldPos, this->position ()
-                                                       , innerRadius, this->radius );
-        const glm::vec3 newPos      = oldPos + (delta * dir);
+        const glm::vec3 oldPos    = v->position (mesh);
+        const float     intensity = parameters.intensity () * this->radius;
+        const float     delta     = intensity
+                                  * Util::smoothStep ( oldPos, this->position ()
+                                                     , 0.0f, this->radius );
+        const glm::vec3 newPos    = oldPos + (delta * dir);
 
         v->writePosition (mesh, newPos);
       }

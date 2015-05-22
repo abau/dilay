@@ -15,24 +15,14 @@ struct ToolSculptCarve::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBCarveParameters> ();
 
-    params.intensity  (this->self->cache ().get <float> ("intensity",  0.03f));
-    params.smoothness (this->self->cache ().get <float> ("smoothness", 0.5f));
-    params.invert     (this->self->cache ().get <bool>  ("invert",     false));
+    params.intensity (this->self->cache ().get <float> ("intensity", 0.03f));
+    params.invert    (this->self->cache ().get <bool>  ("invert",    false));
   }
 
   void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewPropertiesPart& properties) {
-    auto&       params = this->self->brush ().parameters <SBCarveParameters> ();
-    ViewCursor& cursor = this->self->cursor ();
-
-    ViewDoubleSlider& smoothnessEdit = ViewUtil::slider ( 0.0f, params.smoothness ()
-                                                        , 1.0f, 0.1f );
-    ViewUtil::connect (smoothnessEdit, [this,&params,&cursor] (float f) {
-      params.smoothness (f);
-      this->self->cache ().set ("smoothness", f);
-    });
-    properties.addStacked (QObject::tr ("Smoothness"), smoothnessEdit);
+    auto& params = this->self->brush ().parameters <SBCarveParameters> ();
 
     ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.01f, params.intensity ()
                                                        , 0.1f, 0.01f );

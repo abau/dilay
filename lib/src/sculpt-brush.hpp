@@ -23,15 +23,11 @@ class SBCarveParameters : public SBIntensityParameters {
   public:
     SBCarveParameters ();
 
-    float smoothness   () const { return this->_smoothness; }
     bool  invert       () const { return this->_invert; }
-
-    void  smoothness   (float v) { this->_smoothness = v; }
-    void  invert       (bool v)  { this->_invert     = v; }
-    void  toggleInvert ()        { this->_invert     = ! this->_invert; }
+    void  invert       (bool v) { this->_invert = v; }
+    void  toggleInvert ()       { this->_invert = ! this->_invert; }
 
   private:
-    float _smoothness;
     bool  _invert;
 };
 
