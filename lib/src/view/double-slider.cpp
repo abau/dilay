@@ -65,15 +65,15 @@ struct ViewDoubleSlider::Impl {
   }
 
   void setDoubleRange (double min, double max) {
-    this->self->setRange (this->toInt (min,true), this->toInt (max,true));
+    this->self->setRange (this->toInt (min, true), this->toInt (max, true));
   }
 
   void setDoubleSingleStep (double v) {
-    this->self->setSingleStep (this->toInt (v,true));
+    this->self->setSingleStep (this->toInt (v, true));
   }
 
   void setDoublePageStep (double v) {
-    this->self->setPageStep (this->toInt (v,true));
+    this->self->setPageStep (this->toInt (v, true));
   }
 
   int intValue () const {

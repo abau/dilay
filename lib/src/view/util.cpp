@@ -58,8 +58,8 @@ ViewDoubleSlider& ViewUtil :: slider ( float min, float value, float max
                                      , float stepSize, unsigned short order )
 {
   ViewDoubleSlider& slider = *new ViewDoubleSlider (2, order);
-  slider.setDoubleValue       (value);
   slider.setDoubleRange       (min, max);
+  slider.setDoubleValue       (value);
   slider.setDoubleSingleStep  (stepSize);
   slider.setDoublePageStep    (max);
   slider.setTracking          (true);
