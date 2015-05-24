@@ -38,6 +38,11 @@ glm::vec3 Util :: transformDirection (const glm::mat4x4& m, const glm::vec3& v) 
   return glm::vec3 (m * glm::vec4 (v, 0.0f));
 }
 
+glm::vec3 Util :: orthogonal (const glm::vec3& v) {
+  return glm::abs (v.x) > glm::abs (v.z) ? glm::vec3 (-v.y, v.x, 0.0f)
+                                         : glm::vec3 (0.0f, -v.z, v.y);
+}
+
 std::string Util :: readFile (const std::string& filePath) {
   std::string   content;
   std::ifstream stream(filePath, std::ios::in);
