@@ -18,6 +18,10 @@ SBInvertParameters::SBInvertParameters ()
   : _invert (false)
 {}
 
+glm::vec3 SBInvertParameters :: invert (const glm::vec3& v) const {
+  return this->_invert ? -v : v;
+}
+
 SBDraglikeParameters::SBDraglikeParameters ()
   : _smoothness       (1.0f)
   , _discardBackfaces (true)
@@ -78,11 +82,8 @@ struct SculptBrush :: Impl {
 
     if (faces.isEmpty () == false) {
       VertexPtrSet    vertices (faces.toVertexSet ());
-      const glm::vec3 dir      ( parameters.invert () 
-                               ? - WingedUtil::averageNormal (mesh, vertices)
-                               :   WingedUtil::averageNormal (mesh, vertices) );
-
-      PrimPlane plane (this->position (), dir);
+      const glm::vec3 dir      (parameters.invert (WingedUtil::averageNormal (mesh, vertices)));
+      PrimPlane       plane    (this->position (), dir);
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos    = v->position (mesh);
@@ -182,12 +183,9 @@ struct SculptBrush :: Impl {
 
     if (faces.isEmpty () == false) {
       VertexPtrSet    vertices (faces.toVertexSet ());
-      const glm::vec3 avgDir   ( parameters.invert ()
-                               ? -WingedUtil::averageNormal (mesh, vertices)
-                               :  WingedUtil::averageNormal (mesh, vertices) );
-
-      const glm::vec3 refPos (this->position () + (avgDir * parameters.intensity () * this->radius));
-      const PrimPlane plane  (refPos, avgDir);
+      const glm::vec3 avgDir   (parameters.invert (WingedUtil::averageNormal (mesh, vertices)));
+      const glm::vec3 refPos   (this->position () + (avgDir * parameters.intensity () * this->radius));
+      const PrimPlane plane    (refPos, avgDir);
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos   = v->position (mesh);
@@ -207,7 +205,7 @@ struct SculptBrush :: Impl {
     }
   }
 
-  void sculpt (const SBPinchParameters&, AffectedFaces& faces) const {
+  void sculpt (const SBPinchParameters& parameters, AffectedFaces& faces) const {
     PrimSphere  sphere (this->position (), this->radius);
     WingedMesh& mesh   (this->self->meshRef ());
 
@@ -225,7 +223,7 @@ struct SculptBrush :: Impl {
         if (distance > 0.1f) {
           const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
           const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
-          const glm::vec3 direction   = glm::normalize (this->position () - oldPos);
+          const glm::vec3 direction   = parameters.invert (glm::normalize (this->position () - oldPos));
           const glm::vec3 newPos      = oldPos + (factor * direction);
 
           v->writePosition (mesh, newPos);

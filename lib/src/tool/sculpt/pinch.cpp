@@ -40,7 +40,7 @@ struct ToolSculptPinch::Impl {
     const std::function <void ()> toggleInvert = [this] () {
       this->self->brush ().parameters <SBPinchParameters> ().toggleInvert ();
     };
-    return this->self->carvelikeStroke (e, true, &toggleInvert);
+    return this->self->carvelikeStroke (e, false, &toggleInvert);
   }
 
   void runSculptMouseMoveEvent (const QMouseEvent& e) {

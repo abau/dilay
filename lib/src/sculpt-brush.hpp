@@ -23,9 +23,10 @@ class SBInvertParameters {
   public:
     SBInvertParameters ();
 
-    bool  invert       () const { return this->_invert; }
-    void  invert       (bool v) { this->_invert = v; }
-    void  toggleInvert ()       { this->_invert = ! this->_invert; }
+    bool      invert       () const { return this->_invert; }
+    void      invert       (bool v) { this->_invert = v; }
+    void      toggleInvert ()       { this->_invert = ! this->_invert; }
+    glm::vec3 invert       (const glm::vec3&) const;
 
   private:
     bool _invert;
