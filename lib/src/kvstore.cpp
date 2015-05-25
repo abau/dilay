@@ -39,7 +39,8 @@ struct KVStore::Impl {
     Map::const_iterator value = this->map.find (this->path (p));
 
     if (value == this->map.end ()) {
-      throw (std::runtime_error ("Can not find path '" + this->path (p) + "' in kv-store"));
+      throw (std::runtime_error ( "Can not find path '" + this->path (p)
+                                + "' in kv-store '" + this->fileName + "'" ));
     }
     else {
       return value->second.get <T> ();
