@@ -10,11 +10,11 @@
 #include "winged/vertex.hpp"
 #include "variant.hpp"
 
-SBIntensityParameters::SBIntensityParameters ()
+SBIntensityParameters :: SBIntensityParameters ()
   : _intensity (0.0f)
 {}
 
-SBInvertParameters::SBInvertParameters ()
+SBInvertParameters :: SBInvertParameters ()
   : _invert (false)
 {}
 
@@ -22,13 +22,17 @@ glm::vec3 SBInvertParameters :: invert (const glm::vec3& v) const {
   return this->_invert ? -v : v;
 }
 
-SBDraglikeParameters::SBDraglikeParameters ()
+SBCarveParameters :: SBCarveParameters ()
+  : _inflate (false)
+{}
+
+SBDraglikeParameters :: SBDraglikeParameters ()
   : _smoothness       (1.0f)
   , _discardBackfaces (true)
   , _linearStep       (false)
 {}
 
-SBSmoothParameters::SBSmoothParameters ()
+SBSmoothParameters :: SBSmoothParameters ()
   : _relaxOnly (false)
 {}
 
@@ -81,9 +85,11 @@ struct SculptBrush :: Impl {
     faces.discardBackfaces (mesh, this->direction ());
 
     if (faces.isEmpty () == false) {
-      VertexPtrSet    vertices (faces.toVertexSet ());
-      const glm::vec3 dir      (parameters.invert (WingedUtil::averageNormal (mesh, vertices)));
-      PrimPlane       plane    (this->position (), dir);
+      VertexPtrSet vertices (faces.toVertexSet ());
+
+      const glm::vec3 avgDir ( parameters.inflate ()
+                             ? glm::vec3 (0.0f)
+                             : parameters.invert (WingedUtil::averageNormal (mesh, vertices)) );
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos    = v->position (mesh);
@@ -91,7 +97,10 @@ struct SculptBrush :: Impl {
         const float     factor    = intensity
                                   * Util::smoothStep ( oldPos, this->position ()
                                                      , 0.0f, this->radius );
-        const glm::vec3 newPos    = oldPos + (factor * dir);
+        const glm::vec3 direction = parameters.inflate ()
+                                  ? parameters.invert (v->savedNormal (mesh))
+                                  : avgDir;
+        const glm::vec3 newPos    = oldPos + (factor * direction);
 
         v->writePosition (mesh, newPos);
       }

@@ -17,6 +17,7 @@ struct ToolSculptCarve::Impl {
 
     params.intensity (this->self->cache ().get <float> ("intensity", 0.03f));
     params.invert    (this->self->cache ().get <bool>  ("invert",    false));
+    params.inflate   (this->self->cache ().get <bool>  ("inflate",   false));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -38,6 +39,13 @@ struct ToolSculptCarve::Impl {
       this->self->cache ().set ("invert", i);
     });
     properties.add (invertEdit);
+
+    QCheckBox& inflateEdit = ViewUtil::checkBox (QObject::tr ("Inflate"), params.inflate ());
+    ViewUtil::connect (inflateEdit, [this,&params] (bool i) {
+      params.inflate (i);
+      this->self->cache ().set ("inflate", i);
+    });
+    properties.add (inflateEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {

@@ -33,7 +33,16 @@ class SBInvertParameters {
 };
 
 
-class SBCarveParameters : public SBIntensityParameters, public SBInvertParameters {};
+class SBCarveParameters : public SBIntensityParameters, public SBInvertParameters {
+  public:
+    SBCarveParameters ();
+
+    bool inflate () const { return this->_inflate; }
+    void inflate (bool v) { this->_inflate = v; }
+
+  private:
+    bool _inflate;
+};
 
 class SBDraglikeParameters {
   public:
