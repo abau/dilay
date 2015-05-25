@@ -60,6 +60,7 @@ SOURCES += \
            src/tool/new-mesh.cpp \
            src/tool/sculpt.cpp \
            src/tool/sculpt/carve.cpp \
+           src/tool/sculpt/crease.cpp \
            src/tool/sculpt/drag.cpp \
            src/tool/sculpt/flatten.cpp \
            src/tool/sculpt/grab.cpp \

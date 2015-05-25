@@ -19,17 +19,20 @@ class SBIntensityParameters {
     float _intensity;
 };
 
-class SBCarveParameters : public SBIntensityParameters {
+class SBInvertParameters {
   public:
-    SBCarveParameters ();
+    SBInvertParameters ();
 
     bool  invert       () const { return this->_invert; }
     void  invert       (bool v) { this->_invert = v; }
     void  toggleInvert ()       { this->_invert = ! this->_invert; }
 
   private:
-    bool  _invert;
+    bool _invert;
 };
+
+
+class SBCarveParameters : public SBIntensityParameters, public SBInvertParameters {};
 
 class SBDraglikeParameters {
   public:
@@ -61,6 +64,8 @@ class SBSmoothParameters : public SBIntensityParameters {
 };
 
 class SBFlattenParameters : public SBIntensityParameters {};
+
+class SBCreaseParameters : public SBIntensityParameters, public SBInvertParameters {};
 
 class SculptBrush {
   public:
