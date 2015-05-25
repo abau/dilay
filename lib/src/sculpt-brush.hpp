@@ -66,6 +66,7 @@ class SBSmoothParameters : public SBIntensityParameters {
 class SBFlattenParameters : public SBIntensityParameters {};
 
 class SBCreaseParameters : public SBIntensityParameters, public SBInvertParameters {};
+class SBPinchParameters : public SBInvertParameters {};
 
 class SculptBrush {
   public:

@@ -44,7 +44,8 @@ struct SculptBrush :: Impl {
           , SBDraglikeParameters
           , SBSmoothParameters
           , SBFlattenParameters
-          , SBCreaseParameters > parameters;
+          , SBCreaseParameters
+          , SBPinchParameters > parameters;
 
   Impl (SculptBrush* s) 
     : self            (s)
@@ -64,6 +65,7 @@ struct SculptBrush :: Impl {
       , [this,&faces] (const SBSmoothParameters&   p) { this->sculpt (p, faces); }
       , [this,&faces] (const SBFlattenParameters&  p) { this->sculpt (p, faces); }
       , [this,&faces] (const SBCreaseParameters&   p) { this->sculpt (p, faces); }
+      , [this,&faces] (const SBPinchParameters&    p) { this->sculpt (p, faces); }
       );
   }
 
@@ -205,6 +207,33 @@ struct SculptBrush :: Impl {
     }
   }
 
+  void sculpt (const SBPinchParameters&, AffectedFaces& faces) const {
+    PrimSphere  sphere (this->position (), this->radius);
+    WingedMesh& mesh   (this->self->meshRef ());
+
+    mesh.intersects (sphere, faces);
+
+    faces.discardBackfaces (mesh, this->direction ());
+
+    if (faces.isEmpty () == false) {
+      VertexPtrSet    vertices (faces.toVertexSet ());
+
+      for (WingedVertex* v : vertices) {
+        const glm::vec3 oldPos   = v->position (mesh);
+        const float     distance = glm::distance (oldPos, this->position ());
+
+        if (distance > 0.1f) {
+          const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
+          const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
+          const glm::vec3 direction   = glm::normalize (this->position () - oldPos);
+          const glm::vec3 newPos      = oldPos + (factor * direction);
+
+          v->writePosition (mesh, newPos);
+        }
+      }
+    }
+  }
+
   float subdivThreshold () const {
     return (1.0f - this->detailFactor) * this->radius;
   }
@@ -312,3 +341,6 @@ template       SBFlattenParameters& SculptBrush::parameters      <SBFlattenParam
 
 template const SBCreaseParameters& SculptBrush::constParameters <SBCreaseParameters> () const;
 template       SBCreaseParameters& SculptBrush::parameters      <SBCreaseParameters> ();
+
+template const SBPinchParameters& SculptBrush::constParameters <SBPinchParameters> () const;
+template       SBPinchParameters& SculptBrush::parameters      <SBPinchParameters> ();

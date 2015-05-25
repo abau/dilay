@@ -18,5 +18,6 @@ DECLARE_TOOL_SCULPT (ToolSculptGrab   , "sculpt/grab")
 DECLARE_TOOL_SCULPT (ToolSculptSmooth , "sculpt/smooth")
 DECLARE_TOOL_SCULPT (ToolSculptFlatten, "sculpt/flatten")
 DECLARE_TOOL_SCULPT (ToolSculptCrease , "sculpt/crease")
+DECLARE_TOOL_SCULPT (ToolSculptPinch  , "sculpt/pinch")
 
 #endif

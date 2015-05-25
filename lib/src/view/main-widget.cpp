@@ -50,6 +50,7 @@ struct ViewMainWidget :: Impl {
     this->addToolButton <ToolSculptDrag>    (toolPaneLayout, QObject::tr ("Drag"));
     this->addToolButton <ToolSculptFlatten> (toolPaneLayout, QObject::tr ("Flatten"));
     this->addToolButton <ToolSculptSmooth>  (toolPaneLayout, QObject::tr ("Smooth"));
+    this->addToolButton <ToolSculptPinch>   (toolPaneLayout, QObject::tr ("Pinch"));
     return toolPane;
   }
 
