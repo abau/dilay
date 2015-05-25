@@ -220,6 +220,15 @@ struct ToolSculpt::Impl {
 
   void runClose () {}
 
+  void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode) {
+    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
+
+    if (hasInvertedMode) {
+      toolTip.add ( ViewToolTip::MouseEvent::Left
+                  , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to sculpt inverted"));
+    }
+  }
+
   void sculpt () {
     Action::sculpt (this->brush);
   }
@@ -343,16 +352,17 @@ struct ToolSculpt::Impl {
 };
 
 DELEGATE_BIG2_BASE (ToolSculpt, (State& s, const char* k), (this), Tool, (s, k))
-GETTER         (SculptBrush&, ToolSculpt, brush)
-GETTER         (ViewCursor& , ToolSculpt, cursor)
-DELEGATE       (void        , ToolSculpt, sculpt)
-DELEGATE3      (bool        , ToolSculpt, carvelikeStroke, const QMouseEvent&, bool, const std::function <void ()>*)
-DELEGATE2      (bool        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
-DELEGATE2      (bool        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
-DELEGATE       (ToolResponse, ToolSculpt, runInitialize)
-DELEGATE_CONST (void        , ToolSculpt, runRender)
-DELEGATE1      (ToolResponse, ToolSculpt, runMouseMoveEvent, const QMouseEvent&)
-DELEGATE1      (ToolResponse, ToolSculpt, runMousePressEvent, const QMouseEvent&)
-DELEGATE1      (ToolResponse, ToolSculpt, runMouseReleaseEvent, const QMouseEvent&)
-DELEGATE1      (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
-DELEGATE       (void        , ToolSculpt, runClose)
+GETTER          (SculptBrush&, ToolSculpt, brush)
+GETTER          (ViewCursor& , ToolSculpt, cursor)
+DELEGATE2_CONST (void        , ToolSculpt, addDefaultToolTip, ViewToolTip&, bool)
+DELEGATE        (void        , ToolSculpt, sculpt)
+DELEGATE3       (bool        , ToolSculpt, carvelikeStroke, const QMouseEvent&, bool, const std::function <void ()>*)
+DELEGATE2       (bool        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE2       (bool        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE        (ToolResponse, ToolSculpt, runInitialize)
+DELEGATE_CONST  (void        , ToolSculpt, runRender)
+DELEGATE1       (ToolResponse, ToolSculpt, runMouseMoveEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse, ToolSculpt, runMousePressEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse, ToolSculpt, runMouseReleaseEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
+DELEGATE        (void        , ToolSculpt, runClose)

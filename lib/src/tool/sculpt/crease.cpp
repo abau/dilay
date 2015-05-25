@@ -4,7 +4,6 @@
 #include "tools.hpp"
 #include "view/double-slider.hpp"
 #include "view/properties.hpp"
-#include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptCrease::Impl {
@@ -42,9 +41,7 @@ struct ToolSculptCrease::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
-    toolTip.add ( ViewToolTip::MouseEvent::Left
-                , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to sculpt inverted"));
+    this->self->addDefaultToolTip (toolTip, true);
   }
 
   bool runMouseEvent (const QMouseEvent& e) {

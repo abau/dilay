@@ -7,7 +7,6 @@
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/properties.hpp"
-#include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptGrab::Impl {
@@ -44,7 +43,7 @@ struct ToolSculptGrab::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
+    this->self->addDefaultToolTip (toolTip, false);
   }
 
   void runSculptMouseMoveEvent (const QMouseEvent& e) {

@@ -4,7 +4,6 @@
 #include "tools.hpp"
 #include "view/double-slider.hpp"
 #include "view/properties.hpp"
-#include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptSmooth::Impl {
@@ -43,7 +42,7 @@ struct ToolSculptSmooth::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to smooth"));
+    this->self->addDefaultToolTip (toolTip, false);
   }
 
   void runSculptMouseMoveEvent (const QMouseEvent& e) {

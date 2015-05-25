@@ -15,6 +15,7 @@ class ToolSculpt : public Tool {
   protected:
     SculptBrush& brush                    ();
     ViewCursor&  cursor                   ();
+    void         addDefaultToolTip        (ViewToolTip&, bool) const;
     void         sculpt                   ();
     bool         carvelikeStroke          ( const QMouseEvent&, bool
                                           , const std::function <void ()>* = nullptr );

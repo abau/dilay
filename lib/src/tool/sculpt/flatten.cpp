@@ -4,7 +4,6 @@
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/properties.hpp"
-#include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptFlatten::Impl {
@@ -33,7 +32,7 @@ struct ToolSculptFlatten::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to flatten"));
+    this->self->addDefaultToolTip (toolTip, false);
   }
 
   void runSculptMouseMoveEvent (const QMouseEvent& e) {
