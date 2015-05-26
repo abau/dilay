@@ -185,8 +185,10 @@ struct WingedMesh::Impl {
       prunedMesh.reserveIndices  (this->mesh.numIndices  ());
 
       if (newFaceIndices) {
+        assert (this->mesh.numIndices () % 3 == 0);
+
         newFaceIndices->clear ();
-        newFaceIndices->resize (this->numFaces (), Util::invalidIndex ());
+        newFaceIndices->resize (this->mesh.numIndices () / 3, Util::invalidIndex ());
       }
 
       this->forEachConstVertex ([&prunedMesh, &newVertexIndices, this] (const WingedVertex& v) {
@@ -194,7 +196,7 @@ struct WingedMesh::Impl {
                                                            , v.savedNormal (*this->self) );
         newVertexIndices [v.index ()] = newIndex;
       });
-      this->forEachConstFace ( [&prunedMesh, &newVertexIndices, newFaceIndices]
+      this->forEachConstFace ( [&prunedMesh, &newVertexIndices, &newFaceIndices]
                                (const WingedFace& f) 
       {
         const unsigned int newV1 = newVertexIndices [f.vertexRef (0).index ()];
