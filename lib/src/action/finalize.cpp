@@ -3,7 +3,6 @@
 #include "octree.hpp"
 #include "partial-action/collapse-face.hpp"
 #include "primitive/triangle.hpp"
-#include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
@@ -19,7 +18,6 @@ void Action :: collapseDegeneratedFaces (WingedMesh& mesh, AffectedFaces& affect
 
     FacePtrSet affectedByCollapse = affectedFaces.uncommitedFaces ();
     for (WingedFace* f : affectedByCollapse) {
-      f->writeIndices (mesh);
       mesh.realignFace (*f);
     }
     affectedFaces.commit ();

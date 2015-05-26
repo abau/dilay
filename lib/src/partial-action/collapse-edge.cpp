@@ -75,6 +75,7 @@ void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
   for (WingedFace& f : newVertex.adjacentFaces ()) {
     assert (f.numEdges () == 3);
     affectedFaces.insert (f);
+    f.writeIndices (mesh);
   }
   assert (newVertex.valence () == (valence1 - 3) + (valence2 - 3) + 2);
 

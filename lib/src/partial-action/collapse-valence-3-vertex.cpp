@@ -21,6 +21,7 @@ void PartialAction :: collapseValence3Vertex ( WingedMesh& mesh, WingedVertex& v
   PartialAction::deleteEdgeFace (mesh, edgeToDelete, affectedFaces);
 
   assert (remainingFace.numEdges () == 3);
+  remainingFace.writeIndices (mesh);
 
   if (recursively) {
     for (WingedVertex& v : remainingFace.adjacentVertices ()) {
