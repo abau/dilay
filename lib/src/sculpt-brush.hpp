@@ -77,6 +77,7 @@ class SBFlattenParameters : public SBIntensityParameters {};
 
 class SBCreaseParameters : public SBIntensityParameters, public SBInvertParameters {};
 class SBPinchParameters : public SBInvertParameters {};
+class SBReduceParameters : public SBIntensityParameters {};
 
 class SculptBrush {
   public:
@@ -105,6 +106,7 @@ class SculptBrush {
     void             setPointOfAction    (const glm::vec3&, const glm::vec3&);
     bool             updatePointOfAction (const glm::vec3&, const glm::vec3&);
     void             resetPointOfAction  ();
+    bool             reduce              () const;
 
     template <typename T> const T& constParameters () const;
     template <typename T>       T& parameters      ();

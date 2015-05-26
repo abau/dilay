@@ -4,10 +4,12 @@
 #include "action/sculpt.hpp"
 #include "affected-faces.hpp"
 #include "sculpt-brush.hpp"
+#include "partial-action/collapse-edge.hpp"
 #include "partial-action/relax-edge.hpp"
 #include "partial-action/smooth.hpp"
 #include "partial-action/subdivide-edge.hpp"
 #include "winged/edge.hpp"
+#include "winged/mesh.hpp"
 
 namespace {
   void postprocessEdges (const SculptBrush& brush, AffectedFaces& domain) {
@@ -27,6 +29,33 @@ namespace {
       }
       domain.commit ();
     };
+
+    auto isCollapsable = [&] (WingedEdge& edge) -> bool {
+      const auto& params = brush.constParameters <SBReduceParameters> ();
+      const float r2     = brush.radius () * brush.radius ();
+      const float i2     = params.intensity () * params.intensity ();
+      return edge.lengthSqr (mesh) < r2 * i2;
+    };
+
+    auto collapseEdges = [&] () {
+      EdgePtrVec                 edges = domain.toEdgeVec ();
+      std::vector <unsigned int> indices;
+
+      for (WingedEdge* e : domain.toEdgeVec ()) {
+        indices.push_back (e->index ());
+      }
+      domain.reset ();
+
+      for (unsigned int i : indices) {
+        WingedEdge* e = mesh.edge (i);
+
+        if (e && isCollapsable (*e)) {
+          PartialAction::collapseEdge (mesh, *e, domain);
+        }
+      }
+      domain.commit ();
+    };
+
     auto relaxEdges = [&] () {
       for (WingedEdge* e : domain.toEdgeVec ()) {
         PartialAction::relaxEdge (mesh, *e, domain);
@@ -38,9 +67,14 @@ namespace {
       domain.commit ();
     };
 
-    PartialAction::extendDomain (domain);
-    if (brush.subdivide ()) {
-      subdivideEdges ();
+    if (brush.reduce ()) {
+      collapseEdges ();
+    }
+    else {
+      PartialAction::extendDomain (domain);
+      if (brush.subdivide ()) {
+        subdivideEdges ();
+      }
     }
     relaxEdges     ();
     smoothVertices ();

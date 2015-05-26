@@ -65,6 +65,7 @@ SOURCES += \
            src/tool/sculpt/flatten.cpp \
            src/tool/sculpt/grab.cpp \
            src/tool/sculpt/pinch.cpp \
+           src/tool/sculpt/reduce.cpp \
            src/tool/sculpt/smooth.cpp \
            src/tool/util/movement.cpp \
            src/util.cpp \

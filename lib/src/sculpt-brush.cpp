@@ -53,7 +53,8 @@ struct SculptBrush :: Impl {
           , SBSmoothParameters
           , SBFlattenParameters
           , SBCreaseParameters
-          , SBPinchParameters > parameters;
+          , SBPinchParameters
+          , SBReduceParameters > parameters;
 
   Impl (SculptBrush* s) 
     : self            (s)
@@ -74,6 +75,7 @@ struct SculptBrush :: Impl {
       , [this,&faces] (const SBFlattenParameters&  p) { this->sculpt (p, faces); }
       , [this,&faces] (const SBCreaseParameters&   p) { this->sculpt (p, faces); }
       , [this,&faces] (const SBPinchParameters&    p) { this->sculpt (p, faces); }
+      , [this,&faces] (const SBReduceParameters&   p) { this->sculpt (p, faces); }
       );
   }
 
@@ -241,6 +243,10 @@ struct SculptBrush :: Impl {
     }
   }
 
+  void sculpt (const SBReduceParameters&, AffectedFaces& faces) const {
+    this->self->meshRef ().intersects (PrimSphere (this->position (), this->radius), faces);
+  }
+
   float subdivThreshold () const {
     return (1.0f - this->detailFactor) * this->radius;
   }
@@ -295,6 +301,10 @@ struct SculptBrush :: Impl {
   void resetPointOfAction () {
     this->hasPosition = false;
   }
+
+  bool reduce () const {
+    return this->parameters.is <SBReduceParameters> ();
+  }
 };
 
 DELEGATE_BIG6_SELF (SculptBrush)
@@ -319,6 +329,7 @@ DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
 DELEGATE2       (void             , SculptBrush, setPointOfAction, const glm::vec3&, const glm::vec3&)
 DELEGATE2       (bool             , SculptBrush, updatePointOfAction, const glm::vec3&, const glm::vec3&)
 DELEGATE        (void             , SculptBrush, resetPointOfAction)
+DELEGATE_CONST  (bool             , SculptBrush, reduce)
 
 template <typename T> 
 const T& SculptBrush::constParameters () const {
@@ -351,3 +362,6 @@ template       SBCreaseParameters& SculptBrush::parameters      <SBCreaseParamet
 
 template const SBPinchParameters& SculptBrush::constParameters <SBPinchParameters> () const;
 template       SBPinchParameters& SculptBrush::parameters      <SBPinchParameters> ();
+
+template const SBReduceParameters& SculptBrush::constParameters <SBReduceParameters> () const;
+template       SBReduceParameters& SculptBrush::parameters      <SBReduceParameters> ();
