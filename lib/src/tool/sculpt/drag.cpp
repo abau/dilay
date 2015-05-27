@@ -17,8 +17,12 @@ struct ToolSculptDrag::Impl {
     : self (s)
     , movement ( this->self->state ().camera ()
                , glm::vec3 (0.0f)
-               , MovementConstraint::Explicit )
-  {}
+               , MovementConstraint::CameraPlane )
+  {
+    if (this->self->cache ().get <bool> ("along-primary-plane", false)) {
+      this->movement.constraint (MovementConstraint::PrimaryPlane);
+    }
+  }
 
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBDraglikeParameters> ();
@@ -40,6 +44,17 @@ struct ToolSculptDrag::Impl {
       this->self->cache ().set ("smoothness", f);
     });
     properties.addStacked (QObject::tr ("Smoothness"), smoothnessEdit);
+
+    QCheckBox& primPlaneEdit = ViewUtil::checkBox 
+      ( QObject::tr ("Along primary plane")
+      , this->movement.constraint () == MovementConstraint::PrimaryPlane
+      );
+    ViewUtil::connect (primPlaneEdit, [this] (bool p) {
+      this->movement.constraint ( p ? MovementConstraint::PrimaryPlane
+                                    : MovementConstraint::CameraPlane );
+      this->self->cache ().set ("along-primary-plane", p);
+    });
+    properties.add (primPlaneEdit);
 
     QCheckBox& discardEdit = ViewUtil::checkBox ( QObject::tr ("Discard backfaces")
                                                 , params.discardBackfaces () );

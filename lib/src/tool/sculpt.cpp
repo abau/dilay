@@ -295,9 +295,7 @@ struct ToolSculpt::Impl {
         this->brush.setPointOfAction (intersection.position (), intersection.normal ());
         
         this->cursor.disable ();
-
         movement.resetPosition (intersection.position ());
-        movement.constraint    (MovementConstraint::CameraPlane);
         return true;
       }
       else {
