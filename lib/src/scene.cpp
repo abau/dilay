@@ -104,6 +104,14 @@ struct Scene :: Impl {
       this->runFromConfig (mesh);
     });
   }
+
+  void deleteEmptyMeshes () {
+    this->forEachMesh ([this] (WingedMesh& mesh) {
+      if (mesh.numFaces () == 0) {
+        this->deleteMesh (mesh);
+      }
+    });
+  }
 };
 
 DELEGATE1_BIG3 (Scene, const Config&)
@@ -121,4 +129,5 @@ DELEGATE        (void             , Scene, reset)
 DELEGATE_CONST  (const RenderMode&, Scene, commonRenderMode)
 DELEGATE1       (void             , Scene, commonRenderMode, const RenderMode&)
 DELEGATE_CONST  (unsigned int     , Scene, numWingedMeshes)
+DELEGATE        (void             , Scene, deleteEmptyMeshes)
 DELEGATE1       (void             , Scene, runFromConfig, const Config&)

@@ -19,8 +19,9 @@ void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
   WingedVertex& vertex2        = edge.vertex2Ref ();
   WingedEdge&   edgeToDelete1  = edge.leftSuccessorRef ();
   WingedEdge&   edgeToDelete2  = edge.rightSuccessorRef ();
-  WingedEdge&   remainingEdge1 = edge.leftPredecessorRef ();
-  WingedEdge&   remainingEdge2 = edge.rightPredecessorRef ();
+
+  const unsigned int vertex3Index = edgeToDelete1.otherVertexRef (vertex2).index ();
+  const unsigned int vertex4Index = edgeToDelete2.otherVertexRef (vertex1).index ();
 
 #ifndef NDEBUG
   const unsigned int valence1 = vertex1.valence ();
@@ -78,20 +79,34 @@ void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
     f.writeIndices (mesh);
   }
   assert (newVertex.valence () == (valence1 - 3) + (valence2 - 3) + 2);
+  assert (mesh.vertex (vertex3Index));
 
-  if (remainingEdge1.otherVertexRef (newVertex).valence () == 3) {
-    PartialAction::collapseValence3Vertex ( mesh, remainingEdge1.otherVertexRef (newVertex)
-                                          , true, affectedFaces );
+  WingedVertex& vertex3 = mesh.vertexRef (vertex3Index);
+
+  if (vertex3.valence () == 3) {
+    PartialAction::collapseValence3Vertex (mesh, vertex3, true, affectedFaces);
   }
-  if (remainingEdge2.otherVertexRef (newVertex).valence () == 3) {
-    PartialAction::collapseValence3Vertex ( mesh, remainingEdge2.otherVertexRef (newVertex)
-                                          , true, affectedFaces );
+
+  WingedVertex* vertex4 = mesh.vertex (vertex4Index);
+  if (vertex4 && vertex4->valence () == 3) {
+    PartialAction::collapseValence3Vertex (mesh, *vertex4, true, affectedFaces);
+  }
+  else if (vertex4 == false || vertex4->valence () < 3) {
+    mesh         .reset ();
+    affectedFaces.reset ();
+    return;
+  }
+
+  if (mesh.vertex (newVertexIndex) == nullptr) {
+    mesh         .reset ();
+    affectedFaces.reset ();
+    return;
   }
 #ifndef NDEBUG
-  assert (mesh.vertex (newVertexIndex));
-
-  for (WingedVertex& v : newVertex.adjacentVertices ()) {
-    assert (v.valence () > 3);
+  else {
+    for (WingedVertex& v : newVertex.adjacentVertices ()) {
+      assert (v.valence () > 3);
+    }
   }
 #endif
 }

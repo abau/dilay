@@ -1,5 +1,7 @@
 #include "cache.hpp"
+#include "scene.hpp"
 #include "sculpt-brush.hpp"
+#include "state.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"
 #include "view/properties.hpp"
@@ -35,7 +37,9 @@ struct ToolSculptReduce::Impl {
   }
 
   bool runMouseEvent (const QMouseEvent& e) {
-    return this->self->carvelikeStroke (e, false);
+    const bool result = this->self->carvelikeStroke (e, false);
+    this->self->state ().scene ().deleteEmptyMeshes ();
+    return result;
   }
 
   void runSculptMouseMoveEvent (const QMouseEvent& e) {

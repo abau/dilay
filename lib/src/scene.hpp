@@ -15,19 +15,20 @@ class Scene : public Configurable {
   public: 
     DECLARE_BIG3 (Scene, const Config&)
 
-    WingedMesh&       newWingedMesh    ();
-    WingedMesh&       newWingedMesh    (const Mesh&);
-    void              deleteMesh       (WingedMesh&);
-    WingedMesh*       wingedMesh       (unsigned int) const;
-    void              render           (Camera&);
-    bool              intersects       (const PrimRay&, WingedFaceIntersection&);
-    void              printStatistics  (bool) const;
-    void              forEachMesh      (const std::function <void (WingedMesh&)>&);
-    void              forEachConstMesh (const std::function <void (const WingedMesh&)>&) const;
-    void              reset            ();
-    const RenderMode& commonRenderMode () const;
-    void              commonRenderMode (const RenderMode&);
-    unsigned int      numWingedMeshes  () const;
+    WingedMesh&       newWingedMesh     ();
+    WingedMesh&       newWingedMesh     (const Mesh&);
+    void              deleteMesh        (WingedMesh&);
+    WingedMesh*       wingedMesh        (unsigned int) const;
+    void              render            (Camera&);
+    bool              intersects        (const PrimRay&, WingedFaceIntersection&);
+    void              printStatistics   (bool) const;
+    void              forEachMesh       (const std::function <void (WingedMesh&)>&);
+    void              forEachConstMesh  (const std::function <void (const WingedMesh&)>&) const;
+    void              reset             ();
+    const RenderMode& commonRenderMode  () const;
+    void              commonRenderMode  (const RenderMode&);
+    unsigned int      numWingedMeshes   () const;
+    void              deleteEmptyMeshes ();
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:
