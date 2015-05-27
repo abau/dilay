@@ -5,6 +5,7 @@
 #include "macro.hpp"
 
 class AffectedFaces;
+class PrimPlane;
 class WingedFace;
 class WingedMesh;
 
@@ -52,7 +53,7 @@ class SBDraglikeParameters {
     bool  discardBackfaces () const { return this->_discardBackfaces; }
     bool  linearStep       () const { return this->_linearStep; }
 
-    void  smoothness       (float v) { this->_smoothness = v; }
+    void  smoothness       (float v) { this->_smoothness       = v; }
     void  discardBackfaces (bool v)  { this->_discardBackfaces = v; }
     void  linearStep       (bool v)  { this->_linearStep       = v; }
 
@@ -107,6 +108,7 @@ class SculptBrush {
     bool             updatePointOfAction (const glm::vec3&, const glm::vec3&);
     void             resetPointOfAction  ();
     bool             reduce              () const;
+    void             mirror              (const PrimPlane&);
 
     template <typename T> const T& constParameters () const;
     template <typename T>       T& parameters      ();

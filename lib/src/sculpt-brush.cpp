@@ -305,6 +305,14 @@ struct SculptBrush :: Impl {
   bool reduce () const {
     return this->parameters.is <SBReduceParameters> ();
   }
+
+  void mirror (const PrimPlane& plane) {
+    if (this->hasPosition) {
+      this->_lastPosition = plane.mirror          (this->_lastPosition);
+      this->_position     = plane.mirror          (this->_position);
+      this->_direction    = plane.mirrorDirection (this->_direction);
+    }
+  }
 };
 
 DELEGATE_BIG6_SELF (SculptBrush)
@@ -330,6 +338,7 @@ DELEGATE2       (void             , SculptBrush, setPointOfAction, const glm::ve
 DELEGATE2       (bool             , SculptBrush, updatePointOfAction, const glm::vec3&, const glm::vec3&)
 DELEGATE        (void             , SculptBrush, resetPointOfAction)
 DELEGATE_CONST  (bool             , SculptBrush, reduce)
+DELEGATE1       (void             , SculptBrush, mirror, const PrimPlane&)
 
 template <typename T> 
 const T& SculptBrush::constParameters () const {

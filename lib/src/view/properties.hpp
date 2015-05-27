@@ -15,6 +15,7 @@ class ViewPropertiesPart {
     void reset      ();
     void add        (QWidget&);
     void add        (const QString&, QWidget&);
+    void add        (QWidget&, QWidget&);
     void addStacked (const QString&, QWidget&);
     void add        (QButtonGroup&, const std::vector <QString>&);
 

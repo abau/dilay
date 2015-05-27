@@ -59,8 +59,6 @@ class WingedMesh {
     unsigned int       numFaces            () const;
     unsigned int       numIndices          () const;
     bool               isEmpty             () const;
-    bool               hasMirrorPlane      () const;
-    const PrimPlane&   mirrorPlane         () const;
 
     Mesh               makePrunedMesh      (std::vector <unsigned int>* = nullptr) const;
     void               fromMesh            (const Mesh&, const PrimPlane* = nullptr);
@@ -70,7 +68,6 @@ class WingedMesh {
     void               render              (Camera&) const;
     void               reset               ();
     void               mirror              (const PrimPlane&);
-    void               deleteMirrorPlane   ();
     void               setupOctreeRoot     (const glm::vec3&, float);
     const RenderMode&  renderMode          () const;
     RenderMode&        renderMode          ();

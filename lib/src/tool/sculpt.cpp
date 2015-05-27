@@ -1,6 +1,7 @@
 #include <QCheckBox>
 #include <QFrame>
 #include <QMouseEvent>
+#include <QPushButton>
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
 #include "cache.hpp"
@@ -24,7 +25,6 @@
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
-#include "util.hpp"
 
 struct ToolSculpt::Impl {
   ToolSculpt*              self;
@@ -33,23 +33,14 @@ struct ToolSculpt::Impl {
   CacheProxy               commonCache;
   ViewDoubleSlider&        radiusEdit;
   std::unique_ptr <Mirror> mirror;
-  bool                     snapshotOnNextMousePress;
 
   Impl (ToolSculpt* s) 
-    : self                     (s) 
-    , commonCache              (this->self->cache ("sculpt"))
-    , radiusEdit               (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f, 3))
-    , snapshotOnNextMousePress (true)
+    : self        (s) 
+    , commonCache (this->self->cache ("sculpt"))
+    , radiusEdit  (ViewUtil::slider  (1.0f, 1.0f, 100.0f, 5.0f, 3))
   {
-    const int mirrorCache = this->commonCache.get <int> ("mirror", 0);
-    if (mirrorCache >= 0 && mirrorCache <= 2) {
-      this->snapshotOnNextMousePress = false;
-      switch (mirrorCache) {
-        case 0:  this->setupMirror (Dimension::X); break;
-        case 1:  this->setupMirror (Dimension::Y); break;
-        case 2:  this->setupMirror (Dimension::Z); break;
-        default: DILAY_IMPOSSIBLE
-      }
+    if (this->commonCache.get <bool> ("mirror", true)) {
+      this->mirror.reset (new Mirror (this->self->config (), Dimension::X));
     }
   }
 
@@ -111,18 +102,28 @@ struct ToolSculpt::Impl {
     });
     properties.add (subdivEdit);
 
-    QCheckBox& mirrorEdit = ViewUtil::checkBox ( QObject::tr ("Mirror")
-                                               , bool (this->mirror) );
-    ViewUtil::connect (mirrorEdit, [this] (bool m) {
-      if (m) {
-        this->setupMirror (Dimension::X);
-      }
-      else {
-        this->deleteMirror ();
-      }
+    QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
+    ViewUtil::connect (syncButton, [this] () {
+      this->mirrorScene ();
       this->self->updateGlWidget ();
     });
-    properties.add (mirrorEdit);
+    syncButton.setEnabled (bool (this->mirror));
+
+    QCheckBox& mirrorEdit = ViewUtil::checkBox ( QObject::tr ("Mirror")
+                                               , bool (this->mirror) );
+    ViewUtil::connect (mirrorEdit, [this,&syncButton] (bool m) {
+      if (m) {
+        this->mirror.reset (new Mirror (this->self->config (), Dimension::X));
+      }
+      else {
+        this->mirror.reset ();
+      }
+      syncButton.setEnabled (m);
+      this->commonCache.set ("mirror", m);
+      this->self->updateGlWidget ();
+    });
+
+    properties.add (mirrorEdit, syncButton);
 
     properties.add (ViewUtil::horizontalLine ());
 
@@ -137,29 +138,6 @@ struct ToolSculpt::Impl {
                 , QObject::tr ("Change radius") );
 
     this->self->showToolTip (toolTip);
-  }
-
-  void setupMirror (Dimension d) {
-    this->self->snapshotScene ();
-
-    this->mirror.reset (new Mirror (this->self->config (), d));
-
-    this->self->state ().scene ().forEachMesh (
-      [this] (WingedMesh& mesh) {
-        mesh.mirror (this->mirror->plane ());
-        mesh.bufferData ();
-      }
-    );
-    this->commonCache.set ("mirror", int (DimensionUtil::index (d)));
-  }
-
-  void deleteMirror () {
-    this->mirror.reset ();
-
-    this->self->state ().scene ().forEachMesh ([] (WingedMesh& mesh) {
-      mesh.deleteMirrorPlane ();
-    });
-    this->commonCache.set ("mirror", -1);
   }
 
   void runRender () const {
@@ -179,12 +157,7 @@ struct ToolSculpt::Impl {
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    if (this->snapshotOnNextMousePress) {
-      this->self->snapshotScene ();
-    }
-    else {
-      this->snapshotOnNextMousePress = true;
-    }
+    this->self->snapshotScene ();
 
     if (this->self->runSculptMousePressEvent (e) == false) {
       this->self->state ().history ().dropSnapshot ();
@@ -194,10 +167,6 @@ struct ToolSculpt::Impl {
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
-      if (this->brush.mesh () && this->mirror) {
-        this->brush.meshRef ().mirror     (this->mirror->plane ());
-        this->brush.meshRef ().bufferData ();
-      }
       this->brush.resetPointOfAction ();
     }
     this->cursor.enable ();
@@ -220,6 +189,19 @@ struct ToolSculpt::Impl {
 
   void runClose () {}
 
+  void mirrorScene () {
+    assert (this->mirror);
+
+    this->self->snapshotScene ();
+
+    this->self->state ().scene ().forEachMesh (
+      [this] (WingedMesh& mesh) {
+        mesh.mirror (this->mirror->plane ());
+        mesh.bufferData ();
+      }
+    );
+  }
+
   void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode) {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
 
@@ -231,6 +213,11 @@ struct ToolSculpt::Impl {
 
   void sculpt () {
     Action::sculpt (this->brush);
+    if (this->mirror) {
+      this->brush.mirror (this->mirror->plane ());
+      Action::sculpt (this->brush);
+      this->brush.mirror (this->mirror->plane ());
+    }
   }
 
   void updateCursorByIntersection (const QMouseEvent& e) {

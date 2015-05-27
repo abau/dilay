@@ -102,6 +102,10 @@ void ViewUtil :: connect (const QDoubleSpinBox& s, const std::function <void (do
   QObject::connect (&s, ptr, f);
 }
 
+void ViewUtil :: connect (const QPushButton& b, const std::function <void ()>& f) {
+  QObject::connect (&b, &QPushButton::released, f);
+}
+
 void ViewUtil :: connect (const QButtonGroup& g, const std::function <void (int)>& f) {
   void (QButtonGroup::* ptr)(int) = &QButtonGroup::buttonReleased;
   QObject::connect (&g, ptr, f);

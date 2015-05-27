@@ -33,6 +33,7 @@ namespace ViewUtil {
   glm::ivec2        toIVec2        (const QMouseEvent&);
   void              connect        (const QSpinBox&, const std::function <void (int)>&);
   void              connect        (const QDoubleSpinBox&, const std::function <void (double)>&);
+  void              connect        (const QPushButton&, const std::function <void ()>&);
   void              connect        (const QButtonGroup&, const std::function <void (int)>&);
   void              connect        (const QCheckBox&, const std::function <void (bool)>&);
   void              connect        (const QRadioButton&, const std::function <void (bool)>&);

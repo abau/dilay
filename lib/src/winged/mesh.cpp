@@ -10,7 +10,6 @@
 #include "intersection.hpp"
 #include "mesh-util.hpp"
 #include "octree.hpp"
-#include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
@@ -29,7 +28,6 @@ struct WingedMesh::Impl {
   IndexableList <WingedEdge>    edges;
   IndexableList <WingedFace>    faces;
   Octree                        octree;
-  std::unique_ptr <PrimPlane>  _mirrorPlane;
 
   Impl (WingedMesh* s, unsigned int i) 
     :  self   (s)
@@ -163,14 +161,6 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  bool hasMirrorPlane () const {
-    return bool (this->_mirrorPlane);
-  }
-
-  const PrimPlane& mirrorPlane () const {
-    return *this->_mirrorPlane;
-  }
-
   Mesh makePrunedMesh (std::vector <unsigned int>* newFaceIndices) const {
     Mesh prunedMesh (this->mesh, false);
 
@@ -263,14 +253,8 @@ struct WingedMesh::Impl {
     // mesh
     this->reset ();
 
-    if (mirror) {
-      this->_mirrorPlane = std::make_unique <PrimPlane> (*mirror);
-      this->mesh         = MeshUtil::mirror (mesh, *mirror);
-    }
-    else {
-      this->_mirrorPlane.reset ();
-      this->mesh = mesh;
-    }
+    this->mesh = bool (mirror) ? MeshUtil::mirror (mesh, *mirror)
+                               : mesh;
 
     // octree
     glm::vec3 minVertex, maxVertex;
@@ -358,22 +342,15 @@ struct WingedMesh::Impl {
   }
 
   void reset () {
-    this->mesh        .reset ();
-    this->vertices    .reset ();
-    this->edges       .reset ();
-    this->faces       .reset ();
-    this->octree      .reset ();
-    this->_mirrorPlane.reset ();
+    this->mesh    .reset ();
+    this->vertices.reset ();
+    this->edges   .reset ();
+    this->faces   .reset ();
+    this->octree  .reset ();
   }
 
   void mirror (const PrimPlane& plane) {
     this->fromMesh (this->makePrunedMesh (nullptr), &plane);
-  }
-
-  void deleteMirrorPlane () {
-    if (this->hasMirrorPlane ()) {
-      this->_mirrorPlane.reset ();
-    }
   }
 
   void setupOctreeRoot (const glm::vec3& center, float width) {
@@ -568,8 +545,6 @@ DELEGATE_CONST  (unsigned int     , WingedMesh, numEdges)
 DELEGATE_CONST  (unsigned int     , WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int     , WingedMesh, numIndices)
 DELEGATE_CONST  (bool             , WingedMesh, isEmpty)
-DELEGATE_CONST  (bool             , WingedMesh, hasMirrorPlane)
-DELEGATE_CONST  (const PrimPlane& , WingedMesh, mirrorPlane)
 
 DELEGATE1_CONST (Mesh             , WingedMesh, makePrunedMesh, std::vector <unsigned int>*)
 DELEGATE2       (void             , WingedMesh, fromMesh, const Mesh&, const PrimPlane*)
@@ -579,7 +554,6 @@ DELEGATE        (void             , WingedMesh, bufferData)
 DELEGATE1_CONST (void             , WingedMesh, render, Camera&)
 DELEGATE        (void             , WingedMesh, reset)
 DELEGATE1       (void             , WingedMesh, mirror, const PrimPlane&)
-DELEGATE        (void             , WingedMesh, deleteMirrorPlane)
 DELEGATE2       (void             , WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE_CONST  (const RenderMode&, WingedMesh, renderMode)
 DELEGATE        (RenderMode&      , WingedMesh, renderMode)
