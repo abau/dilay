@@ -129,6 +129,9 @@ struct ViewGlWidget::Impl {
       this->state ().redo ();
       this->self->update ();
     }
+    if (key == Qt::Key_C) {
+      this->toolMoveCamera.keyPressEvent (this->state (), *e);
+    }
     else if (hasTool) {
       if (key == Qt::Key_Escape || key == Qt::Key_Enter) {
         this->state ().resetTool ();

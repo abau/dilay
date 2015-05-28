@@ -8,6 +8,7 @@
 #include "opengl.hpp"
 #include "primitive/ray.hpp"
 #include "renderer.hpp"
+#include "util.hpp"
 
 struct Camera::Impl {
   Camera*      self;
@@ -67,9 +68,10 @@ struct Camera::Impl {
   void set (const glm::vec3& g, const glm::vec3& e, const glm::vec3& u) {
     this->gazePoint  = g;
     this->toEyePoint = e;
-    this->up         = u;
-    this->right      = glm::normalize ( glm::cross (this->up, this->toEyePoint) );
-
+    this->up         = glm::normalize (u);
+    this->right      = Util::colinear (e,u)
+                     ? glm::vec3 (1.0f, 0.0f, 0.0f)
+                     : glm::normalize (glm::cross (this->up, this->toEyePoint));
     this->updateView ();
   }
 
@@ -97,10 +99,6 @@ struct Camera::Impl {
   void horizontalRotation (float angle) {
     glm::quat q      = glm::angleAxis (angle, this->right);
     this->toEyePoint = glm::rotate (q, this->toEyePoint);
-
-    if (glm::dot ( glm::cross (this->up, this->toEyePoint), this->right ) < 0) {
-      this->up = -this->up;
-    }
     this->updateView ();
   }
 
@@ -137,11 +135,10 @@ struct Camera::Impl {
   }
 
   void updateView () {
-    this->view = glm::lookAt ( this->eyePoint (), this->gazePoint, this->up );
+    const glm::vec3 realUp = glm::normalize (glm::cross (this->toEyePoint, this->right));
 
-    this->viewRotation = glm::lookAt ( glm::normalize (this->toEyePoint)
-                                     , glm::vec3 (0.0f)
-                                     , this->up );
+    this->view         = glm::lookAt (this->eyePoint (), this->gazePoint, realUp);
+    this->viewRotation = glm::lookAt (glm::normalize (this->toEyePoint), glm::vec3 (0.0f), realUp);
     this->renderer.setEyePoint (this->eyePoint ());
   }
 

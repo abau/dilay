@@ -1,6 +1,7 @@
 #include <cstdarg>
 #include <fstream>
 #include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -41,6 +42,12 @@ glm::vec3 Util :: transformDirection (const glm::mat4x4& m, const glm::vec3& v) 
 glm::vec3 Util :: orthogonal (const glm::vec3& v) {
   return glm::abs (v.x) > glm::abs (v.z) ? glm::vec3 (-v.y, v.x, 0.0f)
                                          : glm::vec3 (0.0f, -v.z, v.y);
+}
+
+bool Util :: colinear (const glm::vec3& v1, const glm::vec3& v2) {
+  return glm::epsilonEqual ( glm::abs (glm::dot (glm::normalize (v1), glm::normalize (v2)))
+                           , 1.0f
+                           , Util::epsilon () );
 }
 
 std::string Util :: readFile (const std::string& filePath) {
