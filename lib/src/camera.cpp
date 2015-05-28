@@ -35,15 +35,15 @@ struct Camera::Impl {
   glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
 
   glm::mat4x4 world () const {
-    glm::vec3   x = this->right;
-    glm::vec3   z = glm::normalize (this->toEyePoint);
-    glm::vec3   y = glm::cross (z,x);
-    glm::vec3   p = this->position ();
+    const glm::vec3 x = this->right;
+    const glm::vec3 z = glm::normalize (this->toEyePoint);
+    const glm::vec3 y = glm::cross (z,x);
+    const glm::vec3 p = this->position ();
 
-    return glm::colMajor4 ( glm::vec4 (x,0.0f)
-                          , glm::vec4 (y,0.0f)
-                          , glm::vec4 (z,0.0f)
-                          , glm::vec4 (p,1.0f));
+    return glm::colMajor4 ( glm::vec4 (x, 0.0f)
+                          , glm::vec4 (y, 0.0f)
+                          , glm::vec4 (z, 0.0f)
+                          , glm::vec4 (p, 1.0f));
   }
 
   void updateResolution (const glm::uvec2& dimension) {
@@ -81,7 +81,8 @@ struct Camera::Impl {
   }
 
   void stepAlongGaze (float factor) {
-    float d = glm::length (this->toEyePoint);
+    const float d = glm::length (this->toEyePoint);
+
     if (factor < 1.0f && d > 1.0f)
       this->toEyePoint *= glm::vec3 (factor);
     else if (factor > 1.0f)
@@ -90,15 +91,15 @@ struct Camera::Impl {
   }
 
   void verticalRotation (float angle) {
-    glm::quat q       = glm::angleAxis (angle, this->up);
+    const glm::quat q = glm::angleAxis (angle, this->up);
     this->right       = glm::rotate (q, this->right);
     this->toEyePoint  = glm::rotate (q, this->toEyePoint);
     this->updateView ();
   }
 
   void horizontalRotation (float angle) {
-    glm::quat q      = glm::angleAxis (angle, this->right);
-    this->toEyePoint = glm::rotate (q, this->toEyePoint);
+    const glm::quat q = glm::angleAxis (angle, this->right);
+    this->toEyePoint  = glm::rotate (q, this->toEyePoint);
     this->updateView ();
   }
 
@@ -107,22 +108,23 @@ struct Camera::Impl {
   }
 
   glm::ivec2 fromWorld (const glm::vec3& p, const glm::mat4x4& model, bool onlyRotation) const {
-    glm::mat4x4 mv = onlyRotation ? this->viewRotation * model
-                                  : this->view         * model;
-    glm::vec3 w = glm::project (p, mv, this->projection, this->viewport ());
+    const glm::mat4x4 mv = onlyRotation ? this->viewRotation * model
+                                        : this->view         * model;
+    const glm::vec3 w = glm::project (p, mv, this->projection, this->viewport ());
+
     return glm::ivec2 (int (w.x), int (resolution.y - w.y));
   }
 
   glm::vec3 toWorld (const glm::ivec2& p, float z = 0.0f) const {
-    float invY  = this->resolution.y - float (p.y);
-    float normZ = z / this->farClipping;
+    const float invY  = this->resolution.y - float (p.y);
+    const float normZ = z / this->farClipping;
     return glm::unProject ( glm::vec3 (float (p.x), invY, normZ)
                           , this->view, this->projection, this->viewport ());
   }
 
   PrimRay ray (const glm::ivec2& p) const {
-    glm::vec3 w   = this->toWorld  (p);
-    glm::vec3 eye = this->eyePoint ();
+    const glm::vec3 w   = this->toWorld  (p);
+    const glm::vec3 eye = this->eyePoint ();
     return PrimRay (eye, glm::normalize (w - eye));
   }
 
@@ -147,7 +149,7 @@ struct Camera::Impl {
   }
 
   Dimension primaryDimension () const {
-    glm::vec3 t = glm::abs (this->toEyePoint);
+    const glm::vec3 t = glm::abs (this->toEyePoint);
     if (t.x > t.y && t.x > t.z) {
       return Dimension::X;
     }
