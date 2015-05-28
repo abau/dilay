@@ -116,9 +116,11 @@ struct ViewGlWidget::Impl {
       this->state ().scene ().commonRenderMode (mode);
       this->self->update ();
     }
+#ifndef NDEBUG
     else if (key == Qt::Key_I) {
       this->state ().scene ().printStatistics (false);
     }
+#endif
     else if (key == Qt::Key_Z && mod == Qt::ControlModifier) {
       this->state ().undo ();
       this->self->update ();
