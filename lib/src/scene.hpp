@@ -28,6 +28,7 @@ class Scene : public Configurable {
     const RenderMode& commonRenderMode  () const;
     void              commonRenderMode  (const RenderMode&);
     unsigned int      numWingedMeshes   () const;
+    unsigned int      numFaces          () const;
     void              deleteEmptyMeshes ();
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)

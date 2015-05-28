@@ -87,6 +87,7 @@ struct ViewGlWidget::Impl {
     painter.endNativePainting ();
 
     this->axis->render (this->state ().camera (), painter);
+    this->mainWindow.showNumFaces (this->state ().scene ().numFaces ());
   }
 
   void resizeGL (int w, int h) {

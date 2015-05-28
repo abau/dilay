@@ -1,5 +1,5 @@
 #include <QLabel>
-#include <QToolBar>
+#include <QStatusBar>
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/tool-tip.hpp"
@@ -8,20 +8,24 @@
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
   ViewMainWidget  mainWidget;
-  QToolBar        statusBar;
+  QStatusBar      statusBar;
   QLabel          messageLabel;
+  QLabel          numFacesLabel;
 
   Impl (ViewMainWindow* s, Config& config, Cache& cache) 
     : self       (s) 
     , mainWidget (*this->self, config, cache)
   {
     this->self->setCentralWidget (&this->mainWidget);
-    this->self->addToolBar       (Qt::BottomToolBarArea, &this->statusBar);
-    this->statusBar.setFloatable (false);
-    this->statusBar.setMovable   (false);
-    this->statusBar.addWidget    (new QLabel (" "));
-    this->statusBar.addWidget    (&this->messageLabel);
+    this->self->setStatusBar     (&this->statusBar);
+
+    this->statusBar.setStyleSheet      ("QStatusBar::item { border: 0px solid black };");
+    this->statusBar.setSizeGripEnabled (false);
+    this->statusBar.addPermanentWidget (&this->messageLabel,1);
+    this->statusBar.addPermanentWidget (&this->numFacesLabel);
+
     this->showDefaultToolTip     ();
+    this->showNumFaces           (0);
   }
 
   ViewGlWidget&   glWidget     () { return this->mainWidget.glWidget     (); }
@@ -45,6 +49,10 @@ struct ViewMainWindow :: Impl {
 
     this->showToolTip (tip);
   }
+
+  void showNumFaces (unsigned int n) {
+    this->numFacesLabel.setText (QString::number (n).append (" faces"));
+  }
 };
 
 DELEGATE2_BIG2_SELF (ViewMainWindow, Config&, Cache&)
@@ -54,3 +62,4 @@ DELEGATE  (void           , ViewMainWindow, deselectTool)
 DELEGATE1 (void           , ViewMainWindow, showMessage, const QString&)
 DELEGATE1 (void           , ViewMainWindow, showToolTip, const ViewToolTip&)
 DELEGATE  (void           , ViewMainWindow, showDefaultToolTip)
+DELEGATE1 (void           , ViewMainWindow, showNumFaces, unsigned int)

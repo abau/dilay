@@ -21,6 +21,7 @@ class ViewMainWindow : public QMainWindow {
     void            showMessage        (const QString&);
     void            showToolTip        (const ViewToolTip&);
     void            showDefaultToolTip ();
+    void            showNumFaces       (unsigned int);
 
   private:
     IMPLEMENTATION

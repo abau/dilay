@@ -92,6 +92,22 @@ struct Scene :: Impl {
     return this->wingedMeshes.numElements ();
   }
 
+  unsigned int numFaces () const {
+    unsigned int n = 0;
+    this->forEachConstMesh ([this, &n] (const WingedMesh& mesh) {
+      n = n + mesh.numFaces ();
+    });
+    return n;
+  }
+
+  void deleteEmptyMeshes () {
+    this->forEachMesh ([this] (WingedMesh& mesh) {
+      if (mesh.numFaces () == 0) {
+        this->deleteMesh (mesh);
+      }
+    });
+  }
+
   void runFromConfig (WingedMesh& mesh) {
     mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
     mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
@@ -102,14 +118,6 @@ struct Scene :: Impl {
 
     this->forEachMesh ([this] (WingedMesh& mesh) {
       this->runFromConfig (mesh);
-    });
-  }
-
-  void deleteEmptyMeshes () {
-    this->forEachMesh ([this] (WingedMesh& mesh) {
-      if (mesh.numFaces () == 0) {
-        this->deleteMesh (mesh);
-      }
     });
   }
 };
@@ -129,5 +137,6 @@ DELEGATE        (void             , Scene, reset)
 DELEGATE_CONST  (const RenderMode&, Scene, commonRenderMode)
 DELEGATE1       (void             , Scene, commonRenderMode, const RenderMode&)
 DELEGATE_CONST  (unsigned int     , Scene, numWingedMeshes)
+DELEGATE_CONST  (unsigned int     , Scene, numFaces)
 DELEGATE        (void             , Scene, deleteEmptyMeshes)
 DELEGATE1       (void             , Scene, runFromConfig, const Config&)
