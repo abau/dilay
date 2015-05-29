@@ -10,13 +10,14 @@
 
 struct ViewMainWidget :: Impl {
   ViewMainWidget* self;
-  ViewGlWidget    glWidget;
-  ViewProperties  properties;
+  ViewGlWidget&   glWidget;
+  ViewProperties& properties;
   QButtonGroup    toolButtons;
 
   Impl (ViewMainWidget* s, ViewMainWindow& mW, Config& config, Cache& cache) 
     : self       (s) 
-    , glWidget   (mW, config, cache)
+    , glWidget   (*new ViewGlWidget (mW, config, cache))
+    , properties (*new ViewProperties)
   {
     this->self->addWidget (this->initalizeLeftPane ());
     this->self->addWidget (&this->glWidget);

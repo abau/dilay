@@ -7,14 +7,17 @@
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
-  ViewMainWidget  mainWidget;
-  QStatusBar      statusBar;
-  QLabel          messageLabel;
-  QLabel          numFacesLabel;
+  ViewMainWidget& mainWidget;
+  QStatusBar&     statusBar;
+  QLabel&         messageLabel;
+  QLabel&         numFacesLabel;
 
   Impl (ViewMainWindow* s, Config& config, Cache& cache) 
-    : self       (s) 
-    , mainWidget (*this->self, config, cache)
+    : self          (s) 
+    , mainWidget    (*new ViewMainWidget (*this->self, config, cache))
+    , statusBar     (*new QStatusBar)
+    , messageLabel  (*new QLabel)
+    , numFacesLabel (*new QLabel)
   {
     this->self->setCentralWidget (&this->mainWidget);
     this->self->setStatusBar     (&this->statusBar);
@@ -24,8 +27,8 @@ struct ViewMainWindow :: Impl {
     this->statusBar.addPermanentWidget (&this->messageLabel,1);
     this->statusBar.addPermanentWidget (&this->numFacesLabel);
 
-    this->showDefaultToolTip     ();
-    this->showNumFaces           (0);
+    this->showDefaultToolTip ();
+    this->showNumFaces       (0);
   }
 
   ViewGlWidget&   glWidget     () { return this->mainWidget.glWidget     (); }
