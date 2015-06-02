@@ -10,6 +10,7 @@
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
+#include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
@@ -59,11 +60,11 @@ struct Tool::Impl {
   }
 
   void updateGlWidget () {
-    this->state.mainWindow ().glWidget ().update ();
+    this->state.mainWindow ().mainWidget ().glWidget ().update ();
   }
 
   ViewProperties& properties () const {
-    return this->state.mainWindow ().properties ();
+    return this->state.mainWindow ().mainWidget ().properties ();
   }
 
   void showToolTip (const ViewToolTip& toolTip) {
@@ -79,7 +80,7 @@ struct Tool::Impl {
   }
 
   glm::ivec2 cursorPosition () {
-    return this->state.mainWindow ().glWidget ().cursorPosition ();
+    return this->state.mainWindow ().mainWidget ().glWidget ().cursorPosition ();
   }
 
   bool intersectsScene (const glm::ivec2& pos, WingedFaceIntersection& intersection) {

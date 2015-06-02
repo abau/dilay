@@ -31,10 +31,6 @@ struct ViewMainWindow :: Impl {
     this->showNumFaces       (0);
   }
 
-  ViewGlWidget&   glWidget     () { return this->mainWidget.glWidget     (); }
-  ViewProperties& properties   () { return this->mainWidget.properties   (); }
-  void            deselectTool () {        this->mainWidget.deselectTool (); }
-
   void showMessage (const QString& message) {
     this->messageLabel.setText (message);
   }
@@ -61,9 +57,7 @@ struct ViewMainWindow :: Impl {
 };
 
 DELEGATE2_BIG2_SELF (ViewMainWindow, Config&, Cache&)
-DELEGATE  (ViewGlWidget&  , ViewMainWindow, glWidget)
-DELEGATE  (ViewProperties&, ViewMainWindow, properties)
-DELEGATE  (void           , ViewMainWindow, deselectTool)
+GETTER    (ViewMainWidget&, ViewMainWindow, mainWidget)
 DELEGATE1 (void           , ViewMainWindow, showMessage, const QString&)
 DELEGATE1 (void           , ViewMainWindow, showToolTip, const ViewToolTip&)
 DELEGATE  (void           , ViewMainWindow, showDefaultToolTip)

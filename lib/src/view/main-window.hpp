@@ -6,8 +6,7 @@
 
 class Cache;
 class Config;
-class ViewGlWidget;
-class ViewProperties;
+class ViewMainWidget;
 class ViewToolTip;
 
 class ViewMainWindow : public QMainWindow {
@@ -15,9 +14,7 @@ class ViewMainWindow : public QMainWindow {
   public:
     DECLARE_BIG2 (ViewMainWindow, Config&, Cache&)
 
-    ViewGlWidget&   glWidget           ();
-    ViewProperties& properties         ();
-    void            deselectTool       ();
+    ViewMainWidget& mainWidget         ();
     void            showMessage        (const QString&);
     void            showToolTip        (const ViewToolTip&);
     void            showDefaultToolTip ();

@@ -10,6 +10,7 @@
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
+#include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
 #include "winged/util.hpp"
@@ -70,10 +71,10 @@ struct State::Impl {
       // order of destruction is important, because of stack-allocated widgets
       this->toolPtr.reset (); 
       this->mainWindow.showDefaultToolTip ();
-      this->mainWindow.properties ().reset ();
+      this->mainWindow.mainWidget ().properties ().reset ();
 
       if (deselect) {
-        this->mainWindow.deselectTool ();
+        this->mainWindow.mainWidget ().deselectTool ();
       }
       this->mainWindow.update ();
     }

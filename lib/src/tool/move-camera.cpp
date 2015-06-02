@@ -11,6 +11,7 @@
 #include "tool/move-camera.hpp"
 #include "util.hpp"
 #include "view/gl-widget.hpp"
+#include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
@@ -76,7 +77,7 @@ struct ToolMoveCamera::Impl {
       else if (mod == Qt::ControlModifier) {
         cam.set (glm::vec3 (0.0f), cam.position (), glm::vec3 (0.0f, 1.0f, 0.0f));
       }
-      state.mainWindow ().glWidget ().update ();
+      state.mainWindow ().mainWidget ().glWidget ().update ();
     }
   }
 
@@ -106,7 +107,7 @@ struct ToolMoveCamera::Impl {
                     );
       }
       this->oldPos = newPos;
-      state.mainWindow ().glWidget ().update ();
+      state.mainWindow ().mainWidget ().glWidget ().update ();
     }
   }
 
@@ -121,7 +122,7 @@ struct ToolMoveCamera::Impl {
           cam.set ( intersection.position ()
                   , cam.position () - intersection.position ()
                   , cam.up () );
-          state.mainWindow ().glWidget ().update ();
+          state.mainWindow ().mainWidget ().glWidget ().update ();
         }
       }
     }
@@ -135,7 +136,7 @@ struct ToolMoveCamera::Impl {
       else if (event.delta () < 0) {
         state.camera ().stepAlongGaze (1.0f / this->zoomInFactor);
       }
-      state.mainWindow ().glWidget ().update ();
+      state.mainWindow ().mainWidget ().glWidget ().update ();
     }
   }
 
