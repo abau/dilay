@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QPainter>
 #include <glm/glm.hpp>
 #include "camera.hpp"
@@ -89,17 +89,6 @@ struct ViewGlWidget::Impl {
     this->state ().camera ().updateResolution (glm::uvec2 (w,h));
   }
 
-  void keyPressEvent (QKeyEvent* e) {
-    const int key = e->key ();
-
-    if (key == Qt::Key_C) {
-      this->toolMoveCamera.keyPressEvent (this->state (), *e);
-    }
-    else {
-      this->self->QOpenGLWidget::keyPressEvent (e);
-    }
-  }
-
   void mouseMoveEvent (QMouseEvent* e) {
     this->self->setFocus (Qt::MouseFocusReason);
 
@@ -137,13 +126,13 @@ struct ViewGlWidget::Impl {
 };
 
 DELEGATE3_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
-DELEGATE  (State&    , ViewGlWidget, state)
-DELEGATE  (glm::ivec2, ViewGlWidget, cursorPosition)
-DELEGATE  (void      , ViewGlWidget, initializeGL)
-DELEGATE2 (void      , ViewGlWidget, resizeGL, int, int)
-DELEGATE  (void      , ViewGlWidget, paintGL)
-DELEGATE1 (void      , ViewGlWidget, keyPressEvent    , QKeyEvent*)
-DELEGATE1 (void      , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
-DELEGATE1 (void      , ViewGlWidget, mousePressEvent  , QMouseEvent*)
-DELEGATE1 (void      , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
-DELEGATE1 (void      , ViewGlWidget, wheelEvent       , QWheelEvent*)
+GETTER    (ToolMoveCamera&, ViewGlWidget, toolMoveCamera)
+DELEGATE  (State&         , ViewGlWidget, state)
+DELEGATE  (glm::ivec2     , ViewGlWidget, cursorPosition)
+DELEGATE  (void           , ViewGlWidget, initializeGL)
+DELEGATE2 (void           , ViewGlWidget, resizeGL, int, int)
+DELEGATE  (void           , ViewGlWidget, paintGL)
+DELEGATE1 (void           , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
+DELEGATE1 (void           , ViewGlWidget, mousePressEvent  , QMouseEvent*)
+DELEGATE1 (void           , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
+DELEGATE1 (void           , ViewGlWidget, wheelEvent       , QWheelEvent*)

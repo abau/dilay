@@ -13,7 +13,9 @@ class ToolMoveCamera : public Configurable {
   public:
     DECLARE_BIG3 (ToolMoveCamera, const Config&)
 
-    void keyPressEvent   (State&, const QKeyEvent&);
+    void snap            (State&, bool);
+    void resetGazePoint  (State&);
+
     void mouseMoveEvent  (State&, const QMouseEvent&);
     void mousePressEvent (State&, const QMouseEvent&);
     void wheelEvent      (State&, const QWheelEvent&);

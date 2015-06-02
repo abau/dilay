@@ -8,6 +8,7 @@
 class Cache;
 class Config;
 class State;
+class ToolMoveCamera;
 class ViewMainWindow;
 
 class ViewGlWidget : public QOpenGLWidget {
@@ -15,15 +16,15 @@ class ViewGlWidget : public QOpenGLWidget {
   public:
     DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 
-    State&     state          ();
-    glm::ivec2 cursorPosition ();
+    ToolMoveCamera& toolMoveCamera ();
+    State&          state          ();
+    glm::ivec2      cursorPosition ();
        
   protected:
     void initializeGL       ();
     void resizeGL           (int,int);
     void paintGL            ();
  
-    void keyPressEvent      (QKeyEvent*);
     void mouseMoveEvent     (QMouseEvent*);
     void mousePressEvent    (QMouseEvent*);
     void mouseReleaseEvent  (QMouseEvent*);

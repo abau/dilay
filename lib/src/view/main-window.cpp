@@ -8,6 +8,7 @@
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "state.hpp"
+#include "tool/move-camera.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
@@ -56,10 +57,15 @@ struct ViewMainWindow :: Impl {
     addShortcut (Qt::Key_I, [this] () {
       this->mainWidget.glWidget ().state ().scene ().printStatistics (false);
     });
-    addShortcut (Qt::ShiftModifier + Qt::Key_I, [this] () {
+    addShortcut (Qt::SHIFT + Qt::Key_I, [this] () {
       this->mainWidget.glWidget ().state ().scene ().printStatistics (true);
     });
 #endif
+    addShortcut (Qt::SHIFT + Qt::Key_C, [this] () {
+      this->mainWidget.glWidget ()
+                      .toolMoveCamera ()
+                      .snap (this->mainWidget.glWidget ().state (), true);
+    });
   }
 
   void setupMenuBar () {
@@ -96,6 +102,16 @@ struct ViewMainWindow :: Impl {
     addAction (editMenu, QObject::tr ("&Redo"), QKeySequence::Redo, [this] () {
       this->mainWidget.glWidget ().state ().redo ();
     });
+    addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::Key_C, [this] () {
+      this->mainWidget.glWidget ()
+                      .toolMoveCamera ()
+                      .snap (this->mainWidget.glWidget ().state (), false);
+    });
+    addAction (viewMenu, QObject::tr ("Reset &gaze point"), Qt::CTRL + Qt::Key_C, [this] () {
+      this->mainWidget.glWidget ()
+                      .toolMoveCamera ()
+                      .resetGazePoint (this->mainWidget.glWidget ().state ());
+    });
     addAction (viewMenu, QObject::tr ("Toggle &wireframe"), Qt::Key_W, [this] () {
       RenderMode mode = this->mainWidget.glWidget ().state ().scene ().commonRenderMode ();
       mode.renderWireframe (! mode.renderWireframe ());
@@ -103,7 +119,7 @@ struct ViewMainWindow :: Impl {
       this->mainWidget.glWidget ().state ().scene ().commonRenderMode (mode);
       this->self->update ();
     });
-    addAction (viewMenu, QObject::tr ("Toggle &shading"), Qt::ShiftModifier + Qt::Key_W, [this] () {
+    addAction (viewMenu, QObject::tr ("Toggle &shading"), Qt::SHIFT + Qt::Key_W, [this] () {
       RenderMode mode = this->mainWidget.glWidget ().state ().scene ().commonRenderMode ();
 
       if (mode.smoothShading ()) {
