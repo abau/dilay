@@ -2,12 +2,8 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <glm/glm.hpp>
-#include <memory>
 #include "camera.hpp"
-#include "history.hpp"
 #include "opengl.hpp"
-#include "primitive/ray.hpp"
-#include "render-mode.hpp"
 #include "renderer.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -17,7 +13,6 @@
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/util.hpp"
-#include "winged/mesh.hpp"
 
 struct ViewGlWidget::Impl {
   typedef std::unique_ptr <State>    StatePtr;
@@ -95,51 +90,10 @@ struct ViewGlWidget::Impl {
   }
 
   void keyPressEvent (QKeyEvent* e) {
-    const int                   key     = e->key ();
-    const Qt::KeyboardModifiers mod     = e->modifiers ();
-    const bool                  hasTool = this->state ().hasTool ();
+    const int key = e->key ();
 
-    if (key == Qt::Key_W) {
-      RenderMode mode = this->state ().scene ().commonRenderMode ();
-
-      if (mod == Qt::ControlModifier) {
-        if (mode.smoothShading ()) {
-          mode.flatShading (true);
-        }
-        else if (mode.flatShading ()) {
-          mode.smoothShading (true);
-        }
-      }
-      else if (mod == Qt::NoModifier) {
-        mode.renderWireframe (! mode.renderWireframe ());
-      }
-      this->state ().scene ().commonRenderMode (mode);
-      this->self->update ();
-    }
-#ifndef NDEBUG
-    else if (key == Qt::Key_I) {
-      this->state ().scene ().printStatistics (false);
-    }
-#endif
-    else if (key == Qt::Key_Z && mod == Qt::ControlModifier) {
-      this->state ().undo ();
-      this->self->update ();
-    }
-    else if (key == Qt::Key_Y && mod == Qt::ControlModifier) {
-      this->state ().redo ();
-      this->self->update ();
-    }
     if (key == Qt::Key_C) {
       this->toolMoveCamera.keyPressEvent (this->state (), *e);
-    }
-    else if (hasTool) {
-      if (key == Qt::Key_Escape || key == Qt::Key_Enter) {
-        this->state ().resetTool ();
-        this->self->update ();
-      }
-    }
-    else if (key == Qt::Key_Escape) {
-      QCoreApplication::instance()->quit();
     }
     else {
       this->self->QOpenGLWidget::keyPressEvent (e);

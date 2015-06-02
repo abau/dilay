@@ -87,10 +87,12 @@ struct State::Impl {
 
   void undo () {
     this->history.undo (this->scene);
+    this->mainWindow.update ();
   }
 
   void redo () {
     this->history.redo (this->scene);
+    this->mainWindow.update ();
   }
 
   void handleToolResponse (ToolResponse response) {

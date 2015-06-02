@@ -1,5 +1,14 @@
+#include <QApplication>
 #include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QShortcut>
 #include <QStatusBar>
+#include "render-mode.hpp"
+#include "scene.hpp"
+#include "state.hpp"
+#include "view/gl-widget.hpp"
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/tool-tip.hpp"
@@ -20,7 +29,96 @@ struct ViewMainWindow :: Impl {
     , numFacesLabel (*new QLabel)
   {
     this->self->setCentralWidget (&this->mainWidget);
-    this->self->setStatusBar     (&this->statusBar);
+
+    this->setupShortcuts ();
+    this->setupMenuBar   ();
+    this->setupStatusBar ();
+  }
+
+  void setupShortcuts () {
+    auto addShortcut = [this] (const QKeySequence& keySequence, const std::function <void ()>& f) {
+      QShortcut* s = new QShortcut (keySequence, this->self);
+
+      QObject::connect (s, &QShortcut::activated, f);
+    };
+
+    addShortcut (Qt::Key_Backspace, [this] () {
+      if (this->mainWidget.glWidget ().state ().hasTool ()) {
+        this->mainWidget.glWidget ().state ().resetTool ();
+      }
+#ifndef NDEBUG
+      else {
+        QApplication::quit ();
+      }
+#endif
+    });
+#ifndef NDEBUG
+    addShortcut (Qt::Key_I, [this] () {
+      this->mainWidget.glWidget ().state ().scene ().printStatistics (false);
+    });
+    addShortcut (Qt::ShiftModifier + Qt::Key_I, [this] () {
+      this->mainWidget.glWidget ().state ().scene ().printStatistics (true);
+    });
+#endif
+  }
+
+  void setupMenuBar () {
+    QMenuBar& menuBar  = *this->self->menuBar ();
+    QMenu&    fileMenu = *menuBar.addMenu (QObject::tr ("&File"));
+    QMenu&    editMenu = *menuBar.addMenu (QObject::tr ("&Edit"));
+    QMenu&    viewMenu = *menuBar.addMenu (QObject::tr ("&View"));
+
+    auto addAction = [] ( QMenu& menu, const QString& label, const QKeySequence& keySequence
+                        , const std::function <void ()>& f ) -> QAction&
+    {
+      QAction* a = new QAction (label, nullptr);
+      a->setShortcut (keySequence);
+      menu.addAction (a);
+      QObject::connect (a, &QAction::triggered, f);
+      return *a;
+    };
+
+    addAction (fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit, [] () {
+      QMessageBox msgBox;
+      msgBox.setWindowTitle     (QObject::tr ("Do you want to quit?"));
+      msgBox.setText            (msgBox.windowTitle ());
+      msgBox.setStandardButtons (QMessageBox::Cancel | QMessageBox::Ok);
+      msgBox.setDefaultButton   (QMessageBox::Ok);
+      msgBox.setEscapeButton    (QMessageBox::Cancel);
+
+      if (msgBox.exec () == QMessageBox::Ok) {
+        QApplication::quit ();
+      }
+    });
+    addAction (editMenu, QObject::tr ("&Undo"), QKeySequence::Undo, [this] () {
+      this->mainWidget.glWidget ().state ().undo ();
+    });
+    addAction (editMenu, QObject::tr ("&Redo"), QKeySequence::Redo, [this] () {
+      this->mainWidget.glWidget ().state ().redo ();
+    });
+    addAction (viewMenu, QObject::tr ("Toggle &wireframe"), Qt::Key_W, [this] () {
+      RenderMode mode = this->mainWidget.glWidget ().state ().scene ().commonRenderMode ();
+      mode.renderWireframe (! mode.renderWireframe ());
+
+      this->mainWidget.glWidget ().state ().scene ().commonRenderMode (mode);
+      this->self->update ();
+    });
+    addAction (viewMenu, QObject::tr ("Toggle &shading"), Qt::ShiftModifier + Qt::Key_W, [this] () {
+      RenderMode mode = this->mainWidget.glWidget ().state ().scene ().commonRenderMode ();
+
+      if (mode.smoothShading ()) {
+        mode.flatShading (true);
+      }
+      else if (mode.flatShading ()) {
+        mode.smoothShading (true);
+      }
+      this->mainWidget.glWidget ().state ().scene ().commonRenderMode (mode);
+      this->self->update ();
+    });
+  }
+
+  void setupStatusBar () {
+    this->self->setStatusBar (&this->statusBar);
 
     this->statusBar.setStyleSheet      ("QStatusBar::item { border: 0px solid black };");
     this->statusBar.setSizeGripEnabled (false);
