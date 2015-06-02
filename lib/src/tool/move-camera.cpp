@@ -9,6 +9,7 @@
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool/move-camera.hpp"
+#include "util.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/util.hpp"
@@ -29,24 +30,51 @@ struct ToolMoveCamera::Impl {
     const Qt::KeyboardModifiers mod = event.modifiers ();
           Camera&               cam = state.camera ();
 
-    auto snapCamera = [&cam] (Dimension d) {
-      const float     gazeLength = glm::length (cam.toEyePoint ());
-      const float     side       = cam.toEyePoint ()[DimensionUtil::index (d)] > 0.0f
-                                 ?  1.0f
-                                 : -1.0f;
+    auto snapCamera = [&cam] (Dimension d, bool forcePositive) {
+      const float gazeLength = glm::length (cam.toEyePoint ());
+      const float side       = (forcePositive || cam.toEyePoint ()[DimensionUtil::index (d)] > 0.0f)
+                             ?  1.0f
+                             : -1.0f;
+
       const glm::vec3 toEyePoint = side * gazeLength * DimensionUtil::vector (d);
 
       cam.set (cam.gazePoint (), toEyePoint, glm::vec3 (0.0f, 1.0f, 0.0f));
     };
 
+    auto isSnapped = [&cam] (Dimension d) -> bool {
+      const float dot = glm::abs (glm::dot ( glm::normalize (cam.toEyePoint ())
+                                           , DimensionUtil::vector (d) ));
+      return dot > 1.0f - Util::epsilon ();
+    };
+
     if (key == Qt::Key_C) {
       if (mod == Qt::NoModifier) {
-        snapCamera (cam.primaryDimension ());
+        if (isSnapped (Dimension::X)) {
+          snapCamera (Dimension::Y, true);
+        }
+        else if (isSnapped (Dimension::Y)) {
+          snapCamera (Dimension::Z, true);
+        }
+        else if (isSnapped (Dimension::Z)) {
+          snapCamera (Dimension::X, true);
+        }
+        else {
+          snapCamera (cam.primaryDimension (), false);
+        }
+      }
+      else if (mod == Qt::ShiftModifier) {
+        if (isSnapped (Dimension::X)) {
+          snapCamera (Dimension::Z, true);
+        }
+        else if (isSnapped (Dimension::Y)) {
+          snapCamera (Dimension::X, true);
+        }
+        else if (isSnapped (Dimension::Z)) {
+          snapCamera (Dimension::Y, true);
+        }
       }
       else if (mod == Qt::ControlModifier) {
-        cam.set ( glm::vec3 (0.0f)
-                , cam.gazePoint () + cam.toEyePoint ()
-                , glm::vec3 (0.0f, 1.0f, 0.0f) );
+        cam.set (glm::vec3 (0.0f), cam.position (), glm::vec3 (0.0f, 1.0f, 0.0f));
       }
       state.mainWindow ().glWidget ().update ();
     }
