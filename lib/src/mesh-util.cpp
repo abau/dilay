@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 #include "hash.hpp"
@@ -663,4 +664,17 @@ bool MeshUtil :: checkConsistency (const Mesh& mesh) {
     }
   }
   return true;
+}
+
+void MeshUtil :: toObjFile (std::ostream& stream, const Mesh& mesh) {
+  for (unsigned int i = 0; i < mesh.numVertices (); i++) {
+    const glm::vec3 v = mesh.vertex (i);
+
+    stream << "v " << v.x << " " << v.y << " " << v.z << std::endl;
+  }
+  for (unsigned int i = 0; i < mesh.numIndices (); i += 3) {
+    stream << "f " << mesh.index (i + 0) + 1 << " " 
+                   << mesh.index (i + 1) + 1 << " " 
+                   << mesh.index (i + 2) + 1 << std::endl;
+  }
 }

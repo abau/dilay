@@ -1,6 +1,8 @@
 #ifndef DILAY_MESH_UTIL
 #define DILAY_MESH_UTIL
 
+#include <iosfwd>
+
 class Mesh;
 class PrimPlane;
 
@@ -15,8 +17,8 @@ namespace MeshUtil {
   Mesh testCaseValcence3_3 ();
 
   Mesh mirror              (const Mesh&, const PrimPlane&);
-
   bool checkConsistency    (const Mesh&);
+  void toObjFile           (std::ostream&, const Mesh&);
 };
 
 #endif

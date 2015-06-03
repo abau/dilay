@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QFileDialog>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
@@ -83,6 +84,32 @@ struct ViewMainWindow :: Impl {
       return *a;
     };
 
+    QAction& saveAsAction = addAction ( fileMenu, QObject::tr ("Save &as...")
+                                      , QKeySequence::SaveAs, [this] () 
+    {
+      Scene&            scene    = this->mainWidget.glWidget ().state ().scene ();
+      const std::string previous = scene.hasFileName () ? scene.fileName () 
+                                                        : std::string ();
+      const std::string fileName = QFileDialog::getSaveFileName ( this->self
+                                                                , QObject::tr ("Save as...")
+                                                                , QString (previous.c_str ())
+                                                                , "*.obj" ).toStdString ();
+      if (fileName.empty () == false && scene.toObjFile (fileName) == false) {
+        ViewUtil::error (*this->self, QObject::tr ("Could not save to file."));
+      }
+    });
+    addAction (fileMenu, QObject::tr ("&Save"), QKeySequence::Save, [this, &saveAsAction] () {
+      Scene& scene = this->mainWidget.glWidget ().state ().scene ();
+      if (scene.hasFileName ()) {
+        if (scene.toObjFile () == false) {
+          ViewUtil::error (*this->self, QObject::tr ("Could not save to file."));
+        }
+      }
+      else {
+        saveAsAction.trigger ();
+      }
+    });
+    fileMenu.addSeparator ();
     addAction (fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit, [this] () {
       if (ViewUtil::question (*this->self, QObject::tr ("Do you want to quit?"))) {
         QApplication::quit ();
@@ -104,6 +131,7 @@ struct ViewMainWindow :: Impl {
                       .toolMoveCamera ()
                       .resetGazePoint (this->mainWidget.glWidget ().state ());
     });
+    viewMenu.addSeparator ();
     addAction (viewMenu, QObject::tr ("Toggle &wireframe"), Qt::Key_W, [this] () {
       RenderMode mode = this->mainWidget.glWidget ().state ().scene ().commonRenderMode ();
       mode.renderWireframe (! mode.renderWireframe ());

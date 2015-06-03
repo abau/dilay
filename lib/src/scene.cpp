@@ -1,5 +1,8 @@
+#include <fstream>
 #include "config.hpp"
 #include "indexable.hpp"
+#include "mesh.hpp"
+#include "mesh-util.hpp"
 #include "primitive/ray.hpp"
 #include "render-mode.hpp"
 #include "scene.hpp"
@@ -11,6 +14,7 @@ struct Scene :: Impl {
   const ConfigProxy          wingedMeshConfig;
   IndexableList <WingedMesh> wingedMeshes;
   RenderMode                _commonRenderMode;
+  std::string                fileName;
 
   Impl (const Config& config) 
     : wingedMeshConfig (ConfigProxy (config, "editor/mesh/"))
@@ -75,6 +79,7 @@ struct Scene :: Impl {
 
   void reset () {
     this->wingedMeshes.reset ();
+    this->fileName.clear     ();
   }
 
   const RenderMode& commonRenderMode () {
@@ -108,6 +113,34 @@ struct Scene :: Impl {
     });
   }
 
+  bool hasFileName () const {
+    return ! this->fileName.empty ();
+  }
+
+  bool toObjFile () {
+    assert (this->hasFileName ());
+
+    std::ofstream file (this->fileName);
+
+    if (file.is_open ()) {
+      this->forEachConstMesh ([&file] (const WingedMesh& mesh) {
+        file << "g group" << mesh.index () << std::endl;
+        MeshUtil::toObjFile (file, mesh.makePrunedMesh ());
+      });
+      file.close ();
+      return true;
+    }
+    else {
+      this->fileName.clear ();
+      return false;
+    }
+  }
+
+  bool toObjFile (const std::string& newFileName) {
+    this->fileName = newFileName;
+    return this->toObjFile ();
+  }
+
   void runFromConfig (WingedMesh& mesh) {
     mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
     mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
@@ -124,19 +157,23 @@ struct Scene :: Impl {
 
 DELEGATE1_BIG3 (Scene, const Config&)
 
-DELEGATE        (WingedMesh&      , Scene, newWingedMesh)
-DELEGATE1       (WingedMesh&      , Scene, newWingedMesh, const Mesh&)
-DELEGATE1       (void             , Scene, deleteMesh, WingedMesh&)
-DELEGATE1_CONST (WingedMesh*      , Scene, wingedMesh, unsigned int)
-DELEGATE1       (void             , Scene, render, Camera&)
-DELEGATE2       (bool             , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
-DELEGATE1_CONST (void             , Scene, printStatistics, bool)
-DELEGATE1       (void             , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
-DELEGATE1_CONST (void             , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
-DELEGATE        (void             , Scene, reset)
-DELEGATE_CONST  (const RenderMode&, Scene, commonRenderMode)
-DELEGATE1       (void             , Scene, commonRenderMode, const RenderMode&)
-DELEGATE_CONST  (unsigned int     , Scene, numWingedMeshes)
-DELEGATE_CONST  (unsigned int     , Scene, numFaces)
-DELEGATE        (void             , Scene, deleteEmptyMeshes)
-DELEGATE1       (void             , Scene, runFromConfig, const Config&)
+DELEGATE        (WingedMesh&       , Scene, newWingedMesh)
+DELEGATE1       (WingedMesh&       , Scene, newWingedMesh, const Mesh&)
+DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
+DELEGATE1_CONST (WingedMesh*       , Scene, wingedMesh, unsigned int)
+DELEGATE1       (void              , Scene, render, Camera&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
+DELEGATE1_CONST (void              , Scene, printStatistics, bool)
+DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
+DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
+DELEGATE        (void              , Scene, reset)
+DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
+DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)
+DELEGATE_CONST  (unsigned int      , Scene, numWingedMeshes)
+DELEGATE_CONST  (unsigned int      , Scene, numFaces)
+DELEGATE        (void              , Scene, deleteEmptyMeshes)
+DELEGATE_CONST  (bool              , Scene, hasFileName)
+GETTER_CONST    (const std::string&, Scene, fileName)
+DELEGATE        (bool              , Scene, toObjFile)
+DELEGATE1       (bool              , Scene, toObjFile, const std::string&)
+DELEGATE1       (void              , Scene, runFromConfig, const Config&)

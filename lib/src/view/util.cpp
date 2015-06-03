@@ -146,3 +146,7 @@ void ViewUtil :: deselect (QAbstractSpinBox& spinBox) {
 bool ViewUtil :: question (QWidget& parent, const QString& label) {
   return QMessageBox::question (&parent, label, label) == QMessageBox::Yes;
 }
+
+void ViewUtil :: error (QWidget& parent, const QString& label) {
+  QMessageBox::critical (&parent, QObject::tr ("Error"), label);
+}

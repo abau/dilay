@@ -41,6 +41,7 @@ namespace ViewUtil {
   QWidget&          stretcher      (bool, bool);
   void              deselect       (QAbstractSpinBox&);
   bool              question       (QWidget&, const QString&);
+  void              error          (QWidget&, const QString&);
 };
 
 #endif
