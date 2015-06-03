@@ -3,6 +3,7 @@
 #include <QDoubleSpinBox>
 #include <QFrame>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QRadioButton>
@@ -140,4 +141,8 @@ QWidget& ViewUtil :: stretcher (bool horizontal, bool vertical) {
 
 void ViewUtil :: deselect (QAbstractSpinBox& spinBox) {
   spinBox.findChild <QLineEdit*> ()->deselect ();
+}
+
+bool ViewUtil :: question (QWidget& parent, const QString& label) {
+  return QMessageBox::question (&parent, label, label) == QMessageBox::Yes;
 }

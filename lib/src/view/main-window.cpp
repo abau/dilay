@@ -2,7 +2,6 @@
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QShortcut>
 #include <QStatusBar>
 #include "render-mode.hpp"
@@ -84,15 +83,8 @@ struct ViewMainWindow :: Impl {
       return *a;
     };
 
-    addAction (fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit, [] () {
-      QMessageBox msgBox;
-      msgBox.setWindowTitle     (QObject::tr ("Do you want to quit?"));
-      msgBox.setText            (msgBox.windowTitle ());
-      msgBox.setStandardButtons (QMessageBox::Cancel | QMessageBox::Ok);
-      msgBox.setDefaultButton   (QMessageBox::Ok);
-      msgBox.setEscapeButton    (QMessageBox::Cancel);
-
-      if (msgBox.exec () == QMessageBox::Ok) {
+    addAction (fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit, [this] () {
+      if (ViewUtil::question (*this->self, QObject::tr ("Do you want to quit?"))) {
         QApplication::quit ();
       }
     });

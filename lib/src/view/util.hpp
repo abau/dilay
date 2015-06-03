@@ -40,6 +40,7 @@ namespace ViewUtil {
   void              connect        (const ViewDoubleSlider&, const std::function <void (float)>&);
   QWidget&          stretcher      (bool, bool);
   void              deselect       (QAbstractSpinBox&);
+  bool              question       (QWidget&, const QString&);
 };
 
 #endif
