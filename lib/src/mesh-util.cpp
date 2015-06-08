@@ -582,7 +582,7 @@ bool MeshUtil :: checkConsistency (const Mesh& mesh) {
   }
 
   for (unsigned int v = 0; v < numVertexAdjacentFaces.size (); v++) {
-    if (numVertexAdjacentFaces [v] < 4) {
+    if (numVertexAdjacentFaces [v] < 3) {
       DILAY_WARN ("inconsistent vertex %u with %u adjacent faces", v, numVertexAdjacentFaces [v]);
       return false;
     }
