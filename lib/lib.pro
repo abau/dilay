@@ -29,7 +29,6 @@ SOURCES += \
            src/opengl-buffer-id.cpp \
            src/partial-action/collapse-edge.cpp \
            src/partial-action/collapse-face.cpp \
-           src/partial-action/collapse-valence-2-vertex.cpp \
            src/partial-action/collapse-valence-3-vertex.cpp \
            src/partial-action/delete-edge-face.cpp \
            src/partial-action/flip-edge.cpp \
@@ -114,7 +113,6 @@ HEADERS += \
            src/opengl-buffer-id.hpp \
            src/partial-action/collapse-edge.hpp \
            src/partial-action/collapse-face.hpp \
-           src/partial-action/collapse-valence-2-vertex.hpp \
            src/partial-action/collapse-valence-3-vertex.hpp \
            src/partial-action/delete-edge-face.hpp \
            src/partial-action/flip-edge.hpp \

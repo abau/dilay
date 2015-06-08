@@ -7,7 +7,7 @@ class WingedVertex;
 
 namespace PartialAction {
 
-  void collapseValence3Vertex (WingedMesh&, WingedVertex&, bool, AffectedFaces&);
+  void collapseValence3Vertex (WingedMesh&, WingedVertex&, AffectedFaces&);
 };
 
 #endif

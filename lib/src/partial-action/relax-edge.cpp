@@ -15,7 +15,7 @@ namespace {
     const int pre  = glm::abs (v1-6)   + glm::abs (v2-6)   + glm::abs (v3-6)   + glm::abs (v4-6);
     const int post = glm::abs (v1-6-1) + glm::abs (v2-6-1) + glm::abs (v3-6+1) + glm::abs (v4-6+1);
 
-    return (v1 > 4) && (v2 > 4) && (post < pre);
+    return (v1 > 3) && (v2 > 3) && (post < pre);
   }
 }
 

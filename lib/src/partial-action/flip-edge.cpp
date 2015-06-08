@@ -24,8 +24,8 @@ void PartialAction :: flipEdge (WingedMesh& mesh, WingedEdge& edge) {
   const unsigned int valence3 = v3->valence ();
   const unsigned int valence4 = v4->valence ();
 #endif
-  assert (valence1 > 4);
-  assert (valence2 > 4);
+  assert (valence1 > 3);
+  assert (valence2 > 3);
 
   lf->edge (&edge);
   rf->edge (&edge);
