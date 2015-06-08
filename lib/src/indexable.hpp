@@ -60,7 +60,7 @@ class Indexable {
     }
 
     TPointer get (unsigned int index) const {
-      return index > this->numIndices () || this->isFree (index)
+      return index >= this->numIndices () || this->isFree (index)
         ? nullptr
         : &*this->map [index];
     }
