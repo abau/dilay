@@ -12,7 +12,7 @@
 #include "winged/vertex.hpp"
 
 void WingedUtil :: printStatistics (const WingedMesh& mesh, const WingedVertex& v) {
-  std::cout   << "Vertex "               << v.index       () 
+  std::cout   << "vertex "               << v.index       () 
               << "\n\tposition:\t"       << v.position    (mesh)
               << "\n\tedge:\t\t"         << v.edge        ()->index ();
     std::cout << "\n\tnormal:\t\t"       << v.savedNormal (mesh);
@@ -33,7 +33,7 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
                          : std::string ("NULL");
   };
 
-  std::cout << "Edge " << e.index () 
+  std::cout << "edge " << e.index () 
     << "\n\tvertex 1:\t\t"        << maybeVertexIndex (e.vertex1          ())
     <<   "\tvertex 2:\t\t"        << maybeVertexIndex (e.vertex2          ())
     << "\n\tleft face:\t\t"       << maybeFaceIndex   (e.leftFace         ())
@@ -46,17 +46,17 @@ void WingedUtil :: printStatistics (const WingedEdge& e) {
 }
 
 void WingedUtil :: printStatistics (const WingedFace& f) {
-  std::cout   << "Face "                << f.index () 
+  std::cout   << "face "                << f.index () 
               << "\n\tedge:\t\t\t"      << f.edgeRef ().index ()
               << std::endl;
 }
 
 void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printAll) {
-  std::cout << "Mesh:\t\t\t\t"              << mesh.index ()       << std::endl;
-  std::cout << "\tNumber of vertices:\t"    << mesh.numVertices () << std::endl;
-  std::cout << "\tNumber of edges:\t"       << mesh.numEdges ()    << std::endl;
-  std::cout << "\tNumber of faces:\t"       << mesh.numFaces ()    << std::endl;
-  std::cout << "\tNumber of indices:\t"     << mesh.numIndices ()  
+  std::cout << "mesh:\t\t\t\t"              << mesh.index ()       << std::endl;
+  std::cout << "\tnumber of vertices:\t"    << mesh.numVertices () << std::endl;
+  std::cout << "\tnumber of edges:\t"       << mesh.numEdges ()    << std::endl;
+  std::cout << "\tnumber of faces:\t"       << mesh.numFaces ()    << std::endl;
+  std::cout << "\tnumber of indices:\t"     << mesh.numIndices ()  
             << " (" << mesh.numIndices () / 3  << ")" << std::endl;
 
   if (printAll) {
@@ -77,7 +77,7 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printAll) {
 
 void WingedUtil :: printStatistics (const Octree& octree) {
   OctreeStatistics oStats = octree.statistics ();
-  std::cout << "Octree:"
+  std::cout << "octree:"
             << "\n\tnum nodes:\t\t"           << oStats.numNodes
             << "\n\tnum faces:\t\t"           << oStats.numFaces
             << "\n\tnum degenerated faces:\t" << oStats.numDegeneratedFaces
