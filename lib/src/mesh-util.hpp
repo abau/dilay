@@ -2,6 +2,7 @@
 #define DILAY_MESH_UTIL
 
 #include <iosfwd>
+#include <vector>
 
 class Mesh;
 class PrimPlane;
@@ -16,6 +17,7 @@ namespace MeshUtil {
   Mesh mirror           (const Mesh&, const PrimPlane&);
   bool checkConsistency (const Mesh&);
   void toObjFile        (std::ostream&, const Mesh&);
+  bool fromObjFile      (std::istream&, std::vector <Mesh>&);
 };
 
 #endif

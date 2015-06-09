@@ -124,7 +124,7 @@ struct Scene :: Impl {
 
     if (file.is_open ()) {
       this->forEachConstMesh ([&file] (const WingedMesh& mesh) {
-        file << "g group" << mesh.index () << std::endl;
+        file << "o object" << mesh.index () << std::endl;
         MeshUtil::toObjFile (file, mesh.makePrunedMesh ());
       });
       file.close ();
@@ -141,6 +141,25 @@ struct Scene :: Impl {
     return this->toObjFile ();
   }
 
+  bool fromObjFile (const std::string& newFileName) {
+    this->fileName = newFileName;
+
+    std::ifstream      file (this->fileName);
+    std::vector <Mesh> meshes;
+
+    if (file.is_open () && MeshUtil::fromObjFile (file, meshes)) {
+      for (Mesh& m : meshes) {
+        this->newWingedMesh (m);
+      }
+      file.close ();
+      return true;
+    }
+    else {
+      this->fileName.clear ();
+      return false;
+    }
+  }
+  
   void runFromConfig (WingedMesh& mesh) {
     mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
     mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
@@ -176,4 +195,5 @@ DELEGATE_CONST  (bool              , Scene, hasFileName)
 GETTER_CONST    (const std::string&, Scene, fileName)
 DELEGATE        (bool              , Scene, toObjFile)
 DELEGATE1       (bool              , Scene, toObjFile, const std::string&)
+DELEGATE1       (bool              , Scene, fromObjFile, const std::string&)
 DELEGATE1       (void              , Scene, runFromConfig, const Config&)

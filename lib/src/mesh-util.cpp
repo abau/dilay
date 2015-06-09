@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <sstream>
@@ -546,6 +547,10 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
 }
 
 bool MeshUtil :: checkConsistency (const Mesh& mesh) {
+  if (mesh.numVertices () == 0) {
+    DILAY_WARN ("empty mesh");
+    return false;
+  }
   std::unordered_map <ui_pair, unsigned int> numEdgeAdjacentFaces;
   std::vector        <unsigned int>          numVertexAdjacentFaces;
 
@@ -609,5 +614,92 @@ void MeshUtil :: toObjFile (std::ostream& stream, const Mesh& mesh) {
     stream << "f " << mesh.index (i + 0) + 1 << " " 
                    << mesh.index (i + 1) + 1 << " " 
                    << mesh.index (i + 2) + 1 << std::endl;
+  }
+}
+
+bool MeshUtil :: fromObjFile (std::istream& stream, std::vector <Mesh>& meshes) {
+  unsigned int lineNumber = 1;
+
+  meshes.clear ();
+
+  auto extractFirst = [] (const std::string& string, unsigned int& value) -> bool {
+    auto slashPos = string.find ('/');
+    return Util::fromString (string.substr (0, slashPos), value);
+  };
+
+  for (std::string line; std::getline (stream, line); ) {
+    std::istringstream lineStream (line);
+    std::string        keyword;
+
+    lineStream >> keyword;
+
+    if (keyword.empty () == false) {
+      if (keyword == "o") {
+        meshes.push_back (Mesh ());
+      }
+      else {
+        if (meshes.empty ()) {
+          meshes.push_back (Mesh ());
+        }
+        if (keyword == "v") {
+          float x, y, z;
+          lineStream >> x >> y >> z;
+
+          if (lineStream.fail ()) {
+            DILAY_WARN ("could not parse vertex at line %u", lineNumber)
+            return false;
+          }
+          else {
+            addVertex (meshes.back (), glm::vec3 (x, y, z));
+          }
+        }
+        else if (keyword == "f") {
+          std::string v1String, v2String, v3String;
+          unsigned int v1, v2, v3;
+
+          lineStream >> v1String >> v2String >> v3String;
+
+          if ( lineStream.fail () || extractFirst (v1String, v1) == false
+                                  || extractFirst (v2String, v2) == false
+                                  || extractFirst (v3String, v3) == false )
+          {
+            DILAY_WARN ("could not parse face at line %u", lineNumber)
+            return false;
+          }
+          else {
+            std::string  v4String;
+            unsigned int v4;
+            lineStream >> v4String;
+
+            if (lineStream.fail ()) {
+              lineStream.clear ();
+              addFace (meshes.back (), v1-1, v2-1, v3-1);
+            }
+            else if (extractFirst (v4String, v4) == false) {
+              DILAY_WARN ("could not parse face at line %u", lineNumber)
+              return false;
+            }
+            else {
+              addFace (meshes.back (), v1-1, v2-1, v3-1, v4-1);
+            }
+          }
+        }
+      }
+    }
+    lineNumber++;
+  }
+  meshes.erase ( std::remove_if ( meshes.begin ()
+                                , meshes.end   ()
+                                , [] (Mesh& m) { return m.numVertices () == 0; } )
+               , meshes.end () );
+
+  if (std::all_of ( meshes.begin (), meshes.end ()
+                  , [] (Mesh& m) { return checkConsistency (m); } ))
+  {
+    return true;
+  }
+  else {
+    meshes.clear ();
+    return false;
   }
 }

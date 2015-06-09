@@ -31,6 +31,9 @@ namespace Util {
   float        smoothStep         (const glm::vec3&, const glm::vec3&, float, float);
   float        linearStep         (const glm::vec3&, const glm::vec3&, float, float);
   void         warn               (const char*, unsigned int, const char*, ...);
+  bool         fromString         (const std::string&, int&);
+  bool         fromString         (const std::string&, unsigned int&);
+  bool         fromString         (const std::string&, float&);
 
   constexpr float        epsilon      () { return 0.0001f; }
   constexpr unsigned int invalidIndex () { return std::numeric_limits <unsigned int>::max (); }

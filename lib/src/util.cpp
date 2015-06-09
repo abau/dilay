@@ -136,3 +136,30 @@ void Util :: warn (const char* file, unsigned int line, const char* format, ...)
 
   std::fprintf (stderr, "[WARNING] %s (%u): %s\n", file, line, buffer.data ());
 }
+
+bool Util :: fromString (const std::string& string, int& value) {
+  try {
+    value = std::stoi (string);
+    return true;
+  }
+  catch (const std::invalid_argument&) { return false; }
+  catch (const std::out_of_range&)     { return false; }
+}
+
+bool Util :: fromString (const std::string& string, unsigned int& value) {
+  try {
+    value = (unsigned int) (std::stoul (string));
+    return true;
+  }
+  catch (const std::invalid_argument&) { return false; }
+  catch (const std::out_of_range&)     { return false; }
+}
+
+bool Util :: fromString (const std::string& string, float& value) {
+  try {
+    value = std::stof (string);
+    return true;
+  }
+  catch (const std::invalid_argument&) { return false; }
+  catch (const std::out_of_range&)     { return false; }
+}

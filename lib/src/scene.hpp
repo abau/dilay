@@ -35,6 +35,7 @@ class Scene : public Configurable {
     const std::string& fileName          () const;
     bool               toObjFile         ();
     bool               toObjFile         (const std::string&);
+    bool               fromObjFile       (const std::string&);
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:

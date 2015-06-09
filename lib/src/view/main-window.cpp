@@ -84,6 +84,19 @@ struct ViewMainWindow :: Impl {
       return *a;
     };
 
+    addAction (fileMenu, QObject::tr ("&Open..."), QKeySequence::Open, [this] () {
+      Scene&            scene    = this->mainWidget.glWidget ().state ().scene ();
+      const std::string previous = scene.hasFileName () ? scene.fileName () 
+                                                        : std::string ();
+      const std::string fileName = QFileDialog::getOpenFileName ( this->self
+                                                                , QObject::tr ("Open...")
+                                                                , QString (previous.c_str ())
+                                                                , "*.obj" ).toStdString ();
+      if (fileName.empty () == false && scene.fromObjFile (fileName) == false) {
+        ViewUtil::error (*this->self, QObject::tr ("Could not open file."));
+      }
+      this->self->update ();
+    });
     QAction& saveAsAction = addAction ( fileMenu, QObject::tr ("Save &as...")
                                       , QKeySequence::SaveAs, [this] () 
     {
