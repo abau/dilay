@@ -33,7 +33,6 @@ namespace Util {
   void         warn               (const char*, unsigned int, const char*, ...);
 
   constexpr float        epsilon      () { return 0.0001f; }
-  constexpr float        defaultScale () { return 100.0f; }
   constexpr unsigned int invalidIndex () { return std::numeric_limits <unsigned int>::max (); }
 }
 

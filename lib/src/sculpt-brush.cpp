@@ -203,7 +203,7 @@ struct SculptBrush :: Impl {
         const glm::vec3 projPos  = plane.project (oldPos);
         const float     distance = glm::distance (projPos, refPos);
 
-        if (glm::distance (projPos, refPos) > 0.1f) {
+        if (glm::distance (projPos, refPos) > 0.001f) {
           const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
           const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
           const glm::vec3 direction   = glm::normalize ( (projPos - oldPos)
@@ -231,7 +231,7 @@ struct SculptBrush :: Impl {
         const glm::vec3 oldPos   = v->position (mesh);
         const float     distance = glm::distance (oldPos, this->position ());
 
-        if (distance > 0.1f) {
+        if (distance > 0.001f) {
           const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
           const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
           const glm::vec3 direction   = parameters.invert (glm::normalize (this->position () - oldPos));

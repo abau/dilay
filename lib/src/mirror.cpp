@@ -92,7 +92,7 @@ struct Mirror::Impl {
   }
 
   void updateMesh () {
-    const float extent = 10000.0f;
+    const float extent = 1000.0f;
 
     switch (this->_dimension) {
       case Dimension::X:

@@ -5,7 +5,6 @@
 #include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"
-#include "winged/util.hpp"
 
 struct ToolNewMesh::Impl {
   ToolNewMesh* self;
@@ -14,11 +13,7 @@ struct ToolNewMesh::Impl {
 
   ToolResponse runInitialize () const {
     this->self->snapshotScene ();
-
-    WingedMesh& mesh = this->self->state ().scene ().newWingedMesh (MeshUtil::icosphere (3));
-
-    WingedUtil::defaultScale (mesh);
-
+    this->self->state ().scene ().newWingedMesh (MeshUtil::icosphere (3));
     return ToolResponse::Terminate;
   }
 };

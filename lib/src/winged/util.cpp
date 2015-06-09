@@ -125,9 +125,3 @@ glm::vec3 WingedUtil :: center (const WingedMesh& mesh, const WingedVertex& vert
   }
   return c / float (n);
 }
-
-void WingedUtil :: defaultScale (WingedMesh& mesh) {
-  mesh.scale      (glm::vec3 (Util::defaultScale ()));
-  mesh.normalize  ();
-  mesh.bufferData ();
-}

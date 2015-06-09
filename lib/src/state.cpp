@@ -13,7 +13,6 @@
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/properties.hpp"
-#include "winged/util.hpp"
 
 struct State::Impl {
   ViewMainWindow&        mainWindow;
@@ -32,7 +31,7 @@ struct State::Impl {
     , history    (this->config)
     , scene      (this->config)
   {
-    WingedUtil::defaultScale (this->scene.newWingedMesh (MeshUtil::icosphere (3)));
+    this->scene.newWingedMesh (MeshUtil::icosphere (3));
   }
 
   ~Impl () {
