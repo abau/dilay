@@ -1,6 +1,6 @@
 #include "partial-action/collapse-edge.hpp"
 #include "partial-action/collapse-face.hpp"
-#include "partial-action/collapse-valence-3-vertex.hpp"
+#include "partial-action/delete-valence-3-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
@@ -23,13 +23,13 @@ void PartialAction :: collapseFace ( WingedMesh& mesh, WingedFace& face
   assert (valence3 >= 3);
 
   if (valence1 == 3) {
-    PartialAction::collapseValence3Vertex (mesh, vertex1, affectedFaces);
+    PartialAction::deleteValence3Vertex (mesh, vertex1, affectedFaces);
   }
   else if (valence2 == 3) {
-    PartialAction::collapseValence3Vertex (mesh, vertex2, affectedFaces);
+    PartialAction::deleteValence3Vertex (mesh, vertex2, affectedFaces);
   }
   else if (valence3 == 3) {
-    PartialAction::collapseValence3Vertex (mesh, vertex3, affectedFaces);
+    PartialAction::deleteValence3Vertex (mesh, vertex3, affectedFaces);
   }
   else {
     WingedEdge& e1 = face.edgeRef ();

@@ -1,13 +1,13 @@
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
-#include "partial-action/collapse-valence-3-vertex.hpp"
-#include "partial-action/collapse-vertex.hpp"
+#include "partial-action/delete-valence-3-vertex.hpp"
+#include "partial-action/delete-vertex.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
-void PartialAction :: collapseValence3Vertex ( WingedMesh& mesh, WingedVertex& vertex
-                                             , AffectedFaces& affectedFaces )
+void PartialAction :: deleteValence3Vertex ( WingedMesh& mesh, WingedVertex& vertex
+                                           , AffectedFaces& affectedFaces )
 {
   assert (vertex.valence () == 3);
 
@@ -18,7 +18,7 @@ void PartialAction :: collapseValence3Vertex ( WingedMesh& mesh, WingedVertex& v
       return;
     }
   }
-  WingedFace& remainingFace = PartialAction::collapseVertex (mesh, vertex, affectedFaces);
+  WingedFace& remainingFace = PartialAction::deleteVertex (mesh, vertex, affectedFaces);
 
   remainingFace.writeIndices (mesh);
 }

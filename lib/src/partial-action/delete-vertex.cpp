@@ -1,14 +1,14 @@
 #include "affected-faces.hpp"
-#include "partial-action/collapse-vertex.hpp"
 #include "partial-action/delete-edge-face.hpp"
+#include "partial-action/delete-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
 namespace {
-  WingedEdge& collapseValence2Vertex ( WingedMesh& mesh, WingedVertex& vertex
-                                     , AffectedFaces& affectedFaces )
+  WingedEdge& deleteValence2Vertex ( WingedMesh& mesh, WingedVertex& vertex
+                                   , AffectedFaces& affectedFaces )
   {
     assert (vertex.valence () == 2);
 
@@ -58,8 +58,8 @@ namespace {
   }
 }
 
-WingedFace& PartialAction :: collapseVertex ( WingedMesh& mesh, WingedVertex& vertex
-                                            , AffectedFaces& affectedFaces )
+WingedFace& PartialAction :: deleteVertex ( WingedMesh& mesh, WingedVertex& vertex
+                                          , AffectedFaces& affectedFaces )
 {
   const unsigned int valence = vertex.valence ();
 
@@ -70,7 +70,7 @@ WingedFace& PartialAction :: collapseVertex ( WingedMesh& mesh, WingedVertex& ve
   }
   assert (vertex.valence () == 2);
 
-  WingedEdge& edgeToDelete  = collapseValence2Vertex (mesh, vertex, affectedFaces);
+  WingedEdge& edgeToDelete  = deleteValence2Vertex (mesh, vertex, affectedFaces);
   WingedFace& remainingFace = edgeToDelete.leftFaceRef ();
 
   PartialAction::deleteEdgeFace (mesh, edgeToDelete, affectedFaces);

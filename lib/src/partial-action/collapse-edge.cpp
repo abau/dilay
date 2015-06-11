@@ -2,8 +2,8 @@
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "partial-action/collapse-edge.hpp"
-#include "partial-action/collapse-valence-3-vertex.hpp"
 #include "partial-action/delete-edge-face.hpp"
+#include "partial-action/delete-valence-3-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
@@ -48,20 +48,20 @@ void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
   const unsigned int valence4  = vertex4.valence ();
 
   if (valence1 == 3) {
-    PartialAction::collapseValence3Vertex (mesh, vertex1, affectedFaces);
+    PartialAction::deleteValence3Vertex (mesh, vertex1, affectedFaces);
   }
   else if (valence2 == 3) {
-    PartialAction::collapseValence3Vertex (mesh, vertex2, affectedFaces);
+    PartialAction::deleteValence3Vertex (mesh, vertex2, affectedFaces);
   }
   else if (valence3 == 3) {
-    PartialAction::collapseValence3Vertex (mesh, vertex3, affectedFaces);
+    PartialAction::deleteValence3Vertex (mesh, vertex3, affectedFaces);
 
     if (mesh.edge (edgeIndex)) {
       PartialAction::collapseEdge (mesh, edge, affectedFaces);
     }
   }
   else if (valence4 == 3) {
-    PartialAction::collapseValence3Vertex (mesh, vertex4, affectedFaces);
+    PartialAction::deleteValence3Vertex (mesh, vertex4, affectedFaces);
 
     if (mesh.edge (edgeIndex)) {
       PartialAction::collapseEdge (mesh, edge, affectedFaces);
