@@ -31,8 +31,15 @@ namespace {
 void PartialAction :: deleteEdgeFace ( WingedMesh& mesh, WingedEdge& edge
                                      , AffectedFaces& affectedFaces) 
 {
-  WingedFace& faceToDelete  = *edge.rightFace ();
-  WingedFace& remainingFace = *edge.leftFace ();
+#ifndef NDEBUG
+  const unsigned int numEdgesLeft  = edge.leftFaceRef  ().numEdges ();
+  const unsigned int numEdgesRight = edge.rightFaceRef ().numEdges ();
+#endif
+  assert (numEdgesLeft  >= 2);
+  assert (numEdgesRight >= 2);
+
+  WingedFace& faceToDelete  = edge.rightFaceRef ();
+  WingedFace& remainingFace = edge.leftFaceRef ();
 
   assert (faceToDelete != remainingFace);
 
@@ -43,4 +50,7 @@ void PartialAction :: deleteEdgeFace ( WingedMesh& mesh, WingedEdge& edge
 
   mesh.deleteEdge (edge);
   mesh.deleteFace (faceToDelete); 
+
+  assert (remainingFace.numEdges () >= 3);
+  assert (remainingFace.numEdges () == numEdgesLeft + numEdgesRight - 2);
 }

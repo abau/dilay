@@ -18,6 +18,12 @@ namespace {
     WingedEdge& edgeToDelete  = remainingEdge.isVertex1 (vertex)
                               ? remainingEdge.leftPredecessorRef ()
                               : remainingEdge.leftSuccessorRef ();
+#ifndef NDEBUG
+    const unsigned int numEdgesLeft  = left.numEdges ();
+    const unsigned int numEdgesRight = right.numEdges ();
+#endif
+    assert (numEdgesLeft  >= 3);
+    assert (numEdgesRight >= 3);
 
     assert (left  == edgeToDelete.leftFaceRef () || left  == edgeToDelete.rightFaceRef ());
     assert (right == edgeToDelete.leftFaceRef () || right == edgeToDelete.rightFaceRef ());
@@ -54,6 +60,9 @@ namespace {
     mesh.deleteEdge   (edgeToDelete);
     mesh.deleteVertex (vertex);
 
+    assert (remainingEdge.leftFaceRef ().numEdges () == numEdgesLeft - 1);
+    assert (remainingEdge.rightFaceRef ().numEdges () == numEdgesRight - 1);
+
     return remainingEdge;
   }
 }
@@ -74,7 +83,5 @@ WingedFace& PartialAction :: deleteVertex ( WingedMesh& mesh, WingedVertex& vert
   WingedFace& remainingFace = edgeToDelete.leftFaceRef ();
 
   PartialAction::deleteEdgeFace (mesh, edgeToDelete, affectedFaces);
-
-  assert (remainingFace.numEdges () == valence);
   return remainingFace;
 }
