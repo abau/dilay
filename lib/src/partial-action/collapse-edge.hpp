@@ -7,7 +7,7 @@ class WingedMesh;
 
 namespace PartialAction {
 
-  void collapseEdge (WingedMesh&, WingedEdge&, AffectedFaces&);
+  bool collapseEdge (WingedMesh&, WingedEdge&, AffectedFaces&);
 };
 
 #endif

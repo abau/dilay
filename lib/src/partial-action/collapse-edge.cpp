@@ -28,7 +28,7 @@ namespace {
   }
 }
 
-void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
+bool PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
                                  , AffectedFaces& affectedFaces ) 
 {
   assert (edge.leftFaceRef  ().numEdges () == 3);
@@ -49,27 +49,34 @@ void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
 
   if (valence1 == 3) {
     PartialAction::deleteValence3Vertex (mesh, vertex1, affectedFaces);
+    return true;
   }
   else if (valence2 == 3) {
     PartialAction::deleteValence3Vertex (mesh, vertex2, affectedFaces);
+    return true;
   }
   else if (valence3 == 3) {
     PartialAction::deleteValence3Vertex (mesh, vertex3, affectedFaces);
 
     if (mesh.edge (edgeIndex)) {
-      PartialAction::collapseEdge (mesh, edge, affectedFaces);
+      return PartialAction::collapseEdge (mesh, edge, affectedFaces);
+    }
+    else {
+      return true;
     }
   }
   else if (valence4 == 3) {
     PartialAction::deleteValence3Vertex (mesh, vertex4, affectedFaces);
 
     if (mesh.edge (edgeIndex)) {
-      PartialAction::collapseEdge (mesh, edge, affectedFaces);
+      return PartialAction::collapseEdge (mesh, edge, affectedFaces);
+    }
+    else {
+      return true;
     }
   }
   else if (splitsMesh (vertex1, vertex2, vertex3, vertex4)) {
-    mesh         .reset ();
-    affectedFaces.reset ();
+    return false;
   }
   else {
     WingedVertex& newVertex = mesh.addVertex (edge.middle (mesh));
@@ -122,5 +129,6 @@ void PartialAction::collapseEdge ( WingedMesh& mesh, WingedEdge& edge
       assert (v.valence () > 2);
     }
 #endif
+    return true;
   }
 }

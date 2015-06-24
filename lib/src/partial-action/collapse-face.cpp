@@ -1,8 +1,10 @@
+#include "affected-faces.hpp"
 #include "partial-action/collapse-edge.hpp"
 #include "partial-action/collapse-face.hpp"
 #include "partial-action/delete-valence-3-vertex.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
+#include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
 void PartialAction :: collapseFace ( WingedMesh& mesh, WingedFace& face
@@ -32,18 +34,31 @@ void PartialAction :: collapseFace ( WingedMesh& mesh, WingedFace& face
     PartialAction::deleteValence3Vertex (mesh, vertex3, affectedFaces);
   }
   else {
-    WingedEdge& e1 = face.edgeRef ();
-    WingedEdge& e2 = e1.successorRef (face);
-    WingedEdge& e3 = e2.successorRef (face);
+    WingedEdge* edges[] = { face.edge ()
+                          , face.edgeRef ().successor (face)
+                          , face.edgeRef ().successor (face, 1) };
 
-    const float d1 = e1.lengthSqr (mesh);
-    const float d2 = e2.lengthSqr (mesh);
-    const float d3 = e3.lengthSqr (mesh);
+    float distances[] = { edges[0]->lengthSqr (mesh)
+                        , edges[1]->lengthSqr (mesh)
+                        , edges[2]->lengthSqr (mesh) };
 
-    WingedEdge& shortest = d1 < d2 && d1 < d3
-                         ? e1
-                         : (d2 < d3 ? e2 : e3);
+    for (unsigned int i = 0; i < 2; i++) {
+      if (distances[1] < distances[0]) {
+        std::swap (edges[0], edges[1]);
+        std::swap (distances[0], distances[1]);
+      }
+      if (distances[2] < distances[1]) {
+        std::swap (edges[1], edges[2]);
+        std::swap (distances[1], distances[2]);
+      }
+    }
 
-    PartialAction::collapseEdge (mesh, shortest, affectedFaces);
+    for (unsigned int i = 0; i < 3; i++) {
+      if (PartialAction::collapseEdge (mesh, *edges[i], affectedFaces)) {
+        return;
+      }
+    }
+    mesh         .reset ();
+    affectedFaces.reset ();
   }
 }
