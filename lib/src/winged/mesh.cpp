@@ -197,11 +197,13 @@ struct WingedMesh::Impl {
         assert (newV2 != Util::invalidIndex ());
         assert (newV3 != Util::invalidIndex ());
 
-        const unsigned int newF = prunedMesh.addIndex (newV1);
+        const unsigned int newI = prunedMesh.addIndex (newV1);
                                   prunedMesh.addIndex (newV2);
                                   prunedMesh.addIndex (newV3);
+
+        assert (std::div (newI, 3).rem == 0);
         if (newFaceIndices) {
-          (*newFaceIndices)[f.index ()] = newF;
+          (*newFaceIndices)[f.index ()] = std::div (newI, 3).quot;
         }
       });
     }
