@@ -16,6 +16,7 @@ SOURCES += \
            src/affected-faces.cpp \
            src/camera.cpp \
            src/color.cpp \
+           src/config.cpp \
            src/configurable.cpp \
            src/dimension.cpp \
            src/history.cpp \

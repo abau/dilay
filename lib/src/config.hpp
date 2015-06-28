@@ -5,10 +5,22 @@
 
 class Config {
   public:   
-    Config (const std::string& file) : store (file, true, "config") {}
+    Config ();
 
     template <class T> const T& get (const std::string& path) const {
       return this->store.get <T> (path);
+    }
+
+    template <class T> void set (const std::string& path, const T& value) {
+      this->store.set <T> (path, value);
+    }
+
+    void fromFile (const std::string& fileName) {
+      this->store.fromFile (fileName);
+    }
+
+    void toFile (const std::string& fileName) const {
+      this->store.toFile (fileName);
     }
 
   private:

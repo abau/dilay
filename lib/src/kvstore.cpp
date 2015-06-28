@@ -13,24 +13,25 @@ struct KVStore::Impl {
   typedef Variant <float,int,bool,glm::vec3,glm::ivec2,Color> Value;
   typedef std::unordered_map <std::string, Value>             Map;
 
-  const std::string fileName;
   const std::string root;
         Map         map;
 
-  Impl (const std::string& f, bool mustExist, const std::string& r) 
-    : fileName (f)
-    , root     (r)
+  Impl (const std::string& r) 
+    : root (r)
   {
     assert (this->root.find ('/') == std::string::npos);
-
-    this->loadFile (mustExist);
   }
 
   std::string path (const std::string& suffix) const {
-    assert (suffix.front () != '/');
     assert (suffix.back  () != '/');
 
-    return "/" + this->root + "/" + suffix;
+    if (suffix.front () == '/') {
+      assert (suffix.find ("/" + this->root + "/") == 0);
+      return suffix;
+    }
+    else {
+      return "/" + this->root + "/" + suffix;
+    }
   }
 
   template <class T>
@@ -39,8 +40,7 @@ struct KVStore::Impl {
     Map::const_iterator value = this->map.find (this->path (p));
 
     if (value == this->map.end ()) {
-      throw (std::runtime_error ( "Can not find path '" + this->path (p)
-                                + "' in kv-store '" + this->fileName + "'" ));
+      throw (std::runtime_error ("Can not find path '" + this->path (p) + "' in kv-store"));
     }
     else {
       return value->second.get <T> ();
@@ -67,25 +67,20 @@ struct KVStore::Impl {
     this->map.emplace (this->path (p), value);
   }
 
-  void loadFile (bool mustExist) {
-    QFile file (this->fileName.c_str ());
+  void fromFile (const std::string& fileName) {
+    QFile file (fileName.c_str ());
 
-    if (file.open (QIODevice::ReadOnly) == false) {
-      if (mustExist) {
-        throw (std::runtime_error ("Can not open kv-store file '" + this->fileName + "'"));
-      }
-      else {
-        return;
-      }
+    if (file.open (QIODevice::ReadOnly | QIODevice::Text) == false) {
+      throw (std::runtime_error ("Can not open kv-store file '" + fileName + "'"));
     }
-    QDomDocument doc (this->fileName.c_str ());
+    QDomDocument doc (fileName.c_str ());
     QString      errorMsg;
     int          errorLine   = -1;
     int          errorColumn = -1;
     if (doc.setContent (&file, &errorMsg, &errorLine, &errorColumn) == false) {
       file.close();
       throw (std::runtime_error 
-          ( "Error while loading kv-store file '" + this->fileName + "': " + errorMsg.toStdString ()
+          ( "Error while loading kv-store file '" + fileName + "': " + errorMsg.toStdString ()
           + " (" + std::to_string (errorLine) + ","  + std::to_string (errorColumn) + ")"));
     }
     file.close();
@@ -94,7 +89,7 @@ struct KVStore::Impl {
     }
     catch (std::runtime_error& e) {
       throw (std::runtime_error 
-          ("Error while parsing kv-store file '" + this->fileName + "': " + e.what ()));
+          ("Error while parsing kv-store file '" + fileName + "': " + e.what ()));
     }
   }
 
@@ -111,44 +106,50 @@ struct KVStore::Impl {
             this->loadNode (prefix + "/" + element.tagName (), child);
           }
           else if (attribute.value () == "float") {
-            this->insertIntoMap <float> (prefix, element);
+            this->loadElement <float> (prefix, element);
           }
           else if (attribute.value () == "integer") {
-            this->insertIntoMap <int> (prefix, element);
+            this->loadElement <int> (prefix, element);
           }
           else if (attribute.value () == "boolean") {
-            this->insertIntoMap <bool> (prefix, element);
+            this->loadElement <bool> (prefix, element);
           }
           else if (attribute.value () == "vector3f") {
-            this->insertIntoMap <glm::vec3> (prefix, element);
+            this->loadElement <glm::vec3> (prefix, element);
           }
           else if (attribute.value () == "vector2i") {
-            this->insertIntoMap <glm::ivec2> (prefix, element);
+            this->loadElement <glm::ivec2> (prefix, element);
           }
           else if (attribute.value () == "color") {
-            this->insertIntoMap <Color> (prefix, element);
+            this->loadElement <Color> (prefix, element);
           }
           else {
             throw (std::runtime_error 
               ( "invalid type '" + attribute.value ().toStdString () + "' "
               + "(" + std::to_string (child.lineNumber   ()) 
-              + "," + std::to_string (child.columnNumber ()) + ")"));
+              + "," + std::to_string (child.columnNumber ()) + ")") 
+              );
           }
+      }
+      else {
+        throw (std::runtime_error 
+          ( "invalid node (" + std::to_string (child.lineNumber   ()) 
+                             + "," + std::to_string (child.columnNumber ()) + ")")
+          );
       }
       child = child.nextSibling();
     }
   }
 
   template <typename T>
-  bool insertIntoMap (const QString& prefix, QDomElement& element) {
-    T           t;
-    bool        ok  = XmlConversion::fromDomElement (element, t);
-    std::string key = (prefix + "/" + element.tagName ()).toStdString ();
+  bool loadElement (const QString& prefix, QDomElement& element) {
+          T           t;
+    const bool        ok     = XmlConversion::fromDomElement (element, t);
+    const std::string suffix = element.tagName ().toStdString ();
+    const std::string key    = prefix.toStdString () + "/" + suffix;
 
     if (ok) {
-      Value value;
-      value.set <T> (t);
-      this->map.emplace (key, value);
+      this->set <T> (key, t);
     }
     else {
       throw (std::runtime_error 
@@ -159,7 +160,7 @@ struct KVStore::Impl {
     return ok;
   }
 
-  void writeToDisk (bool mustSucceed) const {
+  void toFile (const std::string& fileName) const {
     QDomDocument doc;
 
     for (auto& c : this->map) {
@@ -170,14 +171,14 @@ struct KVStore::Impl {
       this->appendAsDomChild (doc, doc, path, value);
     }
     if (doc.isNull () == false) {
-      QFile file (this->fileName.c_str ());
-      if (file.open (QIODevice::WriteOnly)) {
+      QFile file (fileName.c_str ());
+      if (file.open (QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream stream (&file);
         doc.save (stream, 2);
         file.close ();
       }
-      else if (mustSucceed) {
-        throw (std::runtime_error ("Can not save kv-store file '" + this->fileName + "'"));
+      else {
+        throw (std::runtime_error ("Can not save kv-store file '" + fileName + "'"));
       }
     }
   }
@@ -229,8 +230,9 @@ struct KVStore::Impl {
   }
 };
 
-DELEGATE3_BIG2  (KVStore, const std::string&, bool, const std::string&)
-DELEGATE1_CONST (void, KVStore, writeToDisk, bool);
+DELEGATE1_BIG2  (KVStore, const std::string&)
+DELEGATE1       (void, KVStore, fromFile, const std::string&);
+DELEGATE1_CONST (void, KVStore, toFile, const std::string&);
 
 template <class T>
 const T& KVStore :: get (const std::string& path) const {

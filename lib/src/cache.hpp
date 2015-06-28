@@ -5,7 +5,7 @@
 
 class Cache {
   public:   
-    Cache (const std::string& file) : store (file, false, "cache") {}
+    Cache () : store ("cache") {}
 
     template <class T> const T& get (const std::string& path, const T& value) const {
       return this->store.get <T> (path, value);
@@ -13,10 +13,6 @@ class Cache {
 
     template <class T> void set (const std::string& path, const T& value) {
       this->store.set <T> (path, value);
-    }
-
-    void writeToDisk () {
-      this->store.writeToDisk (false);
     }
 
   private:

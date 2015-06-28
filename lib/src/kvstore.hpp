@@ -6,13 +6,14 @@
 
 class KVStore {
   public:   
-    DECLARE_BIG2 (KVStore, const std::string&, bool, const std::string&)
+    DECLARE_BIG2 (KVStore, const std::string&)
 
     template <class T> const T& get (const std::string&) const;  
     template <class T> const T& get (const std::string&, const T&) const;  
     template <class T> void     set (const std::string&, const T&);  
 
-    void writeToDisk (bool) const;
+    void fromFile (const std::string&);
+    void toFile   (const std::string&) const;
 
   private:
     IMPLEMENTATION
