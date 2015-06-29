@@ -60,7 +60,7 @@ struct ToolSculpt::Impl {
     this->brush.detailFactor    (config.get <float> ("editor/tool/sculpt/detail-factor"));
     this->brush.stepWidthFactor (config.get <float> ("editor/tool/sculpt/step-width-factor"));
 
-    this->brush.radius          (cCache.get <float> ("radius"   , 20.0f));
+    this->brush.radius          (cCache.get <float> ("radius"   , 0.2f));
     this->brush.subdivide       (cCache.get <bool>  ("subdivide", true));
 
     this->self->runSetupBrush (this->brush);
