@@ -24,32 +24,35 @@ namespace {
         break;
 
       case ViewToolTip::Modifier::Ctrl: 
-        string.append ("Ctrl+");
+        string.append (QObject::tr ("Ctrl"));
+        string.append ("+");
         break;
 
       case ViewToolTip::Modifier::Shift: 
-        string.append ("Shift+");
+        string.append (QObject::tr ("Shift"));
+        string.append ("+");
         break;
 
       case ViewToolTip::Modifier::Alt: 
-        string.append ("Alt+");
+        string.append (QObject::tr ("Alt"));
+        string.append ("+");
         break;
     }
     switch (std::get <0> (tip)) {
       case ViewToolTip::MouseEvent::Left: 
-        string.append ("Left");
+        string.append (QObject::tr ("Left"));
         break;
 
       case ViewToolTip::MouseEvent::Middle: 
-        string.append ("Middle");
+        string.append (QObject::tr ("Middle"));
         break;
 
       case ViewToolTip::MouseEvent::Wheel: 
-        string.append ("Wheel");
+        string.append (QObject::tr ("Wheel"));
         break;
 
       case ViewToolTip::MouseEvent::Right: 
-        string.append ("Right");
+        string.append (QObject::tr ("Right"));
         break;
     }
 
