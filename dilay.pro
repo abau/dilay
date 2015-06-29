@@ -1,5 +1,5 @@
-TEMPLATE = subdirs
-SUBDIRS  = lib app test
+TEMPLATE     = subdirs
+SUBDIRS      = lib app test
 
-app.depends = lib
+app.depends  = lib
 test.depends = lib

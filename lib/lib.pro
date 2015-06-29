@@ -2,11 +2,11 @@
     error( Can not find .common.pri )
 }
 
-TEMPLATE               =  lib
-TARGET                 =  dilay
-DEPENDPATH             += src 
-INCLUDEPATH            += src 
-CONFIG                 += staticlib
+TEMPLATE     = lib
+TARGET       = dilay
+DEPENDPATH  += src 
+INCLUDEPATH += src 
+CONFIG      += staticlib
 
 SOURCES += \
            src/action/finalize.cpp \
