@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QDir>
+#include <QLibraryInfo>
 #include <QStandardPaths>
 #include <QTranslator>
 #include "cache.hpp"
@@ -9,11 +10,18 @@
 
 int main (int argv, char **args) {
   QApplication app (argv, args);
+  QTranslator  baseTranslator;
+  QTranslator  dilayTranslator;
 
-  if (QLocale::system ().language () == QLocale::German) {
-    QTranslator  appTranslator;
-    appTranslator.load ("i18n/dilay_de.qm");
-    app.installTranslator (&appTranslator);
+  for (const QString& dir : QStandardPaths::standardLocations (QStandardPaths::AppDataLocation)) {
+    if (dilayTranslator.load (QLocale::system (), "dilay", "_", dir, ".qm")) {
+      baseTranslator.load ( QLocale::system (), "qtbase", "_"
+                          , QLibraryInfo::location (QLibraryInfo::TranslationsPath), ".qm");
+
+      app.installTranslator (&baseTranslator);
+      app.installTranslator (&dilayTranslator);
+      break;
+    }
   }
 
   OpenGL::setDefaultFormat ();
