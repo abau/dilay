@@ -63,7 +63,6 @@ struct ViewGlWidget::Impl {
     this->_state.reset (new State (this->mainWindow, this->config, this->cache));
 
     this->self->setMouseTracking (true);
-    this->self->setFocus         ();
   }
 
   void paintGL () {
@@ -90,8 +89,6 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseMoveEvent (QMouseEvent* e) {
-    this->self->setFocus (Qt::MouseFocusReason);
-
     if (e->buttons () == Qt::MiddleButton) {
       this->toolMoveCamera.mouseMoveEvent (this->state (), *e);
     }
