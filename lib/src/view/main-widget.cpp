@@ -1,5 +1,4 @@
-#include <QButtonGroup>
-#include <QRadioButton>
+#include <QPushButton>
 #include <QVBoxLayout>
 #include "state.hpp"
 #include "tools.hpp"
@@ -9,10 +8,10 @@
 #include "view/util.hpp"
 
 struct ViewMainWidget :: Impl {
-  ViewMainWidget* self;
-  ViewGlWidget&   glWidget;
-  ViewProperties& properties;
-  QButtonGroup    toolButtons;
+  ViewMainWidget*            self;
+  ViewGlWidget&              glWidget;
+  ViewProperties&            properties;
+  std::vector <QPushButton*> toolButtons;
 
   Impl (ViewMainWidget* s, ViewMainWindow& mW, Config& config, Cache& cache) 
     : self       (s) 
@@ -58,25 +57,31 @@ struct ViewMainWidget :: Impl {
 
   template <typename T>
   void addToolButton (QLayout* layout, const QString& name) {
-    QRadioButton& button = ViewUtil::radioButton (name);
+    QPushButton& button = ViewUtil::pushButton (name);
+    button.setCheckable (true);
     
-    ViewUtil::connect (button, [this] (bool value) {
-      if (value) {
-        State& s = this->glWidget.state ();
-        s.resetTool (false);
-        s.setTool   (std::move (*new T (s)));
-      }
+    ViewUtil::connect (button, [this, &button] () {
+      this->selectOnly (button);
+
+      State& s = this->glWidget.state ();
+      s.resetTool (false);
+      s.setTool   (std::move (*new T (s)));
     });
-    this->toolButtons.addButton (&button);
     layout->addWidget           (&button);
+    this->toolButtons.push_back (&button);
+  }
+
+  void selectOnly (QPushButton& button) {
+    for (QPushButton* b : this->toolButtons) {
+      b->setChecked (b == &button);
+    }
   }
 
   void deselectTool () {
-    QAbstractButton* selectedButton = this->toolButtons.checkedButton ();
-    if (selectedButton && this->glWidget.state ().hasTool () == false) {
-      this->toolButtons.setExclusive (false);
-      selectedButton->setChecked     (false);
-      this->toolButtons.setExclusive (true);
+    if (this->glWidget.state ().hasTool () == false) {
+      for (QPushButton* b : this->toolButtons) {
+        b->setChecked (false);
+      }
     }
   }
 };
