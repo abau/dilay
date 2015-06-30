@@ -179,7 +179,7 @@ class IndexableList {
 
     unsigned int numElements () const {
       assert (this->elements.size () == this->index.numElements ());
-      return this->elements.size ();
+      return this->index.numElements ();
     }
 
     unsigned int numIndices () const {
