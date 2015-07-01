@@ -15,7 +15,7 @@ struct ToolSculptReduce::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBReduceParameters> ();
 
-    params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
+    params.intensity (this->self->cache ().get <float> ("intensity", 0.75f));
   }
 
   void runSetupCursor (ViewCursor&) {}

@@ -10,6 +10,7 @@
 #include "partial-action/subdivide-edge.hpp"
 #include "winged/edge.hpp"
 #include "winged/mesh.hpp"
+#include "winged/util.hpp"
 
 namespace {
   void postprocessEdges (const SculptBrush& brush, AffectedFaces& domain) {
@@ -30,18 +31,19 @@ namespace {
       domain.commit ();
     };
 
-    auto isCollapsable = [&] (WingedEdge& edge) -> bool {
+    auto isCollapsable = [&] (WingedEdge& edge, float avgLength) -> bool {
       const auto& params = brush.constParameters <SBReduceParameters> ();
-      const float r2     = brush.radius () * brush.radius ();
+      const float l2     = avgLength * avgLength;
       const float i2     = params.intensity () * params.intensity ();
-      return edge.lengthSqr (mesh) < r2 * i2;
+      return edge.lengthSqr (mesh) < l2 * i2;
     };
 
     auto collapseEdges = [&] () {
-      EdgePtrVec                 edges = domain.toEdgeVec ();
+      EdgePtrVec                 edges     = domain.toEdgeVec ();
+      const float                avgLength = WingedUtil::averageLength (mesh, edges);
       std::vector <unsigned int> indices;
 
-      for (WingedEdge* e : domain.toEdgeVec ()) {
+      for (WingedEdge* e : edges) {
         indices.push_back (e->index ());
       }
       domain.reset ();
@@ -49,7 +51,7 @@ namespace {
       for (unsigned int i : indices) {
         WingedEdge* e = mesh.edge (i);
 
-        if (e && isCollapsable (*e)) {
+        if (e && isCollapsable (*e, avgLength)) {
           PartialAction::collapseEdge (mesh, *e, domain);
         }
       }

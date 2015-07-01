@@ -123,5 +123,16 @@ glm::vec3 WingedUtil :: center (const WingedMesh& mesh, const WingedVertex& vert
     c += v.position (mesh);
     n++;
   }
+  assert (n > 0);
   return c / float (n);
+}
+
+float WingedUtil :: averageLength (const WingedMesh& mesh, const EdgePtrVec& edges) {
+  assert (edges.size () > 0);
+
+  float l = 0.0f;
+  for (const WingedEdge* e : edges) {
+    l += e->length (mesh);
+  }
+  return l / float (edges.size ());
 }
