@@ -39,6 +39,14 @@ namespace {
     return snapshot;
   }
 
+  void resetToSnapshot (const SceneSnapshot& snapshot, Scene& scene) {
+    scene.reset (false);
+
+    for (const MeshSnapshot& meshSnapshot : snapshot) {
+      scene.newWingedMesh (meshSnapshot.mesh);
+    }
+  }
+
   void deleteOctreeSnapshot (SceneSnapshot& sceneSnapshot) {
     for (MeshSnapshot& meshSnapshot : sceneSnapshot) {
       meshSnapshot.octree.reset ();
@@ -75,18 +83,10 @@ struct History::Impl {
     }
   }
 
-  void resetToSnapshot (const SceneSnapshot& snapshot, Scene& scene) {
-    scene.reset ();
-
-    for (const MeshSnapshot& meshSnapshot : snapshot) {
-      scene.newWingedMesh (meshSnapshot.mesh);
-    }
-  }
-
   void undo (Scene& scene) {
     if (this->past.empty () == false) {
       this->future.push_front (std::move (sceneSnapshot (scene, false)));
-      this->resetToSnapshot (this->past.front (), scene);
+      resetToSnapshot (this->past.front (), scene);
       this->past.pop_front ();
     }
   }
@@ -97,7 +97,7 @@ struct History::Impl {
         deleteOctreeSnapshot (this->past.front ());
       }
       this->past.push_front (std::move (sceneSnapshot (scene, false)));
-      this->resetToSnapshot (this->future.front (), scene);
+      resetToSnapshot (this->future.front (), scene);
       this->future.pop_front ();
     }
   }

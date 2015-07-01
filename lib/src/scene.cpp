@@ -77,9 +77,12 @@ struct Scene :: Impl {
     this->wingedMeshes.forEachConstElement (f);
   }
 
-  void reset () {
+  void reset (bool resetFileName) {
     this->wingedMeshes.reset ();
-    this->fileName.clear     ();
+
+    if (resetFileName) {
+      this->fileName.clear ();
+    }
   }
 
   const RenderMode& commonRenderMode () {
@@ -185,7 +188,7 @@ DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFa
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
-DELEGATE        (void              , Scene, reset)
+DELEGATE1       (void              , Scene, reset, bool)
 DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
 DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)
 DELEGATE_CONST  (unsigned int      , Scene, numWingedMeshes)
@@ -193,6 +196,7 @@ DELEGATE_CONST  (unsigned int      , Scene, numFaces)
 DELEGATE        (void              , Scene, deleteEmptyMeshes)
 DELEGATE_CONST  (bool              , Scene, hasFileName)
 GETTER_CONST    (const std::string&, Scene, fileName)
+SETTER          (const std::string&, Scene, fileName)
 DELEGATE        (bool              , Scene, toObjFile)
 DELEGATE1       (bool              , Scene, toObjFile, const std::string&)
 DELEGATE1       (bool              , Scene, fromObjFile, const std::string&)

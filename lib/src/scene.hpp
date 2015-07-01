@@ -25,7 +25,7 @@ class Scene : public Configurable {
     void               printStatistics   (bool) const;
     void               forEachMesh       (const std::function <void (WingedMesh&)>&);
     void               forEachConstMesh  (const std::function <void (const WingedMesh&)>&) const;
-    void               reset             ();
+    void               reset             (bool = true);
     const RenderMode&  commonRenderMode  () const;
     void               commonRenderMode  (const RenderMode&);
     unsigned int       numWingedMeshes   () const;
@@ -33,6 +33,7 @@ class Scene : public Configurable {
     void               deleteEmptyMeshes ();
     bool               hasFileName       () const;
     const std::string& fileName          () const;
+    void               fileName          (const std::string&);
     bool               toObjFile         ();
     bool               toObjFile         (const std::string&);
     bool               fromObjFile       (const std::string&);
