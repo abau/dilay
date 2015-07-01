@@ -7,7 +7,7 @@ TARGET          = dilay
 DESTDIR         = ..
 DEPENDPATH     += src 
 INCLUDEPATH    += src ../lib/src
-LIBS           += -L../lib -ldilay -lGL -lGLEW
+LIBS           += -L../lib -ldilay
 PRE_TARGETDEPS += ../lib/libdilay.a
 SOURCES        += src/main.cpp
 
