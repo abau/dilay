@@ -93,21 +93,18 @@ struct Tool::Impl {
   }
 
   bool intersectsRecentOctree (const QMouseEvent& e, Intersection& intersection) const {
-    if (this->state.history ().hasRecentOctrees ()) {
-      const PrimRay ray = this->state.camera ().ray (ViewUtil::toIVec2 (e));
-      OctreeIntersection octreeIntersection;
+    assert (this->state.history ().hasRecentOctrees ());
 
-      this->state.history ().forEachRecentOctree (
-        [&ray, &octreeIntersection] (const Mesh& mesh, const Octree& octree) {
-          octree.intersects (mesh, ray, octreeIntersection);
-        }
-      );
-      intersection = octreeIntersection;
-      return intersection.isIntersection ();
-    }
-    else {
-      return false;
-    }
+    const PrimRay ray = this->state.camera ().ray (ViewUtil::toIVec2 (e));
+    OctreeIntersection octreeIntersection;
+
+    this->state.history ().forEachRecentOctree (
+      [&ray, &octreeIntersection] (const Mesh& mesh, const Octree& octree) {
+        octree.intersects (mesh, ray, octreeIntersection);
+      }
+    );
+    intersection = octreeIntersection;
+    return intersection.isIntersection ();
   }
 
   void snapshotScene () {
