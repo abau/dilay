@@ -224,10 +224,6 @@
         <translation>Ziehen zum Rotieren</translation>
     </message>
     <message>
-        <source>Drag to pan</source>
-        <translation>Ziehen zum Schwenken</translation>
-    </message>
-    <message>
         <source>Gaze</source>
         <translation>Zentrieren</translation>
     </message>

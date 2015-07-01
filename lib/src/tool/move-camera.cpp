@@ -19,7 +19,7 @@
 struct ToolMoveCamera::Impl {
   glm::ivec2 oldPos;
   float      rotationFactor;
-  float      panningFactor;
+  float      movementFactor;
   float      zoomInFactor;
 
   Impl (const Config& config) {
@@ -105,8 +105,8 @@ struct ToolMoveCamera::Impl {
       }
       else if (event.modifiers () == Qt::ShiftModifier) {
         cam.setGaze ( cam.gazePoint () 
-                    + (this->panningFactor * float ( delta.x) * cam.right ())
-                    + (this->panningFactor * float (-delta.y) * cam.up    ())
+                    + (this->movementFactor * float ( delta.x) * cam.right ())
+                    + (this->movementFactor * float (-delta.y) * cam.up    ())
                     );
       }
       this->oldPos = newPos;
@@ -144,9 +144,9 @@ struct ToolMoveCamera::Impl {
   }
 
   void runFromConfig (const Config& config) {
-    rotationFactor = config.get <float> ("editor/camera/rotation-factor");
-    panningFactor  = config.get <float> ("editor/camera/panning-factor");
-    zoomInFactor   = config.get <float> ("editor/camera/zoom-in-factor");
+    this->rotationFactor = config.get <float> ("editor/camera/rotation-factor");
+    this->movementFactor = config.get <float> ("editor/camera/movement-factor");
+    this->zoomInFactor   = config.get <float> ("editor/camera/zoom-in-factor");
   }
 };
 

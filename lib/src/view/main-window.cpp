@@ -191,7 +191,7 @@ struct ViewMainWindow :: Impl {
 
     tip.add ( ViewToolTip::MouseEvent::Middle, QObject::tr ("Drag to rotate"));
     tip.add ( ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Shift
-            , QObject::tr ("Drag to pan"));
+            , QObject::tr ("Drag to move"));
     tip.add ( ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Ctrl
             , QObject::tr ("Gaze"));
 

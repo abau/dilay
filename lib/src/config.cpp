@@ -18,7 +18,7 @@ Config :: Config ()
   this->set ("editor/camera/near-clipping",          0.01f);
   this->set ("editor/camera/far-clipping",           1000.0f);
   this->set ("editor/camera/rotation-factor",        1.0f);
-  this->set ("editor/camera/panning-factor",         0.01f);
+  this->set ("editor/camera/movement-factor",        0.01f);
   this->set ("editor/camera/zoom-in-factor",         0.9f);
 
   this->set ("editor/light/light1/direction",        glm::vec3 (-0.2f, 1.0f, 0.2f));
