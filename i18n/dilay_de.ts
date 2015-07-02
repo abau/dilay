@@ -259,5 +259,17 @@
         <source>Right</source>
         <translation>Rechts</translation>
     </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation>&amp;Hilfe</translation>
+    </message>
+    <message>
+        <source>&amp;Manual...</source>
+        <translation>&amp;Handbuch...</translation>
+    </message>
+    <message>
+        <source>Could not open manual.</source>
+        <translation>Handbuch konnte nicht geöffnet werden.</translation>
+    </message>
 </context>
 </TS>

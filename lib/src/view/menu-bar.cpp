@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QMenuBar>
 #include "render-mode.hpp"
@@ -15,6 +16,7 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
   QMenu&        fileMenu = *menuBar.addMenu (QObject::tr ("&File"));
   QMenu&        editMenu = *menuBar.addMenu (QObject::tr ("&Edit"));
   QMenu&        viewMenu = *menuBar.addMenu (QObject::tr ("&View"));
+  QMenu&        helpMenu = *menuBar.addMenu (QObject::tr ("&Help"));
 
   auto addAction = [] ( QMenu& menu, const QString& label, const QKeySequence& keySequence
                       , const std::function <void ()>& f ) -> QAction&
@@ -114,5 +116,10 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
     }
     glWidget.state ().scene ().commonRenderMode (mode);
     mainWindow.update ();
+  });
+  addAction (helpMenu, QObject::tr ("&Manual..."), QKeySequence (), [&mainWindow] () {
+    if (QDesktopServices::openUrl (QUrl ("http://abau.org/dilay/manual.html")) == false) {
+      ViewUtil::error (mainWindow, QObject::tr ("Could not open manual."));
+    }
   });
 }
