@@ -35,7 +35,7 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
     const std::string previous = scene.hasFileName () ? scene.fileName () 
                                                       : std::string ();
     const std::string fileName = QFileDialog::getOpenFileName ( &mainWindow
-                                                              , QObject::tr ("Open...")
+                                                              , QObject::tr ("Open")
                                                               , QString (previous.c_str ())
                                                               , "*.obj" ).toStdString ();
     if (fileName.empty () == false && scene.fromObjFile (fileName) == false) {
@@ -51,7 +51,7 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
     const std::string previous = scene.hasFileName () ? scene.fileName () 
                                                       : std::string ();
     const std::string fileName = QFileDialog::getSaveFileName ( &mainWindow
-                                                              , QObject::tr ("Save as...")
+                                                              , QObject::tr ("Save as")
                                                               , QString (previous.c_str ())
                                                               , "*.obj" ).toStdString ();
     if (fileName.empty () == false && scene.toObjFile (fileName) == false) {

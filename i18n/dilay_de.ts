@@ -164,8 +164,8 @@
         <translation>Ö&amp;ffnen...</translation>
     </message>
     <message>
-        <source>Open...</source>
-        <translation>Öffnen...</translation>
+        <source>Open</source>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <source>Could not open file.</source>
@@ -176,8 +176,8 @@
         <translation>Speichern &amp;unter...</translation>
     </message>
     <message>
-        <source>Save as...</source>
-        <translation>Speichern unter...</translation>
+        <source>Save as</source>
+        <translation>Speichern unter</translation>
     </message>
     <message>
         <source>Could not save to file.</source>
