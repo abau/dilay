@@ -271,5 +271,21 @@
         <source>Could not open manual.</source>
         <translation>Handbuch konnte nicht geöffnet werden.</translation>
     </message>
+    <message>
+        <source>&amp;About Dilay...</source>
+        <translation>&amp;Über Dilay...</translation>
+    </message>
+    <message>
+        <source>About Dilay</source>
+        <translation>Über Dilay</translation>
+    </message>
+    <message>
+        <source>a 3D sculpting application</source>
+        <translation>eine 3D Sculpting Software</translation>
+    </message>
+    <message>
+        <source>Use and redistribute under the terms of the GNU General Public License</source>
+        <translation>Benutzung und Weiterverbreitung gemäß den Bedingungen der GNU General Public License</translation>
+    </message>
 </context>
 </TS>

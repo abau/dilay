@@ -122,4 +122,12 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
       ViewUtil::error (mainWindow, QObject::tr ("Could not open manual."));
     }
   });
+  addAction (helpMenu, QObject::tr ("&About Dilay..."), QKeySequence (), [&mainWindow] () {
+    ViewUtil::about (mainWindow, QString ("Dilay " DILAY_VERSION " - ")
+                               + QObject::tr ("a 3D sculpting application")
+                               + QString ("\n\n")
+                               + QString ("Copyright © 2015 Alexander Bau")
+                               + QString ("\n\n")
+                               + QObject::tr ("Use and redistribute under the terms of the GNU General Public License"));
+  });
 }

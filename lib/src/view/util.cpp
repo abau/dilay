@@ -150,3 +150,7 @@ bool ViewUtil :: question (QWidget& parent, const QString& label) {
 void ViewUtil :: error (QWidget& parent, const QString& label) {
   QMessageBox::critical (&parent, QObject::tr ("Error"), label);
 }
+
+void ViewUtil :: about (QWidget& parent, const QString& label) {
+  QMessageBox::about (&parent, QObject::tr ("About Dilay"), label);
+}
