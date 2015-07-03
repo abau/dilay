@@ -15,22 +15,24 @@
 #include "view/menu-bar.hpp"
 #include "view/util.hpp"
 
-void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
-  QMenuBar&     menuBar  = *mainWindow.menuBar ();
-  QMenu&        fileMenu = *menuBar.addMenu (QObject::tr ("&File"));
-  QMenu&        editMenu = *menuBar.addMenu (QObject::tr ("&Edit"));
-  QMenu&        viewMenu = *menuBar.addMenu (QObject::tr ("&View"));
-  QMenu&        helpMenu = *menuBar.addMenu (QObject::tr ("&Help"));
-
-  auto addAction = [] ( QMenu& menu, const QString& label, const QKeySequence& keySequence
-                      , const std::function <void ()>& f ) -> QAction&
+namespace {
+  QAction& addAction ( QMenu& menu, const QString& label, const QKeySequence& keySequence
+                     , const std::function <void ()>& f )
   {
     QAction* a = new QAction (label, nullptr);
     a->setShortcut (keySequence);
     menu.addAction (a);
     QObject::connect (a, &QAction::triggered, f);
     return *a;
-  };
+  }
+}
+
+void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
+  QMenuBar& menuBar  = *mainWindow.menuBar ();
+  QMenu&    fileMenu = *menuBar.addMenu (QObject::tr ("&File"));
+  QMenu&    editMenu = *menuBar.addMenu (QObject::tr ("&Edit"));
+  QMenu&    viewMenu = *menuBar.addMenu (QObject::tr ("&View"));
+  QMenu&    helpMenu = *menuBar.addMenu (QObject::tr ("&Help"));
 
   addAction ( fileMenu, QObject::tr ("&Open..."), QKeySequence::Open
             , [&mainWindow, &glWidget] ()
