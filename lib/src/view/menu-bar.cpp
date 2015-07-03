@@ -25,6 +25,12 @@ namespace {
     QObject::connect (a, &QAction::triggered, f);
     return *a;
   }
+
+  QString getFileDialogPath (const Scene& scene) {
+    return scene.hasFileName () 
+      ? QString (scene.fileName ().c_str ())
+      : QStandardPaths::standardLocations (QStandardPaths::HomeLocation).front ();
+  }
 }
 
 void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
@@ -38,11 +44,9 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
             , [&mainWindow, &glWidget] ()
   {
     Scene&            scene    = glWidget.state ().scene ();
-    const std::string previous = scene.hasFileName () ? scene.fileName () 
-                                                      : std::string ();
     const std::string fileName = QFileDialog::getOpenFileName ( &mainWindow
                                                               , QObject::tr ("Open")
-                                                              , QString (previous.c_str ())
+                                                              , getFileDialogPath (scene)
                                                               , "*.obj" ).toStdString ();
     if (fileName.empty () == false && scene.fromObjFile (fileName) == false) {
       ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
@@ -54,11 +58,9 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
                                     , [&mainWindow, &glWidget] () 
   {
     Scene&            scene    = glWidget.state ().scene ();
-    const std::string previous = scene.hasFileName () ? scene.fileName () 
-                                                      : std::string ();
     const std::string fileName = QFileDialog::getSaveFileName ( &mainWindow
                                                               , QObject::tr ("Save as")
-                                                              , QString (previous.c_str ())
+                                                              , getFileDialogPath (scene)
                                                               , "*.obj" ).toStdString ();
     if (fileName.empty () == false && scene.toObjFile (fileName) == false) {
       ViewUtil::error (mainWindow, QObject::tr ("Could not save to file."));
