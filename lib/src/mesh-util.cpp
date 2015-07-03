@@ -72,8 +72,8 @@ Mesh MeshUtil :: sphere (unsigned int rings, unsigned int sectors) {
   Mesh mesh;
 
   const float radius     = 1.0f;
-  const float ringStep   =        M_PI / float (rings);
-  const float sectorStep = 2.0f * M_PI / float (sectors);
+  const float ringStep   =        glm::pi <float> () / float (rings);
+  const float sectorStep = 2.0f * glm::pi <float> () / float (sectors);
         float phi        = ringStep;
         float theta      = 0.0f;
 

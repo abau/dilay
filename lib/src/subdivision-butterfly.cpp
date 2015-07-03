@@ -4,6 +4,7 @@
  */
 #include <functional>
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 #include <vector>
 #include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
@@ -36,14 +37,14 @@ namespace {
         - (0.125f * (a[2] - center));
     }
     else {
-      float K = float (a.size ());
+      const float K = float (a.size ());
 
       for (unsigned int i = 0; i < a.size (); i++) {
-        float j   = float (i);
-        float s_j = ( 0.25f 
-                    +         cos ( 2.0f * M_PI * j / K ) 
-                    + (0.5f * cos ( 4.0f * M_PI * j / K ))
-                    ) / K;
+        const float j   = float (i);
+        const float s_j = ( 0.25f 
+                          +         cos ( 2.0f * glm::pi <float> () * j / K ) 
+                          + (0.5f * cos ( 4.0f * glm::pi <float> () * j / K ))
+                          ) / K;
 
         v = v + (s_j * (a[i] - center));
       }
