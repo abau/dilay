@@ -1,12 +1,9 @@
-*.swp
 obj/
 moc/
 dilay
 Makefile.qt
-*.vim
 archive/
 i18n/*.qm
-dilay.cache
 lib/libdilay.a
 run-tests
 lib/Makefile
