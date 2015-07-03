@@ -25,8 +25,12 @@ struct ToolDeleteMesh::Impl {
     if (e.button () == Qt::LeftButton) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
+        Scene& scene = this->self->state ().scene ();
         this->self->snapshotScene ();
-        this->self->state ().scene ().deleteMesh (intersection.mesh ());
+        scene.deleteMesh (intersection.mesh ());
+        if (scene.numWingedMeshes () == 0) {
+          scene.reset ();
+        }
         return ToolResponse::Redraw;
       }
     }

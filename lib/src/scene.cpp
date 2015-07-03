@@ -118,6 +118,9 @@ struct Scene :: Impl {
         this->deleteMesh (mesh);
       }
     });
+    if (this->numWingedMeshes () == 0) {
+      this->reset (true);
+    }
   }
 
   bool hasFileName () const {
