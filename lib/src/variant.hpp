@@ -1,3 +1,7 @@
+/* This file is part of Dilay
+ * Copyright © 2015 Alexander Bau
+ * Use and redistribute under the terms of the GNU General Public License
+ */
 #ifndef VARIANT_35425680_d10a_41c7_b91e_2e48cfe545da
 #define VARIANT_35425680_d10a_41c7_b91e_2e48cfe545da
 

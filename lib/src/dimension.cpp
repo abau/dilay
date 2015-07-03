@@ -1,3 +1,7 @@
+/* This file is part of Dilay
+ * Copyright © 2015 Alexander Bau
+ * Use and redistribute under the terms of the GNU General Public License
+ */
 #include <cstdlib>
 #include <glm/glm.hpp>
 #include "dimension.hpp"
