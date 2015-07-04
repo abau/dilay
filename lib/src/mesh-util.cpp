@@ -119,10 +119,9 @@ Mesh MeshUtil :: sphere (unsigned int rings, unsigned int sectors) {
 }
 
 Mesh MeshUtil :: icosphere (unsigned int numSubdivisions) {
-  Mesh mesh;
-  typedef unsigned long                          Key;
-  typedef std::unordered_map <Key, unsigned int> VertexCache;
+  typedef std::unordered_map <ui_pair, unsigned int> VertexCache;
 
+  Mesh        mesh;
   VertexCache vertexCache;
 
   // adds new vertex to ico-sphere
@@ -130,18 +129,13 @@ Mesh MeshUtil :: icosphere (unsigned int numSubdivisions) {
     return addVertex (mesh, glm::normalize (v));
   };
 
-  // computes key for vertex cache
-  auto getKey = [] (unsigned int i1, unsigned i2) -> Key {
-    return (Key (i1) << 8 * sizeof (int)) + Key (i2);
-  };
-
   // looks up vertex in cache or computes a new one
-  auto lookupVertex = [&vertexCache,&addIcoVertex,&getKey,&mesh] 
+  auto lookupVertex = [&vertexCache,&addIcoVertex,&mesh]
     (unsigned int i1, unsigned int i2) -> unsigned int 
     {
       const unsigned int lowerI = i1 < i2 ? i1 : i2;
       const unsigned int upperI = i1 < i2 ? i2 : i1;
-      const Key          key    = getKey (lowerI, upperI);
+      const ui_pair      key    = std::make_pair (lowerI, upperI);
 
       VertexCache::iterator it = vertexCache.find (key);
       if (it == vertexCache.end ()) {
