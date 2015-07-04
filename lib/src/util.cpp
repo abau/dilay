@@ -8,6 +8,7 @@
 #include <glm/gtc/epsilon.hpp>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 #include "util.hpp"
 
