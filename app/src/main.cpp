@@ -13,6 +13,8 @@
 #include "view/main-window.hpp"
 
 int main (int argv, char **args) {
+  QCoreApplication::setAttribute (Qt::AA_UseDesktopOpenGL);
+
   QApplication app (argv, args);
   QTranslator  baseTranslator;
   QTranslator  dilayTranslator;
