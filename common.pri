@@ -6,7 +6,8 @@ OBJECTS_DIR             = obj
 QMAKE_CXXFLAGS         += -DDILAY_VERSION=\\\"$$VERSION\\\" -DGLM_FORCE_RADIANS
 QMAKE_CXXFLAGS_RELEASE += -DNDEBUG -Wno-unused-parameter -Wno-unused-variable
 QMAKE_CXXFLAGS_DEBUG   += -Wall -Werror # -pg # -DDILAY_RENDER_OCTREE
-QMAKE_LFLAGS_DEBUG     += # -pg 
+QMAKE_LFLAGS_DEBUG     += # -pg
+win32:INCLUDEPATH      += $$PWD/glm/
 
 isEmpty (PREFIX) {
   PREFIX = /usr/local
