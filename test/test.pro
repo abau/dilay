@@ -1,6 +1,4 @@
-! include( ../common.pri ) {
-    error( Can not find .common.pri )
-}
+include (../common.pri)
 
 TEMPLATE        = app
 TARGET          = run-tests

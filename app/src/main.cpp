@@ -20,9 +20,11 @@ int main (int argv, char **args) {
   QTranslator  dilayTranslator;
 
   for (const QString& dir : QStandardPaths::standardLocations (QStandardPaths::AppDataLocation)) {
-    if (dilayTranslator.load (QLocale::system (), "dilay", "_", dir, ".qm")) {
+    if (dilayTranslator.load ( QLocale::system (), "dilay", "_"
+                             , QDir (dir).filePath ("translations"), ".qm" ))
+    {
       baseTranslator.load ( QLocale::system (), "qtbase", "_"
-                          , QLibraryInfo::location (QLibraryInfo::TranslationsPath), ".qm");
+                          , QLibraryInfo::location (QLibraryInfo::TranslationsPath), ".qm" );
 
       app.installTranslator (&baseTranslator);
       app.installTranslator (&dilayTranslator);
