@@ -44,7 +44,9 @@ int main (int argv, char **args) {
   }
 
   ViewMainWindow mainWindow (config, cache);
-  mainWindow.show ();
+  mainWindow.resize ( config.get <int> ("window/initial-width")
+                    , config.get <int> ("window/initial-height") );
+  mainWindow.show   ();
 
   QObject::connect (&app, &QApplication::aboutToQuit, [&config] () {
     const QString configDirName (QStandardPaths::writableLocation (QStandardPaths::ConfigLocation));

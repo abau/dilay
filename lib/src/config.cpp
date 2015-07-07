@@ -43,4 +43,7 @@ Config :: Config ()
   this->set ("editor/tool/sculpt/mirror/color",      Color (0.8f, 0.8f, 0.8f));
 
   this->set ("editor/undo-depth",                    5);
+
+  this->set ("window/initial-width",                 1024);
+  this->set ("window/initial-height",                768);
 }
