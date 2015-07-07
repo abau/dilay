@@ -31,7 +31,7 @@ win32 {
       PRE_TARGETDEPS += $$OUT_PWD/../lib/debug/dilay.lib
     }
   }
-  QMAKE_POST_LINK += $$PWD/../win32deploy.bat $$shell_path($$[QT_INSTALL_BINS]) $$shell_path($$DESTDIR/$${TARGET}.exe)
+  QMAKE_POST_LINK += $$PWD/../win32deploy.bat $$shell_path($$[QT_INSTALL_PREFIX]) $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
 
 unix {
