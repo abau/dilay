@@ -1,0 +1,104 @@
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" UpgradeCode="8e37a957-2019-4b44-b5b8-15e128f47df3"
+           Name="Dilay" Version="1.0.0" Manufacturer="A.Bau" Language="1033">
+    <Package Compressed="yes"/>
+    <Media Id="1" Cabinet="dilay.cab" EmbedCab="yes"/>
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+    <WixVariable Id="WixUILicenseRtf" Value="Dilay\LICENSE.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="Dilay\banner1-compressed.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="Dilay\banner2-compressed.bmp" />
+    
+    <Icon Id="icon.ico" SourceFile="Dilay\icon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+     
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="Dilay">
+          <Component Id="compExe" Guid="3ebdb979-c3a9-4758-a086-b7a9b4188d8c">
+            <File Name="dilay.exe" KeyPath="yes">
+              <Shortcut Id="shortcutStartmenu" Directory="dirProgramMenu" Name="Dilay"
+                Icon="icon.ico" WorkingDirectory="INSTALLDIR" Advertise="yes" />
+              <Shortcut Id="shortcutDesktop" Directory="DesktopFolder" Name="Dilay"
+                Icon="icon.ico" WorkingDirectory="INSTALLDIR" Advertise="yes" />
+            </File>
+          </Component>
+          <Component Id="compLibGCC" Guid="3b3da860-1e87-4949-ab82-bcf154e795fc">
+            <File Name="libgcc_s_dw2-1.dll" KeyPath="yes" />
+          </Component>
+          <Component Id="compLibStdCpp" Guid="ba9cffee-c204-4f83-85ae-f7abb3462d72">
+            <File Name="libstdc++-6.dll" KeyPath="yes" />
+          </Component>
+          <Component Id="compLibWinPThread" Guid="0c70f11e-2e89-4849-a734-4320d9162b4c">
+            <File Name="libwinpthread-1.dll" KeyPath="yes" />
+          </Component>
+          <Component Id="compQt5Core" Guid="9f55a7ac-0f07-4312-9510-6d8a62448574">
+            <File Name="Qt5Core.dll" KeyPath="yes" />
+          </Component>
+          <Component Id="compQt5Gui" Guid="94c3b12a-6621-4535-87cd-582fb94d04ea">
+            <File Name="Qt5Gui.dll" KeyPath="yes" />
+          </Component>
+          <Component Id="compQt5Widgets" Guid="a6e7be4b-25d1-4341-8e62-2eb54534de7a">
+            <File Name="Qt5Widgets.dll" KeyPath="yes" />
+          </Component>
+          <Component Id="compQt5Xml" Guid="d276a252-6c57-43b0-90f6-f0ad95a82d96">
+            <File Name="Qt5Xml.dll" KeyPath="yes" />
+          </Component>
+          
+          <Directory Id="dirTranslations" Name="translations">
+            <Component Id="compDilayDe" Guid="62009562-7be5-4607-89eb-c3c501f654aa">
+              <File Name="dilay_de.qm" KeyPath="yes" />
+            </Component>
+            <Component Id="compQtBaseDe" Guid="687dad44-4b18-405a-82a6-72fe3cd4ee42">
+              <File Name="qtbase_de.qm" KeyPath="yes" />
+            </Component>
+          </Directory>
+          
+          <Directory Id="dirPlatforms" Name="platforms">
+            <Component Id="compQWindows" Guid="0de8c9a0-4a5c-458f-ab2f-631d0d2c9abe">
+              <File Name="qwindows.dll" KeyPath="yes" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+      
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="dirProgramMenu" Name="Dilay">
+          <Component Id="compProgramMenu" Guid="8eec888e-4698-45fb-892e-45f8b4214654">
+            <RemoveFolder Id="removeProgramMenu" On="uninstall" />
+            <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="programMenu" Type="integer" Value="1" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+      
+      <Directory Id="LocalAppDataFolder">
+        <Directory Id="dirLocalAppData" Name="dilay">
+          <Component Id="compLocalAppData" Guid="6ad51fd0-7165-4cae-80d4-c9b58097e844">
+            <RemoveFile Id="removeLocalAppData" On="uninstall" Name="*.*" />
+            <RemoveFolder Id="removeLocalAppDir" On="uninstall" />
+            <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="localAppData" Type="integer" Value="1" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+      
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>    
+    
+    <Feature Id="Complete" Level="1" ConfigurableDirectory="INSTALLDIR">
+      <ComponentRef Id="compProgramMenu"/>
+      <ComponentRef Id="compLocalAppData"/>
+      <ComponentRef Id="compExe"/>
+      <ComponentRef Id="compLibGCC"/>
+      <ComponentRef Id="compLibStdCpp"/>
+      <ComponentRef Id="compLibWinPThread"/>
+      <ComponentRef Id="compQt5Core"/>
+      <ComponentRef Id="compQt5Gui"/>
+      <ComponentRef Id="compQt5Widgets"/>
+      <ComponentRef Id="compQt5Xml"/>
+      <ComponentRef Id="compDilayDe"/>
+      <ComponentRef Id="compQtBaseDe"/>
+      <ComponentRef Id="compQWindows"/>
+    </Feature>
+  </Product>
+</Wix>
