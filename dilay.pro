@@ -9,7 +9,7 @@ test.depends = lib
 unix {
   release.commands  = $(QMAKE) -r CONFIG+=release; $(MAKE)
   debug.commands    = $(QMAKE) -r CONFIG+=debug; $(MAKE)
-  lupdate.commands  = $$QMAKE_LUPDATE $$PWD/dilay.pro -ts $$TRANSLATIONS
+  lupdate.commands  = $$QMAKE_LUPDATE $$PWD/lib/lib.pro -ts $$TRANSLATIONS
   gdb.commands      = gdb -ex run ./dilay_debug
   valgrind.commands = valgrind ./dilay_debug &> valgrind.log
   leak.commands     = valgrind --leak-check=yes ./dilay_debug &> valgrind.log
