@@ -80,12 +80,8 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
     }
   });
   fileMenu.addSeparator ();
-  addAction ( fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit
-            , [&mainWindow] ()
-  {
-    if (ViewUtil::question (mainWindow, QObject::tr ("Do you want to quit?"))) {
-      QApplication::quit ();
-    }
+  addAction (fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit , [&mainWindow] () {
+    mainWindow.close ();
   });
   addAction (editMenu, QObject::tr ("&Undo"), QKeySequence::Undo, [&glWidget] () {
     glWidget.state ().undo ();

@@ -3,6 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QApplication>
+#include <QCloseEvent>
 #include <QLabel>
 #include <QMenu>
 #include <QShortcut>
@@ -15,6 +16,7 @@
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/tool-tip.hpp"
+#include "view/util.hpp"
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
@@ -45,13 +47,13 @@ struct ViewMainWindow :: Impl {
       QObject::connect (s, &QShortcut::activated, f);
     };
 
-    addShortcut (Qt::Key_Backspace, [this] () {
+    addShortcut (Qt::Key_Escape, [this] () {
       if (this->mainWidget.glWidget ().state ().hasTool ()) {
         this->mainWidget.glWidget ().state ().resetTool ();
       }
 #ifndef NDEBUG
       else {
-        QApplication::quit ();
+        this->self->close ();
       }
 #endif
     });
@@ -105,6 +107,19 @@ struct ViewMainWindow :: Impl {
   void showNumFaces (unsigned int n) {
     this->numFacesLabel.setText (QString::number (n).append (" faces"));
   }
+
+  void closeEvent (QCloseEvent* e) {
+#ifndef NDEBUG
+    e->accept ();
+#else
+    if (ViewUtil::question (*this->self, QObject::tr ("Do you want to quit?"))) {
+      e->accept ();
+    }
+    else {
+      e->ignore ();
+    }
+#endif
+  }
 };
 
 DELEGATE2_BIG2_SELF (ViewMainWindow, Config&, Cache&)
@@ -113,3 +128,4 @@ DELEGATE1 (void           , ViewMainWindow, showMessage, const QString&)
 DELEGATE1 (void           , ViewMainWindow, showToolTip, const ViewToolTip&)
 DELEGATE  (void           , ViewMainWindow, showDefaultToolTip)
 DELEGATE1 (void           , ViewMainWindow, showNumFaces, unsigned int)
+DELEGATE1 (void           , ViewMainWindow, closeEvent, QCloseEvent*)

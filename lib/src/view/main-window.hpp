@@ -10,6 +10,7 @@
 
 class Cache;
 class Config;
+class QCloseEvent;
 class ViewMainWidget;
 class ViewToolTip;
 
@@ -23,6 +24,9 @@ class ViewMainWindow : public QMainWindow {
     void            showToolTip        (const ViewToolTip&);
     void            showDefaultToolTip ();
     void            showNumFaces       (unsigned int);
+
+  protected:
+    void            closeEvent         (QCloseEvent*);
 
   private:
     IMPLEMENTATION
