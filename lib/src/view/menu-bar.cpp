@@ -48,10 +48,17 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
                                                               , QObject::tr ("Open")
                                                               , getFileDialogPath (scene)
                                                               , "*.obj" ).toStdString ();
-    if (fileName.empty () == false && scene.fromObjFile (fileName) == false) {
-      ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
+    if (fileName.empty () == false) {
+      if ( scene.isEmpty () == false 
+        && ViewUtil::question (mainWindow, QObject::tr ("Replace existent scene?")))
+      {
+        scene.reset ();
+      }
+      if (scene.fromObjFile (fileName) == false) {
+        ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
+      }
+      mainWindow.update ();
     }
-    mainWindow.update ();
   });
   QAction& saveAsAction = addAction ( fileMenu, QObject::tr ("Save &as...")
                                     , QKeySequence::SaveAs
