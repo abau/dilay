@@ -29,7 +29,7 @@ class Scene : public Configurable {
     void               printStatistics   (bool) const;
     void               forEachMesh       (const std::function <void (WingedMesh&)>&);
     void               forEachConstMesh  (const std::function <void (const WingedMesh&)>&) const;
-    void               reset             (bool = true);
+    void               reset             ();
     const RenderMode&  commonRenderMode  () const;
     void               commonRenderMode  (const RenderMode&);
     bool               isEmpty           () const;

@@ -81,12 +81,9 @@ struct Scene :: Impl {
     this->wingedMeshes.forEachConstElement (f);
   }
 
-  void reset (bool resetFileName) {
+  void reset () {
     this->wingedMeshes.reset ();
-
-    if (resetFileName) {
-      this->fileName.clear ();
-    }
+    this->fileName    .clear ();
   }
 
   const RenderMode& commonRenderMode () {
@@ -123,7 +120,7 @@ struct Scene :: Impl {
       }
     });
     if (this->isEmpty ()) {
-      this->reset (true);
+      this->reset ();
     }
   }
 
@@ -199,7 +196,7 @@ DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFa
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
-DELEGATE1       (void              , Scene, reset, bool)
+DELEGATE        (void              , Scene, reset)
 DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
 DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)
 DELEGATE_CONST  (bool              , Scene, isEmpty)

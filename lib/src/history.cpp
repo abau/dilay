@@ -44,7 +44,9 @@ namespace {
   }
 
   void resetToSnapshot (const SceneSnapshot& snapshot, Scene& scene) {
-    scene.reset (false);
+    std::string sceneFileName = scene.fileName ();
+    scene.reset    ();
+    scene.fileName (sceneFileName);
 
     for (const MeshSnapshot& meshSnapshot : snapshot) {
       scene.newWingedMesh (meshSnapshot.mesh);
