@@ -47,7 +47,8 @@ struct Scene :: Impl {
   }
 
   void deleteMesh (WingedMesh& mesh) {
-    return this->wingedMeshes.deleteElement (mesh);
+    this->wingedMeshes.deleteElement (mesh);
+    this->resetIfEmpty ();
   }
 
   WingedMesh* wingedMesh (unsigned int index) const { 
@@ -86,6 +87,12 @@ struct Scene :: Impl {
     this->fileName    .clear ();
   }
 
+  void resetIfEmpty () {
+    if (this->isEmpty ()) {
+      this->reset ();
+    }
+  }
+
   const RenderMode& commonRenderMode () {
     return this->_commonRenderMode;
   }
@@ -119,9 +126,6 @@ struct Scene :: Impl {
         this->deleteMesh (mesh);
       }
     });
-    if (this->isEmpty ()) {
-      this->reset ();
-    }
   }
 
   bool hasFileName () const {
