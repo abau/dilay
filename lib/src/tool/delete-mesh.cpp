@@ -28,7 +28,7 @@ struct ToolDeleteMesh::Impl {
         Scene& scene = this->self->state ().scene ();
         this->self->snapshotScene ();
         scene.deleteMesh (intersection.mesh ());
-        if (scene.numWingedMeshes () == 0) {
+        if (scene.isEmpty ()) {
           scene.reset ();
         }
         return ToolResponse::Redraw;

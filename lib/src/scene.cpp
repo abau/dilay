@@ -100,6 +100,10 @@ struct Scene :: Impl {
     });
   }
 
+  bool isEmpty () const {
+    return this->numWingedMeshes () == 0;
+  }
+
   unsigned int numWingedMeshes () const {
     return this->wingedMeshes.numElements ();
   }
@@ -118,7 +122,7 @@ struct Scene :: Impl {
         this->deleteMesh (mesh);
       }
     });
-    if (this->numWingedMeshes () == 0) {
+    if (this->isEmpty ()) {
       this->reset (true);
     }
   }
@@ -198,6 +202,7 @@ DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::functio
 DELEGATE1       (void              , Scene, reset, bool)
 DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
 DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)
+DELEGATE_CONST  (bool              , Scene, isEmpty)
 DELEGATE_CONST  (unsigned int      , Scene, numWingedMeshes)
 DELEGATE_CONST  (unsigned int      , Scene, numFaces)
 DELEGATE        (void              , Scene, deleteEmptyMeshes)

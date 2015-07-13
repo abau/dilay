@@ -68,7 +68,7 @@ struct History::Impl {
   }
 
   void snapshot (const Scene& scene) {
-    if (scene.numWingedMeshes () > 0) {
+    if (scene.isEmpty () == false) {
       this->future.clear ();
 
       while (this->past.size () >= this->undoDepth) {

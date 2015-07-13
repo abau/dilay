@@ -32,6 +32,7 @@ class Scene : public Configurable {
     void               reset             (bool = true);
     const RenderMode&  commonRenderMode  () const;
     void               commonRenderMode  (const RenderMode&);
+    bool               isEmpty           () const;
     unsigned int       numWingedMeshes   () const;
     unsigned int       numFaces          () const;
     void               deleteEmptyMeshes ();
