@@ -6,6 +6,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMenuBar>
+#include "history.hpp"
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -49,10 +50,14 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
                                                               , getFileDialogPath (scene)
                                                               , "*.obj" ).toStdString ();
     if (fileName.empty () == false) {
-      if ( scene.isEmpty () == false 
-        && ViewUtil::question (mainWindow, QObject::tr ("Replace existent scene?")))
-      {
-        scene.reset ();
+      if (scene.isEmpty () == false) {
+        if (ViewUtil::question (mainWindow, QObject::tr ("Replace existent scene?"))) {
+          scene.reset ();
+          glWidget.state ().history ().reset ();
+        }
+        else {
+          glWidget.state ().history ().snapshot (scene);
+        }
       }
       if (scene.fromObjFile (fileName) == false) {
         ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));

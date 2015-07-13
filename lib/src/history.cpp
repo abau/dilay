@@ -120,6 +120,11 @@ struct History::Impl {
     }
   }
 
+  void reset () {
+    this->past  .clear ();
+    this->future.clear ();
+  }
+
   void runFromConfig (const Config& config) {
     this->undoDepth = config.get <int> ("editor/undo-depth");
   }
@@ -132,4 +137,5 @@ DELEGATE1       (void, History, undo, Scene&)
 DELEGATE1       (void, History, redo, Scene&)
 DELEGATE1       (void, History, runFromConfig, const Config&)
 DELEGATE_CONST  (bool, History, hasRecentOctrees)
+DELEGATE        (void, History, reset)
 DELEGATE1_CONST (void, History, forEachRecentOctree, const std::function <void (const Mesh&, const Octree&)>)
