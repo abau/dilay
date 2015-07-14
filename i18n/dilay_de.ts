@@ -287,5 +287,9 @@
         <source>Use and redistribute under the terms of the GNU General Public License</source>
         <translation>Benutzung und Weiterverbreitung gemäß den Bedingungen der GNU General Public License</translation>
     </message>
+    <message>
+        <source>Replace existent scene?</source>
+        <translation>Vorhandene Szene ersetzen?</translation>
+    </message>
 </context>
 </TS>
