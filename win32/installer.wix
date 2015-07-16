@@ -49,15 +49,6 @@
             <File Name="Qt5Xml.dll" KeyPath="yes" />
           </Component>
           
-          <Directory Id="dirTranslations" Name="translations">
-            <Component Id="compDilayDe" Guid="*">
-              <File Name="dilay_de.qm" KeyPath="yes" />
-            </Component>
-            <Component Id="compQtBaseDe" Guid="*">
-              <File Name="qtbase_de.qm" KeyPath="yes" />
-            </Component>
-          </Directory>
-          
           <Directory Id="dirPlatforms" Name="platforms">
             <Component Id="compQWindows" Guid="*">
               <File Name="qwindows.dll" KeyPath="yes" />
@@ -88,8 +79,6 @@
       <ComponentRef Id="compQt5Gui"/>
       <ComponentRef Id="compQt5Widgets"/>
       <ComponentRef Id="compQt5Xml"/>
-      <ComponentRef Id="compDilayDe"/>
-      <ComponentRef Id="compQtBaseDe"/>
       <ComponentRef Id="compQWindows"/>
     </Feature>
   </Product>

@@ -1,5 +1,4 @@
 include (../common.pri)
-include (../translations.pri)
 
 TEMPLATE        = app
 DESTDIR         = $$OUT_PWD/..
@@ -44,15 +43,5 @@ unix {
   PRE_TARGETDEPS += $$OUT_PWD/../lib/libdilay.a
 
   target.path     = $$PREFIX/bin/
-  qm.files        = $$OUT_PWD/translations/
-  qm.path         = $$PREFIX/share/$$TARGET
-  INSTALLS       += target qm
+  INSTALLS       += target
 }
-
-compile_ts.commands  = $$QMAKE_LRELEASE ${QMAKE_FILE_NAME} -qm ${QMAKE_FILE_OUT}
-compile_ts.depends   = $$TRANSLATIONS
-compile_ts.input     = TRANSLATIONS
-compile_ts.output    = $$OUT_PWD/translations/${QMAKE_FILE_BASE}.qm
-compile_ts.CONFIG   += no_link target_predeps
-
-QMAKE_EXTRA_COMPILERS += compile_ts
