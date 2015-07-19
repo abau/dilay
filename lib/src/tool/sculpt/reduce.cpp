@@ -27,8 +27,7 @@ struct ToolSculptReduce::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBReduceParameters> ();
 
-    ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.1f, params.intensity ()
-                                                       , 0.9f, 0.05f );
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider (2, 0.1f, params.intensity (), 0.9f);
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);

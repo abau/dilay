@@ -59,14 +59,15 @@ QCheckBox& ViewUtil :: checkBox (const QString& label, bool isChecked) {
   return box;
 }
 
-ViewDoubleSlider& ViewUtil :: slider ( float min, float value, float max
-                                     , float stepSize, unsigned short order )
+ViewDoubleSlider& ViewUtil :: slider ( unsigned short numDecimals
+                                     , float min, float value, float max
+                                     , unsigned short order )
 {
-  ViewDoubleSlider& slider = *new ViewDoubleSlider (2, order);
+  ViewDoubleSlider& slider = *new ViewDoubleSlider (numDecimals, order);
   slider.setDoubleRange       (min, max);
   slider.setDoubleValue       (value);
-  slider.setDoubleSingleStep  (stepSize);
-  slider.setDoublePageStep    (max);
+  slider.setDoubleSingleStep  ((max - min) / 10.0f);
+  slider.setDoublePageStep    ((max - min) / 10.0f);
   slider.setTracking          (true);
   slider.setOrientation       (Qt::Horizontal);
   return slider;

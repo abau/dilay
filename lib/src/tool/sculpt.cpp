@@ -41,7 +41,7 @@ struct ToolSculpt::Impl {
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
-    , radiusEdit  (ViewUtil::slider  (0.01f, 0.01f, 1.0f, 0.05f, 3))
+    , radiusEdit  (ViewUtil::slider  (2, 0.01f, 0.01f, 1.0f, 3))
   {
     if (this->commonCache.get <bool> ("mirror", true)) {
       this->mirror.reset (new Mirror (this->self->config (), Dimension::X));

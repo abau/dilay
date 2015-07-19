@@ -41,8 +41,7 @@ struct ToolSculptDrag::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBDraglikeParameters> ();
 
-    ViewDoubleSlider& smoothnessEdit = ViewUtil::slider ( 0.0f, params.smoothness ()
-                                                        , 1.0f, 0.1f );
+    ViewDoubleSlider& smoothnessEdit = ViewUtil::slider (2, 0.0f, params.smoothness (), 1.0f);
     ViewUtil::connect (smoothnessEdit, [this,&params] (float f) {
       params.smoothness (f);
       this->self->cache ().set ("smoothness", f);

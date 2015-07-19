@@ -29,8 +29,7 @@ struct ToolSculptSmooth::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBSmoothParameters> ();
 
-    ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.1f, params.intensity ()
-                                                       , 1.0f, 0.1f );
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider (2, 0.1f, params.intensity (), 1.0f);
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);

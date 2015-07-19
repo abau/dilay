@@ -28,8 +28,7 @@ struct ToolSculptCarve::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBCarveParameters> ();
 
-    ViewDoubleSlider& intensityEdit = ViewUtil::slider ( 0.0f, params.intensity ()
-                                                       , 0.1f, 0.01f );
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider (3, 0.0f, params.intensity (), 0.1f);
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);

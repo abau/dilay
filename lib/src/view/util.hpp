@@ -29,7 +29,7 @@ namespace ViewUtil {
   QToolButton&      toolButton     (const QString&);
   QRadioButton&     radioButton    (const QString&, bool = false);
   QCheckBox&        checkBox       (const QString&, bool = false);
-  ViewDoubleSlider& slider         (float, float, float, float, unsigned short = 1);
+  ViewDoubleSlider& slider         (unsigned short, float, float, float, unsigned short = 1);
   QFrame&           horizontalLine ();
   glm::uvec2        toUVec2        (const QPoint&);
   glm::uvec2        toUVec2        (const QMouseEvent&);
