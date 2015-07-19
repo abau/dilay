@@ -18,7 +18,7 @@ struct ToolSculptCarve::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.parameters <SBCarveParameters> ();
 
-    params.intensity (this->self->cache ().get <float> ("intensity", 0.03f));
+    params.intensity (this->self->cache ().get <float> ("intensity", 0.02f));
     params.invert    (this->self->cache ().get <bool>  ("invert",    false));
     params.inflate   (this->self->cache ().get <bool>  ("inflate",   false));
   }
@@ -28,7 +28,7 @@ struct ToolSculptCarve::Impl {
   void runSetupProperties (ViewPropertiesPart& properties) {
     auto& params = this->self->brush ().parameters <SBCarveParameters> ();
 
-    ViewDoubleSlider& intensityEdit = ViewUtil::slider (3, 0.0f, params.intensity (), 0.1f);
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider (3, 0.0f, params.intensity (), 0.05f);
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);

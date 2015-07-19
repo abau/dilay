@@ -284,7 +284,7 @@ struct SculptBrush :: Impl {
 
   bool updatePointOfAction (const glm::vec3& p, const glm::vec3& d) {
     if (this->hasPosition) {
-      const float stepWidth = this->stepWidthFactor * this->self->radius ();
+      const float stepWidth = this->stepWidthFactor * glm::log (this->self->radius () + 1);
 
       if (glm::distance2 (p, this->_position) > stepWidth * stepWidth) {
         this->_lastPosition = this->_position;
