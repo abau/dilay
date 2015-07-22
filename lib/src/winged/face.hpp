@@ -18,7 +18,7 @@ class WingedMesh;
 class WingedFace {
   public:                      
     WingedFace (unsigned int);
-    WingedFace (const WingedFace&)  = default;
+    WingedFace (const WingedFace&)  = delete;
     WingedFace (      WingedFace&&) = default;
 
     bool          operator==       (const WingedFace&) const;
