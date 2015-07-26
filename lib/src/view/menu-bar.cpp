@@ -58,7 +58,7 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
           glWidget.state ().history ().snapshot (scene);
         }
       }
-      if (scene.fromObjFile (fileName) == false) {
+      if (scene.fromObjFile (glWidget.state ().config (), fileName) == false) {
         ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
       }
       mainWindow.update ();

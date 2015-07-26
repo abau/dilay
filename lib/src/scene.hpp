@@ -20,7 +20,7 @@ class Scene : public Configurable {
   public: 
     DECLARE_BIG3 (Scene, const Config&)
 
-    WingedMesh&        newWingedMesh     (const Mesh&);
+    WingedMesh&        newWingedMesh     (const Config&, const Mesh&);
     void               deleteMesh        (WingedMesh&);
     WingedMesh*        wingedMesh        (unsigned int) const;
     void               render            (Camera&);
@@ -40,7 +40,7 @@ class Scene : public Configurable {
     void               fileName          (const std::string&);
     bool               toObjFile         ();
     bool               toObjFile         (const std::string&);
-    bool               fromObjFile       (const std::string&);
+    bool               fromObjFile       (const Config&, const std::string&);
 
     SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
   private:

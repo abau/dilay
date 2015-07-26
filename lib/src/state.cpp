@@ -18,6 +18,7 @@
 #include "view/properties.hpp"
 
 struct State::Impl {
+  State*                 self;
   ViewMainWindow&        mainWindow;
   Config&                config;
   Cache&                 cache;
@@ -26,15 +27,16 @@ struct State::Impl {
   Scene                  scene;
   std::unique_ptr <Tool> toolPtr;
 
-  Impl (ViewMainWindow& mW, Config& cfg, Cache& cch) 
-    : mainWindow (mW) 
+  Impl (State* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
+    : self       (s)
+    , mainWindow (mW) 
     , config     (cfg)
     , cache      (cch)
     , camera     (this->config)
     , history    (this->config)
     , scene      (this->config)
   {
-    this->scene.newWingedMesh (MeshUtil::icosphere (3));
+    this->scene.newWingedMesh (this->config, MeshUtil::icosphere (3));
   }
 
   ~Impl () {
@@ -88,12 +90,12 @@ struct State::Impl {
   }
 
   void undo () {
-    this->history.undo (this->scene);
+    this->history.undo (*this->self);
     this->mainWindow.update ();
   }
 
   void redo () {
-    this->history.redo (this->scene);
+    this->history.redo (*this->self);
     this->mainWindow.update ();
   }
 
@@ -112,7 +114,7 @@ struct State::Impl {
   }
 };
 
-DELEGATE3_BIG2 (State, ViewMainWindow&, Config&, Cache&)
+DELEGATE3_BIG2_SELF (State, ViewMainWindow&, Config&, Cache&)
 
 GETTER    (ViewMainWindow&   , State, mainWindow)
 GETTER    (Config&           , State, config)

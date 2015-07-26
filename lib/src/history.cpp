@@ -10,6 +10,7 @@
 #include "mesh.hpp"
 #include "octree.hpp"
 #include "scene.hpp"
+#include "state.hpp"
 #include "winged/mesh.hpp"
 
 namespace {
@@ -43,13 +44,14 @@ namespace {
     return snapshot;
   }
 
-  void resetToSnapshot (const SceneSnapshot& snapshot, Scene& scene) {
+  void resetToSnapshot (const SceneSnapshot& snapshot, State& state) {
+    Scene&      scene         = state.scene ();
     std::string sceneFileName = scene.fileName ();
     scene.reset    ();
     scene.fileName (sceneFileName);
 
     for (const MeshSnapshot& meshSnapshot : snapshot) {
-      scene.newWingedMesh (meshSnapshot.mesh);
+      scene.newWingedMesh (state.config (), meshSnapshot.mesh);
     }
   }
 
@@ -89,21 +91,21 @@ struct History::Impl {
     }
   }
 
-  void undo (Scene& scene) {
+  void undo (State& state) {
     if (this->past.empty () == false) {
-      this->future.push_front (std::move (sceneSnapshot (scene, false)));
-      resetToSnapshot (this->past.front (), scene);
+      this->future.push_front (std::move (sceneSnapshot (state.scene (), false)));
+      resetToSnapshot (this->past.front (), state);
       this->past.pop_front ();
     }
   }
 
-  void redo (Scene& scene) {
+  void redo (State& state) {
     if (this->future.empty () == false) {
       if (this->past.empty () == false) {
         deleteOctreeSnapshot (this->past.front ());
       }
-      this->past.push_front (std::move (sceneSnapshot (scene, false)));
-      resetToSnapshot (this->future.front (), scene);
+      this->past.push_front (std::move (sceneSnapshot (state.scene (), false)));
+      resetToSnapshot (this->future.front (), state);
       this->future.pop_front ();
     }
   }
@@ -133,8 +135,8 @@ struct History::Impl {
 DELEGATE1_BIG3  (History, const Config&)
 DELEGATE1       (void, History, snapshot, const Scene&)
 DELEGATE        (void, History, dropSnapshot)
-DELEGATE1       (void, History, undo, Scene&)
-DELEGATE1       (void, History, redo, Scene&)
+DELEGATE1       (void, History, undo, State&)
+DELEGATE1       (void, History, redo, State&)
 DELEGATE1       (void, History, runFromConfig, const Config&)
 DELEGATE_CONST  (bool, History, hasRecentOctrees)
 DELEGATE        (void, History, reset)

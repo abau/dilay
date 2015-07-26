@@ -14,27 +14,24 @@
 #include "winged/util.hpp"
 
 struct Scene :: Impl {
-  const ConfigProxy          wingedMeshConfig;
   IndexableList <WingedMesh> wingedMeshes;
   RenderMode                _commonRenderMode;
   std::string                fileName;
 
-  Impl (const Config& config) 
-    : wingedMeshConfig (ConfigProxy (config, "editor/mesh/"))
-  {
+  Impl (const Config& config) {
     this->runFromConfig (config);
 
     this->_commonRenderMode.smoothShading (true);
   }
 
-  WingedMesh& newWingedMesh (const Mesh& mesh) {
+  WingedMesh& newWingedMesh (const Config& config, const Mesh& mesh) {
     WingedMesh& wingedMesh = this->wingedMeshes.emplace ();
 
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
     wingedMesh.renderMode () = this->_commonRenderMode;
 
-    this->runFromConfig (wingedMesh);
+    this->runFromConfig (config, wingedMesh);
     return wingedMesh;
   }
 
@@ -148,7 +145,7 @@ struct Scene :: Impl {
     return this->toObjFile ();
   }
 
-  bool fromObjFile (const std::string& newFileName) {
+  bool fromObjFile (const Config& config, const std::string& newFileName) {
     this->fileName = newFileName;
 
     std::ifstream      file (this->fileName);
@@ -156,7 +153,7 @@ struct Scene :: Impl {
 
     if (file.is_open () && MeshUtil::fromObjFile (file, meshes)) {
       for (Mesh& m : meshes) {
-        this->newWingedMesh (m);
+        this->newWingedMesh (config, m);
       }
       file.close ();
       return true;
@@ -167,23 +164,23 @@ struct Scene :: Impl {
     }
   }
   
-  void runFromConfig (WingedMesh& mesh) {
-    mesh.color          (this->wingedMeshConfig.get <Color> ("color/normal"));
-    mesh.wireframeColor (this->wingedMeshConfig.get <Color> ("color/wireframe"));
+  void runFromConfig (const Config& config, WingedMesh& mesh) {
+    ConfigProxy wingedMeshConfig (config, "editor/mesh/");
+
+    mesh.color          (wingedMeshConfig.get <Color> ("color/normal"));
+    mesh.wireframeColor (wingedMeshConfig.get <Color> ("color/wireframe"));
   }
 
   void runFromConfig (const Config& config) {
-    assert (&config == &this->wingedMeshConfig.config ());
-
-    this->forEachMesh ([this] (WingedMesh& mesh) {
-      this->runFromConfig (mesh);
+    this->forEachMesh ([this, &config] (WingedMesh& mesh) {
+      this->runFromConfig (config, mesh);
     });
   }
 };
 
 DELEGATE1_BIG3 (Scene, const Config&)
 
-DELEGATE1       (WingedMesh&       , Scene, newWingedMesh, const Mesh&)
+DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
 DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
 DELEGATE1_CONST (WingedMesh*       , Scene, wingedMesh, unsigned int)
 DELEGATE1       (void              , Scene, render, Camera&)
@@ -203,5 +200,5 @@ GETTER_CONST    (const std::string&, Scene, fileName)
 SETTER          (const std::string&, Scene, fileName)
 DELEGATE        (bool              , Scene, toObjFile)
 DELEGATE1       (bool              , Scene, toObjFile, const std::string&)
-DELEGATE1       (bool              , Scene, fromObjFile, const std::string&)
+DELEGATE2       (bool              , Scene, fromObjFile, const Config&, const std::string&)
 DELEGATE1       (void              , Scene, runFromConfig, const Config&)

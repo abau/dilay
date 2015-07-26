@@ -15,7 +15,8 @@ struct ToolNewMesh::Impl {
 
   ToolResponse runInitialize () const {
     this->self->snapshotScene ();
-    this->self->state ().scene ().newWingedMesh (MeshUtil::icosphere (3));
+    this->self->state ().scene ().newWingedMesh ( this->self->state ().config ()
+                                                , MeshUtil::icosphere (3) );
     return ToolResponse::Terminate;
   }
 };

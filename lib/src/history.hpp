@@ -11,6 +11,7 @@
 class Mesh;
 class Octree;
 class Scene;
+class State;
 
 class History : public Configurable {
   public: 
@@ -18,8 +19,8 @@ class History : public Configurable {
 
     void snapshot            (const Scene&);
     void dropSnapshot        ();
-    void undo                (Scene&);
-    void redo                (Scene&);
+    void undo                (State&);
+    void redo                (State&);
     bool hasRecentOctrees    () const;
     void forEachRecentOctree (const std::function <void (const Mesh&, const Octree&)>) const;
     void reset               ();
