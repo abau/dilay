@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QColor>
-#include <fstream>
 #include <glm/glm.hpp>
 #include "color.hpp"
 

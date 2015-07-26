@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QMouseEvent>
-#include "history.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"

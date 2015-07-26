@@ -2,13 +2,11 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/glm.hpp>
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
-#include "winged/vertex.hpp"
 
 struct AffectedFaces::Impl {
   FacePtrSet faces;

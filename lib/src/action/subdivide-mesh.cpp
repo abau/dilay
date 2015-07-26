@@ -5,11 +5,9 @@
 #include <glm/glm.hpp>
 #include "action/subdivide-mesh.hpp"
 #include "affected-faces.hpp"
-#include "octree.hpp"
 #include "partial-action/insert-edge-vertex.hpp"
 #include "partial-action/triangulate-6-gon.hpp"
 #include "subdivision-butterfly.hpp"
-#include "winged/edge.hpp"
 #include "winged/mesh.hpp"
 
 void Action::subdivideMesh (WingedMesh& mesh) {

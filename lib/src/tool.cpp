@@ -2,11 +2,8 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QMouseEvent>
-#include <glm/glm.hpp>
 #include "cache.hpp"
 #include "camera.hpp"
-#include "config.hpp"
 #include "history.hpp"
 #include "octree.hpp"
 #include "primitive/ray.hpp"
@@ -16,7 +13,6 @@
 #include "view/gl-widget.hpp"
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 

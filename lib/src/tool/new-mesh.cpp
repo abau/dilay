@@ -2,8 +2,6 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/glm.hpp>
-#include "history.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
 #include "scene.hpp"

@@ -3,8 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <algorithm>
-#include <limits>
-#include "indexable.hpp"
 #include "maybe.hpp"
 #include "mesh.hpp"
 #include "octree.hpp"

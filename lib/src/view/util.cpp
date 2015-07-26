@@ -5,16 +5,13 @@
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QDoubleSpinBox>
-#include <QFrame>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QSpinBox>
 #include <QToolButton>
 #include <glm/glm.hpp>
-#include <limits>
 #include "view/double-slider.hpp"
 #include "view/util.hpp"
 

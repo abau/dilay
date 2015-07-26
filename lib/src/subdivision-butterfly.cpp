@@ -2,15 +2,12 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <vector>
 #include "adjacent-iterator.hpp"
 #include "subdivision-butterfly.hpp"
 #include "winged/edge.hpp"
-#include "winged/face.hpp"
-#include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 
 namespace {

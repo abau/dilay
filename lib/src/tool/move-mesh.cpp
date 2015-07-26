@@ -8,8 +8,6 @@
 #include <glm/glm.hpp>
 #include "../util.hpp"
 #include "cache.hpp"
-#include "history.hpp"
-#include "scene.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"

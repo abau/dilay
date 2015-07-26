@@ -2,7 +2,6 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <cassert>
 #include "adjacent-iterator.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"

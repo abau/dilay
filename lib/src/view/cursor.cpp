@@ -3,8 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/glm.hpp>
-#include "camera.hpp"
-#include "color.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
 #include "opengl.hpp"

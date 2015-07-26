@@ -2,8 +2,6 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/glm.hpp>
-#include <utility>
 #include "winged/face-intersection.hpp"
 
 struct WingedFaceIntersection::Impl {

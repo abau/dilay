@@ -7,7 +7,6 @@
 #include "indexable.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
-#include "primitive/ray.hpp"
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "winged/face-intersection.hpp"

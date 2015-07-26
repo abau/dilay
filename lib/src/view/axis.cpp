@@ -9,12 +9,10 @@
 #include "color.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
-#include "macro.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
-#include "state.hpp"
 #include "view/axis.hpp"
 
 struct ViewAxis::Impl {

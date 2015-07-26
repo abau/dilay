@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QWheelEvent>
-#include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include "camera.hpp"
 #include "config.hpp"

@@ -4,7 +4,6 @@
  */
 #include "opengl.hpp"
 #include "opengl-buffer-id.hpp"
-#include "util.hpp"
 
 OpenGLBufferId :: OpenGLBufferId () 
   : _id (0)

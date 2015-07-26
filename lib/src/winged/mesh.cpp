@@ -2,22 +2,16 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/glm.hpp>
-#include <unordered_map>
 #include "../mesh.hpp"
 #include "../util.hpp"
 #include "action/finalize.hpp"
-#include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "hash.hpp"
 #include "indexable.hpp"
 #include "intersection.hpp"
 #include "mesh-util.hpp"
 #include "octree.hpp"
-#include "primitive/ray.hpp"
-#include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
-#include "render-mode.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/face-intersection.hpp"

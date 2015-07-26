@@ -2,7 +2,6 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/glm.hpp>
 #include <memory>
 #include "cache.hpp"
 #include "camera.hpp"

@@ -8,7 +8,6 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "winged/vertex.hpp"
 
 void PartialAction :: triangulate6Gon ( WingedMesh& mesh, WingedFace& f
                                       , AffectedFaces& affectedFaces ) 

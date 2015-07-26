@@ -7,7 +7,6 @@
 #include "adjacent-iterator.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
-#include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
   
 WingedEdge :: WingedEdge (unsigned int i) 

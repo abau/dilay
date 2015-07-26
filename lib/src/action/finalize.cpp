@@ -6,7 +6,6 @@
 #include "affected-faces.hpp"
 #include "octree.hpp"
 #include "partial-action/collapse-face.hpp"
-#include "primitive/triangle.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 

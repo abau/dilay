@@ -5,7 +5,6 @@
 #include <glm/glm.hpp>
 #include "color.hpp"
 #include "config.hpp"
-#include "macro.hpp"
 #include "opengl.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"

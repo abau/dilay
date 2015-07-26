@@ -3,10 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QObject>
-#include <QString>
-#include <algorithm>
-#include <tuple>
-#include <vector>
 #include "view/tool-tip.hpp"
 
 namespace {

@@ -2,10 +2,8 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QApplication>
 #include <QCloseEvent>
 #include <QLabel>
-#include <QMenu>
 #include <QShortcut>
 #include <QStatusBar>
 #include "scene.hpp"
@@ -16,7 +14,6 @@
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/tool-tip.hpp"
-#include "view/util.hpp"
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;

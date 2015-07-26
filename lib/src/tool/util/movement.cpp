@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QMouseEvent>
-#include <glm/glm.hpp>
 #include "../../util.hpp"
 #include "camera.hpp"
 #include "dimension.hpp"

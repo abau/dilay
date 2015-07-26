@@ -2,13 +2,11 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/glm.hpp>
 #include <iostream>
 #include "../util.hpp"
 #include "adjacent-iterator.hpp"
 #include "octree.hpp"
 #include "primitive/triangle.hpp"
-#include "util.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"

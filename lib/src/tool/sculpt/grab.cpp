@@ -3,8 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
-#include <QMouseEvent>
-#include <glm/glm.hpp>
 #include "cache.hpp"
 #include "sculpt-brush.hpp"
 #include "state.hpp"
