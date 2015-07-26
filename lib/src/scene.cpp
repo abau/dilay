@@ -27,15 +27,8 @@ struct Scene :: Impl {
     this->_commonRenderMode.smoothShading (true);
   }
 
-  WingedMesh& newWingedMesh () {
-    WingedMesh& newWMesh = this->wingedMeshes.emplace ();
-
-    newWMesh.renderMode () = this->_commonRenderMode;
-    return newWMesh;
-  }
-
   WingedMesh& newWingedMesh (const Mesh& mesh) {
-    WingedMesh& wingedMesh = this->newWingedMesh ();
+    WingedMesh& wingedMesh = this->wingedMeshes.emplace ();
 
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
@@ -190,7 +183,6 @@ struct Scene :: Impl {
 
 DELEGATE1_BIG3 (Scene, const Config&)
 
-DELEGATE        (WingedMesh&       , Scene, newWingedMesh)
 DELEGATE1       (WingedMesh&       , Scene, newWingedMesh, const Mesh&)
 DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
 DELEGATE1_CONST (WingedMesh*       , Scene, wingedMesh, unsigned int)

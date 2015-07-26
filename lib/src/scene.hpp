@@ -20,7 +20,6 @@ class Scene : public Configurable {
   public: 
     DECLARE_BIG3 (Scene, const Config&)
 
-    WingedMesh&        newWingedMesh     ();
     WingedMesh&        newWingedMesh     (const Mesh&);
     void               deleteMesh        (WingedMesh&);
     WingedMesh*        wingedMesh        (unsigned int) const;
