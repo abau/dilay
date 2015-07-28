@@ -46,7 +46,8 @@ class Tool {
     bool            intersectsScene        (const glm::ivec2&, WingedFaceIntersection&);
     bool            intersectsScene        (const QMouseEvent&, WingedFaceIntersection&);
     bool            intersectsRecentOctree (const QMouseEvent&, Intersection&) const;
-    void            snapshotScene          ();
+    void            snapshotWingedMeshes   ();
+    void            snapshotSketchMeshes   ();
 
   private:
     IMPLEMENTATION

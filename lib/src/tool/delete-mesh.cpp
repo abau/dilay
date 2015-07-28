@@ -25,7 +25,7 @@ struct ToolDeleteMesh::Impl {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         Scene& scene = this->self->state ().scene ();
-        this->self->snapshotScene ();
+        this->self->snapshotWingedMeshes ();
         scene.deleteMesh (intersection.mesh ());
         return ToolResponse::Redraw;
       }

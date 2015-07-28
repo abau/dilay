@@ -101,7 +101,7 @@ struct ToolMoveMesh::Impl {
         this->mesh = &intersection.mesh ();
         this->movement.resetPosition (intersection.position ());
 
-        this->self->snapshotScene ();
+        this->self->snapshotWingedMeshes ();
       }
     }
     return ToolResponse::None;

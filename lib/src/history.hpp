@@ -17,13 +17,15 @@ class History : public Configurable {
   public: 
     DECLARE_BIG3 (History, const Config&)
 
-    void snapshot            (const Scene&);
-    void dropSnapshot        ();
-    void undo                (State&);
-    void redo                (State&);
-    bool hasRecentOctrees    () const;
-    void forEachRecentOctree (const std::function <void (const Mesh&, const Octree&)>) const;
-    void reset               ();
+    void snapshotAll          (const Scene&);
+    void snapshotWingedMeshes (const Scene&);
+    void snapshotSketchMeshes (const Scene&);
+    void dropSnapshot         ();
+    void undo                 (State&);
+    void redo                 (State&);
+    bool hasRecentOctrees     () const;
+    void forEachRecentOctree  (const std::function <void (const Mesh&, const Octree&)>) const;
+    void reset                ();
 
   private:
     IMPLEMENTATION

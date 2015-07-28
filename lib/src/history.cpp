@@ -10,53 +10,98 @@
 #include "mesh.hpp"
 #include "octree.hpp"
 #include "scene.hpp"
+#include "sketch/mesh.hpp"
 #include "state.hpp"
+#include "tree.hpp"
 #include "winged/mesh.hpp"
 
 namespace {
-  struct MeshSnapshot {
+  struct SnapshotConfig {
+    bool snapshotWingedMeshes;
+    bool copyOctree;
+    bool snapshotSketchMeshes;
+
+    SnapshotConfig (bool w, bool o, bool s)
+      : snapshotWingedMeshes (w)
+      , copyOctree           (o)
+      , snapshotSketchMeshes (s)
+    {
+      assert (!this->copyOctree || this->snapshotWingedMeshes);
+    }
+
+    SnapshotConfig withoutOctrees () const {
+      return SnapshotConfig ( this->snapshotWingedMeshes
+                            , false
+                            , this->snapshotSketchMeshes );
+    }
+  };
+
+  struct WingedMeshSnapshot {
     Mesh           mesh;
     Maybe <Octree> octree;
   };
 
-  typedef std::list <MeshSnapshot>  SceneSnapshot;
+  struct SceneSnapshot {
+    const SnapshotConfig           config;
+    std::list <WingedMeshSnapshot> wingedMeshes;
+    std::list <SketchTree>         sketchMeshes;
+
+    SceneSnapshot (const SnapshotConfig& c) : config (c) {}
+  };
+
   typedef std::list <SceneSnapshot> Timeline;
 
-  SceneSnapshot sceneSnapshot (const Scene& scene, bool copyOctree) {
-    SceneSnapshot snapshot;
+  SceneSnapshot sceneSnapshot (const Scene& scene, const SnapshotConfig& config) {
+    SceneSnapshot snapshot (config);
 
-    scene.forEachConstMesh ([copyOctree, &snapshot] (const WingedMesh& mesh) {
-      if (copyOctree) {
-        std::vector <unsigned int> newFaceIndices;
+    if (config.snapshotWingedMeshes) {
+      scene.forEachConstMesh ([&config, &snapshot] (const WingedMesh& mesh) {
+        if (config.copyOctree) {
+          std::vector <unsigned int> newFaceIndices;
 
-        MeshSnapshot meshSnapshot = { mesh.makePrunedMesh (&newFaceIndices)
-                                    , mesh.octree () };
+          WingedMeshSnapshot meshSnapshot = { mesh.makePrunedMesh (&newFaceIndices)
+                                            , mesh.octree () };
 
-        if (newFaceIndices.empty () == false) {
-          meshSnapshot.octree->rewriteIndices (newFaceIndices);
+          if (newFaceIndices.empty () == false) {
+            meshSnapshot.octree->rewriteIndices (newFaceIndices);
+          }
+          snapshot.wingedMeshes.push_back (std::move (meshSnapshot));
         }
-        snapshot.push_front (std::move (meshSnapshot));
-      }
-      else {
-        snapshot.push_front ({ mesh.makePrunedMesh (), Maybe <Octree> () });
-      }
-    });
+        else {
+          snapshot.wingedMeshes.push_back ({ mesh.makePrunedMesh (), Maybe <Octree> () });
+        }
+      });
+    }
+    if (config.snapshotSketchMeshes) {
+      scene.forEachConstMesh ([&config, &snapshot] (const SketchMesh& mesh) {
+        assert (mesh.hasRoot ());
+        snapshot.sketchMeshes.push_back (mesh.tree ());
+      });
+    }
     return snapshot;
   }
 
   void resetToSnapshot (const SceneSnapshot& snapshot, State& state) {
-    Scene&      scene         = state.scene ();
-    std::string sceneFileName = scene.fileName ();
-    scene.reset    ();
-    scene.fileName (sceneFileName);
+    Scene& scene = state.scene ();
 
-    for (const MeshSnapshot& meshSnapshot : snapshot) {
-      scene.newWingedMesh (state.config (), meshSnapshot.mesh);
+    if (snapshot.config.snapshotWingedMeshes) {
+      scene.deleteWingedMeshes ();
+
+      for (const WingedMeshSnapshot& meshSnapshot : snapshot.wingedMeshes) {
+        scene.newWingedMesh (state.config (), meshSnapshot.mesh);
+      }
+    }
+    if (snapshot.config.snapshotSketchMeshes) {
+      scene.deleteSketchMeshes ();
+
+      for (const SketchTree& tree : snapshot.sketchMeshes) {
+        scene.newSketchMesh (state.config (), tree);
+      }
     }
   }
 
   void deleteOctreeSnapshot (SceneSnapshot& sceneSnapshot) {
-    for (MeshSnapshot& meshSnapshot : sceneSnapshot) {
+    for (WingedMeshSnapshot& meshSnapshot : sceneSnapshot.wingedMeshes) {
       meshSnapshot.octree.reset ();
     }
   }
@@ -71,18 +116,28 @@ struct History::Impl {
     this->runFromConfig (config);
   }
 
-  void snapshot (const Scene& scene) {
-    if (scene.isEmpty () == false) {
-      this->future.clear ();
+  void snapshotAll (const Scene& scene) {
+    this->snapshot (scene, SnapshotConfig (true, true, true));
+  }
 
-      while (this->past.size () >= this->undoDepth) {
-        this->past.pop_back ();
-      }
-      if (this->past.empty () == false) {
-        deleteOctreeSnapshot (this->past.front ());
-      }
-      this->past.push_front (std::move (sceneSnapshot (scene, true)));
+  void snapshotWingedMeshes (const Scene& scene) {
+    this->snapshot (scene, SnapshotConfig (true, true, false));
+  }
+
+  void snapshotSketchMeshes (const Scene& scene) {
+    this->snapshot (scene, SnapshotConfig (false, false, true));
+  }
+
+  void snapshot (const Scene& scene, const SnapshotConfig& config) {
+    this->future.clear ();
+
+    while (this->past.size () >= this->undoDepth) {
+      this->past.pop_back ();
     }
+    if (this->past.empty () == false) {
+      deleteOctreeSnapshot (this->past.front ());
+    }
+    this->past.push_front (std::move (sceneSnapshot (scene, config)));
   }
 
   void dropSnapshot () {
@@ -93,7 +148,9 @@ struct History::Impl {
 
   void undo (State& state) {
     if (this->past.empty () == false) {
-      this->future.push_front (std::move (sceneSnapshot (state.scene (), false)));
+      SnapshotConfig config = this->past.front ().config.withoutOctrees ();
+
+      this->future.push_front (std::move (sceneSnapshot (state.scene (), config)));
       resetToSnapshot (this->past.front (), state);
       this->past.pop_front ();
     }
@@ -104,19 +161,23 @@ struct History::Impl {
       if (this->past.empty () == false) {
         deleteOctreeSnapshot (this->past.front ());
       }
-      this->past.push_front (std::move (sceneSnapshot (state.scene (), false)));
+      SnapshotConfig config = this->future.front ().config.withoutOctrees ();
+
+      this->past.push_front (std::move (sceneSnapshot (state.scene (), config)));
       resetToSnapshot (this->future.front (), state);
       this->future.pop_front ();
     }
   }
 
   bool hasRecentOctrees () const {
-    return this->past.empty () == false && bool (this->past.front ().front ().octree);
+    return this->past.empty () == false 
+      && this->past.front ().config.snapshotWingedMeshes
+      && bool (this->past.front ().wingedMeshes.front ().octree);
   }
 
   void forEachRecentOctree (const std::function <void (const Mesh& m, const Octree&)> f) const {
     assert (this->hasRecentOctrees ());
-    for (const MeshSnapshot& s : this->past.front ()) {
+    for (const WingedMeshSnapshot& s : this->past.front ().wingedMeshes) {
       assert (s.octree);
       f (s.mesh, *s.octree);
     }
@@ -133,7 +194,9 @@ struct History::Impl {
 };
 
 DELEGATE1_BIG3  (History, const Config&)
-DELEGATE1       (void, History, snapshot, const Scene&)
+DELEGATE1       (void, History, snapshotAll, const Scene&)
+DELEGATE1       (void, History, snapshotWingedMeshes, const Scene&)
+DELEGATE1       (void, History, snapshotSketchMeshes, const Scene&)
 DELEGATE        (void, History, dropSnapshot)
 DELEGATE1       (void, History, undo, State&)
 DELEGATE1       (void, History, redo, State&)

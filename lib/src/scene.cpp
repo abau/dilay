@@ -8,12 +8,15 @@
 #include "mesh-util.hpp"
 #include "render-mode.hpp"
 #include "scene.hpp"
+#include "sketch/mesh.hpp"
+#include "sketch/tree-intersection.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
 
 struct Scene :: Impl {
   IntrusiveIndexedList <WingedMesh> wingedMeshes;
+  IntrusiveIndexedList <SketchMesh> sketchMeshes;
   RenderMode                       _commonRenderMode;
   std::string                       fileName;
 
@@ -34,23 +37,72 @@ struct Scene :: Impl {
     return wingedMesh;
   }
 
+  SketchMesh& newSketchMesh (const Config& config, const SketchTree& tree) {
+    SketchMesh& mesh = this->sketchMeshes.emplaceBack ();
+
+    mesh.fromTree   (tree);
+    mesh.fromConfig (config);
+
+    return mesh;
+  }
+
   void deleteMesh (WingedMesh& mesh) {
     this->wingedMeshes.deleteElement (mesh);
     this->resetIfEmpty ();
+  }
+
+  void deleteMesh (SketchMesh& mesh) {
+    this->sketchMeshes.deleteElement (mesh);
+    this->resetIfEmpty ();
+  }
+
+  void deleteWingedMeshes () {
+    this->wingedMeshes.reset ();
+  }
+
+  void deleteSketchMeshes () {
+    this->sketchMeshes.reset ();
+  }
+
+  void deleteEmptyMeshes () {
+    this->forEachMesh ([this] (WingedMesh& mesh) {
+      if (mesh.numFaces () == 0) {
+        this->deleteMesh (mesh);
+      }
+    });
+    this->forEachMesh ([this] (SketchMesh& mesh) {
+      if (mesh.hasRoot () == false) {
+        this->deleteMesh (mesh);
+      }
+    });
   }
 
   WingedMesh* wingedMesh (unsigned int index) { 
     return this->wingedMeshes.get (index); 
   }
 
+  SketchMesh* sketchMesh (unsigned int index) { 
+    return this->sketchMeshes.get (index); 
+  }
+
   void render (Camera& camera) {
     this->forEachMesh ([&] (WingedMesh& m) {
+      m.render (camera);
+    });
+    this->forEachMesh ([&] (SketchMesh& m) {
       m.render (camera);
     });
   }
 
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
     this->forEachMesh ([this, &ray, &intersection] (WingedMesh& m) {
+      m.intersects (ray, intersection);
+    });
+    return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, SketchTreeIntersection& intersection) {
+    this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
       m.intersects (ray, intersection);
     });
     return intersection.isIntersection ();
@@ -66,13 +118,22 @@ struct Scene :: Impl {
     this->wingedMeshes.forEachElement (f);
   }
 
+  void forEachMesh (const std::function <void (SketchMesh&)>& f) {
+    this->sketchMeshes.forEachElement (f);
+  }
+
   void forEachConstMesh (const std::function <void (const WingedMesh&)>& f) const {
     this->wingedMeshes.forEachConstElement (f);
   }
 
+  void forEachConstMesh (const std::function <void (const SketchMesh&)>& f) const {
+    this->sketchMeshes.forEachConstElement (f);
+  }
+
   void reset () {
-    this->wingedMeshes.reset ();
-    this->fileName    .clear ();
+    this->deleteWingedMeshes ();
+    this->deleteSketchMeshes ();
+    this->fileName.clear ();
   }
 
   void resetIfEmpty () {
@@ -93,11 +154,15 @@ struct Scene :: Impl {
   }
 
   bool isEmpty () const {
-    return this->numWingedMeshes () == 0;
+    return this->numWingedMeshes () == 0 && this->numSketchMeshes () == 0;
   }
 
   unsigned int numWingedMeshes () const {
     return this->wingedMeshes.numElements ();
+  }
+
+  unsigned int numSketchMeshes () const {
+    return this->sketchMeshes.numElements ();
   }
 
   unsigned int numFaces () const {
@@ -106,14 +171,6 @@ struct Scene :: Impl {
       n = n + mesh.numFaces ();
     });
     return n;
-  }
-
-  void deleteEmptyMeshes () {
-    this->forEachMesh ([this] (WingedMesh& mesh) {
-      if (mesh.numFaces () == 0) {
-        this->deleteMesh (mesh);
-      }
-    });
   }
 
   bool hasFileName () const {
@@ -174,26 +231,38 @@ struct Scene :: Impl {
     this->forEachMesh ([this, &config] (WingedMesh& mesh) {
       this->runFromConfig (config, mesh);
     });
+    this->forEachMesh ([this, &config] (SketchMesh& mesh) {
+      mesh.fromConfig (config);
+    });
   }
 };
 
 DELEGATE1_BIG3 (Scene, const Config&)
 
 DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
+DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchTree&)
 DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
+DELEGATE1       (void              , Scene, deleteMesh, SketchMesh&)
+DELEGATE        (void              , Scene, deleteWingedMeshes)
+DELEGATE        (void              , Scene, deleteSketchMeshes)
+DELEGATE        (void              , Scene, deleteEmptyMeshes)
 DELEGATE1       (WingedMesh*       , Scene, wingedMesh, unsigned int)
+DELEGATE1       (SketchMesh*       , Scene, sketchMesh, unsigned int)
 DELEGATE1       (void              , Scene, render, Camera&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchTreeIntersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
+DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (SketchMesh&)>&)
 DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
+DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const SketchMesh&)>&)
 DELEGATE        (void              , Scene, reset)
 DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
 DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)
 DELEGATE_CONST  (bool              , Scene, isEmpty)
 DELEGATE_CONST  (unsigned int      , Scene, numWingedMeshes)
+DELEGATE_CONST  (unsigned int      , Scene, numSketchMeshes)
 DELEGATE_CONST  (unsigned int      , Scene, numFaces)
-DELEGATE        (void              , Scene, deleteEmptyMeshes)
 DELEGATE_CONST  (bool              , Scene, hasFileName)
 GETTER_CONST    (const std::string&, Scene, fileName)
 SETTER          (const std::string&, Scene, fileName)

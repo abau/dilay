@@ -49,6 +49,8 @@ SOURCES += \
            src/scene.cpp \
            src/sculpt-brush.cpp \
            src/shader.cpp \
+           src/sketch/mesh.cpp \
+           src/sketch/tree-intersection.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
@@ -136,6 +138,9 @@ HEADERS += \
            src/scene.hpp \
            src/sculpt-brush.hpp \
            src/shader.hpp \
+           src/sketch/fwd.hpp \
+           src/sketch/mesh.hpp \
+           src/sketch/tree-intersection.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \

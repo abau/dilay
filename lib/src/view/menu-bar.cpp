@@ -55,7 +55,7 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
           glWidget.state ().history ().reset ();
         }
         else {
-          glWidget.state ().history ().snapshot (scene);
+          glWidget.state ().history ().snapshotAll (scene);
         }
       }
       if (scene.fromObjFile (glWidget.state ().config (), fileName) == false) {

@@ -107,8 +107,12 @@ struct Tool::Impl {
     return intersection.isIntersection ();
   }
 
-  void snapshotScene () {
-    this->state.history ().snapshot (this->state.scene ());
+  void snapshotWingedMeshes () {
+    this->state.history ().snapshotWingedMeshes (this->state.scene ());
+  }
+
+  void snapshotSketchMeshes () {
+    this->state.history ().snapshotSketchMeshes (this->state.scene ());
   }
 };
 
@@ -131,4 +135,5 @@ DELEGATE_CONST  (glm::ivec2     , Tool, cursorPosition)
 DELEGATE2       (bool           , Tool, intersectsScene, const glm::ivec2&, WingedFaceIntersection&)
 DELEGATE2       (bool           , Tool, intersectsScene, const QMouseEvent&, WingedFaceIntersection&)
 DELEGATE2_CONST (bool           , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)
-DELEGATE        (void           , Tool, snapshotScene)
+DELEGATE        (void           , Tool, snapshotWingedMeshes)
+DELEGATE        (void           , Tool, snapshotSketchMeshes)

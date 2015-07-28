@@ -157,7 +157,7 @@ struct ToolSculpt::Impl {
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->snapshotScene ();
+    this->self->snapshotWingedMeshes ();
 
     if (this->self->runSculptMousePressEvent (e) == false) {
       this->self->state ().history ().dropSnapshot ();
@@ -192,7 +192,7 @@ struct ToolSculpt::Impl {
   void mirrorScene () {
     assert (this->mirror);
 
-    this->self->snapshotScene ();
+    this->self->snapshotWingedMeshes ();
 
     this->self->state ().scene ().forEachMesh (
       [this] (WingedMesh& mesh) {

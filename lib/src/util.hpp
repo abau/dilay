@@ -32,6 +32,7 @@ namespace Util {
   std::string  readFile           (const std::string&); 
   unsigned int solveQuadraticEq   (float, float, float, float&, float&);
   bool         isNaN              (const glm::vec3&);
+  float        lerp               (float, float, float);
   void         warn               (const char*, unsigned int, const char*, ...);
   bool         fromString         (const std::string&, int&);
   bool         fromString         (const std::string&, unsigned int&);
