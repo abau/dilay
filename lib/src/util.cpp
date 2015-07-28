@@ -95,37 +95,6 @@ bool Util :: isNaN (const glm::vec3& v) {
   return glm::isnan (v.x) || glm::isnan (v.y) || glm::isnan (v.z);
 }
 
-float Util :: smoothStep ( const glm::vec3& v, const glm::vec3& center
-                         , float innerRadius, float radius )
-{
-  assert (innerRadius <= radius);
-
-  const float d = glm::distance <float> (v, center);
-
-  if (radius - innerRadius < Util::epsilon ()) {
-    return d > radius ? 0.0f : 1.0f;
-  }
-  else {
-    const float x = glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
-    return x*x*x * (x * (x*6.0f - 15.0f) + 10.0f);
-  }
-}
-
-float Util :: linearStep ( const glm::vec3& v, const glm::vec3& center
-                         , float innerRadius, float radius )
-{
-  assert (innerRadius <= radius);
-
-  const float d = glm::distance <float> (v, center);
-
-  if (radius - innerRadius < Util::epsilon ()) {
-    return d > radius ? 0.0f : 1.0f;
-  }
-  else {
-    return glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
-  }
-}
-
 void Util :: warn (const char* file, unsigned int line, const char* format, ...) {
   va_list args1;
   va_list args2;
