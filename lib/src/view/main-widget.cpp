@@ -82,10 +82,9 @@ struct ViewMainWidget :: Impl {
   }
 
   void deselectTool () {
-    if (this->glWidget.state ().hasTool () == false) {
-      for (QPushButton* b : this->toolButtons) {
-        b->setChecked (false);
-      }
+    assert (this->glWidget.state ().hasTool () == false);
+    for (QPushButton* b : this->toolButtons) {
+      b->setChecked (false);
     }
   }
 };

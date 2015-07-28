@@ -53,7 +53,7 @@ struct State::Impl {
   }
 
   void setTool (Tool&& tool) { 
-    assert (this->toolPtr == false);
+    assert (this->hasTool () == false);
 
     this->toolPtr.reset (&tool); 
 
@@ -72,7 +72,6 @@ struct State::Impl {
     if (this->hasTool ()) {
       this->toolPtr->close ();
 
-      // order of destruction is important, because of stack-allocated widgets
       this->toolPtr.reset (); 
       this->mainWindow.showDefaultToolTip ();
       this->mainWindow.mainWidget ().properties ().reset ();
