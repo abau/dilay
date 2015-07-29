@@ -144,6 +144,7 @@ HEADERS += \
            src/tool/sculpt.hpp \
            src/tool/util/movement.hpp \
            src/tools.hpp \
+           src/tree.hpp \
            src/util.hpp \
            src/variant.hpp \
            src/view/axis.hpp \

@@ -9,6 +9,7 @@
 #include "test-intrusive-list.hpp"
 #include "test-maybe.hpp"
 #include "test-octree.hpp"
+#include "test-tree.hpp"
 
 int main () {
   QCoreApplication::setApplicationName ("dilay");
@@ -22,6 +23,7 @@ int main () {
   TestIntrusiveList::test1 ();
   TestIntrusiveList::test2 ();
   TestIntrusiveList::test3 ();
+  TestTree         ::test  ();
 
   std::cout << "all tests run successfully\n";
   return 0;

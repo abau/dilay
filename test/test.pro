@@ -12,13 +12,15 @@ SOURCES += \
            src/test-intersection.cpp \
            src/test-intrusive-list.cpp \
            src/test-maybe.cpp \
-           src/test-octree.cpp
+           src/test-octree.cpp \
+           src/test-tree.cpp
 
 HEADERS += \
            src/test-intersection.hpp \
            src/test-intrusive-list.hpp \
            src/test-maybe.hpp \
-           src/test-octree.hpp
+           src/test-octree.hpp \
+           src/test-tree.hpp
 
 win32:CONFIG(release, debug|release):    LIBS += -L$$OUT_PWD/../lib/release/ -ldilay
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../lib/debug/ -ldilay
