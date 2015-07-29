@@ -25,10 +25,12 @@ class Maybe {
       {}
 
     Maybe (const Maybe <T>& o) 
-      : value (o.isSet () ? new T (o.getRef ()) : nullptr)
+      : value (o.isSet () ? new T (*o) : nullptr)
       {}
 
     Maybe (Maybe <T>&&) = default;
+
+    ~Maybe () = default;
 
     const Maybe <T>& operator= (const T* v) {
       this->value.reset (bool (v) ? new T (*v) : nullptr);
@@ -42,7 +44,7 @@ class Maybe {
 
     const Maybe <T>& operator= (const Maybe<T>& o) {
       if (this != &o) {
-        this->value.reset (o.isSet () ? new T (o.getRef ()) : nullptr);
+        this->value.reset (o.isSet () ? new T (*o) : nullptr);
       }
       return *this;
     }
@@ -57,31 +59,26 @@ class Maybe {
       return this->operator bool () == v;
     }
 
-    T& operator* () const {
-      return this->getRef ();
-    }
-
-    T* operator-> () const {
-      return this->get ();
-    }
-
-    ~Maybe () = default;
-
-    bool isSet () const {
-      return bool (this->value); 
-    }
-
-    T* get () const {
-      return this->isSet () ? this->value.get () : nullptr ;
-    }
-
-    T& getRef () const {
+    T& operator* () {
       assert (this->isSet ());
       return *this->value;
     }
 
-    void set (const T& newValue) {
-      this->value.reset (new T (newValue));
+    const T& operator* () const {
+      assert (this->isSet ());
+      return *this->value;
+    }
+
+    T* operator-> () {
+      return this->isSet () ? this->value.get () : nullptr ;
+    }
+
+    const T* operator-> () const {
+      return this->isSet () ? this->value.get () : nullptr ;
+    }
+
+    bool isSet () const {
+      return bool (this->value); 
     }
 
     void reset (T* newValue = nullptr) {

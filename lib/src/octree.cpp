@@ -365,7 +365,7 @@ namespace {
         assert (map [i] != Util::invalidIndex ());
         i = map [i];
       }
-      for (const Child& c : this->children) {
+      for (Child& c : this->children) {
         c->rewriteIndices (map);
       }
     }
@@ -413,15 +413,15 @@ struct Octree::Impl {
     ,  rootWidth        (other.rootWidth)
     ,  rootWasSetup     (other.rootWasSetup)
   {
-    std::function <void (const Child&)> copyNodeMap = 
-      [this, &copyNodeMap] (const Child& node) 
+    std::function <void (Child&)> copyNodeMap = 
+      [this, &copyNodeMap] (Child& node) 
     {
       if (node) {
         for (unsigned i : node->faceIndices) {
           assert (this->nodeMap [i] == nullptr);
           this->nodeMap [i] = &*node;
         }
-        for (const Child& c : node->children) {
+        for (Child& c : node->children) {
           copyNodeMap (c);
         }
       }

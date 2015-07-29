@@ -10,41 +10,41 @@ void TestMaybe::test () {
   Maybe <int> m1 (5);
 
   assert (m1.isSet ());
-  assert (m1.getRef () == 5);
+  assert (*m1 == 5);
 
   Maybe <int> m2 (m1);
 
-  assert (m1.getRef () == 5);
-  assert (m2.getRef () == 5);
+  assert (*m1 == 5);
+  assert (*m2 == 5);
 
   Maybe <int> m3 (std::move (m1));
 
   assert (m1.isSet () == false);
-  assert (m3.getRef () == 5);
+  assert (*m3 == 5);
 
-  m2.set (12);
+  m2 = 12;
   m3 = std::move (m2);
 
   assert (m2.isSet () == false);
-  assert (m3.getRef () == 12);
+  assert (*m3 == 12);
 
   m3 = std::move (m2);
 
   assert (m3.isSet () == false);
 
-  m3.set (12);
+  m3 = 12;
   m3 = m2;
 
   assert (m3.isSet () == false);
 
   m3 = 44;
-  assert (m3.getRef () == 44);
+  assert (*m3 == 44);
 
   int *i = new int (55);
   m3 = i;
   delete i;
 
-  assert (m3.getRef () == 55);
+  assert (*m3 == 55);
 
   m3 = nullptr;
 

@@ -118,7 +118,7 @@ struct History::Impl {
     assert (this->hasRecentOctrees ());
     for (const MeshSnapshot& s : this->past.front ()) {
       assert (s.octree);
-      f (s.mesh, s.octree.getRef ());
+      f (s.mesh, *s.octree);
     }
   }
 
