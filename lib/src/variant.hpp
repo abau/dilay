@@ -127,7 +127,14 @@ namespace VariantDetails {
     }
 
     template <typename U>
-    U& get (unsigned int i) const {
+    U& get (unsigned int i) {
+      assert (i == 0);
+      assert ((std::is_same <T,U>::value));
+      return *reinterpret_cast <U*> (this->t);
+    }
+
+    template <typename U>
+    const U& get (unsigned int i) const {
       assert (i == 0);
       assert ((std::is_same <T,U>::value));
       return *reinterpret_cast <U*> (this->t);
@@ -192,7 +199,18 @@ namespace VariantDetails {
     }
 
     template <typename U>
-    U& get (unsigned int i) const {
+    U& get (unsigned int i) {
+      if (i == 0) {
+        assert ((std::is_same<U,T>::value));
+        return *reinterpret_cast <U*> (this->t);
+      }
+      else {
+        return this->ts.template get <U> (i-1);
+      }
+    }
+
+    template <typename U>
+    const U& get (unsigned int i) const {
       if (i == 0) {
         assert ((std::is_same<U,T>::value));
         return *reinterpret_cast <U*> (this->t);
@@ -289,7 +307,13 @@ class Variant {
     }
 
     template <typename U>
-    U& get () const {
+    U& get () {
+      assert (this->isSet ());
+      return this->_varUnion.template get <U> (this->_setTo);
+    }
+
+    template <typename U>
+    const U& get () const {
       assert (this->isSet ());
       return this->_varUnion.template get <U> (this->_setTo);
     }
