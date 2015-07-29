@@ -47,7 +47,6 @@ class Scene : public Configurable {
     unsigned int       numFaces           () const;
     bool               hasFileName        () const;
     const std::string& fileName           () const;
-    void               fileName           (const std::string&);
     bool               toObjFile          ();
     bool               toObjFile          (const std::string&);
     bool               fromObjFile        (const Config&, const std::string&);
