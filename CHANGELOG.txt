@@ -1,0 +1,12 @@
+# Dilay's Change Log
+
+This change log documents updates/changes/regressions for the
+[Dilay](http://abau.org/dilay) project. The entries in this log regard only
+changes that are observable by the user of Dilay, i.e., code refactorings that
+are not obviously observable by the user are not documented here. See `git log`
+for a fine-grained overview of all changes.
+
+## 1.0.0 -> 1.0.1
+
+- 2015-07-30: Fix "Move mesh" tool so that it does not push a scene snapshot
+  to the history whenever it is invoked, but when a mesh is actually moved.
