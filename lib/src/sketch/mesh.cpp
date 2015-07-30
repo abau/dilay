@@ -10,7 +10,6 @@
 #include "primitive/sphere.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/tree-intersection.hpp"
-#include "tree.hpp"
 
 namespace {
   struct RenderConfig {

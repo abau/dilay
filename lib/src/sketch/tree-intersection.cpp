@@ -2,6 +2,7 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include "sketch/mesh.hpp"
 #include "sketch/tree-intersection.hpp"
 
 struct SketchTreeIntersection::Impl {

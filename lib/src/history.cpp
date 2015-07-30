@@ -12,7 +12,6 @@
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
 #include "state.hpp"
-#include "tree.hpp"
 #include "winged/mesh.hpp"
 
 namespace {
