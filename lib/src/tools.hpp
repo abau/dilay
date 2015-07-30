@@ -25,4 +25,6 @@ DECLARE_TOOL_SCULPT (ToolSculptCrease , "sculpt/crease")
 DECLARE_TOOL_SCULPT (ToolSculptPinch  , "sculpt/pinch")
 DECLARE_TOOL_SCULPT (ToolSculptReduce , "sculpt/reduce")
 
+DECLARE_TOOL (ToolNewSketch, "new-sketch", DECLARE_TOOL_RUN_INITIALIZE)
+
 #endif

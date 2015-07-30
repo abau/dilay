@@ -3,6 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QPushButton>
+#include <QTabWidget>
 #include <QVBoxLayout>
 #include "state.hpp"
 #include "tools.hpp"
@@ -33,7 +34,6 @@ struct ViewMainWidget :: Impl {
     leftPane->setLayout (leftPaneLayout);
     leftPaneLayout->setSpacing (0);
     leftPaneLayout->addWidget  (this->initalizeToolPane ());
-    leftPaneLayout->addWidget  (&ViewUtil::horizontalLine ());
     leftPaneLayout->addWidget  (&this->properties);
     leftPaneLayout->addStretch (1);
 
@@ -41,6 +41,17 @@ struct ViewMainWidget :: Impl {
   }
 
   QWidget* initalizeToolPane () {
+    QTabWidget* toolPane = new QTabWidget;
+    toolPane->addTab (this->initalizeSculptToolPane (), QObject::tr ("Sculpt"));
+    toolPane->addTab (this->initalizeSketchToolPane (), QObject::tr ("Sketch"));
+
+    QObject::connect (toolPane, &QTabWidget::currentChanged, [this] (int) {
+      this->glWidget.state ().resetTool ();
+    });
+    return toolPane;
+  }
+
+  QWidget* initalizeSculptToolPane () {
     QWidget*     toolPane       = new QWidget;
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
@@ -56,6 +67,19 @@ struct ViewMainWidget :: Impl {
     this->addToolButton <ToolSculptSmooth>  (toolPaneLayout, QObject::tr ("Smooth"));
     this->addToolButton <ToolSculptPinch>   (toolPaneLayout, QObject::tr ("Pinch"));
     this->addToolButton <ToolSculptReduce>  (toolPaneLayout, QObject::tr ("Reduce"));
+
+    toolPaneLayout->addStretch (1);
+    return toolPane;
+  }
+
+  QWidget* initalizeSketchToolPane () {
+    QWidget*     toolPane       = new QWidget;
+    QVBoxLayout* toolPaneLayout = new QVBoxLayout;
+
+    toolPane->setLayout (toolPaneLayout);
+    this->addToolButton <ToolNewSketch> (toolPaneLayout, QObject::tr ("New sketch"));
+
+    toolPaneLayout->addStretch (1);
     return toolPane;
   }
 
