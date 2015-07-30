@@ -7,6 +7,7 @@
 
 #include <glm/fwd.hpp>
 #include "macro.hpp"
+#include "sketch/fwd.hpp"
 
 class CacheProxy;
 class Config;
@@ -43,11 +44,14 @@ class Tool {
     CacheProxy&     cache                  ();
     CacheProxy      cache                  (const char*) const;
     glm::ivec2      cursorPosition         () const;
-    bool            intersectsScene        (const glm::ivec2&, WingedFaceIntersection&);
-    bool            intersectsScene        (const QMouseEvent&, WingedFaceIntersection&);
-    bool            intersectsRecentOctree (const QMouseEvent&, Intersection&) const;
     void            snapshotWingedMeshes   ();
     void            snapshotSketchMeshes   ();
+    bool            intersectsRecentOctree (const QMouseEvent&, Intersection&) const;
+
+    template <typename T>
+    bool intersectsScene (const glm::ivec2&, T&);
+    template <typename T>
+    bool intersectsScene (const QMouseEvent&, T&);
 
   private:
     IMPLEMENTATION

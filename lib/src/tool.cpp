@@ -83,13 +83,12 @@ struct Tool::Impl {
     return this->state.mainWindow ().mainWidget ().glWidget ().cursorPosition ();
   }
 
-  bool intersectsScene (const glm::ivec2& pos, WingedFaceIntersection& intersection) {
-    return this->state.scene ().intersects ( this->state.camera ().ray (pos)
-                                           , intersection );
+  void snapshotWingedMeshes () {
+    this->state.history ().snapshotWingedMeshes (this->state.scene ());
   }
 
-  bool intersectsScene (const QMouseEvent& e, WingedFaceIntersection& intersection) {
-    return this->intersectsScene (ViewUtil::toIVec2 (e), intersection);
+  void snapshotSketchMeshes () {
+    this->state.history ().snapshotSketchMeshes (this->state.scene ());
   }
 
   bool intersectsRecentOctree (const QMouseEvent& e, Intersection& intersection) const {
@@ -107,12 +106,14 @@ struct Tool::Impl {
     return intersection.isIntersection ();
   }
 
-  void snapshotWingedMeshes () {
-    this->state.history ().snapshotWingedMeshes (this->state.scene ());
+  template <typename T>
+  bool intersectsScene (const glm::ivec2& pos, T& intersection) {
+    return this->state.scene ().intersects (this->state.camera ().ray (pos), intersection);
   }
 
-  void snapshotSketchMeshes () {
-    this->state.history ().snapshotSketchMeshes (this->state.scene ());
+  template <typename T>
+  bool intersectsScene (const QMouseEvent& e, T& intersection) {
+    return this->intersectsScene (ViewUtil::toIVec2 (e), intersection);
   }
 };
 
@@ -132,8 +133,21 @@ GETTER_CONST    (Config&        , Tool, config)
 DELEGATE        (CacheProxy&    , Tool, cache)
 DELEGATE1_CONST (CacheProxy     , Tool, cache, const char*)
 DELEGATE_CONST  (glm::ivec2     , Tool, cursorPosition)
-DELEGATE2       (bool           , Tool, intersectsScene, const glm::ivec2&, WingedFaceIntersection&)
-DELEGATE2       (bool           , Tool, intersectsScene, const QMouseEvent&, WingedFaceIntersection&)
-DELEGATE2_CONST (bool           , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)
 DELEGATE        (void           , Tool, snapshotWingedMeshes)
 DELEGATE        (void           , Tool, snapshotSketchMeshes)
+DELEGATE2_CONST (bool           , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)
+
+template <typename T>
+bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection) {
+  return this->impl->intersectsScene (pos, intersection);
+}
+
+template <typename T>
+bool Tool :: intersectsScene (const QMouseEvent& e, T& intersection) {
+  return this->impl->intersectsScene (e, intersection);
+}
+
+template bool Tool :: intersectsScene (const glm::ivec2&, WingedFaceIntersection&);
+template bool Tool :: intersectsScene (const QMouseEvent&, WingedFaceIntersection&);
+template bool Tool :: intersectsScene (const glm::ivec2&, SketchTreeIntersection&);
+template bool Tool :: intersectsScene (const QMouseEvent&, SketchTreeIntersection&);
