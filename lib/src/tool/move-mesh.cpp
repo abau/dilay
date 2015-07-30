@@ -29,8 +29,6 @@ struct ToolMoveMesh::Impl {
   {
     this->setupProperties ();
     this->setupToolTip    ();
-
-    this->self->snapshotScene ();
   }
 
   void setupProperties () {
@@ -104,6 +102,8 @@ struct ToolMoveMesh::Impl {
       if (this->self->intersectsScene (e, intersection)) {
         this->mesh = &intersection.mesh ();
         this->movement.resetPosition (intersection.position ());
+
+        this->self->snapshotScene ();
       }
     }
     return ToolResponse::None;
