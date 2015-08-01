@@ -127,7 +127,7 @@ struct Camera::Impl {
 
   PrimRay ray (const glm::ivec2& p) const {
     const glm::vec3 w   = this->toWorld  (p);
-    const glm::vec3 eye = this->eyePoint ();
+    const glm::vec3 eye = this->position ();
     return PrimRay (eye, glm::normalize (w - eye));
   }
 
@@ -142,13 +142,9 @@ struct Camera::Impl {
   void updateView () {
     const glm::vec3 realUp = glm::normalize (glm::cross (this->toEyePoint, this->right));
 
-    this->view         = glm::lookAt (this->eyePoint (), this->gazePoint, realUp);
+    this->view         = glm::lookAt (this->position (), this->gazePoint, realUp);
     this->viewRotation = glm::lookAt (glm::normalize (this->toEyePoint), glm::vec3 (0.0f), realUp);
-    this->renderer.setEyePoint (this->eyePoint ());
-  }
-
-  glm::vec3 eyePoint () const {
-    return this->gazePoint + this->toEyePoint;
+    this->renderer.setEyePoint (this->position ());
   }
 
   Dimension primaryDimension () const {
