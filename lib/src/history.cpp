@@ -43,7 +43,7 @@ namespace {
   struct SceneSnapshot {
     const SnapshotConfig           config;
     std::list <WingedMeshSnapshot> wingedMeshes;
-    std::list <SketchTree>         sketchMeshes;
+    std::list <SketchNode>         sketchMeshes;
 
     SceneSnapshot (const SnapshotConfig& c) : config (c) {}
   };
@@ -74,7 +74,7 @@ namespace {
     if (config.snapshotSketchMeshes) {
       scene.forEachConstMesh ([&config, &snapshot] (const SketchMesh& mesh) {
         assert (mesh.hasRoot ());
-        snapshot.sketchMeshes.push_back (mesh.tree ());
+        snapshot.sketchMeshes.push_back (mesh.root ());
       });
     }
     return snapshot;
@@ -93,7 +93,7 @@ namespace {
     if (snapshot.config.snapshotSketchMeshes) {
       scene.deleteSketchMeshes ();
 
-      for (const SketchTree& tree : snapshot.sketchMeshes) {
+      for (const SketchNode& tree : snapshot.sketchMeshes) {
         scene.newSketchMesh (state.config (), tree);
       }
     }

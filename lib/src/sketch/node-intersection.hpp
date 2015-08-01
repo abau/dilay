@@ -2,21 +2,21 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#ifndef DILAY_SKETCH_TREE_INTERSECTION
-#define DILAY_SKETCH_TREE_INTERSECTION
+#ifndef DILAY_SKETCH_NODE_INTERSECTION
+#define DILAY_SKETCH_NODE_INTERSECTION
 
 #include "intersection.hpp"
 #include "macro.hpp"
 #include "sketch/fwd.hpp"
 
-class SketchTreeIntersection : public Intersection {
+class SketchNodeIntersection : public Intersection {
   public:
-    DECLARE_BIG6 (SketchTreeIntersection)
+    DECLARE_BIG6 (SketchNodeIntersection)
 
     SketchMesh& mesh   () const;
-    SketchTree& tree   () const;
+    SketchNode& node   () const;
     void        update ( float, const glm::vec3&, const glm::vec3&
-                       , SketchMesh&, SketchTree& );
+                       , SketchMesh&, SketchNode& );
 
   private:
     IMPLEMENTATION

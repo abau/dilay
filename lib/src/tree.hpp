@@ -65,19 +65,19 @@ class Tree {
       }
     }
 
-    void forEachTree (const std::function <void (Tree&)>& f) {
+    void forEachNode (const std::function <void (Tree&)>& f) {
       f (*this);
-      this->forEachChild ([&f] (Tree& c) { c.forEachTree (f); });
+      this->forEachChild ([&f] (Tree& c) { c.forEachNode (f); });
     }
 
-    void forEachConstTree (const std::function <void (const Tree&)>& f) const {
+    void forEachConstNode (const std::function <void (const Tree&)>& f) const {
       f (*this);
-      this->forEachConstChild ([&f] (const Tree& c) { c.forEachConstTree (f); });
+      this->forEachConstChild ([&f] (const Tree& c) { c.forEachConstNode (f); });
     }
 
-    unsigned int numElements () const {
+    unsigned int numNodes () const {
       unsigned int n = 0;
-      this->forEachConstTree ([&n] (const Tree <T>&) { n++; });
+      this->forEachConstNode ([&n] (const Tree <T>&) { n++; });
       return n;
     }
 

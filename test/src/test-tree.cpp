@@ -15,8 +15,8 @@ void TestTree::test () {
 
   assert (n1.data () == 100);
   assert (n2.parent () == &n1);
-  assert (t.numElements () == 3);
+  assert (t.numNodes () == 3);
 
   t.deleteChild (n1);
-  assert (t.numElements () == 1);
+  assert (t.numNodes () == 1);
 }

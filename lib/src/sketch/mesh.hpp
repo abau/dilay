@@ -14,9 +14,9 @@
 class Camera;
 class PrimRay;
 
-class SketchTreeData {
+class SketchNodeData {
   public:
-    SketchTreeData (const glm::vec3& p, float r)
+    SketchNodeData (const glm::vec3& p, float r)
       : _position (p)
       , _radius   (r)
     {}
@@ -41,11 +41,11 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
 
     unsigned int      index      () const;
     bool              hasRoot    () const;
-    SketchTree&       tree       ();
-    const SketchTree& tree       () const;
-    void              fromTree   (const SketchTree&);
+    SketchNode&       root       ();
+    const SketchNode& root       () const;
+    void              fromTree   (const SketchNode&);
     void              reset      ();
-    bool              intersects (const PrimRay&, SketchTreeIntersection&);
+    bool              intersects (const PrimRay&, SketchNodeIntersection&);
     void              render     (Camera&);
 
   private:

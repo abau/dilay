@@ -36,7 +36,7 @@ Config :: Config ()
   this->set ("editor/mesh/color/normal",             Color (0.8f, 0.8f, 0.8f));
   this->set ("editor/mesh/color/wireframe",          Color (0.3f, 0.3f, 0.3f));
 
-  this->set ("editor/sketch/tree/color",             Color (0.5f, 0.5f, 0.9f));
+  this->set ("editor/sketch/node/color",             Color (0.5f, 0.5f, 0.9f));
   this->set ("editor/sketch/bubble/color",           Color (0.5f, 0.5f, 0.7f));
 
   this->set ("editor/tool/sculpt/detail-factor",     0.75f);

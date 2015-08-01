@@ -9,7 +9,7 @@
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
-#include "sketch/tree-intersection.hpp"
+#include "sketch/node-intersection.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
@@ -37,7 +37,7 @@ struct Scene :: Impl {
     return wingedMesh;
   }
 
-  SketchMesh& newSketchMesh (const Config& config, const SketchTree& tree) {
+  SketchMesh& newSketchMesh (const Config& config, const SketchNode& tree) {
     SketchMesh& mesh = this->sketchMeshes.emplaceBack ();
 
     mesh.fromTree   (tree);
@@ -101,7 +101,7 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const PrimRay& ray, SketchTreeIntersection& intersection) {
+  bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
     this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
       m.intersects (ray, intersection);
     });
@@ -240,7 +240,7 @@ struct Scene :: Impl {
 DELEGATE1_BIG3 (Scene, const Config&)
 
 DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
-DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchTree&)
+DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchNode&)
 DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
 DELEGATE1       (void              , Scene, deleteMesh, SketchMesh&)
 DELEGATE        (void              , Scene, deleteWingedMeshes)
@@ -250,7 +250,7 @@ DELEGATE1       (WingedMesh*       , Scene, wingedMesh, unsigned int)
 DELEGATE1       (SketchMesh*       , Scene, sketchMesh, unsigned int)
 DELEGATE1       (void              , Scene, render, Camera&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
-DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchTreeIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (SketchMesh&)>&)

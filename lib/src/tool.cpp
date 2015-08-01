@@ -149,5 +149,5 @@ bool Tool :: intersectsScene (const QMouseEvent& e, T& intersection) {
 
 template bool Tool :: intersectsScene (const glm::ivec2&, WingedFaceIntersection&);
 template bool Tool :: intersectsScene (const QMouseEvent&, WingedFaceIntersection&);
-template bool Tool :: intersectsScene (const glm::ivec2&, SketchTreeIntersection&);
-template bool Tool :: intersectsScene (const QMouseEvent&, SketchTreeIntersection&);
+template bool Tool :: intersectsScene (const glm::ivec2&, SketchNodeIntersection&);
+template bool Tool :: intersectsScene (const QMouseEvent&, SketchNodeIntersection&);

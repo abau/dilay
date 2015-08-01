@@ -22,7 +22,7 @@ class Scene : public Configurable {
     DECLARE_BIG3 (Scene, const Config&)
 
     WingedMesh&        newWingedMesh      (const Config&, const Mesh&);
-    SketchMesh&        newSketchMesh      (const Config&, const SketchTree&);
+    SketchMesh&        newSketchMesh      (const Config&, const SketchNode&);
     void               deleteMesh         (WingedMesh&);
     void               deleteMesh         (SketchMesh&);
     void               deleteWingedMeshes ();
@@ -32,7 +32,7 @@ class Scene : public Configurable {
     SketchMesh*        sketchMesh         (unsigned int);
     void               render             (Camera&);
     bool               intersects         (const PrimRay&, WingedFaceIntersection&);
-    bool               intersects         (const PrimRay&, SketchTreeIntersection&);
+    bool               intersects         (const PrimRay&, SketchNodeIntersection&);
     void               printStatistics    (bool) const;
     void               forEachMesh        (const std::function <void (WingedMesh&)>&);
     void               forEachMesh        (const std::function <void (SketchMesh&)>&);

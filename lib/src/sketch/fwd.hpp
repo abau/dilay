@@ -8,9 +8,9 @@
 #include "tree.hpp"
 
 template <typename T> class Tree;
-class SketchTreeData;
-class SketchTreeIntersection;
-using SketchTree = Tree <SketchTreeData>;
+class SketchNodeData;
+class SketchNodeIntersection;
+using SketchNode = Tree <SketchNodeData>;
 class SketchMesh;
 
 #endif

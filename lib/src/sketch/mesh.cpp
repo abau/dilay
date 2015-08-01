@@ -9,23 +9,23 @@
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
 #include "sketch/mesh.hpp"
-#include "sketch/tree-intersection.hpp"
+#include "sketch/node-intersection.hpp"
 
 namespace {
   struct RenderConfig {
-    Color treeColor;
+    Color nodeColor;
     Color bubbleColor;
   };
 
-  PrimSphere treeSphere (const SketchTree& tree) {
-    return PrimSphere (tree.data ().position (), tree.data ().radius ());
+  PrimSphere nodeSphere (const SketchNode& node) {
+    return PrimSphere (node.data ().position (), node.data ().radius ());
   }
 }
 
 struct SketchMesh::Impl {
   SketchMesh*                   self;
   const unsigned int            index;
-  std::unique_ptr <SketchTree> _tree;
+  std::unique_ptr <SketchNode> _root;
   Mesh                          nodeMesh;
   RenderConfig                  renderConfig;
 
@@ -46,36 +46,36 @@ struct SketchMesh::Impl {
   }
 
   bool hasRoot () const {
-    return bool (this->_tree);
+    return bool (this->_root);
   }
 
-  SketchTree& tree () {
+  SketchNode& root () {
     assert (this->hasRoot ());
-    return *this->_tree;
+    return *this->_root;
   }
 
-  const SketchTree& tree () const {
+  const SketchNode& root () const {
     assert (this->hasRoot ());
-    return *this->_tree;
+    return *this->_root;
   }
 
-  void fromTree (const SketchTree& tree) {
+  void fromTree (const SketchNode& tree) {
     assert (this->hasRoot () == false);
-    this->_tree = std::make_unique <SketchTree> (tree);
+    this->_root = std::make_unique <SketchNode> (tree);
   }
 
   void reset () {
-    this->_tree.reset ();
+    this->_root.reset ();
   }
 
-  bool intersects (const PrimRay& ray, SketchTreeIntersection& intersection) {
+  bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
     if (this->hasRoot ()) {
-      this->_tree->forEachTree ([this, &ray, &intersection] (SketchTree& tree) {
+      this->_root->forEachNode ([this, &ray, &intersection] (SketchNode& node) {
         float t;
-        if (IntersectionUtil::intersects (ray, treeSphere (tree), &t)) {
+        if (IntersectionUtil::intersects (ray, nodeSphere (node), &t)) {
           const glm::vec3 p = ray.pointAt (t);
-          intersection.update ( t, p, glm::normalize (p - tree.data ().position ())
-                              , *this->self, tree );
+          intersection.update ( t, p, glm::normalize (p - node.data ().position ())
+                              , *this->self, node );
         }
       });
     }
@@ -84,18 +84,18 @@ struct SketchMesh::Impl {
 
   void render (Camera& camera) {
     if (this->hasRoot ()) {
-      this->_tree->forEachConstTree ([this, &camera] (const SketchTree& tree) {
-        const glm::vec3& pos    = tree.data ().position ();
-        const float      radius = tree.data ().radius ();
+      this->_root->forEachConstNode ([this, &camera] (const SketchNode& node) {
+        const glm::vec3& pos    = node.data ().position ();
+        const float      radius = node.data ().radius ();
 
         this->nodeMesh.position (pos);
         this->nodeMesh.scaling  (glm::vec3 (radius));
-        this->nodeMesh.color    (this->renderConfig.treeColor);
+        this->nodeMesh.color    (this->renderConfig.nodeColor);
         this->nodeMesh.render   (camera);
 
-        if (tree.parent ()) {
-          const glm::vec3& parPos    = tree.parent ()->data ().position ();
-          const float      parRadius = tree.parent ()->data ().radius ();
+        if (node.parent ()) {
+          const glm::vec3& parPos    = node.parent ()->data ().position ();
+          const float      parRadius = node.parent ()->data ().radius ();
 
           this->nodeMesh.color (this->renderConfig.bubbleColor);
 
@@ -118,7 +118,7 @@ struct SketchMesh::Impl {
   }
 
   void runFromConfig (const Config& config) {
-    this->renderConfig.treeColor   = config.get <Color> ("editor/sketch/tree/color");
+    this->renderConfig.nodeColor   = config.get <Color> ("editor/sketch/node/color");
     this->renderConfig.bubbleColor = config.get <Color> ("editor/sketch/bubble/color");
   }
 };
@@ -128,10 +128,10 @@ DELEGATE1_CONST (bool              , SketchMesh, operator==, const SketchMesh&)
 DELEGATE1_CONST (bool              , SketchMesh, operator!=, const SketchMesh&)
 GETTER_CONST    (unsigned int      , SketchMesh, index)
 DELEGATE_CONST  (bool              , SketchMesh, hasRoot)
-DELEGATE        (SketchTree&       , SketchMesh, tree)
-DELEGATE_CONST  (const SketchTree& , SketchMesh, tree)
-DELEGATE1       (void              , SketchMesh, fromTree, const SketchTree&)
+DELEGATE        (SketchNode&       , SketchMesh, root)
+DELEGATE_CONST  (const SketchNode& , SketchMesh, root)
+DELEGATE1       (void              , SketchMesh, fromTree, const SketchNode&)
 DELEGATE        (void              , SketchMesh, reset)
-DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchTreeIntersection&)
+DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE1       (void              , SketchMesh, render, Camera&)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)
