@@ -17,9 +17,7 @@ struct ToolSculptGrab::Impl {
 
   Impl (ToolSculptGrab* s) 
     : self (s)
-    , movement ( this->self->state ().camera ()
-               , glm::vec3 (0.0f)
-               , MovementConstraint::CameraPlane )
+    , movement (this->self->state ().camera (), MovementConstraint::CameraPlane)
   {
     if (this->self->cache ().get <bool> ("along-primary-plane", false)) {
       this->movement.constraint (MovementConstraint::PrimaryPlane);

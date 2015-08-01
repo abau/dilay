@@ -25,7 +25,7 @@ struct ToolMoveMesh::Impl {
   Impl (ToolMoveMesh* s) 
     : self      (s) 
     , mesh      (nullptr)
-    , movement  (s->state ().camera (), glm::vec3 (0.0f), MovementConstraint::CameraPlane)
+    , movement  (s->state ().camera (), MovementConstraint::CameraPlane)
   {
     this->setupProperties ();
     this->setupToolTip    ();
@@ -85,10 +85,8 @@ struct ToolMoveMesh::Impl {
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    const glm::vec3 previousDelta = this->movement.delta ();
-
-    if (e.buttons () == Qt::LeftButton && this->mesh && this->movement.move (e)) {
-      this->mesh->translate  (this->movement.delta () - previousDelta);
+    if (e.buttons () == Qt::LeftButton && this->mesh && this->movement.move (e, true)) {
+      this->mesh->translate  (this->movement.delta ());
       return ToolResponse::Redraw;
     }
     else {

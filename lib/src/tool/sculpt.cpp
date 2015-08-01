@@ -319,7 +319,7 @@ struct ToolSculpt::Impl {
     else if (e.buttons () == Qt::LeftButton && this->brush.hasPosition ()) {
       const glm::vec3 oldBrushPos = this->brush.position ();
 
-      if ( movement.move (ViewUtil::toIVec2 (e))
+      if ( movement.move (e, false)
         && this->brush.updatePointOfAction ( movement.position ()
                                            , movement.position () - oldBrushPos ) )
       {

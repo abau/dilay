@@ -13,22 +13,18 @@ class QMouseEvent;
 
 enum class MovementConstraint { XAxis, YAxis, ZAxis
                               , XYPlane, XZPlane, YZPlane
-                              , CameraPlane, PrimaryPlane, Explicit
+                              , CameraPlane, PrimaryPlane
                               };
 class ToolUtilMovement {
   public:
-    DECLARE_BIG4COPY (ToolUtilMovement, const Camera&, const glm::vec3&, MovementConstraint)
+    DECLARE_BIG4COPY (ToolUtilMovement, const Camera&, MovementConstraint)
 
     MovementConstraint constraint       () const;
           void         constraint       (MovementConstraint);
-          void         explicitPlane    (const glm::vec3&);
-    const glm::vec3&   originalPosition () const;
           glm::vec3    delta            () const;
-          void         delta            (const glm::vec3&);
     const glm::vec3&   position         () const;
           void         position         (const glm::vec3&);
-          bool         move             (const glm::ivec2&, bool = false);
-          bool         move             (const QMouseEvent&);
+          bool         move             (const QMouseEvent&, bool);
           void         resetPosition    (const glm::vec3&);
 
   private:
