@@ -11,11 +11,18 @@ class Config {
   public:   
     Config ();
 
-    template <class T> const T& get (const std::string& path) const {
+    template <class T>
+    const T& get (const std::string& path) const {
       return this->store.get <T> (path);
     }
 
-    template <class T> void set (const std::string& path, const T& value) {
+    template <class T>
+    T getFrom (const std::string& path) const {
+      return this->store.getFrom <T> (path);
+    }
+
+    template <class T>
+    void set (const std::string& path, const T& value) {
       this->store.set <T> (path, value);
     }
 
@@ -40,21 +47,26 @@ class ConfigProxy {
       assert (p.back () == '/');
     }
 
-    ConfigProxy (const ConfigProxy& c, const std::string& p) 
-      : ConfigProxy (c._config, c.prefix + p)
+    ConfigProxy (const ConfigProxy& o, const std::string& path) 
+      : ConfigProxy (o._config, o.prefix + path)
     {}
 
     const Config& config () const {
       return this->_config;
     }
 
-    std::string key (const std::string& p) const {
-      return this->prefix + p;
+    std::string key (const std::string& path) const {
+      return this->prefix + path;
     }
 
     template <class T> 
-    const T& get (const std::string& p) const { 
-      return this->_config.get <T> (this->key(p));
+    const T& get (const std::string& path) const { 
+      return this->_config.get <T> (this->key (path));
+    }
+
+    template <class T> 
+    T getFrom (const std::string& path) const {
+      return this->_config.getFrom <T> (this->key (path));
     }
 
   private:
