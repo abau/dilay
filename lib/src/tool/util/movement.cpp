@@ -2,15 +2,51 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QAbstractButton>
+#include <QButtonGroup>
 #include <QMouseEvent>
 #include "../../util.hpp"
 #include "camera.hpp"
 #include "dimension.hpp"
 #include "intersection.hpp"
+#include "kvstore.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "tool/util/movement.hpp"
+#include "view/properties.hpp"
 #include "view/util.hpp"
+
+namespace {
+  int constraintToInt (MovementConstraint c) {
+    switch (c) {
+      case MovementConstraint::XAxis:        return 0;
+      case MovementConstraint::YAxis:        return 1;
+      case MovementConstraint::ZAxis:        return 2;
+      case MovementConstraint::XYPlane:      return 3;
+      case MovementConstraint::XZPlane:      return 4;
+      case MovementConstraint::YZPlane:      return 5;
+      case MovementConstraint::CameraPlane:  return 6;
+      case MovementConstraint::PrimaryPlane: return 7;
+      default:
+        DILAY_IMPOSSIBLE
+    }
+  }
+
+  MovementConstraint constraintFromInt (int i) {
+    switch (i) {
+      case 0: return MovementConstraint::XAxis;
+      case 1: return MovementConstraint::YAxis;
+      case 2: return MovementConstraint::ZAxis;
+      case 3: return MovementConstraint::XYPlane;
+      case 4: return MovementConstraint::XZPlane;
+      case 5: return MovementConstraint::YZPlane;
+      case 6: return MovementConstraint::CameraPlane;
+      case 7: return MovementConstraint::PrimaryPlane;
+      default:
+        DILAY_IMPOSSIBLE
+    }
+  }
+}
 
 struct ToolUtilMovement::Impl {
   const Camera&      camera;
@@ -125,7 +161,36 @@ struct ToolUtilMovement::Impl {
     this->previousPosition = p;
     this->position         = p;
   }
+
+  void addProperties (ViewPropertiesPart& properties, const std::function <void ()>& onClick) {
+    QButtonGroup& constraintEdit = *new QButtonGroup;
+    properties.add ( constraintEdit , { QObject::tr ("X-axis")
+                                      , QObject::tr ("Y-axis")
+                                      , QObject::tr ("Z-axis")
+                                      , QObject::tr ("XY-plane")
+                                      , QObject::tr ("XZ-plane")
+                                      , QObject::tr ("YZ-plane")
+                                      , QObject::tr ("Camera-plane")
+                                      , QObject::tr ("Primary plane") 
+                                      } );
+    ViewUtil::connect (constraintEdit, [this, onClick] (int id) {
+      this->constraint = constraintFromInt (id);
+      onClick ();
+    });
+    constraintEdit.button (constraintToInt (this->constraint))->click ();
+  }
 };
+
+
+template <>
+void KVStore :: set (const std::string& path, const MovementConstraint& c) {
+  this->set (path, constraintToInt (c));
+}
+  
+template <>
+MovementConstraint KVStore :: getFrom (const std::string& path, const MovementConstraint& c) const {
+  return constraintFromInt (this->get (path, constraintToInt (c)));
+}
 
 DELEGATE2_BIG4COPY (ToolUtilMovement, const Camera&, MovementConstraint)
 GETTER_CONST    (MovementConstraint, ToolUtilMovement, constraint)
@@ -135,3 +200,4 @@ GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
 SETTER          (const glm::vec3&  , ToolUtilMovement, position)
 DELEGATE2       (bool              , ToolUtilMovement, move, const QMouseEvent&, bool)
 DELEGATE1       (void              , ToolUtilMovement, resetPosition, const glm::vec3&)
+DELEGATE2       (void              , ToolUtilMovement, addProperties, ViewPropertiesPart&, const std::function <void ()>&)

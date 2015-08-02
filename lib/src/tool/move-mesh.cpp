@@ -2,18 +2,14 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QAbstractButton>
-#include <QButtonGroup>
 #include <QMouseEvent>
 #include <glm/glm.hpp>
-#include "../util.hpp"
 #include "cache.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
-#include "view/util.hpp"
 #include "winged/mesh.hpp"
 #include "winged/face-intersection.hpp"
 
@@ -23,54 +19,23 @@ struct ToolMoveMesh::Impl {
   ToolUtilMovement movement;
 
   Impl (ToolMoveMesh* s) 
-    : self      (s) 
-    , mesh      (nullptr)
-    , movement  (s->state ().camera (), MovementConstraint::CameraPlane)
+    : self     (s) 
+    , mesh     (nullptr)
+    , movement ( s->state ().camera ()
+               , s->cache ().getFrom <MovementConstraint> ( "constraint"
+                                                          , MovementConstraint::CameraPlane ))
   {
     this->setupProperties ();
     this->setupToolTip    ();
   }
 
   void setupProperties () {
-    QButtonGroup& constraintEdit = *new QButtonGroup;
-    this->self->properties ().body ().add (
-        constraintEdit
-      , { QObject::tr ("X-axis")
-        , QObject::tr ("Y-axis")
-        , QObject::tr ("Z-axis")
-        , QObject::tr ("XY-plane")
-        , QObject::tr ("XZ-plane")
-        , QObject::tr ("YZ-plane")
-        , QObject::tr ("Camera-plane")
-        , QObject::tr ("Primary plane") 
-        }
-    );
-
-    ViewUtil::connect (constraintEdit, [this] (int id) {
-      switch (id) {
-        case 0: this->movement.constraint (MovementConstraint::XAxis);
-                break;
-        case 1: this->movement.constraint (MovementConstraint::YAxis);
-                break;
-        case 2: this->movement.constraint (MovementConstraint::ZAxis);
-                break;
-        case 3: this->movement.constraint (MovementConstraint::XYPlane);
-                break;
-        case 4: this->movement.constraint (MovementConstraint::XZPlane);
-                break;
-        case 5: this->movement.constraint (MovementConstraint::YZPlane);
-                break;
-        case 6: this->movement.constraint (MovementConstraint::CameraPlane);
-                break;
-        case 7: this->movement.constraint (MovementConstraint::PrimaryPlane);
-                break;
-        default:
-          DILAY_IMPOSSIBLE
-      }
+    this->movement.addProperties ( this->self->properties ().body ()
+                                 , [this] ()
+    {
       this->setupToolTip ();
-      this->self->cache ().set ("constraint", id);
+      this->self->cache ().set ("constraint", this->movement.constraint ());
     });
-    constraintEdit.button (this->self->cache ().get <int> ("constraint", 6))->click ();
   }
 
   void setupToolTip () {
