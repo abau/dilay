@@ -317,6 +317,19 @@ struct Mesh::Impl {
     this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (0.0f,0.0f,1.0f));
   }
 
+  void normalize () {
+    const glm::mat4x4 model       = this->modelMatrix ();
+    const glm::mat3x3 modelNormal = this->modelNormalMatrix ();
+
+    for (unsigned int i = 0; i < this->numVertices (); i++) {
+      this->setVertex (i, Util::transformPosition (model, this->vertex (i)));
+      this->setNormal (i, glm::normalize (modelNormal * this->normal (i)));
+    }
+    this->position       (glm::vec3   (0.0f));
+    this->scaling        (glm::vec3   (1.0f));
+    this->rotationMatrix = glm::mat4x4 (1.0f);
+  }
+
   glm::vec3 center () const {
     glm::vec3 min, max;
 
@@ -391,6 +404,7 @@ GETTER_CONST     (const glm::mat4x4&, Mesh, rotationMatrix)
 DELEGATE1        (void              , Mesh, rotationX, float)
 DELEGATE1        (void              , Mesh, rotationY, float)
 DELEGATE1        (void              , Mesh, rotationZ, float)
+DELEGATE         (void              , Mesh, normalize)
 DELEGATE_CONST   (glm::vec3         , Mesh, center)
 DELEGATE2_CONST  (void              , Mesh, minMax, glm::vec3&, glm::vec3&)
 GETTER_CONST     (const Color&      , Mesh, color)

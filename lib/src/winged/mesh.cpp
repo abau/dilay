@@ -432,33 +432,12 @@ struct WingedMesh::Impl {
   void               rotationZ      (float v)              { return this->mesh.rotationZ (v); }
 
   void normalize () {
-    const glm::mat4x4 model       = this->mesh.modelMatrix ();
-    const glm::mat3x3 modelNormal = this->mesh.modelNormalMatrix ();
-
-    glm::vec3 maxVertex (std::numeric_limits <float>::lowest ());
-    glm::vec3 minVertex (std::numeric_limits <float>::max    ());
-
-    this->forEachVertex ([this, &model, &modelNormal, &maxVertex, &minVertex] 
-                         (WingedVertex& vertex)
-    { 
-      const glm::vec3 v = Util::transformPosition  (model, vertex.position (*this->self));
-      const glm::vec3 n = glm::normalize (modelNormal * vertex.savedNormal (*this->self));
-            maxVertex   = glm::max (maxVertex, v);
-            minVertex   = glm::min (minVertex, v);
-
-      vertex.writePosition (*this->self, v);
-      vertex.writeNormal   (*this->self, n);
-    });
-
+    this->mesh.normalize ();
     this->octree.reset ();
 
     this->forEachFace ([this] (WingedFace& face) { 
       this->octree.addFace (face.index (), face.triangle (*this->self));
     });
-
-    this->mesh.position       (glm::vec3   (0.0f));
-    this->mesh.scaling        (glm::vec3   (1.0f));
-    this->mesh.rotationMatrix (glm::mat4x4 (1.0f));
   }
 
   glm::vec3 center () const {
