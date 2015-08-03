@@ -40,8 +40,9 @@ struct Scene :: Impl {
   SketchMesh& newSketchMesh (const Config& config, const SketchNode& tree) {
     SketchMesh& mesh = this->sketchMeshes.emplaceBack ();
 
-    mesh.fromTree   (tree);
-    mesh.fromConfig (config);
+    mesh.fromTree        (tree);
+    mesh.renderWireframe (this->_commonRenderMode.renderWireframe ());
+    mesh.fromConfig      (config);
 
     return mesh;
   }
@@ -150,6 +151,9 @@ struct Scene :: Impl {
     this->_commonRenderMode = mode;
     this->forEachMesh ([&mode] (WingedMesh& mesh) {
       mesh.renderMode () = mode; 
+    });
+    this->forEachMesh ([&mode] (SketchMesh& mesh) {
+      mesh.renderWireframe (mode.renderWireframe ()); 
     });
   }
 

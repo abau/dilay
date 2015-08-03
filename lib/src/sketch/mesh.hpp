@@ -39,14 +39,15 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     bool operator== (const SketchMesh&) const;
     bool operator!= (const SketchMesh&) const;
 
-    unsigned int      index      () const;
-    bool              hasRoot    () const;
-    SketchNode&       root       ();
-    const SketchNode& root       () const;
-    void              fromTree   (const SketchNode&);
-    void              reset      ();
-    bool              intersects (const PrimRay&, SketchNodeIntersection&);
-    void              render     (Camera&);
+    unsigned int      index           () const;
+    bool              hasRoot         () const;
+    SketchNode&       root            ();
+    const SketchNode& root            () const;
+    void              fromTree        (const SketchNode&);
+    void              reset           ();
+    bool              intersects      (const PrimRay&, SketchNodeIntersection&);
+    void              render          (Camera&);
+    void              renderWireframe (bool);
 
   private:
     IMPLEMENTATION

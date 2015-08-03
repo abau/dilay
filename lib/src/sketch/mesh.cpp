@@ -2,19 +2,26 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <glm/gtx/rotate_vector.hpp>
 #include "../mesh.hpp"
 #include "color.hpp"
 #include "config.hpp"
 #include "mesh-util.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
+#include "render-mode.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
 
 namespace {
   struct RenderConfig {
+    bool  renderWireframe;
     Color nodeColor;
     Color bubbleColor;
+
+    RenderConfig ()
+      : renderWireframe (false)
+    {}
   };
 
   PrimSphere nodeSphere (const SketchNode& node) {
@@ -27,6 +34,7 @@ struct SketchMesh::Impl {
   const unsigned int            index;
   std::unique_ptr <SketchNode> _root;
   Mesh                          nodeMesh;
+  Mesh                          wireframeMesh;
   RenderConfig                  renderConfig;
 
   Impl (SketchMesh* s, unsigned int i)
@@ -35,6 +43,12 @@ struct SketchMesh::Impl {
   {
     this->nodeMesh = MeshUtil::icosphere (3);
     this->nodeMesh.bufferData ();
+
+    this->wireframeMesh = MeshUtil::cone (16);
+    this->wireframeMesh.renderMode ().flatShading (true);
+    this->wireframeMesh.position   (glm::vec3 (0.0f, 0.5f, 0.0f));
+    this->wireframeMesh.normalize  ();
+    this->wireframeMesh.bufferData ();
   }
 
   bool operator== (const SketchMesh& other) const {
@@ -96,25 +110,40 @@ struct SketchMesh::Impl {
         if (node.parent ()) {
           const glm::vec3& parPos    = node.parent ()->data ().position ();
           const float      parRadius = node.parent ()->data ().radius ();
+          const float      distance  = glm::distance (pos, parPos);
+          const glm::vec3  direction = (parPos - pos) / distance;
 
-          this->nodeMesh.color (this->renderConfig.bubbleColor);
+          if (this->renderConfig.renderWireframe) {
+            const glm::mat4x4 rotMatrix = glm::orientation ( direction
+                                                           , glm::vec3 (0.0f, -1.0f, 0.0f) );
 
-          const float     distance  = glm::distance (pos, parPos);
-          const glm::vec3 direction = (parPos - pos) / distance;
+            this->wireframeMesh.color          (this->renderConfig.nodeColor);
+            this->wireframeMesh.position       (parPos);
+            this->wireframeMesh.scaling        (glm::vec3 (parRadius, distance, parRadius));
+            this->wireframeMesh.rotationMatrix (rotMatrix);
+            this->wireframeMesh.render         (camera);
+          }
+          else {
+            this->nodeMesh.color (this->renderConfig.bubbleColor);
 
-          for (float d = radius * 0.5f; d < distance; ) {
-            const glm::vec3 bubblePos    = pos + (d * direction);
-            const float     bubbleRadius = Util::lerp (d/distance, radius, parRadius);
+            for (float d = radius * 0.5f; d < distance; ) {
+              const glm::vec3 bubblePos    = pos + (d * direction);
+              const float     bubbleRadius = Util::lerp (d/distance, radius, parRadius);
 
-            this->nodeMesh.position (bubblePos);
-            this->nodeMesh.scaling  (glm::vec3 (bubbleRadius));
-            this->nodeMesh.render   (camera);
+              this->nodeMesh.position (bubblePos);
+              this->nodeMesh.scaling  (glm::vec3 (bubbleRadius));
+              this->nodeMesh.render   (camera);
 
-            d += bubbleRadius * 0.5f;
+              d += bubbleRadius * 0.5f;
+            }
           }
         }
       });
     }
+  }
+
+  void renderWireframe (bool v) {
+    this->renderConfig.renderWireframe = v;
   }
 
   void runFromConfig (const Config& config) {
@@ -134,4 +163,5 @@ DELEGATE1       (void              , SketchMesh, fromTree, const SketchNode&)
 DELEGATE        (void              , SketchMesh, reset)
 DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE1       (void              , SketchMesh, render, Camera&)
+DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)
