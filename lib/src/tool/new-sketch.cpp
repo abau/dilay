@@ -15,8 +15,11 @@ struct ToolNewSketch::Impl {
 
   ToolResponse runInitialize () const {
     this->self->snapshotSketchMeshes ();
-    this->self->state ().scene ().newSketchMesh ( this->self->state ().config ()
-                                                , SketchNode (nullptr, glm::vec3 (0.0f), 0.1f) );
+
+    SketchTree tree;
+    tree.addRoot (glm::vec3 (0.0f), 0.1f);
+
+    this->self->state ().scene ().newSketchMesh (this->self->state ().config (), tree);
     return ToolResponse::Terminate;
   }
 };

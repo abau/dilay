@@ -6,12 +6,15 @@
 #include "../mesh.hpp"
 #include "color.hpp"
 #include "config.hpp"
+#include "dimension.hpp"
 #include "mesh-util.hpp"
+#include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
 #include "render-mode.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
+#include "util.hpp"
 
 namespace {
   struct RenderConfig {
@@ -27,15 +30,39 @@ namespace {
   PrimSphere nodeSphere (const SketchNode& node) {
     return PrimSphere (node.data ().position (), node.data ().radius ());
   }
+
+  void deleteMirrored (SketchNode& node, bool all) {
+    if (all) {
+      if (node.data ().mirrored ()) {
+        node.data ().mirrored ()->forEachNode ([] (SketchNode& n) {
+          n.data ().mirrored (nullptr);
+        });
+      }
+      node.forEachNode ([] (SketchNode& n) {
+        n.data ().mirrored (nullptr);
+      });
+    }
+    else {
+      if (node.data ().mirrored ()) {
+        node.data ().mirrored ()->data ().mirrored (nullptr);
+      }
+      node.data ().mirrored (nullptr);
+    }
+  }
+}
+
+void SketchNodeData :: updatePointers (const SketchTree::PtrMap& ptrMap) {
+  this->_parent   = ptrMap.at (this->_parent);
+  this->_mirrored = ptrMap.at (this->_mirrored);
 }
 
 struct SketchMesh::Impl {
-  SketchMesh*                   self;
-  const unsigned int            index;
-  std::unique_ptr <SketchNode> _root;
-  Mesh                          nodeMesh;
-  Mesh                          wireframeMesh;
-  RenderConfig                  renderConfig;
+  SketchMesh*        self;
+  const unsigned int index;
+  SketchTree         tree;
+  Mesh               nodeMesh;
+  Mesh               wireframeMesh;
+  RenderConfig       renderConfig;
 
   Impl (SketchMesh* s, unsigned int i)
     : self  (s)
@@ -59,32 +86,17 @@ struct SketchMesh::Impl {
     return ! this->operator== (other);
   }
 
-  bool hasRoot () const {
-    return bool (this->_root);
-  }
-
-  SketchNode& root () {
-    assert (this->hasRoot ());
-    return *this->_root;
-  }
-
-  const SketchNode& root () const {
-    assert (this->hasRoot ());
-    return *this->_root;
-  }
-
-  void fromTree (const SketchNode& tree) {
-    assert (this->hasRoot () == false);
-    this->_root = std::make_unique <SketchNode> (tree);
+  void fromTree (const SketchTree& newTree) {
+    this->tree = newTree;
   }
 
   void reset () {
-    this->_root.reset ();
+    this->tree.reset ();
   }
 
   bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
-    if (this->hasRoot ()) {
-      this->_root->forEachNode ([this, &ray, &intersection] (SketchNode& node) {
+    if (this->tree.hasRoot ()) {
+      this->tree.root ().forEachNode ([this, &ray, &intersection] (SketchNode& node) {
         float t;
         if (IntersectionUtil::intersects (ray, nodeSphere (node), &t)) {
           const glm::vec3 p = ray.pointAt (t);
@@ -97,8 +109,8 @@ struct SketchMesh::Impl {
   }
 
   void render (Camera& camera) {
-    if (this->hasRoot ()) {
-      this->_root->forEachConstNode ([this, &camera] (const SketchNode& node) {
+    if (this->tree.hasRoot ()) {
+      this->tree.root ().forEachConstNode ([this, &camera] (const SketchNode& node) {
         const glm::vec3& pos    = node.data ().position ();
         const float      radius = node.data ().radius ();
 
@@ -107,9 +119,9 @@ struct SketchMesh::Impl {
         this->nodeMesh.color    (this->renderConfig.nodeColor);
         this->nodeMesh.render   (camera);
 
-        if (node.parent ()) {
-          const glm::vec3& parPos    = node.parent ()->data ().position ();
-          const float      parRadius = node.parent ()->data ().radius ();
+        if (node.data ().parent ()) {
+          const glm::vec3& parPos    = node.data ().parent ()->data ().position ();
+          const float      parRadius = node.data ().parent ()->data ().radius ();
           const float      distance  = glm::distance (pos, parPos);
           const glm::vec3  direction = (parPos - pos) / distance;
 
@@ -146,6 +158,78 @@ struct SketchMesh::Impl {
     this->renderConfig.renderWireframe = v;
   }
 
+  PrimPlane mirrorPlane (Dimension dim) const {
+    assert (this->tree.hasRoot ());
+    return PrimPlane (this->tree.root ().data ().position (), DimensionUtil::vector (dim));
+  }
+
+  SketchNode& addChild ( SketchNode& node, const glm::vec3& pos, float radius
+                       , const Dimension* dim )
+  {
+    SketchNode& new1 = node.emplaceChild (pos, radius);
+    new1.data ().parent (&node);
+
+    if (dim) {
+      SketchNode& new2 = node.emplaceChild (this->mirrorPlane (*dim).mirror (pos), radius);
+      new2.data ().parent (&node);
+      new2.data ().mirrored (&new1);
+      new1.data ().mirrored (&new2);
+    }
+    return new1;
+  }
+
+  void move ( SketchNode& node, const glm::vec3& delta, bool withChildren
+            , const Dimension* dim )
+  {
+    auto moveNodes = [withChildren] (SketchNode& node, const glm::vec3& delta) {
+      if (withChildren) {
+        node.forEachNode ([&delta] (SketchNode& n) {
+          n.data ().position (n.data ().position () + delta);
+        });
+      }
+      else {
+        node.data ().position (node.data ().position () + delta);
+      }
+    };
+
+    moveNodes (node, delta);
+
+    if (dim) {
+      if (node.data ().mirrored ()) {
+        const glm::vec3 mDelta = this->mirrorPlane (*dim).mirrorDirection (delta);
+        moveNodes (*node.data ().mirrored (), mDelta);
+      }
+    }
+    else {
+      deleteMirrored (node, withChildren);
+    }
+  }
+  /*
+    if (this->_root) {
+      PrimPlane plane (this->_root->data ().position (), DimensionUtil::vector (dim));
+
+      // ...............
+
+      this->_root->deleteNodeIf ([&plane] (const SketchNode& node) {
+        return plane.distance (node.data ().position ()) < Util::epsilon ();
+      });
+    }
+    */
+
+  void mirror (Dimension) {
+    /*
+    if (this->hasMirror ()) {
+      if (*this->_mirrorDimension != dim) {
+        this->deleteMirror ();
+        this->_mirrorDimension = std::make_unique <Dimension> (dim);
+      }
+    }
+    else {
+      this->_mirrorDimension = std::make_unique <Dimension> (dim);
+    }
+    */
+  }
+
   void runFromConfig (const Config& config) {
     this->renderConfig.nodeColor   = config.get <Color> ("editor/sketch/node/color");
     this->renderConfig.bubbleColor = config.get <Color> ("editor/sketch/bubble/color");
@@ -156,12 +240,14 @@ DELEGATE1_BIG3_SELF (SketchMesh, unsigned int);
 DELEGATE1_CONST (bool              , SketchMesh, operator==, const SketchMesh&)
 DELEGATE1_CONST (bool              , SketchMesh, operator!=, const SketchMesh&)
 GETTER_CONST    (unsigned int      , SketchMesh, index)
-DELEGATE_CONST  (bool              , SketchMesh, hasRoot)
-DELEGATE        (SketchNode&       , SketchMesh, root)
-DELEGATE_CONST  (const SketchNode& , SketchMesh, root)
-DELEGATE1       (void              , SketchMesh, fromTree, const SketchNode&)
+GETTER          (SketchTree&       , SketchMesh, tree)
+GETTER_CONST    (const SketchTree& , SketchMesh, tree)
+DELEGATE1       (void              , SketchMesh, fromTree, const SketchTree&)
 DELEGATE        (void              , SketchMesh, reset)
 DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE1       (void              , SketchMesh, render, Camera&)
 DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
+DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
+DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
+DELEGATE1       (void              , SketchMesh, mirror, Dimension)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)

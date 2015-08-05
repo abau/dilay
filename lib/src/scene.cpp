@@ -37,7 +37,7 @@ struct Scene :: Impl {
     return wingedMesh;
   }
 
-  SketchMesh& newSketchMesh (const Config& config, const SketchNode& tree) {
+  SketchMesh& newSketchMesh (const Config& config, const SketchTree& tree) {
     SketchMesh& mesh = this->sketchMeshes.emplaceBack ();
 
     mesh.fromTree        (tree);
@@ -72,7 +72,7 @@ struct Scene :: Impl {
       }
     });
     this->forEachMesh ([this] (SketchMesh& mesh) {
-      if (mesh.hasRoot () == false) {
+      if (mesh.tree ().hasRoot () == false) {
         this->deleteMesh (mesh);
       }
     });
@@ -244,7 +244,7 @@ struct Scene :: Impl {
 DELEGATE1_BIG3 (Scene, const Config&)
 
 DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
-DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchNode&)
+DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchTree&)
 DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
 DELEGATE1       (void              , Scene, deleteMesh, SketchMesh&)
 DELEGATE        (void              , Scene, deleteWingedMeshes)

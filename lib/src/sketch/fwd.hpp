@@ -7,10 +7,10 @@
 
 #include "tree.hpp"
 
-template <typename T> class Tree;
 class SketchNodeData;
 class SketchNodeIntersection;
-using SketchNode = Tree <SketchNodeData>;
+using SketchNode = TreeNode <SketchNodeData>;
+using SketchTree = Tree <SketchNodeData>;
 class SketchMesh;
 
 #endif
