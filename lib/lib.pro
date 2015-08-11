@@ -103,6 +103,7 @@ HEADERS += \
            src/hash.hpp \
            src/history.hpp \
            src/intersection.hpp \
+           src/intrusive-list.hpp \
            src/kvstore.hpp \
            src/macro.hpp \
            src/maybe.hpp \

@@ -7,16 +7,18 @@ DEPENDPATH     += src
 INCLUDEPATH    += src $$PWD/../lib/src
 
 SOURCES += \
+           src/main.cpp \
            src/test-bitset.cpp \
            src/test-indexable.cpp \
            src/test-intersection.cpp \
+           src/test-intrusive-list.cpp \
            src/test-maybe.cpp \
-           src/main.cpp \
            src/test-octree.cpp
 
 HEADERS += \
            src/test-indexable.hpp \
            src/test-intersection.hpp \
+           src/test-intrusive-list.hpp \
            src/test-maybe.hpp \
            src/test-octree.hpp
 

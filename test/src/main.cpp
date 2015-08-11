@@ -7,19 +7,23 @@
 #include "test-bitset.hpp"
 #include "test-indexable.hpp"
 #include "test-intersection.hpp"
+#include "test-intrusive-list.hpp"
 #include "test-maybe.hpp"
 #include "test-octree.hpp"
 
 int main () {
   QCoreApplication::setApplicationName ("dilay");
 
-  TestIndexable   ::test  ();
-  TestIntersection::test  ();
-  TestMaybe       ::test1 ();
-  TestMaybe       ::test2 ();
-  TestOctree      ::test1 ();
-  TestOctree      ::test2 ();
-  TestBitset      ::test  ();
+  TestIndexable    ::test  ();
+  TestIntersection ::test  ();
+  TestMaybe        ::test1 ();
+  TestMaybe        ::test2 ();
+  TestOctree       ::test1 ();
+  TestOctree       ::test2 ();
+  TestBitset       ::test  ();
+  TestIntrusiveList::test1 ();
+  TestIntrusiveList::test2 ();
+  TestIntrusiveList::test3 ();
 
   std::cout << "all tests run successfully\n";
   return 0;
