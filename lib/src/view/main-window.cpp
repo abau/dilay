@@ -14,6 +14,7 @@
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/tool-tip.hpp"
+#include "view/util.hpp"
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
