@@ -5,6 +5,7 @@
 #ifndef DILAY_WINGED_FACE
 #define DILAY_WINGED_FACE
 
+#include "intrusive-list.hpp"
 #include "macro.hpp"
 
 class AdjEdges;
@@ -15,7 +16,7 @@ class WingedEdge;
 class WingedVertex;
 class WingedMesh;
 
-class WingedFace {
+class WingedFace : public IntrusiveList <WingedFace>::Item {
   public:                      
     WingedFace (unsigned int);
     WingedFace (const WingedFace&)  = delete;

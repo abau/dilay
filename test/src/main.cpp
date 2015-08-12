@@ -5,7 +5,6 @@
 #include <iostream>
 #include <QCoreApplication>
 #include "test-bitset.hpp"
-#include "test-indexable.hpp"
 #include "test-intersection.hpp"
 #include "test-intrusive-list.hpp"
 #include "test-maybe.hpp"
@@ -14,7 +13,6 @@
 int main () {
   QCoreApplication::setApplicationName ("dilay");
 
-  TestIndexable    ::test  ();
   TestIntersection ::test  ();
   TestMaybe        ::test1 ();
   TestMaybe        ::test2 ();

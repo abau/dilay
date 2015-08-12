@@ -4,7 +4,6 @@
  */
 #include <fstream>
 #include "config.hpp"
-#include "indexable.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
 #include "render-mode.hpp"
@@ -14,9 +13,9 @@
 #include "winged/util.hpp"
 
 struct Scene :: Impl {
-  IndexableList <WingedMesh> wingedMeshes;
-  RenderMode                _commonRenderMode;
-  std::string                fileName;
+  IntrusiveIndexedList <WingedMesh> wingedMeshes;
+  RenderMode                       _commonRenderMode;
+  std::string                       fileName;
 
   Impl (const Config& config) {
     this->runFromConfig (config);
@@ -25,7 +24,7 @@ struct Scene :: Impl {
   }
 
   WingedMesh& newWingedMesh (const Config& config, const Mesh& mesh) {
-    WingedMesh& wingedMesh = this->wingedMeshes.emplace ();
+    WingedMesh& wingedMesh = this->wingedMeshes.emplaceBack ();
 
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();

@@ -7,7 +7,6 @@
 #include "action/finalize.hpp"
 #include "affected-faces.hpp"
 #include "hash.hpp"
-#include "indexable.hpp"
 #include "intersection.hpp"
 #include "mesh-util.hpp"
 #include "octree.hpp"
@@ -19,13 +18,13 @@
 #include "winged/vertex.hpp"
 
 struct WingedMesh::Impl {
-  WingedMesh*                   self;
-  const unsigned int           _index;
-  Mesh                          mesh;
-  IndexableList <WingedVertex>  vertices;
-  IndexableList <WingedEdge>    edges;
-  IndexableList <WingedFace>    faces;
-  Octree                        octree;
+  WingedMesh*                         self;
+  const unsigned int                 _index;
+  Mesh                                mesh;
+  IntrusiveIndexedList <WingedVertex> vertices;
+  IntrusiveIndexedList <WingedEdge>   edges;
+  IntrusiveIndexedList <WingedFace>   faces;
+  Octree                              octree;
 
   Impl (WingedMesh* s, unsigned int i) 
     :  self   (s)
@@ -64,7 +63,7 @@ struct WingedMesh::Impl {
   }
 
   WingedVertex& addVertex (const glm::vec3& pos) {
-    WingedVertex& vertex = this->vertices.emplace ();
+    WingedVertex& vertex = this->vertices.emplaceBack ();
     this->addVertexToInternalMesh (vertex, pos);
     return vertex;
   }
@@ -82,11 +81,11 @@ struct WingedMesh::Impl {
   }
 
   WingedEdge& addEdge () {
-    return this->edges.emplace ();
+    return this->edges.emplaceBack ();
   }
 
   WingedFace& addFace (const PrimTriangle& geometry) {
-    WingedFace& face = this->faces.emplace ();
+    WingedFace& face = this->faces.emplaceBack ();
 
     this->octree.addFace (face.index (), geometry);
 
@@ -101,12 +100,12 @@ struct WingedMesh::Impl {
   }
 
   void setVertex (unsigned int index, const glm::vec3& v) {
-    assert (this->vertices.isFree (index) == false);
+    assert (this->vertices.isFreeSLOW (index) == false);
     return this->mesh.setVertex (index,v);
   }
 
   void setNormal (unsigned int index, const glm::vec3& n) {
-    assert (this->vertices.isFree (index) == false);
+    assert (this->vertices.isFreeSLOW (index) == false);
     return this->mesh.setNormal (index,n);
   }
 
@@ -162,10 +161,7 @@ struct WingedMesh::Impl {
   Mesh makePrunedMesh (std::vector <unsigned int>* newFaceIndices) const {
     Mesh prunedMesh (this->mesh, false);
 
-    if (this->vertices.numFreeIndices () == 0 && this->faces.numFreeIndices () == 0) {
-      prunedMesh = this->mesh;
-    }
-    else {
+    if (this->vertices.hasFreeIndices () || this->faces.hasFreeIndices ()) {
       std::vector <unsigned int> newVertexIndices;
 
       newVertexIndices.resize    (this->mesh.numVertices (), Util::invalidIndex ());
@@ -204,6 +200,9 @@ struct WingedMesh::Impl {
           (*newFaceIndices)[f.index ()] = std::div (newI, 3).quot;
         }
       });
+    }
+    else {
+      prunedMesh = this->mesh;
     }
     return prunedMesh;
   }
@@ -267,9 +266,8 @@ struct WingedMesh::Impl {
     this->setupOctreeRoot (center, width);
 
     // vertices
-    this->vertices.reserveIndices (this->mesh.numVertices ());
     for (unsigned int i = 0; i < this->mesh.numVertices (); i++) {
-      this->vertices.emplace ();
+      this->vertices.emplaceBack ();
     }
 
     // faces & edges
@@ -319,14 +317,13 @@ struct WingedMesh::Impl {
   void bufferData  () { 
     auto resetFreeFaceIndices = [this] () {
       if (this->numFaces () > 0) {
-        WingedFace* someFace = this->faces.getSome ();
+        WingedFace& someFace = this->faces.front ();
 
-        assert (someFace);
-        this->faces.forEachFreeIndex ([&] (unsigned int index) {
-          this->setIndex ((3 * index) + 0, this->index ((3 * someFace->index ()) + 0));
-          this->setIndex ((3 * index) + 1, this->index ((3 * someFace->index ()) + 1));
-          this->setIndex ((3 * index) + 2, this->index ((3 * someFace->index ()) + 2));
-        });
+        for (unsigned int index : this->faces.freeIndices ()) {
+          this->setIndex ((3 * index) + 0, this->index ((3 * someFace.index ()) + 0));
+          this->setIndex ((3 * index) + 1, this->index ((3 * someFace.index ()) + 1));
+          this->setIndex ((3 * index) + 2, this->index ((3 * someFace.index ()) + 2));
+        }
       }
     };
 

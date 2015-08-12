@@ -8,6 +8,7 @@
 #include <functional>
 #include <glm/fwd.hpp>
 #include <vector>
+#include "intrusive-list.hpp"
 #include "macro.hpp"
 
 class AffectedFaces;
@@ -25,7 +26,7 @@ class WingedFace;
 class WingedFaceIntersection;
 class WingedVertex;
 
-class WingedMesh {
+class WingedMesh : public IntrusiveList <WingedMesh>::Item {
   public: 
     DECLARE_BIG3 (WingedMesh, unsigned int);
 

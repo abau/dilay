@@ -6,13 +6,14 @@
 #define DILAY_WINGED_EDGE
 
 #include <glm/fwd.hpp>
+#include "intrusive-list.hpp"
 #include "macro.hpp"
 
 class WingedVertex;
 class WingedFace;
 class WingedMesh;
 
-class WingedEdge {
+class WingedEdge : public IntrusiveList <WingedEdge>::Item {
   public:
     WingedEdge (unsigned int);
     WingedEdge (const WingedEdge&)  = delete;
