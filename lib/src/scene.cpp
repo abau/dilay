@@ -40,7 +40,7 @@ struct Scene :: Impl {
     this->resetIfEmpty ();
   }
 
-  WingedMesh* wingedMesh (unsigned int index) const { 
+  WingedMesh* wingedMesh (unsigned int index) { 
     return this->wingedMeshes.get (index); 
   }
 
@@ -182,7 +182,7 @@ DELEGATE1_BIG3 (Scene, const Config&)
 
 DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
 DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
-DELEGATE1_CONST (WingedMesh*       , Scene, wingedMesh, unsigned int)
+DELEGATE1       (WingedMesh*       , Scene, wingedMesh, unsigned int)
 DELEGATE1       (void              , Scene, render, Camera&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)

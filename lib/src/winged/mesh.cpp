@@ -45,19 +45,19 @@ struct WingedMesh::Impl {
   unsigned int index  (unsigned int i) const { return this->mesh.index  (i); }
   glm::vec3    normal (unsigned int i) const { return this->mesh.normal (i); }
 
-  WingedVertex* vertex (unsigned int i) const {
+  WingedVertex* vertex (unsigned int i) {
     return this->vertices.get (i);
   }
 
-  WingedEdge* edge (unsigned int i) const {
+  WingedEdge* edge (unsigned int i) {
     return this->edges.get (i);
   }
 
-  WingedFace* face (unsigned int i) const {
+  WingedFace* face (unsigned int i) {
     return this->faces.get (i);
   }
 
-  WingedFace* someDegeneratedFace () const {
+  WingedFace* someDegeneratedFace () {
     return this->octree.numDegeneratedFaces () == 0
       ? nullptr
       : this->face (this->octree.someDegeneratedIndex ());
@@ -518,10 +518,10 @@ DELEGATE_CONST  (unsigned int   , WingedMesh, index)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, vector, unsigned int)
 DELEGATE1_CONST (unsigned int   , WingedMesh, index, unsigned int)
 DELEGATE1_CONST (glm::vec3      , WingedMesh, normal, unsigned int)
-DELEGATE1_CONST (WingedVertex*  , WingedMesh, vertex, unsigned int)
-DELEGATE1_CONST (WingedEdge*    , WingedMesh, edge, unsigned int)
-DELEGATE1_CONST (WingedFace*    , WingedMesh, face, unsigned int)
-DELEGATE_CONST  (WingedFace*    , WingedMesh, someDegeneratedFace)
+DELEGATE1       (WingedVertex*  , WingedMesh, vertex, unsigned int)
+DELEGATE1       (WingedEdge*    , WingedMesh, edge, unsigned int)
+DELEGATE1       (WingedFace*    , WingedMesh, face, unsigned int)
+DELEGATE        (WingedFace*    , WingedMesh, someDegeneratedFace)
 
 DELEGATE1       (WingedVertex&  , WingedMesh, addVertex, const glm::vec3&)
 DELEGATE        (WingedEdge&    , WingedMesh, addEdge)

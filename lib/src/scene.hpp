@@ -22,7 +22,7 @@ class Scene : public Configurable {
 
     WingedMesh&        newWingedMesh     (const Config&, const Mesh&);
     void               deleteMesh        (WingedMesh&);
-    WingedMesh*        wingedMesh        (unsigned int) const;
+    WingedMesh*        wingedMesh        (unsigned int);
     void               render            (Camera&);
     bool               intersects        (const PrimRay&, WingedFaceIntersection&);
     void               printStatistics   (bool) const;
@@ -42,7 +42,7 @@ class Scene : public Configurable {
     bool               toObjFile         (const std::string&);
     bool               fromObjFile       (const Config&, const std::string&);
 
-    SAFE_REF1_CONST (WingedMesh, wingedMesh, unsigned int)
+    SAFE_REF1 (WingedMesh, wingedMesh, unsigned int)
   private:
     IMPLEMENTATION
 
