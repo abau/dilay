@@ -15,7 +15,8 @@ int main () {
 
   TestIndexable   ::test  ();
   TestIntersection::test  ();
-  TestMaybe       ::test  ();
+  TestMaybe       ::test1 ();
+  TestMaybe       ::test2 ();
   TestOctree      ::test1 ();
   TestOctree      ::test2 ();
   TestBitset      ::test  ();

@@ -18,33 +18,41 @@ class Maybe {
 
     Maybe (const T* v) 
       : value (bool (v) ? new T (*v) : nullptr)
-      {}
+    {}
 
     Maybe (const T& v) 
-      : value (new T (v))
-      {}
+      : Maybe (&v)
+    {}
 
     Maybe (const Maybe <T>& o) 
-      : value (o.isSet () ? new T (*o) : nullptr)
-      {}
+      : Maybe (o.get ())
+    {}
 
     Maybe (Maybe <T>&&) = default;
 
+    Maybe (std::unique_ptr <T>&& v)
+      : value (std::move (v))
+    {}
+
+    template <typename ... Args>
+    static Maybe <T> make (Args&& ... args) {
+      return Maybe (std::make_unique <T> (std::forward <Args> (args) ...));
+    }
+
     ~Maybe () = default;
 
-    const Maybe <T>& operator= (const T* v) {
+    Maybe <T>& operator= (const T* v) {
       this->value.reset (bool (v) ? new T (*v) : nullptr);
       return *this;
     }
 
-    const Maybe <T>& operator= (const T& v) {
-      this->value.reset (new T (v));
-      return *this;
+    Maybe <T>& operator= (const T& v) {
+      return this->operator= (&v);
     }
 
-    const Maybe <T>& operator= (const Maybe<T>& o) {
+    Maybe <T>& operator= (const Maybe<T>& o) {
       if (this != &o) {
-        this->value.reset (o.isSet () ? new T (*o) : nullptr);
+        this->operator= (o.get ());
       }
       return *this;
     }
@@ -52,7 +60,7 @@ class Maybe {
     Maybe <T>& operator= (Maybe<T>&&) = default;
 
     explicit operator bool () const {
-      return this->isSet ();
+      return this->hasValue ();
     }
 
     bool operator== (bool v) const {
@@ -60,29 +68,41 @@ class Maybe {
     }
 
     T& operator* () {
-      assert (this->isSet ());
+      assert (this->hasValue ());
       return *this->value;
     }
 
     const T& operator* () const {
-      assert (this->isSet ());
+      assert (this->hasValue ());
       return *this->value;
     }
 
     T* operator-> () {
-      return this->isSet () ? this->value.get () : nullptr ;
+      return this->hasValue () ? this->get () : nullptr ;
     }
 
     const T* operator-> () const {
-      return this->isSet () ? this->value.get () : nullptr ;
+      return this->hasValue () ? this->get () : nullptr ;
     }
 
-    bool isSet () const {
+    T* get () {
+      return this->value.get ();
+    }
+
+    const T* get () const {
+      return this->value.get ();
+    }
+
+    bool hasValue () const {
       return bool (this->value); 
     }
 
     void reset (T* newValue = nullptr) {
       this->value.reset (newValue);
+    }
+
+    void swap (Maybe <T>& o) {
+      this->value.swap (o.value);
     }
 
   private:

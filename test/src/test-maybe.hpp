@@ -6,7 +6,8 @@
 #define DILAY_TEST_MAYBE
 
 namespace TestMaybe {
-  void test ();
+  void test1 ();
+  void test2 ();
 }
 
 #endif
