@@ -77,6 +77,10 @@ QFrame& ViewUtil :: horizontalLine () {
   return frame;
 }
 
+QWidget& ViewUtil :: emptyWidget () {
+  return *new QWidget;
+}
+
 glm::uvec2 ViewUtil :: toUVec2 (const QPoint& p) {
   assert (p.x () >= 0);
   assert (p.y () >= 0);

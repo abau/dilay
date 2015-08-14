@@ -163,19 +163,41 @@ struct SketchMesh::Impl {
     return PrimPlane (this->tree.root ().data ().position (), DimensionUtil::vector (dim));
   }
 
-  SketchNode& addChild ( SketchNode& node, const glm::vec3& pos, float radius
+  SketchNode& addMirroredChild (SketchNode& node, const PrimPlane& mirrorPlane) {
+    const glm::vec3   pos    = mirrorPlane.mirror (node.data ().position ());
+    const float       radius = node.data ().radius ();
+          SketchNode& parent = *node.data ().parent ();
+
+    if (parent.data ().parent () == nullptr) {
+      SketchNode& nodeM = parent.emplaceChild (pos, radius);
+
+      nodeM.data ().parent (&parent);
+      nodeM.data ().mirrored (&node);
+      node.data ().mirrored (&nodeM);
+      return nodeM;
+    }
+    else if (parent.data ().mirrored ()) {
+      SketchNode* parentM = parent.data ().mirrored ();
+      SketchNode& nodeM   = parentM->emplaceChild (pos, radius);
+
+      nodeM.data ().parent (parentM);
+      nodeM.data ().mirrored (&node);
+      node.data ().mirrored (&nodeM);
+      return nodeM;
+    }
+    DILAY_IMPOSSIBLE
+  }
+
+  SketchNode& addChild ( SketchNode& parent, const glm::vec3& pos, float radius
                        , const Dimension* dim )
   {
-    SketchNode& new1 = node.emplaceChild (pos, radius);
-    new1.data ().parent (&node);
+    SketchNode& newNode = parent.emplaceChild (pos, radius);
+    newNode.data ().parent (&parent);
 
     if (dim) {
-      SketchNode& new2 = node.emplaceChild (this->mirrorPlane (*dim).mirror (pos), radius);
-      new2.data ().parent (&node);
-      new2.data ().mirrored (&new1);
-      new1.data ().mirrored (&new2);
+      this->addMirroredChild (newNode, this->mirrorPlane (*dim));
     }
-    return new1;
+    return newNode;
   }
 
   void move ( SketchNode& node, const glm::vec3& delta, bool withChildren
@@ -204,30 +226,52 @@ struct SketchMesh::Impl {
       deleteMirrored (node, withChildren);
     }
   }
-  /*
-    if (this->_root) {
-      PrimPlane plane (this->_root->data ().position (), DimensionUtil::vector (dim));
 
-      // ...............
+  void radius (SketchNode& node, float radius, bool mirror) {
+    node.data ().radius (radius);
 
-      this->_root->deleteNodeIf ([&plane] (const SketchNode& node) {
-        return plane.distance (node.data ().position ()) < Util::epsilon ();
-      });
-    }
-    */
-
-  void mirror (Dimension) {
-    /*
-    if (this->hasMirror ()) {
-      if (*this->_mirrorDimension != dim) {
-        this->deleteMirror ();
-        this->_mirrorDimension = std::make_unique <Dimension> (dim);
+    if (mirror) {
+      if (node.data ().mirrored ()) {
+        node.data ().mirrored ()->data ().radius (radius);
       }
     }
     else {
-      this->_mirrorDimension = std::make_unique <Dimension> (dim);
+      deleteMirrored (node, false);
     }
-    */
+  }
+
+  void mirror (Dimension dim) {
+    if (this->tree.hasRoot ()) {
+      PrimPlane mirrorPlane = this->mirrorPlane (dim); 
+
+      std::function <void (SketchNode&)> mirrorNode =
+        [this, &mirrorPlane, &mirrorNode] (SketchNode& node)
+      {
+        node.forEachChild ([this, &mirrorPlane, &mirrorNode] (SketchNode& c) {
+          this->addMirroredChild (c, mirrorPlane);
+          mirrorNode (c);
+        });
+      };
+
+      deleteMirrored (this->tree.root (), true);
+
+      this->tree.root ().deleteChildIf ([&mirrorPlane] (const SketchNode& node) {
+        return mirrorPlane.distance (node.data ().position ()) < -Util::epsilon ();
+      });
+
+      unsigned int numC = this->tree.root ().numChildren ();
+
+      this->tree.root ().forEachChild ([this, &mirrorNode, &mirrorPlane, &numC] 
+        (SketchNode& child)
+      {
+        if (numC > 0) {
+          this->addMirroredChild (child, mirrorPlane);
+          mirrorNode (child);
+
+          numC--;
+        }
+      });
+    }
   }
 
   void runFromConfig (const Config& config) {
@@ -240,7 +284,6 @@ DELEGATE1_BIG3_SELF (SketchMesh, unsigned int);
 DELEGATE1_CONST (bool              , SketchMesh, operator==, const SketchMesh&)
 DELEGATE1_CONST (bool              , SketchMesh, operator!=, const SketchMesh&)
 GETTER_CONST    (unsigned int      , SketchMesh, index)
-GETTER          (SketchTree&       , SketchMesh, tree)
 GETTER_CONST    (const SketchTree& , SketchMesh, tree)
 DELEGATE1       (void              , SketchMesh, fromTree, const SketchTree&)
 DELEGATE        (void              , SketchMesh, reset)
@@ -249,5 +292,6 @@ DELEGATE1       (void              , SketchMesh, render, Camera&)
 DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
 DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
+DELEGATE3       (void              , SketchMesh, radius, SketchNode&, float, bool)
 DELEGATE1       (void              , SketchMesh, mirror, Dimension)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)

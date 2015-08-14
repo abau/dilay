@@ -51,7 +51,6 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     bool operator!= (const SketchMesh&) const;
 
     unsigned int      index           () const;
-    SketchTree&       tree            ();
     const SketchTree& tree            () const;
     void              fromTree        (const SketchTree&);
     void              reset           ();
@@ -60,6 +59,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void              renderWireframe (bool);
     SketchNode&       addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
     void              move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
+    void              radius          (SketchNode&, float, bool);
     void              mirror          (Dimension);
 
   private:

@@ -56,6 +56,7 @@ SOURCES += \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/delete-mesh.cpp \
+           src/tool/modify-sketch.cpp \
            src/tool/move-mesh.cpp \
            src/tool/move-camera.cpp \
            src/tool/new-mesh.cpp \
@@ -70,6 +71,7 @@ SOURCES += \
            src/tool/sculpt/reduce.cpp \
            src/tool/sculpt/smooth.cpp \
            src/tool/util/movement.cpp \
+           src/tool/util/scaling.cpp \
            src/util.cpp \
            src/view/axis.cpp \
            src/view/cursor.cpp \
@@ -149,6 +151,7 @@ HEADERS += \
            src/tool/move-camera.hpp \
            src/tool/sculpt.hpp \
            src/tool/util/movement.hpp \
+           src/tool/util/scaling.hpp \
            src/tools.hpp \
            src/tree.hpp \
            src/util.hpp \

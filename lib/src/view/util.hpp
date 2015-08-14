@@ -31,6 +31,7 @@ namespace ViewUtil {
   QCheckBox&        checkBox       (const QString&, bool = false);
   ViewDoubleSlider& slider         (unsigned short, float, float, float, unsigned short = 1);
   QFrame&           horizontalLine ();
+  QWidget&          emptyWidget    ();
   glm::uvec2        toUVec2        (const QPoint&);
   glm::uvec2        toUVec2        (const QMouseEvent&);
   glm::ivec2        toIVec2        (const QPoint&);
