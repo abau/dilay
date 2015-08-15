@@ -34,6 +34,7 @@ struct ToolSculptSmooth::Impl {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);
     });
+    intensityEdit.setEnabled (!params.relaxOnly ());
     properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
 
     QCheckBox& relaxEdit = ViewUtil::checkBox (QObject::tr ("Relax only"), params.relaxOnly ());

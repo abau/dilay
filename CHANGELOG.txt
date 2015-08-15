@@ -8,5 +8,8 @@ for a fine-grained overview of all changes.
 
 ## 1.0.0 -> 1.0.1
 
-- 2015-07-30: Fix "Move mesh" tool so that it does not push a scene snapshot
-  to the history whenever it is invoked, but when a mesh is actually moved.
+- 2015-07-30: Fix the Intensity slider of the Smooth-tool so that it is initially
+  disabled if the "Relax only"-checkbox is activated.
+
+- 2015-07-30: Fix the "Move mesh"-tool so that it does not push a scene snapshot
+  to the history when it is invoked, but when a mesh is actually moved.
