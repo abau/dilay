@@ -31,23 +31,15 @@ namespace {
     return PrimSphere (node.data ().position (), node.data ().radius ());
   }
 
-  void deleteMirrored (SketchNode& node, bool all) {
-    if (all) {
-      if (node.data ().mirrored ()) {
-        node.data ().mirrored ()->forEachNode ([] (SketchNode& n) {
-          n.data ().mirrored (nullptr);
-        });
-      }
-      node.forEachNode ([] (SketchNode& n) {
+  void deleteMirrored (SketchNode& node) {
+    if (node.data ().mirrored ()) {
+      node.data ().mirrored ()->forEachNode ([] (SketchNode& n) {
         n.data ().mirrored (nullptr);
       });
     }
-    else {
-      if (node.data ().mirrored ()) {
-        node.data ().mirrored ()->data ().mirrored (nullptr);
-      }
-      node.data ().mirrored (nullptr);
-    }
+    node.forEachNode ([] (SketchNode& n) {
+      n.data ().mirrored (nullptr);
+    });
   }
 }
 
@@ -223,7 +215,7 @@ struct SketchMesh::Impl {
       }
     }
     else {
-      deleteMirrored (node, withChildren);
+      deleteMirrored (node);
     }
   }
 
@@ -236,7 +228,7 @@ struct SketchMesh::Impl {
       }
     }
     else {
-      deleteMirrored (node, false);
+      deleteMirrored (node);
     }
   }
 
@@ -253,7 +245,7 @@ struct SketchMesh::Impl {
         });
       };
 
-      deleteMirrored (this->tree.root (), true);
+      deleteMirrored (this->tree.root ());
 
       this->tree.root ().deleteChildIf ([&mirrorPlane] (const SketchNode& node) {
         return mirrorPlane.distance (node.data ().position ()) < -Util::epsilon ();
