@@ -9,6 +9,12 @@
 #include "intrusive-list.hpp"
 #include "maybe.hpp"
 
+template <typename T> 
+class TreeNode;
+
+template <typename T> 
+using TreeNodePtrMap = std::unordered_map <const TreeNode <T>*, TreeNode <T>*>;
+
 template <typename T>
 class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
   public:
@@ -20,8 +26,7 @@ class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
       : _data (std::move (d))
     {}
 
-    explicit TreeNode ( const TreeNode& o
-                      , std::unordered_map <const TreeNode*, TreeNode*>& ptrMap )
+    explicit TreeNode (const TreeNode& o, TreeNodePtrMap <T>& ptrMap)
       : _data (o._data)
     {
       ptrMap.emplace (&o, this);
@@ -106,8 +111,6 @@ class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
 template <typename T>
 class Tree {
   public:
-    typedef std::unordered_map <const TreeNode <T>*, TreeNode <T>*> PtrMap;
-
     Tree () {}
 
     Tree (const Tree& o) {
@@ -118,7 +121,7 @@ class Tree {
       this->reset ();
 
       if (o.hasRoot ()) {
-        PtrMap ptrMap;
+        TreeNodePtrMap <T> ptrMap;
         ptrMap.emplace (nullptr, nullptr);
 
         this->_root = Maybe <TreeNode <T>>::make (o.root (), ptrMap);

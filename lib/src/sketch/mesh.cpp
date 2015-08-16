@@ -43,7 +43,7 @@ namespace {
   }
 }
 
-void SketchNodeData :: updatePointers (const SketchTree::PtrMap& ptrMap) {
+void SketchNodeData :: updatePointers (const SketchNodePtrMap& ptrMap) {
   this->_parent   = ptrMap.at (this->_parent);
   this->_mirrored = ptrMap.at (this->_mirrored);
 }

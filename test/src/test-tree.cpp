@@ -16,7 +16,7 @@ namespace {
       , parent (p)
     {}
 
-    void updatePointers (const Tree <Foo>::PtrMap& ptrMap) {
+    void updatePointers (const TreeNodePtrMap <Foo>& ptrMap) {
       this->parent = ptrMap.at (this->parent);
     }
   };

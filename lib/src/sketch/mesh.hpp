@@ -34,7 +34,7 @@ class SketchNodeData {
     void             parent   (SketchNode* p)      { this->_parent   = p; }
     void             mirrored (SketchNode* m)      { this->_mirrored = m; }
 
-    void             updatePointers (const SketchTree::PtrMap&);
+    void             updatePointers (const SketchNodePtrMap&);
 
   private:
     glm::vec3   _position;
