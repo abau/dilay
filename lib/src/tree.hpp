@@ -144,7 +144,7 @@ class Tree {
     }
 
     template <typename ... Args>
-    TreeNode <T>& addRoot (Args&& ... args) {
+    TreeNode <T>& emplaceRoot (Args&& ... args) {
       this->_root = Maybe <TreeNode <T>>::make 
                           (TreeNode <T> ::make (std::forward <Args> (args) ...));
       return this->root ();

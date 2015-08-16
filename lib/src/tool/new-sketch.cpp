@@ -17,7 +17,7 @@ struct ToolNewSketch::Impl {
     this->self->snapshotSketchMeshes ();
 
     SketchTree tree;
-    tree.addRoot (glm::vec3 (0.0f), 0.1f);
+    tree.emplaceRoot (glm::vec3 (0.0f), 0.1f);
 
     this->self->state ().scene ().newSketchMesh (this->self->state ().config (), tree);
     return ToolResponse::Terminate;

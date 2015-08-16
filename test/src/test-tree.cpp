@@ -26,7 +26,7 @@ void TestTree::test () {
 
   Tree <Foo> tree;
 
-  auto& n0 = tree.addRoot (0);
+  auto& n0 = tree.emplaceRoot (0);
   auto& n1 = n0.emplaceChild (100, &n0);
   auto& n2 = n1.emplaceChild (200, &n1);
 
