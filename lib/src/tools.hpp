@@ -30,4 +30,7 @@ DECLARE_TOOL (ToolNewSketch, "new-sketch", DECLARE_TOOL_RUN_INITIALIZE)
 DECLARE_TOOL (ToolModifySketch, "modify-sketch", DECLARE_TOOL_RUN_MOUSE_MOVE_EVENT
                                                  DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT
                                                  DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT )
+
+DECLARE_TOOL (ToolDeleteSketchNode, "delete-sketch-node", DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT)
+
 #endif

@@ -56,6 +56,7 @@ SOURCES += \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/delete-mesh.cpp \
+           src/tool/delete-sketch-node.cpp \
            src/tool/modify-sketch.cpp \
            src/tool/move-mesh.cpp \
            src/tool/move-camera.cpp \

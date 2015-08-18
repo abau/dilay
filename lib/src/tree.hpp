@@ -50,6 +50,13 @@ class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
       return this->_children.back ();
     }
 
+    TreeNode& addChild (const TreeNode& node) {
+      this->_children.emplaceBack (node);
+      this->_children.back ()._parent = this;
+
+      return this->_children.back ();
+    }
+
     void deleteChild (TreeNode& child) {
       this->_children.deleteElement (child);
     }

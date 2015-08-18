@@ -17,7 +17,7 @@ class PrimRay;
 
 class SketchNodeData {
   public:
-    SketchNodeData (const glm::vec3& pos, float r)
+    SketchNodeData ( const glm::vec3& pos, float r)
       : _position (pos)
       , _radius   (r)
     {}
@@ -50,6 +50,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     SketchNode&       addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
     void              move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
     void              radius          (SketchNode&, float, const Dimension*);
+    void              deleteNode      (SketchNode&, bool, const Dimension*);
     void              mirror          (Dimension);
 
   private:

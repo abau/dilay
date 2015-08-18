@@ -227,6 +227,41 @@ struct SketchMesh::Impl {
     }
   }
 
+  void deleteNode (SketchNode& node, bool deleteChildren, const Dimension* dim) {
+    assert (this->tree.hasRoot ());
+
+    if (node.parent () == nullptr) {
+      this->reset ();
+    }
+    else if (deleteChildren) {
+      if (dim) {
+        SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim));
+
+        if (nodeM && nodeM->parent ()) {
+          nodeM->parent ()->deleteChild (*nodeM);
+        }
+      }
+      node.parent ()->deleteChild (node);
+    }
+    else {
+      node.forEachChild ([&node] (SketchNode& child) {
+        node.parent ()->addChild (child);
+      });
+
+      if (dim) {
+        SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim));
+
+        if (nodeM && nodeM->parent ()) {
+          nodeM->forEachChild ([nodeM] (SketchNode& child) {
+            nodeM->parent ()->addChild (child);
+          });
+          nodeM->parent ()->deleteChild (*nodeM);
+        }
+      }
+      node.parent ()->deleteChild (node);
+    }
+  }
+
   void mirror (Dimension dim) {
     if (this->tree.hasRoot ()) {
       PrimPlane mirrorPlane = this->mirrorPlane (dim); 
@@ -278,5 +313,6 @@ DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
 DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE3       (void              , SketchMesh, radius, SketchNode&, float, const Dimension*)
+DELEGATE3       (void              , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
 DELEGATE1       (void              , SketchMesh, mirror, Dimension)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)

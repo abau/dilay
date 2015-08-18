@@ -77,8 +77,9 @@ struct ViewMainWidget :: Impl {
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
     toolPane->setLayout (toolPaneLayout);
-    this->addToolButton <ToolNewSketch>    (toolPaneLayout, QObject::tr ("New sketch"));
-    this->addToolButton <ToolModifySketch> (toolPaneLayout, QObject::tr ("Modify sketch"));
+    this->addToolButton <ToolNewSketch>        (toolPaneLayout, QObject::tr ("New sketch"));
+    this->addToolButton <ToolModifySketch>     (toolPaneLayout, QObject::tr ("Modify sketch"));
+    this->addToolButton <ToolDeleteSketchNode> (toolPaneLayout, QObject::tr ("Delete node"));
 
     toolPaneLayout->addStretch (1);
     return toolPane;
