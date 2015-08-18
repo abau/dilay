@@ -27,22 +27,17 @@
 #include "winged/mesh.hpp"
 
 struct ToolSculpt::Impl {
-  ToolSculpt*              self;
-  SculptBrush              brush;
-  ViewCursor               cursor;
-  CacheProxy               commonCache;
-  ViewDoubleSlider&        radiusEdit;
-  std::unique_ptr <Mirror> mirror;
+  ToolSculpt*       self;
+  SculptBrush       brush;
+  ViewCursor        cursor;
+  CacheProxy        commonCache;
+  ViewDoubleSlider& radiusEdit;
 
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
     , radiusEdit  (ViewUtil::slider  (2, 0.01f, 0.01f, 2.0f, 3))
-  {
-    if (this->commonCache.get <bool> ("mirror", true)) {
-      this->mirror.reset (new Mirror (this->self->config (), Dimension::X));
-    }
-  }
+  {}
 
   ToolResponse runInitialize () {
     this->setupBrush      ();
@@ -107,20 +102,13 @@ struct ToolSculpt::Impl {
       this->mirrorScene ();
       this->self->updateGlWidget ();
     });
-    syncButton.setEnabled (bool (this->mirror));
+    syncButton.setEnabled (this->self->hasMirror ());
 
     QCheckBox& mirrorEdit = ViewUtil::checkBox ( QObject::tr ("Mirror")
-                                               , bool (this->mirror) );
+                                               , this->self->hasMirror () );
     ViewUtil::connect (mirrorEdit, [this,&syncButton] (bool m) {
-      if (m) {
-        this->mirror.reset (new Mirror (this->self->config (), Dimension::X));
-      }
-      else {
-        this->mirror.reset ();
-      }
+      this->self->mirror (m);
       syncButton.setEnabled (m);
-      this->commonCache.set ("mirror", m);
-      this->self->updateGlWidget ();
     });
 
     properties.add (mirrorEdit, syncButton);
@@ -145,9 +133,6 @@ struct ToolSculpt::Impl {
 
     if (this->cursor.isEnabled ()) {
       this->cursor.render (camera);
-    }
-    if (this->mirror) {
-      this->mirror->render (camera);
     }
   }
 
@@ -190,13 +175,13 @@ struct ToolSculpt::Impl {
   void runClose () {}
 
   void mirrorScene () {
-    assert (this->mirror);
+    assert (this->self->hasMirror ());
 
     this->self->snapshotWingedMeshes ();
 
     this->self->state ().scene ().forEachMesh (
       [this] (WingedMesh& mesh) {
-        mesh.mirror (this->mirror->plane ());
+        mesh.mirror (this->self->mirror ().plane ());
         mesh.bufferData ();
       }
     );
@@ -213,10 +198,10 @@ struct ToolSculpt::Impl {
 
   void sculpt () {
     Action::sculpt (this->brush);
-    if (this->mirror) {
-      this->brush.mirror (this->mirror->plane ());
+    if (this->self->hasMirror ()) {
+      this->brush.mirror (this->self->mirror ().plane ());
       Action::sculpt (this->brush);
-      this->brush.mirror (this->mirror->plane ());
+      this->brush.mirror (this->self->mirror ().plane ());
     }
   }
 

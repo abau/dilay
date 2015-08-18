@@ -11,7 +11,9 @@
 
 class CacheProxy;
 class Config;
+enum class Dimension;
 class Intersection;
+class Mirror;
 class QMouseEvent;
 class QWheelEvent;
 class State;
@@ -27,26 +29,30 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
 
-    ToolResponse    initialize             ();
-    void            render                 () const;
-    ToolResponse    mouseMoveEvent         (const QMouseEvent&);
-    ToolResponse    mousePressEvent        (const QMouseEvent&);
-    ToolResponse    mouseReleaseEvent      (const QMouseEvent&);
-    ToolResponse    wheelEvent             (const QWheelEvent&);
-    void            close                  ();
+    ToolResponse     initialize             ();
+    void             render                 () const;
+    ToolResponse     mouseMoveEvent         (const QMouseEvent&);
+    ToolResponse     mousePressEvent        (const QMouseEvent&);
+    ToolResponse     mouseReleaseEvent      (const QMouseEvent&);
+    ToolResponse     wheelEvent             (const QWheelEvent&);
+    void             close                  ();
 
   protected:
-    State&          state                  () const;
-    void            updateGlWidget         ();
-    ViewProperties& properties             () const;
-    void            showToolTip            (const ViewToolTip&);
-    Config&         config                 () const;
-    CacheProxy&     cache                  ();
-    CacheProxy      cache                  (const char*) const;
-    glm::ivec2      cursorPosition         () const;
-    void            snapshotWingedMeshes   ();
-    void            snapshotSketchMeshes   ();
-    bool            intersectsRecentOctree (const QMouseEvent&, Intersection&) const;
+    State&           state                  () const;
+    void             updateGlWidget         ();
+    ViewProperties&  properties             () const;
+    void             showToolTip            (const ViewToolTip&);
+    Config&          config                 () const;
+    CacheProxy&      cache                  ();
+    CacheProxy       cache                  (const char*) const;
+    glm::ivec2       cursorPosition         () const;
+    void             snapshotWingedMeshes   ();
+    void             snapshotSketchMeshes   ();
+    bool             intersectsRecentOctree (const QMouseEvent&, Intersection&) const;
+    bool             hasMirror              () const;
+    const Mirror&    mirror                 () const;
+    void             mirror                 (bool);
+    const Dimension* mirrorDimension        () const;
 
     template <typename T>
     bool intersectsScene (const glm::ivec2&, T&);

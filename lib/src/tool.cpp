@@ -4,7 +4,9 @@
  */
 #include "cache.hpp"
 #include "camera.hpp"
+#include "dimension.hpp"
 #include "history.hpp"
+#include "mirror.hpp"
 #include "octree.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
@@ -17,16 +19,18 @@
 #include "view/util.hpp"
 
 struct Tool::Impl {
-  Tool*       self;
-  State&      state;
-  CacheProxy _cache;
+  Tool*           self;
+  State&          state;
+  CacheProxy     _cache;
+  Maybe <Mirror> _mirror;
 
   Impl (Tool* s, State& st, const char* key) 
-    : self  (s) 
-    , state (st)
-    ,_cache (this->cache (key))
+    : self   (s) 
+    , state  (st)
+    ,_cache  (this->cache (key))
   {
     this->state.mainWindow ().showToolTip (ViewToolTip ());
+    this->mirror (this->hasMirror ());
   }
 
   ToolResponse initialize () { 
@@ -34,7 +38,10 @@ struct Tool::Impl {
   }
 
   void render () const { 
-    return this->self->runRender ( ); 
+    this->self->runRender (); 
+    if (this->_mirror) {
+      this->_mirror->render (this->state.camera ());
+    }
   }
 
   ToolResponse mouseMoveEvent (const QMouseEvent& e) { 
@@ -108,6 +115,33 @@ struct Tool::Impl {
     return intersection.isIntersection ();
   }
 
+  bool hasMirror () const {
+    return this->state.cache ().get ("editor/tool/mirror", true);
+  }
+
+  const Mirror& mirror () const {
+    assert (this->hasMirror ());
+    return *this->_mirror;
+  }
+
+  void mirror (bool m) {
+    this->state.cache ().set ("editor/tool/mirror", m);
+
+    if (m) {
+      this->_mirror = Maybe <Mirror>::make (this->config (), Dimension::X);
+    }
+    else {
+      this->_mirror.reset ();
+    }
+    this->updateGlWidget ();
+  }
+
+  const Dimension* mirrorDimension () const {
+    const static Dimension d = Dimension::X;
+
+    return this->hasMirror () ? &d : nullptr;
+  }
+
   template <typename T>
   bool intersectsScene (const glm::ivec2& pos, T& intersection) {
     return this->state.scene ().intersects (this->state.camera ().ray (pos), intersection);
@@ -120,24 +154,28 @@ struct Tool::Impl {
 };
 
 DELEGATE2_BIG3_SELF (Tool, State&, const char*)
-DELEGATE        (ToolResponse   , Tool, initialize)
-DELEGATE_CONST  (void           , Tool, render)
-DELEGATE1       (ToolResponse   , Tool, mouseMoveEvent, const QMouseEvent&)
-DELEGATE1       (ToolResponse   , Tool, mousePressEvent, const QMouseEvent&)
-DELEGATE1       (ToolResponse   , Tool, mouseReleaseEvent, const QMouseEvent&)
-DELEGATE1       (ToolResponse   , Tool, wheelEvent, const QWheelEvent&)
-DELEGATE        (void           , Tool, close)
-GETTER_CONST    (State&         , Tool, state)
-DELEGATE        (void           , Tool, updateGlWidget)
-DELEGATE_CONST  (ViewProperties&, Tool, properties)
-DELEGATE1       (void           , Tool, showToolTip, const ViewToolTip&)
-DELEGATE_CONST  (Config&        , Tool, config)
-DELEGATE        (CacheProxy&    , Tool, cache)
-DELEGATE1_CONST (CacheProxy     , Tool, cache, const char*)
-DELEGATE_CONST  (glm::ivec2     , Tool, cursorPosition)
-DELEGATE        (void           , Tool, snapshotWingedMeshes)
-DELEGATE        (void           , Tool, snapshotSketchMeshes)
-DELEGATE2_CONST (bool           , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)
+DELEGATE        (ToolResponse    , Tool, initialize)
+DELEGATE_CONST  (void            , Tool, render)
+DELEGATE1       (ToolResponse    , Tool, mouseMoveEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse    , Tool, mousePressEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse    , Tool, mouseReleaseEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse    , Tool, wheelEvent, const QWheelEvent&)
+DELEGATE        (void            , Tool, close)
+GETTER_CONST    (State&          , Tool, state)
+DELEGATE        (void            , Tool, updateGlWidget)
+DELEGATE_CONST  (ViewProperties& , Tool, properties)
+DELEGATE1       (void            , Tool, showToolTip, const ViewToolTip&)
+DELEGATE_CONST  (Config&         , Tool, config)
+DELEGATE        (CacheProxy&     , Tool, cache)
+DELEGATE1_CONST (CacheProxy      , Tool, cache, const char*)
+DELEGATE_CONST  (glm::ivec2      , Tool, cursorPosition)
+DELEGATE        (void            , Tool, snapshotWingedMeshes)
+DELEGATE        (void            , Tool, snapshotSketchMeshes)
+DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)
+DELEGATE_CONST  (bool            , Tool, hasMirror)
+DELEGATE_CONST  (const Mirror&   , Tool, mirror)
+DELEGATE1       (void            , Tool, mirror, bool)
+DELEGATE_CONST  (const Dimension*, Tool, mirrorDimension)
 
 template <typename T>
 bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection) {

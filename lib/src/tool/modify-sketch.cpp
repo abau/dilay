@@ -7,7 +7,6 @@
 #include <QMouseEvent>
 #include <QPushButton>
 #include "cache.hpp"
-#include "dimension.hpp"
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
@@ -25,7 +24,6 @@ struct ToolModifySketch::Impl {
   SketchNode*       node;
   ToolUtilMovement  movement;
   ToolUtilScaling   scaling;
-  bool              mirror;
   bool              moveChildren;
 
   Impl (ToolModifySketch* s)
@@ -36,27 +34,20 @@ struct ToolModifySketch::Impl {
                    , s->cache ().getFrom <MovementConstraint> ( "constraint"
                                                               , MovementConstraint::CameraPlane ))
     , scaling      (s->state ().camera ())
-    , mirror       (s->cache ().get <bool> ("mirror", true))
     , moveChildren (s->cache ().get <bool> ("move-children", false))
   {
     this->setupProperties ();
     this->setupToolTip    ();
   }
 
-  const Dimension* mirrorDimension () const {
-    static Dimension dim = Dimension::X;
-
-    return this->mirror ? &dim : nullptr;
-  }
-
   void mirrorSketchMeshes () {
-    assert (this->mirror);
+    assert (this->self->hasMirror ());
 
     this->self->snapshotSketchMeshes ();
 
     this->self->state ().scene ().forEachMesh (
       [this] (SketchMesh& mesh) {
-        mesh.mirror (*this->mirrorDimension ());
+        mesh.mirror (*this->self->mirrorDimension ());
       }
     );
   }
@@ -75,13 +66,13 @@ struct ToolModifySketch::Impl {
       this->mirrorSketchMeshes ();
       this->self->updateGlWidget ();
     });
-    syncButton.setEnabled (bool (this->mirror));
+    syncButton.setEnabled (this->self->hasMirror ());
 
-    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->mirror);
+    QCheckBox& mirrorEdit = ViewUtil::checkBox ( QObject::tr ("Mirror")
+                                               , this->self->hasMirror () );
     ViewUtil::connect (mirrorEdit, [this, &syncButton] (bool m) {
-      this->mirror = m;
+      this->self->mirror (m);
       syncButton.setEnabled (m);
-      this->self->cache ().set ("mirror", m);
     });
     properties.add (mirrorEdit, syncButton);
 
@@ -107,12 +98,12 @@ struct ToolModifySketch::Impl {
     if (e.buttons () == Qt::LeftButton && this->node) {
       if (e.modifiers () == Qt::ShiftModifier) {
         if (this->scaling.move (e)) {
-          this->mesh->radius (*this->node, this->scaling.delta (), this->mirrorDimension ());
+          this->mesh->radius (*this->node, this->scaling.delta (), this->self->mirrorDimension ());
         }
       }
       else if (this->movement.move (e, false)) {
         this->mesh->move (*this->node, this->movement.delta ()
-                         , this->moveChildren, this->mirrorDimension () );
+                         , this->moveChildren, this->self->mirrorDimension () );
       }
       return ToolResponse::Redraw;
     }
@@ -141,7 +132,7 @@ struct ToolModifySketch::Impl {
                              : iNode.data ().radius ();
 
           this->node = &this->mesh->addChild ( iNode, iNode.data ().position ()
-                                             , radius, this->mirrorDimension () );
+                                             , radius, this->self->mirrorDimension () );
         }
         else {
           this->node = &intersection.node ();
