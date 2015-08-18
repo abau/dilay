@@ -9,9 +9,8 @@
 
 class SketchNodeData;
 class SketchNodeIntersection;
-using SketchNode       = TreeNode <SketchNodeData>;
-using SketchNodePtrMap = TreeNodePtrMap <SketchNodeData>;
-using SketchTree       = Tree <SketchNodeData>;
+using SketchNode = TreeNode <SketchNodeData>;
+using SketchTree = Tree <SketchNodeData>;
 class SketchMesh;
 
 #endif

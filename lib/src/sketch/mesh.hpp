@@ -20,27 +20,17 @@ class SketchNodeData {
     SketchNodeData (const glm::vec3& pos, float r)
       : _position (pos)
       , _radius   (r)
-      , _parent   (nullptr)
-      , _mirrored (nullptr)
     {}
 
     const glm::vec3& position () const { return this->_position; }
     float            radius   () const { return this->_radius;   }
-    SketchNode*      parent   () const { return this->_parent;   }
-    SketchNode*      mirrored () const { return this->_mirrored; }
 
-    void             position (const glm::vec3& p) { this->_position = p; }
-    void             radius   (float r)            { this->_radius   = r; }
-    void             parent   (SketchNode* p)      { this->_parent   = p; }
-    void             mirrored (SketchNode* m)      { this->_mirrored = m; }
-
-    void             updatePointers (const SketchNodePtrMap&);
+    void position (const glm::vec3& p) { this->_position = p; }
+    void radius   (float r)            { this->_radius   = r; }
 
   private:
     glm::vec3   _position;
     float       _radius;
-    SketchNode* _parent;
-    SketchNode* _mirrored;
 };
 
 class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item {
@@ -59,7 +49,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void              renderWireframe (bool);
     SketchNode&       addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
     void              move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
-    void              radius          (SketchNode&, float, bool);
+    void              radius          (SketchNode&, float, const Dimension*);
     void              mirror          (Dimension);
 
   private:

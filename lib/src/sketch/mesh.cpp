@@ -2,6 +2,7 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <glm/gtx/norm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include "../mesh.hpp"
 #include "color.hpp"
@@ -30,22 +31,6 @@ namespace {
   PrimSphere nodeSphere (const SketchNode& node) {
     return PrimSphere (node.data ().position (), node.data ().radius ());
   }
-
-  void deleteMirrored (SketchNode& node) {
-    if (node.data ().mirrored ()) {
-      node.data ().mirrored ()->forEachNode ([] (SketchNode& n) {
-        n.data ().mirrored (nullptr);
-      });
-    }
-    node.forEachNode ([] (SketchNode& n) {
-      n.data ().mirrored (nullptr);
-    });
-  }
-}
-
-void SketchNodeData :: updatePointers (const SketchNodePtrMap& ptrMap) {
-  this->_parent   = ptrMap.at (this->_parent);
-  this->_mirrored = ptrMap.at (this->_mirrored);
 }
 
 struct SketchMesh::Impl {
@@ -111,9 +96,9 @@ struct SketchMesh::Impl {
         this->nodeMesh.color    (this->renderConfig.nodeColor);
         this->nodeMesh.render   (camera);
 
-        if (node.data ().parent ()) {
-          const glm::vec3& parPos    = node.data ().parent ()->data ().position ();
-          const float      parRadius = node.data ().parent ()->data ().radius ();
+        if (node.parent ()) {
+          const glm::vec3& parPos    = node.parent ()->data ().position ();
+          const float      parRadius = node.parent ()->data ().radius ();
           const float      distance  = glm::distance (pos, parPos);
           const glm::vec3  direction = (parPos - pos) / distance;
 
@@ -155,36 +140,45 @@ struct SketchMesh::Impl {
     return PrimPlane (this->tree.root ().data ().position (), DimensionUtil::vector (dim));
   }
 
-  SketchNode& addMirroredChild (SketchNode& node, const PrimPlane& mirrorPlane) {
+  SketchNode* mirrored (const SketchNode& node, const PrimPlane& mirrorPlane) {
+    if (this->tree.hasRoot () && node.parent ()) {
+      SketchNode*     result = nullptr;
+      const glm::vec3 pos    = mirrorPlane.mirror (node.data ().position ());
+
+      this->tree.root ().forEachNode ([&result, &pos] (SketchNode& n) {
+        if (n.parent () && glm::distance2 (n.data ().position (), pos) 
+                        <= Util::epsilon () * Util::epsilon () )
+        {
+          result = &n;
+        }
+      });
+      return result;
+    }
+    else {
+      return nullptr;
+    }
+  }
+
+  void addMirroredChild (SketchNode& node, const PrimPlane& mirrorPlane) {
     const glm::vec3   pos    = mirrorPlane.mirror (node.data ().position ());
     const float       radius = node.data ().radius ();
-          SketchNode& parent = *node.data ().parent ();
+          SketchNode& parent = *node.parent ();
 
-    if (parent.data ().parent () == nullptr) {
-      SketchNode& nodeM = parent.emplaceChild (pos, radius);
-
-      nodeM.data ().parent (&parent);
-      nodeM.data ().mirrored (&node);
-      node.data ().mirrored (&nodeM);
-      return nodeM;
+    if (parent.parent () == nullptr) {
+      parent.emplaceChild (pos, radius);
     }
-    else if (parent.data ().mirrored ()) {
-      SketchNode* parentM = parent.data ().mirrored ();
-      SketchNode& nodeM   = parentM->emplaceChild (pos, radius);
-
-      nodeM.data ().parent (parentM);
-      nodeM.data ().mirrored (&node);
-      node.data ().mirrored (&nodeM);
-      return nodeM;
+    else {
+      SketchNode* parentM = this->mirrored (parent, mirrorPlane);
+      if (parentM) {
+        parentM->emplaceChild (pos, radius);
+      }
     }
-    DILAY_IMPOSSIBLE
   }
 
   SketchNode& addChild ( SketchNode& parent, const glm::vec3& pos, float radius
                        , const Dimension* dim )
   {
     SketchNode& newNode = parent.emplaceChild (pos, radius);
-    newNode.data ().parent (&parent);
 
     if (dim) {
       this->addMirroredChild (newNode, this->mirrorPlane (*dim));
@@ -206,29 +200,30 @@ struct SketchMesh::Impl {
       }
     };
 
-    moveNodes (node, delta);
-
     if (dim) {
-      if (node.data ().mirrored ()) {
-        const glm::vec3 mDelta = this->mirrorPlane (*dim).mirrorDirection (delta);
-        moveNodes (*node.data ().mirrored (), mDelta);
+      const PrimPlane mirrorPlane = this->mirrorPlane (*dim);
+      SketchNode*     nodeM       = this->mirrored (node, mirrorPlane);
+
+      moveNodes (node, delta);
+
+      if (nodeM) {
+        moveNodes (*nodeM, mirrorPlane.mirrorDirection (delta));
       }
     }
     else {
-      deleteMirrored (node);
+      moveNodes (node, delta);
     }
   }
 
-  void radius (SketchNode& node, float radius, bool mirror) {
+  void radius (SketchNode& node, float radius, const Dimension* dim) {
     node.data ().radius (radius);
 
-    if (mirror) {
-      if (node.data ().mirrored ()) {
-        node.data ().mirrored ()->data ().radius (radius);
+    if (dim) {
+      SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim));
+
+      if (nodeM) {
+        nodeM->data ().radius (radius);
       }
-    }
-    else {
-      deleteMirrored (node);
     }
   }
 
@@ -244,8 +239,6 @@ struct SketchMesh::Impl {
           mirrorNode (c);
         });
       };
-
-      deleteMirrored (this->tree.root ());
 
       this->tree.root ().deleteChildIf ([&mirrorPlane] (const SketchNode& node) {
         return mirrorPlane.distance (node.data ().position ()) < -Util::epsilon ();
@@ -284,6 +277,6 @@ DELEGATE1       (void              , SketchMesh, render, Camera&)
 DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
 DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
-DELEGATE3       (void              , SketchMesh, radius, SketchNode&, float, bool)
+DELEGATE3       (void              , SketchMesh, radius, SketchNode&, float, const Dimension*)
 DELEGATE1       (void              , SketchMesh, mirror, Dimension)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)
