@@ -52,6 +52,7 @@ class Tool {
     bool             hasMirror              () const;
     const Mirror&    mirror                 () const;
     void             mirror                 (bool);
+    void             renderMirror           (bool);
     const Dimension* mirrorDimension        () const;
 
     template <typename T>

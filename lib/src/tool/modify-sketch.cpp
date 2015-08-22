@@ -36,6 +36,8 @@ struct ToolModifySketch::Impl {
     , scaling      (s->state ().camera ())
     , moveChildren (s->cache ().get <bool> ("move-children", false))
   {
+    this->self->renderMirror (false);
+
     this->setupProperties ();
     this->setupToolTip    ();
   }

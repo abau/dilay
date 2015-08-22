@@ -25,6 +25,8 @@ struct ToolDeleteSketchNode::Impl {
     , deleteMesh     (s->cache ().get <bool> ("delete-mesh"    , false))
     , deleteChildren (s->cache ().get <bool> ("delete-children", false))
   {
+    this->self->renderMirror (false);
+
     this->setupProperties ();
     this->setupToolTip    ();
   }

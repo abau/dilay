@@ -23,11 +23,13 @@ struct Tool::Impl {
   State&          state;
   CacheProxy     _cache;
   Maybe <Mirror> _mirror;
+  bool            renderMirror;
 
   Impl (Tool* s, State& st, const char* key) 
-    : self   (s) 
-    , state  (st)
-    ,_cache  (this->cache (key))
+    : self         (s) 
+    , state        (st)
+    ,_cache        (this->cache (key))
+    , renderMirror (true)
   {
     this->state.mainWindow ().showToolTip (ViewToolTip ());
     this->mirror (this->hasMirror ());
@@ -39,7 +41,7 @@ struct Tool::Impl {
 
   void render () const { 
     this->self->runRender (); 
-    if (this->_mirror) {
+    if (this->_mirror && this->renderMirror) {
       this->_mirror->render (this->state.camera ());
     }
   }
@@ -175,6 +177,7 @@ DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const QMouseEve
 DELEGATE_CONST  (bool            , Tool, hasMirror)
 DELEGATE_CONST  (const Mirror&   , Tool, mirror)
 DELEGATE1       (void            , Tool, mirror, bool)
+SETTER          (bool            , Tool, renderMirror)
 DELEGATE_CONST  (const Dimension*, Tool, mirrorDimension)
 
 template <typename T>
