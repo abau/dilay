@@ -61,6 +61,41 @@ namespace {
       *ptr = value;
     }
   }
+
+  bool intersectsQuadric (float a, float b, float c, bool alongLine, float* t) {
+    float s1,s2;
+    const unsigned int n = Util :: solveQuadraticEq (a, b, c, s1, s2);
+
+    switch (n) {
+      case 0:
+        return false;
+
+      case 1:
+        if (s1 >= 0.0f || alongLine) {
+          writeIfNotNull (t, s1);
+          return true;
+        }
+        else {
+          return false;
+        }
+      case 2: {
+        const float sMin = glm::min (s1,s2);
+        const float sMax = glm::max (s1,s2);
+
+        if (sMin >= 0.0f) {
+          writeIfNotNull (t, sMin);
+          return true;
+        }
+        else if (sMax >= 0.0f || alongLine) {
+          writeIfNotNull (t, sMax);
+          return true;
+        }
+        return false;
+      }
+      default:
+        DILAY_IMPOSSIBLE
+    }
+  }
 }
 
 bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& vec) {
@@ -136,44 +171,14 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& 
 }
 
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& sphere, float* t) {
-  float s1,s2;
-  const glm::vec3& d  = ray.direction ();
-  const glm::vec3& v  = ray.origin () - sphere.center ();
-  const float      r2 = sphere.radius () * sphere.radius ();
+  const glm::vec3& dir     = ray.direction ();
+  const glm::vec3& origin  = ray.origin () - sphere.center ();
+  const float      radius2 = sphere.radius () * sphere.radius ();
 
-  const unsigned int n = Util :: solveQuadraticEq ( glm::dot (d,d)
-                                                  , 2.0f * glm::dot (d,v)
-                                                  , glm::dot (v, v) - r2
-                                                  , s1, s2);
-  switch (n) {
-    case 0:
-      return false;
-
-    case 1:
-      if (s1 >= 0.0f || ray.isLine ()) {
-        writeIfNotNull (t, s1);
-        return true;
-      }
-      else {
-        return false;
-      }
-    case 2: {
-      const float sMin = glm::min (s1,s2);
-      const float sMax = glm::max (s1,s2);
-
-      if (sMin >= 0.0f) {
-        writeIfNotNull (t, sMin);
-        return true;
-      }
-      else if (sMax >= 0.0f || ray.isLine ()) {
-        writeIfNotNull (t, sMax);
-        return true;
-      }
-      return false;
-    }
-    default:
-      DILAY_IMPOSSIBLE
-  }
+  return intersectsQuadric ( glm::dot (dir, dir)
+                           , 2.0f * glm::dot (dir, origin)
+                           , glm::dot (origin, origin) - radius2
+                           , ray.isLine (), t );
 }
 
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane, float* t) {
