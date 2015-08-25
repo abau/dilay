@@ -4,8 +4,10 @@
  */
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
+#include <glm/gtx/norm.hpp>
 #include "intersection.hpp"
 #include "primitive/aabox.hpp"
+#include "primitive/cylinder.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
@@ -237,6 +239,40 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimAABox& box) {
   const float tMax = glm::min ( glm::min (max.x, max.y), max.z );
 
   return (tMax >= 0.0f || ray.isLine ()) && tMin <= tMax;
+}
+
+bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCylinder& cylinder
+                                    , float* tRay, float* tCyl )
+{
+  const glm::vec3& dir     = ray.direction ();
+  const glm::vec3& cylDir  = cylinder.direction ();
+  const glm::vec3  offset  = ray.origin () - cylinder.center1 ();
+  const glm::vec3  d       = dir - (cylDir * glm::dot (cylDir, dir));
+  const glm::vec3  c       = offset - (cylDir * glm::dot (cylDir, offset));
+  const float      radius2 = cylinder.radius () * cylinder.radius ();
+        float      tmpRay;
+
+  if ( intersectsQuadric ( glm::dot (d,d)
+                         , 2.0f * glm::dot (c, d)
+                         , glm::dot (c, c) - radius2
+                         , ray.isLine (), &tmpRay ) )
+  {
+    const glm::vec3 p       = ray.pointAt (tmpRay);
+    const float     tmpCyl  = glm::dot (cylDir, p - cylinder.center1 ());
+    const float     lenght2 = glm::distance2 (cylinder.center1 (), cylinder.center2 ());
+
+    if (tmpCyl >= 0.0f && tmpCyl * tmpCyl <= lenght2) {
+      writeIfNotNull (tRay, tmpRay);
+      writeIfNotNull (tCyl, tmpCyl);
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  else {
+    return false;
+  }
 }
 
 bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimAABox& box) {
