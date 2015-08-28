@@ -50,6 +50,7 @@ SOURCES += \
            src/scene.cpp \
            src/sculpt-brush.cpp \
            src/shader.cpp \
+           src/sketch/bone-intersection.cpp \
            src/sketch/mesh.cpp \
            src/sketch/node-intersection.cpp \
            src/state.cpp \
@@ -144,6 +145,7 @@ HEADERS += \
            src/scene.hpp \
            src/sculpt-brush.hpp \
            src/shader.hpp \
+           src/sketch/bone-intersection.hpp \
            src/sketch/fwd.hpp \
            src/sketch/mesh.hpp \
            src/sketch/node-intersection.hpp \

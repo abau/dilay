@@ -45,9 +45,11 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void              fromTree        (const SketchTree&);
     void              reset           ();
     bool              intersects      (const PrimRay&, SketchNodeIntersection&);
+    bool              intersects      (const PrimRay&, SketchBoneIntersection&);
     void              render          (Camera&);
     void              renderWireframe (bool);
     SketchNode&       addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
+    SketchNode&       addParent       (SketchNode&, const glm::vec3&, float, const Dimension*);
     void              move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
     void              radius          (SketchNode&, float, const Dimension*);
     void              deleteNode      (SketchNode&, bool, const Dimension*);

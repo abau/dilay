@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include "cache.hpp"
 #include "scene.hpp"
+#include "sketch/bone-intersection.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
 #include "state.hpp"
@@ -115,30 +116,59 @@ struct ToolModifySketch::Impl {
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
+
+    auto handleNodeIntersection = [this, &e] (SketchNodeIntersection &intersection) {
+      this->self->snapshotSketchMeshes ();
+
+      this->movement.resetPosition ( intersection.position ());
+      this->scaling .resetPosition ( intersection.node ().data ().position ()
+                                   , intersection.position () );
+
+      this->mesh = &intersection.mesh ();
+
+      if (e.modifiers () == Qt::ControlModifier) {
+        SketchNode& iNode = intersection.node ();
+
+        const float radius = iNode.numChildren () > 0
+                           ? iNode.lastChild ().data ().radius ()
+                           : iNode.data ().radius ();
+
+        this->node = &this->mesh->addChild ( iNode, iNode.data ().position ()
+                                           , radius, this->self->mirrorDimension () );
+      }
+      else {
+        this->node = &intersection.node ();
+      }
+    };
+
+    auto handleBoneIntersection = [this, &e] (SketchBoneIntersection &intersection) {
+      this->self->snapshotSketchMeshes ();
+
+      this->movement.resetPosition ( intersection.position ());
+      this->scaling .resetPosition ( intersection.projectedPosition ()
+                                   , intersection.position () );
+
+      this->mesh = &intersection.mesh ();
+
+      if (e.modifiers () == Qt::ControlModifier) {
+        const float radius = glm::distance ( intersection.projectedPosition ()
+                                           , intersection.position () );
+
+        this->node = &this->mesh->addParent ( intersection.child ()
+                                            , intersection.projectedPosition ()
+                                            , radius, this->self->mirrorDimension () );
+      }
+    };
+
     if (e.button () == Qt::LeftButton) {
-      SketchNodeIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
-        this->self->snapshotSketchMeshes ();
+      SketchNodeIntersection nodeIntersection;
+      SketchBoneIntersection boneIntersection;
 
-        this->movement.resetPosition ( intersection.position ());
-        this->scaling .resetPosition ( intersection.node ().data ().position ()
-                                     , intersection.position () );
-
-        this->mesh = &intersection.mesh ();
-        
-        if (e.modifiers () == Qt::ControlModifier) {
-          SketchNode& iNode = intersection.node ();
-
-          const float radius = iNode.numChildren () > 0
-                             ? iNode.lastChild ().data ().radius ()
-                             : iNode.data ().radius ();
-
-          this->node = &this->mesh->addChild ( iNode, iNode.data ().position ()
-                                             , radius, this->self->mirrorDimension () );
-        }
-        else {
-          this->node = &intersection.node ();
-        }
+      if (this->self->intersectsScene (e, nodeIntersection)) {
+        handleNodeIntersection (nodeIntersection);
+      }
+      else if (this->self->intersectsScene (e, boneIntersection)) {
+        handleBoneIntersection (boneIntersection);
       }
     }
     return ToolResponse::None;

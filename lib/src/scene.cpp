@@ -9,6 +9,7 @@
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
+#include "sketch/bone-intersection.hpp"
 #include "sketch/node-intersection.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
@@ -103,6 +104,13 @@ struct Scene :: Impl {
   }
 
   bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
+    this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
+      m.intersects (ray, intersection);
+    });
+    return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, SketchBoneIntersection& intersection) {
     this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
       m.intersects (ray, intersection);
     });
@@ -255,6 +263,7 @@ DELEGATE1       (SketchMesh*       , Scene, sketchMesh, unsigned int)
 DELEGATE1       (void              , Scene, render, Camera&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchNodeIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (SketchMesh&)>&)

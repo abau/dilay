@@ -9,6 +9,7 @@
 
 class SketchNodeData;
 class SketchNodeIntersection;
+class SketchBoneIntersection;
 using SketchNode = TreeNode <SketchNodeData>;
 using SketchTree = Tree <SketchNodeData>;
 class SketchMesh;

@@ -9,10 +9,12 @@
 #include "config.hpp"
 #include "dimension.hpp"
 #include "mesh-util.hpp"
+#include "primitive/cylinder.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
 #include "render-mode.hpp"
+#include "sketch/bone-intersection.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
 #include "util.hpp"
@@ -79,6 +81,26 @@ struct SketchMesh::Impl {
           const glm::vec3 p = ray.pointAt (t);
           intersection.update ( t, p, glm::normalize (p - node.data ().position ())
                               , *this->self, node );
+        }
+      });
+    }
+    return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, SketchBoneIntersection& intersection) {
+    if (this->tree.hasRoot ()) {
+      this->tree.root ().forEachNode ([this, &ray, &intersection] (SketchNode& node) {
+        if (node.parent ()) {
+          const PrimCylinder cyl ( node.data ().position ()
+                                 , node.parent ()->data ().position ()
+                                 , 0.5f * ( node.data ().radius ()
+                                          + node.parent ()->data ().radius () ) );
+          float tRay, tCyl;
+          if (IntersectionUtil::intersects (ray, cyl, &tRay, &tCyl)) {
+            const glm::vec3 p     = ray.pointAt (tRay);
+            const glm::vec3 projP = cyl.center1 () + (tCyl * cyl.direction ());
+            intersection.update (tRay, p, projP, *this->self, node);
+          }
         }
       });
     }
@@ -159,18 +181,21 @@ struct SketchMesh::Impl {
     }
   }
 
-  void addMirroredChild (SketchNode& node, const PrimPlane& mirrorPlane) {
+  SketchNode* addMirroredNode (SketchNode& node, const PrimPlane& mirrorPlane) {
     const glm::vec3   pos    = mirrorPlane.mirror (node.data ().position ());
     const float       radius = node.data ().radius ();
           SketchNode& parent = *node.parent ();
 
     if (parent.parent () == nullptr) {
-      parent.emplaceChild (pos, radius);
+      return &parent.emplaceChild (pos, radius);
     }
     else {
       SketchNode* parentM = this->mirrored (parent, mirrorPlane);
       if (parentM) {
-        parentM->emplaceChild (pos, radius);
+        return &parentM->emplaceChild (pos, radius);
+      }
+      else {
+        return nullptr;
       }
     }
   }
@@ -181,8 +206,32 @@ struct SketchMesh::Impl {
     SketchNode& newNode = parent.emplaceChild (pos, radius);
 
     if (dim) {
-      this->addMirroredChild (newNode, this->mirrorPlane (*dim));
+      this->addMirroredNode (newNode, this->mirrorPlane (*dim));
     }
+    return newNode;
+  }
+
+  SketchNode& addParent ( SketchNode& child, const glm::vec3& pos, float radius
+                        , const Dimension* dim )
+  {
+    assert (child.parent ());
+
+    SketchNode& newNode = child.parent ()->emplaceChild (pos, radius);
+    newNode.addChild (child);
+
+    if (dim) {
+      PrimPlane   mPlane = this->mirrorPlane (*dim);
+      SketchNode* childM = this->mirrored (child, mPlane);
+
+      if (childM && childM->parent ()) {
+        SketchNode* newNodeM = this->addMirroredNode (newNode, mPlane);
+        if (newNodeM) {
+          newNodeM->addChild (*childM);
+          childM->parent ()->deleteChild (*childM);
+        }
+      }
+    }
+    child.parent ()->deleteChild (child);
     return newNode;
   }
 
@@ -270,7 +319,7 @@ struct SketchMesh::Impl {
         [this, &mirrorPlane, &mirrorNode] (SketchNode& node)
       {
         node.forEachChild ([this, &mirrorPlane, &mirrorNode] (SketchNode& c) {
-          this->addMirroredChild (c, mirrorPlane);
+          this->addMirroredNode (c, mirrorPlane);
           mirrorNode (c);
         });
       };
@@ -285,7 +334,7 @@ struct SketchMesh::Impl {
         (SketchNode& child)
       {
         if (numC > 0) {
-          this->addMirroredChild (child, mirrorPlane);
+          this->addMirroredNode (child, mirrorPlane);
           mirrorNode (child);
 
           numC--;
@@ -308,9 +357,11 @@ GETTER_CONST    (const SketchTree& , SketchMesh, tree)
 DELEGATE1       (void              , SketchMesh, fromTree, const SketchTree&)
 DELEGATE        (void              , SketchMesh, reset)
 DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
+DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE1       (void              , SketchMesh, render, Camera&)
 DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
 DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
+DELEGATE4       (SketchNode&       , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE3       (void              , SketchMesh, radius, SketchNode&, float, const Dimension*)
 DELEGATE3       (void              , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
