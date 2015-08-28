@@ -8,6 +8,7 @@
 namespace TestMaybe {
   void test1 ();
   void test2 ();
+  void test3 ();
 }
 
 #endif

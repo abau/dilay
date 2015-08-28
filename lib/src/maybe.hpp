@@ -16,16 +16,16 @@ class Maybe {
   public:
     Maybe () = default;
 
-    Maybe (const T* v) 
-      : value (bool (v) ? new T (*v) : nullptr)
+    explicit Maybe (T* v)
+      : value (v)
     {}
 
     Maybe (const T& v) 
-      : Maybe (&v)
+      : value (new T (v))
     {}
 
     Maybe (const Maybe <T>& o) 
-      : Maybe (o.get ())
+      : value (o.hasValue () ? new T (*o) : nullptr)
     {}
 
     Maybe (Maybe <T>&&) = default;
@@ -41,18 +41,23 @@ class Maybe {
 
     ~Maybe () = default;
 
-    Maybe <T>& operator= (const T* v) {
-      this->value.reset (bool (v) ? new T (*v) : nullptr);
+    Maybe <T>& operator= (T* v) {
+      if (this->get () != v) {
+        this->value.reset (v);
+      }
       return *this;
     }
 
     Maybe <T>& operator= (const T& v) {
-      return this->operator= (&v);
+      if (this->get () != &v) {
+        this->value.reset (new T (v));
+      }
+      return *this;
     }
 
     Maybe <T>& operator= (const Maybe<T>& o) {
       if (this != &o) {
-        this->operator= (o.get ());
+        this->value.reset (o.hasValue () ? new T (*o) : nullptr);
       }
       return *this;
     }
@@ -78,11 +83,11 @@ class Maybe {
     }
 
     T* operator-> () {
-      return this->hasValue () ? this->get () : nullptr ;
+      return this->get ();
     }
 
     const T* operator-> () const {
-      return this->hasValue () ? this->get () : nullptr ;
+      return this->get ();
     }
 
     T* get () {
@@ -91,6 +96,10 @@ class Maybe {
 
     const T* get () const {
       return this->value.get ();
+    }
+
+    T* release () {
+      return this->value.release ();
     }
 
     bool hasValue () const {

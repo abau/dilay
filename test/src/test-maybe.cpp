@@ -42,7 +42,6 @@ void TestMaybe::test1 () {
 
   int *i = new int (55);
   m3 = i;
-  delete i;
 
   assert (*m3 == 55);
 
@@ -68,4 +67,18 @@ void TestMaybe::test2 () {
 
   assert (m.hasValue ());
   assert (m->data () == 5);
+}
+
+void TestMaybe::test3 () {
+  Maybe <int> m1 = 5;
+  Maybe <int> m2;
+
+  assert (m1.hasValue ());
+  assert (m2.hasValue () == false);
+
+  m2 = m1.release ();
+
+  assert (m1.hasValue () == false);
+  assert (m2.hasValue ());
+  assert (*m2 == 5);
 }
