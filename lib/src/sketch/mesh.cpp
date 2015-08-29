@@ -264,14 +264,14 @@ struct SketchMesh::Impl {
     }
   }
 
-  void radius (SketchNode& node, float radius, const Dimension* dim) {
-    node.data ().radius (radius);
+  void scale (SketchNode& node, float factor, const Dimension* dim) {
+    node.data ().radius (node.data ().radius () * factor);
 
     if (dim) {
       SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim));
 
       if (nodeM) {
-        nodeM->data ().radius (radius);
+        nodeM->data ().radius (node.data ().radius ());
       }
     }
   }
@@ -363,7 +363,7 @@ DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
 DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (SketchNode&       , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
-DELEGATE3       (void              , SketchMesh, radius, SketchNode&, float, const Dimension*)
+DELEGATE3       (void              , SketchMesh, scale, SketchNode&, float, const Dimension*)
 DELEGATE3       (void              , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
 DELEGATE1       (void              , SketchMesh, mirror, Dimension)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)

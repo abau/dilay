@@ -15,7 +15,7 @@ class ToolUtilScaling {
   public:
     DECLARE_BIG3 (ToolUtilScaling, const Camera&)
 
-    float delta         () const;
+    float factor        () const;
     bool  move          (const QMouseEvent&);
     void  resetPosition (const glm::vec3&, const glm::vec3&);
 

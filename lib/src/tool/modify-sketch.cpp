@@ -101,7 +101,7 @@ struct ToolModifySketch::Impl {
     if (e.buttons () == Qt::LeftButton && this->node) {
       if (e.modifiers () == Qt::ShiftModifier) {
         if (this->scaling.move (e)) {
-          this->mesh->radius (*this->node, this->scaling.delta (), this->self->mirrorDimension ());
+          this->mesh->scale (*this->node, this->scaling.factor (), this->self->mirrorDimension ());
         }
       }
       else if (this->movement.move (e, false)) {

@@ -51,7 +51,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     SketchNode&       addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
     SketchNode&       addParent       (SketchNode&, const glm::vec3&, float, const Dimension*);
     void              move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
-    void              radius          (SketchNode&, float, const Dimension*);
+    void              scale           (SketchNode&, float, const Dimension*);
     void              deleteNode      (SketchNode&, bool, const Dimension*);
     void              mirror          (Dimension);
 

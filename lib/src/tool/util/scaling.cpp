@@ -8,23 +8,26 @@
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "tool/util/scaling.hpp"
+#include "util.hpp"
 #include "view/util.hpp"
 
 struct ToolUtilScaling::Impl {
   const Camera&               camera;
   std::unique_ptr <PrimPlane> plane;
+  glm::vec3                   previousPosition;
   glm::vec3                   position;
-  float                       originalDistance;
-  float                       projectedDistance;
 
   Impl (const Camera& cam) 
     : camera (cam)
   {}
 
-  float delta () const {
+  float factor () const {
     assert (this->plane);
-    return this->originalDistance * glm::distance (this->position, this->plane->point ()) 
-                                  / this->projectedDistance;
+
+    const float  d = glm::distance (this->position        , this->plane->point ());
+    const float pd = glm::distance (this->previousPosition, this->plane->point ());
+
+    return pd <= Util::epsilon () ? 1.0f : d / pd;
   }
 
   bool intersects (const glm::ivec2& p, glm::vec3& i) const {
@@ -41,8 +44,15 @@ struct ToolUtilScaling::Impl {
   }
 
   bool move (const QMouseEvent& e) {
-    return this->plane ? this->intersects (ViewUtil::toIVec2 (e), this->position)
-                       : false;
+    glm::vec3 p;
+    if (this->plane && this->intersects (ViewUtil::toIVec2 (e), p)) {
+      this->previousPosition = this->position;
+      this->position         = p;
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
   void resetPosition (const glm::vec3& origin, const glm::vec3& reference) {
@@ -53,9 +63,8 @@ struct ToolUtilScaling::Impl {
     float t ;
 
     if (IntersectionUtil::intersects (ray, *this->plane, &t)) {
+      this->previousPosition  = origin;
       this->position          = origin;
-      this->originalDistance  = glm::distance (origin, reference);
-      this->projectedDistance = glm::distance (origin, ray.pointAt (t));
     }
     else {
       this->plane.reset ();
@@ -64,6 +73,6 @@ struct ToolUtilScaling::Impl {
 };
 
 DELEGATE1_BIG3 (ToolUtilScaling, const Camera&)
-DELEGATE_CONST (float, ToolUtilScaling, delta)
+DELEGATE_CONST (float, ToolUtilScaling, factor)
 DELEGATE1      (bool , ToolUtilScaling, move, const QMouseEvent&)
 DELEGATE2      (void , ToolUtilScaling, resetPosition, const glm::vec3&, const glm::vec3&)
