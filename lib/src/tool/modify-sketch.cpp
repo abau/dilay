@@ -23,6 +23,7 @@ struct ToolModifySketch::Impl {
   ToolModifySketch* self;
   SketchMesh*       mesh;
   SketchNode*       node;
+  SketchNode*       parent;
   ToolUtilMovement  movement;
   ToolUtilScaling   scaling;
   bool              transformChildren;
@@ -31,6 +32,7 @@ struct ToolModifySketch::Impl {
     : self              (s)
     , mesh              (nullptr)
     , node              (nullptr)
+    , parent            (nullptr)
     , movement          ( s->state ().camera ()
                         , s->cache ().getFrom <MovementConstraint>
                             ("constraint", MovementConstraint::CameraPlane) )
@@ -102,11 +104,19 @@ struct ToolModifySketch::Impl {
     if (e.buttons () == Qt::LeftButton && this->node) {
       if (e.modifiers () == Qt::ShiftModifier) {
         if (this->scaling.move (e)) {
+          if (this->parent) {
+            this->mesh->scale ( *this->parent, this->scaling.factor ()
+                              , false, this->self->mirrorDimension () );
+          }
           this->mesh->scale ( *this->node, this->scaling.factor ()
                             , this->transformChildren, this->self->mirrorDimension () );
         }
       }
       else if (this->movement.move (e, false)) {
+        if (this->parent) {
+          this->mesh->move (*this->parent, this->movement.delta ()
+                           , false, this->self->mirrorDimension () );
+        }
         this->mesh->move (*this->node, this->movement.delta ()
                          , this->transformChildren, this->self->mirrorDimension () );
       }
@@ -126,7 +136,8 @@ struct ToolModifySketch::Impl {
       this->scaling .resetPosition ( intersection.node ().data ().position ()
                                    , intersection.position () );
 
-      this->mesh = &intersection.mesh ();
+      this->mesh   = &intersection.mesh ();
+      this->parent = nullptr;
 
       if (e.modifiers () == Qt::ControlModifier) {
         SketchNode& iNode = intersection.node ();
@@ -156,9 +167,14 @@ struct ToolModifySketch::Impl {
         const float radius = glm::distance ( intersection.projectedPosition ()
                                            , intersection.position () );
 
-        this->node = &this->mesh->addParent ( intersection.child ()
-                                            , intersection.projectedPosition ()
-                                            , radius, this->self->mirrorDimension () );
+        this->parent = nullptr;
+        this->node   = &this->mesh->addParent ( intersection.child ()
+                                              , intersection.projectedPosition ()
+                                              , radius, this->self->mirrorDimension () );
+      }
+      else {
+        this->node   = &intersection.child  ();
+        this->parent = &intersection.parent ();
       }
     };
 
@@ -178,8 +194,9 @@ struct ToolModifySketch::Impl {
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
-      this->mesh = nullptr;
-      this->node = nullptr;
+      this->mesh   = nullptr;
+      this->node   = nullptr;
+      this->parent = nullptr;
     }
     return ToolResponse::None;
   }
