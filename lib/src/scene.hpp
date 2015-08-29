@@ -42,6 +42,9 @@ class Scene : public Configurable {
     void               reset              ();
     const RenderMode&  commonRenderMode   () const;
     void               commonRenderMode   (const RenderMode&);
+    void               renderWireframe    (bool);
+    void               toggleWireframe    ();
+    void               toggleShading      ();
     bool               isEmpty            () const;
     unsigned int       numWingedMeshes    () const;
     unsigned int       numSketchMeshes    () const;

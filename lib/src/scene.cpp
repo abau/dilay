@@ -165,6 +165,28 @@ struct Scene :: Impl {
     });
   }
 
+  void renderWireframe (bool value) {
+    RenderMode mode = this->commonRenderMode ();
+    mode.renderWireframe (value);
+    this->commonRenderMode (mode);
+  }
+
+  void toggleWireframe () {
+    this->renderWireframe (! this->commonRenderMode ().renderWireframe ());
+  }
+
+  void toggleShading () {
+    RenderMode mode = this->commonRenderMode ();
+
+    if (mode.smoothShading ()) {
+      mode.flatShading (true);
+    }
+    else if (mode.flatShading ()) {
+      mode.smoothShading (true);
+    }
+    this->commonRenderMode (mode);
+  }
+
   bool isEmpty () const {
     return this->numWingedMeshes () == 0 && this->numSketchMeshes () == 0;
   }
@@ -272,6 +294,9 @@ DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::functio
 DELEGATE        (void              , Scene, reset)
 DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
 DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)
+DELEGATE1       (void              , Scene, renderWireframe, bool)
+DELEGATE        (void              , Scene, toggleWireframe)
+DELEGATE        (void              , Scene, toggleShading)
 DELEGATE_CONST  (bool              , Scene, isEmpty)
 DELEGATE_CONST  (unsigned int      , Scene, numWingedMeshes)
 DELEGATE_CONST  (unsigned int      , Scene, numSketchMeshes)

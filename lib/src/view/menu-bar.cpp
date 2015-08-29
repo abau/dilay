@@ -6,7 +6,6 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include "history.hpp"
-#include "render-mode.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool/move-camera.hpp"
@@ -112,24 +111,13 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
   addAction ( viewMenu, QObject::tr ("Toggle &wireframe"), Qt::Key_W
             , [&mainWindow, &glWidget] ()
   {
-    RenderMode mode = glWidget.state ().scene ().commonRenderMode ();
-    mode.renderWireframe (! mode.renderWireframe ());
-
-    glWidget.state ().scene ().commonRenderMode (mode);
+    glWidget.state ().scene ().toggleWireframe ();
     mainWindow.update ();
   });
   addAction ( viewMenu, QObject::tr ("Toggle &shading"), Qt::SHIFT + Qt::Key_W
             , [&mainWindow, &glWidget] ()
   {
-    RenderMode mode = glWidget.state ().scene ().commonRenderMode ();
-
-    if (mode.smoothShading ()) {
-      mode.flatShading (true);
-    }
-    else if (mode.flatShading ()) {
-      mode.smoothShading (true);
-    }
-    glWidget.state ().scene ().commonRenderMode (mode);
+    glWidget.state ().scene ().toggleShading ();
     mainWindow.update ();
   });
   addAction (helpMenu, QObject::tr ("&Manual..."), QKeySequence (), [&mainWindow] () {
