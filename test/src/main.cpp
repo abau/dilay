@@ -24,7 +24,8 @@ int main () {
   TestIntrusiveList::test1 ();
   TestIntrusiveList::test2 ();
   TestIntrusiveList::test3 ();
-  TestTree         ::test  ();
+  TestTree         ::test1 ();
+  TestTree         ::test2 ();
 
   std::cout << "all tests run successfully\n";
   return 0;

@@ -14,7 +14,7 @@ namespace {
   };
 }
 
-void TestTree::test () {
+void TestTree::test1 () {
 
   Tree <Foo> tree;
 
@@ -48,4 +48,24 @@ void TestTree::test () {
   assert (copy.root ().data ().i == 0);
   assert (copy.root ().lastChild ().data ().i == 5);
   assert (copy.root ().lastChild ().parent () == &copy.root ());
+}
+
+void TestTree::test2 () {
+  Tree <int> t;
+
+  t.emplaceRoot (1).emplaceChild (2).emplaceChild (3).emplaceChild (4);
+
+  assert (t.root ().numNodes () == 4);
+  assert (t.root ().data () == 1);
+  assert (t.root ().lastChild ().data () == 2);
+  assert (t.root ().lastChild ().lastChild ().data () == 3);
+  assert (t.root ().lastChild ().lastChild ().lastChild ().data () == 4);
+
+  t.rebalance (t.root ().lastChild ().lastChild ().lastChild ());
+
+  assert (t.root ().numNodes () == 4);
+  assert (t.root ().data () == 4);
+  assert (t.root ().lastChild ().data () == 3);
+  assert (t.root ().lastChild ().lastChild ().data () == 2);
+  assert (t.root ().lastChild ().lastChild ().lastChild ().data () == 1);
 }

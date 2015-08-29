@@ -143,6 +143,28 @@ class Tree {
       this->_root.reset ();
     }
 
+    void rebalance (TreeNode <T>& node) {
+      const std::function <void (const TreeNode <T>&, TreeNode <T>&)> go =
+        [&go] (const auto& child, auto& rebalancedChild)
+      {
+        if (child.parent ()) {
+          const auto& parent           = *child.parent ();
+                auto& rebalancedParent = rebalancedChild.emplaceChild (parent.data ());
+
+          parent.forEachConstChild ([&rebalancedParent, &child] (const auto& c) {
+            if (&c != &child) {
+              rebalancedParent.addChild (c);
+            }
+          });
+          go (parent, rebalancedParent);
+        }
+      };
+
+      TreeNode <T>& newRoot (node);
+      go (node, newRoot);
+      this->_root = std::move (newRoot);
+    }
+
   private:
     Maybe <TreeNode <T>> _root;
 };
