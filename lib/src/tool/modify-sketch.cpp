@@ -25,17 +25,17 @@ struct ToolModifySketch::Impl {
   SketchNode*       node;
   ToolUtilMovement  movement;
   ToolUtilScaling   scaling;
-  bool              moveChildren;
+  bool              transformChildren;
 
   Impl (ToolModifySketch* s)
-    : self         (s)
-    , mesh         (nullptr)
-    , node         (nullptr)
-    , movement     ( s->state ().camera ()
-                   , s->cache ().getFrom <MovementConstraint> ( "constraint"
-                                                              , MovementConstraint::CameraPlane ))
-    , scaling      (s->state ().camera ())
-    , moveChildren (s->cache ().get <bool> ("move-children", false))
+    : self              (s)
+    , mesh              (nullptr)
+    , node              (nullptr)
+    , movement          ( s->state ().camera ()
+                        , s->cache ().getFrom <MovementConstraint>
+                            ("constraint", MovementConstraint::CameraPlane) )
+    , scaling           (s->state ().camera ())
+    , transformChildren (s->cache ().get <bool> ("transform-children", false))
   {
     this->self->renderMirror (false);
 
@@ -79,12 +79,13 @@ struct ToolModifySketch::Impl {
     });
     properties.add (mirrorEdit, syncButton);
 
-    QCheckBox& moveCEdit = ViewUtil::checkBox (QObject::tr ("Move children"), this->moveChildren);
-    ViewUtil::connect (moveCEdit, [this] (bool m) {
-      this->moveChildren = m;
-      this->self->cache ().set ("move-children", m);
+    QCheckBox& transformCEdit = ViewUtil::checkBox ( QObject::tr ("Transform children")
+                                                   , this->transformChildren );
+    ViewUtil::connect (transformCEdit, [this] (bool m) {
+      this->transformChildren = m;
+      this->self->cache ().set ("transform-children", m);
     });
-    properties.add (moveCEdit);
+    properties.add (transformCEdit);
   }
 
   void setupToolTip () {
@@ -101,12 +102,13 @@ struct ToolModifySketch::Impl {
     if (e.buttons () == Qt::LeftButton && this->node) {
       if (e.modifiers () == Qt::ShiftModifier) {
         if (this->scaling.move (e)) {
-          this->mesh->scale (*this->node, this->scaling.factor (), this->self->mirrorDimension ());
+          this->mesh->scale ( *this->node, this->scaling.factor ()
+                            , this->transformChildren, this->self->mirrorDimension () );
         }
       }
       else if (this->movement.move (e, false)) {
         this->mesh->move (*this->node, this->movement.delta ()
-                         , this->moveChildren, this->self->mirrorDimension () );
+                         , this->transformChildren, this->self->mirrorDimension () );
       }
       return ToolResponse::Redraw;
     }
