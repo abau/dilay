@@ -29,10 +29,6 @@ namespace {
       : renderWireframe (false)
     {}
   };
-
-  PrimSphere nodeSphere (const SketchNode& node) {
-    return PrimSphere (node.data ().position (), node.data ().radius ());
-  }
 }
 
 struct SketchMesh::Impl {
@@ -76,8 +72,10 @@ struct SketchMesh::Impl {
   bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachNode ([this, &ray, &intersection] (SketchNode& node) {
+        const PrimSphere nodeSphere (node.data ().position (), node.data ().radius ());
         float t;
-        if (IntersectionUtil::intersects (ray, nodeSphere (node), &t)) {
+
+        if (IntersectionUtil::intersects (ray, nodeSphere, &t)) {
           const glm::vec3 p = ray.pointAt (t);
           intersection.update ( t, p, glm::normalize (p - node.data ().position ())
                               , *this->self, node );
