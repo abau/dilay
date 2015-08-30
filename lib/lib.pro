@@ -64,6 +64,7 @@ SOURCES += \
            src/tool/move-camera.cpp \
            src/tool/new-mesh.cpp \
            src/tool/new-sketch.cpp \
+           src/tool/rebalance-sketch.cpp \
            src/tool/sculpt.cpp \
            src/tool/sculpt/carve.cpp \
            src/tool/sculpt/crease.cpp \

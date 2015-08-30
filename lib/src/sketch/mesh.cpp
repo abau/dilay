@@ -357,6 +357,11 @@ struct SketchMesh::Impl {
     }
   }
 
+  void rebalance (SketchNode& newRoot) {
+    assert (this->tree.hasRoot ());
+    this->tree.rebalance (newRoot);
+  }
+
   void runFromConfig (const Config& config) {
     this->renderConfig.nodeColor   = config.get <Color> ("editor/sketch/node/color");
     this->renderConfig.bubbleColor = config.get <Color> ("editor/sketch/bubble/color");
@@ -380,4 +385,5 @@ DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::v
 DELEGATE4       (void              , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
 DELEGATE3       (void              , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
 DELEGATE1       (void              , SketchMesh, mirror, Dimension)
+DELEGATE1       (void              , SketchMesh, rebalance, SketchNode&)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)

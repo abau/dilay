@@ -54,6 +54,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void              scale           (SketchNode&, float, bool, const Dimension*);
     void              deleteNode      (SketchNode&, bool, const Dimension*);
     void              mirror          (Dimension);
+    void              rebalance       (SketchNode&);
 
   private:
     IMPLEMENTATION
