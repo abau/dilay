@@ -18,6 +18,7 @@ class QMouseEvent;
 class QPoint;
 class QPushButton;
 class QRadioButton;
+class QSlider;
 class QSpinBox;
 class QString;
 class QToolButton;
@@ -29,6 +30,7 @@ namespace ViewUtil {
   QToolButton&      toolButton     (const QString&);
   QRadioButton&     radioButton    (const QString&, bool = false);
   QCheckBox&        checkBox       (const QString&, bool = false);
+  QSlider&          slider         (int, int, int);
   ViewDoubleSlider& slider         (unsigned short, float, float, float, unsigned short = 1);
   QFrame&           horizontalLine ();
   QWidget&          emptyWidget    ();
@@ -42,6 +44,7 @@ namespace ViewUtil {
   void              connect        (const QButtonGroup&, const std::function <void (int)>&);
   void              connect        (const QCheckBox&, const std::function <void (bool)>&);
   void              connect        (const QRadioButton&, const std::function <void (bool)>&);
+  void              connect        (const QSlider&, const std::function <void (int)>&);
   void              connect        (const ViewDoubleSlider&, const std::function <void (float)>&);
   QWidget&          stretcher      (bool, bool);
   void              deselect       (QAbstractSpinBox&);

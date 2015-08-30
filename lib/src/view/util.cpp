@@ -10,6 +10,7 @@
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QSlider>
 #include <QToolButton>
 #include <glm/glm.hpp>
 #include "view/double-slider.hpp"
@@ -54,6 +55,17 @@ QCheckBox& ViewUtil :: checkBox (const QString& label, bool isChecked) {
   QCheckBox& box = *new QCheckBox (label);
   box.setChecked (isChecked);
   return box;
+}
+
+QSlider& ViewUtil :: slider (int min, int value, int max) {
+  QSlider& slider = *new QSlider;
+  slider.setRange       (min, max);
+  slider.setValue       (value);
+  slider.setSingleStep  (1);
+  slider.setPageStep    (1);
+  slider.setTracking    (true);
+  slider.setOrientation (Qt::Horizontal);
+  return slider;
 }
 
 ViewDoubleSlider& ViewUtil :: slider ( unsigned short numDecimals
@@ -131,6 +143,10 @@ void ViewUtil :: connect (const QCheckBox& c, const std::function <void (bool)>&
 
 void ViewUtil :: connect (const QRadioButton& r, const std::function <void (bool)>& f) {
   QObject::connect (&r, &QRadioButton::clicked, f);
+}
+
+void ViewUtil :: connect (const QSlider& s, const std::function <void (int)>& f) {
+  QObject::connect (&s, &QSlider::valueChanged, f);
 }
 
 void ViewUtil :: connect (const ViewDoubleSlider& s, const std::function <void (float)>& f) {
