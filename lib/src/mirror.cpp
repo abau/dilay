@@ -15,13 +15,13 @@
 
 struct Mirror::Impl {
   Dimension                   _dimension;
-  float                        mirrorWidth;
+  float                        width;
   Mesh                         mirrorMesh;
   std::unique_ptr <PrimPlane> _plane;
 
   Impl (const Config& config, Dimension d)
-    : _dimension   (d)
-    ,  mirrorWidth (1.0f)
+    : _dimension (d)
+    ,  width     (1.0f)
   {
     this->mirrorMesh = MeshUtil::cube ();
     this->mirrorMesh.renderMode ().constantShading (true);
@@ -46,7 +46,7 @@ struct Mirror::Impl {
 
   void render (Camera& camera) const {
     const glm::vec3 pos    = camera.position ();
-    const float     width2 = this->mirrorWidth * 0.5f;
+    const float     width2 = this->width * 0.5f;
     const bool      inside = 
         (this->_dimension == Dimension::X && glm::abs (pos.x) <= width2)
      || (this->_dimension == Dimension::Y && glm::abs (pos.y) <= width2)
@@ -99,19 +99,19 @@ struct Mirror::Impl {
 
     switch (this->_dimension) {
       case Dimension::X:
-        this->mirrorMesh.scaling (glm::vec3 (this->mirrorWidth, extent, extent));
+        this->mirrorMesh.scaling (glm::vec3 (this->width, extent, extent));
         break;
       case Dimension::Y:
-        this->mirrorMesh.scaling (glm::vec3 (extent, this->mirrorWidth, extent));
+        this->mirrorMesh.scaling (glm::vec3 (extent, this->width, extent));
         break;
       case Dimension::Z:
-        this->mirrorMesh.scaling (glm::vec3 (extent, extent, this->mirrorWidth));
+        this->mirrorMesh.scaling (glm::vec3 (extent, extent, this->width));
         break;
     }
   }
 
   void runFromConfig (const Config& config) {
-    this->mirrorWidth = config.get <float> ("editor/tool/sculpt/mirror/width");
+    this->width = config.get <float> ("editor/tool/sculpt/mirror/width");
     this->mirrorMesh.color (config.get <Color> ("editor/tool/sculpt/mirror/color"));
     this->updateMesh ();
   }
@@ -119,6 +119,7 @@ struct Mirror::Impl {
 
 DELEGATE2_BIG2 (Mirror, const Config&, Dimension)
 DELEGATE_CONST  (Dimension       , Mirror, dimension)
+GETTER_CONST    (float           , Mirror, width)
 DELEGATE1       (void            , Mirror, dimension, Dimension)
 DELEGATE_CONST  (const PrimPlane&, Mirror, plane)
 DELEGATE1_CONST (void            , Mirror, render, Camera&)

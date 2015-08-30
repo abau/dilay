@@ -17,6 +17,7 @@ class Mirror : public Configurable {
     DECLARE_BIG2 (Mirror, const Config&, Dimension)
 
     Dimension        dimension () const;
+    float            width     () const;
     const PrimPlane& plane     () const;
 
     void             dimension (Dimension);
