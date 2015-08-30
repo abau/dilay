@@ -65,6 +65,9 @@ class Mesh {
     void               rotationX         (float);
     void               rotationY         (float);
     void               rotationZ         (float);
+    void               rotateX           (float);
+    void               rotateY           (float);
+    void               rotateZ           (float);
     void               normalize         ();
     glm::vec3          center            () const;
     void               minMax            (glm::vec3&, glm::vec3&) const;

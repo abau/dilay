@@ -317,6 +317,18 @@ struct Mesh::Impl {
     this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (0.0f,0.0f,1.0f));
   }
 
+  void rotateX (float angle) {
+    this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, glm::vec3 (1.0f,0.0f,0.0f));
+  }
+
+  void rotateY (float angle) {
+    this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, glm::vec3 (0.0f,1.0f,0.0f));
+  }
+
+  void rotateZ (float angle) {
+    this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, glm::vec3 (0.0f,0.0f,1.0f));
+  }
+
   void normalize () {
     const glm::mat4x4 model       = this->modelMatrix ();
     const glm::mat3x3 modelNormal = this->modelNormalMatrix ();
@@ -404,6 +416,9 @@ GETTER_CONST     (const glm::mat4x4&, Mesh, rotationMatrix)
 DELEGATE1        (void              , Mesh, rotationX, float)
 DELEGATE1        (void              , Mesh, rotationY, float)
 DELEGATE1        (void              , Mesh, rotationZ, float)
+DELEGATE1        (void              , Mesh, rotateX, float)
+DELEGATE1        (void              , Mesh, rotateY, float)
+DELEGATE1        (void              , Mesh, rotateZ, float)
 DELEGATE         (void              , Mesh, normalize)
 DELEGATE_CONST   (glm::vec3         , Mesh, center)
 DELEGATE2_CONST  (void              , Mesh, minMax, glm::vec3&, glm::vec3&)
