@@ -50,9 +50,11 @@ glm::vec3 Util :: orthogonal (const glm::vec3& v) {
 }
 
 bool Util :: colinear (const glm::vec3& v1, const glm::vec3& v2) {
-  return glm::epsilonEqual ( glm::abs (glm::dot (glm::normalize (v1), glm::normalize (v2)))
-                           , 1.0f
-                           , Util::epsilon () );
+  return Util::colinearUnit (glm::normalize (v1), glm::normalize (v2));
+}
+
+bool Util :: colinearUnit (const glm::vec3& v1, const glm::vec3& v2) {
+  return glm::epsilonEqual (glm::abs (glm::dot (v1, v2)), 1.0f, Util::epsilon ());
 }
 
 std::string Util :: readFile (const std::string& filePath) {
