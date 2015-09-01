@@ -6,7 +6,10 @@
 #include <QFrame>
 #include <QMouseEvent>
 #include <QPushButton>
+#include <QSlider>
 #include "cache.hpp"
+#include "mirror.hpp"
+#include "primitive/plane.hpp"
 #include "scene.hpp"
 #include "sketch/bone-intersection.hpp"
 #include "sketch/mesh.hpp"
@@ -27,6 +30,8 @@ struct ToolModifySketch::Impl {
   ToolUtilMovement  movement;
   ToolUtilScaling   scaling;
   bool              transformChildren;
+  bool              snap;
+  QSlider&          snapWidthEdit;
 
   Impl (ToolModifySketch* s)
     : self              (s)
@@ -35,9 +40,11 @@ struct ToolModifySketch::Impl {
     , parent            (nullptr)
     , movement          ( s->state ().camera ()
                         , s->cache ().getFrom <MovementConstraint>
-                            ("constraint", MovementConstraint::CameraPlane) )
+                            ("constraint", MovementConstraint::PrimaryPlane) )
     , scaling           (s->state ().camera ())
     , transformChildren (s->cache ().get <bool> ("transform-children", false))
+    , snap              (s->cache ().get <bool> ("snap", true))
+    , snapWidthEdit     (ViewUtil::slider (1, s->cache ().get <int> ("snap-width", 5), 10))
   {
     this->self->renderMirror (false);
 
@@ -88,6 +95,20 @@ struct ToolModifySketch::Impl {
       this->self->cache ().set ("transform-children", m);
     });
     properties.add (transformCEdit);
+
+    QCheckBox& snapEdit = ViewUtil::checkBox (QObject::tr ("Snap"), this->snap);
+    ViewUtil::connect (snapEdit, [this] (bool s) {
+      this->snap = s;
+      this->snapWidthEdit.setEnabled (s);
+      this->self->cache ().set ("snap", s);
+    });
+    properties.add (snapEdit);
+
+    this->snapWidthEdit.setEnabled (this->snap);
+    ViewUtil::connect (this->snapWidthEdit, [this] (int w) {
+      this->self->cache ().set ("snap-width", w);
+    });
+    properties.addStacked (QObject::tr ("Snap width"), this->snapWidthEdit);
   }
 
   void setupToolTip () {
@@ -193,12 +214,31 @@ struct ToolModifySketch::Impl {
   }
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
+    bool redraw = false;
+
     if (e.button () == Qt::LeftButton) {
+      if (this->snap && this->mesh && this->self->hasMirror ()) {
+        PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
+
+        const auto isSnappable = [this, &mirrorPlane] (const SketchNode& node) -> bool {
+          return mirrorPlane.absDistance (node.data ().position ()) <=
+                 (this->snapWidthEdit.value ()) * this->self->mirror ().width ();
+        };
+
+        if (this->node && isSnappable (*this->node)) {
+          this->mesh->snap (*this->node, *this->self->mirrorDimension ());
+          redraw = true;
+        }
+        if (this->parent && isSnappable (*this->parent)) {
+          this->mesh->snap (*this->parent, *this->self->mirrorDimension ());
+          redraw = true;
+        }
+      }
       this->mesh   = nullptr;
       this->node   = nullptr;
       this->parent = nullptr;
     }
-    return ToolResponse::None;
+    return redraw ? ToolResponse::Redraw : ToolResponse::None;
   }
 };
 

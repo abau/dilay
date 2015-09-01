@@ -123,14 +123,23 @@ struct SketchMesh::Impl {
           const glm::vec3  direction = (parPos - pos) / distance;
 
           if (this->renderConfig.renderWireframe) {
-            const glm::mat4x4 rotMatrix = glm::orientation ( direction
-                                                           , glm::vec3 (0.0f, -1.0f, 0.0f) );
+            const glm::vec3 down = glm::vec3 (0.0f, -1.0f, 0.0f);
 
-            this->wireframeMesh.color          (this->renderConfig.nodeColor);
-            this->wireframeMesh.position       (parPos);
-            this->wireframeMesh.scaling        (glm::vec3 (parRadius, distance, parRadius));
-            this->wireframeMesh.rotationMatrix (rotMatrix);
-            this->wireframeMesh.render         (camera);
+            if (Util::colinearUnit (direction, down)) {
+              this->wireframeMesh.rotationMatrix (glm::mat4x4 (1.0f));
+
+              if (glm::dot (direction, down) < 0.0f) {
+                this->wireframeMesh.rotateX (glm::pi <float> ());
+              }
+            }
+            else {
+              this->wireframeMesh.rotationMatrix (glm::orientation (direction, down));
+            }
+
+            this->wireframeMesh.color    (this->renderConfig.nodeColor);
+            this->wireframeMesh.position (parPos);
+            this->wireframeMesh.scaling  (glm::vec3 (parRadius, distance, parRadius));
+            this->wireframeMesh.render   (camera);
           }
           else {
             this->nodeMesh.color (this->renderConfig.bubbleColor);
@@ -160,14 +169,18 @@ struct SketchMesh::Impl {
     return PrimPlane (this->tree.root ().data ().position (), DimensionUtil::vector (dim));
   }
 
-  SketchNode* mirrored (const SketchNode& node, const PrimPlane& mirrorPlane) {
+  SketchNode* mirrored ( const SketchNode& node, const PrimPlane& mirrorPlane
+                       , const SketchNode& exclude )
+  {
     if (this->tree.hasRoot () && node.parent ()) {
       SketchNode*     result = nullptr;
       const glm::vec3 pos    = mirrorPlane.mirror (node.data ().position ());
 
-      this->tree.root ().forEachNode ([&result, &pos] (SketchNode& n) {
-        if (n.parent () && glm::distance2 (n.data ().position (), pos) 
-                        <= Util::epsilon () * Util::epsilon () )
+      this->tree.root ().forEachNode ([&exclude, &result, &pos] (SketchNode& n) {
+        if ( n.parent ()
+          && (&exclude != &n)
+          && glm::distance2 (n.data ().position (), pos)
+          <= Util::epsilon () * Util::epsilon () )
         {
           result = &n;
         }
@@ -188,13 +201,10 @@ struct SketchMesh::Impl {
       return &parent.emplaceChild (pos, radius);
     }
     else {
-      SketchNode* parentM = this->mirrored (parent, mirrorPlane);
-      if (parentM) {
-        return &parentM->emplaceChild (pos, radius);
-      }
-      else {
-        return nullptr;
-      }
+      SketchNode* parentM = this->mirrored (parent, mirrorPlane, node);
+
+      return bool (parentM) ? &parentM->emplaceChild (pos, radius)
+                            : nullptr;
     }
   }
 
@@ -219,7 +229,7 @@ struct SketchMesh::Impl {
 
     if (dim) {
       PrimPlane   mPlane = this->mirrorPlane (*dim);
-      SketchNode* childM = this->mirrored (child, mPlane);
+      SketchNode* childM = this->mirrored (child, mPlane, child);
 
       if (childM && childM->parent ()) {
         SketchNode* newNodeM = this->addMirroredNode (newNode, mPlane);
@@ -249,7 +259,7 @@ struct SketchMesh::Impl {
 
     if (dim) {
       const PrimPlane mirrorPlane = this->mirrorPlane (*dim);
-      SketchNode*     nodeM       = this->mirrored (node, mirrorPlane);
+      SketchNode*     nodeM       = this->mirrored (node, mirrorPlane, node);
 
       moveNodes (node, delta);
 
@@ -275,7 +285,7 @@ struct SketchMesh::Impl {
     };
 
     if (dim) {
-      SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim));
+      SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim), node);
 
       scaleNodes (node);
 
@@ -296,7 +306,7 @@ struct SketchMesh::Impl {
     }
     else if (deleteChildren) {
       if (dim) {
-        SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim));
+        SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim), node);
 
         if (nodeM && nodeM->parent ()) {
           nodeM->parent ()->deleteChild (*nodeM);
@@ -310,7 +320,7 @@ struct SketchMesh::Impl {
       });
 
       if (dim) {
-        SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim));
+        SketchNode* nodeM = this->mirrored (node, this->mirrorPlane (*dim), node);
 
         if (nodeM && nodeM->parent ()) {
           nodeM->forEachChild ([nodeM] (SketchNode& child) {
@@ -327,28 +337,39 @@ struct SketchMesh::Impl {
     if (this->tree.hasRoot ()) {
       PrimPlane mirrorPlane = this->mirrorPlane (dim); 
 
+      auto requiresMirroring = [&mirrorPlane] (const SketchNode& node) {
+        assert (node.parent ());
+        return (mirrorPlane.absDistance (node.data ().position ())            > Util::epsilon ())
+            || (mirrorPlane.absDistance (node.parent ()->data ().position ()) > Util::epsilon ());
+      };
+
       std::function <void (SketchNode&)> mirrorNode =
-        [this, &mirrorPlane, &mirrorNode] (SketchNode& node)
+        [this, &mirrorPlane, &requiresMirroring, &mirrorNode] (SketchNode& node)
       {
-        node.forEachChild ([this, &mirrorPlane, &mirrorNode] (SketchNode& c) {
-          this->addMirroredNode (c, mirrorPlane);
+        node.forEachChild ([this, &mirrorPlane, &requiresMirroring, &mirrorNode] (SketchNode& c) {
+          if (requiresMirroring (c)) {
+            this->addMirroredNode (c, mirrorPlane);
+          }
           mirrorNode (c);
         });
       };
 
-      this->tree.root ().deleteChildIf ([&mirrorPlane] (const SketchNode& node) {
-        return mirrorPlane.distance (node.data ().position ()) < -Util::epsilon ();
+      this->tree.root ().forEachNode ([&mirrorPlane] (SketchNode& parent) {
+        parent.deleteChildIf ([&mirrorPlane] (const SketchNode& child) {
+          return mirrorPlane.distance (child.data ().position ()) < -Util::epsilon ();
+        });
       });
 
       unsigned int numC = this->tree.root ().numChildren ();
 
-      this->tree.root ().forEachChild ([this, &mirrorNode, &mirrorPlane, &numC] 
+      this->tree.root ().forEachChild ([this, &requiresMirroring, &mirrorNode, &mirrorPlane, &numC] 
         (SketchNode& child)
       {
         if (numC > 0) {
-          this->addMirroredNode (child, mirrorPlane);
+          if (requiresMirroring (child)) {
+            this->addMirroredNode (child, mirrorPlane);
+          }
           mirrorNode (child);
-
           numC--;
         }
       });
@@ -358,6 +379,40 @@ struct SketchMesh::Impl {
   void rebalance (SketchNode& newRoot) {
     assert (this->tree.hasRoot ());
     this->tree.rebalance (newRoot);
+  }
+
+  SketchNode& snap (SketchNode& node, Dimension dim) {
+    assert (this->tree.hasRoot ());
+    const PrimPlane mPlane = this->mirrorPlane (dim);
+
+    SketchNode* nodeM = this->mirrored (node, mPlane, node);
+    if (nodeM && nodeM != &node) {
+      if (nodeM->parent () == node.parent ()) {
+        SketchNode& snapped = this->addChild ( *node.parent ()
+                                             , 0.5f * ( node.data ().position ()
+                                                      + nodeM->data ().position () )
+                                             , node.data ().radius ()
+                                             , nullptr );
+
+        node.forEachConstChild ([&snapped] (const SketchNode& c) {
+          snapped.addChild (c);
+        });
+        nodeM->forEachConstChild ([&snapped] (const SketchNode& c) {
+          snapped.addChild (c);
+        });
+        this->deleteNode (node, true, &dim);
+        return snapped;
+      }
+      else {
+        node.data ().position (mPlane.project (node.data ().position ()));
+        nodeM->data ().position (mPlane.project (nodeM->data ().position ()));
+        return node;
+      }
+    }
+    else {
+      node.data ().position (mPlane.project (node.data ().position ()));
+      return node;
+    }
   }
 
   void runFromConfig (const Config& config) {
@@ -377,6 +432,7 @@ DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, Ske
 DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE1       (void              , SketchMesh, render, Camera&)
 DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
+DELEGATE1       (PrimPlane         , SketchMesh, mirrorPlane, Dimension)
 DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (SketchNode&       , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
@@ -384,4 +440,5 @@ DELEGATE4       (void              , SketchMesh, scale, SketchNode&, float, bool
 DELEGATE3       (void              , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
 DELEGATE1       (void              , SketchMesh, mirror, Dimension)
 DELEGATE1       (void              , SketchMesh, rebalance, SketchNode&)
+DELEGATE2       (SketchNode&       , SketchMesh, snap, SketchNode&, Dimension)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)

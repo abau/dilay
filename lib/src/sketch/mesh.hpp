@@ -13,6 +13,7 @@
 
 class Camera;
 enum class Dimension;
+class PrimPlane;
 class PrimRay;
 
 class SketchNodeData {
@@ -48,6 +49,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     bool              intersects      (const PrimRay&, SketchBoneIntersection&);
     void              render          (Camera&);
     void              renderWireframe (bool);
+    PrimPlane         mirrorPlane     (Dimension);
     SketchNode&       addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
     SketchNode&       addParent       (SketchNode&, const glm::vec3&, float, const Dimension*);
     void              move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
@@ -55,6 +57,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void              deleteNode      (SketchNode&, bool, const Dimension*);
     void              mirror          (Dimension);
     void              rebalance       (SketchNode&);
+    SketchNode&       snap            (SketchNode&, Dimension);
 
   private:
     IMPLEMENTATION
