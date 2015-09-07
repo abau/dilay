@@ -5,6 +5,8 @@
 #ifndef DILAY_BITSET
 #define DILAY_BITSET
 
+#include <cmath>
+
 template <typename T>
 class Bitset {
   public:
@@ -42,6 +44,22 @@ class Bitset {
 
     void reset () {
       this->_data = 0;
+    }
+
+    bool none () const {
+      return this->_data == 0;
+    }
+
+    template <unsigned short N>
+    bool all () const {
+      static_assert (N < sizeof(T) * 8, "invalid bitset index");
+
+      const T allBits = std::pow (2, N) - 1;
+      return (this->_data & allBits) == allBits;
+    }
+
+    T value () const {
+      return this->_data;
     }
 
   private:
