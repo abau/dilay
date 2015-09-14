@@ -415,6 +415,19 @@ struct SketchMesh::Impl {
     }
   }
 
+  void minMax (glm::vec3& min, glm::vec3& max) const {
+    assert (this->tree.hasRoot ());
+
+    const SketchNode& root = this->tree.root ();
+                      min  = root.data ().position () - glm::vec3 (root.data ().radius ());
+                      max  = root.data ().position () + glm::vec3 (root.data ().radius ());
+
+    root.forEachConstNode ([&min, &max] (const SketchNode& node) {
+      min = glm::min (min, node.data ().position () - glm::vec3 (node.data ().radius ()));
+      max = glm::max (max, node.data ().position () + glm::vec3 (node.data ().radius ()));
+    });
+  }
+
   void runFromConfig (const Config& config) {
     this->renderConfig.nodeColor   = config.get <Color> ("editor/sketch/node/color");
     this->renderConfig.bubbleColor = config.get <Color> ("editor/sketch/bubble/color");
@@ -441,4 +454,5 @@ DELEGATE3       (void              , SketchMesh, deleteNode, SketchNode&, bool, 
 DELEGATE1       (void              , SketchMesh, mirror, Dimension)
 DELEGATE1       (void              , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&       , SketchMesh, snap, SketchNode&, Dimension)
+DELEGATE2_CONST (void              , SketchMesh, minMax, glm::vec3&, glm::vec3&)
 DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)

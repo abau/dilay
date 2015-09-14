@@ -58,6 +58,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void              mirror          (Dimension);
     void              rebalance       (SketchNode&);
     SketchNode&       snap            (SketchNode&, Dimension);
+    void              minMax          (glm::vec3&, glm::vec3&) const;
 
   private:
     IMPLEMENTATION
