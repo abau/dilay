@@ -31,7 +31,7 @@ struct ToolRebalanceSketch::Impl {
     if (e.button () == Qt::LeftButton) {
       SketchNodeIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
-        this->self->snapshotWingedMeshes ();
+        this->self->snapshotSketchMeshes ();
         intersection.mesh ().rebalance (intersection.node ());
         return ToolResponse::Redraw;
       }
