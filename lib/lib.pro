@@ -58,6 +58,7 @@ SOURCES += \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
+           src/tool/convert-sketch.cpp \
            src/tool/delete-mesh.cpp \
            src/tool/delete-sketch-node.cpp \
            src/tool/modify-sketch.cpp \

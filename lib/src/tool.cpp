@@ -94,6 +94,10 @@ struct Tool::Impl {
     return this->state.mainWindow ().mainWidget ().glWidget ().cursorPosition ();
   }
 
+  void snapshotAll () {
+    this->state.history ().snapshotAll (this->state.scene ());
+  }
+
   void snapshotWingedMeshes () {
     this->state.history ().snapshotWingedMeshes (this->state.scene ());
   }
@@ -171,6 +175,7 @@ DELEGATE_CONST  (Config&         , Tool, config)
 DELEGATE        (CacheProxy&     , Tool, cache)
 DELEGATE1_CONST (CacheProxy      , Tool, cache, const char*)
 DELEGATE_CONST  (glm::ivec2      , Tool, cursorPosition)
+DELEGATE        (void            , Tool, snapshotAll)
 DELEGATE        (void            , Tool, snapshotWingedMeshes)
 DELEGATE        (void            , Tool, snapshotSketchMeshes)
 DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)

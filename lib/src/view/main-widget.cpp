@@ -81,6 +81,7 @@ struct ViewMainWidget :: Impl {
     this->addToolButton <ToolModifySketch>     (toolPaneLayout, QObject::tr ("Modify sketch"));
     this->addToolButton <ToolDeleteSketchNode> (toolPaneLayout, QObject::tr ("Delete node"));
     this->addToolButton <ToolRebalanceSketch>  (toolPaneLayout, QObject::tr ("Rebalance sketch"));
+    this->addToolButton <ToolConvertSketch>    (toolPaneLayout, QObject::tr ("Convert sketch"));
 
     toolPaneLayout->addStretch (1);
     return toolPane;

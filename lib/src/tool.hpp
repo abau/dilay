@@ -46,6 +46,7 @@ class Tool {
     CacheProxy&      cache                  ();
     CacheProxy       cache                  (const char*) const;
     glm::ivec2       cursorPosition         () const;
+    void             snapshotAll            ();
     void             snapshotWingedMeshes   ();
     void             snapshotSketchMeshes   ();
     bool             intersectsRecentOctree (const QMouseEvent&, Intersection&) const;
