@@ -144,3 +144,11 @@ bool Util :: fromString (const std::string& string, float& value) {
   catch (const std::invalid_argument&) { return false; }
   catch (const std::out_of_range&)     { return false; }
 }
+
+unsigned int Util :: countOnes (unsigned int x) {
+  unsigned int n = 0;
+  for (; x > 0; n++) {
+    x &= x-1;
+  }
+  return n;
+}

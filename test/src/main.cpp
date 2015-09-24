@@ -8,6 +8,7 @@
 #include "test-intersection.hpp"
 #include "test-intrusive-list.hpp"
 #include "test-maybe.hpp"
+#include "test-misc.hpp"
 #include "test-octree.hpp"
 #include "test-tree.hpp"
 
@@ -26,6 +27,7 @@ int main () {
   TestIntrusiveList::test3 ();
   TestTree         ::test1 ();
   TestTree         ::test2 ();
+  TestMisc         ::test  ();
 
   std::cout << "all tests run successfully\n";
   return 0;

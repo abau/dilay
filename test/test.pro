@@ -12,6 +12,7 @@ SOURCES += \
            src/test-intersection.cpp \
            src/test-intrusive-list.cpp \
            src/test-maybe.cpp \
+           src/test-misc.cpp \
            src/test-octree.cpp \
            src/test-tree.cpp
 
@@ -19,6 +20,7 @@ HEADERS += \
            src/test-intersection.hpp \
            src/test-intrusive-list.hpp \
            src/test-maybe.hpp \
+           src/test-misc.hpp \
            src/test-octree.hpp \
            src/test-tree.hpp
 
