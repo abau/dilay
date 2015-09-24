@@ -633,7 +633,7 @@ namespace {
                                    , dim == -2 ? y-1 : (dim == 2 ? y+1 : y)
                                    , dim == -3 ? z-1 : (dim == 3 ? z+1 : z) ) );
       if (other.isAmbiguous ()) {
-        unsigned int otherAmbiguousFace;
+        unsigned int otherAmbiguousFace = Util::invalidIndex ();
         const bool   hasOtherAmbiguousFace = other.hasAmbiguousFaces (&otherAmbiguousFace);
 
         assert (hasOtherAmbiguousFace);
@@ -656,7 +656,7 @@ namespace {
           Cube& cube = params.grid.at (params.cubeIndex (x,y,z));
 
           if (cube.isAmbiguous ()) {
-            unsigned int ambiguousFace;
+            unsigned int ambiguousFace = Util::invalidIndex ();
             const bool   hasAmbiguousFace = cube.hasAmbiguousFaces (&ambiguousFace);
 
             assert (hasAmbiguousFace);
