@@ -10,16 +10,418 @@
 #include "sketch/mesh.hpp"
 #include "util.hpp"
 
+/* vertex layout:          edge layout:          face layout:
+ *
+ *     2------------3          o-----3------o      - 0: bottom
+ *    /|           /|         /|           /|      - 1: top
+ *   / |          / |        8 1         11 |      - 2: left
+ *  /  |         /  |       /  |         /  4      - 3: right
+ * 6------------7   |      o-----9------o   |      - 4: back
+ * |   |        |   |      |   |        |   |      - 5: front
+ * |   0--------|---1      |   o----0---|---o
+ * |  /         |  /       7  /        10  /
+ * | /          | /        | 2          | 5
+ * |/           |/         |/           |/
+ * 4------------5          o-----6------o
+ */
 namespace {
   static glm::vec3 invalidVec3 = glm::vec3 (std::numeric_limits <float>::lowest ());
 
+  static int edgeVertexIndices[256][12] = {
+      {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
+    , {0,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1}
+    , {0,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1}
+    , {-1,0,0,-1,0,0,-1,-1,-1,-1,-1,-1}
+    , {-1,0,-1,0,-1,-1,-1,-1,0,-1,-1,-1}
+    , {0,-1,0,0,-1,-1,-1,-1,0,-1,-1,-1}
+    , {0,1,-1,1,0,0,-1,-1,1,-1,-1,-1}
+    , {-1,-1,0,0,0,0,-1,-1,0,-1,-1,-1}
+    , {-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,0}
+    , {0,0,0,1,1,-1,-1,-1,-1,-1,-1,1}
+    , {0,-1,-1,0,-1,0,-1,-1,-1,-1,-1,0}
+    , {-1,0,0,0,-1,0,-1,-1,-1,-1,-1,0}
+    , {-1,0,-1,-1,0,-1,-1,-1,0,-1,-1,0}
+    , {0,-1,0,-1,0,-1,-1,-1,0,-1,-1,0}
+    , {0,0,-1,-1,-1,0,-1,-1,0,-1,-1,0}
+    , {-1,-1,0,-1,-1,0,-1,-1,0,-1,-1,0}
+    , {-1,-1,0,-1,-1,-1,0,0,-1,-1,-1,-1}
+    , {0,0,-1,-1,-1,-1,0,0,-1,-1,-1,-1}
+    , {0,-1,1,-1,0,0,1,1,-1,-1,-1,-1}
+    , {-1,0,-1,-1,0,0,0,0,-1,-1,-1,-1}
+    , {-1,0,1,0,-1,-1,1,1,0,-1,-1,-1}
+    , {0,-1,-1,0,-1,-1,0,0,0,-1,-1,-1}
+    , {0,1,2,1,0,0,2,2,1,-1,-1,-1}
+    , {-1,-1,-1,0,0,0,0,0,0,-1,-1,-1}
+    , {-1,-1,1,0,0,-1,1,1,-1,-1,-1,0}
+    , {0,0,-1,1,1,-1,0,0,-1,-1,-1,1}
+    , {0,-1,1,0,-1,0,1,1,-1,-1,-1,0}
+    , {-1,0,-1,0,-1,0,0,0,-1,-1,-1,0}
+    , {-1,0,1,-1,0,-1,1,1,0,-1,-1,0}
+    , {0,-1,-1,-1,0,-1,0,0,0,-1,-1,0}
+    , {0,0,1,-1,-1,0,1,1,0,-1,-1,0}
+    , {-1,-1,-1,-1,-1,0,0,0,0,-1,-1,0}
+    , {-1,-1,-1,-1,-1,0,0,-1,-1,-1,0,-1}
+    , {0,0,0,-1,-1,1,1,-1,-1,-1,1,-1}
+    , {0,-1,-1,-1,0,-1,0,-1,-1,-1,0,-1}
+    , {-1,0,0,-1,0,-1,0,-1,-1,-1,0,-1}
+    , {-1,0,-1,0,-1,1,1,-1,0,-1,1,-1}
+    , {0,-1,0,0,-1,1,1,-1,0,-1,1,-1}
+    , {0,1,-1,1,0,-1,0,-1,1,-1,0,-1}
+    , {-1,-1,0,0,0,-1,0,-1,0,-1,0,-1}
+    , {-1,-1,-1,0,0,1,1,-1,-1,-1,1,0}
+    , {0,0,0,1,1,2,2,-1,-1,-1,2,1}
+    , {0,-1,-1,0,-1,-1,0,-1,-1,-1,0,0}
+    , {-1,0,0,0,-1,-1,0,-1,-1,-1,0,0}
+    , {-1,0,-1,-1,0,1,1,-1,0,-1,1,0}
+    , {0,-1,0,-1,0,1,1,-1,0,-1,1,0}
+    , {0,0,-1,-1,-1,-1,0,-1,0,-1,0,0}
+    , {-1,-1,0,-1,-1,-1,0,-1,0,-1,0,0}
+    , {-1,-1,0,-1,-1,0,-1,0,-1,-1,0,-1}
+    , {0,0,-1,-1,-1,0,-1,0,-1,-1,0,-1}
+    , {0,-1,0,-1,0,-1,-1,0,-1,-1,0,-1}
+    , {-1,0,-1,-1,0,-1,-1,0,-1,-1,0,-1}
+    , {-1,0,1,0,-1,1,-1,1,0,-1,1,-1}
+    , {0,-1,-1,0,-1,0,-1,0,0,-1,0,-1}
+    , {0,1,0,1,0,-1,-1,0,1,-1,0,-1}
+    , {-1,-1,-1,0,0,-1,-1,0,0,-1,0,-1}
+    , {-1,-1,1,0,0,1,-1,1,-1,-1,1,0}
+    , {0,0,-1,1,1,0,-1,0,-1,-1,0,1}
+    , {0,-1,0,0,-1,-1,-1,0,-1,-1,0,0}
+    , {-1,0,-1,0,-1,-1,-1,0,-1,-1,0,0}
+    , {-1,0,1,-1,0,1,-1,1,0,-1,1,0}
+    , {0,-1,-1,-1,0,0,-1,1,1,-1,1,1}
+    , {0,0,0,-1,-1,-1,-1,1,1,-1,1,1}
+    , {-1,-1,-1,-1,-1,-1,-1,0,0,-1,0,0}
+    , {-1,-1,-1,-1,-1,-1,-1,0,0,0,-1,-1}
+    , {0,0,0,-1,-1,-1,-1,1,1,1,-1,-1}
+    , {0,-1,-1,-1,0,0,-1,1,1,1,-1,-1}
+    , {-1,0,0,-1,0,0,-1,1,1,1,-1,-1}
+    , {-1,0,-1,0,-1,-1,-1,0,-1,0,-1,-1}
+    , {0,-1,0,0,-1,-1,-1,0,-1,0,-1,-1}
+    , {0,1,-1,1,0,0,-1,1,-1,1,-1,-1}
+    , {-1,-1,0,0,0,0,-1,0,-1,0,-1,-1}
+    , {-1,-1,-1,0,0,-1,-1,1,1,1,-1,0}
+    , {0,0,0,1,1,-1,-1,2,2,2,-1,1}
+    , {0,-1,-1,0,-1,0,-1,1,1,1,-1,0}
+    , {-1,0,0,0,-1,0,-1,1,1,1,-1,0}
+    , {-1,0,-1,-1,0,-1,-1,0,-1,0,-1,0}
+    , {0,-1,0,-1,0,-1,-1,0,-1,0,-1,0}
+    , {0,0,-1,-1,-1,0,-1,0,-1,0,-1,0}
+    , {-1,-1,0,-1,-1,0,-1,0,-1,0,-1,0}
+    , {-1,-1,0,-1,-1,-1,0,-1,0,0,-1,-1}
+    , {0,0,-1,-1,-1,-1,0,-1,0,0,-1,-1}
+    , {0,-1,1,-1,0,0,1,-1,1,1,-1,-1}
+    , {-1,0,-1,-1,0,0,0,-1,0,0,-1,-1}
+    , {-1,0,0,0,-1,-1,0,-1,-1,0,-1,-1}
+    , {0,-1,-1,0,-1,-1,0,-1,-1,0,-1,-1}
+    , {0,1,1,1,0,0,1,-1,-1,1,-1,-1}
+    , {-1,-1,-1,0,0,0,0,-1,-1,0,-1,-1}
+    , {-1,-1,1,0,0,-1,1,-1,1,1,-1,0}
+    , {0,0,-1,1,1,-1,0,-1,0,0,-1,1}
+    , {0,-1,1,0,-1,0,1,-1,1,1,-1,0}
+    , {-1,0,-1,0,-1,1,1,-1,0,1,-1,1}
+    , {-1,0,0,-1,0,-1,0,-1,-1,0,-1,0}
+    , {0,-1,-1,-1,0,-1,0,-1,-1,0,-1,0}
+    , {0,0,0,-1,-1,1,1,-1,-1,1,-1,1}
+    , {-1,-1,-1,-1,-1,0,0,-1,-1,0,-1,0}
+    , {-1,-1,-1,-1,-1,0,0,1,1,1,0,-1}
+    , {0,0,0,-1,-1,1,1,2,2,2,1,-1}
+    , {0,-1,-1,-1,0,-1,0,1,1,1,0,-1}
+    , {-1,0,0,-1,0,-1,0,1,1,1,0,-1}
+    , {-1,0,-1,0,-1,1,1,0,-1,0,1,-1}
+    , {0,-1,0,0,-1,1,1,0,-1,0,1,-1}
+    , {0,1,-1,1,0,-1,0,1,-1,1,0,-1}
+    , {-1,-1,1,0,0,-1,1,1,-1,0,0,-1}
+    , {-1,-1,-1,0,0,1,1,2,2,2,1,0}
+    , {0,0,0,1,1,2,2,3,3,3,2,1}
+    , {0,-1,-1,0,-1,-1,0,1,1,1,0,0}
+    , {-1,0,0,0,-1,-1,0,1,1,1,0,0}
+    , {-1,0,-1,-1,0,1,1,0,-1,0,1,0}
+    , {0,-1,0,-1,0,1,1,0,-1,0,1,0}
+    , {0,0,-1,-1,-1,-1,0,0,-1,1,1,1}
+    , {-1,-1,0,-1,-1,-1,0,0,-1,1,1,1}
+    , {-1,-1,0,-1,-1,0,-1,-1,0,0,0,-1}
+    , {0,0,-1,-1,-1,0,-1,-1,0,0,0,-1}
+    , {0,-1,0,-1,0,-1,-1,-1,0,0,0,-1}
+    , {-1,0,-1,-1,0,-1,-1,-1,0,0,0,-1}
+    , {-1,0,0,0,-1,0,-1,-1,-1,0,0,-1}
+    , {0,-1,-1,0,-1,0,-1,-1,-1,0,0,-1}
+    , {0,0,0,1,1,-1,-1,-1,-1,1,1,-1}
+    , {-1,-1,-1,0,0,-1,-1,-1,-1,0,0,-1}
+    , {-1,-1,1,0,0,1,-1,-1,1,1,1,0}
+    , {0,0,-1,1,1,0,-1,-1,0,0,0,1}
+    , {0,-1,0,0,-1,-1,-1,-1,0,1,1,1}
+    , {-1,0,-1,0,-1,-1,-1,-1,0,1,1,1}
+    , {-1,0,0,-1,0,0,-1,-1,-1,1,1,1}
+    , {0,-1,-1,-1,0,0,-1,-1,-1,1,1,1}
+    , {0,0,0,-1,-1,-1,-1,-1,-1,1,1,1}
+    , {-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0}
+    , {-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0}
+    , {0,0,0,-1,-1,-1,-1,-1,-1,1,1,1}
+    , {0,-1,-1,-1,0,0,-1,-1,-1,1,1,1}
+    , {-1,0,0,-1,0,0,-1,-1,-1,1,1,1}
+    , {-1,0,-1,0,-1,-1,-1,-1,0,1,1,1}
+    , {0,-1,0,0,-1,-1,-1,-1,0,1,1,1}
+    , {0,1,-1,1,0,0,-1,-1,1,2,2,2}
+    , {-1,-1,0,0,0,0,-1,-1,0,1,1,1}
+    , {-1,-1,-1,0,0,-1,-1,-1,-1,0,0,-1}
+    , {0,0,0,1,1,-1,-1,-1,-1,1,1,-1}
+    , {0,-1,-1,0,-1,0,-1,-1,-1,0,0,-1}
+    , {-1,0,0,0,-1,0,-1,-1,-1,0,0,-1}
+    , {-1,0,-1,-1,0,-1,-1,-1,0,0,0,-1}
+    , {0,-1,0,-1,0,-1,-1,-1,0,0,0,-1}
+    , {0,0,-1,-1,-1,0,-1,-1,0,0,0,-1}
+    , {-1,-1,0,-1,-1,0,-1,-1,0,0,0,-1}
+    , {-1,-1,0,-1,-1,-1,0,0,-1,1,1,1}
+    , {0,0,-1,-1,-1,-1,0,0,-1,1,1,1}
+    , {0,-1,1,-1,0,0,1,1,-1,2,2,2}
+    , {-1,0,-1,-1,0,0,0,0,-1,1,1,1}
+    , {-1,0,1,0,-1,-1,1,1,0,2,2,2}
+    , {0,-1,-1,0,-1,-1,0,0,0,1,1,1}
+    , {0,1,2,1,0,0,2,2,1,3,3,3}
+    , {-1,-1,-1,0,0,0,0,0,0,1,1,1}
+    , {-1,-1,1,0,0,-1,1,1,-1,0,0,-1}
+    , {0,0,-1,1,1,-1,0,0,-1,1,1,-1}
+    , {0,-1,1,0,-1,0,1,1,-1,0,0,-1}
+    , {-1,0,-1,0,-1,1,1,0,-1,0,1,-1}
+    , {-1,0,1,-1,0,-1,1,1,0,0,0,-1}
+    , {0,-1,-1,-1,0,-1,0,1,1,1,0,-1}
+    , {0,0,1,-1,-1,0,1,1,0,0,0,-1}
+    , {-1,-1,-1,-1,-1,0,0,1,1,1,0,-1}
+    , {-1,-1,-1,-1,-1,0,0,-1,-1,0,-1,0}
+    , {0,0,0,-1,-1,1,1,-1,-1,1,-1,1}
+    , {0,-1,-1,-1,0,-1,0,-1,-1,0,-1,0}
+    , {-1,0,0,-1,0,-1,0,-1,-1,0,-1,0}
+    , {-1,0,-1,0,-1,1,1,-1,0,1,-1,1}
+    , {0,-1,0,0,-1,1,1,-1,0,1,-1,1}
+    , {0,1,-1,1,0,-1,0,-1,1,0,-1,0}
+    , {-1,-1,1,0,0,-1,1,-1,1,1,-1,0}
+    , {-1,-1,-1,0,0,0,0,-1,-1,0,-1,-1}
+    , {0,0,0,1,1,1,1,-1,-1,1,-1,-1}
+    , {0,-1,-1,0,-1,-1,0,-1,-1,0,-1,-1}
+    , {-1,0,0,0,-1,-1,0,-1,-1,0,-1,-1}
+    , {-1,0,-1,-1,0,0,0,-1,0,0,-1,-1}
+    , {0,-1,1,-1,0,0,1,-1,1,1,-1,-1}
+    , {0,0,-1,-1,-1,-1,0,-1,0,0,-1,-1}
+    , {-1,-1,0,-1,-1,-1,0,-1,0,0,-1,-1}
+    , {-1,-1,0,-1,-1,0,-1,0,-1,0,-1,0}
+    , {0,0,-1,-1,-1,0,-1,0,-1,0,-1,0}
+    , {0,-1,0,-1,0,-1,-1,0,-1,0,-1,0}
+    , {-1,0,-1,-1,0,-1,-1,0,-1,0,-1,0}
+    , {-1,0,1,0,-1,1,-1,1,0,1,-1,1}
+    , {0,-1,-1,0,-1,0,-1,1,1,1,-1,0}
+    , {0,1,0,1,0,-1,-1,0,1,0,-1,0}
+    , {-1,-1,-1,0,0,-1,-1,1,1,1,-1,0}
+    , {-1,-1,0,0,0,0,-1,0,-1,0,-1,-1}
+    , {0,1,-1,1,0,0,-1,1,-1,1,-1,-1}
+    , {0,-1,0,0,-1,-1,-1,0,-1,0,-1,-1}
+    , {-1,0,-1,0,-1,-1,-1,0,-1,0,-1,-1}
+    , {-1,0,0,-1,0,0,-1,1,1,1,-1,-1}
+    , {0,-1,-1,-1,0,0,-1,1,1,1,-1,-1}
+    , {0,0,0,-1,-1,-1,-1,1,1,1,-1,-1}
+    , {-1,-1,-1,-1,-1,-1,-1,0,0,0,-1,-1}
+    , {-1,-1,-1,-1,-1,-1,-1,0,0,-1,0,0}
+    , {0,0,0,-1,-1,-1,-1,1,1,-1,1,1}
+    , {0,-1,-1,-1,0,0,-1,1,1,-1,1,1}
+    , {-1,0,0,-1,0,0,-1,1,1,-1,1,1}
+    , {-1,0,-1,0,-1,-1,-1,0,-1,-1,0,0}
+    , {0,-1,0,0,-1,-1,-1,0,-1,-1,0,0}
+    , {0,1,-1,1,0,0,-1,1,-1,-1,1,1}
+    , {-1,-1,1,0,0,1,-1,1,-1,-1,1,0}
+    , {-1,-1,-1,0,0,-1,-1,0,0,-1,0,-1}
+    , {0,0,0,1,1,-1,-1,1,1,-1,1,-1}
+    , {0,-1,-1,0,-1,0,-1,0,0,-1,0,-1}
+    , {-1,0,1,0,-1,1,-1,1,0,-1,1,-1}
+    , {-1,0,-1,-1,0,-1,-1,0,-1,-1,0,-1}
+    , {0,-1,0,-1,0,-1,-1,0,-1,-1,0,-1}
+    , {0,0,-1,-1,-1,0,-1,0,-1,-1,0,-1}
+    , {-1,-1,0,-1,-1,0,-1,0,-1,-1,0,-1}
+    , {-1,-1,0,-1,-1,-1,0,-1,0,-1,0,0}
+    , {0,0,-1,-1,-1,-1,0,-1,0,-1,0,0}
+    , {0,-1,1,-1,0,0,1,-1,1,-1,1,1}
+    , {-1,0,-1,-1,0,1,1,-1,0,-1,1,0}
+    , {-1,0,0,0,-1,-1,0,-1,-1,-1,0,0}
+    , {0,-1,-1,0,-1,-1,0,-1,-1,-1,0,0}
+    , {0,1,1,1,0,0,1,-1,-1,-1,1,1}
+    , {-1,-1,-1,0,0,1,1,-1,-1,-1,1,0}
+    , {-1,-1,0,0,0,-1,0,-1,0,-1,0,-1}
+    , {0,1,-1,1,0,-1,0,-1,1,-1,0,-1}
+    , {0,-1,0,0,-1,1,1,-1,0,-1,1,-1}
+    , {-1,0,-1,0,-1,1,1,-1,0,-1,1,-1}
+    , {-1,0,0,-1,0,-1,0,-1,-1,-1,0,-1}
+    , {0,-1,-1,-1,0,-1,0,-1,-1,-1,0,-1}
+    , {0,0,0,-1,-1,1,1,-1,-1,-1,1,-1}
+    , {-1,-1,-1,-1,-1,0,0,-1,-1,-1,0,-1}
+    , {-1,-1,-1,-1,-1,0,0,0,0,-1,-1,0}
+    , {0,0,0,-1,-1,1,1,1,1,-1,-1,1}
+    , {0,-1,-1,-1,0,-1,0,0,0,-1,-1,0}
+    , {-1,0,1,-1,0,-1,1,1,0,-1,-1,0}
+    , {-1,0,-1,0,-1,0,0,0,-1,-1,-1,0}
+    , {0,-1,1,0,-1,0,1,1,-1,-1,-1,0}
+    , {0,0,-1,1,1,-1,0,0,-1,-1,-1,1}
+    , {-1,-1,1,0,0,-1,1,1,-1,-1,-1,0}
+    , {-1,-1,-1,0,0,0,0,0,0,-1,-1,-1}
+    , {0,0,0,1,1,1,1,1,1,-1,-1,-1}
+    , {0,-1,-1,0,-1,-1,0,0,0,-1,-1,-1}
+    , {-1,0,1,0,-1,-1,1,1,0,-1,-1,-1}
+    , {-1,0,-1,-1,0,0,0,0,-1,-1,-1,-1}
+    , {0,-1,1,-1,0,0,1,1,-1,-1,-1,-1}
+    , {0,0,-1,-1,-1,-1,0,0,-1,-1,-1,-1}
+    , {-1,-1,0,-1,-1,-1,0,0,-1,-1,-1,-1}
+    , {-1,-1,0,-1,-1,0,-1,-1,0,-1,-1,0}
+    , {0,0,-1,-1,-1,0,-1,-1,0,-1,-1,0}
+    , {0,-1,0,-1,0,-1,-1,-1,0,-1,-1,0}
+    , {-1,0,-1,-1,0,-1,-1,-1,0,-1,-1,0}
+    , {-1,0,0,0,-1,0,-1,-1,-1,-1,-1,0}
+    , {0,-1,-1,0,-1,0,-1,-1,-1,-1,-1,0}
+    , {0,0,0,1,1,-1,-1,-1,-1,-1,-1,1}
+    , {-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,0}
+    , {-1,-1,0,0,0,0,-1,-1,0,-1,-1,-1}
+    , {0,1,-1,1,0,0,-1,-1,1,-1,-1,-1}
+    , {0,-1,0,0,-1,-1,-1,-1,0,-1,-1,-1}
+    , {-1,0,-1,0,-1,-1,-1,-1,0,-1,-1,-1}
+    , {-1,0,0,-1,0,0,-1,-1,-1,-1,-1,-1}
+    , {0,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1}
+    , {0,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1}
+    , {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
+  };
+
+  void vertexIndices (unsigned int edge, unsigned int& vertex1, unsigned int& vertex2) {
+    switch (edge) {
+      case 0 : vertex1 = 0; vertex2 = 1; return;
+      case 1 : vertex1 = 0; vertex2 = 2; return;
+      case 2 : vertex1 = 0; vertex2 = 4; return;
+      case 3 : vertex1 = 2; vertex2 = 3; return;
+      case 4 : vertex1 = 1; vertex2 = 3; return;
+      case 5 : vertex1 = 1; vertex2 = 5; return;
+      case 6 : vertex1 = 4; vertex2 = 5; return;
+      case 7 : vertex1 = 4; vertex2 = 6; return;
+      case 8 : vertex1 = 2; vertex2 = 6; return;
+      case 9 : vertex1 = 6; vertex2 = 7; return;
+      case 10: vertex1 = 5; vertex2 = 7; return;
+      case 11: vertex1 = 3; vertex2 = 7; return;
+      default: DILAY_IMPOSSIBLE;
+    }
+  }
+
+  void edgeIndices ( unsigned int face, unsigned& edge1, unsigned int& edge2
+                   , unsigned& edge3, unsigned int& edge4 )
+  {
+    switch (face) {
+      case 0: edge1 = 0; edge2 = 2; edge3 =  5; edge4 =  6; return;
+      case 1: edge1 = 3; edge2 = 8; edge3 =  9; edge4 = 11; return;
+      case 2: edge1 = 1; edge2 = 2; edge3 =  7; edge4 =  8; return;
+      case 3: edge1 = 4; edge2 = 5; edge3 = 10; edge4 = 11; return;
+      case 4: edge1 = 0; edge2 = 1; edge3 =  3; edge4 =  4; return;
+      case 5: edge1 = 6; edge2 = 7; edge3 =  9; edge4 = 10; return;
+      default: DILAY_IMPOSSIBLE;
+    }
+  }
+
+  struct Cube {
+    unsigned int               configuration;
+    glm::vec3                  vertex;
+    std::vector <unsigned int> vertexInstanceIndices;
+    bool                       collapseWhenAmbiguous;
+
+    Cube ()
+      : configuration         (Util::invalidIndex ())  
+      , vertex                (invalidVec3)
+      , collapseWhenAmbiguous (false)
+    {}
+
+    void initializeVertexInstanceIndices () {
+      assert (this->configuration <= 255);
+
+      int n = -1;
+      for (unsigned int i = 0; i < 12; i++) {
+        n = glm::max (n, edgeVertexIndices[this->configuration][i]);
+      }
+      this->vertexInstanceIndices.resize (n+1, Util::invalidIndex ());
+    }
+
+    unsigned int vertexInstanceIndex (unsigned int edge) const {
+      assert (edge <= 11);
+      assert (this->configuration <= 255);
+      assert (edgeVertexIndices[this->configuration][edge] >= 0);
+      assert (this->collapseWhenAmbiguous == false || this->isAmbiguous ());
+
+      const unsigned int i = this->collapseWhenAmbiguous
+                           ? 0
+                           : (unsigned int) edgeVertexIndices[this->configuration][edge];
+
+      assert (i < this->vertexInstanceIndices.size ());
+
+      return this->vertexInstanceIndices.at (i);
+    }
+
+    bool hasAmbiguousFace ( unsigned int edge1, unsigned int edge2, unsigned int edge3
+                          , unsigned int edge4 ) const
+    {
+      assert (this->configuration <= 255);
+      assert (edge1 <= 11);
+      assert (edge2 <= 11);
+      assert (edge3 <= 11);
+      assert (edge4 <= 11);
+
+      const int i1 = edgeVertexIndices[this->configuration][edge1];
+      const int i2 = edgeVertexIndices[this->configuration][edge2];
+      const int i3 = edgeVertexIndices[this->configuration][edge3];
+      const int i4 = edgeVertexIndices[this->configuration][edge4];
+
+      if (i1 == -1 || i2 == -1 || i3 == -1 || i4 == -1) {
+        return false;
+      }
+      else {
+        assert (i1 == i2 || i1 == i3 || i1 == i4);
+        assert (i2 == i1 || i2 == i3 || i2 == i4);
+        assert (i3 == i1 || i3 == i2 || i3 == i4);
+        assert (i4 == i1 || i4 == i2 || i4 == i3);
+
+        assert ((i1 != i2) || (i3 == i4 && i1 != i3));
+        assert ((i1 != i3) || (i2 == i4 && i1 != i2));
+        assert ((i1 != i4) || (i2 == i3 && i1 != i2));
+        assert ((i2 != i3) || (i1 == i4 && i1 != i2));
+        assert ((i2 != i4) || (i1 == i3 && i1 != i2));
+        assert ((i3 != i4) || (i1 == i2 && i1 != i3));
+
+        return true;
+      }
+    }
+
+    bool hasAmbiguousFaces (unsigned int* face = nullptr) const {
+      for (unsigned int i = 0; i < 6; i++) {
+        unsigned int edge1, edge2, edge3, edge4;
+        edgeIndices (i, edge1, edge2, edge3, edge4);
+
+        if (this->hasAmbiguousFace (edge1, edge2, edge3, edge4)) {
+          if (face) {
+            *face = i;
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+
+    bool isAmbiguous () const {
+      assert (this->configuration <= 255);
+
+      switch (Util::countOnes (this->configuration)) {
+        case  5: return this->hasAmbiguousFaces ();
+        case  6: return this->hasAmbiguousFaces ();
+        default: return false;
+      }
+    }
+  };
+
   struct Parameters {
-    float                   resolution;
-    glm::vec3               sampleOrigin;
-    glm::uvec3              numSamples;
-    std::vector <float>     samples;
-    glm::uvec3              numCubes;
-    std::vector <glm::vec3> grid;
+    float               resolution;
+    glm::vec3           sampleOrigin;
+    glm::uvec3          numSamples;
+    std::vector <float> samples;
+    glm::uvec3          numCubes;
+    std::vector <Cube>  grid;
 
     Parameters ()
       : resolution   (0.0f)
@@ -49,8 +451,8 @@ namespace {
       return (z * this->numSamples.x * this->numSamples.y) + (y * this->numSamples.x) + x;
     }
 
-    unsigned int sampleIndex (unsigned int cubeIndex, unsigned int i) const {
-      assert (i < 8);
+    unsigned int sampleIndex (unsigned int cubeIndex, unsigned int vertex) const {
+      assert (vertex < 8);
 
       const std::div_t   divZ = std::div ( int (cubeIndex)
                                          , int (this->numCubes.x * this->numCubes.y));
@@ -59,7 +461,7 @@ namespace {
       const unsigned int y    = (unsigned int) (divY.quot);
       const unsigned int z    = (unsigned int) (divZ.quot);
 
-      switch (i) {
+      switch (vertex) {
         case 0 : return this->sampleIndex (x  , y  , z  );
         case 1 : return this->sampleIndex (x+1, y  , z  );
         case 2 : return this->sampleIndex (x  , y+1, z  );
@@ -121,8 +523,14 @@ namespace {
     for (unsigned int z = 0; z < params.numSamples.z; z++) {
       for (unsigned int y = 0; y < params.numSamples.y; y++) {
         for (unsigned int x = 0; x < params.numSamples.x; x++) {
-          const glm::vec3 samplePos = params.samplePos (x,y,z);
-          params.samples.at (params.sampleIndex (x,y,z)) = sampleAt (mesh, samplePos);
+          const glm::vec3    pos   = params.samplePos   (x,y,z);
+          const unsigned int index = params.sampleIndex (x,y,z);
+
+          params.samples.at (index) = sampleAt (mesh, pos);
+
+          assert ((x > 0 && x < params.numSamples.x-1) || params.samples.at (index) > 0.0f);
+          assert ((y > 0 && y < params.numSamples.y-1) || params.samples.at (index) > 0.0f);
+          assert ((z > 0 && z < params.numSamples.z-1) || params.samples.at (index) > 0.0f);
         }
       }
     }
@@ -135,52 +543,74 @@ namespace {
   void setCubeVertex (Parameters& params, unsigned int cubeIndex) {
     glm::vec3    vertex          = glm::vec3 (0.0f);
     unsigned int numCrossedEdges = 0;
+    Cube&        cube            = params.grid.at (cubeIndex);
 
-    auto checkEdge = [&params, &numCrossedEdges, &vertex]
-                     (unsigned int i1, unsigned int i2)
+    const unsigned int indices[] = { params.sampleIndex (cubeIndex, 0)
+                                   , params.sampleIndex (cubeIndex, 1)
+                                   , params.sampleIndex (cubeIndex, 2)
+                                   , params.sampleIndex (cubeIndex, 3)
+                                   , params.sampleIndex (cubeIndex, 4)
+                                   , params.sampleIndex (cubeIndex, 5)
+                                   , params.sampleIndex (cubeIndex, 6)
+                                   , params.sampleIndex (cubeIndex, 7)
+                                   };
+
+    const float samples[] = { params.samples.at (indices [0]), params.samples.at (indices [1])
+                            , params.samples.at (indices [2]), params.samples.at (indices [3])
+                            , params.samples.at (indices [4]), params.samples.at (indices [5])
+                            , params.samples.at (indices [6]), params.samples.at (indices [7])
+                            };
+
+    const glm::vec3 positions[] = { params.samplePos (indices [0]), params.samplePos (indices [1])
+                                  , params.samplePos (indices [2]), params.samplePos (indices [3])
+                                  , params.samplePos (indices [4]), params.samplePos (indices [5])
+                                  , params.samplePos (indices [6]), params.samplePos (indices [7])
+                                  };
+
+    auto checkEdge = [&numCrossedEdges, &vertex, &samples, &positions]
+                     (unsigned short vertex1, unsigned short vertex2)
     {
-      const float s1 = params.samples.at (i1);
-      const float s2 = params.samples.at (i2);
+      if (isIntersecting (samples[vertex1], samples[vertex2])) {
+        const float     factor = samples[vertex1] / (samples[vertex1] - samples[vertex2]);
+        const glm::vec3 delta  = positions[vertex2] - positions[vertex1];
 
-      if (isIntersecting (s1, s2)) {
-        const glm::vec3 p1 = params.samplePos (i1);
-        const glm::vec3 p2 = params.samplePos (i2);
-
-        vertex += p1 + ((p2 - p1) * (s1 / (s1 - s2)));
+        vertex += positions[vertex1] + (delta * factor);
         numCrossedEdges++;
       }
     };
-    const unsigned int i0 = params.sampleIndex (cubeIndex, 0);
-    const unsigned int i1 = params.sampleIndex (cubeIndex, 1);
-    const unsigned int i2 = params.sampleIndex (cubeIndex, 2);
-    const unsigned int i3 = params.sampleIndex (cubeIndex, 3);
-    const unsigned int i4 = params.sampleIndex (cubeIndex, 4);
-    const unsigned int i5 = params.sampleIndex (cubeIndex, 5);
-    const unsigned int i6 = params.sampleIndex (cubeIndex, 6);
-    const unsigned int i7 = params.sampleIndex (cubeIndex, 7);
 
-    checkEdge (i0, i1);
-    checkEdge (i0, i2);
-    checkEdge (i0, i4);
-    checkEdge (i1, i3);
-    checkEdge (i1, i5);
-    checkEdge (i2, i3);
-    checkEdge (i2, i6);
-    checkEdge (i3, i7);
-    checkEdge (i4, i5);
-    checkEdge (i4, i6);
-    checkEdge (i5, i7);
-    checkEdge (i6, i7);
+    cube.configuration = 0;
+    for (unsigned int edge = 0; edge < 12; edge++) {
+      unsigned int vertex1, vertex2;
+      vertexIndices (edge, vertex1, vertex2);
 
-    params.grid.at (cubeIndex) = numCrossedEdges >= 3
-                               ? vertex / glm::vec3 (float (numCrossedEdges))
-                               : invalidVec3;
+      cube.configuration |= (int (samples[vertex1] < 0.0f)) << vertex1;
+      cube.configuration |= (int (samples[vertex2] < 0.0f)) << vertex2;
+
+      checkEdge (vertex1, vertex2);
+    }
+    assert (cube.configuration <= 255);
+
+#ifndef NDEBUG
+    for (unsigned int edge = 0; edge < 12; edge++) {
+      unsigned int vertex1, vertex2;
+      vertexIndices (edge, vertex1, vertex2);
+
+      if (isIntersecting (samples[vertex1], samples[vertex2])) {
+        assert (edgeVertexIndices [cube.configuration][edge] != -1);
+      }
+    }
+#endif
+
+    if (numCrossedEdges > 0) {
+      cube.vertex = vertex / glm::vec3 (float (numCrossedEdges));
+      cube.initializeVertexInstanceIndices ();
+    }
   }
 
   void makeGrid (Parameters& params) {
     params.numCubes = params.numSamples - glm::uvec3 (1);
-    params.grid.resize ( params.numCubes.x * params.numCubes.y * params.numCubes.z
-                       , glm::vec3 (0.0f) );
+    params.grid.resize (params.numCubes.x * params.numCubes.y * params.numCubes.z);
 
     for (unsigned int z = 0; z < params.numCubes.z; z++) {
       for (unsigned int y = 0; y < params.numCubes.y; y++) {
@@ -191,58 +621,125 @@ namespace {
     }
   }
 
-  Mesh makeMesh (Parameters& params) {
-    Mesh                       mesh;
-    std::vector <unsigned int> indexMap;
-
-    indexMap.resize (params.grid.size (), Util::invalidIndex ());
-
-    for (unsigned int i = 0; i < params.grid.size (); i++) {
-      if (params.grid.at (i) != invalidVec3) {
-        indexMap.at (i) = mesh.addVertex (params.grid.at (i));
-      }
-    }
-
-    auto makeQuad = [&params, &mesh, &indexMap] ( unsigned int i1, unsigned int i2
-                                                , unsigned int i3, unsigned int i4 )
+  void resolveAmbiguities (Parameters& params) {
+    auto check = [&params] ( const Cube& cube, unsigned int x, unsigned int y, unsigned int z
+                           , unsigned int ambiguousFace, int dim ) -> bool
     {
-      assert (i1 != Util::invalidIndex ());
-      assert (i2 != Util::invalidIndex ());
-      assert (i3 != Util::invalidIndex ());
-      assert (i4 != Util::invalidIndex ());
+      assert (cube.isAmbiguous ());
+      assert (dim == -3 || dim == -2 || dim == -1 || dim == 1 || dim == 2 || dim == 3);
 
-      if ( indexMap.at (i1) != Util::invalidIndex ()
-        && indexMap.at (i2) != Util::invalidIndex ()
-        && indexMap.at (i3) != Util::invalidIndex ()
-        && indexMap.at (i4) != Util::invalidIndex () )
-      {
-        const glm::vec3& v1 = params.grid.at (i1);
-        const glm::vec3& v2 = params.grid.at (i2);
-        const glm::vec3& v3 = params.grid.at (i3);
-        const glm::vec3& v4 = params.grid.at (i4);
+      Cube& other = params.grid.at ( params.cubeIndex 
+                                   ( dim == -1 ? x-1 : (dim == 1 ? x+1 : x)
+                                   , dim == -2 ? y-1 : (dim == 2 ? y+1 : y)
+                                   , dim == -3 ? z-1 : (dim == 3 ? z+1 : z) ) );
+      if (other.isAmbiguous ()) {
+        unsigned int otherAmbiguousFace;
+        const bool   hasOtherAmbiguousFace = other.hasAmbiguousFaces (&otherAmbiguousFace);
 
-        if (glm::distance2 (v1, v3) <= glm::distance2 (v2, v4)) {
-          mesh.addIndex (indexMap.at (i1));
-          mesh.addIndex (indexMap.at (i2));
-          mesh.addIndex (indexMap.at (i3));
+        assert (hasOtherAmbiguousFace);
 
-          mesh.addIndex (indexMap.at (i1));
-          mesh.addIndex (indexMap.at (i3));
-          mesh.addIndex (indexMap.at (i4));
-        }
-        else {
-          mesh.addIndex (indexMap.at (i2));
-          mesh.addIndex (indexMap.at (i3));
-          mesh.addIndex (indexMap.at (i4));
-
-          mesh.addIndex (indexMap.at (i2));
-          mesh.addIndex (indexMap.at (i4));
-          mesh.addIndex (indexMap.at (i1));
-        }
+        return (dim == -1 && ambiguousFace == 2 && otherAmbiguousFace == 3)
+            || (dim ==  1 && ambiguousFace == 3 && otherAmbiguousFace == 2)
+            || (dim == -2 && ambiguousFace == 0 && otherAmbiguousFace == 1)
+            || (dim ==  2 && ambiguousFace == 1 && otherAmbiguousFace == 0)
+            || (dim == -3 && ambiguousFace == 4 && otherAmbiguousFace == 5)
+            || (dim ==  3 && ambiguousFace == 5 && otherAmbiguousFace == 4);
+      }
+      else {
+        return false;
       }
     };
 
-    auto makeFaces = [&params, &mesh, &indexMap, &makeQuad]
+    for (unsigned int z = 0; z < params.numCubes.z; z++) {
+      for (unsigned int y = 0; y < params.numCubes.y; y++) {
+        for (unsigned int x = 0; x < params.numCubes.x; x++) {
+          Cube& cube = params.grid.at (params.cubeIndex (x,y,z));
+
+          if (cube.isAmbiguous ()) {
+            unsigned int ambiguousFace;
+            const bool   hasAmbiguousFace = cube.hasAmbiguousFaces (&ambiguousFace);
+
+            assert (hasAmbiguousFace);
+
+            if ( (x > 0                   && check (cube, x, y, z, ambiguousFace, -1))
+              || (x < params.numCubes.x-1 && check (cube, x, y, z, ambiguousFace,  1))
+              || (y > 0                   && check (cube, x, y, z, ambiguousFace, -2))
+              || (y < params.numCubes.y-1 && check (cube, x, y, z, ambiguousFace,  2))
+              || (z > 0                   && check (cube, x, y, z, ambiguousFace, -3))
+              || (z < params.numCubes.z-1 && check (cube, x, y, z, ambiguousFace,  3)) )
+            {
+              cube.collapseWhenAmbiguous = false;
+            }
+            else {
+              cube.collapseWhenAmbiguous = true;
+            }
+          }
+          else {
+            cube.collapseWhenAmbiguous = false;
+          }
+        }
+      }
+    }
+  }
+
+  Mesh makeMesh (Parameters& params) {
+    Mesh mesh;
+
+    for (Cube& cube : params.grid) {
+      for (unsigned int i = 0; i < cube.vertexInstanceIndices.size (); i++) {
+        assert (cube.vertex != invalidVec3);
+        cube.vertexInstanceIndices.at (i) = mesh.addVertex (cube.vertex);
+
+        if (cube.collapseWhenAmbiguous) {
+          break;
+        }
+      }
+    }
+
+    auto makeQuad = [&params, &mesh] ( unsigned int dim, bool swap
+                                     , unsigned int i, unsigned int iu
+                                     , unsigned int iv, unsigned int iuv )
+    {
+      unsigned int v1, v2, v3, v4;
+
+      if (dim == 0) {
+        v1 = params.grid.at (i)  .vertexInstanceIndex (0);
+        v2 = params.grid.at (iu) .vertexInstanceIndex (3);
+        v3 = params.grid.at (iuv).vertexInstanceIndex (9);
+        v4 = params.grid.at (iv) .vertexInstanceIndex (6);
+      }
+      else if (dim == 1) {
+        v1 = params.grid.at (i)  .vertexInstanceIndex (1);
+        v2 = params.grid.at (iu) .vertexInstanceIndex (7);
+        v3 = params.grid.at (iuv).vertexInstanceIndex (10);
+        v4 = params.grid.at (iv) .vertexInstanceIndex (4);
+      }
+      else if (dim == 2) {
+        v1 = params.grid.at (i)  .vertexInstanceIndex (2);
+        v2 = params.grid.at (iu) .vertexInstanceIndex (5);
+        v3 = params.grid.at (iuv).vertexInstanceIndex (11);
+        v4 = params.grid.at (iv) .vertexInstanceIndex (8);
+      }
+      else {
+        DILAY_IMPOSSIBLE
+      }
+
+      if (swap) {
+        std::swap (v2, v4);
+      }
+      if ( glm::distance2 (mesh.vertex (v1), mesh.vertex (v3))
+        <= glm::distance2 (mesh.vertex (v2), mesh.vertex (v4)) ) 
+      {
+        mesh.addIndex (v1); mesh.addIndex (v2); mesh.addIndex (v3);
+        mesh.addIndex (v1); mesh.addIndex (v3); mesh.addIndex (v4);
+      }
+      else {
+        mesh.addIndex (v2); mesh.addIndex (v3); mesh.addIndex (v4);
+        mesh.addIndex (v2); mesh.addIndex (v4); mesh.addIndex (v1);
+      }
+    };
+
+    auto makeFaces = [&params, &makeQuad]
                      (unsigned int dim, unsigned int x, unsigned int y, unsigned int z)
     {
       assert (dim == 0 || dim == 1 || dim == 2);
@@ -264,19 +761,9 @@ namespace {
 
         const unsigned int iuv = dim == 0 ? params.cubeIndex (x  , y-1, z-1)
                              : ( dim == 1 ? params.cubeIndex (x-1, y  , z-1)
-                             : ( dim == 2 ? params.cubeIndex (x-1, y-1, z  ) 
-                             : ( Util::invalidIndex () )));
+                             : (            params.cubeIndex (x-1, y-1, z  ) ));
 
-        if ( i != Util::invalidIndex () && iu != Util::invalidIndex ()
-          && iv != Util::invalidIndex () && iuv != Util::invalidIndex () )
-        {
-          if (s1 > 0.0f) {
-            makeQuad (i, iv, iuv, iu);
-          }
-          else {
-            makeQuad (i, iu, iuv, iv);
-          }
-        }
+        makeQuad (dim, s1 >= 0.0f, i, iu, iv, iuv);
       }
     };
 
@@ -300,9 +787,10 @@ Mesh SketchConversion :: convert (const SketchMesh& mesh, float resolution) {
   setupSampling (mesh, params);
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0) {
-    sample   (mesh, params);
-    makeGrid (params);
-    return makeMesh (params);
+    sample             (mesh, params);
+    makeGrid           (params);
+    resolveAmbiguities (params);
+    return makeMesh    (params);
   }
   else {
     return Mesh ();
