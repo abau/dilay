@@ -18,6 +18,7 @@ SOURCES += \
            src/configurable.cpp \
            src/dimension.cpp \
            src/history.cpp \
+           src/index-octree.cpp \
            src/intersection.cpp \
            src/kvstore.cpp \
            src/mesh.cpp \
@@ -113,6 +114,7 @@ HEADERS += \
            src/dimension.hpp \
            src/hash.hpp \
            src/history.hpp \
+           src/index-octree.hpp \
            src/intersection.hpp \
            src/intrusive-list.hpp \
            src/kvstore.hpp \
