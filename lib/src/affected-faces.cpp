@@ -36,9 +36,7 @@ struct AffectedFaces::Impl {
   }
 
   void commit () { 
-    for (WingedFace* f : this->uncommitedFaces) {
-      this->faces.insert (f);
-    }
+    this->faces.insert (this->uncommitedFaces.begin (), this->uncommitedFaces.end ());
     this->uncommitedFaces.clear ();
   }
 
