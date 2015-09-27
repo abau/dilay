@@ -40,9 +40,9 @@ namespace {
       glm::vec3    normal = glm::vec3 (0.0f);
       unsigned int n      = 0;
 
-      for (const PrimTriangle& t : triangles) {
-        if (t.isDegenerated () == false) {
-          normal += t.normal ();
+      for (const PrimTriangle& tri : triangles) {
+        if (tri.isDegenerated () == false) {
+          normal += tri.normal ();
           n++;
         }
       }
@@ -70,15 +70,14 @@ namespace {
         const PrimRay   ray  (true, newP, normal);
 
         bool intersected (false);
-        for (const PrimTriangle& t : adjTriangles) {
-          glm::vec3 intersection;
-
-          if (t.isDegenerated ()) {
+        for (const PrimTriangle& tri : adjTriangles) {
+          if (tri.isDegenerated ()) {
             continue;
           }
           else {
-            if (IntersectionUtil::intersects (ray, t, &intersection)) {
-              newPositions.push_back (intersection);
+            float t;
+            if (IntersectionUtil::intersects (ray, tri, &t)) {
+              newPositions.push_back (ray.pointAt (t));
               intersected = true;
               break;
             }

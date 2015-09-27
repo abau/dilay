@@ -38,7 +38,7 @@ namespace IntersectionUtil {
   bool intersects (const PrimSphere&, const PrimAABox&);
   bool intersects (const PrimRay&, const PrimSphere&, float*); 
   bool intersects (const PrimRay&, const PrimPlane& , float*); 
-  bool intersects (const PrimRay&, const PrimTriangle& , glm::vec3*); 
+  bool intersects (const PrimRay&, const PrimTriangle& , float*); 
   bool intersects (const PrimRay&, const PrimAABox&); 
   bool intersects (const PrimRay&, const PrimCylinder&, float*, float*); 
   bool intersects (const PrimPlane&, const PrimAABox&); 

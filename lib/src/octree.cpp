@@ -282,10 +282,10 @@ namespace {
 
       for (unsigned int index : this->faceIndices) {
         PrimTriangle tri = this->triangle (mesh, index);
-        glm::vec3    p;
+        float        t;
 
-        if (IntersectionUtil::intersects (ray, tri, &p)) {
-          intersection.update (glm::distance (ray.origin (), p), p, tri.normal (), index);
+        if (IntersectionUtil::intersects (ray, tri, &t)) {
+          intersection.update (t, ray.pointAt (t), tri.normal (), index);
         }
       }
     }

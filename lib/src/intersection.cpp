@@ -201,9 +201,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
 }
 
 // see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
-bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tri
-                                    , glm::vec3* intersection ) 
-{
+bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimTriangle& tri, float* t) {
   const float dot = glm::dot (ray.direction (), tri.normal ());
 
   if (glm::epsilonEqual (dot, 0.0f, Util::epsilon ())) {
@@ -217,13 +215,13 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimTriangle& tr
   const glm::vec3 s2     = glm::cross (d,e1);
   const float     b1     = glm::dot (d,s1) * invDet;
   const float     b2     = glm::dot (ray.direction (), s2) * invDet;
-  const float     t      = glm::dot (e2, s2) * invDet;
+  const float     tRay   = glm::dot (e2, s2) * invDet;
 
-  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || (t < 0.0f && ray.isLine () == false)) {
+  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || (tRay < 0.0f && ray.isLine () == false)) {
     return false;
   }
   else {
-    writeIfNotNull (intersection, ray.pointAt (t));
+    writeIfNotNull (t, tRay);
     return true;
   }
 }
