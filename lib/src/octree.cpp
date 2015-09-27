@@ -24,14 +24,14 @@ namespace {
         : index         (i)
         , triangle      (t)
         , center        (t.center        ())
-        , oneDimExtent  (t.oneDimExtent  ())
+        , maxDimExtent  (t.maxDimExtent  ())
         , isDegenerated (t.isDegenerated ())
       {}
 
       unsigned int    index;
       PrimTriangle    triangle;
       const glm::vec3 center;
-      const float     oneDimExtent;
+      const float     maxDimExtent;
       const bool      isDegenerated;
   };
 
@@ -159,7 +159,7 @@ namespace {
 
     bool approxContains (const FaceToInsert& f) const {
       assert (this->storeDegenerated == false);
-      return this->approxContains (f.center) && f.oneDimExtent <= this->width;
+      return this->approxContains (f.center) && f.maxDimExtent <= this->width;
     }
 
     /* node indices:
@@ -222,7 +222,7 @@ namespace {
 
     OctreeNode& addFace (const FaceToInsert& f) {
       if ( f.isDegenerated == false 
-        && f.oneDimExtent <= this->width * OctreeNode::relativeMinFaceExtent )
+        && f.maxDimExtent <= this->width * OctreeNode::relativeMinFaceExtent )
       {
         return this->insertIntoChild (f);
       }
@@ -445,7 +445,7 @@ struct Octree::Impl {
 
     if (this->rootWasSetup == false) {
       this->rootPosition = faceToInsert.center;
-      this->rootWidth    = faceToInsert.oneDimExtent + Util::epsilon ();
+      this->rootWidth    = faceToInsert.maxDimExtent + Util::epsilon ();
     }
     this->root = Child (new OctreeNode (this->rootPosition, this->rootWidth, 0, nullptr));
   }

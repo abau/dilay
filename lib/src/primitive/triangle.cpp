@@ -44,11 +44,11 @@ glm::vec3 PrimTriangle :: maximum () const {
   return glm::max (glm::max (this->_vertex1, this->_vertex2), this->_vertex3);
 }
 
-float PrimTriangle :: extent () const {
+float PrimTriangle :: maxExtent () const {
   return glm::length (this->maximum () - this->minimum ());
 }
 
-float PrimTriangle :: oneDimExtent () const {
+float PrimTriangle :: maxDimExtent () const {
   const glm::vec3 extent = this->maximum () - this->minimum ();
   return glm::max (glm::max (extent.x, extent.y), extent.z);
 }

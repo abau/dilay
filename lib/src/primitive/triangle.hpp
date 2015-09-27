@@ -25,8 +25,8 @@ class PrimTriangle {
           glm::vec3  center            () const;
           glm::vec3  minimum           () const;
           glm::vec3  maximum           () const;
-          float      extent            () const;
-          float      oneDimExtent      () const;
+          float      maxExtent         () const;
+          float      maxDimExtent      () const;
           bool       isDegenerated     () const;
           float      incircleRadiusSqr () const;
           float      longestEdgeSqr    () const;
