@@ -57,6 +57,10 @@ namespace {
 
         if (e && isCollapsable (*e, avgLength)) {
           PartialAction::collapseEdge (mesh, *e, domain);
+
+          if (mesh.isEmpty ()) {
+            return;
+          }
         }
       }
       domain.commit ();
@@ -75,6 +79,10 @@ namespace {
 
     if (brush.reduce ()) {
       collapseEdges ();
+
+      if (mesh.isEmpty ()) {
+        return;
+      }
     }
     else {
       PartialAction::extendDomain (domain);
@@ -92,6 +100,10 @@ void Action :: sculpt (const SculptBrush& brush) {
 
   brush.sculpt (domain);
 
-  postprocessEdges (brush, domain);
-  Action::finalize (brush.meshRef (), domain);
+  if (domain.isEmpty () == false) {
+    postprocessEdges (brush, domain);
+  }
+  if (brush.meshRef ().isEmpty () == false) {
+    Action::finalize (brush.meshRef (), domain);
+  }
 }
