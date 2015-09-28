@@ -19,8 +19,7 @@ int main () {
   TestMaybe        ::test1 ();
   TestMaybe        ::test2 ();
   TestMaybe        ::test3 ();
-  TestOctree       ::test1 ();
-  TestOctree       ::test2 ();
+  TestOctree       ::test  ();
   TestBitset       ::test  ();
   TestIntrusiveList::test1 ();
   TestIntrusiveList::test2 ();

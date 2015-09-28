@@ -8,8 +8,8 @@
 #include "configurable.hpp"
 #include "macro.hpp"
 
+class IndexOctree;
 class Mesh;
-class Octree;
 class Scene;
 class State;
 
@@ -24,7 +24,7 @@ class History : public Configurable {
     void undo                 (State&);
     void redo                 (State&);
     bool hasRecentOctrees     () const;
-    void forEachRecentOctree  (const std::function <void (const Mesh&, const Octree&)>) const;
+    void forEachRecentOctree  (const std::function <void (const Mesh&, const IndexOctree&)>&) const;
     void reset                ();
 
   private:

@@ -24,7 +24,6 @@ SOURCES += \
            src/mesh.cpp \
            src/mesh-util.cpp \
            src/mirror.cpp \
-           src/octree.cpp \
            src/opengl.cpp \
            src/opengl-buffer-id.cpp \
            src/partial-action/collapse-edge.cpp \
@@ -123,7 +122,6 @@ HEADERS += \
            src/mesh.hpp \
            src/mesh-util.hpp \
            src/mirror.hpp \
-           src/octree.hpp \
            src/opengl.hpp \
            src/opengl-buffer-id.hpp \
            src/partial-action/collapse-edge.hpp \

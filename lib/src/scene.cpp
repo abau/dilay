@@ -139,6 +139,12 @@ struct Scene :: Impl {
     this->sketchMeshes.forEachConstElement (f);
   }
 
+  void sanitizeMeshes () {
+    this->forEachMesh ([] (WingedMesh& mesh) {
+      mesh.sanitize ();
+    });
+  }
+
   void reset () {
     this->deleteWingedMeshes ();
     this->deleteSketchMeshes ();
@@ -291,6 +297,7 @@ DELEGATE1       (void              , Scene, forEachMesh, const std::function <vo
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (SketchMesh&)>&)
 DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
 DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const SketchMesh&)>&)
+DELEGATE        (void              , Scene, sanitizeMeshes)
 DELEGATE        (void              , Scene, reset)
 DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
 DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)

@@ -6,9 +6,12 @@
 #include "camera.hpp"
 #include "dimension.hpp"
 #include "history.hpp"
+#include "index-octree.hpp"
+#include "intersection.hpp"
+#include "mesh.hpp"
 #include "mirror.hpp"
-#include "octree.hpp"
 #include "primitive/ray.hpp"
+#include "primitive/triangle.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -55,7 +58,9 @@ struct Tool::Impl {
   }
 
   ToolResponse mouseReleaseEvent (const QMouseEvent& e) {
-    return this->self->runMouseReleaseEvent (e);
+    ToolResponse response = this->self->runMouseReleaseEvent (e);
+    this->state.scene ().sanitizeMeshes ();
+    return response;
   }
 
   ToolResponse wheelEvent (const QWheelEvent& e) {
@@ -110,14 +115,21 @@ struct Tool::Impl {
     assert (this->state.history ().hasRecentOctrees ());
 
     const PrimRay ray = this->state.camera ().ray (ViewUtil::toIVec2 (e));
-    OctreeIntersection octreeIntersection;
 
     this->state.history ().forEachRecentOctree (
-      [&ray, &octreeIntersection] (const Mesh& mesh, const Octree& octree) {
-        octree.intersects (mesh, ray, octreeIntersection);
+      [&ray, &intersection] (const Mesh& mesh, const IndexOctree& octree) {
+        octree.intersects (ray, [&ray, &mesh, &intersection] (unsigned int i) {
+          const PrimTriangle tri ( mesh.vertex (mesh.index ((3 * i) + 0))
+                                 , mesh.vertex (mesh.index ((3 * i) + 1))
+                                 , mesh.vertex (mesh.index ((3 * i) + 2)) );
+          float t;
+
+          if (IntersectionUtil::intersects (ray, tri, &t)) {
+            intersection.update (t, ray.pointAt (t), tri.normal ());
+          }
+        });
       }
     );
-    intersection = octreeIntersection;
     return intersection.isIntersection ();
   }
 

@@ -4,7 +4,7 @@
  */
 #include "action/finalize.hpp"
 #include "affected-faces.hpp"
-#include "octree.hpp"
+#include "index-octree.hpp"
 #include "partial-action/collapse-face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
@@ -38,5 +38,5 @@ void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces) {
   }
   mesh.bufferData ();
 
-  assert (mesh.octree ().numDegeneratedFaces () == 0);
+  assert (mesh.octree ().numDegeneratedElements () == 0);
 }

@@ -2,14 +2,16 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <unordered_map>
 #include "../mesh.hpp"
 #include "../util.hpp"
 #include "action/finalize.hpp"
 #include "affected-faces.hpp"
 #include "hash.hpp"
+#include "index-octree.hpp"
 #include "intersection.hpp"
 #include "mesh-util.hpp"
-#include "octree.hpp"
+#include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
@@ -24,7 +26,7 @@ struct WingedMesh::Impl {
   IntrusiveIndexedList <WingedVertex> vertices;
   IntrusiveIndexedList <WingedEdge>   edges;
   IntrusiveIndexedList <WingedFace>   faces;
-  Octree                              octree;
+  IndexOctree                         octree;
 
   Impl (WingedMesh* s, unsigned int i) 
     :  self   (s)
@@ -57,9 +59,9 @@ struct WingedMesh::Impl {
   }
 
   WingedFace* someDegeneratedFace () {
-    return this->octree.numDegeneratedFaces () == 0
+    return this->octree.numDegeneratedElements () == 0
       ? nullptr
-      : this->face (this->octree.someDegeneratedIndex ());
+      : this->face (this->octree.someDegeneratedElement ());
   }
 
   WingedVertex& addVertex (const glm::vec3& pos) {
@@ -84,10 +86,19 @@ struct WingedMesh::Impl {
     return this->edges.emplaceBack ();
   }
 
+  void addFaceToOctree (const WingedFace& face, const PrimTriangle& geometry) {
+    if (geometry.isDegenerated ()) {
+      this->octree.addDegeneratedElement (face.index ());
+    }
+    else {
+      this->octree.addElement (face.index (), geometry.center (), geometry.maxDimExtent ());
+    }
+  }
+
   WingedFace& addFace (const PrimTriangle& geometry) {
     WingedFace& face = this->faces.emplaceBack ();
 
-    this->octree.addFace (face.index (), geometry);
+    this->addFaceToOctree (face, geometry);
 
     if ((3 * face.index ()) + 2 >= this->mesh.numIndices ()) {
       this->mesh.resizeIndices ((3 * face.index ()) + 3);
@@ -114,7 +125,7 @@ struct WingedMesh::Impl {
   }
 
   void deleteFace (WingedFace& face) { 
-    this->octree.deleteFace (face.index ()); 
+    this->octree.deleteElement (face.index ()); 
     this->faces.deleteElement (face);
   }
 
@@ -122,18 +133,24 @@ struct WingedMesh::Impl {
     this->vertices.deleteElement (vertex);
   }
 
-  void realignFace (const WingedFace& face, const PrimTriangle& triangle) {
-    this->octree.realignFace (face.index (), triangle);
+  void realignFace (const WingedFace& face, const PrimTriangle& geometry) {
+    this->octree.deleteElement (face.index ());
+    this->addFaceToOctree (face, geometry);
   }
 
   void realignFace (const WingedFace& face) {
-    this->octree.realignFace (face.index (), face.triangle (*this->self));
+    this->realignFace (face.index (), face.triangle (*this->self));
   }
 
   void realignAllFaces () {
     this->forEachFace ([this] (WingedFace& f) { 
       this->realignFace (f);
     });
+  }
+
+  void sanitize () {
+    this->octree.deleteEmptyChildren ();
+    this->octree.shrinkRoot          ();
   }
 
   unsigned int numVertices () const {
@@ -295,7 +312,7 @@ struct WingedMesh::Impl {
       e3.successor   (f, &e1);
     }
 
-    if (this->octree.numDegeneratedFaces () > 0) {
+    if (this->octree.numDegeneratedElements () > 0) {
       Action::collapseDegeneratedFaces (*this->self);
     }
     this->writeAllNormals ();
@@ -331,7 +348,7 @@ struct WingedMesh::Impl {
     this->mesh.bufferData (); 
   }
 
-  void render (Camera& camera) const { 
+  void render (Camera& camera) { 
     this->mesh.render   (camera); 
 #ifdef DILAY_RENDER_OCTREE
     this->octree.render (camera);
@@ -359,64 +376,29 @@ struct WingedMesh::Impl {
   RenderMode&       renderMode ()       { return this->mesh.renderMode (); }
 
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
-    OctreeIntersection octreeIntersection;
-    if (this->octree.intersects (this->mesh, ray, octreeIntersection)) {
-      intersection.update ( octreeIntersection.distance ()
-                          , octreeIntersection.position ()
-                          , octreeIntersection.normal ()
-                          , *this->self
-                          , this->self->faceRef (octreeIntersection.index ()) );
-      return true;
-    }
-    else {
-      return false;
-    }
+    this->octree.intersects (ray, [this, &ray, &intersection] (unsigned int i) {
+      WingedFace&        face = this->self->faceRef (i);
+      const PrimTriangle tri  = face.triangle (*this->self);
+      float              t;
+
+      if (IntersectionUtil::intersects (ray, tri, &t)) {
+        intersection.update (t, ray.pointAt (t), tri.normal (), *this->self, face);
+      }
+    });
+    return intersection.isIntersection ();
   }
 
   bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
-    OctreeIntersectionFunctional functional
-      ( [&sphere] (const PrimAABox& box) {
-          return IntersectionUtil::intersects (sphere, box);
-        }
-      , [this,&sphere] (const PrimTriangle& triangle) {
-          return IntersectionUtil::intersects (sphere, triangle);
-        }
-      );
-    std::vector <unsigned int> indices;
+    this->octree.intersects (sphere, [this, &sphere, &faces] (unsigned int i) {
+      WingedFace&        face = this->self->faceRef (i);
+      const PrimTriangle tri  = face.triangle (*this->self);
 
-    if (this->octree.intersects (this->mesh, functional, indices)) {
-      for (unsigned int index : indices) {
-        faces.insert (this->self->faceRef (index));
+      if (IntersectionUtil::intersects (sphere, tri)) {
+        faces.insert (face);
       }
-      faces.commit ();
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-
-  bool intersects (const PrimPlane& plane, AffectedFaces& faces) {
-    OctreeIntersectionFunctional functional
-      ( [&plane] (const PrimAABox& box) {
-          return IntersectionUtil::intersects (plane, box);
-        }
-      , [this,&plane] (const PrimTriangle& triangle) {
-          return IntersectionUtil::intersects (plane, triangle);
-        }
-      );
-    std::vector <unsigned int> indices;
-
-    if (this->octree.intersects (this->mesh, functional, indices)) {
-      for (unsigned int index : indices) {
-        faces.insert (this->self->faceRef (index));
-      }
-      faces.commit ();
-      return true;
-    }
-    else {
-      return false;
-    }
+    });
+    faces.commit ();
+    return faces.isEmpty () == false;
   }
 
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
@@ -436,7 +418,7 @@ struct WingedMesh::Impl {
     this->octree.reset ();
 
     this->forEachFace ([this] (WingedFace& face) { 
-      this->octree.addFace (face.index (), face.triangle (*this->self));
+      this->addFaceToOctree (face, face.triangle (*this->self));
     });
   }
 
@@ -506,8 +488,8 @@ DELEGATE2       (void           , WingedMesh, setIndex, unsigned int, unsigned i
 DELEGATE2       (void           , WingedMesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2       (void           , WingedMesh, setNormal, unsigned int, const glm::vec3&)
 
-GETTER_CONST    (const Octree&  , WingedMesh, octree)
-GETTER_CONST    (const Mesh&    , WingedMesh, mesh)
+GETTER_CONST    (const IndexOctree&, WingedMesh, octree)
+GETTER_CONST    (const Mesh&       , WingedMesh, mesh)
 
 DELEGATE1       (void, WingedMesh, deleteEdge, WingedEdge&)
 DELEGATE1       (void, WingedMesh, deleteFace, WingedFace&)
@@ -515,6 +497,7 @@ DELEGATE1       (void, WingedMesh, deleteVertex, WingedVertex&)
 DELEGATE2       (void, WingedMesh, realignFace, const WingedFace&, const PrimTriangle&)
 DELEGATE1       (void, WingedMesh, realignFace, const WingedFace&)
 DELEGATE        (void, WingedMesh, realignAllFaces)
+DELEGATE        (void, WingedMesh, sanitize)
  
 DELEGATE_CONST  (unsigned int     , WingedMesh, numVertices)
 DELEGATE_CONST  (unsigned int     , WingedMesh, numEdges)
@@ -527,7 +510,7 @@ DELEGATE2       (void             , WingedMesh, fromMesh, const Mesh&, const Pri
 DELEGATE        (void             , WingedMesh, writeAllIndices)
 DELEGATE        (void             , WingedMesh, writeAllNormals)
 DELEGATE        (void             , WingedMesh, bufferData)
-DELEGATE1_CONST (void             , WingedMesh, render, Camera&)
+DELEGATE1       (void             , WingedMesh, render, Camera&)
 DELEGATE        (void             , WingedMesh, reset)
 DELEGATE1       (void             , WingedMesh, mirror, const PrimPlane&)
 DELEGATE2       (void             , WingedMesh, setupOctreeRoot, const glm::vec3&, float)
@@ -536,7 +519,6 @@ DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
-DELEGATE2       (bool, WingedMesh, intersects, const PrimPlane&, AffectedFaces&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
 DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)

@@ -5,7 +5,7 @@
 #include <iostream>
 #include "../util.hpp"
 #include "adjacent-iterator.hpp"
-#include "octree.hpp"
+#include "index-octree.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
@@ -74,27 +74,7 @@ void WingedUtil :: printStatistics (const WingedMesh& mesh, bool printAll) {
       WingedUtil :: printStatistics (face);
     });
   }
-  WingedUtil::printStatistics (mesh.octree ());
-}
-
-void WingedUtil :: printStatistics (const Octree& octree) {
-  OctreeStatistics oStats = octree.statistics ();
-  std::cout << "octree:"
-            << "\n\tnum nodes:\t\t"           << oStats.numNodes
-            << "\n\tnum faces:\t\t"           << oStats.numFaces
-            << "\n\tnum degenerated faces:\t" << oStats.numDegeneratedFaces
-            << "\n\tmax faces per node:\t"    << oStats.maxFacesPerNode
-            << "\n\tmin depth:\t\t"           << oStats.minDepth
-            << "\n\tmax depth:\t\t"           << oStats.maxDepth
-            << "\n\tfaces per node:\t\t"      << float (oStats.numFaces) / float (oStats.numNodes) 
-            << std::endl;
-
-  for (OctreeStatistics::DepthMap::value_type& e : oStats.numNodesPerDepth) {
-    std::cout << "\t" << e.second << "\tnodes at depth\t" << e.first << std::endl;
-  }
-  for (OctreeStatistics::DepthMap::value_type& e : oStats.numFacesPerDepth) {
-    std::cout << "\t" << e.second << "\tfaces at depth\t" << e.first << std::endl;
-  }
+  mesh.octree ().printStatistics ();
 }
 
 glm::vec3 WingedUtil :: averageNormal (const WingedMesh& mesh, const VertexPtrSet& vertices) {

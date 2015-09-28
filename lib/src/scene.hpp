@@ -39,6 +39,7 @@ class Scene : public Configurable {
     void               forEachMesh        (const std::function <void (SketchMesh&)>&);
     void               forEachConstMesh   (const std::function <void (const WingedMesh&)>&) const;
     void               forEachConstMesh   (const std::function <void (const SketchMesh&)>&) const;
+    void               sanitizeMeshes     ();
     void               reset              ();
     const RenderMode&  commonRenderMode   () const;
     void               commonRenderMode   (const RenderMode&);

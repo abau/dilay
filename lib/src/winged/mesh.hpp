@@ -14,8 +14,8 @@
 class AffectedFaces;
 class Camera;
 class Color;
+class IndexOctree;
 class Mesh;
-class Octree;
 class PrimPlane;
 class PrimRay;
 class PrimSphere;
@@ -48,7 +48,7 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     void               setVertex           (unsigned int, const glm::vec3&);
     void               setNormal           (unsigned int, const glm::vec3&);
 
-    const Octree&      octree              () const;
+    const IndexOctree& octree              () const;
     const Mesh&        mesh                () const;
 
     void               deleteEdge          (WingedEdge&);
@@ -58,6 +58,7 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     void               realignFace         (const WingedFace&, const PrimTriangle&);
     void               realignFace         (const WingedFace&);
     void               realignAllFaces     ();
+    void               sanitize            ();
 
     unsigned int       numVertices         () const;
     unsigned int       numEdges            () const;
@@ -70,7 +71,7 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     void               writeAllIndices     (); 
     void               writeAllNormals     (); 
     void               bufferData          ();
-    void               render              (Camera&) const;
+    void               render              (Camera&);
     void               reset               ();
     void               mirror              (const PrimPlane&);
     void               setupOctreeRoot     (const glm::vec3&, float);
@@ -79,7 +80,6 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     
     bool               intersects          (const PrimRay&, WingedFaceIntersection&);
     bool               intersects          (const PrimSphere&, AffectedFaces&);
-    bool               intersects          (const PrimPlane&, AffectedFaces&);
 
     void               scale               (const glm::vec3&);
     void               scaling             (const glm::vec3&);

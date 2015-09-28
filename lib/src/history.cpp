@@ -6,9 +6,9 @@
 #include <vector>
 #include "config.hpp"
 #include "history.hpp"
+#include "index-octree.hpp"
 #include "maybe.hpp"
 #include "mesh.hpp"
-#include "octree.hpp"
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
 #include "state.hpp"
@@ -36,8 +36,8 @@ namespace {
   };
 
   struct WingedMeshSnapshot {
-    Mesh           mesh;
-    Maybe <Octree> octree;
+    Mesh                mesh;
+    Maybe <IndexOctree> octree;
   };
 
   struct SceneSnapshot {
@@ -67,7 +67,7 @@ namespace {
           snapshot.wingedMeshes.push_back (std::move (meshSnapshot));
         }
         else {
-          snapshot.wingedMeshes.push_back ({ mesh.makePrunedMesh (), Maybe <Octree> () });
+          snapshot.wingedMeshes.push_back ({ mesh.makePrunedMesh (), Maybe <IndexOctree> () });
         }
       });
     }
@@ -174,7 +174,9 @@ struct History::Impl {
       && bool (this->past.front ().wingedMeshes.front ().octree);
   }
 
-  void forEachRecentOctree (const std::function <void (const Mesh& m, const Octree&)> f) const {
+  void forEachRecentOctree (const std::function <void ( const Mesh& m
+                                                      , const IndexOctree& )>& f) const
+  {
     assert (this->hasRecentOctrees ());
     for (const WingedMeshSnapshot& s : this->past.front ().wingedMeshes) {
       assert (s.octree);
@@ -202,4 +204,4 @@ DELEGATE1       (void, History, redo, State&)
 DELEGATE1       (void, History, runFromConfig, const Config&)
 DELEGATE_CONST  (bool, History, hasRecentOctrees)
 DELEGATE        (void, History, reset)
-DELEGATE1_CONST (void, History, forEachRecentOctree, const std::function <void (const Mesh&, const Octree&)>)
+DELEGATE1_CONST (void, History, forEachRecentOctree, const std::function <void (const Mesh&, const IndexOctree&)>&)

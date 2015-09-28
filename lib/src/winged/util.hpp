@@ -8,8 +8,6 @@
 #include <glm/fwd.hpp>
 #include "winged/fwd.hpp"
 
-class Octree;
-
 namespace WingedUtil {
   void      printStatistics (const WingedMesh&, const WingedVertex&);
   void      printStatistics (const WingedEdge&);
@@ -18,7 +16,6 @@ namespace WingedUtil {
   /** `printStatistics (m,b)` prints some statistics about mesh `m`.
    * If `b == true`, statistics about faces, edges, and vertices are printed as well. */
   void      printStatistics (const WingedMesh&, bool);
-  void      printStatistics (const Octree&);
 
   glm::vec3 averageNormal   (const WingedMesh&, const VertexPtrSet&);
   glm::vec3 center          (const WingedMesh&, const VertexPtrSet&);
