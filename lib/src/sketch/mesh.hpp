@@ -47,6 +47,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void              reset           ();
     bool              intersects      (const PrimRay&, SketchNodeIntersection&);
     bool              intersects      (const PrimRay&, SketchBoneIntersection&);
+    bool              intersects      (const PrimRay&, SketchMeshIntersection&);
     void              render          (Camera&);
     void              renderWireframe (bool);
     PrimPlane         mirrorPlane     (Dimension);

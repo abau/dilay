@@ -105,6 +105,25 @@ struct SketchMesh::Impl {
     return intersection.isIntersection ();
   }
 
+  bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection) {
+    SketchNodeIntersection snIntersection;
+    SketchBoneIntersection sbIntersection;
+
+    if (this->intersects (ray, snIntersection)) {
+      intersection.update ( snIntersection.distance ()
+                          , snIntersection.position ()
+                          , snIntersection.normal   () 
+                          , snIntersection.mesh     () );
+    }
+    if (this->intersects (ray, sbIntersection)) {
+      intersection.update ( sbIntersection.distance ()
+                          , sbIntersection.position ()
+                          , sbIntersection.normal   ()
+                          , sbIntersection.mesh     () );
+    }
+    return intersection.isIntersection ();
+  }
+
   void render (Camera& camera) {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachConstNode ([this, &camera] (const SketchNode& node) {
@@ -443,6 +462,7 @@ DELEGATE1       (void              , SketchMesh, fromTree, const SketchTree&)
 DELEGATE        (void              , SketchMesh, reset)
 DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
+DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE1       (void              , SketchMesh, render, Camera&)
 DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
 DELEGATE1       (PrimPlane         , SketchMesh, mirrorPlane, Dimension)

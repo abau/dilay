@@ -11,6 +11,7 @@
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/bone-intersection.hpp"
+#include "sketch/mesh-intersection.hpp"
 #include "sketch/node-intersection.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
@@ -118,25 +119,26 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const PrimRay& ray, Intersection& intersection) {
-    WingedFaceIntersection wfIntersection;
-    SketchNodeIntersection snIntersection;
-    SketchBoneIntersection sbIntersection;
+  bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection) {
+    this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
+      m.intersects (ray, intersection);
+    });
+    return intersection.isIntersection ();
+  }
 
-    if (this->intersects (ray, wfIntersection)) {
-      intersection.update ( wfIntersection.distance ()
-                          , wfIntersection.position ()
-                          , wfIntersection.normal   () );
+  bool intersects (const PrimRay& ray, Intersection& intersection) {
+    WingedFaceIntersection wIntersection;
+    SketchMeshIntersection sIntersection;
+
+    if (this->intersects (ray, wIntersection)) {
+      intersection.update ( wIntersection.distance ()
+                          , wIntersection.position ()
+                          , wIntersection.normal   () );
     }
-    if (this->intersects (ray, snIntersection)) {
-      intersection.update ( snIntersection.distance ()
-                          , snIntersection.position ()
-                          , snIntersection.normal   () );
-    }
-    if (this->intersects (ray, sbIntersection)) {
-      intersection.update ( sbIntersection.distance ()
-                          , sbIntersection.position ()
-                          , sbIntersection.normal   () );
+    if (this->intersects (ray, sIntersection)) {
+      intersection.update ( sIntersection.distance ()
+                          , sIntersection.position ()
+                          , sIntersection.normal   () );
     }
     return intersection.isIntersection ();
   }
@@ -316,6 +318,7 @@ DELEGATE1       (void              , Scene, render, Camera&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchBoneIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, Intersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)

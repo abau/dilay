@@ -10,6 +10,7 @@
 class SketchNodeData;
 class SketchNodeIntersection;
 class SketchBoneIntersection;
+class SketchMeshIntersection;
 using SketchNode = TreeNode <SketchNodeData>;
 using SketchTree = Tree <SketchNodeData>;
 class SketchMesh;

@@ -53,6 +53,7 @@ SOURCES += \
            src/sketch/bone-intersection.cpp \
            src/sketch/conversion.cpp \
            src/sketch/mesh.cpp \
+           src/sketch/mesh-intersection.cpp \
            src/sketch/node-intersection.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
@@ -152,6 +153,7 @@ HEADERS += \
            src/sketch/conversion.hpp \
            src/sketch/fwd.hpp \
            src/sketch/mesh.hpp \
+           src/sketch/mesh-intersection.hpp \
            src/sketch/node-intersection.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \

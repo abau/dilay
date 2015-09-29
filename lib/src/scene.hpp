@@ -35,6 +35,7 @@ class Scene : public Configurable {
     bool               intersects         (const PrimRay&, WingedFaceIntersection&);
     bool               intersects         (const PrimRay&, SketchNodeIntersection&);
     bool               intersects         (const PrimRay&, SketchBoneIntersection&);
+    bool               intersects         (const PrimRay&, SketchMeshIntersection&);
     bool               intersects         (const PrimRay&, Intersection&);
     void               printStatistics    (bool) const;
     void               forEachMesh        (const std::function <void (WingedMesh&)>&);

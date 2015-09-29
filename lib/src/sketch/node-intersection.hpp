@@ -5,18 +5,16 @@
 #ifndef DILAY_SKETCH_NODE_INTERSECTION
 #define DILAY_SKETCH_NODE_INTERSECTION
 
-#include "intersection.hpp"
 #include "macro.hpp"
 #include "sketch/fwd.hpp"
+#include "sketch/mesh-intersection.hpp"
 
-class SketchNodeIntersection : public Intersection {
+class SketchNodeIntersection : public SketchMeshIntersection {
   public:
     DECLARE_BIG6 (SketchNodeIntersection)
 
-    SketchMesh& mesh   () const;
     SketchNode& node   () const;
-    void        update ( float, const glm::vec3&, const glm::vec3&
-                       , SketchMesh&, SketchNode& );
+    bool        update (float, const glm::vec3&, const glm::vec3&, SketchMesh&, SketchNode&);
 
   private:
     IMPLEMENTATION

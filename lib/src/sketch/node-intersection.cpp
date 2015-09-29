@@ -7,24 +7,20 @@
 
 struct SketchNodeIntersection::Impl {
   SketchNodeIntersection* self;
-  SketchMesh*            _mesh;
   SketchNode*            _node;
 
   Impl (SketchNodeIntersection* s) : self (s) {}
 
-  void update ( float d, const glm::vec3& p, const glm::vec3& n
-              , SketchMesh& mesh, SketchNode& node) 
+  bool update ( float d, const glm::vec3& p, const glm::vec3& n
+              , SketchMesh& mesh, SketchNode& node)
   {
-    if (this->self->Intersection::update (d,p,n)) {
-      this->_mesh = &mesh;
+    if (this->self->SketchMeshIntersection::update (d,p,n,mesh)) {
       this->_node = &node;
+      return true;
     }
-  }
-
-  SketchMesh& mesh () const {
-    assert (this->self->isIntersection ());
-    assert (this->_mesh);
-    return *this->_mesh;
+    else {
+      return false;
+    }
   }
 
   SketchNode& node () const {
@@ -34,7 +30,6 @@ struct SketchNodeIntersection::Impl {
   }
 };
 
-DELEGATE_BIG6_BASE (SketchNodeIntersection,(),(this),Intersection,())
-DELEGATE5      (void       , SketchNodeIntersection, update, float, const glm::vec3&, const glm::vec3&, SketchMesh&, SketchNode&)
-DELEGATE_CONST (SketchMesh&, SketchNodeIntersection, mesh)
+DELEGATE_BIG6_BASE (SketchNodeIntersection,(),(this),SketchMeshIntersection,())
+DELEGATE5      (bool       , SketchNodeIntersection, update, float, const glm::vec3&, const glm::vec3&, SketchMesh&, SketchNode&)
 DELEGATE_CONST (SketchNode&, SketchNodeIntersection, node)
