@@ -4,6 +4,7 @@
  */
 #include <fstream>
 #include "config.hpp"
+#include "intersection.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
 #include "render-mode.hpp"
@@ -114,6 +115,29 @@ struct Scene :: Impl {
     this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
       m.intersects (ray, intersection);
     });
+    return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, Intersection& intersection) {
+    WingedFaceIntersection wfIntersection;
+    SketchNodeIntersection snIntersection;
+    SketchBoneIntersection sbIntersection;
+
+    if (this->intersects (ray, wfIntersection)) {
+      intersection.update ( wfIntersection.distance ()
+                          , wfIntersection.position ()
+                          , wfIntersection.normal   () );
+    }
+    if (this->intersects (ray, snIntersection)) {
+      intersection.update ( snIntersection.distance ()
+                          , snIntersection.position ()
+                          , snIntersection.normal   () );
+    }
+    if (this->intersects (ray, sbIntersection)) {
+      intersection.update ( sbIntersection.distance ()
+                          , sbIntersection.position ()
+                          , sbIntersection.normal   () );
+    }
     return intersection.isIntersection ();
   }
 
@@ -292,6 +316,7 @@ DELEGATE1       (void              , Scene, render, Camera&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchBoneIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, Intersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (SketchMesh&)>&)
