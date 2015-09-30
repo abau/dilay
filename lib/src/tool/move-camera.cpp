@@ -17,7 +17,6 @@
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/util.hpp"
-#include "winged/face-intersection.hpp"
 
 struct ToolMoveCamera::Impl {
   glm::ivec2 oldPos;
@@ -123,7 +122,7 @@ struct ToolMoveCamera::Impl {
 
       if (event.modifiers () == Qt::ControlModifier) {
         Camera& cam = state.camera ();
-        WingedFaceIntersection intersection;
+        Intersection intersection;
         if (state.scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
           cam.set ( intersection.position ()
                   , cam.position () - intersection.position ()
