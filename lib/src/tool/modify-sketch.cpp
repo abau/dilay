@@ -154,7 +154,7 @@ struct ToolModifySketch::Impl {
       this->self->snapshotSketchMeshes ();
 
       this->movement.resetPosition ( intersection.position ());
-      this->scaling .resetPosition ( intersection.node ().data ().position ()
+      this->scaling .resetPosition ( intersection.node ().data ().center ()
                                    , intersection.position () );
 
       this->mesh   = &intersection.mesh ();
@@ -167,7 +167,7 @@ struct ToolModifySketch::Impl {
                            ? iNode.lastChild ().data ().radius ()
                            : iNode.data ().radius ();
 
-        this->node = &this->mesh->addChild ( iNode, iNode.data ().position ()
+        this->node = &this->mesh->addChild ( iNode, iNode.data ().center ()
                                            , radius, this->self->mirrorDimension () );
       }
       else {
@@ -221,7 +221,7 @@ struct ToolModifySketch::Impl {
         PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
 
         const auto isSnappable = [this, &mirrorPlane] (const SketchNode& node) -> bool {
-          return mirrorPlane.absDistance (node.data ().position ()) <=
+          return mirrorPlane.absDistance (node.data ().center ()) <=
                  (this->snapWidthEdit.value ()) * this->self->mirror ().width ();
         };
 

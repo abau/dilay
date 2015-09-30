@@ -492,8 +492,8 @@ namespace {
 
   float sampleAt (const SketchNode& node, const glm::vec3& pos) {
     if (node.parent ()) {
-      const glm::vec3& nPos    = node.data ().position ();
-      const glm::vec3& pPos    = node.parent ()->data ().position ();
+      const glm::vec3& nPos    = node.data ().center ();
+      const glm::vec3& pPos    = node.parent ()->data ().center ();
       const float      nRadius = node.data ().radius ();
       const float      pRadius = node.parent ()->data ().radius ();
 
@@ -504,7 +504,7 @@ namespace {
       return glm::length (pToP - (nToP*t)) - glm::mix (pRadius, nRadius, t);
     }
     else {
-      return glm::distance (node.data ().position (), pos) - node.data ().radius ();
+      return glm::distance (node.data ().center (), pos) - node.data ().radius ();
     }
   }
 

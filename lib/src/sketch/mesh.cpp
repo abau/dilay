@@ -72,12 +72,10 @@ struct SketchMesh::Impl {
   bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachNode ([this, &ray, &intersection] (SketchNode& node) {
-        const PrimSphere nodeSphere (node.data ().position (), node.data ().radius ());
         float t;
-
-        if (IntersectionUtil::intersects (ray, nodeSphere, &t)) {
+        if (IntersectionUtil::intersects (ray, node.data (), &t)) {
           const glm::vec3 p = ray.pointAt (t);
-          intersection.update ( t, p, glm::normalize (p - node.data ().position ())
+          intersection.update ( t, p, glm::normalize (p - node.data ().center ())
                               , *this->self, node );
         }
       });
@@ -89,9 +87,9 @@ struct SketchMesh::Impl {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachNode ([this, &ray, &intersection] (SketchNode& node) {
         if (node.parent ()) {
-          const PrimCone cone ( node.data ().position ()
+          const PrimCone cone ( node.data ().center ()
                               , node.data ().radius ()
-                              , node.parent ()->data ().position ()
+                              , node.parent ()->data ().center ()
                               , node.parent ()->data ().radius () );
           float tRay, tCone;
           if (IntersectionUtil::intersects (ray, cone, &tRay, &tCone)) {
@@ -127,7 +125,7 @@ struct SketchMesh::Impl {
   void render (Camera& camera) {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachConstNode ([this, &camera] (const SketchNode& node) {
-        const glm::vec3& pos    = node.data ().position ();
+        const glm::vec3& pos    = node.data ().center ();
         const float      radius = node.data ().radius ();
 
         this->nodeMesh.position (pos);
@@ -136,7 +134,7 @@ struct SketchMesh::Impl {
         this->nodeMesh.render   (camera);
 
         if (node.parent ()) {
-          const glm::vec3& parPos    = node.parent ()->data ().position ();
+          const glm::vec3& parPos    = node.parent ()->data ().center ();
           const float      parRadius = node.parent ()->data ().radius ();
           const float      distance  = glm::distance (pos, parPos);
           const glm::vec3  direction = (parPos - pos) / distance;
@@ -185,7 +183,7 @@ struct SketchMesh::Impl {
 
   PrimPlane mirrorPlane (Dimension dim) const {
     assert (this->tree.hasRoot ());
-    return PrimPlane (this->tree.root ().data ().position (), DimensionUtil::vector (dim));
+    return PrimPlane (this->tree.root ().data ().center (), DimensionUtil::vector (dim));
   }
 
   SketchNode* mirrored ( const SketchNode& node, const PrimPlane& mirrorPlane
@@ -193,12 +191,12 @@ struct SketchMesh::Impl {
   {
     if (this->tree.hasRoot () && node.parent ()) {
       SketchNode*     result = nullptr;
-      const glm::vec3 pos    = mirrorPlane.mirror (node.data ().position ());
+      const glm::vec3 pos    = mirrorPlane.mirror (node.data ().center ());
 
       this->tree.root ().forEachNode ([&exclude, &result, &pos] (SketchNode& n) {
         if ( n.parent ()
           && (&exclude != &n)
-          && glm::distance2 (n.data ().position (), pos)
+          && glm::distance2 (n.data ().center (), pos)
           <= Util::epsilon () * Util::epsilon () )
         {
           result = &n;
@@ -212,7 +210,7 @@ struct SketchMesh::Impl {
   }
 
   SketchNode* addMirroredNode (SketchNode& node, const PrimPlane& mirrorPlane) {
-    const glm::vec3   pos    = mirrorPlane.mirror (node.data ().position ());
+    const glm::vec3   pos    = mirrorPlane.mirror (node.data ().center ());
     const float       radius = node.data ().radius ();
           SketchNode& parent = *node.parent ();
 
@@ -268,11 +266,11 @@ struct SketchMesh::Impl {
     auto moveNodes = [withChildren] (SketchNode& node, const glm::vec3& delta) {
       if (withChildren) {
         node.forEachNode ([&delta] (SketchNode& n) {
-          n.data ().position (n.data ().position () + delta);
+          n.data ().center (n.data ().center () + delta);
         });
       }
       else {
-        node.data ().position (node.data ().position () + delta);
+        node.data ().center (node.data ().center () + delta);
       }
     };
 
@@ -358,8 +356,8 @@ struct SketchMesh::Impl {
 
       auto requiresMirroring = [&mirrorPlane] (const SketchNode& node) {
         assert (node.parent ());
-        return (mirrorPlane.absDistance (node.data ().position ())            > Util::epsilon ())
-            || (mirrorPlane.absDistance (node.parent ()->data ().position ()) > Util::epsilon ());
+        return (mirrorPlane.absDistance (node.data ().center ())            > Util::epsilon ())
+            || (mirrorPlane.absDistance (node.parent ()->data ().center ()) > Util::epsilon ());
       };
 
       std::function <void (SketchNode&)> mirrorNode =
@@ -375,7 +373,7 @@ struct SketchMesh::Impl {
 
       this->tree.root ().forEachNode ([&mirrorPlane] (SketchNode& parent) {
         parent.deleteChildIf ([&mirrorPlane] (const SketchNode& child) {
-          return mirrorPlane.distance (child.data ().position ()) < -Util::epsilon ();
+          return mirrorPlane.distance (child.data ().center ()) < -Util::epsilon ();
         });
       });
 
@@ -408,8 +406,8 @@ struct SketchMesh::Impl {
     if (nodeM && nodeM != &node) {
       if (nodeM->parent () == node.parent ()) {
         SketchNode& snapped = this->addChild ( *node.parent ()
-                                             , 0.5f * ( node.data ().position ()
-                                                      + nodeM->data ().position () )
+                                             , 0.5f * ( node.data ().center ()
+                                                      + nodeM->data ().center () )
                                              , node.data ().radius ()
                                              , nullptr );
 
@@ -423,13 +421,13 @@ struct SketchMesh::Impl {
         return snapped;
       }
       else {
-        node.data ().position (mPlane.project (node.data ().position ()));
-        nodeM->data ().position (mPlane.project (nodeM->data ().position ()));
+        node.data ().center (mPlane.project (node.data ().center ()));
+        nodeM->data ().center (mPlane.project (nodeM->data ().center ()));
         return node;
       }
     }
     else {
-      node.data ().position (mPlane.project (node.data ().position ()));
+      node.data ().center (mPlane.project (node.data ().center ()));
       return node;
     }
   }
@@ -438,12 +436,12 @@ struct SketchMesh::Impl {
     assert (this->tree.hasRoot ());
 
     const SketchNode& root = this->tree.root ();
-                      min  = root.data ().position () - glm::vec3 (root.data ().radius ());
-                      max  = root.data ().position () + glm::vec3 (root.data ().radius ());
+                      min  = root.data ().center () - glm::vec3 (root.data ().radius ());
+                      max  = root.data ().center () + glm::vec3 (root.data ().radius ());
 
     root.forEachConstNode ([&min, &max] (const SketchNode& node) {
-      min = glm::min (min, node.data ().position () - glm::vec3 (node.data ().radius ()));
-      max = glm::max (max, node.data ().position () + glm::vec3 (node.data ().radius ()));
+      min = glm::min (min, node.data ().center () - glm::vec3 (node.data ().radius ()));
+      max = glm::max (max, node.data ().center () + glm::vec3 (node.data ().radius ()));
     });
   }
 

@@ -16,24 +16,6 @@ enum class Dimension;
 class PrimPlane;
 class PrimRay;
 
-class SketchNodeData {
-  public:
-    SketchNodeData ( const glm::vec3& pos, float r)
-      : _position (pos)
-      , _radius   (r)
-    {}
-
-    const glm::vec3& position () const { return this->_position; }
-    float            radius   () const { return this->_radius;   }
-
-    void position (const glm::vec3& p) { this->_position = p; }
-    void radius   (float r)            { this->_radius   = r; }
-
-  private:
-    glm::vec3   _position;
-    float       _radius;
-};
-
 class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item {
   public: 
     DECLARE_BIG3 (SketchMesh, unsigned int);

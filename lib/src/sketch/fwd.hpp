@@ -5,14 +5,14 @@
 #ifndef DILAY_SKETCH_TREE_FWD
 #define DILAY_SKETCH_TREE_FWD
 
+#include "primitive/sphere.hpp"
 #include "tree.hpp"
 
-class SketchNodeData;
 class SketchNodeIntersection;
 class SketchBoneIntersection;
 class SketchMeshIntersection;
-using SketchNode = TreeNode <SketchNodeData>;
-using SketchTree = Tree <SketchNodeData>;
+using SketchNode = TreeNode <PrimSphere>;
+using SketchTree = Tree <PrimSphere>;
 class SketchMesh;
 
 #endif
