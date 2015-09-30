@@ -9,6 +9,7 @@
 #include "macro.hpp"
 
 class PrimAABox;
+class PrimCone;
 class PrimCylinder;
 class PrimPlane;
 class PrimRay;
@@ -41,6 +42,7 @@ namespace IntersectionUtil {
   bool intersects (const PrimRay&, const PrimTriangle& , float*); 
   bool intersects (const PrimRay&, const PrimAABox&); 
   bool intersects (const PrimRay&, const PrimCylinder&, float*, float*); 
+  bool intersects (const PrimRay&, const PrimCone&, float*, float*);
   bool intersects (const PrimPlane&, const PrimAABox&); 
   bool intersects (const PrimPlane&, const PrimTriangle&); 
 }

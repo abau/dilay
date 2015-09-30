@@ -8,9 +8,12 @@
 #include <glm/glm.hpp>
 #include <iosfwd>
 
+class PrimCone;
+
 class PrimCylinder {
   public:
     PrimCylinder (const glm::vec3&, const glm::vec3&, float);
+    PrimCylinder (const PrimCone&);
 
     const glm::vec3& center1   () const { return this->_center1; }
     const glm::vec3& center2   () const { return this->_center2; }

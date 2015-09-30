@@ -9,7 +9,7 @@
 #include "config.hpp"
 #include "dimension.hpp"
 #include "mesh-util.hpp"
-#include "primitive/cylinder.hpp"
+#include "primitive/cone.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
@@ -89,14 +89,14 @@ struct SketchMesh::Impl {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachNode ([this, &ray, &intersection] (SketchNode& node) {
         if (node.parent ()) {
-          const PrimCylinder cyl ( node.data ().position ()
-                                 , node.parent ()->data ().position ()
-                                 , 0.5f * ( node.data ().radius ()
-                                          + node.parent ()->data ().radius () ) );
-          float tRay, tCyl;
-          if (IntersectionUtil::intersects (ray, cyl, &tRay, &tCyl)) {
+          const PrimCone cone ( node.data ().position ()
+                              , node.data ().radius ()
+                              , node.parent ()->data ().position ()
+                              , node.parent ()->data ().radius () );
+          float tRay, tCone;
+          if (IntersectionUtil::intersects (ray, cone, &tRay, &tCone)) {
             const glm::vec3 p     = ray.pointAt (tRay);
-            const glm::vec3 projP = cyl.center1 () + (tCyl * cyl.direction ());
+            const glm::vec3 projP = cone.center1 () + (tCone * cone.direction ());
             intersection.update (tRay, p, projP, *this->self, node);
           }
         }

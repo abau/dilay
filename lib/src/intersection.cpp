@@ -7,6 +7,7 @@
 #include <glm/gtx/norm.hpp>
 #include "intersection.hpp"
 #include "primitive/aabox.hpp"
+#include "primitive/cone.hpp"
 #include "primitive/cylinder.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
@@ -270,6 +271,48 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCylinder& cy
   }
   else {
     return false;
+  }
+}
+
+bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCone& cone
+                                    , float* tRay, float* tCone )
+{
+  if (cone.isCylinder ()) {
+    return IntersectionUtil::intersects (ray, PrimCylinder (cone), tRay, tCone);
+  }
+  else {
+    const glm::vec3& dir     = ray.direction ();
+    const glm::vec3& coneDir = cone.direction ();
+    const glm::vec3  offset  = ray.origin () - cone.apex ();
+    const float      dotD    = glm::dot (coneDir, dir);
+    const float      dotO    = glm::dot (coneDir, offset);
+    const glm::vec3  d       = dir - (coneDir * dotD);
+    const glm::vec3  c       = offset - (coneDir * glm::dot (coneDir, offset));
+          float      tmpRay;
+
+    if (intersectsQuadric
+         ( (cone.cosSqrAlpha () * glm::dot (d,d)) - (cone.sinSqrAlpha () * dotD * dotD)
+         , (2.0f * cone.cosSqrAlpha () * glm::dot (c, d))
+         - (2.0f * cone.sinSqrAlpha () * dotD * dotO)
+         , (cone.cosSqrAlpha () * glm::dot (c,c)) - (cone.sinSqrAlpha () * dotO * dotO)
+         , ray.isLine (), &tmpRay ) )
+    {
+      const glm::vec3 p       = ray.pointAt (tmpRay);
+      const float     tmpCone = glm::dot (coneDir, p - cone.center1 ());
+      const float     lenght2 = glm::distance2 (cone.center1 (), cone.center2 ());
+
+      if (tmpCone >= 0.0f && tmpCone * tmpCone <= lenght2) {
+        writeIfNotNull (tRay , tmpRay);
+        writeIfNotNull (tCone, tmpCone);
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
   }
 }
 
