@@ -160,14 +160,16 @@ struct Tool::Impl {
     return this->hasMirror () ? &d : nullptr;
   }
 
-  template <typename T>
-  bool intersectsScene (const glm::ivec2& pos, T& intersection) {
-    return this->state.scene ().intersects (this->state.camera ().ray (pos), intersection);
+  template <typename T, typename ... Ts>
+  bool intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {
+    return this->state.scene ().intersects ( this->state.camera ().ray (pos), intersection
+                                           , std::forward <Ts> (args) ... );
   }
 
-  template <typename T>
-  bool intersectsScene (const QMouseEvent& e, T& intersection) {
-    return this->intersectsScene (ViewUtil::toIVec2 (e), intersection);
+  template <typename T, typename ... Ts>
+  bool intersectsScene (const QMouseEvent& e, T& intersection, Ts ... args) {
+    return this->intersectsScene ( ViewUtil::toIVec2 (e), intersection 
+                                 , std::forward <Ts> (args) ... );
   }
 };
 
@@ -197,14 +199,14 @@ DELEGATE1       (void            , Tool, mirror, bool)
 SETTER          (bool            , Tool, renderMirror)
 DELEGATE_CONST  (const Dimension*, Tool, mirrorDimension)
 
-template <typename T>
-bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection) {
-  return this->impl->intersectsScene (pos, intersection);
+template <typename T, typename ... Ts>
+bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {
+  return this->impl->intersectsScene (pos, intersection, std::forward <Ts> (args) ...);
 }
 
-template <typename T>
-bool Tool :: intersectsScene (const QMouseEvent& e, T& intersection) {
-  return this->impl->intersectsScene (e, intersection);
+template <typename T, typename ... Ts>
+bool Tool :: intersectsScene (const QMouseEvent& e, T& intersection, Ts ... args) {
+  return this->impl->intersectsScene (e, intersection, std::forward <Ts> (args) ...);
 }
 
 template bool Tool :: intersectsScene (const glm::ivec2&, WingedFaceIntersection&);

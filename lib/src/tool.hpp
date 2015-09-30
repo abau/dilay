@@ -56,10 +56,10 @@ class Tool {
     void             renderMirror           (bool);
     const Dimension* mirrorDimension        () const;
 
-    template <typename T>
-    bool intersectsScene (const glm::ivec2&, T&);
-    template <typename T>
-    bool intersectsScene (const QMouseEvent&, T&);
+    template <typename T, typename ... Ts>
+    bool intersectsScene (const glm::ivec2&, T&, Ts ...);
+    template <typename T, typename ... Ts>
+    bool intersectsScene (const QMouseEvent&, T&, Ts ...);
 
   private:
     IMPLEMENTATION
