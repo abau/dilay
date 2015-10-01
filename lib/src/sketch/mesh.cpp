@@ -245,8 +245,8 @@ struct SketchMesh::Impl {
     newNode.addChild (child);
 
     if (dim) {
-      PrimPlane   mPlane = this->mirrorPlane (*dim);
-      SketchNode* childM = this->mirrored (child, mPlane, child);
+      const PrimPlane mPlane = this->mirrorPlane (*dim);
+      SketchNode*     childM = this->mirrored (child, mPlane, child);
 
       if (childM && childM->parent ()) {
         SketchNode* newNodeM = this->addMirroredNode (newNode, mPlane);
@@ -352,7 +352,7 @@ struct SketchMesh::Impl {
 
   void mirror (Dimension dim) {
     if (this->tree.hasRoot ()) {
-      PrimPlane mirrorPlane = this->mirrorPlane (dim); 
+      const PrimPlane mirrorPlane = this->mirrorPlane (dim); 
 
       auto requiresMirroring = [&mirrorPlane] (const SketchNode& node) {
         assert (node.parent ());
