@@ -13,6 +13,7 @@
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
 #include "scene.hpp"
+#include "sketch/mesh.hpp"
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
@@ -20,6 +21,7 @@
 #include "view/main-window.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
+#include "winged/mesh.hpp"
 
 struct Tool::Impl {
   Tool*           self;
@@ -160,6 +162,28 @@ struct Tool::Impl {
     return this->hasMirror () ? &d : nullptr;
   }
 
+  void mirrorWingedMeshes () {
+    assert (this->hasMirror ());
+
+    this->snapshotWingedMeshes ();
+    this->state.scene ().forEachMesh (
+      [this] (WingedMesh& mesh) {
+        mesh.mirror (this->mirror ().plane ());
+        mesh.bufferData ();
+      }
+    );
+  }
+  void mirrorSketchMeshes () {
+    assert (this->hasMirror ());
+
+    this->snapshotSketchMeshes ();
+    this->state.scene ().forEachMesh (
+      [this] (SketchMesh& mesh) {
+        mesh.mirror (*this->mirrorDimension ());
+      }
+    );
+  }
+
   template <typename T, typename ... Ts>
   bool intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {
     return this->state.scene ().intersects ( this->state.camera ().ray (pos), intersection
@@ -198,6 +222,8 @@ DELEGATE_CONST  (const Mirror&   , Tool, mirror)
 DELEGATE1       (void            , Tool, mirror, bool)
 SETTER          (bool            , Tool, renderMirror)
 DELEGATE_CONST  (const Dimension*, Tool, mirrorDimension)
+DELEGATE        (void            , Tool, mirrorWingedMeshes)
+DELEGATE        (void            , Tool, mirrorSketchMeshes)
 
 template <typename T, typename ... Ts>
 bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {

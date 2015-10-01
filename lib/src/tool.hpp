@@ -55,6 +55,8 @@ class Tool {
     void             mirror                 (bool);
     void             renderMirror           (bool);
     const Dimension* mirrorDimension        () const;
+    void             mirrorWingedMeshes     ();
+    void             mirrorSketchMeshes     ();
 
     template <typename T, typename ... Ts>
     bool intersectsScene (const glm::ivec2&, T&, Ts ...);

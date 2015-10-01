@@ -52,18 +52,6 @@ struct ToolModifySketch::Impl {
     this->setupToolTip    ();
   }
 
-  void mirrorSketchMeshes () {
-    assert (this->self->hasMirror ());
-
-    this->self->snapshotSketchMeshes ();
-
-    this->self->state ().scene ().forEachMesh (
-      [this] (SketchMesh& mesh) {
-        mesh.mirror (*this->self->mirrorDimension ());
-      }
-    );
-  }
-
   void setupProperties () {
     ViewPropertiesPart& properties = this->self->properties ().body ();
 
@@ -75,7 +63,7 @@ struct ToolModifySketch::Impl {
 
     QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
     ViewUtil::connect (syncButton, [this] () {
-      this->mirrorSketchMeshes ();
+      this->self->mirrorSketchMeshes ();
       this->self->updateGlWidget ();
     });
     syncButton.setEnabled (this->self->hasMirror ());

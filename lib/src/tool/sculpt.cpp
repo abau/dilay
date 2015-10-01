@@ -10,7 +10,6 @@
 #include "action/sculpt.hpp"
 #include "cache.hpp"
 #include "config.hpp"
-#include "dimension.hpp"
 #include "history.hpp"
 #include "mirror.hpp"
 #include "scene.hpp"
@@ -24,7 +23,6 @@
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
-#include "winged/mesh.hpp"
 
 struct ToolSculpt::Impl {
   ToolSculpt*       self;
@@ -99,7 +97,7 @@ struct ToolSculpt::Impl {
 
     QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
     ViewUtil::connect (syncButton, [this] () {
-      this->mirrorScene ();
+      this->self->mirrorWingedMeshes ();
       this->self->updateGlWidget ();
     });
     syncButton.setEnabled (this->self->hasMirror ());
@@ -173,19 +171,6 @@ struct ToolSculpt::Impl {
   }
 
   void runClose () {}
-
-  void mirrorScene () {
-    assert (this->self->hasMirror ());
-
-    this->self->snapshotWingedMeshes ();
-
-    this->self->state ().scene ().forEachMesh (
-      [this] (WingedMesh& mesh) {
-        mesh.mirror (this->self->mirror ().plane ());
-        mesh.bufferData ();
-      }
-    );
-  }
 
   void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode) {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
