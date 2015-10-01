@@ -35,7 +35,6 @@ class ToolSculpt : public Tool {
     ToolResponse runMousePressEvent   (const QMouseEvent&);
     ToolResponse runMouseReleaseEvent (const QMouseEvent&);
     ToolResponse runWheelEvent        (const QWheelEvent&);
-    void         runClose             ();
 
     virtual const char* key                      () const = 0;
     virtual void        runSetupBrush            (SculptBrush&) = 0;

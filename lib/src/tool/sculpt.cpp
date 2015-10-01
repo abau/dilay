@@ -170,8 +170,6 @@ struct ToolSculpt::Impl {
     return ToolResponse::Redraw;
   }
 
-  void runClose () {}
-
   void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode) {
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
 
@@ -320,4 +318,3 @@ DELEGATE1       (ToolResponse, ToolSculpt, runMouseMoveEvent, const QMouseEvent&
 DELEGATE1       (ToolResponse, ToolSculpt, runMousePressEvent, const QMouseEvent&)
 DELEGATE1       (ToolResponse, ToolSculpt, runMouseReleaseEvent, const QMouseEvent&)
 DELEGATE1       (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
-DELEGATE        (void        , ToolSculpt, runClose)
