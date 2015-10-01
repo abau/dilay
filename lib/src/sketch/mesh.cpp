@@ -8,6 +8,7 @@
 #include "color.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
+#include "index-octree.hpp"
 #include "mesh-util.hpp"
 #include "primitive/cone.hpp"
 #include "primitive/plane.hpp"
@@ -24,6 +25,7 @@ namespace {
     bool  renderWireframe;
     Color nodeColor;
     Color bubbleColor;
+    Color sphereColor;
 
     RenderConfig ()
       : renderWireframe (false)
@@ -35,22 +37,24 @@ struct SketchMesh::Impl {
   SketchMesh*        self;
   const unsigned int index;
   SketchTree         tree;
-  Mesh               nodeMesh;
-  Mesh               wireframeMesh;
+  SketchSpheres      spheres;
+  IndexOctree        sphereOctree;
+  Mesh               sphereMesh;
+  Mesh               boneMesh;
   RenderConfig       renderConfig;
 
   Impl (SketchMesh* s, unsigned int i)
     : self  (s)
     , index (i)
   {
-    this->nodeMesh = MeshUtil::icosphere (3);
-    this->nodeMesh.bufferData ();
+    this->sphereMesh = MeshUtil::icosphere (3);
+    this->sphereMesh.bufferData ();
 
-    this->wireframeMesh = MeshUtil::cone (16);
-    this->wireframeMesh.renderMode ().flatShading (true);
-    this->wireframeMesh.position   (glm::vec3 (0.0f, 0.5f, 0.0f));
-    this->wireframeMesh.normalize  ();
-    this->wireframeMesh.bufferData ();
+    this->boneMesh = MeshUtil::cone (16);
+    this->boneMesh.renderMode ().flatShading (true);
+    this->boneMesh.position   (glm::vec3 (0.0f, 0.5f, 0.0f));
+    this->boneMesh.normalize  ();
+    this->boneMesh.bufferData ();
   }
 
   bool operator== (const SketchMesh& other) const {
@@ -95,7 +99,12 @@ struct SketchMesh::Impl {
           if (IntersectionUtil::intersects (ray, cone, &tRay, &tCone)) {
             const glm::vec3 p     = ray.pointAt (tRay);
             const glm::vec3 projP = cone.center1 () + (tCone * cone.direction ());
-            intersection.update (tRay, p, projP, *this->self, node);
+            const glm::vec3 diff  = glm::normalize (p - projP);
+            const glm::vec3 slope = (cone.center2 () + (cone.radius2 () * diff))
+                                  - (cone.center1 () + (cone.radius1 () * diff));
+            const glm::vec3 tang  = glm::cross (diff, cone.direction ());
+            const glm::vec3 n     = glm::normalize (glm::cross (slope, tang));
+            intersection.update (tRay, p, projP, n, *this->self, node);
           }
         }
       });
@@ -104,6 +113,12 @@ struct SketchMesh::Impl {
   }
 
   bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection) {
+    return this->intersects (ray, intersection, Util::invalidIndex ());
+  }
+
+  bool intersects ( const PrimRay& ray, SketchMeshIntersection& intersection
+                  , unsigned int excludeFrom )
+  {
     SketchNodeIntersection snIntersection;
     SketchBoneIntersection sbIntersection;
 
@@ -119,19 +134,32 @@ struct SketchMesh::Impl {
                           , sbIntersection.normal   ()
                           , sbIntersection.mesh     () );
     }
+    this->sphereOctree.intersects (ray, [this, &ray, &intersection, excludeFrom]
+                                        (unsigned int i)
+    {
+      const PrimSphere& sphere = this->spheres.at (i).sphere ();
+      const bool        valid  = excludeFrom == Util::invalidIndex () || i < excludeFrom;
+      float             t;
+
+      if (valid && IntersectionUtil::intersects (ray, sphere, &t)) {
+        const glm::vec3 p = ray.pointAt (t);
+        const glm::vec3 n = glm::normalize (p - sphere.center ());
+        intersection.update (t, p, n, *this->self);
+      }
+    });
     return intersection.isIntersection ();
   }
 
-  void render (Camera& camera) {
+  void renderTree (Camera& camera) {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachConstNode ([this, &camera] (const SketchNode& node) {
         const glm::vec3& pos    = node.data ().center ();
         const float      radius = node.data ().radius ();
 
-        this->nodeMesh.position (pos);
-        this->nodeMesh.scaling  (glm::vec3 (radius));
-        this->nodeMesh.color    (this->renderConfig.nodeColor);
-        this->nodeMesh.render   (camera);
+        this->sphereMesh.position (pos);
+        this->sphereMesh.scaling  (glm::vec3 (radius));
+        this->sphereMesh.color    (this->renderConfig.nodeColor);
+        this->sphereMesh.render   (camera);
 
         if (node.parent ()) {
           const glm::vec3& parPos    = node.parent ()->data ().center ();
@@ -143,37 +171,54 @@ struct SketchMesh::Impl {
             const glm::vec3 down = glm::vec3 (0.0f, -1.0f, 0.0f);
 
             if (Util::colinearUnit (direction, down)) {
-              this->wireframeMesh.rotationMatrix (glm::mat4x4 (1.0f));
+              this->boneMesh.rotationMatrix (glm::mat4x4 (1.0f));
 
               if (glm::dot (direction, down) < 0.0f) {
-                this->wireframeMesh.rotateX (glm::pi <float> ());
+                this->boneMesh.rotateX (glm::pi <float> ());
               }
             }
             else {
-              this->wireframeMesh.rotationMatrix (glm::orientation (direction, down));
+              this->boneMesh.rotationMatrix (glm::orientation (direction, down));
             }
 
-            this->wireframeMesh.color    (this->renderConfig.nodeColor);
-            this->wireframeMesh.position (parPos);
-            this->wireframeMesh.scaling  (glm::vec3 (parRadius, distance, parRadius));
-            this->wireframeMesh.render   (camera);
+            this->boneMesh.color    (this->renderConfig.nodeColor);
+            this->boneMesh.position (parPos);
+            this->boneMesh.scaling  (glm::vec3 (parRadius, distance, parRadius));
+            this->boneMesh.render   (camera);
           }
           else {
-            this->nodeMesh.color (this->renderConfig.bubbleColor);
+            this->sphereMesh.color (this->renderConfig.bubbleColor);
 
             for (float d = radius * 0.5f; d < distance; ) {
               const glm::vec3 bubblePos    = pos + (d * direction);
               const float     bubbleRadius = Util::lerp (d/distance, radius, parRadius);
 
-              this->nodeMesh.position (bubblePos);
-              this->nodeMesh.scaling  (glm::vec3 (bubbleRadius));
-              this->nodeMesh.render   (camera);
+              this->sphereMesh.position (bubblePos);
+              this->sphereMesh.scaling  (glm::vec3 (bubbleRadius));
+              this->sphereMesh.render   (camera);
 
               d += bubbleRadius * 0.5f;
             }
           }
         }
       });
+    }
+  }
+
+  void renderSpheres (Camera& camera) {
+    for (const SketchSphere& s : this->spheres) {
+      this->sphereMesh.position (s.center ());
+      this->sphereMesh.scaling  (glm::vec3 (s.radius ()));
+      this->sphereMesh.color    (this->renderConfig.sphereColor);
+      this->sphereMesh.render   (camera);
+    }
+  }
+
+  void render (Camera& camera) {
+    this->renderTree (camera);
+
+    if (this->renderConfig.renderWireframe == false) {
+      this->renderSpheres (camera);
     }
   }
 
@@ -258,6 +303,24 @@ struct SketchMesh::Impl {
     }
     child.parent ()->deleteChild (child);
     return newNode;
+  }
+
+  void addMirroredSphere (const SketchSphere& sphere, const PrimPlane& mirrorPlane) {
+    const glm::vec3    mPosition = mirrorPlane.mirror (sphere.center ());
+    const unsigned int mIndex    = this->spheres.size ();
+
+    this->spheres.emplace_back (mIndex, mPosition, sphere.radius ());
+    this->sphereOctree.addElement (mIndex, mPosition, sphere.radius ());
+  }
+
+  void addSphere (const glm::vec3& position, float radius , const Dimension* dim) {
+    const unsigned int index = this->spheres.size ();
+    this->spheres.emplace_back (index, position, radius);
+    this->sphereOctree.addElement (index, position, radius);
+
+    if (dim) {
+      this->addMirroredSphere (this->spheres.back (), this->mirrorPlane (*dim));
+    }
   }
 
   void move ( SketchNode& node, const glm::vec3& delta, bool withChildren
@@ -350,7 +413,7 @@ struct SketchMesh::Impl {
     }
   }
 
-  void mirror (Dimension dim) {
+  void mirrorTree (Dimension dim) {
     if (this->tree.hasRoot ()) {
       const PrimPlane mirrorPlane = this->mirrorPlane (dim); 
 
@@ -391,6 +454,26 @@ struct SketchMesh::Impl {
         }
       });
     }
+  }
+
+  void mirrorSpheres (Dimension dim) {
+    const PrimPlane     mPlane     = this->mirrorPlane (dim); 
+    const SketchSpheres oldSpheres = std::move (this->spheres);
+
+    this->spheres.clear ();
+    this->sphereOctree.reset ();
+
+    for (const SketchSphere& s : oldSpheres) {
+      if (mPlane.distance (s.center ()) > -Util::epsilon ()) {
+        this->addSphere (s.center (), s.radius (), nullptr);
+        this->addMirroredSphere (this->spheres.back (), mPlane);
+      }
+    }
+  }
+
+  void mirror (Dimension dim) {
+    this->mirrorTree    (dim);
+    this->mirrorSpheres (dim);
   }
 
   void rebalance (SketchNode& newRoot) {
@@ -443,34 +526,43 @@ struct SketchMesh::Impl {
       min = glm::min (min, node.data ().center () - glm::vec3 (node.data ().radius ()));
       max = glm::max (max, node.data ().center () + glm::vec3 (node.data ().radius ()));
     });
+
+    for (const SketchSphere& s : this->spheres) {
+      min = glm::min (min, s.center () - glm::vec3 (s.radius ()));
+      max = glm::max (max, s.center () + glm::vec3 (s.radius ()));
+    }
   }
 
   void runFromConfig (const Config& config) {
     this->renderConfig.nodeColor   = config.get <Color> ("editor/sketch/node/color");
     this->renderConfig.bubbleColor = config.get <Color> ("editor/sketch/bubble/color");
+    this->renderConfig.sphereColor = config.get <Color> ("editor/sketch/sphere/color");
   }
 };
 
 DELEGATE1_BIG3_SELF (SketchMesh, unsigned int);
-DELEGATE1_CONST (bool              , SketchMesh, operator==, const SketchMesh&)
-DELEGATE1_CONST (bool              , SketchMesh, operator!=, const SketchMesh&)
-GETTER_CONST    (unsigned int      , SketchMesh, index)
-GETTER_CONST    (const SketchTree& , SketchMesh, tree)
-DELEGATE1       (void              , SketchMesh, fromTree, const SketchTree&)
-DELEGATE        (void              , SketchMesh, reset)
-DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
-DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
-DELEGATE2       (bool              , SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&)
-DELEGATE1       (void              , SketchMesh, render, Camera&)
-DELEGATE1       (void              , SketchMesh, renderWireframe, bool)
-DELEGATE1       (PrimPlane         , SketchMesh, mirrorPlane, Dimension)
-DELEGATE4       (SketchNode&       , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
-DELEGATE4       (SketchNode&       , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
-DELEGATE4       (void              , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
-DELEGATE4       (void              , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
-DELEGATE3       (void              , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
-DELEGATE1       (void              , SketchMesh, mirror, Dimension)
-DELEGATE1       (void              , SketchMesh, rebalance, SketchNode&)
-DELEGATE2       (SketchNode&       , SketchMesh, snap, SketchNode&, Dimension)
-DELEGATE2_CONST (void              , SketchMesh, minMax, glm::vec3&, glm::vec3&)
-DELEGATE1       (void              , SketchMesh, runFromConfig, const Config&)
+DELEGATE1_CONST (bool                , SketchMesh, operator==, const SketchMesh&)
+DELEGATE1_CONST (bool                , SketchMesh, operator!=, const SketchMesh&)
+GETTER_CONST    (unsigned int        , SketchMesh, index)
+GETTER_CONST    (const SketchTree&   , SketchMesh, tree)
+DELEGATE1       (void                , SketchMesh, fromTree, const SketchTree&)
+DELEGATE        (void                , SketchMesh, reset)
+DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
+DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
+DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&)
+DELEGATE3       (bool                , SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
+DELEGATE1       (void                , SketchMesh, render, Camera&)
+DELEGATE1       (void                , SketchMesh, renderWireframe, bool)
+DELEGATE1       (PrimPlane           , SketchMesh, mirrorPlane, Dimension)
+DELEGATE4       (SketchNode&         , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
+DELEGATE4       (SketchNode&         , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
+DELEGATE3       (void                , SketchMesh, addSphere, const glm::vec3&, float, const Dimension*)
+DELEGATE4       (void                , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
+DELEGATE4       (void                , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
+DELEGATE3       (void                , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
+DELEGATE1       (void                , SketchMesh, mirror, Dimension)
+DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
+DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)
+DELEGATE2_CONST (void                , SketchMesh, minMax, glm::vec3&, glm::vec3&)
+GETTER_CONST    (const SketchSpheres&, SketchMesh, spheres)
+DELEGATE1       (void                , SketchMesh, runFromConfig, const Config&)

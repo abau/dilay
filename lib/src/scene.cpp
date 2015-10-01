@@ -126,6 +126,15 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
+  bool intersects ( const PrimRay& ray, SketchMeshIntersection& intersection
+                  , unsigned int excludeFrom )
+  {
+    this->forEachMesh ([this, &ray, &intersection, excludeFrom] (SketchMesh& m) {
+      m.intersects (ray, intersection, excludeFrom);
+    });
+    return intersection.isIntersection ();
+  }
+
   bool intersects (const PrimRay& ray, Intersection& intersection) {
     WingedFaceIntersection wIntersection;
     SketchMeshIntersection sIntersection;
@@ -319,6 +328,7 @@ DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFa
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchMeshIntersection&)
+DELEGATE3       (bool              , Scene, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, Intersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)

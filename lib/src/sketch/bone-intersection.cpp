@@ -12,12 +12,12 @@ struct SketchBoneIntersection::Impl {
 
   Impl (SketchBoneIntersection* s) : self (s) {}
 
-  bool update ( float d, const glm::vec3& p, const glm::vec3& projP
+  bool update ( float d, const glm::vec3& p, const glm::vec3& projP, const glm::vec3& n
               , SketchMesh& mesh, SketchNode& child ) 
   {
     assert (child.parent ());
 
-    if (this->self->SketchMeshIntersection::update (d, p, glm::vec3 (0.0f), mesh)) {
+    if (this->self->SketchMeshIntersection::update (d, p, n, mesh)) {
       this->_child            = &child;
       this->projectedPosition = projP;
       return true;
@@ -41,7 +41,13 @@ struct SketchBoneIntersection::Impl {
 };
 
 DELEGATE_BIG6_BASE (SketchBoneIntersection,(),(this),SketchMeshIntersection,())
-DELEGATE5      (bool            , SketchBoneIntersection, update, float, const glm::vec3&, const glm::vec3&, SketchMesh&, SketchNode&)
 DELEGATE_CONST (SketchNode&     , SketchBoneIntersection, parent)
 DELEGATE_CONST (SketchNode&     , SketchBoneIntersection, child)
 GETTER_CONST   (const glm::vec3&, SketchBoneIntersection, projectedPosition)
+
+bool SketchBoneIntersection :: update ( float a1, const glm::vec3& a2
+                                      , const glm::vec3& a3, const glm::vec3& a4
+                                      , SketchMesh& a5, SketchNode& a6 )
+{
+  return this->impl->update (a1, a2, a3, a4, a5, a6);
+}

@@ -40,10 +40,15 @@ namespace {
     Maybe <IndexOctree> octree;
   };
 
+  struct SketchMeshSnapshot {
+    SketchTree               tree;
+    std::vector <PrimSphere> spheres;
+  };
+
   struct SceneSnapshot {
     const SnapshotConfig           config;
     std::list <WingedMeshSnapshot> wingedMeshes;
-    std::list <SketchTree>         sketchTrees;
+    std::list <SketchMeshSnapshot> sketchMeshes;
 
     SceneSnapshot (const SnapshotConfig& c) : config (c) {}
   };
@@ -74,7 +79,14 @@ namespace {
     if (config.snapshotSketchMeshes) {
       scene.forEachConstMesh ([&config, &snapshot] (const SketchMesh& mesh) {
         assert (mesh.tree ().hasRoot ());
-        snapshot.sketchTrees.push_back (mesh.tree ());
+
+        std::vector <PrimSphere> spheres;
+        spheres.reserve (mesh.spheres ().size ());
+
+        for (const SketchSphere& sketchSphere : mesh.spheres ()) {
+          spheres.emplace_back (sketchSphere.center (), sketchSphere.radius ());
+        }
+        snapshot.sketchMeshes.push_back ({ mesh.tree (), spheres });
       });
     }
     return snapshot;
@@ -93,8 +105,11 @@ namespace {
     if (snapshot.config.snapshotSketchMeshes) {
       scene.deleteSketchMeshes ();
 
-      for (const SketchTree& tree : snapshot.sketchTrees) {
-        scene.newSketchMesh (state.config (), tree);
+      for (const SketchMeshSnapshot& meshSnapshot : snapshot.sketchMeshes) {
+        SketchMesh& sketch = scene.newSketchMesh (state.config (), meshSnapshot.tree);
+        for (const PrimSphere& s : meshSnapshot.spheres) {
+          sketch.addSphere (s.center (), s.radius (), nullptr);
+        }
       }
     }
   }

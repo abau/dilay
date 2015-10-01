@@ -514,6 +514,10 @@ namespace {
     mesh.tree ().root ().forEachConstNode ([&pos, &distance] (const SketchNode& node) {
       distance = glm::min (distance, sampleAt (node, pos));
     });
+
+    for (const SketchSphere& s : mesh.spheres ()) {
+      distance = glm::min (distance, glm::distance (s.center (), pos) - s.radius ());
+    }
     return distance;
   }
 

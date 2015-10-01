@@ -17,7 +17,7 @@ class SketchBoneIntersection : public SketchMeshIntersection {
     SketchNode&      child             () const;
     const glm::vec3& projectedPosition () const;
     bool             update            ( float, const glm::vec3&, const glm::vec3&
-                                       , SketchMesh&, SketchNode& );
+                                       , const glm::vec3&, SketchMesh&, SketchNode& );
   private:
     IMPLEMENTATION
 };

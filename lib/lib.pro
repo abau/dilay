@@ -78,6 +78,7 @@ SOURCES += \
            src/tool/sculpt/pinch.cpp \
            src/tool/sculpt/reduce.cpp \
            src/tool/sculpt/smooth.cpp \
+           src/tool/sketch-spheres.cpp \
            src/tool/util/movement.cpp \
            src/tool/util/scaling.cpp \
            src/util.cpp \
