@@ -14,36 +14,6 @@
 #include "winged/vertex.hpp"
 #include "variant.hpp"
 
-namespace {
-
-  float smoothStep (const glm::vec3& v,const glm::vec3& center, float innerRadius, float radius) {
-    assert (innerRadius <= radius);
-
-    const float d = glm::distance <float> (v, center);
-
-    if (radius - innerRadius < Util::epsilon ()) {
-      return d > radius ? 0.0f : 1.0f;
-    }
-    else {
-      const float x = glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
-      return x*x*x * (x * (x*6.0f - 15.0f) + 10.0f);
-    }
-  }
-
-  float linearStep (const glm::vec3& v, const glm::vec3& center, float innerRadius, float radius) {
-    assert (innerRadius <= radius);
-
-    const float d = glm::distance <float> (v, center);
-
-    if (radius - innerRadius < Util::epsilon ()) {
-      return d > radius ? 0.0f : 1.0f;
-    }
-    else {
-      return glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
-    }
-  }
-}
-
 SBIntensityParameters :: SBIntensityParameters ()
   : _intensity (0.0f)
 {}
@@ -131,7 +101,8 @@ struct SculptBrush :: Impl {
         const glm::vec3 oldPos    = v->position (mesh);
         const float     intensity = parameters.intensity () * this->radius;
         const float     factor    = intensity
-                                  * smoothStep (oldPos, this->position (), 0.0f, this->radius);
+                                  * Util::smoothStep ( oldPos, this->position ()
+                                                     , 0.0f, this->radius );
         const glm::vec3 direction = parameters.inflate ()
                                   ? parameters.invert (v->savedNormal (mesh))
                                   : avgDir;
@@ -156,7 +127,7 @@ struct SculptBrush :: Impl {
       VertexPtrSet vertices (faces.toVertexSet ());
 
       float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
-        parameters.linearStep () ? linearStep : smoothStep;
+        parameters.linearStep () ? Util::linearStep : Util::smoothStep;
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos      = v->position (mesh);
@@ -183,7 +154,8 @@ struct SculptBrush :: Impl {
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos = v->position (mesh);
         const float     factor = parameters.intensity ()
-                               * smoothStep (oldPos, this->position (), 0.0f, this->radius);
+                               * Util::smoothStep ( oldPos, this->position ()
+                                                  , 0.0f, this->radius );
         const glm::vec3 newPos = oldPos + (factor * (WingedUtil::center (mesh, *v) - oldPos));
 
         v->writePosition (mesh, newPos);
@@ -206,7 +178,8 @@ struct SculptBrush :: Impl {
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos   = v->position (mesh);
         const float     factor   = parameters.intensity ()
-                                 * linearStep (oldPos, this->position (), 0.0f, this->radius);
+                                 * Util::linearStep ( oldPos, this->position ()
+                                                    , 0.0f, this->radius );
         const float     distance = glm::max (0.0f, plane.distance (oldPos));
         const glm::vec3 newPos   = oldPos - (normal * factor * distance);
 

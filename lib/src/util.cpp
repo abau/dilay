@@ -57,6 +57,37 @@ bool Util :: colinearUnit (const glm::vec3& v1, const glm::vec3& v2) {
   return glm::epsilonEqual (glm::abs (glm::dot (v1, v2)), 1.0f, Util::epsilon ());
 }
 
+float Util :: smoothStep ( const glm::vec3& v, const glm::vec3& center
+                         , float innerRadius, float radius )
+{
+  assert (innerRadius <= radius);
+
+  const float d = glm::distance <float> (v, center);
+
+  if (radius - innerRadius < Util::epsilon ()) {
+    return d > radius ? 0.0f : 1.0f;
+  }
+  else {
+    const float x = glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
+    return x*x*x * (x * (x*6.0f - 15.0f) + 10.0f);
+  }
+}
+
+float Util :: linearStep ( const glm::vec3& v, const glm::vec3& center
+                         , float innerRadius, float radius)
+{
+  assert (innerRadius <= radius);
+
+  const float d = glm::distance <float> (v, center);
+
+  if (radius - innerRadius < Util::epsilon ()) {
+    return d > radius ? 0.0f : 1.0f;
+  }
+  else {
+    return glm::clamp ((radius - d) / (radius - innerRadius), 0.0f, 1.0f);
+  }
+}
+
 std::string Util :: readFile (const std::string& filePath) {
   std::string   content;
   std::ifstream stream(filePath, std::ios::in);

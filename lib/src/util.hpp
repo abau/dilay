@@ -30,6 +30,8 @@ namespace Util {
   glm::vec3    orthogonal         (const glm::vec3&);
   bool         colinear           (const glm::vec3&, const glm::vec3&);
   bool         colinearUnit       (const glm::vec3&, const glm::vec3&);
+  float        smoothStep         (const glm::vec3&, const glm::vec3&, float, float);
+  float        linearStep         (const glm::vec3&, const glm::vec3&, float, float);
   std::string  readFile           (const std::string&); 
   unsigned int solveQuadraticEq   (float, float, float, float&, float&);
   bool         isNaN              (const glm::vec3&);
