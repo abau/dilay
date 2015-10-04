@@ -1,4 +1,4 @@
-VERSION                 = 1.0.1
+VERSION                 = 1.1.0
 CONFIG                 += debug_and_release warn_on object_parallel_to_source ordered c++14
 QT                     += widgets opengl openglextensions xml
 MOC_DIR                 = moc

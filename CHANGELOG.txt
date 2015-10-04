@@ -6,6 +6,10 @@ changes that are observable by the user of Dilay, i.e., code refactorings that
 are not obviously observable by the user are not documented here. See `git log`
 for a fine-grained overview of all changes.
 
+## 1.0.1 -> 1.1.0
+
+- 2015-10-04: Add a prototypical implementation for sketching meshes.
+
 ## 1.0.0 -> 1.0.1
 
 - 2015-07-30: Fix the Intensity slider of the Smooth-tool so that it is initially
