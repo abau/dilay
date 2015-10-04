@@ -173,6 +173,11 @@ bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimAABox& 
   return d <= sphere.radius () * sphere.radius ();
 }
 
+bool IntersectionUtil :: intersects (const PrimSphere& sphere1, const PrimSphere& sphere2) {
+  return glm::distance2 (sphere1.center (), sphere2.center ())
+      < ((sphere1.radius () + sphere2.radius ()) * (sphere1.radius () + sphere2.radius ()));
+}
+
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& sphere, float* t) {
   const glm::vec3& dir     = ray.direction ();
   const glm::vec3& origin  = ray.origin () - sphere.center ();

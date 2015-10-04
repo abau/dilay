@@ -19,21 +19,21 @@ class PrimRay;
 class SketchSphere {
   public:
     SketchSphere (unsigned int i, const glm::vec3& p, float r)
-      : _index    (i)
-      , _sphere   (p, r)
+      : _index  (i)
+      , _sphere (p, r)
     {}
 
-    unsigned int      index    () const { return this->_index;            }
-    const PrimSphere& sphere   () const { return this->_sphere;           }
-    const glm::vec3&  center   () const { return this->_sphere.center (); }
-    float             radius   () const { return this->_sphere.radius (); }
+    unsigned int      index  () const { return this->_index;            }
+    const PrimSphere& sphere () const { return this->_sphere;           }
+    const glm::vec3&  center () const { return this->_sphere.center (); }
+    float             radius () const { return this->_sphere.radius (); }
 
     void center (const glm::vec3& p) { this->_sphere.center (p); }
     void radius (float r)            { this->_sphere.radius (r); }
 
   private:
-    const unsigned int _index;
-    PrimSphere         _sphere;
+    unsigned int _index;
+    PrimSphere   _sphere;
 };
 
 class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item {
@@ -63,6 +63,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void                 mirror          (Dimension);
     void                 rebalance       (SketchNode&);
     SketchNode&          snap            (SketchNode&, Dimension);
+    void                 scaleSpheres    (const glm::vec3&, float, float, const Dimension*);
     void                 minMax          (glm::vec3&, glm::vec3&) const;
     const SketchSpheres& spheres         () const;
 

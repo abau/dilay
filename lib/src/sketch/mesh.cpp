@@ -150,6 +150,15 @@ struct SketchMesh::Impl {
     return intersection.isIntersection ();
   }
 
+  bool intersects (const PrimSphere& sphere, std::vector <unsigned int>& intersection) {
+    this->sphereOctree.intersects (sphere, [this, &sphere, &intersection] (unsigned int i) {
+      if (IntersectionUtil::intersects (sphere, this->spheres.at (i).sphere ())) {
+        intersection.push_back (i);
+      }
+    });
+    return intersection.empty () == false;
+  }
+
   void renderTree (Camera& camera) {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachConstNode ([this, &camera] (const SketchNode& node) {
@@ -515,6 +524,40 @@ struct SketchMesh::Impl {
     }
   }
 
+  void scaleSpheres (const glm::vec3& position, float radius, float factor, const Dimension* dim) {
+    std::vector <unsigned int> intersection;
+    if (this->intersects (PrimSphere (position, radius), intersection)) {
+      SketchSphere* nearest         = nullptr;
+      float         nearestDistance = std::numeric_limits <float>::max ();
+
+      for (unsigned int index : intersection) {
+        SketchSphere& sphere = this->spheres.at (index);
+        const float   d      = glm::distance2 (sphere.center (), position);
+
+        if (nearest == nullptr || d < nearestDistance) {
+          nearest         = &sphere;
+          nearestDistance = d;
+        }
+      }
+      nearestDistance = glm::sqrt (nearestDistance);
+
+      if (nearest && nearestDistance < radius) {
+        for (unsigned int index : intersection) {
+          SketchSphere& sphere = this->spheres.at (index);
+          const float smooth    = Util::smoothStep ( sphere.center (), position
+                                                   , nearestDistance, radius );
+          const float newRadius = sphere.radius () 
+                                * (factor + ((1.0f - factor) * (1.0f - smooth)));
+
+          sphere.radius (newRadius);
+        }
+        if (dim) {
+          this->scaleSpheres (this->mirrorPlane (*dim).mirror (position), radius, factor, nullptr);
+        }
+      }
+    }
+  }
+
   void minMax (glm::vec3& min, glm::vec3& max) const {
     assert (this->tree.hasRoot ());
 
@@ -563,6 +606,7 @@ DELEGATE3       (void                , SketchMesh, deleteNode, SketchNode&, bool
 DELEGATE1       (void                , SketchMesh, mirror, Dimension)
 DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)
+DELEGATE4       (void                , SketchMesh, scaleSpheres, const glm::vec3&, float, float, const Dimension*)
 DELEGATE2_CONST (void                , SketchMesh, minMax, glm::vec3&, glm::vec3&)
 GETTER_CONST    (const SketchSpheres&, SketchMesh, spheres)
 DELEGATE1       (void                , SketchMesh, runFromConfig, const Config&)
