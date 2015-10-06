@@ -56,6 +56,7 @@ SOURCES += \
            src/sketch/mesh.cpp \
            src/sketch/mesh-intersection.cpp \
            src/sketch/node-intersection.cpp \
+           src/sketch/sphere.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
@@ -158,6 +159,7 @@ HEADERS += \
            src/sketch/mesh.hpp \
            src/sketch/mesh-intersection.hpp \
            src/sketch/node-intersection.hpp \
+           src/sketch/sphere.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \

@@ -11,6 +11,7 @@
 #include "mesh.hpp"
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
+#include "sketch/sphere.hpp"
 #include "state.hpp"
 #include "winged/mesh.hpp"
 

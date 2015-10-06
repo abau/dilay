@@ -8,6 +8,7 @@
 #include "../mesh.hpp"
 #include "sketch/conversion.hpp"
 #include "sketch/mesh.hpp"
+#include "sketch/sphere.hpp"
 #include "util.hpp"
 
 /* vertex layout:          edge layout:          face layout:

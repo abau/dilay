@@ -10,31 +10,12 @@
 #include "intrusive-list.hpp"
 #include "macro.hpp"
 #include "sketch/fwd.hpp"
+#include "sketch/sphere.hpp"
 
 class Camera;
 enum class Dimension;
 class PrimPlane;
 class PrimRay;
-
-class SketchSphere {
-  public:
-    SketchSphere (unsigned int i, const glm::vec3& p, float r)
-      : _index  (i)
-      , _sphere (p, r)
-    {}
-
-    unsigned int      index  () const { return this->_index;            }
-    const PrimSphere& sphere () const { return this->_sphere;           }
-    const glm::vec3&  center () const { return this->_sphere.center (); }
-    float             radius () const { return this->_sphere.radius (); }
-
-    void center (const glm::vec3& p) { this->_sphere.center (p); }
-    void radius (float r)            { this->_sphere.radius (r); }
-
-  private:
-    unsigned int _index;
-    PrimSphere   _sphere;
-};
 
 class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item {
   public: 
