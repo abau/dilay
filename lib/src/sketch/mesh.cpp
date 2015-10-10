@@ -8,7 +8,6 @@
 #include "color.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
-#include "index-octree.hpp"
 #include "mesh-util.hpp"
 #include "primitive/cone.hpp"
 #include "primitive/plane.hpp"
@@ -18,6 +17,7 @@
 #include "sketch/bone-intersection.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
+#include "sketch/path.hpp"
 #include "util.hpp"
 
 namespace {
@@ -37,8 +37,7 @@ struct SketchMesh::Impl {
   SketchMesh*        self;
   const unsigned int index;
   SketchTree         tree;
-  SketchSpheres      spheres;
-  IndexOctree        sphereOctree;
+  SketchPaths        paths;
   Mesh               sphereMesh;
   Mesh               boneMesh;
   RenderConfig       renderConfig;
@@ -113,11 +112,11 @@ struct SketchMesh::Impl {
   }
 
   bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection) {
-    return this->intersects (ray, intersection, Util::invalidIndex ());
+    return this->intersects (ray, intersection, 0);
   }
 
   bool intersects ( const PrimRay& ray, SketchMeshIntersection& intersection
-                  , unsigned int excludeFrom )
+                  , unsigned int numExcludedLastPaths )
   {
     SketchNodeIntersection snIntersection;
     SketchBoneIntersection sbIntersection;
@@ -134,29 +133,19 @@ struct SketchMesh::Impl {
                           , sbIntersection.normal   ()
                           , sbIntersection.mesh     () );
     }
-    this->sphereOctree.intersects (ray, [this, &ray, &intersection, excludeFrom]
-                                        (unsigned int i)
-    {
-      const PrimSphere& sphere = this->spheres.at (i).sphere ();
-      const bool        valid  = excludeFrom == Util::invalidIndex () || i < excludeFrom;
-      float             t;
+    if (numExcludedLastPaths < this->paths.size ()) {
+      for (unsigned int i = 0; i < this->paths.size () - numExcludedLastPaths; i++) {
+        Intersection pIntersection;
 
-      if (valid && IntersectionUtil::intersects (ray, sphere, &t)) {
-        const glm::vec3 p = ray.pointAt (t);
-        const glm::vec3 n = glm::normalize (p - sphere.center ());
-        intersection.update (t, p, n, *this->self);
+        if (this->paths.at (i).intersects (ray, pIntersection)) {
+          intersection.update ( pIntersection.distance ()
+                              , pIntersection.position ()
+                              , pIntersection.normal   ()
+                              , *this->self );
+        }
       }
-    });
+    }
     return intersection.isIntersection ();
-  }
-
-  bool intersects (const PrimSphere& sphere, std::vector <unsigned int>& intersection) {
-    this->sphereOctree.intersects (sphere, [this, &sphere, &intersection] (unsigned int i) {
-      if (IntersectionUtil::intersects (sphere, this->spheres.at (i).sphere ())) {
-        intersection.push_back (i);
-      }
-    });
-    return intersection.empty () == false;
   }
 
   void renderTree (Camera& camera) {
@@ -214,12 +203,11 @@ struct SketchMesh::Impl {
     }
   }
 
-  void renderSpheres (Camera& camera) {
-    for (const SketchSphere& s : this->spheres) {
-      this->sphereMesh.position (s.center ());
-      this->sphereMesh.scaling  (glm::vec3 (s.radius ()));
-      this->sphereMesh.color    (this->renderConfig.sphereColor);
-      this->sphereMesh.render   (camera);
+  void renderPaths (Camera& camera) {
+    this->sphereMesh.color (this->renderConfig.sphereColor);
+
+    for (const SketchPath& p : this->paths) {
+      p.render (camera, this->sphereMesh);
     }
   }
 
@@ -227,7 +215,7 @@ struct SketchMesh::Impl {
     this->renderTree (camera);
 
     if (this->renderConfig.renderWireframe == false) {
-      this->renderSpheres (camera);
+      this->renderPaths (camera);
     }
   }
 
@@ -314,21 +302,31 @@ struct SketchMesh::Impl {
     return newNode;
   }
 
-  void addMirroredSphere (const SketchSphere& sphere, const PrimPlane& mirrorPlane) {
-    const glm::vec3    mPosition = mirrorPlane.mirror (sphere.center ());
-    const unsigned int mIndex    = this->spheres.size ();
-
-    this->spheres.emplace_back (mIndex, mPosition, sphere.radius ());
-    this->sphereOctree.addElement (mIndex, mPosition, sphere.radius ());
+  SketchPath& currentPath () {
+    assert (this->paths.empty () == false);
+    return this->paths.back ();
   }
 
-  void addSphere (const glm::vec3& position, float radius , const Dimension* dim) {
-    const unsigned int index = this->spheres.size ();
-    this->spheres.emplace_back (index, position, radius);
-    this->sphereOctree.addElement (index, position, radius);
+  SketchPath& currentMirroredPath () {
+    assert (this->paths.size () >= 2);
+    return this->paths.at (this->paths.size () - 2);
+  }
+
+  void addPath (const SketchPath& path) {
+    this->paths.push_back (path);
+  }
+
+  void addSphere (bool newPath, const glm::vec3& position, float radius, const Dimension* dim) {
+    if (newPath) {
+      this->paths.emplace_back ();
+      if (dim) {
+        this->paths.emplace_back ();
+      }
+    }
+    this->currentPath ().addSphere (position, radius);
 
     if (dim) {
-      this->addMirroredSphere (this->spheres.back (), this->mirrorPlane (*dim));
+      this->currentMirroredPath ().addSphere (this->mirrorPlane (*dim).mirror (position), radius);
     }
   }
 
@@ -465,24 +463,25 @@ struct SketchMesh::Impl {
     }
   }
 
-  void mirrorSpheres (Dimension dim) {
-    const PrimPlane     mPlane     = this->mirrorPlane (dim); 
-    const SketchSpheres oldSpheres = std::move (this->spheres);
+  void mirrorPaths (Dimension dim) {
+    const PrimPlane   mPlane   = this->mirrorPlane (dim); 
+          SketchPaths oldPaths = std::move (this->paths);
 
-    this->spheres.clear ();
-    this->sphereOctree.reset ();
+    this->paths.clear ();
 
-    for (const SketchSphere& s : oldSpheres) {
-      if (mPlane.distance (s.center ()) > -Util::epsilon ()) {
-        this->addSphere (s.center (), s.radius (), nullptr);
-        this->addMirroredSphere (this->spheres.back (), mPlane);
+    for (SketchPath& p : oldPaths) {
+      SketchPath mirrored = p.mirror (mPlane);
+
+      if (p.isEmpty () == false) {
+        this->paths.push_back (std::move (mirrored));
+        this->paths.push_back (std::move (p));
       }
     }
   }
 
   void mirror (Dimension dim) {
-    this->mirrorTree    (dim);
-    this->mirrorSpheres (dim);
+    this->mirrorTree  (dim);
+    this->mirrorPaths (dim);
   }
 
   void rebalance (SketchNode& newRoot) {
@@ -524,40 +523,6 @@ struct SketchMesh::Impl {
     }
   }
 
-  void scaleSpheres (const glm::vec3& position, float radius, float factor, const Dimension* dim) {
-    std::vector <unsigned int> intersection;
-    if (this->intersects (PrimSphere (position, radius), intersection)) {
-      SketchSphere* nearest         = nullptr;
-      float         nearestDistance = std::numeric_limits <float>::max ();
-
-      for (unsigned int index : intersection) {
-        SketchSphere& sphere = this->spheres.at (index);
-        const float   d      = glm::distance2 (sphere.center (), position);
-
-        if (nearest == nullptr || d < nearestDistance) {
-          nearest         = &sphere;
-          nearestDistance = d;
-        }
-      }
-      nearestDistance = glm::sqrt (nearestDistance);
-
-      if (nearest && nearestDistance < radius) {
-        for (unsigned int index : intersection) {
-          SketchSphere& sphere = this->spheres.at (index);
-          const float smooth    = Util::smoothStep ( sphere.center (), position
-                                                   , nearestDistance, radius );
-          const float newRadius = sphere.radius () 
-                                * (factor + ((1.0f - factor) * (1.0f - smooth)));
-
-          sphere.radius (newRadius);
-        }
-        if (dim) {
-          this->scaleSpheres (this->mirrorPlane (*dim).mirror (position), radius, factor, nullptr);
-        }
-      }
-    }
-  }
-
   void minMax (glm::vec3& min, glm::vec3& max) const {
     assert (this->tree.hasRoot ());
 
@@ -570,9 +535,20 @@ struct SketchMesh::Impl {
       max = glm::max (max, node.data ().center () + glm::vec3 (node.data ().radius ()));
     });
 
-    for (const SketchSphere& s : this->spheres) {
-      min = glm::min (min, s.center () - glm::vec3 (s.radius ()));
-      max = glm::max (max, s.center () + glm::vec3 (s.radius ()));
+    for (const SketchPath& p : this->paths) {
+      min = glm::min (min, p.minimum ());
+      max = glm::max (max, p.maximum ());
+    }
+  }
+
+  void smoothPaths ( const glm::vec3& pos, float radius, unsigned int halfWidth
+                   , const Dimension* dim)
+  {
+    for (SketchPath& p : this->paths) {
+      p.smooth (pos, radius, halfWidth);
+    }
+    if (dim) {
+      this->smoothPaths (this->mirrorPlane (*dim).mirror (pos), radius, halfWidth, nullptr);
     }
   }
 
@@ -588,6 +564,7 @@ DELEGATE1_CONST (bool                , SketchMesh, operator==, const SketchMesh&
 DELEGATE1_CONST (bool                , SketchMesh, operator!=, const SketchMesh&)
 GETTER_CONST    (unsigned int        , SketchMesh, index)
 GETTER_CONST    (const SketchTree&   , SketchMesh, tree)
+GETTER_CONST    (const SketchPaths&  , SketchMesh, paths)
 DELEGATE1       (void                , SketchMesh, fromTree, const SketchTree&)
 DELEGATE        (void                , SketchMesh, reset)
 DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
@@ -599,14 +576,14 @@ DELEGATE1       (void                , SketchMesh, renderWireframe, bool)
 DELEGATE1       (PrimPlane           , SketchMesh, mirrorPlane, Dimension)
 DELEGATE4       (SketchNode&         , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (SketchNode&         , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
-DELEGATE3       (void                , SketchMesh, addSphere, const glm::vec3&, float, const Dimension*)
+DELEGATE1       (void                , SketchMesh, addPath, const SketchPath&)
+DELEGATE4       (void                , SketchMesh, addSphere, bool, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void                , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE4       (void                , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
 DELEGATE3       (void                , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
 DELEGATE1       (void                , SketchMesh, mirror, Dimension)
 DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)
-DELEGATE4       (void                , SketchMesh, scaleSpheres, const glm::vec3&, float, float, const Dimension*)
 DELEGATE2_CONST (void                , SketchMesh, minMax, glm::vec3&, glm::vec3&)
-GETTER_CONST    (const SketchSpheres&, SketchMesh, spheres)
+DELEGATE4       (void                , SketchMesh, smoothPaths, const glm::vec3&, float, unsigned int, const Dimension*)
 DELEGATE1       (void                , SketchMesh, runFromConfig, const Config&)

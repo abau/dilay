@@ -8,7 +8,7 @@
 #include "../mesh.hpp"
 #include "sketch/conversion.hpp"
 #include "sketch/mesh.hpp"
-#include "sketch/sphere.hpp"
+#include "sketch/path.hpp"
 #include "util.hpp"
 
 /* vertex layout:          edge layout:          face layout:
@@ -516,8 +516,10 @@ namespace {
       distance = glm::min (distance, sampleAt (node, pos));
     });
 
-    for (const SketchSphere& s : mesh.spheres ()) {
-      distance = glm::min (distance, glm::distance (s.center (), pos) - s.radius ());
+    for (const SketchPath& p : mesh.paths ()) {
+      for (const PrimSphere& s : p.spheres ()) {
+        distance = glm::min (distance, glm::distance (s.center (), pos) - s.radius ());
+      }
     }
     return distance;
   }

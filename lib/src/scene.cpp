@@ -123,9 +123,9 @@ struct Scene :: Impl {
   }
 
   bool intersects ( const PrimRay& ray, SketchMeshIntersection& intersection
-                  , unsigned int excludeFrom )
+                  , unsigned int numExcludedLastPaths )
   {
-    return this->intersectsT <SketchMesh> (ray, intersection, excludeFrom);
+    return this->intersectsT <SketchMesh> (ray, intersection, numExcludedLastPaths);
   }
 
   bool intersects (const PrimRay& ray, Intersection& intersection) {

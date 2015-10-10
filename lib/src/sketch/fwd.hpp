@@ -8,13 +8,13 @@
 #include "primitive/sphere.hpp"
 #include "tree.hpp"
 
-class SketchSphere;
+class SketchPath;
+using SketchPaths = std::vector <SketchPath>;
 class SketchNodeIntersection;
 class SketchBoneIntersection;
 class SketchMeshIntersection;
 using SketchNode = TreeNode <PrimSphere>;
 using SketchTree = Tree <PrimSphere>;
-using SketchSpheres = std::vector <SketchSphere>;
 class SketchMesh;
 
 #endif

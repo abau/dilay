@@ -11,7 +11,7 @@
 #include "mesh.hpp"
 #include "scene.hpp"
 #include "sketch/mesh.hpp"
-#include "sketch/sphere.hpp"
+#include "sketch/path.hpp"
 #include "state.hpp"
 #include "winged/mesh.hpp"
 
@@ -42,8 +42,8 @@ namespace {
   };
 
   struct SketchMeshSnapshot {
-    SketchTree               tree;
-    std::vector <PrimSphere> spheres;
+    SketchTree  tree;
+    SketchPaths paths;
   };
 
   struct SceneSnapshot {
@@ -81,13 +81,7 @@ namespace {
       scene.forEachConstMesh ([&config, &snapshot] (const SketchMesh& mesh) {
         assert (mesh.tree ().hasRoot ());
 
-        std::vector <PrimSphere> spheres;
-        spheres.reserve (mesh.spheres ().size ());
-
-        for (const SketchSphere& sketchSphere : mesh.spheres ()) {
-          spheres.emplace_back (sketchSphere.center (), sketchSphere.radius ());
-        }
-        snapshot.sketchMeshes.push_back ({ mesh.tree (), spheres });
+        snapshot.sketchMeshes.push_back ({ mesh.tree (), mesh.paths () });
       });
     }
     return snapshot;
@@ -108,8 +102,8 @@ namespace {
 
       for (const SketchMeshSnapshot& meshSnapshot : snapshot.sketchMeshes) {
         SketchMesh& sketch = scene.newSketchMesh (state.config (), meshSnapshot.tree);
-        for (const PrimSphere& s : meshSnapshot.spheres) {
-          sketch.addSphere (s.center (), s.radius (), nullptr);
+        for (const SketchPath& p : meshSnapshot.paths) {
+          sketch.addPath (p);
         }
       }
     }
