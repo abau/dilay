@@ -98,41 +98,34 @@ struct Scene :: Impl {
     });
   }
 
-  bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
-    this->forEachMesh ([this, &ray, &intersection] (WingedMesh& m) {
-      m.intersects (ray, intersection);
+  template <typename TMesh, typename TIntersection, typename ... Ts>
+  bool intersectsT (const PrimRay& ray, TIntersection& intersection, Ts ... args) {
+    this->forEachMesh ([this, &ray, &intersection, &args ...] (TMesh& m) {
+      m.intersects (ray, intersection, std::forward <Ts> (args) ...);
     });
     return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
+    return this->intersectsT <WingedMesh> (ray, intersection);
   }
 
   bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
-    this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
-      m.intersects (ray, intersection);
-    });
-    return intersection.isIntersection ();
+    return this->intersectsT <SketchMesh> (ray, intersection);
   }
 
   bool intersects (const PrimRay& ray, SketchBoneIntersection& intersection) {
-    this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
-      m.intersects (ray, intersection);
-    });
-    return intersection.isIntersection ();
+    return this->intersectsT <SketchMesh> (ray, intersection);
   }
 
   bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection) {
-    this->forEachMesh ([this, &ray, &intersection] (SketchMesh& m) {
-      m.intersects (ray, intersection);
-    });
-    return intersection.isIntersection ();
+    return this->intersectsT <SketchMesh> (ray, intersection);
   }
 
   bool intersects ( const PrimRay& ray, SketchMeshIntersection& intersection
                   , unsigned int excludeFrom )
   {
-    this->forEachMesh ([this, &ray, &intersection, excludeFrom] (SketchMesh& m) {
-      m.intersects (ray, intersection, excludeFrom);
-    });
-    return intersection.isIntersection ();
+    return this->intersectsT <SketchMesh> (ray, intersection, excludeFrom);
   }
 
   bool intersects (const PrimRay& ray, Intersection& intersection) {
