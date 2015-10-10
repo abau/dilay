@@ -22,8 +22,8 @@ class PrimAABox {
           float      zWidth   () const;
 
   private:
-    const glm::vec3 _maximum;
     const glm::vec3 _minimum;
+    const glm::vec3 _maximum;
     const glm::vec3 _center;
 };
 
