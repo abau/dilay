@@ -9,6 +9,7 @@
 #include "cache.hpp"
 #include "camera.hpp"
 #include "config.hpp"
+#include "dimension.hpp"
 #include "scene.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
@@ -133,7 +134,8 @@ struct ToolSketchSpheres::Impl {
     else if (this->mesh) {
       const Camera&   camera = this->self->state ().camera ();
       const PrimRay   ray    = camera.ray (ViewUtil::toIVec2 (e));
-      const PrimPlane plane  = PrimPlane (this->previousPosition, camera.toEyePoint ());
+      const PrimPlane plane  = PrimPlane ( this->previousPosition
+                                         , DimensionUtil::vector (camera.primaryDimension ()) );
       float t;
       if (IntersectionUtil::intersects (ray, plane, &t)) {
         intersection.update (t, ray.pointAt (t), plane.normal (), *this->mesh);
