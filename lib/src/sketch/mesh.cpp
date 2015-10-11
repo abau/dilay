@@ -64,6 +64,10 @@ struct SketchMesh::Impl {
     return ! this->operator== (other);
   }
 
+  bool isEmpty () const {
+    return this->tree.hasRoot () == false && this->paths.empty ();
+  }
+
   void fromTree (const SketchTree& newTree) {
     this->tree = newTree;
   }
@@ -565,6 +569,7 @@ DELEGATE1_CONST (bool                , SketchMesh, operator!=, const SketchMesh&
 GETTER_CONST    (unsigned int        , SketchMesh, index)
 GETTER_CONST    (const SketchTree&   , SketchMesh, tree)
 GETTER_CONST    (const SketchPaths&  , SketchMesh, paths)
+DELEGATE_CONST  (bool                , SketchMesh, isEmpty)
 DELEGATE1       (void                , SketchMesh, fromTree, const SketchTree&)
 DELEGATE        (void                , SketchMesh, reset)
 DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)

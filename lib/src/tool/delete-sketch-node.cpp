@@ -85,7 +85,7 @@ struct ToolDeleteSketchNode::Impl {
           intersection.mesh ().deleteNode ( intersection.node ()
                                           , this->deleteChildren
                                           , this->self->mirrorDimension () );
-          if (intersection.mesh ().tree ().hasRoot () == false) {
+          if (intersection.mesh ().isEmpty ()) {
             scene.deleteMesh (intersection.mesh ());
           }
         }

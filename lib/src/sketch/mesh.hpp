@@ -26,6 +26,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     unsigned int       index           () const;
     const SketchTree&  tree            () const;
     const SketchPaths& paths           () const;
+    bool               isEmpty         () const;
     void               fromTree        (const SketchTree&);
     void               reset           ();
     bool               intersects      (const PrimRay&, SketchNodeIntersection&);

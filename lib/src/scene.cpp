@@ -75,7 +75,7 @@ struct Scene :: Impl {
       }
     });
     this->forEachMesh ([this] (SketchMesh& mesh) {
-      if (mesh.tree ().hasRoot () == false) {
+      if (mesh.isEmpty ()) {
         this->deleteMesh (mesh);
       }
     });
