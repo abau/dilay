@@ -12,13 +12,26 @@ struct SketchPath :: Impl {
   glm::vec3           maximum;
 
   Impl () {
-    this->reset ();
+    this->resetMinMax ();
+  }
+
+  void resetMinMax () {
+    this->minimum = glm::vec3 (std::numeric_limits <float>::max ());
+    this->maximum = glm::vec3 (std::numeric_limits <float>::min ());
   }
 
   void reset () {
+    this->resetMinMax ();
     this->spheres.clear ();
-    this->minimum = glm::vec3 (std::numeric_limits <float>::max ());
-    this->maximum = glm::vec3 (std::numeric_limits <float>::min ());
+  }
+
+  void setMinMax () {
+    this->resetMinMax ();
+
+    for (const PrimSphere& s : this->spheres) {
+      this->maximum = glm::max (this->maximum, s.center () + glm::vec3 (s.radius ()));
+      this->minimum = glm::min (this->minimum, s.center () - glm::vec3 (s.radius ()));
+    }
   }
 
   bool isEmpty () const {
@@ -85,6 +98,7 @@ struct SketchPath :: Impl {
           this->spheres.at (i).center (center / float ((2 * hW) + 1));
         }
       }
+      this->setMinMax ();
     }
   }
 };
