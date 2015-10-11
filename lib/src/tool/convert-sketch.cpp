@@ -6,10 +6,9 @@
 #include "cache.hpp"
 #include "mesh.hpp"
 #include "scene.hpp"
-#include "sketch/bone-intersection.hpp"
 #include "sketch/conversion.hpp"
 #include "sketch/mesh.hpp"
-#include "sketch/node-intersection.hpp"
+#include "sketch/mesh-intersection.hpp"
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"
@@ -55,26 +54,16 @@ struct ToolConvertSketch::Impl {
   }
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    auto convert = [this] (SketchMesh& mesh) {
-      this->self->snapshotAll ();
-
-      this->self->state ().scene ().newWingedMesh 
-        ( this->self->state ().config ()
-        , SketchConversion::convert (mesh, this->maxResolution + this->minResolution 
-                                                               - this->resolution ) );
-
-      this->self->state ().scene ().deleteMesh (mesh);
-    };
-
     if (e.button () == Qt::LeftButton) {
-      SketchNodeIntersection nodeIntersection;
-      SketchBoneIntersection boneIntersection;
-      if (this->self->intersectsScene (e, nodeIntersection)) {
-        convert (nodeIntersection.mesh ());
-        return ToolResponse::Redraw;
-      }
-      else if (this->self->intersectsScene (e, boneIntersection)) {
-        convert (boneIntersection.mesh ());
+      SketchMeshIntersection intersection;
+      if (this->self->intersectsScene (e, intersection)) {
+        this->self->snapshotAll ();
+        this->self->state ().scene ().newWingedMesh 
+          ( this->self->state ().config ()
+          , SketchConversion::convert ( intersection.mesh ()
+                                      , this->maxResolution + this->minResolution 
+                                                            - this->resolution ) );
+        this->self->state ().scene ().deleteMesh (intersection.mesh ());
         return ToolResponse::Redraw;
       }
     }
