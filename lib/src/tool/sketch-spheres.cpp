@@ -46,6 +46,7 @@ struct ToolSketchSpheres::Impl {
     , falloffEdit     (ViewUtil::slider ( 2, 1.5f, s->cache ().get <float> ("falloff", 2.0f)
                                         , 4.0f ))
     , stepWidthFactor (s->config ().get <float> ("editor/tool/sketch-spheres/step-width-factor"))
+    , mesh            (nullptr)
   {}
 
   void setupProperties () {
@@ -140,8 +141,11 @@ struct ToolSketchSpheres::Impl {
       if (IntersectionUtil::intersects (ray, plane, &t)) {
         intersection.update (t, ray.pointAt (t), plane.normal (), *this->mesh);
       }
+      return intersection.isIntersection ();
     }
-    return intersection.isIntersection ();
+    else {
+      return false;
+    }
   }
 
   ToolResponse runMouseEvent (const QMouseEvent& e, bool startNewPath) {
