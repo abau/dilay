@@ -126,66 +126,64 @@ struct ToolSketchSpheres::Impl {
     }
   }
 
-  bool intersectsSketch ( const QMouseEvent& e, SketchMeshIntersection& intersection
-                        , unsigned int numExcludedLastPaths )
-  {
-    if (this->self->intersectsScene (e, intersection, numExcludedLastPaths)) {
-      return true;
-    }
-    else if (this->mesh) {
-      const Camera&   camera = this->self->state ().camera ();
-      const PrimRay   ray    = camera.ray (ViewUtil::toIVec2 (e));
-      const PrimPlane plane  = PrimPlane ( this->previousPosition
-                                         , DimensionUtil::vector (camera.primaryDimension ()) );
-      float t;
-      if (IntersectionUtil::intersects (ray, plane, &t)) {
-        intersection.update (t, ray.pointAt (t), plane.normal (), *this->mesh);
-      }
-      return intersection.isIntersection ();
-    }
-    else {
-      return false;
-    }
+  glm::vec3 newSpherePosition (const SketchMeshIntersection& intersection) {
+    return intersection.position () 
+         - (intersection.normal () * float (this->radiusEdit.doubleValue ()
+                                   * (1.0f - (2.0f * this->heightEdit.doubleValue ()))));
   }
 
-  ToolResponse runMouseEvent (const QMouseEvent& e, bool startNewPath) {
-    const unsigned int numExcludedLastPaths = startNewPath
-                                            ? 0
-                                            : (this->self->hasMirror () ? 2 : 1);
+  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
     SketchMeshIntersection intersection;
-    if (this->intersectsSketch (e, intersection, numExcludedLastPaths)) {
-      this->cursor.enable   ();
-      this->cursor.position (intersection.position ());
 
-      if (startNewPath || this->mesh == &intersection.mesh ()) {
-        const float radius      = this->radiusEdit.doubleValue ();
-        const float height      = this->heightEdit.doubleValue ();
-        const float minDistance = radius * this->stepWidthFactor;
-        const bool  hasDistance = startNewPath ? true
-                                : glm::distance (this->previousPosition, intersection.position ())
-                                > minDistance;
-        
-        if (hasDistance && (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton)) {
-          this->mesh             = &intersection.mesh ();
-          this->previousPosition = intersection.position ();
+    auto minDistance = [this] (const Intersection& intersection) -> bool {
+      const float d = this->radiusEdit.doubleValue () * this->stepWidthFactor;
+      return glm::distance (this->previousPosition, intersection.position ()) > d;
+    };
 
-          if (e.modifiers () == Qt::ShiftModifier) {
-            intersection.mesh ().smoothPaths ( intersection.position ()
-                                             , radius
-                                             , 1
-                                             , this->self->mirrorDimension () );
-          }
-          else {
-            // TODO add more spheres if distance is big
-            const glm::vec3 spherePos = intersection.position () 
-                                      - (intersection.normal () * radius 
-                                                                * (1.0f - (2.0f * height)));
+    if (e.buttons () == Qt::LeftButton) {
+      if (e.modifiers () == Qt::ShiftModifier) {
+        if (this->self->intersectsScene (e, intersection)) {
+          this->cursor.enable   ();
+          this->cursor.position (intersection.position ());
 
-            intersection.mesh ().addSphere ( startNewPath, spherePos, radius
-                                           , this->self->mirrorDimension () );
+          if (minDistance (intersection)) {
+            this->previousPosition = intersection.position ();
+            this->mesh             = &intersection.mesh ();
+
+            this->mesh->smoothPaths ( intersection.position ()
+                                    , this->radiusEdit.doubleValue ()
+                                    , 1
+                                    , this->self->mirrorDimension () );
           }
         }
       }
+      else if (this->mesh) {
+        const unsigned int numExcludedLastPaths = this->self->hasMirror () ? 2 : 1;
+
+        if (this->self->intersectsScene (e, intersection, numExcludedLastPaths) == false) {
+          const Camera&   camera = this->self->state ().camera ();
+          const PrimRay   ray    = camera.ray (ViewUtil::toIVec2 (e));
+          const PrimPlane plane  = PrimPlane ( this->previousPosition
+                                             , DimensionUtil::vector (camera.primaryDimension ()) );
+          float t;
+          if (IntersectionUtil::intersects (ray, plane, &t)) {
+            intersection.update (t, ray.pointAt (t), plane.normal (), *this->mesh);
+          }
+        }
+
+        if (intersection.isIntersection () && minDistance (intersection)) {
+          this->previousPosition = intersection.position ();
+
+          // TODO add more spheres if distance is big
+          this->mesh->addSphere ( false, this->newSpherePosition (intersection)
+                                , this->radiusEdit.doubleValue ()
+                                , this->self->mirrorDimension () );
+        }
+      }
+    }
+    else if (this->self->intersectsScene (e, intersection)) {
+      this->cursor.enable   ();
+      this->cursor.position (intersection.position ());
     }
     else {
       this->cursor.disable ();
@@ -193,14 +191,38 @@ struct ToolSketchSpheres::Impl {
     return ToolResponse::Redraw;
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    return this->runMouseEvent (e, false);
-  }
-
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->snapshotSketchMeshes ();
+    if (e.button () == Qt::LeftButton) {
+      SketchMeshIntersection intersection;
+      if (this->self->intersectsScene (e, intersection)) {
+        this->cursor.enable   ();
+        this->cursor.position (intersection.position ());
 
-    return this->runMouseEvent (e, true);
+        this->self->snapshotSketchMeshes ();
+
+        this->mesh             = &intersection.mesh ();
+        this->previousPosition = intersection.position ();
+
+        if (e.modifiers () == Qt::ShiftModifier) {
+          this->mesh->smoothPaths ( intersection.position ()
+                                  , this->radiusEdit.doubleValue ()
+                                  , 1
+                                  , this->self->mirrorDimension () );
+        }
+        else {
+          this->mesh->addSphere ( true, this->newSpherePosition (intersection)
+                                , this->radiusEdit.doubleValue ()
+                                , this->self->mirrorDimension () );
+        }
+      }
+      else {
+        this->cursor.disable ();
+      }
+      return ToolResponse::Redraw;
+    }
+    else {
+      return ToolResponse::None;
+    }
   }
 
   ToolResponse runMouseReleaseEvent (const QMouseEvent&) {
