@@ -31,7 +31,7 @@ DECLARE_TOOL (ToolModifySketch, "modify-sketch", DECLARE_TOOL_RUN_MOUSE_MOVE_EVE
                                                  DECLARE_TOOL_RUN_MOUSE_PRESS_EVENT
                                                  DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT )
 
-DECLARE_TOOL (ToolDeleteSketchNode, "delete-sketch-node", DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT)
+DECLARE_TOOL (ToolDeleteSketch, "delete-sketch", DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT)
 
 DECLARE_TOOL (ToolRebalanceSketch, "rebalance-sketch", DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT
                                                        DECLARE_TOOL_RUN_CLOSE )

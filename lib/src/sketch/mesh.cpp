@@ -18,6 +18,7 @@
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
 #include "sketch/path.hpp"
+#include "sketch/path-intersection.hpp"
 #include "util.hpp"
 
 namespace {
@@ -31,6 +32,10 @@ namespace {
       : renderWireframe (false)
     {}
   };
+
+  bool almostEqual (const glm::vec3& a, const glm::vec3& b) {
+    return glm::distance2 (a, b) <= Util::epsilon () * Util::epsilon ();
+  }
 }
 
 struct SketchMesh::Impl {
@@ -124,6 +129,7 @@ struct SketchMesh::Impl {
   {
     SketchNodeIntersection snIntersection;
     SketchBoneIntersection sbIntersection;
+    SketchPathIntersection spIntersection;
 
     if (this->intersects (ray, snIntersection)) {
       intersection.update ( snIntersection.distance ()
@@ -139,15 +145,20 @@ struct SketchMesh::Impl {
     }
     if (numExcludedLastPaths < this->paths.size ()) {
       for (unsigned int i = 0; i < this->paths.size () - numExcludedLastPaths; i++) {
-        Intersection pIntersection;
-
-        if (this->paths.at (i).intersects (ray, pIntersection)) {
-          intersection.update ( pIntersection.distance ()
-                              , pIntersection.position ()
-                              , pIntersection.normal   ()
-                              , *this->self );
+        if (this->paths.at (i).intersects (ray, *this->self, spIntersection)) {
+          intersection.update ( spIntersection.distance ()
+                              , spIntersection.position ()
+                              , spIntersection.normal   ()
+                              , spIntersection.mesh     () );
         }
       }
+    }
+    return intersection.isIntersection ();
+  }
+
+  bool intersects (const PrimRay& ray, SketchPathIntersection& intersection) {
+    for (unsigned int i = 0; i < this->paths.size (); i++) {
+      this->paths.at (i).intersects (ray, *this->self, intersection);
     }
     return intersection.isIntersection ();
   }
@@ -240,11 +251,7 @@ struct SketchMesh::Impl {
       const glm::vec3 pos    = mirrorPlane.mirror (node.data ().center ());
 
       this->tree.root ().forEachNode ([&exclude, &result, &pos] (SketchNode& n) {
-        if ( n.parent ()
-          && (&exclude != &n)
-          && glm::distance2 (n.data ().center (), pos)
-          <= Util::epsilon () * Util::epsilon () )
-        {
+        if (n.parent () && (&exclude != &n) && almostEqual (n.data ().center (), pos)) {
           result = &n;
         }
       });
@@ -424,6 +431,47 @@ struct SketchMesh::Impl {
     }
   }
 
+  void deletePathSLOW (SketchPath& path, const Dimension* dim) {
+    const auto it = std::find_if ( this->paths.begin ()
+                                 , this->paths.end ()
+                                 , [&path] (SketchPath& p) { return &p == &path; } );
+    assert (it != this->paths.end ());
+
+    if (dim && this->paths.size () >= 2) {
+      const PrimPlane mPlane = this->mirrorPlane (*dim);
+      const glm::vec3 mMin   = glm::min ( mPlane.mirror (path.minimum ())
+                                        , mPlane.mirror (path.maximum ()) );
+      const glm::vec3 mMax   = glm::max ( mPlane.mirror (path.minimum ())
+                                        , mPlane.mirror (path.maximum ()) );
+
+      const bool deletePrevious = it != this->paths.begin ()
+                               && (it-1)->spheres ().size () == path.spheres ().size ()
+                               && almostEqual ((it-1)->minimum (), mMin)
+                               && almostEqual ((it-1)->maximum (), mMax);
+
+      const bool deleteNext = it != this->paths.end () - 1
+                           && (it+1)->spheres ().size () == path.spheres ().size ()
+                           && almostEqual ((it+1)->minimum (), mMin)
+                           && almostEqual ((it+1)->maximum (), mMax);
+
+      if (deletePrevious) {
+        const auto prevIt = it - 1;
+        this->paths.erase (it);
+        this->paths.erase (prevIt);
+      }
+      else if (deleteNext) {
+        this->paths.erase (it + 1);
+        this->paths.erase (it);
+      }
+      else {
+        this->paths.erase (it);
+      }
+    }
+    else {
+      this->paths.erase (it);
+    }
+  }
+
   void mirrorTree (Dimension dim) {
     if (this->tree.hasRoot ()) {
       const PrimPlane mirrorPlane = this->mirrorPlane (dim); 
@@ -576,6 +624,7 @@ DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, S
 DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE3       (bool                , SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
+DELEGATE2       (bool                , SketchMesh, intersects, const PrimRay&, SketchPathIntersection&)
 DELEGATE1       (void                , SketchMesh, render, Camera&)
 DELEGATE1       (void                , SketchMesh, renderWireframe, bool)
 DELEGATE1       (PrimPlane           , SketchMesh, mirrorPlane, Dimension)
@@ -586,6 +635,7 @@ DELEGATE4       (void                , SketchMesh, addSphere, bool, const glm::v
 DELEGATE4       (void                , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE4       (void                , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
 DELEGATE3       (void                , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
+DELEGATE2       (void                , SketchMesh, deletePathSLOW, SketchPath&, const Dimension*)
 DELEGATE1       (void                , SketchMesh, mirror, Dimension)
 DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)

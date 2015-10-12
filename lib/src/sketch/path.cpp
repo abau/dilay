@@ -4,14 +4,18 @@
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "sketch/path.hpp"
+#include "sketch/path-intersection.hpp"
 #include "util.hpp"
 
 struct SketchPath :: Impl {
+  SketchPath*         self;
   SketchPath::Spheres spheres;
   glm::vec3           minimum;
   glm::vec3           maximum;
 
-  Impl () {
+  Impl (SketchPath* s)
+    : self (s)
+  {
     this->resetMinMax ();
   }
 
@@ -53,12 +57,15 @@ struct SketchPath :: Impl {
     }
   }
 
-  bool intersects (const PrimRay& ray, Intersection& intersection) const {
+  bool intersects (const PrimRay& ray, SketchMesh& mesh, SketchPathIntersection& intersection) {
     if (IntersectionUtil::intersects (ray, PrimAABox (this->minimum, this->maximum))) {
       for (const PrimSphere& s : this->spheres) {
         float t;
         if (IntersectionUtil::intersects (ray, s, &t)) {
-          intersection.update (t, ray.pointAt (t), glm::normalize (ray.pointAt (t) - s.center ()));
+          intersection.update (t, ray.pointAt (t)
+                                , glm::normalize (ray.pointAt (t) - s.center ())
+                                , mesh
+                                , *this->self );
         }
       }
     }
@@ -103,13 +110,13 @@ struct SketchPath :: Impl {
   }
 };
 
-DELEGATE_BIG6 (SketchPath)
+DELEGATE_BIG6_SELF (SketchPath)
 GETTER_CONST    (const SketchPath::Spheres&, SketchPath, spheres)
 GETTER_CONST    (const glm::vec3&          , SketchPath, minimum)
 GETTER_CONST    (const glm::vec3&          , SketchPath, maximum)
 DELEGATE_CONST  (bool                      , SketchPath, isEmpty)
 DELEGATE2       (void                      , SketchPath, addSphere, const glm::vec3&, float)
 DELEGATE2_CONST (void                      , SketchPath, render, Camera&, Mesh&)
-DELEGATE2_CONST (bool                      , SketchPath, intersects, const PrimRay&, Intersection&)
+DELEGATE3       (bool                      , SketchPath, intersects, const PrimRay&, SketchMesh&, SketchPathIntersection&)
 DELEGATE1       (SketchPath                , SketchPath, mirror, const PrimPlane&)
 DELEGATE3       (void                      , SketchPath, smooth, const glm::vec3&, float, unsigned int)

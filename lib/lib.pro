@@ -57,13 +57,14 @@ SOURCES += \
            src/sketch/mesh-intersection.cpp \
            src/sketch/node-intersection.cpp \
            src/sketch/path.cpp \
+           src/sketch/path-intersection.cpp \
            src/state.cpp \
            src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/convert-sketch.cpp \
            src/tool/delete-mesh.cpp \
-           src/tool/delete-sketch-node.cpp \
+           src/tool/delete-sketch.cpp \
            src/tool/modify-sketch.cpp \
            src/tool/move-mesh.cpp \
            src/tool/move-camera.cpp \
@@ -160,6 +161,7 @@ HEADERS += \
            src/sketch/mesh-intersection.hpp \
            src/sketch/node-intersection.hpp \
            src/sketch/path.hpp \
+           src/sketch/path-intersection.hpp \
            src/state.hpp \
            src/subdivision-butterfly.hpp \
            src/time-delta.hpp \

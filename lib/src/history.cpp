@@ -79,8 +79,6 @@ namespace {
     }
     if (config.snapshotSketchMeshes) {
       scene.forEachConstMesh ([&config, &snapshot] (const SketchMesh& mesh) {
-        assert (mesh.tree ().hasRoot ());
-
         snapshot.sketchMeshes.push_back ({ mesh.tree (), mesh.paths () });
       });
     }

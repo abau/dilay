@@ -33,6 +33,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     bool               intersects      (const PrimRay&, SketchBoneIntersection&);
     bool               intersects      (const PrimRay&, SketchMeshIntersection&);
     bool               intersects      (const PrimRay&, SketchMeshIntersection&, unsigned int);
+    bool               intersects      (const PrimRay&, SketchPathIntersection&);
     void               render          (Camera&);
     void               renderWireframe (bool);
     PrimPlane          mirrorPlane     (Dimension);
@@ -43,6 +44,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void               move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
     void               scale           (SketchNode&, float, bool, const Dimension*);
     void               deleteNode      (SketchNode&, bool, const Dimension*);
+    void               deletePathSLOW  (SketchPath&, const Dimension*);
     void               mirror          (Dimension);
     void               rebalance       (SketchNode&);
     SketchNode&        snap            (SketchNode&, Dimension);

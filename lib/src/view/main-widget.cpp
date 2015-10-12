@@ -80,7 +80,7 @@ struct ViewMainWidget :: Impl {
     toolPane->setLayout (toolPaneLayout);
     this->addToolButton <ToolNewSketch>        (toolPaneLayout, QObject::tr ("New sketch"));
     this->addToolButton <ToolModifySketch>     (toolPaneLayout, QObject::tr ("Modify sketch"));
-    this->addToolButton <ToolDeleteSketchNode> (toolPaneLayout, QObject::tr ("Delete node"));
+    this->addToolButton <ToolDeleteSketch>     (toolPaneLayout, QObject::tr ("Delete sketch"));
     this->addToolButton <ToolRebalanceSketch>  (toolPaneLayout, QObject::tr ("Rebalance sketch"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
     this->addToolButton <ToolSketchSpheres>    (toolPaneLayout, QObject::tr ("Sketch spheres"));

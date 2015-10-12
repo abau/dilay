@@ -27,7 +27,7 @@ class SketchPath {
     bool             isEmpty    () const;
     void             addSphere  (const glm::vec3&, float);
     void             render     (Camera&, Mesh&) const;
-    bool             intersects (const PrimRay&, Intersection&) const;
+    bool             intersects (const PrimRay&, SketchMesh&, SketchPathIntersection&);
     SketchPath       mirror     (const PrimPlane&);
     void             smooth     (const glm::vec3&, float, unsigned int);
 

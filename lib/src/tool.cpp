@@ -245,5 +245,7 @@ template bool Tool :: intersectsScene (const glm::ivec2&, SketchMeshIntersection
 template bool Tool :: intersectsScene (const QMouseEvent&, SketchMeshIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchMeshIntersection&, unsigned int);
 template bool Tool :: intersectsScene (const QMouseEvent&, SketchMeshIntersection&, unsigned int);
+template bool Tool :: intersectsScene (const glm::ivec2&, SketchPathIntersection&);
+template bool Tool :: intersectsScene (const QMouseEvent&, SketchPathIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, Intersection&);
 template bool Tool :: intersectsScene (const QMouseEvent&, Intersection&);

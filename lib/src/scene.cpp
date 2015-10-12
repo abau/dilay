@@ -13,6 +13,7 @@
 #include "sketch/bone-intersection.hpp"
 #include "sketch/mesh-intersection.hpp"
 #include "sketch/node-intersection.hpp"
+#include "sketch/path-intersection.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
@@ -126,6 +127,10 @@ struct Scene :: Impl {
                   , unsigned int numExcludedLastPaths )
   {
     return this->intersectsT <SketchMesh> (ray, intersection, numExcludedLastPaths);
+  }
+
+  bool intersects (const PrimRay& ray, SketchPathIntersection& intersection) {
+    return this->intersectsT <SketchMesh> (ray, intersection);
   }
 
   bool intersects (const PrimRay& ray, Intersection& intersection) {
@@ -322,6 +327,7 @@ DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchNo
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE3       (bool              , Scene, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchPathIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, Intersection&)
 DELEGATE1_CONST (void              , Scene, printStatistics, bool)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
