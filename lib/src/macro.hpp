@@ -10,28 +10,30 @@
 
 // delegators
 
+#define SET_SELF this->impl->self = this;
+
 #define DELEGATE_COPY_CONSTRUCTOR(from) \
   from :: from (const from & a1) : impl (new Impl (*a1.impl)) {}
 
 #define DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
   from :: from (const from & a1) : impl (new Impl (*a1.impl)) { \
-    this->impl->self = this; }
+    SET_SELF }
 
 #define DELEGATE_COPY_CONSTRUCTOR_BASE(from,base) \
   from :: from (const from & a1) : base (a1), impl (new Impl (*a1.impl)) { \
-    this->impl->self = this; }
+    SET_SELF }
 
 #define DELEGATE_MOVE_CONSTRUCTOR(from) \
   from :: from (from && a1) : impl (new Impl (std::move (*a1.impl))) {}
 
 #define DELEGATE_MOVE_CONSTRUCTOR_SELF(from) \
   from :: from (from && a1) : impl (new Impl (std::move (*a1.impl))) { \
-    this->impl->self = this; }
+    SET_SELF }
 
 #define DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
   from :: from (from && a1) : base (std::forward < base > (a1)) \
-                            , impl (new Impl (std::move (*a1.impl))) \
-    { this->impl->self = this; }
+                            , impl (new Impl (std::move (*a1.impl))) { \
+    SET_SELF }
 
 #define DELEGATE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (const from & source) { \
@@ -41,6 +43,12 @@
 #define DELEGATE_MOVE_ASSIGNMENT_OP(from) \
   const from & from :: operator= (from && source) { \
     this->impl->operator= (std::move (*source.impl)); \
+    return *this; }
+
+#define DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from) \
+  const from & from :: operator= (from && source) { \
+    this->impl->operator= (std::move (*source.impl)); \
+    SET_SELF \
     return *this; }
 
 #define DELEGATE_DESTRUCTOR(from) from :: ~ from () {}
@@ -59,7 +67,7 @@
 
 #define DELEGATE_BIG4MOVE_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
 #define DELEGATE_BIG4COPY_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
@@ -77,7 +85,7 @@
 
 #define DELEGATE_BIG6_WITHOUT_CONSTRUCTOR_SELF(from) \
   DELEGATE_BIG3_WITHOUT_CONSTRUCTOR_SELF(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP(from) \
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from) \
   DELEGATE_COPY_CONSTRUCTOR_SELF(from) \
   DELEGATE_ASSIGNMENT_OP(from)
 
@@ -366,7 +374,7 @@
   DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
   DELEGATE_DESTRUCTOR(from) \
   DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
 // big 4 (copy) delegators
 
@@ -480,7 +488,7 @@
   DELEGATE_COPY_CONSTRUCTOR_BASE(from,base) \
   DELEGATE_MOVE_CONSTRUCTOR_BASE(from,base) \
   DELEGATE_ASSIGNMENT_OP(from) \
-  DELEGATE_MOVE_ASSIGNMENT_OP(from)
+  DELEGATE_MOVE_ASSIGNMENT_OP_SELF(from)
 
 // getters/setters
 
