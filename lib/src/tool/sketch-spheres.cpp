@@ -126,10 +126,15 @@ struct ToolSketchSpheres::Impl {
     }
   }
 
-  glm::vec3 newSpherePosition (const SketchMeshIntersection& intersection) {
-    return intersection.position () 
-         - (intersection.normal () * float (this->radiusEdit.doubleValue ()
-                                   * (1.0f - (2.0f * this->heightEdit.doubleValue ()))));
+  glm::vec3 newSpherePosition (bool considerHeight, const SketchMeshIntersection& intersection) {
+    if (considerHeight) {
+      return intersection.position () 
+           - (intersection.normal () * float (this->radiusEdit.doubleValue ()
+                                     * (1.0f - (2.0f * this->heightEdit.doubleValue ()))));
+    }
+    else {
+      return intersection.position ();
+    }
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
@@ -159,6 +164,7 @@ struct ToolSketchSpheres::Impl {
       }
       else if (this->mesh) {
         const unsigned int numExcludedLastPaths = this->self->hasMirror () ? 2 : 1;
+              bool         considerHeight       = true;
 
         if (this->self->intersectsScene (e, intersection, numExcludedLastPaths) == false) {
           const Camera&   camera = this->self->state ().camera ();
@@ -168,14 +174,14 @@ struct ToolSketchSpheres::Impl {
           float t;
           if (IntersectionUtil::intersects (ray, plane, &t)) {
             intersection.update (t, ray.pointAt (t), plane.normal (), *this->mesh);
+            considerHeight = false;
           }
         }
 
         if (intersection.isIntersection () && minDistance (intersection)) {
           this->previousPosition = intersection.position ();
 
-          // TODO add more spheres if distance is big
-          this->mesh->addSphere ( false, this->newSpherePosition (intersection)
+          this->mesh->addSphere ( false, this->newSpherePosition (considerHeight, intersection)
                                 , this->radiusEdit.doubleValue ()
                                 , this->self->mirrorDimension () );
         }
@@ -210,7 +216,7 @@ struct ToolSketchSpheres::Impl {
                                   , this->self->mirrorDimension () );
         }
         else {
-          this->mesh->addSphere ( true, this->newSpherePosition (intersection)
+          this->mesh->addSphere ( true, this->newSpherePosition (true, intersection)
                                 , this->radiusEdit.doubleValue ()
                                 , this->self->mirrorDimension () );
         }
