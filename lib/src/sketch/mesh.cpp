@@ -105,14 +105,10 @@ struct SketchMesh::Impl {
                               , node.parent ()->data ().radius () );
           float tRay, tCone;
           if (IntersectionUtil::intersects (ray, cone, &tRay, &tCone)) {
-            const glm::vec3 p     = ray.pointAt (tRay);
-            const glm::vec3 projP = cone.center1 () + (tCone * cone.direction ());
-            const glm::vec3 diff  = glm::normalize (p - projP);
-            const glm::vec3 slope = (cone.center2 () + (cone.radius2 () * diff))
-                                  - (cone.center1 () + (cone.radius1 () * diff));
-            const glm::vec3 tang  = glm::cross (diff, cone.direction ());
-            const glm::vec3 n     = glm::normalize (glm::cross (slope, tang));
-            intersection.update (tRay, p, projP, n, *this->self, node);
+            const glm::vec3 p = ray.pointAt (tRay);
+
+            intersection.update (tRay, p, cone.projPointAt (tCone)
+                                        , cone.normalAt (p, tCone), *this->self, node);
           }
         }
       });

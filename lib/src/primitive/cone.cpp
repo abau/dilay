@@ -24,6 +24,20 @@ PrimCone :: PrimCone (const glm::vec3& c1, float r1, const glm::vec3& c2, float 
   , _cosSqrAlpha (glm::cos (this->_alpha * this->_alpha))
 {}
 
+glm::vec3 PrimCone :: projPointAt (float tCone) const {
+  return this->_center1 + (tCone * this->_direction);
+}
+
+glm::vec3 PrimCone :: normalAt (const glm::vec3& pointAt, float tCone) const {
+  const glm::vec3 projP = this->projPointAt (tCone);
+  const glm::vec3 diff  = glm::normalize (pointAt - projP);
+  const glm::vec3 slope = (this->_center2 + (this->_radius2 * diff))
+                        - (this->_center1 + (this->_radius1 * diff));
+  const glm::vec3 tang  = glm::cross (diff, this->_direction);
+
+  return glm::normalize (glm::cross (slope, tang));
+}
+
 std::ostream& operator<<(std::ostream& os, const PrimCone& cone) {
   os << "PrimCone { center1 = " << (cone.center1 ()) 
               << ", radius1 = " << (cone.radius1 ())
