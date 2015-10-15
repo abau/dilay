@@ -101,8 +101,8 @@ namespace {
   }
 }
 
-bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& vec) {
-  const glm::vec3 d = vec - sphere.center ();
+bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& point) {
+  const glm::vec3 d = point - sphere.center ();
   const float     r = sphere.radius ();
   return glm::dot (d,d) <= r * r;
 }
@@ -363,4 +363,29 @@ bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimTriangle&
                     || d3 > -Util::epsilon ();
 
   return less && greater;
+}
+
+bool IntersectionUtil :: intersects (const PrimCylinder& cylinder, const glm::vec3& point) {
+  const glm::vec3 d   = point - cylinder.center1 ();
+  const float     dot = glm::dot (cylinder.direction (), d);
+  const glm::vec3 t   = d - (cylinder.direction () * dot);
+
+  return dot >= 0.0f
+      && dot * dot <= glm::distance2 (cylinder.center1 (), cylinder.center2 ())
+      && glm::dot (t,t) <= cylinder.radius () * cylinder.radius ();
+}
+
+bool IntersectionUtil :: intersects (const PrimCone& cone, const glm::vec3& point) {
+  if (cone.isCylinder ()) {
+    return IntersectionUtil::intersects (PrimCylinder (cone), point);
+  }
+  else {
+    const glm::vec3 d    = point - cone.center1 ();
+    const float     dot  = glm::dot (cone.direction (), d);
+    const glm::vec3 t    = d - (cone.direction () * dot);
+    const float     dist = glm::distance (cone.center1 (), cone.center2 ());
+    const float     r    = Util::lerp (dot / dist, cone.radius1 (), cone.radius2 ());
+
+    return dot >= 0.0f && dot <= dist && glm::dot (t,t) <= r * r;
+  }
 }

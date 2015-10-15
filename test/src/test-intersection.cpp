@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include "intersection.hpp"
 #include "primitive/aabox.hpp"
+#include "primitive/cone.hpp"
+#include "primitive/cylinder.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
@@ -21,6 +23,10 @@ void TestIntersection::test () {
   PrimPlane    pln ( glm::vec3 (0.0f, 0.0f, 0.0f)
                    , glm::vec3 (0.0f, 1.0f, 0.0f) );
   PrimAABox    abx ( glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f );
+  PrimCylinder cyl ( glm::vec3 (0.0f, 0.0f, 0.0f)
+                   , glm::vec3 (0.0f, 1.0f, 0.0f), 1.0f );
+  PrimCone     cne ( glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f
+                   , glm::vec3 (0.0f, 1.0f, 0.0f), 0.5f );
 
   float t = 0.0f;
 
@@ -83,4 +89,18 @@ void TestIntersection::test () {
 
   assert (intersects (PrimPlane ( glm::vec3 (0.0f, 2.0f, 0.0f)
                                 , glm::vec3 (0.0f, 1.0f, 0.0f) ), tri));
+
+  assert (intersects (cyl, glm::vec3 (0.0f, -0.1f, 0.0f)) == false);
+  assert (intersects (cyl, glm::vec3 (0.0f,  1.1f, 0.0f)) == false);
+  assert (intersects (cyl, glm::vec3 (1.1f,  0.1f, 0.0f)) == false);
+  assert (intersects (cyl, glm::vec3 (1.0f,  0.0f, 0.0f)));
+  assert (intersects (cyl, glm::vec3 (1.0f,  1.0f, 0.0f)));
+  assert (intersects (cyl, glm::vec3 (0.9f,  0.1f, 0.0f)));
+  assert (intersects (cyl, glm::vec3 (0.1f,  0.9f, 0.0f)));
+
+  assert (intersects (cne, glm::vec3 (0.0f, -0.1f, 0.0f)) == false);
+  assert (intersects (cne, glm::vec3 (1.0f,  0.1f, 0.0f)) == false);
+  assert (intersects (cne, glm::vec3 (1.0f,  0.0f, 0.0f)));
+  assert (intersects (cne, glm::vec3 (0.5f,  1.0f, 0.0f)));
+  assert (intersects (cne, glm::vec3 (0.8f,  0.1f, 0.0f)));
 }
