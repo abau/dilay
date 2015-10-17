@@ -58,13 +58,6 @@ DELEGATE3        (bool            , Intersection, update, float, const glm::vec3
 DELEGATE2_STATIC (Intersection&   , Intersection, min, Intersection&, Intersection&)
 
 namespace {
-  template <typename T>
-  void writeIfNotNull (T* ptr, T value) {
-    if (ptr) {
-      *ptr = value;
-    }
-  }
-
   bool intersectsQuadric (float a, float b, float c, bool alongLine, float* t) {
     float s1,s2;
     const unsigned int n = Util :: solveQuadraticEq (a, b, c, s1, s2);
@@ -75,7 +68,7 @@ namespace {
 
       case 1:
         if (s1 >= 0.0f || alongLine) {
-          writeIfNotNull (t, s1);
+          Util::setIfNotNull (t, s1);
           return true;
         }
         else {
@@ -86,11 +79,11 @@ namespace {
         const float sMax = glm::max (s1,s2);
 
         if (sMin >= 0.0f) {
-          writeIfNotNull (t, sMin);
+          Util::setIfNotNull (t, sMin);
           return true;
         }
         else if (sMax >= 0.0f || alongLine) {
-          writeIfNotNull (t, sMax);
+          Util::setIfNotNull (t, sMax);
           return true;
         }
         return false;
@@ -99,12 +92,6 @@ namespace {
         DILAY_IMPOSSIBLE
     }
   }
-}
-
-bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& point) {
-  const glm::vec3 d = point - sphere.center ();
-  const float     r = sphere.radius ();
-  return glm::dot (d,d) <= r * r;
 }
 
 // see http://realtimecollisiondetection.net/blog/?p=103
@@ -198,7 +185,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
   const float s = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
 
   if (s >= 0.0f || ray.isLine ()) {
-    writeIfNotNull (t, s);
+    Util::setIfNotNull (t, s);
     return true;
   }
   else {
@@ -227,7 +214,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimTriangle& tri
     return false;
   }
   else {
-    writeIfNotNull (t, tRay);
+    Util::setIfNotNull (t, tRay);
     return true;
   }
 }
@@ -265,8 +252,8 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCylinder& cy
     const float     tmpCyl = glm::dot (cylDir, p - cylinder.center1 ());
 
     if (tmpCyl >= 0.0f && tmpCyl <= cylinder.length ()) {
-      writeIfNotNull (tRay, tmpRay);
-      writeIfNotNull (tCyl, tmpCyl);
+      Util::setIfNotNull (tRay, tmpRay);
+      Util::setIfNotNull (tCyl, tmpCyl);
       return true;
     }
     else {
@@ -305,8 +292,8 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCone& cone
       const float     tmpCone = glm::dot (coneDir, p - cone.center1 ());
 
       if (tmpCone >= 0.0f && tmpCone <= cone.length ()) {
-        writeIfNotNull (tRay , tmpRay);
-        writeIfNotNull (tCone, tmpCone);
+        Util::setIfNotNull (tRay , tmpRay);
+        Util::setIfNotNull (tCone, tmpCone);
         return true;
       }
       else {

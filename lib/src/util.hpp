@@ -44,6 +44,13 @@ namespace Util {
 
   constexpr float        epsilon      () { return 0.0001f; }
   constexpr unsigned int invalidIndex () { return std::numeric_limits <unsigned int>::max (); }
+
+  template <typename T>
+  void setIfNotNull (T* ptr, const T& value) {
+    if (ptr) {
+      *ptr = value;
+    }
+  }
 }
 
 #endif
