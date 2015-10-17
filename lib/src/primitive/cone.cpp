@@ -20,8 +20,8 @@ PrimCone :: PrimCone (const glm::vec3& c1, float r1, const glm::vec3& c2, float 
                                                        / (this->_radius1 - this->_radius2) ))
   , _alpha       (glm::atan ( (this->_radius1 - this->_radius2)
                             / glm::distance (this->_center2, this->_center1) ))
-  , _sinSqrAlpha (glm::sin (this->_alpha * this->_alpha))
-  , _cosSqrAlpha (glm::cos (this->_alpha * this->_alpha))
+  , _sinSqrAlpha (glm::sin (this->_alpha) * glm::sin (this->_alpha))
+  , _cosSqrAlpha (glm::cos (this->_alpha) * glm::cos (this->_alpha))
 {}
 
 glm::vec3 PrimCone :: projPointAt (float tCone) const {
