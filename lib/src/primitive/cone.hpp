@@ -11,11 +11,13 @@
 class PrimCone {
   public:
     PrimCone (const glm::vec3&, float, const glm::vec3&, float);
+    PrimCone (const glm::vec3&, float, const glm::vec3&, float, float);
 
     const glm::vec3& center1     () const { return this->_center1; }
           float      radius1     () const { return this->_radius1; }
     const glm::vec3& center2     () const { return this->_center2; }
           float      radius2     () const { return this->_radius2; }
+          float      length      () const { return this->_length; }
     const glm::vec3& direction   () const { return this->_direction; }
           bool       isCylinder  () const { return this->_isCylinder; }
     const glm::vec3& apex        () const { return this->_apex; }
@@ -31,6 +33,7 @@ class PrimCone {
     const float     _radius1;
     const glm::vec3 _center2;
     const float     _radius2;
+    const float     _length;
     const glm::vec3 _direction;
     const bool      _isCylinder;
     const glm::vec3 _apex;

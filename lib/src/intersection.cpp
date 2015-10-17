@@ -261,11 +261,10 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCylinder& cy
                          , glm::dot (c, c) - radius2
                          , ray.isLine (), &tmpRay ) )
   {
-    const glm::vec3 p       = ray.pointAt (tmpRay);
-    const float     tmpCyl  = glm::dot (cylDir, p - cylinder.center1 ());
-    const float     lenght2 = glm::distance2 (cylinder.center1 (), cylinder.center2 ());
+    const glm::vec3 p      = ray.pointAt (tmpRay);
+    const float     tmpCyl = glm::dot (cylDir, p - cylinder.center1 ());
 
-    if (tmpCyl >= 0.0f && tmpCyl * tmpCyl <= lenght2) {
+    if (tmpCyl >= 0.0f && tmpCyl <= cylinder.length ()) {
       writeIfNotNull (tRay, tmpRay);
       writeIfNotNull (tCyl, tmpCyl);
       return true;
@@ -304,9 +303,8 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCone& cone
     {
       const glm::vec3 p       = ray.pointAt (tmpRay);
       const float     tmpCone = glm::dot (coneDir, p - cone.center1 ());
-      const float     lenght2 = glm::distance2 (cone.center1 (), cone.center2 ());
 
-      if (tmpCone >= 0.0f && tmpCone * tmpCone <= lenght2) {
+      if (tmpCone >= 0.0f && tmpCone <= cone.length ()) {
         writeIfNotNull (tRay , tmpRay);
         writeIfNotNull (tCone, tmpCone);
         return true;
@@ -371,7 +369,7 @@ bool IntersectionUtil :: intersects (const PrimCylinder& cylinder, const glm::ve
   const glm::vec3 t   = d - (cylinder.direction () * dot);
 
   return dot >= 0.0f
-      && dot * dot <= glm::distance2 (cylinder.center1 (), cylinder.center2 ())
+      && dot <= cylinder.length ()
       && glm::dot (t,t) <= cylinder.radius () * cylinder.radius ();
 }
 
@@ -383,9 +381,8 @@ bool IntersectionUtil :: intersects (const PrimCone& cone, const glm::vec3& poin
     const glm::vec3 d    = point - cone.center1 ();
     const float     dot  = glm::dot (cone.direction (), d);
     const glm::vec3 t    = d - (cone.direction () * dot);
-    const float     dist = glm::distance (cone.center1 (), cone.center2 ());
-    const float     r    = Util::lerp (dot / dist, cone.radius1 (), cone.radius2 ());
+    const float     r    = Util::lerp (dot / cone.length (), cone.radius1 (), cone.radius2 ());
 
-    return dot >= 0.0f && dot <= dist && glm::dot (t,t) <= r * r;
+    return dot >= 0.0f && dot <= cone.length () && glm::dot (t,t) <= r * r;
   }
 }
