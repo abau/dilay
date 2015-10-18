@@ -8,20 +8,20 @@
 #include "util.hpp"
 
 PrimCone :: PrimCone (const glm::vec3& c1, float r1, const glm::vec3& c2, float r2, float l)
-  : _center1     (r1 > r2 ? c1 : c2)
-  , _radius1     (r1 > r2 ? r1 : r2) 
-  , _center2     (r1 > r2 ? c2 : c1)
-  , _radius2     (r1 > r2 ? r2 : r1) 
-  , _length      (l)
-  , _direction   ((this->_center2 - this->_center1) / glm::vec3 (l))
-  , _isCylinder  (glm::epsilonEqual (r1, r2, Util::epsilon ()))
-  , _apex        (this->_isCylinder ? glm::vec3 (0.0f)
-                                    : this->_center1 + ( this->_radius1
-                                                       * (this->_center2 - this->_center1)
-                                                       / (this->_radius1 - this->_radius2) ))
-  , _alpha       (glm::atan ((this->_radius1 - this->_radius2) / l))
-  , _sinSqrAlpha (glm::sin (this->_alpha) * glm::sin (this->_alpha))
-  , _cosSqrAlpha (glm::cos (this->_alpha) * glm::cos (this->_alpha))
+  : _center1    (r1 > r2 ? c1 : c2)
+  , _radius1    (r1 > r2 ? r1 : r2) 
+  , _center2    (r1 > r2 ? c2 : c1)
+  , _radius2    (r1 > r2 ? r2 : r1) 
+  , _length     (l)
+  , _direction  ((this->_center2 - this->_center1) / glm::vec3 (l))
+  , _isCylinder (glm::epsilonEqual (r1, r2, Util::epsilon ()))
+  , _apex       (this->_isCylinder ? glm::vec3 (0.0f)
+                                   : this->_center1 + ( this->_radius1
+                                                      * (this->_center2 - this->_center1)
+                                                      / (this->_radius1 - this->_radius2) ))
+  , _alpha      (glm::atan ((this->_radius1 - this->_radius2) / l))
+  , _sinAlpha   (glm::sin (this->_alpha))
+  , _cosAlpha   (glm::cos (this->_alpha))
 {}
 
 PrimCone :: PrimCone (const glm::vec3& c1, float r1, const glm::vec3& c2, float r2) 

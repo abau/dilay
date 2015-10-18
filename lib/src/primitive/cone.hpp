@@ -22,8 +22,8 @@ class PrimCone {
           bool       isCylinder  () const { return this->_isCylinder; }
     const glm::vec3& apex        () const { return this->_apex; }
           float      alpha       () const { return this->_alpha; }
-          float      sinSqrAlpha () const { return this->_sinSqrAlpha; }
-          float      cosSqrAlpha () const { return this->_cosSqrAlpha; }
+          float      sinAlpha    () const { return this->_sinAlpha; }
+          float      cosAlpha    () const { return this->_cosAlpha; }
 
           glm::vec3  projPointAt (float) const;
           glm::vec3  normalAt    (const glm::vec3&, float) const;
@@ -38,8 +38,8 @@ class PrimCone {
     const bool      _isCylinder;
     const glm::vec3 _apex;
     const float     _alpha;
-    const float     _sinSqrAlpha;
-    const float     _cosSqrAlpha;
+    const float     _sinAlpha;
+    const float     _cosAlpha;
 };
 
 std::ostream& operator<<(std::ostream&, const PrimCone&);

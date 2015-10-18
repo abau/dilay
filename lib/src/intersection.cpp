@@ -279,13 +279,15 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCone& cone
     const float      dotO    = glm::dot (coneDir, offset);
     const glm::vec3  d       = dir - (coneDir * dotD);
     const glm::vec3  c       = offset - (coneDir * glm::dot (coneDir, offset));
+    const float      sinSqr  = cone.sinAlpha () * cone.sinAlpha ();
+    const float      cosSqr  = cone.cosAlpha () * cone.cosAlpha ();
           float      tmpRay;
 
     if (intersectsQuadric
-         ( (cone.cosSqrAlpha () * glm::dot (d,d)) - (cone.sinSqrAlpha () * dotD * dotD)
-         , (2.0f * cone.cosSqrAlpha () * glm::dot (c, d))
-         - (2.0f * cone.sinSqrAlpha () * dotD * dotO)
-         , (cone.cosSqrAlpha () * glm::dot (c,c)) - (cone.sinSqrAlpha () * dotO * dotO)
+         ( (cosSqr * glm::dot (d,d)) - (sinSqr * dotD * dotD)
+         , (2.0f * cosSqr * glm::dot (c, d))
+         - (2.0f * sinSqr * dotD * dotO)
+         , (cosSqr * glm::dot (c,c)) - (sinSqr * dotO * dotO)
          , ray.isLine (), &tmpRay ) )
     {
       const glm::vec3 p       = ray.pointAt (tmpRay);
