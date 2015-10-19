@@ -17,6 +17,7 @@ SOURCES += \
            src/test-tree.cpp
 
 HEADERS += \
+           src/test-bitset.hpp \
            src/test-intersection.hpp \
            src/test-intrusive-list.hpp \
            src/test-maybe.hpp \
