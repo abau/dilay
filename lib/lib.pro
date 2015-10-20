@@ -17,6 +17,7 @@ SOURCES += \
            src/config.cpp \
            src/configurable.cpp \
            src/dimension.cpp \
+           src/distance.cpp \
            src/history.cpp \
            src/index-octree.cpp \
            src/intersection.cpp \
@@ -116,6 +117,7 @@ HEADERS += \
            src/config.hpp \
            src/configurable.hpp \
            src/dimension.hpp \
+           src/distance.hpp \
            src/hash.hpp \
            src/history.hpp \
            src/index-octree.hpp \

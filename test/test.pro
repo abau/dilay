@@ -9,6 +9,7 @@ INCLUDEPATH    += src $$PWD/../lib/src
 SOURCES += \
            src/main.cpp \
            src/test-bitset.cpp \
+           src/test-distance.cpp \
            src/test-intersection.cpp \
            src/test-intrusive-list.cpp \
            src/test-maybe.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
            src/test-bitset.hpp \
+           src/test-distance.hpp \
            src/test-intersection.hpp \
            src/test-intrusive-list.hpp \
            src/test-maybe.hpp \

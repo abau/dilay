@@ -5,6 +5,7 @@
 #include <iostream>
 #include <QCoreApplication>
 #include "test-bitset.hpp"
+#include "test-distance.hpp"
 #include "test-intersection.hpp"
 #include "test-intrusive-list.hpp"
 #include "test-maybe.hpp"
@@ -27,6 +28,7 @@ int main () {
   TestTree         ::test1 ();
   TestTree         ::test2 ();
   TestMisc         ::test  ();
+  TestDistance     ::test  ();
 
   std::cout << "all tests run successfully\n";
   return 0;
