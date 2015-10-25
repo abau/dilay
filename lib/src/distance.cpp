@@ -5,13 +5,13 @@
 #include <glm/glm.hpp>
 #include "distance.hpp"
 #include "primitive/cone.hpp"
+#include "primitive/cone-sphere.hpp"
 #include "primitive/cylinder.hpp"
 #include "primitive/sphere.hpp"
-#include "util.hpp"
 
 namespace {
   float distanceToCylinder ( const glm::vec3& center1, float radius, float length
-                           , const glm::vec3& direction, const glm::vec3& point, float* tCyl )
+                           , const glm::vec3& direction, const glm::vec3& point )
   {
     const glm::vec3 toP = point - center1;
     const float x       = glm::dot (toP, direction);  
@@ -29,8 +29,6 @@ namespace {
                      : glm::sqrt ((xl * xl) + (yr * yr));
     }
     else {
-      Util::setIfNotNull (tCyl, x);
-
       return insideR ? glm::max (-x, glm::max (yr, xl))
                      : yr;
     }
@@ -41,15 +39,15 @@ float Distance::distance (const PrimSphere& sphere, const glm::vec3& point) {
     return glm::distance (sphere.center (), point) - sphere.radius ();
 }
 
-float Distance::distance (const PrimCylinder& cylinder, const glm::vec3& point, float* tCyl) {
+float Distance::distance (const PrimCylinder& cylinder, const glm::vec3& point) {
   return distanceToCylinder ( cylinder.center1 (), cylinder.radius (), cylinder.length ()
-                            , cylinder.direction (), point, tCyl );
+                            , cylinder.direction (), point );
 }
 
-float Distance::distance (const PrimCone& cone, const glm::vec3& point, float* tCone) {
+float Distance::distance (const PrimCone& cone, const glm::vec3& point) {
   if (cone.isCylinder ()) {
     return distanceToCylinder ( cone.center1 (), cone.radius1 (), cone.length ()
-                              , cone.direction (), point, tCone );
+                              , cone.direction (), point );
   }
   else {
     const glm::vec3 toP = point - cone.center1 ();
@@ -60,7 +58,7 @@ float Distance::distance (const PrimCone& cone, const glm::vec3& point, float* t
     const float l       = cone.length ();
 
     if (x <= 0.0f) {
-      return y <= r1 ? glm::abs (x)
+      return y <= r1 ? -x
                      : glm::sqrt ((x * x) + ((y - r1) * (y - r1)));
     }
     else if (x >= l && y <= r2) {
@@ -78,13 +76,9 @@ float Distance::distance (const PrimCone& cone, const glm::vec3& point, float* t
       else if (xn >= s) {
         if (x <= l) {
           assert (yn <= 0.0f);
-
-          Util::setIfNotNull (tCone, x);
           return x - l;
         }
         else {
-          assert (yn >= 0.0f);
-
           return glm::sqrt ((yn * yn) + ((xn - s) * (xn - s)));
         }
       }
@@ -92,10 +86,60 @@ float Distance::distance (const PrimCone& cone, const glm::vec3& point, float* t
         return yn;
       }
       else {
-        Util::setIfNotNull (tCone, x);
-
         return glm::max (-x, glm::max (yn, x - l));
       }
     }
+  }
+}
+
+float Distance::distance (const PrimConeSphere& coneSphere, const glm::vec3& point) {
+  const glm::vec3 toP = point - coneSphere.sphere1 ().center ();
+  const float x       = glm::dot (toP, coneSphere.direction ());  
+  const float y       = glm::sqrt (glm::dot (toP, toP) - (x * x));
+  const float r1      = coneSphere.sphere1 ().radius ();
+  const float r2      = coneSphere.sphere2 ().radius ();
+  const float l       = coneSphere.length ();
+
+  if (coneSphere.sameRadii ()) {
+    if (x <= 0.0f) {
+      return glm::sqrt ((x * x) + (y * y)) - r1;
+    }
+    else if (x >= l) {
+      return glm::sqrt (((x - l) * (x - l)) + (y * y)) - r1;
+    }
+    else {
+      return y - r1;
+    }
+  }
+  else if (coneSphere.hasCone ()) {
+    const float s   = coneSphere.coneSideLength ();
+    const float h1  = r1 * coneSphere.delta () / l;
+    const float h2  = r2 * coneSphere.delta () / l;
+    const float r1c = r1 * s / l;
+    const float r2c = r2 * s / l;
+
+    if (x <= 0.0f) {
+      return glm::sqrt ((x * x) + (y * y)) - r1;
+    }
+    else if (x >= l + h2 && y <= r2c) {
+      return glm::sqrt (((x - l) * (x - l)) + (y * y)) - r2;
+    }
+    else {
+      const float xn = ((x - h1) * coneSphere.cosAlpha ()) - ((y - r1c) * coneSphere.sinAlpha ());
+      const float yn = ((x - h1) * coneSphere.sinAlpha ()) + ((y - r1c) * coneSphere.cosAlpha ());
+
+      if (xn <= 0.0f) {
+        return glm::sqrt ((x * x) + (y * y)) - r1;
+      }
+      else if (xn >= s) {
+        return glm::sqrt (((x - l) * (x - l)) + (y * y)) - r2;
+      }
+      else {
+        return yn;
+      }
+    }
+  }
+  else {
+    return glm::sqrt ((x * x) + (y * y)) - r1;
   }
 }

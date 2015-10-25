@@ -42,6 +42,7 @@ SOURCES += \
            src/partial-action/triangulate-quad.cpp \
            src/primitive/aabox.cpp \
            src/primitive/cone.cpp \
+           src/primitive/cone-sphere.cpp \
            src/primitive/cylinder.cpp \
            src/primitive/plane.cpp \
            src/primitive/ray.cpp \
@@ -146,6 +147,7 @@ HEADERS += \
            src/partial-action/triangulate-quad.hpp \
            src/primitive/aabox.hpp \
            src/primitive/cone.hpp \
+           src/primitive/cone-sphere.hpp \
            src/primitive/cylinder.hpp \
            src/primitive/plane.hpp \
            src/primitive/ray.hpp \

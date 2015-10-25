@@ -8,13 +8,15 @@
 #include <glm/fwd.hpp>
 
 class PrimCone;
+class PrimConeSphere;
 class PrimCylinder;
 class PrimSphere;
 
 namespace Distance {
   float distance (const PrimSphere&, const glm::vec3&);
-  float distance (const PrimCylinder&, const glm::vec3&, float*);
-  float distance (const PrimCone&, const glm::vec3&, float*);
+  float distance (const PrimCylinder&, const glm::vec3&);
+  float distance (const PrimCone&, const glm::vec3&);
+  float distance (const PrimConeSphere&, const glm::vec3&);
 }
 
 #endif
