@@ -129,10 +129,6 @@ bool Util :: isNaN (const glm::vec3& v) {
 }
 
 
-float Util :: lerp (float t, float v0, float v1) {
-  return ((1.0f - t) * v0) + (t * v1);
-}
-
 void Util :: warn (const char* file, unsigned int line, const char* format, ...) {
   va_list args1;
   va_list args2;

@@ -203,7 +203,7 @@ struct SketchMesh::Impl {
 
             for (float d = radius * 0.5f; d < distance; ) {
               const glm::vec3 bubblePos    = pos + (d * direction);
-              const float     bubbleRadius = Util::lerp (d/distance, radius, parRadius);
+              const float     bubbleRadius = glm::mix (radius, parRadius, d/distance);
 
               this->sphereMesh.position (bubblePos);
               this->sphereMesh.scaling  (glm::vec3 (bubbleRadius));

@@ -370,7 +370,7 @@ bool IntersectionUtil :: intersects (const PrimCone& cone, const glm::vec3& poin
     const glm::vec3 d    = point - cone.center1 ();
     const float     dot  = glm::dot (cone.direction (), d);
     const glm::vec3 t    = d - (cone.direction () * dot);
-    const float     r    = Util::lerp (dot / cone.length (), cone.radius1 (), cone.radius2 ());
+    const float     r    = glm::mix (cone.radius1 (), cone.radius2 (), dot / cone.length ());
 
     return dot >= 0.0f && dot <= cone.length () && glm::dot (t,t) <= r * r;
   }
