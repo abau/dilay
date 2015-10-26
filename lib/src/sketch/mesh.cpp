@@ -10,6 +10,7 @@
 #include "dimension.hpp"
 #include "mesh-util.hpp"
 #include "primitive/cone.hpp"
+#include "primitive/cone-sphere.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/sphere.hpp"
@@ -99,16 +100,18 @@ struct SketchMesh::Impl {
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachNode ([this, &ray, &intersection] (SketchNode& node) {
         if (node.parent ()) {
-          const PrimCone cone ( node.data ().center ()
-                              , node.data ().radius ()
-                              , node.parent ()->data ().center ()
-                              , node.parent ()->data ().radius () );
-          float tRay, tCone;
-          if (IntersectionUtil::intersects (ray, cone, &tRay, &tCone)) {
-            const glm::vec3 p = ray.pointAt (tRay);
+          const PrimConeSphere coneSphere (node.data (), node.parent ()->data ());
 
-            intersection.update (tRay, p, cone.projPointAt (tCone)
-                                        , cone.normalAt (p, tCone), *this->self, node);
+          if (coneSphere.hasCone ()) {
+            const PrimCone cone = coneSphere.toCone ();
+
+            float tRay, tCone;
+            if (IntersectionUtil::intersects (ray, cone, &tRay, &tCone)) {
+              const glm::vec3 p = ray.pointAt (tRay);
+
+              intersection.update (tRay, p, cone.projPointAt (tCone)
+                                          , cone.normalAt (p, tCone), *this->self, node);
+            }
           }
         }
       });

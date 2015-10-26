@@ -6,6 +6,8 @@
 #include <glm/gtx/norm.hpp>
 #include <vector>
 #include "../mesh.hpp"
+#include "distance.hpp"
+#include "primitive/cone-sphere.hpp"
 #include "sketch/conversion.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/path.hpp"
@@ -493,19 +495,10 @@ namespace {
 
   float sampleAt (const SketchNode& node, const glm::vec3& pos) {
     if (node.parent ()) {
-      const glm::vec3& nPos    = node.data ().center ();
-      const glm::vec3& pPos    = node.parent ()->data ().center ();
-      const float      nRadius = node.data ().radius ();
-      const float      pRadius = node.parent ()->data ().radius ();
-
-      const glm::vec3 pToP = pos - pPos;
-      const glm::vec3 nToP = nPos - pPos;
-
-      const float t = glm::clamp (glm::dot (pToP,nToP) / glm::dot (nToP,nToP), 0.0f, 1.0f);
-      return glm::length (pToP - (nToP*t)) - glm::mix (pRadius, nRadius, t);
+      return Distance::distance (PrimConeSphere (node.data (), node.parent ()->data ()), pos);
     }
     else {
-      return glm::distance (node.data ().center (), pos) - node.data ().radius ();
+      return Distance::distance (node.data (), pos);
     }
   }
 
