@@ -47,8 +47,8 @@ PrimCone PrimConeSphere :: toCone () const {
   const float r1c   = this->_sphere1.radius () * s / this->_length;
   const float r2c   = this->_sphere2.radius () * s / this->_length;
 
-  return PrimCone ( this->_sphere1.center () + (this->_direction * h1), r1c
-                  , this->_sphere2.center () + (this->_direction * h2), r2c );
+  return PrimCone ( this->_sphere2.center () + (this->_direction * h2), r2c
+                  , this->_sphere1.center () + (this->_direction * h1), r1c );
 }
 
 std::ostream& operator<<(std::ostream& os, const PrimConeSphere& coneSphere) {
