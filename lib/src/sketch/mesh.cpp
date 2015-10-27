@@ -9,6 +9,7 @@
 #include "config.hpp"
 #include "dimension.hpp"
 #include "mesh-util.hpp"
+#include "primitive/aabox.hpp"
 #include "primitive/cone.hpp"
 #include "primitive/cone-sphere.hpp"
 #include "primitive/plane.hpp"
@@ -37,6 +38,31 @@ namespace {
   bool almostEqual (const glm::vec3& a, const glm::vec3& b) {
     return glm::distance2 (a, b) <= Util::epsilon () * Util::epsilon ();
   }
+
+  class PrimSphereIntersection : public Intersection {
+    public:
+      PrimSphereIntersection ()
+        : _sphere (PrimSphere (glm::vec3 (0.0f), 0.0f))
+      {}
+
+      bool update (float d, const PrimSphere& s) {
+        if (this->Intersection::update (d, s.center (), glm::vec3 (0.0f))) {
+          this->_sphere = s;
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+
+      const PrimSphere& sphere () {
+        assert (this->isIntersection ());
+        return this->_sphere;
+      }
+
+    private:
+      PrimSphere _sphere;
+  };
 }
 
 struct SketchMesh::Impl {
@@ -158,6 +184,79 @@ struct SketchMesh::Impl {
   bool intersects (const PrimRay& ray, SketchPathIntersection& intersection) {
     for (unsigned int i = 0; i < this->paths.size (); i++) {
       this->paths.at (i).intersects (ray, *this->self, intersection);
+    }
+    return intersection.isIntersection ();
+  }
+
+  bool intersects ( const glm::vec3& point, PrimSphereIntersection& intersection
+                  , const SketchPath& excluded )
+  {
+    auto checkSphere = [&point, &intersection] (const SketchNode& node) {
+      const float d2 = glm::distance2 (point, node.data ().center ());
+      if (d2 <= node.data ().radius () * node.data ().radius ()) {
+        intersection.update (glm::sqrt (d2), node.data ());
+      }
+    };
+
+    auto checkBone = [&point, &intersection, &checkSphere] (const SketchNode& node) {
+      if (node.parent ()) {
+        const PrimConeSphere coneSphere (node.data (), node.parent ()->data ());
+
+        if (coneSphere.hasCone ()) {
+          const bool     nodeFirst = coneSphere.sphere1 ().center () == node.data ().center ();
+          const PrimCone cone      = coneSphere.toCone ();
+          const float    t         = glm::dot (cone.direction (), point - cone.center1 ());
+
+          if ((t < 0.0f && nodeFirst) || (t > cone.length () && nodeFirst == false)) {
+            const float d2 = glm::distance2 (point, node.data ().center ());
+
+            if (d2 <= node.data ().radius () * node.data ().radius ()) {
+              intersection.update (glm::sqrt (d2), node.data ());
+            }
+          }
+          else if ((t < 0.0f && nodeFirst == false) || (t > cone.length () && nodeFirst)) {
+            const float d2 = glm::distance2 (point, node.parent ()->data ().center ());
+
+            if (d2 <= node.parent ()->data ().radius () * node.parent ()->data ().radius ()) {
+              intersection.update (glm::sqrt (d2), node.parent ()->data ());
+            }
+          }
+          else {
+            const glm::vec3 nearest = cone.center1 () + (t * cone.direction ());
+            const float     radius  = glm::mix ( cone.radius1 (), cone.radius2 ()
+                                               , t / cone.length () );
+            const float     d2      = glm::distance2 (point, nearest);
+
+            if (d2 <= radius * radius) {
+              intersection.update (glm::sqrt (d2), PrimSphere (nearest, radius));
+            }
+          }
+        }
+        else {
+          const float d2 = glm::distance2 (point, coneSphere.sphere1 ().center ());
+
+          if (d2 <= coneSphere.sphere1 ().radius () * coneSphere.sphere1 ().radius ()) {
+            intersection.update (glm::sqrt (d2), coneSphere.sphere1 ());
+          }
+        }
+      }
+      else {
+        checkSphere (node);
+      }
+    };
+
+    if (this->tree.hasRoot ()) {
+      this->tree.root ().forEachNode ([&checkBone] (SketchNode& node) {
+        checkBone (node);
+      });
+    }
+
+    for (const SketchPath& p : this->paths) {
+      if (&p != &excluded) {
+        for (const PrimSphere& s : p.spheres ()) {
+          checkSphere (s);
+        }
+      }
     }
     return intersection.isIntersection ();
   }
@@ -593,13 +692,26 @@ struct SketchMesh::Impl {
   }
 
   void smoothPaths ( const glm::vec3& pos, float radius, unsigned int halfWidth
-                   , const Dimension* dim)
+                   , SketchPathSmoothEffect effect, const Dimension* dim )
   {
+    const PrimSphere range (pos, radius);
+
     for (SketchPath& p : this->paths) {
-      p.smooth (pos, radius, halfWidth);
+      assert (p.isEmpty () == false);
+
+      if (IntersectionUtil::intersects (range, p.aabox ())) {
+        PrimSphereIntersection intersection1, intersection2;
+
+        this->intersects (p.spheres ().front ().center (), intersection1, p);
+        this->intersects (p.spheres ().back  ().center (), intersection2, p);
+
+        p.smooth ( range, halfWidth, effect
+                 , intersection1.isIntersection () ? &intersection1.sphere () : nullptr
+                 , intersection2.isIntersection () ? &intersection2.sphere () : nullptr );
+      }
     }
     if (dim) {
-      this->smoothPaths (this->mirrorPlane (*dim).mirror (pos), radius, halfWidth, nullptr);
+      this->smoothPaths (this->mirrorPlane (*dim).mirror (pos), radius, halfWidth, effect, nullptr);
     }
   }
 
@@ -639,5 +751,5 @@ DELEGATE1       (void                , SketchMesh, mirror, Dimension)
 DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)
 DELEGATE2_CONST (void                , SketchMesh, minMax, glm::vec3&, glm::vec3&)
-DELEGATE4       (void                , SketchMesh, smoothPaths, const glm::vec3&, float, unsigned int, const Dimension*)
+DELEGATE5       (void                , SketchMesh, smoothPaths, const glm::vec3&, float, unsigned int, SketchPathSmoothEffect, const Dimension*)
 DELEGATE1       (void                , SketchMesh, runFromConfig, const Config&)

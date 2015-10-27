@@ -42,6 +42,11 @@ struct SketchPath :: Impl {
     return this->spheres.empty ();
   }
 
+  PrimAABox aabox () const {
+    assert (this->isEmpty () == false);
+    return PrimAABox (this->minimum, this->maximum);
+  }
+
   void addSphere (const glm::vec3& position, float radius) {
     this->maximum = glm::max (this->maximum, position + glm::vec3 (radius));
     this->minimum = glm::min (this->minimum, position - glm::vec3 (radius));
@@ -86,27 +91,70 @@ struct SketchPath :: Impl {
     return mirrored;
   }
 
-  void smooth (const glm::vec3& pos, float radius, unsigned int halfWidth) {
-    const PrimSphere   range = PrimSphere (pos, radius);
-    const unsigned int numS  = this->spheres.size ();
+  void smooth ( const PrimSphere& range, unsigned int halfWidth, SketchPathSmoothEffect effect
+              , const PrimSphere* nearestToFirst, const PrimSphere* nearestToLast )
+  {
+    assert (IntersectionUtil::intersects (range, this->aabox ()));
 
-    if (IntersectionUtil::intersects (range, PrimAABox (this->minimum, this->maximum))) {
-      for (unsigned int i = 0; i < numS; i++) {
-        if (IntersectionUtil::intersects (range, this->spheres.at (i))) {
-          const unsigned int hW = i < halfWidth
-                                ? i
-                                : ( i >= numS - halfWidth 
-                                  ? numS - i - 1
-                                  : halfWidth );
-          glm::vec3 center;
-          for (unsigned int j = i-hW; j <= i+hW; j++) {
-            center += this->spheres.at (j).center ();
-          }
-          this->spheres.at (i).center (center / float ((2 * hW) + 1));
+    const unsigned int numS = this->spheres.size ();
+
+    for (unsigned int i = 0; i < numS; i++) {
+      if (IntersectionUtil::intersects (range, this->spheres.at (i))) {
+        const unsigned int hW = i < halfWidth
+                              ? i
+                              : ( i >= numS - halfWidth 
+                                ? numS - i - 1
+                                : halfWidth );
+        glm::vec3 center (0.0f);
+        float     radius (0.0f);
+        for (unsigned int j = i-hW; j <= i+hW; j++) {
+          center += this->spheres.at (j).center ();
+          radius += this->spheres.at (j).radius ();
         }
+
+        const bool   effectEmbeds      = effect == SketchPathSmoothEffect::Embed 
+                                      || effect == SketchPathSmoothEffect::EmbedAndAdjust;
+        unsigned int numAffectedCenter = 0;
+        unsigned int numAffectedRadius = 0;
+
+        if (effect != SketchPathSmoothEffect::None) {
+          if (i < halfWidth) {
+            if (nearestToFirst && effectEmbeds) {
+              numAffectedCenter++;
+              center += nearestToFirst->center ();
+            }
+
+            if (nearestToFirst && effect == SketchPathSmoothEffect::EmbedAndAdjust) {
+              numAffectedRadius++;
+              radius += nearestToFirst->radius ();
+            }
+            else if (effect == SketchPathSmoothEffect::Pinch) {
+              numAffectedRadius++;
+              radius += 0.0f;
+            }
+          }
+
+          if (i >= numS - halfWidth) {
+            if (nearestToLast && effectEmbeds) {
+              numAffectedCenter++;
+              center += nearestToLast->center ();
+            }
+
+            if (nearestToLast && effect == SketchPathSmoothEffect::EmbedAndAdjust) {
+              numAffectedRadius++;
+              radius += nearestToLast->radius ();
+            }
+            else if (effect == SketchPathSmoothEffect::Pinch) {
+              numAffectedRadius++;
+              radius += 0.0f;
+            }
+          }
+        }
+        this->spheres.at (i).center (center / float ((2 * hW) + 1 + numAffectedCenter));
+        this->spheres.at (i).radius (radius / float ((2 * hW) + 1 + numAffectedRadius));
       }
-      this->setMinMax ();
     }
+    this->setMinMax ();
   }
 };
 
@@ -115,8 +163,9 @@ GETTER_CONST    (const SketchPath::Spheres&, SketchPath, spheres)
 GETTER_CONST    (const glm::vec3&          , SketchPath, minimum)
 GETTER_CONST    (const glm::vec3&          , SketchPath, maximum)
 DELEGATE_CONST  (bool                      , SketchPath, isEmpty)
+DELEGATE_CONST  (PrimAABox                 , SketchPath, aabox)
 DELEGATE2       (void                      , SketchPath, addSphere, const glm::vec3&, float)
 DELEGATE2_CONST (void                      , SketchPath, render, Camera&, Mesh&)
 DELEGATE3       (bool                      , SketchPath, intersects, const PrimRay&, SketchMesh&, SketchPathIntersection&)
 DELEGATE1       (SketchPath                , SketchPath, mirror, const PrimPlane&)
-DELEGATE3       (void                      , SketchPath, smooth, const glm::vec3&, float, unsigned int)
+DELEGATE5       (void                      , SketchPath, smooth, const PrimSphere&, unsigned int, SketchPathSmoothEffect, const PrimSphere*, const PrimSphere*)

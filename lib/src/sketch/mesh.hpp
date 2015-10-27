@@ -15,6 +15,7 @@ class Camera;
 enum class Dimension;
 class PrimPlane;
 class PrimRay;
+enum class SketchPathSmoothEffect;
 
 class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item {
   public: 
@@ -49,7 +50,8 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void               rebalance       (SketchNode&);
     SketchNode&        snap            (SketchNode&, Dimension);
     void               minMax          (glm::vec3&, glm::vec3&) const;
-    void               smoothPaths     (const glm::vec3&, float, unsigned int, const Dimension*);
+    void               smoothPaths     ( const glm::vec3&, float, unsigned int
+                                       , SketchPathSmoothEffect, const Dimension*);
 
   private:
     IMPLEMENTATION

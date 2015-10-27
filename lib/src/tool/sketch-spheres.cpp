@@ -2,6 +2,7 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QButtonGroup>
 #include <QCheckBox>
 #include <QFrame>
 #include <QMouseEvent>
@@ -15,6 +16,7 @@
 #include "primitive/ray.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/mesh-intersection.hpp"
+#include "sketch/path.hpp"
 #include "state.hpp"
 #include "tools.hpp"
 #include "util.hpp"
@@ -24,27 +26,49 @@
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
+namespace {
+  int toInt (SketchPathSmoothEffect effect) {
+    switch (effect) {
+      case SketchPathSmoothEffect::None:           return 0;
+      case SketchPathSmoothEffect::Embed:          return 1;
+      case SketchPathSmoothEffect::EmbedAndAdjust: return 2;
+      case SketchPathSmoothEffect::Pinch:          return 3;
+      default: DILAY_IMPOSSIBLE
+    }
+  }
+
+  SketchPathSmoothEffect toSmoothEffect (int i) {
+    switch (i) {
+      case 0:  return SketchPathSmoothEffect::None;
+      case 1:  return SketchPathSmoothEffect::Embed;
+      case 2:  return SketchPathSmoothEffect::EmbedAndAdjust;
+      case 3:  return SketchPathSmoothEffect::Pinch;
+      default: DILAY_IMPOSSIBLE
+    }
+  }
+}
+
 struct ToolSketchSpheres::Impl {
-  ToolSketchSpheres* self;
-  ViewCursor         cursor;
-  ViewDoubleSlider&  radiusEdit;
-  ViewDoubleSlider&  heightEdit;
-  ViewDoubleSlider&  intensityEdit;
-  ViewDoubleSlider&  falloffEdit;
-  const float        stepWidthFactor;
-  glm::vec3          previousPosition;
-  SketchMesh*        mesh;
+  ToolSketchSpheres*     self;
+  ViewCursor             cursor;
+  ViewDoubleSlider&      radiusEdit;
+  ViewDoubleSlider&      heightEdit;
+  ViewDoubleSlider&      falloffEdit;
+  SketchPathSmoothEffect smoothEffect;
+  const float            stepWidthFactor;
+  glm::vec3              previousPosition;
+  SketchMesh*            mesh;
 
   Impl (ToolSketchSpheres* s)
     : self            (s)
     , radiusEdit      (ViewUtil::slider ( 2, 0.01f, s->cache ().get <float> ("radius", 0.1f)
                                         , 0.3f ))
     , heightEdit      (ViewUtil::slider ( 2, 0.01f, s->cache ().get <float> ("height", 0.2f)
-                                        , 0.5f ))
-    , intensityEdit   (ViewUtil::slider ( 2, 0.01f, s->cache ().get <float> ("intensity", 0.05f)
-                                        , 0.1f ))
+                                        , 0.45f ))
     , falloffEdit     (ViewUtil::slider ( 2, 1.5f, s->cache ().get <float> ("falloff", 2.0f)
                                         , 4.0f ))
+    , smoothEffect    (toSmoothEffect (s->cache ().get <int> 
+                        ("smooth-effect", toInt (SketchPathSmoothEffect::Embed))))
     , stepWidthFactor (s->config ().get <float> ("editor/tool/sketch-spheres/step-width-factor"))
     , mesh            (nullptr)
   {}
@@ -78,15 +102,22 @@ struct ToolSketchSpheres::Impl {
     });
     properties.addStacked (QObject::tr ("Height"), this->heightEdit);
 
-    ViewUtil::connect (this->intensityEdit, [this] (float i) {
-      this->self->cache ().set ("intensity", i);
-    });
-    properties.addStacked (QObject::tr ("Scaling-Intensity"), this->intensityEdit);
-
     ViewUtil::connect (this->falloffEdit, [this] (float f) {
       this->self->cache ().set ("falloff", f);
     });
     properties.addStacked (QObject::tr ("Scaling-Falloff"), this->falloffEdit);
+
+    QButtonGroup& smoothEffectEdit = *new QButtonGroup;
+    properties.add ( smoothEffectEdit , { QObject::tr ("None")
+                                        , QObject::tr ("Embed")
+                                        , QObject::tr ("Embed and adjust")
+                                        , QObject::tr ("Pinch")
+                                        } );
+    ViewUtil::connect (smoothEffectEdit, [this] (int id) {
+      this->smoothEffect = toSmoothEffect (id);
+      this->self->cache ().set ("smooth-effect", id);
+    });
+    smoothEffectEdit.button (toInt (this->smoothEffect))->click ();
   }
 
   void setupToolTip () {
@@ -158,6 +189,7 @@ struct ToolSketchSpheres::Impl {
             this->mesh->smoothPaths ( intersection.position ()
                                     , this->radiusEdit.doubleValue ()
                                     , 1
+                                    , this->smoothEffect
                                     , this->self->mirrorDimension () );
           }
         }
@@ -213,6 +245,7 @@ struct ToolSketchSpheres::Impl {
           this->mesh->smoothPaths ( intersection.position ()
                                   , this->radiusEdit.doubleValue ()
                                   , 1
+                                  , this->smoothEffect
                                   , this->self->mirrorDimension () );
         }
         else {

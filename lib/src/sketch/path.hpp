@@ -12,8 +12,14 @@
 class Camera;
 class Intersection;
 class Mesh;
+class PrimAABox;
 class PrimPlane;
 class PrimRay;
+
+enum class SketchPathSmoothEffect { None
+                                  , Embed
+                                  , EmbedAndAdjust
+                                  , Pinch };
 
 class SketchPath {
   public:
@@ -25,11 +31,13 @@ class SketchPath {
     const glm::vec3& minimum    () const;
     const glm::vec3& maximum    () const;
     bool             isEmpty    () const;
+    PrimAABox        aabox      () const;
     void             addSphere  (const glm::vec3&, float);
     void             render     (Camera&, Mesh&) const;
     bool             intersects (const PrimRay&, SketchMesh&, SketchPathIntersection&);
     SketchPath       mirror     (const PrimPlane&);
-    void             smooth     (const glm::vec3&, float, unsigned int);
+    void             smooth     ( const PrimSphere&, unsigned int
+                                , SketchPathSmoothEffect, const PrimSphere*, const PrimSphere* );
 
   private:
     IMPLEMENTATION
