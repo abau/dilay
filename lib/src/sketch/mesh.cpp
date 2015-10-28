@@ -698,27 +698,32 @@ struct SketchMesh::Impl {
     }
   }
 
-  void smoothPaths ( const glm::vec3& pos, float radius, unsigned int halfWidth
-                   , SketchPathSmoothEffect effect, const Dimension* dim )
+  void smoothPath ( SketchPath& path, const PrimSphere& range, unsigned int halfWidth
+                  , SketchPathSmoothEffect effect, const Dimension* dim )
   {
-    const PrimSphere range (pos, radius);
+    if (IntersectionUtil::intersects (range, path.aabox ())) {
+      PrimSphereIntersection intersection1, intersection2;
+      SketchPath*            mPath = nullptr;
 
-    for (SketchPath& p : this->paths) {
-      assert (p.isEmpty () == false);
+      this->intersects (path.spheres ().front ().center (), intersection1, path);
+      this->intersects (path.spheres ().back  ().center (), intersection2, path);
 
-      if (IntersectionUtil::intersects (range, p.aabox ())) {
-        PrimSphereIntersection intersection1, intersection2;
-
-        this->intersects (p.spheres ().front ().center (), intersection1, p);
-        this->intersects (p.spheres ().back  ().center (), intersection2, p);
-
-        p.smooth ( range, halfWidth, effect
-                 , intersection1.isIntersection () ? &intersection1.sphere () : nullptr
-                 , intersection2.isIntersection () ? &intersection2.sphere () : nullptr );
+      if (dim) {
+        mPath = this->mirrored (path, this->mirrorPlane (*dim));
       }
-    }
-    if (dim) {
-      this->smoothPaths (this->mirrorPlane (*dim).mirror (pos), radius, halfWidth, effect, nullptr);
+
+      path.smooth ( range, halfWidth, effect
+                  , intersection1.isIntersection () ? &intersection1.sphere () : nullptr
+                  , intersection2.isIntersection () ? &intersection2.sphere () : nullptr );
+
+      if (mPath) {
+        assert (dim);
+
+        this->smoothPath ( *mPath
+                         , PrimSphere ( this->mirrorPlane (*dim).mirror (range.center ())
+                                      , range.radius () )
+                         , halfWidth, effect, nullptr );
+      }
     }
   }
 
@@ -758,5 +763,5 @@ DELEGATE1       (void                , SketchMesh, mirror, Dimension)
 DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)
 DELEGATE2_CONST (void                , SketchMesh, minMax, glm::vec3&, glm::vec3&)
-DELEGATE5       (void                , SketchMesh, smoothPaths, const glm::vec3&, float, unsigned int, SketchPathSmoothEffect, const Dimension*)
+DELEGATE5       (void                , SketchMesh, smoothPath, SketchPath&, const PrimSphere&, unsigned int, SketchPathSmoothEffect, const Dimension*)
 DELEGATE1       (void                , SketchMesh, runFromConfig, const Config&)

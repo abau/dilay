@@ -14,9 +14,11 @@
 #include "scene.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
+#include "primitive/sphere.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/mesh-intersection.hpp"
 #include "sketch/path.hpp"
+#include "sketch/path-intersection.hpp"
 #include "state.hpp"
 #include "tools.hpp"
 #include "util.hpp"
@@ -169,8 +171,6 @@ struct ToolSketchSpheres::Impl {
   }
 
   ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    SketchMeshIntersection intersection;
-
     auto minDistance = [this] (const Intersection& intersection) -> bool {
       const float d = this->radiusEdit.doubleValue () * this->stepWidthFactor;
       return glm::distance (this->previousPosition, intersection.position ()) > d;
@@ -178,6 +178,8 @@ struct ToolSketchSpheres::Impl {
 
     if (e.buttons () == Qt::LeftButton) {
       if (e.modifiers () == Qt::ShiftModifier) {
+        SketchPathIntersection intersection;
+
         if (this->self->intersectsScene (e, intersection)) {
           this->cursor.enable   ();
           this->cursor.position (intersection.position ());
@@ -186,17 +188,19 @@ struct ToolSketchSpheres::Impl {
             this->previousPosition = intersection.position ();
             this->mesh             = &intersection.mesh ();
 
-            this->mesh->smoothPaths ( intersection.position ()
-                                    , this->radiusEdit.doubleValue ()
-                                    , 1
-                                    , this->smoothEffect
-                                    , this->self->mirrorDimension () );
+            this->mesh->smoothPath ( intersection.path ()
+                                   , PrimSphere ( intersection.position ()
+                                                , this->radiusEdit.doubleValue () )
+                                   , 1
+                                   , this->smoothEffect
+                                   , this->self->mirrorDimension () );
           }
         }
       }
       else if (this->mesh) {
-        const unsigned int numExcludedLastPaths = this->self->hasMirror () ? 2 : 1;
-              bool         considerHeight       = true;
+        SketchMeshIntersection intersection;
+        const unsigned int     numExcludedLastPaths = this->self->hasMirror () ? 2 : 1;
+              bool             considerHeight       = true;
 
         if (this->self->intersectsScene (e, intersection, numExcludedLastPaths) == false) {
           const Camera&   camera = this->self->state ().camera ();
@@ -219,43 +223,56 @@ struct ToolSketchSpheres::Impl {
         }
       }
     }
-    else if (this->self->intersectsScene (e, intersection)) {
-      this->cursor.enable   ();
-      this->cursor.position (intersection.position ());
-    }
     else {
-      this->cursor.disable ();
+      SketchMeshIntersection intersection;
+      if (this->self->intersectsScene (e, intersection)) {
+        this->cursor.enable   ();
+        this->cursor.position (intersection.position ());
+      }
+      else {
+        this->cursor.disable ();
+      }
     }
     return ToolResponse::Redraw;
   }
 
   ToolResponse runMousePressEvent (const QMouseEvent& e) {
+    auto setupOnIntersection = [this] (const SketchMeshIntersection& intersection) {
+      this->cursor.enable   ();
+      this->cursor.position (intersection.position ());
+
+      this->self->snapshotSketchMeshes ();
+
+      this->mesh             = &intersection.mesh ();
+      this->previousPosition = intersection.position ();
+    };
+
     if (e.button () == Qt::LeftButton) {
-      SketchMeshIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
-        this->cursor.enable   ();
-        this->cursor.position (intersection.position ());
+      if (e.modifiers () == Qt::ShiftModifier) {
+        SketchPathIntersection intersection;
+        if (this->self->intersectsScene (e, intersection)) {
+          setupOnIntersection (intersection);
 
-        this->self->snapshotSketchMeshes ();
-
-        this->mesh             = &intersection.mesh ();
-        this->previousPosition = intersection.position ();
-
-        if (e.modifiers () == Qt::ShiftModifier) {
-          this->mesh->smoothPaths ( intersection.position ()
-                                  , this->radiusEdit.doubleValue ()
-                                  , 1
-                                  , this->smoothEffect
-                                  , this->self->mirrorDimension () );
+          this->mesh->smoothPath ( intersection.path ()
+                                 , PrimSphere ( intersection.position ()
+                                              , this->radiusEdit.doubleValue () )
+                                 , 1
+                                 , this->smoothEffect
+                                 , this->self->mirrorDimension () );
         }
-        else {
+      }
+      else {
+        SketchMeshIntersection intersection;
+        if (this->self->intersectsScene (e, intersection)) {
+          setupOnIntersection (intersection);
+
           this->mesh->addSphere ( true, this->newSpherePosition (true, intersection)
                                 , this->radiusEdit.doubleValue ()
                                 , this->self->mirrorDimension () );
         }
-      }
-      else {
-        this->cursor.disable ();
+        else {
+          this->cursor.disable ();
+        }
       }
       return ToolResponse::Redraw;
     }
