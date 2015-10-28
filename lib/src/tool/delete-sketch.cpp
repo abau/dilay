@@ -153,8 +153,8 @@ struct ToolDeleteSketch::Impl {
           SketchPathIntersection intersection;
           if (this->self->intersectsScene (e, intersection)) {
             this->self->snapshotSketchMeshes ();
-            intersection.mesh ().deletePathSLOW ( intersection.path ()
-                                                , this->self->mirrorDimension () );
+            intersection.mesh ().deletePath ( intersection.path ()
+                                            , this->self->mirrorDimension () );
             if (intersection.mesh ().isEmpty ()) {
               this->self->state ().scene ().deleteMesh (intersection.mesh ());
             }

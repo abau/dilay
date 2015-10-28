@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <limits>
 #include <utility>
+#include <vector>
 
 #define DILAY_WARN(fmt, ...)  Util::warn (__FILE__, __LINE__, fmt, ##__VA_ARGS__);
 #define DILAY_PANIC(fmt, ...) { Util::warn (__FILE__, __LINE__, fmt, ##__VA_ARGS__); \
@@ -49,6 +50,11 @@ namespace Util {
     if (ptr) {
       *ptr = value;
     }
+  }
+
+  template <typename T>
+  unsigned int findIndexByReference (const std::vector <T>& vec, const T& obj) {
+    return &obj - &vec.at (0);
   }
 }
 

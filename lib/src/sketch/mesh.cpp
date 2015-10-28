@@ -360,6 +360,31 @@ struct SketchMesh::Impl {
     }
   }
 
+  SketchPath* mirrored (const SketchPath& path, const PrimPlane& mirrorPlane) {
+    const unsigned int pathIndex = Util::findIndexByReference (this->paths, path);
+    const glm::vec3    mMin      = glm::min ( mirrorPlane.mirror (path.minimum ())
+                                            , mirrorPlane.mirror (path.maximum ()) );
+    const glm::vec3    mMax      = glm::max ( mirrorPlane.mirror (path.minimum ())
+                                            , mirrorPlane.mirror (path.maximum ()) );
+    if ( pathIndex > 0 
+      && this->paths.at (pathIndex - 1).spheres ().size () == path.spheres ().size ()
+      && almostEqual (this->paths.at (pathIndex - 1).minimum (), mMin)
+      && almostEqual (this->paths.at (pathIndex - 1).maximum (), mMax) )
+    {
+      return &this->paths.at (pathIndex - 1);
+    }
+    else if ( pathIndex < this->paths.size () - 1
+      && this->paths.at (pathIndex + 1).spheres ().size () == path.spheres ().size ()
+      && almostEqual (this->paths.at (pathIndex + 1).minimum (), mMin)
+      && almostEqual (this->paths.at (pathIndex + 1).maximum (), mMax) )
+    {
+      return &this->paths.at (pathIndex + 1);
+    }
+    else {
+      return nullptr;
+    }
+  }
+
   SketchNode* addMirroredNode (SketchNode& node, const PrimPlane& mirrorPlane) {
     const glm::vec3   pos    = mirrorPlane.mirror (node.data ().center ());
     const float       radius = node.data ().radius ();
@@ -520,44 +545,35 @@ struct SketchMesh::Impl {
     }
   }
 
-  void deletePathSLOW (SketchPath& path, const Dimension* dim) {
-    const auto it = std::find_if ( this->paths.begin ()
-                                 , this->paths.end ()
-                                 , [&path] (SketchPath& p) { return &p == &path; } );
-    assert (it != this->paths.end ());
+  void deletePath (SketchPath& path, const Dimension* dim) {
+    assert (this->paths.empty () == false);
 
     if (dim && this->paths.size () >= 2) {
-      const PrimPlane mPlane = this->mirrorPlane (*dim);
-      const glm::vec3 mMin   = glm::min ( mPlane.mirror (path.minimum ())
-                                        , mPlane.mirror (path.maximum ()) );
-      const glm::vec3 mMax   = glm::max ( mPlane.mirror (path.minimum ())
-                                        , mPlane.mirror (path.maximum ()) );
+      const unsigned int index  = Util::findIndexByReference (this->paths, path);
+      const PrimPlane    mPlane = this->mirrorPlane (*dim);
+      const SketchPath*  mPath  = this->mirrored (path, mPlane);
 
-      const bool deletePrevious = it != this->paths.begin ()
-                               && (it-1)->spheres ().size () == path.spheres ().size ()
-                               && almostEqual ((it-1)->minimum (), mMin)
-                               && almostEqual ((it-1)->maximum (), mMax);
+      if (mPath) {
+        const unsigned int mIndex = Util::findIndexByReference (this->paths, *mPath);
 
-      const bool deleteNext = it != this->paths.end () - 1
-                           && (it+1)->spheres ().size () == path.spheres ().size ()
-                           && almostEqual ((it+1)->minimum (), mMin)
-                           && almostEqual ((it+1)->maximum (), mMax);
-
-      if (deletePrevious) {
-        const auto prevIt = it - 1;
-        this->paths.erase (it);
-        this->paths.erase (prevIt);
-      }
-      else if (deleteNext) {
-        this->paths.erase (it + 1);
-        this->paths.erase (it);
+        if (mIndex < index) {
+          this->paths.erase (this->paths.begin () + index);
+          this->paths.erase (this->paths.begin () + mIndex);
+        }
+        else if (index < mIndex) {
+          this->paths.erase (this->paths.begin () + mIndex);
+          this->paths.erase (this->paths.begin () + index);
+        }
+        else {
+          DILAY_IMPOSSIBLE
+        }
       }
       else {
-        this->paths.erase (it);
+        this->paths.erase (this->paths.begin () + index);
       }
     }
     else {
-      this->paths.erase (it);
+      this->paths.erase (this->paths.begin ());
     }
   }
 
@@ -737,7 +753,7 @@ DELEGATE4       (void                , SketchMesh, addSphere, bool, const glm::v
 DELEGATE4       (void                , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE4       (void                , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
 DELEGATE3       (void                , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
-DELEGATE2       (void                , SketchMesh, deletePathSLOW, SketchPath&, const Dimension*)
+DELEGATE2       (void                , SketchMesh, deletePath, SketchPath&, const Dimension*)
 DELEGATE1       (void                , SketchMesh, mirror, Dimension)
 DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)

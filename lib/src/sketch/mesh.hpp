@@ -45,7 +45,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void               move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
     void               scale           (SketchNode&, float, bool, const Dimension*);
     void               deleteNode      (SketchNode&, bool, const Dimension*);
-    void               deletePathSLOW  (SketchPath&, const Dimension*);
+    void               deletePath      (SketchPath&, const Dimension*);
     void               mirror          (Dimension);
     void               rebalance       (SketchNode&);
     SketchNode&        snap            (SketchNode&, Dimension);
