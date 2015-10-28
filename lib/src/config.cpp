@@ -47,7 +47,7 @@ Config :: Config ()
   this->set ("editor/tool/sculpt/mirror/color",      Color (0.8f, 0.8f, 0.8f));
 
   this->set ("editor/tool/sketch-spheres/cursor-color"     , Color (1.0f, 0.9f, 0.9f));
-  this->set ("editor/tool/sketch-spheres/step-width-factor", 0.25f);
+  this->set ("editor/tool/sketch-spheres/step-width-factor", 0.1f);
 
   this->set ("editor/undo-depth", 5);
 
