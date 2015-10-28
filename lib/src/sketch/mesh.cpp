@@ -411,16 +411,6 @@ struct SketchMesh::Impl {
     return newNode;
   }
 
-  SketchPath& currentPath () {
-    assert (this->paths.empty () == false);
-    return this->paths.back ();
-  }
-
-  SketchPath& currentMirroredPath () {
-    assert (this->paths.size () >= 2);
-    return this->paths.at (this->paths.size () - 2);
-  }
-
   void addPath (const SketchPath& path) {
     this->paths.push_back (path);
   }
@@ -432,10 +422,11 @@ struct SketchMesh::Impl {
         this->paths.emplace_back ();
       }
     }
-    this->currentPath ().addSphere (position, radius);
+    this->paths.back ().addSphere (position, radius);
 
     if (dim) {
-      this->currentMirroredPath ().addSphere (this->mirrorPlane (*dim).mirror (position), radius);
+      this->paths.at (this->paths.size () - 2)
+                 .addSphere (this->mirrorPlane (*dim).mirror (position), radius);
     }
   }
 
