@@ -493,25 +493,23 @@ namespace {
     params.numSamples   = glm::vec3 (1.0f) + glm::ceil ((max - min) / glm::vec3 (params.resolution));
   }
 
-  float sampleAt (const SketchNode& node, const glm::vec3& pos) {
-    if (node.parent ()) {
-      return Distance::distance (PrimConeSphere (node.data (), node.parent ()->data ()), pos);
-    }
-    else {
-      return Distance::distance (node.data (), pos);
-    }
-  }
-
   float sampleAt (const SketchMesh& mesh, const glm::vec3& pos) {
-    float distance = sampleAt (mesh.tree ().root (), pos);
+    float distance = std::numeric_limits <float>::max ();
+      
+    if (mesh.tree ().hasRoot ()) {
+      mesh.tree ().root ().forEachConstNode ([&pos, &distance] (const SketchNode& node) {
+        const float d = node.parent ()
+                      ? Distance::distance ( PrimConeSphere ( node.data ()
+                                                            , node.parent ()->data () )
+                                           , pos )
+                      : Distance::distance (node.data (), pos);
 
-    mesh.tree ().root ().forEachConstNode ([&pos, &distance] (const SketchNode& node) {
-      distance = glm::min (distance, sampleAt (node, pos));
-    });
-
+        distance = glm::min (distance, d);
+      });
+    }
     for (const SketchPath& p : mesh.paths ()) {
       for (const PrimSphere& s : p.spheres ()) {
-        distance = glm::min (distance, glm::distance (s.center (), pos) - s.radius ());
+        distance = glm::min (distance, Distance::distance (s, pos));
       }
     }
     return distance;
@@ -781,6 +779,8 @@ namespace {
 }
 
 Mesh SketchConversion :: convert (const SketchMesh& mesh, float resolution) {
+  assert (mesh.isEmpty () == false);
+
   Parameters params;
   params.resolution = resolution;
 

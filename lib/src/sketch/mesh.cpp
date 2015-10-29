@@ -337,8 +337,12 @@ struct SketchMesh::Impl {
   }
 
   PrimPlane mirrorPlane (Dimension dim) const {
-    assert (this->tree.hasRoot ());
-    return PrimPlane (this->tree.root ().data ().center (), DimensionUtil::vector (dim));
+    if (this->tree.hasRoot ()) {
+      return PrimPlane (this->tree.root ().data ().center (), DimensionUtil::vector (dim));
+    }
+    else {
+      return PrimPlane (glm::vec3 (0.0f), DimensionUtil::vector (dim));
+    }
   }
 
   SketchNode* mirrored ( const SketchNode& node, const PrimPlane& mirrorPlane
@@ -681,17 +685,15 @@ struct SketchMesh::Impl {
   }
 
   void minMax (glm::vec3& min, glm::vec3& max) const {
-    assert (this->tree.hasRoot ());
+    min = glm::vec3 (std::numeric_limits <float>::max ());
+    max = glm::vec3 (std::numeric_limits <float>::lowest ());
 
-    const SketchNode& root = this->tree.root ();
-                      min  = root.data ().center () - glm::vec3 (root.data ().radius ());
-                      max  = root.data ().center () + glm::vec3 (root.data ().radius ());
-
-    root.forEachConstNode ([&min, &max] (const SketchNode& node) {
-      min = glm::min (min, node.data ().center () - glm::vec3 (node.data ().radius ()));
-      max = glm::max (max, node.data ().center () + glm::vec3 (node.data ().radius ()));
-    });
-
+    if (this->tree.hasRoot ()) {
+      this->tree.root ().forEachConstNode ([&min, &max] (const SketchNode& node) {
+        min = glm::min (min, node.data ().center () - glm::vec3 (node.data ().radius ()));
+        max = glm::max (max, node.data ().center () + glm::vec3 (node.data ().radius ()));
+      });
+    }
     for (const SketchPath& p : this->paths) {
       min = glm::min (min, p.minimum ());
       max = glm::max (max, p.maximum ());
