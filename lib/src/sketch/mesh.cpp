@@ -705,27 +705,29 @@ struct SketchMesh::Impl {
   {
     if (IntersectionUtil::intersects (range, path.aabox ())) {
       PrimSphereIntersection intersection1, intersection2;
-      SketchPath*            mPath = nullptr;
 
       this->intersects (path.spheres ().front ().center (), intersection1, path);
       this->intersects (path.spheres ().back  ().center (), intersection2, path);
 
       if (dim) {
-        mPath = this->mirrored (path, this->mirrorPlane (*dim));
-      }
+        const PrimPlane mPlane = this->mirrorPlane (*dim);
+        SketchPath*     mPath  = this->mirrored (path, mPlane);
 
+        if (mPath) {
+          PrimSphereIntersection intersection3, intersection4;
+
+          this->intersects (mPath->spheres ().front ().center (), intersection3, *mPath);
+          this->intersects (mPath->spheres ().back  ().center (), intersection4, *mPath);
+
+          mPath->smooth ( PrimSphere (mPlane.mirror (range.center ()), range.radius ())
+                        , halfWidth, effect
+                        , intersection3.isIntersection () ? &intersection3.sphere () : nullptr
+                        , intersection4.isIntersection () ? &intersection4.sphere () : nullptr );
+        }
+      }
       path.smooth ( range, halfWidth, effect
                   , intersection1.isIntersection () ? &intersection1.sphere () : nullptr
                   , intersection2.isIntersection () ? &intersection2.sphere () : nullptr );
-
-      if (mPath) {
-        assert (dim);
-
-        this->smoothPath ( *mPath
-                         , PrimSphere ( this->mirrorPlane (*dim).mirror (range.center ())
-                                      , range.radius () )
-                         , halfWidth, effect, nullptr );
-      }
     }
   }
 

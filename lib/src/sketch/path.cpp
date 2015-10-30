@@ -94,8 +94,6 @@ struct SketchPath :: Impl {
   void smooth ( const PrimSphere& range, unsigned int halfWidth, SketchPathSmoothEffect effect
               , const PrimSphere* nearestToFirst, const PrimSphere* nearestToLast )
   {
-    assert (IntersectionUtil::intersects (range, this->aabox ()));
-
     const unsigned int numS = this->spheres.size ();
 
     for (unsigned int i = 0; i < numS; i++) {
