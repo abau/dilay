@@ -203,33 +203,36 @@ struct SketchMesh::Impl {
         const PrimConeSphere coneSphere (node.data (), node.parent ()->data ());
 
         if (coneSphere.hasCone ()) {
-          const bool     nodeFirst = coneSphere.sphere1 ().center () == node.data ().center ();
-          const PrimCone cone      = coneSphere.toCone ();
-          const float    t         = glm::dot (cone.direction (), point - cone.center1 ());
+          const glm::vec3 toP = point - coneSphere.sphere1 ().center ();
+          const float x       = glm::dot (toP, coneSphere.direction ());  
+          const float y       = glm::sqrt (glm::dot (toP, toP) - (x * x));
+          const float sigma   = glm::half_pi <float> () - coneSphere.alpha ();
+          const float xOff    = x - (y / glm::tan (sigma));
 
-          if ((t < 0.0f && nodeFirst) || (t > cone.length () && nodeFirst == false)) {
-            const float d2 = glm::distance2 (point, node.data ().center ());
+          float nearestFactor;
+          float nearestRadius;
 
-            if (d2 <= node.data ().radius () * node.data ().radius ()) {
-              intersection.update (glm::sqrt (d2), node.data ());
-            }
+          if (xOff <= 0.0f) {
+            nearestFactor = 0.0f;
+            nearestRadius = coneSphere.sphere1 ().radius ();
           }
-          else if ((t < 0.0f && nodeFirst == false) || (t > cone.length () && nodeFirst)) {
-            const float d2 = glm::distance2 (point, node.parent ()->data ().center ());
-
-            if (d2 <= node.parent ()->data ().radius () * node.parent ()->data ().radius ()) {
-              intersection.update (glm::sqrt (d2), node.parent ()->data ());
-            }
+          else if (xOff >= coneSphere.length ()) {
+            nearestFactor = coneSphere.length ();
+            nearestRadius = coneSphere.sphere2 ().radius ();
           }
           else {
-            const glm::vec3 nearest = cone.center1 () + (t * cone.direction ());
-            const float     radius  = glm::mix ( cone.radius1 (), cone.radius2 ()
-                                               , t / cone.length () );
-            const float     d2      = glm::distance2 (point, nearest);
+            nearestFactor = xOff;
+            nearestRadius = glm::mix ( coneSphere.sphere1 ().radius ()
+                                     , coneSphere.sphere2 ().radius ()
+                                     , xOff / coneSphere.length () );
+          }
 
-            if (d2 <= radius * radius) {
-              intersection.update (glm::sqrt (d2), PrimSphere (nearest, radius));
-            }
+          const glm::vec3 nearestCenter = coneSphere.sphere1 ().center () 
+                                        + (nearestFactor * coneSphere.direction ());
+          const float     d2            = glm::distance2 (point, nearestCenter);
+
+          if (d2 <= nearestRadius * nearestRadius) {
+            intersection.update (glm::sqrt (d2), PrimSphere (nearestCenter, nearestRadius));
           }
         }
         else {
