@@ -367,23 +367,17 @@ struct SketchMesh::Impl {
     }
   }
 
-  SketchPath* mirrored (const SketchPath& path, const PrimPlane& mirrorPlane) {
+  SketchPath* mirrored (const SketchPath& path) {
     const unsigned int pathIndex = Util::findIndexByReference (this->paths, path);
-    const glm::vec3    mMin      = glm::min ( mirrorPlane.mirror (path.minimum ())
-                                            , mirrorPlane.mirror (path.maximum ()) );
-    const glm::vec3    mMax      = glm::max ( mirrorPlane.mirror (path.minimum ())
-                                            , mirrorPlane.mirror (path.maximum ()) );
+
     if ( pathIndex > 0 
-      && this->paths.at (pathIndex - 1).spheres ().size () == path.spheres ().size ()
-      && almostEqual (this->paths.at (pathIndex - 1).minimum (), mMin)
-      && almostEqual (this->paths.at (pathIndex - 1).maximum (), mMax) )
+      && this->paths.at (pathIndex - 1).spheres ().size () == path.spheres ().size () )
     {
       return &this->paths.at (pathIndex - 1);
     }
     else if ( pathIndex < this->paths.size () - 1
-      && this->paths.at (pathIndex + 1).spheres ().size () == path.spheres ().size ()
-      && almostEqual (this->paths.at (pathIndex + 1).minimum (), mMin)
-      && almostEqual (this->paths.at (pathIndex + 1).maximum (), mMax) )
+      && this->paths.at (pathIndex + 1).spheres ().size () == path.spheres ().size () )
+
     {
       return &this->paths.at (pathIndex + 1);
     }
@@ -556,9 +550,8 @@ struct SketchMesh::Impl {
     assert (this->paths.empty () == false);
 
     if (dim && this->paths.size () >= 2) {
-      const unsigned int index  = Util::findIndexByReference (this->paths, path);
-      const PrimPlane    mPlane = this->mirrorPlane (*dim);
-      const SketchPath*  mPath  = this->mirrored (path, mPlane);
+      const unsigned int index = Util::findIndexByReference (this->paths, path);
+      const SketchPath*  mPath = this->mirrored (path);
 
       if (mPath) {
         const unsigned int mIndex = Util::findIndexByReference (this->paths, *mPath);
@@ -713,8 +706,7 @@ struct SketchMesh::Impl {
       this->intersects (path.spheres ().back  ().center (), intersection2, path);
 
       if (dim) {
-        const PrimPlane mPlane = this->mirrorPlane (*dim);
-        SketchPath*     mPath  = this->mirrored (path, mPlane);
+        SketchPath* mPath = this->mirrored (path);
 
         if (mPath) {
           PrimSphereIntersection intersection3, intersection4;
@@ -722,7 +714,8 @@ struct SketchMesh::Impl {
           this->intersects (mPath->spheres ().front ().center (), intersection3, *mPath);
           this->intersects (mPath->spheres ().back  ().center (), intersection4, *mPath);
 
-          mPath->smooth ( PrimSphere (mPlane.mirror (range.center ()), range.radius ())
+          mPath->smooth ( PrimSphere ( this->mirrorPlane (*dim).mirror (range.center ())
+                                     , range.radius () )
                         , halfWidth, effect
                         , intersection3.isIntersection () ? &intersection3.sphere () : nullptr
                         , intersection4.isIntersection () ? &intersection4.sphere () : nullptr );
