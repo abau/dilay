@@ -119,6 +119,7 @@ HEADERS += \
            src/configurable.hpp \
            src/dimension.hpp \
            src/distance.hpp \
+           src/edge-map.hpp \
            src/hash.hpp \
            src/history.hpp \
            src/index-octree.hpp \

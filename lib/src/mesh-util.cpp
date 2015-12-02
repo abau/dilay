@@ -8,6 +8,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+#include "edge-map.hpp"
 #include "hash.hpp"
 #include "intersection.hpp"
 #include "mesh.hpp"
@@ -285,12 +286,12 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
                                : Side::Border );
   };
 
-  Mesh                                       m (mesh, false);
-  std::vector        <glm::vec3>             positions;
-  std::vector        <Side>                  sides;
-  std::vector        <BorderFlag>            borderFlags;
-  std::vector        <ui_pair>               newIndices;
-  std::unordered_map <ui_pair, unsigned int> newBorderVertices;
+  Mesh                       m (mesh, false);
+  std::vector <glm::vec3>    positions;
+  std::vector <Side>         sides;
+  std::vector <BorderFlag>   borderFlags;
+  std::vector <ui_pair>      newIndices;
+  EdgeMap     <unsigned int> newBorderVertices;
 
   auto updateBorderFlag = [&borderFlags] (unsigned int i, Side side) {
     BorderFlag& current = borderFlags [i];
@@ -317,11 +318,10 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
   auto newBorderVertex = [&mesh, &plane, &newBorderVertices, &m] 
                          (unsigned int i1, unsigned int i2) -> unsigned int 
   {
-    const ui_pair key = std::make_pair ( glm::min (i1, i2)
-                                       , glm::max (i1, i2) );
-    auto it = newBorderVertices.find (key);
-    if (it != newBorderVertices.end ()) {
-      return it->second;
+    const unsigned int* existentIndex = newBorderVertices.find (i1, i2);
+
+    if (existentIndex) {
+      return *existentIndex;
     }
     else {
       const glm::vec3 v1 (mesh.vertex (i1));
@@ -339,7 +339,7 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
       }
       const unsigned int newIndex = m.addVertex (position);
 
-      newBorderVertices.emplace (key, newIndex);
+      newBorderVertices.add (i1, i2, newIndex);
       return newIndex;
     }
   };
@@ -348,6 +348,7 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
   sides      .reserve (mesh.numVertices ());
   borderFlags.reserve (mesh.numVertices ());
 
+  newBorderVertices.resize (mesh.numVertices ());
   newIndices.resize ( mesh.numVertices ()
                     , std::make_pair (Util::invalidIndex (), Util::invalidIndex ()) );
 

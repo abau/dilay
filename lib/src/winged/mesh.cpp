@@ -2,11 +2,11 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <unordered_map>
 #include "../mesh.hpp"
 #include "../util.hpp"
 #include "action/finalize.hpp"
 #include "affected-faces.hpp"
+#include "edge-map.hpp"
 #include "hash.hpp"
 #include "index-octree.hpp"
 #include "intersection.hpp"
@@ -225,7 +225,7 @@ struct WingedMesh::Impl {
   }
 
   void fromMesh (const Mesh& mesh, const PrimPlane* mirror) {
-    std::unordered_map <ui_pair, WingedEdge*> edgeMap;
+    EdgeMap <WingedEdge*> edgeMap;
 
     /** `findOrAddEdge (m,i1,i2,f)` searches an edge between vertices 
      * `i1` and `i2` in `m`.
@@ -236,16 +236,22 @@ struct WingedMesh::Impl {
     auto findOrAddEdge = [this, &edgeMap] ( unsigned int index1, unsigned int index2
                                           , WingedFace& face ) -> WingedEdge&
     {
-      const ui_pair key = std::make_pair ( glm::min (index1, index2)
-                                         , glm::max (index1, index2) );
-      const auto result = edgeMap.find (key);
+      WingedEdge** result = edgeMap.find (index1, index2);
 
-      if (result == edgeMap.end ()) {
+      if (result) {
+        WingedEdge* existingEdge = *result;
+
+        existingEdge->rightFace (&face);
+        face.edge (existingEdge);
+
+        return *existingEdge;
+      }
+      else {
         WingedVertex* v1    = this->vertex (index1);
         WingedVertex* v2    = this->vertex (index2);
         WingedEdge& newEdge = this->addEdge ();
           
-        edgeMap.insert (std::make_pair (key, &newEdge));
+        edgeMap.add (index1, index2, &newEdge);
         newEdge.vertex1  (v1);
         newEdge.vertex2  (v2);
         newEdge.leftFace (&face);
@@ -255,14 +261,6 @@ struct WingedMesh::Impl {
         face.edge (&newEdge);
 
         return newEdge;
-      }
-      else {
-        WingedEdge* existingEdge = result->second;
-
-        existingEdge->rightFace (&face);
-        face.edge (existingEdge);
-
-        return *existingEdge;
       }
     };
 
@@ -289,6 +287,8 @@ struct WingedMesh::Impl {
 
     // faces & edges
     assert (this->mesh.numIndices () % 3 == 0);
+
+    edgeMap.resize (this->mesh.numVertices ());
 
     for (unsigned int i = 0; i < this->mesh.numIndices (); i += 3) {
       unsigned int index1 = this->mesh.index (i + 0);
