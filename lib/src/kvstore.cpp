@@ -232,11 +232,16 @@ struct KVStore::Impl {
       this->appendAsDomChild (doc, child, path, value);
     }
   }
+
+  void reset () {
+    this->map.clear ();
+  }
 };
 
 DELEGATE1_BIG2  (KVStore, const std::string&)
 DELEGATE1       (void, KVStore, fromFile, const std::string&);
 DELEGATE1_CONST (void, KVStore, toFile, const std::string&);
+DELEGATE        (void, KVStore, reset);
 
 template <class T>
 const T& KVStore :: get (const std::string& path) const {

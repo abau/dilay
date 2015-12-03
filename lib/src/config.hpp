@@ -28,6 +28,7 @@ class Config {
 
     void fromFile (const std::string& fileName) {
       this->store.fromFile (fileName);
+      this->update ();
     }
 
     void toFile (const std::string& fileName) const {
@@ -35,6 +36,9 @@ class Config {
     }
 
   private:
+    void reset  ();
+    void update ();
+
     KVStore store;
 };
 

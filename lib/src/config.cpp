@@ -6,10 +6,20 @@
 #include "color.hpp"
 #include "config.hpp"
 
+namespace {
+  static constexpr int latestVersion = 4;
+}
+
 Config :: Config () 
   : store ("config") 
 {
-  this->set ("version", 3);
+  this->reset ();
+}
+
+void Config :: reset () {
+  this->store.reset ();
+
+  this->set ("version", latestVersion);
 
   this->set ("editor/axis/color/normal", Color (0.3f, 0.3f, 0.4f));
   this->set ("editor/axis/color/label",  Color (1.0f, 1.0f, 1.0f));
@@ -49,8 +59,35 @@ Config :: Config ()
   this->set ("editor/tool/sketch-spheres/cursor-color"     , Color (1.0f, 0.9f, 0.9f));
   this->set ("editor/tool/sketch-spheres/step-width-factor", 0.1f);
 
-  this->set ("editor/undo-depth", 5);
+  this->set ("editor/undo-depth", 15);
 
   this->set ("window/initial-width",  1024);
   this->set ("window/initial-height", 768);
+}
+
+void Config :: update () {
+  const int version = this->get <int> ("version");
+
+  auto updateValue = [this] (const std::string& path, const auto& oldValue, const auto& newValue) {
+    if (this->get <typename std::decay <decltype (oldValue)>::type> (path) == oldValue) {
+      this->set (path, newValue);
+    }
+  };
+
+  switch (version) {
+    case 1: break;
+    case 2: break;
+    case 3:
+      updateValue ("editor/undo-depth", 5, 15);
+      break;
+
+    case latestVersion:
+      return;
+
+    default:
+      this->reset ();
+      return;
+  }
+  this->set ("version", version + 1);
+  this->update ();
 }
