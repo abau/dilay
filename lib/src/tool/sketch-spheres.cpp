@@ -55,7 +55,6 @@ struct ToolSketchSpheres::Impl {
   ViewCursor             cursor;
   ViewDoubleSlider&      radiusEdit;
   ViewDoubleSlider&      heightEdit;
-  ViewDoubleSlider&      falloffEdit;
   SketchPathSmoothEffect smoothEffect;
   const float            stepWidthFactor;
   glm::vec3              previousPosition;
@@ -67,8 +66,6 @@ struct ToolSketchSpheres::Impl {
                                         , 0.3f ))
     , heightEdit      (ViewUtil::slider ( 2, 0.01f, s->cache ().get <float> ("height", 0.2f)
                                         , 0.45f ))
-    , falloffEdit     (ViewUtil::slider ( 2, 1.5f, s->cache ().get <float> ("falloff", 2.0f)
-                                        , 4.0f ))
     , smoothEffect    (toSmoothEffect (s->cache ().get <int> 
                         ("smooth-effect", toInt (SketchPathSmoothEffect::Embed))))
     , stepWidthFactor (s->config ().get <float> ("editor/tool/sketch-spheres/step-width-factor"))
@@ -103,11 +100,6 @@ struct ToolSketchSpheres::Impl {
       this->self->cache ().set ("height", d);
     });
     properties.addStacked (QObject::tr ("Height"), this->heightEdit);
-
-    ViewUtil::connect (this->falloffEdit, [this] (float f) {
-      this->self->cache ().set ("falloff", f);
-    });
-    properties.addStacked (QObject::tr ("Scaling-Falloff"), this->falloffEdit);
 
     QButtonGroup& smoothEffectEdit = *new QButtonGroup;
     properties.add ( smoothEffectEdit , { QObject::tr ("None")
