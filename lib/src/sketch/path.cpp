@@ -128,7 +128,6 @@ struct SketchPath :: Impl {
             }
             else if (effect == SketchPathSmoothEffect::Pinch) {
               numAffectedRadius++;
-              radius += 0.0f;
             }
           }
 
@@ -144,7 +143,6 @@ struct SketchPath :: Impl {
             }
             else if (effect == SketchPathSmoothEffect::Pinch) {
               numAffectedRadius++;
-              radius += 0.0f;
             }
           }
         }
