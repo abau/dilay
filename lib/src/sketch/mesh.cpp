@@ -441,18 +441,23 @@ struct SketchMesh::Impl {
     this->paths.push_back (path);
   }
 
-  void addSphere (bool newPath, const glm::vec3& position, float radius, const Dimension* dim) {
+  void addSphere ( bool newPath, const glm::vec3& intersection
+                 , const glm::vec3& position, float radius, const Dimension* dim )
+  {
     if (newPath) {
       this->paths.emplace_back ();
       if (dim) {
         this->paths.emplace_back ();
       }
     }
-    this->paths.back ().addSphere (position, radius);
+    this->paths.back ().addSphere (intersection, position, radius);
 
     if (dim) {
-      this->paths.at (this->paths.size () - 2)
-                 .addSphere (this->mirrorPlane (*dim).mirror (position), radius);
+      const PrimPlane mirrorPlane = this->mirrorPlane (*dim);
+
+      this->paths.at (this->paths.size () - 2).addSphere ( mirrorPlane.mirror (intersection)
+                                                         , mirrorPlane.mirror (position)
+                                                         , radius );
     }
   }
 
@@ -754,7 +759,7 @@ DELEGATE1       (PrimPlane           , SketchMesh, mirrorPlane, Dimension)
 DELEGATE4       (SketchNode&         , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (SketchNode&         , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE1       (void                , SketchMesh, addPath, const SketchPath&)
-DELEGATE4       (void                , SketchMesh, addSphere, bool, const glm::vec3&, float, const Dimension*)
+DELEGATE5       (void                , SketchMesh, addSphere, bool, const glm::vec3&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void                , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE4       (void                , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
 DELEGATE3       (void                , SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)

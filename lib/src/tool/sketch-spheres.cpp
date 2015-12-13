@@ -209,7 +209,9 @@ struct ToolSketchSpheres::Impl {
         if (intersection.isIntersection () && minDistance (intersection)) {
           this->previousPosition = intersection.position ();
 
-          this->mesh->addSphere ( false, this->newSpherePosition (considerHeight, intersection)
+          this->mesh->addSphere ( false
+                                , intersection.position ()
+                                , this->newSpherePosition (considerHeight, intersection)
                                 , this->radiusEdit.doubleValue ()
                                 , this->self->mirrorDimension () );
         }
@@ -258,7 +260,9 @@ struct ToolSketchSpheres::Impl {
         if (this->self->intersectsScene (e, intersection)) {
           setupOnIntersection (intersection);
 
-          this->mesh->addSphere ( true, this->newSpherePosition (true, intersection)
+          this->mesh->addSphere ( true
+                                , intersection.position ()
+                                , this->newSpherePosition (true, intersection)
                                 , this->radiusEdit.doubleValue ()
                                 , this->self->mirrorDimension () );
         }

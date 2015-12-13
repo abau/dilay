@@ -42,7 +42,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     SketchNode&        addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
     SketchNode&        addParent       (SketchNode&, const glm::vec3&, float, const Dimension*);
     void               addPath         (const SketchPath&);
-    void               addSphere       (bool, const glm::vec3&, float, const Dimension*);
+    void               addSphere       (bool, const glm::vec3&, const glm::vec3&, float, const Dimension*);
     void               move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
     void               scale           (SketchNode&, float, bool, const Dimension*);
     void               deleteNode      (SketchNode&, bool, const Dimension*);

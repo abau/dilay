@@ -32,7 +32,7 @@ class SketchPath {
     const glm::vec3& maximum    () const;
     bool             isEmpty    () const;
     PrimAABox        aabox      () const;
-    void             addSphere  (const glm::vec3&, float);
+    void             addSphere  (const glm::vec3&, const glm::vec3&, float);
     void             render     (Camera&, Mesh&) const;
     bool             intersects (const PrimRay&, SketchMesh&, SketchPathIntersection&);
     SketchPath       mirror     (const PrimPlane&);

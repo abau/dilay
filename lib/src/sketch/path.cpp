@@ -12,6 +12,8 @@ struct SketchPath :: Impl {
   SketchPath::Spheres spheres;
   glm::vec3           minimum;
   glm::vec3           maximum;
+  glm::vec3           intersectionFirst;
+  glm::vec3           intersectionLast;
 
   Impl (SketchPath* s)
     : self (s)
@@ -47,7 +49,14 @@ struct SketchPath :: Impl {
     return PrimAABox (this->minimum, this->maximum);
   }
 
-  void addSphere (const glm::vec3& position, float radius) {
+  void addSphere (const glm::vec3& intersection, const glm::vec3& position, float radius) {
+    if (this->spheres.empty ()) {
+      this->intersectionFirst = intersection;
+      this->intersectionLast  = intersection;
+    }
+    else {
+      this->intersectionLast  = intersection;
+    }
     this->maximum = glm::max (this->maximum, position + glm::vec3 (radius));
     this->minimum = glm::min (this->minimum, position - glm::vec3 (radius));
 
@@ -79,13 +88,29 @@ struct SketchPath :: Impl {
 
   SketchPath mirror (const PrimPlane& mPlane) {
     SketchPath::Spheres oldSpheres (std::move (this->spheres));
+    const glm::vec3     oldIntersectionFirst (this->intersectionFirst);
+    const glm::vec3     oldIntersectionLast (this->intersectionLast);
     SketchPath          mirrored;
 
     this->reset ();
-    for (const PrimSphere& s : oldSpheres) {
+    for (unsigned int i = 0; i < oldSpheres.size (); i++) {
+      const PrimSphere& s = oldSpheres[i];
+
       if (mPlane.distance (s.center ()) > -Util::epsilon ()) {
-        this->addSphere (s.center (), s.radius ());
-        mirrored.addSphere (mPlane.mirror (s.center ()), s.radius ());
+        const glm::vec3 mCenter = mPlane.mirror (s.center ());
+
+        if (i == 0) {
+          this->addSphere (oldIntersectionFirst, s.center (), s.radius ());
+          mirrored.addSphere (mPlane.mirror (oldIntersectionFirst), mCenter, s.radius ());
+        }
+        else if (i == oldSpheres.size () - 1) {
+          this->addSphere (oldIntersectionLast, s.center (), s.radius ());
+          mirrored.addSphere (mPlane.mirror (oldIntersectionLast), mCenter, s.radius ());
+        }
+        else {
+          this->addSphere (s.center (), s.center (), s.radius ());
+          mirrored.addSphere (mCenter, mCenter, s.radius ());
+        }
       }
     }
     return mirrored;
@@ -128,6 +153,8 @@ struct SketchPath :: Impl {
             }
             else if (effect == SketchPathSmoothEffect::Pinch) {
               numAffectedRadius++;
+              numAffectedCenter++;
+              center += this->intersectionFirst;
             }
           }
 
@@ -143,6 +170,8 @@ struct SketchPath :: Impl {
             }
             else if (effect == SketchPathSmoothEffect::Pinch) {
               numAffectedRadius++;
+              numAffectedCenter++;
+              center += this->intersectionLast;
             }
           }
         }
@@ -160,7 +189,7 @@ GETTER_CONST    (const glm::vec3&          , SketchPath, minimum)
 GETTER_CONST    (const glm::vec3&          , SketchPath, maximum)
 DELEGATE_CONST  (bool                      , SketchPath, isEmpty)
 DELEGATE_CONST  (PrimAABox                 , SketchPath, aabox)
-DELEGATE2       (void                      , SketchPath, addSphere, const glm::vec3&, float)
+DELEGATE3       (void                      , SketchPath, addSphere, const glm::vec3&, const glm::vec3&, float)
 DELEGATE2_CONST (void                      , SketchPath, render, Camera&, Mesh&)
 DELEGATE3       (bool                      , SketchPath, intersects, const PrimRay&, SketchMesh&, SketchPathIntersection&)
 DELEGATE1       (SketchPath                , SketchPath, mirror, const PrimPlane&)
