@@ -605,9 +605,7 @@ bool MeshUtil :: checkConsistency (const Mesh& mesh) {
 
 void MeshUtil :: toObjFile (std::ostream& stream, const Mesh& mesh) {
   for (unsigned int i = 0; i < mesh.numVertices (); i++) {
-    const glm::vec3 v = mesh.vertex (i);
-
-    stream << "v " << v.x << " " << v.y << " " << v.z << std::endl;
+    stream << "v " << mesh.vertex (i) << std::endl;
   }
   for (unsigned int i = 0; i < mesh.numIndices (); i += 3) {
     stream << "f " << mesh.index (i + 0) + 1 << " " 
@@ -641,15 +639,15 @@ bool MeshUtil :: fromObjFile (std::istream& stream, std::vector <Mesh>& meshes) 
           meshes.push_back (Mesh ());
         }
         if (keyword == "v") {
-          float x, y, z;
-          lineStream >> x >> y >> z;
+          glm::vec3 vertex;
+          lineStream >> vertex;
 
           if (lineStream.fail ()) {
             DILAY_WARN ("could not parse vertex at line %u", lineNumber)
             return false;
           }
           else {
-            addVertex (meshes.back (), glm::vec3 (x, y, z));
+            addVertex (meshes.back (), vertex);
           }
         }
         else if (keyword == "f") {
