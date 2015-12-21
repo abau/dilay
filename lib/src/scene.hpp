@@ -57,9 +57,9 @@ class Scene : public Configurable {
     unsigned int       numFaces           () const;
     bool               hasFileName        () const;
     const std::string& fileName           () const;
-    bool               toObjFile          ();
-    bool               toObjFile          (const std::string&);
-    bool               fromObjFile        (const Config&, const std::string&);
+    bool               toDlyFile          (bool);
+    bool               toDlyFile          (const std::string&, bool);
+    bool               fromDlyFile        (const Config&, const std::string&);
 
     SAFE_REF1 (WingedMesh, wingedMesh, unsigned int)
     SAFE_REF1 (SketchMesh, sketchMesh, unsigned int)

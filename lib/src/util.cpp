@@ -184,3 +184,12 @@ unsigned int Util :: countOnes (unsigned int x) {
   }
   return n;
 }
+
+bool Util :: hasSuffix (const std::string& string, const std::string& suffix) {
+  if (string.size () >= suffix.size ()) {
+    return string.compare (string.size () - suffix.size (), suffix.size (), suffix) == 0;
+  }
+  else {
+    return false;
+  }
+}

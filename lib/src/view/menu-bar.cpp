@@ -5,6 +5,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMenuBar>
+#include "../util.hpp"
 #include "history.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -13,6 +14,9 @@
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/util.hpp"
+
+#define DLY_FILE_FILTER "Dilay (*.dly)"
+#define OBJ_FILE_FILTER "Wavefront (*.obj)"
 
 namespace {
   QAction& addAction ( QMenu& menu, const QString& label, const QKeySequence& keySequence
@@ -30,6 +34,26 @@ namespace {
       ? QString (scene.fileName ().c_str ())
       : QStandardPaths::standardLocations (QStandardPaths::HomeLocation).front ();
   }
+
+  QString filterAllFiles () { return QObject::tr ("All files (*.*)"); }
+  QString filterDlyFiles () { return QObject::tr ("Dilay files (*.dly)"); }
+  QString filterObjFiles () { return QObject::tr ("Wavefront files (*.obj)"); }
+
+  QString fileDialogFilters () {
+    return filterAllFiles () + ";;" + filterDlyFiles () + ";;" + filterObjFiles ();
+  }
+
+  QString selectedFilter (const Scene& scene) {
+    if (scene.hasFileName ()) {
+      if (Util::hasSuffix (scene.fileName (), ".dly")) {
+        return filterDlyFiles ();
+      }
+      else if (Util::hasSuffix (scene.fileName (), ".obj")) {
+        return filterObjFiles ();
+      }
+    }
+    return filterAllFiles ();
+  }
 }
 
 void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
@@ -43,10 +67,12 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
             , [&mainWindow, &glWidget] ()
   {
     Scene&            scene    = glWidget.state ().scene ();
+          QString     filter   = filterAllFiles ();
     const std::string fileName = QFileDialog::getOpenFileName ( &mainWindow
-                                                              , QObject::tr ("Open")
-                                                              , getFileDialogPath (scene)
-                                                              , "*.obj" ).toStdString ();
+                                                          , QObject::tr ("Open")
+                                                          , getFileDialogPath (scene)
+                                                          , fileDialogFilters ()
+                                                          , &filter ).toStdString ();
     if (fileName.empty () == false) {
       if (scene.isEmpty () == false) {
         if (ViewUtil::question (mainWindow, QObject::tr ("Replace existent scene?"))) {
@@ -57,7 +83,7 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
           glWidget.state ().history ().snapshotAll (scene);
         }
       }
-      if (scene.fromObjFile (glWidget.state ().config (), fileName) == false) {
+      if (scene.fromDlyFile (glWidget.state ().config (), fileName) == false) {
         ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
       }
       mainWindow.update ();
@@ -68,12 +94,21 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
                                     , [&mainWindow, &glWidget] () 
   {
     Scene&            scene    = glWidget.state ().scene ();
+          QString     filter   = selectedFilter (scene);
     const std::string fileName = QFileDialog::getSaveFileName ( &mainWindow
-                                                              , QObject::tr ("Save as")
-                                                              , getFileDialogPath (scene)
-                                                              , "*.obj" ).toStdString ();
-    if (fileName.empty () == false && scene.toObjFile (fileName) == false) {
-      ViewUtil::error (mainWindow, QObject::tr ("Could not save to file."));
+                                                          , QObject::tr ("Save as")
+                                                          , getFileDialogPath (scene)
+                                                          , fileDialogFilters ()
+                                                          , &filter ).toStdString ();
+    if (fileName.empty () == false) {
+      const bool saveAsObj = Util::hasSuffix (fileName, ".obj") || filter == filterObjFiles ();
+
+      if (scene.toDlyFile (fileName, saveAsObj) == false) {
+        ViewUtil::error (mainWindow, QObject::tr ("Could not save to file."));
+      }
+      else if (saveAsObj && scene.numSketchMeshes () > 0) {
+        ViewUtil::info (mainWindow, QObject::tr ("Sketches are omitted when saving Wavefront files."));
+      }
     }
   });
   addAction ( fileMenu, QObject::tr ("&Save"), QKeySequence::Save
@@ -81,7 +116,9 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
   {
     Scene& scene = glWidget.state ().scene ();
     if (scene.hasFileName ()) {
-      if (scene.toObjFile () == false) {
+      const bool saveAsObj = Util::hasSuffix (scene.fileName (), ".obj");
+
+      if (scene.toDlyFile (saveAsObj) == false) {
         ViewUtil::error (mainWindow, QObject::tr ("Could not save to file."));
       }
     }

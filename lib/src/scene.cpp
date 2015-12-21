@@ -2,13 +2,11 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <fstream>
 #include "config.hpp"
 #include "intersection.hpp"
-#include "mesh.hpp"
-#include "mesh-util.hpp"
 #include "render-mode.hpp"
 #include "scene.hpp"
+#include "scene-util.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/bone-intersection.hpp"
 #include "sketch/mesh-intersection.hpp"
@@ -19,12 +17,15 @@
 #include "winged/util.hpp"
 
 struct Scene :: Impl {
+  Scene*                            self;
   IntrusiveIndexedList <WingedMesh> wingedMeshes;
   IntrusiveIndexedList <SketchMesh> sketchMeshes;
   RenderMode                       _commonRenderMode;
   std::string                       fileName;
 
-  Impl (const Config& config) {
+  Impl (Scene* s, const Config& config)
+    : self (s)
+  {
     this->runFromConfig (config);
 
     this->_commonRenderMode.smoothShading (true);
@@ -250,17 +251,10 @@ struct Scene :: Impl {
     return ! this->fileName.empty ();
   }
 
-  bool toObjFile () {
+  bool toDlyFile (bool isObjFile) {
     assert (this->hasFileName ());
 
-    std::ofstream file (this->fileName);
-
-    if (file.is_open ()) {
-      this->forEachConstMesh ([&file] (const WingedMesh& mesh) {
-        file << "o object" << mesh.index () << std::endl;
-        MeshUtil::toObjFile (file, mesh.makePrunedMesh ());
-      });
-      file.close ();
+    if (SceneUtil::toDlyFile (this->fileName, *this->self, isObjFile)) {
       return true;
     }
     else {
@@ -269,22 +263,15 @@ struct Scene :: Impl {
     }
   }
 
-  bool toObjFile (const std::string& newFileName) {
+  bool toDlyFile (const std::string& newFileName, bool isObjFile) {
     this->fileName = newFileName;
-    return this->toObjFile ();
+    return this->toDlyFile (isObjFile);
   }
 
-  bool fromObjFile (const Config& config, const std::string& newFileName) {
+  bool fromDlyFile (const Config& config, const std::string& newFileName) {
     this->fileName = newFileName;
 
-    std::ifstream      file (this->fileName);
-    std::vector <Mesh> meshes;
-
-    if (file.is_open () && MeshUtil::fromObjFile (file, meshes)) {
-      for (Mesh& m : meshes) {
-        this->newWingedMesh (config, m);
-      }
-      file.close ();
+    if (SceneUtil::fromDlyFile (this->fileName, config, *this->self)) {
       return true;
     }
     else {
@@ -310,7 +297,7 @@ struct Scene :: Impl {
   }
 };
 
-DELEGATE1_BIG3 (Scene, const Config&)
+DELEGATE1_BIG3_SELF (Scene, const Config&)
 
 DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
 DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchTree&)
@@ -347,7 +334,7 @@ DELEGATE_CONST  (unsigned int      , Scene, numSketchMeshes)
 DELEGATE_CONST  (unsigned int      , Scene, numFaces)
 DELEGATE_CONST  (bool              , Scene, hasFileName)
 GETTER_CONST    (const std::string&, Scene, fileName)
-DELEGATE        (bool              , Scene, toObjFile)
-DELEGATE1       (bool              , Scene, toObjFile, const std::string&)
-DELEGATE2       (bool              , Scene, fromObjFile, const Config&, const std::string&)
+DELEGATE1       (bool              , Scene, toDlyFile, bool)
+DELEGATE2       (bool              , Scene, toDlyFile, const std::string&, bool)
+DELEGATE2       (bool              , Scene, fromDlyFile, const Config&, const std::string&)
 DELEGATE1       (void              , Scene, runFromConfig, const Config&)

@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <sstream>
 #include <unordered_map>
 #include <vector>
 #include "edge-map.hpp"
@@ -24,46 +23,44 @@ namespace {
     }
     return mesh;
   }
+}
 
-  unsigned int addVertex (Mesh& mesh, const glm::vec3& v) {
-    return mesh.addVertex (v);
-  }
+void MeshUtil :: addFace (Mesh& mesh, unsigned int i1, unsigned int i2, unsigned int i3) {
+  mesh.addIndex (i1);
+  mesh.addIndex (i2);
+  mesh.addIndex (i3);
+}
 
-  void addFace (Mesh& mesh, unsigned int i1, unsigned int i2, unsigned int i3) {
-    mesh.addIndex (i1);
-    mesh.addIndex (i2);
-    mesh.addIndex (i3);
-  }
-
-  void addFace (Mesh& mesh, unsigned int i1, unsigned int i2, unsigned int i3, unsigned int i4) {
-    mesh.addIndex (i1);
-    mesh.addIndex (i2);
-    mesh.addIndex (i3);
-    mesh.addIndex (i4);
-    mesh.addIndex (i1);
-    mesh.addIndex (i3);
-  }
+void MeshUtil :: addFace ( Mesh& mesh, unsigned int i1, unsigned int i2
+                         , unsigned int i3, unsigned int i4 )
+{
+  mesh.addIndex (i1);
+  mesh.addIndex (i2);
+  mesh.addIndex (i3);
+  mesh.addIndex (i4);
+  mesh.addIndex (i1);
+  mesh.addIndex (i3);
 }
 
 Mesh MeshUtil :: cube () {
   Mesh mesh;
   const float d = 0.5f;
 
-  addVertex (mesh, glm::vec3 (-d, -d, -d));
-  addVertex (mesh, glm::vec3 (-d, -d, +d));
-  addVertex (mesh, glm::vec3 (-d, +d, -d));
-  addVertex (mesh, glm::vec3 (-d, +d, +d));
-  addVertex (mesh, glm::vec3 (+d, -d, -d));
-  addVertex (mesh, glm::vec3 (+d, -d, +d));
-  addVertex (mesh, glm::vec3 (+d, +d, -d));
-  addVertex (mesh, glm::vec3 (+d, +d, +d));
+  mesh.addVertex (glm::vec3 (-d, -d, -d));
+  mesh.addVertex (glm::vec3 (-d, -d, +d));
+  mesh.addVertex (glm::vec3 (-d, +d, -d));
+  mesh.addVertex (glm::vec3 (-d, +d, +d));
+  mesh.addVertex (glm::vec3 (+d, -d, -d));
+  mesh.addVertex (glm::vec3 (+d, -d, +d));
+  mesh.addVertex (glm::vec3 (+d, +d, -d));
+  mesh.addVertex (glm::vec3 (+d, +d, +d));
 
-  addFace (mesh, 0, 1, 3, 2);
-  addFace (mesh, 1, 5, 7, 3);
-  addFace (mesh, 5, 4, 6, 7);
-  addFace (mesh, 4, 0, 2, 6);
-  addFace (mesh, 3, 7, 6, 2);
-  addFace (mesh, 0, 4, 5, 1);
+  MeshUtil::addFace (mesh, 0, 1, 3, 2);
+  MeshUtil::addFace (mesh, 1, 5, 7, 3);
+  MeshUtil::addFace (mesh, 5, 4, 6, 7);
+  MeshUtil::addFace (mesh, 4, 0, 2, 6);
+  MeshUtil::addFace (mesh, 3, 7, 6, 2);
+  MeshUtil::addFace (mesh, 0, 4, 5, 1);
 
   return finalized (mesh);
 }
@@ -85,7 +82,7 @@ Mesh MeshUtil :: sphere (unsigned int rings, unsigned int sectors) {
       const float y = radius * cos (phi);
       const float z = radius * cos (theta) * sin (phi);
 
-      addVertex (mesh, glm::vec3 (x,y,z));
+      mesh.addVertex (glm::vec3 (x,y,z));
 
       theta += sectorStep;
     }
@@ -93,28 +90,28 @@ Mesh MeshUtil :: sphere (unsigned int rings, unsigned int sectors) {
   }
 
   // caps vertices
-  const unsigned int topCapIndex = addVertex (mesh, glm::vec3 (0.0f, radius, 0.0f));
-  const unsigned int botCapIndex = addVertex (mesh, glm::vec3 (0.0f,-radius, 0.0f));
+  const unsigned int topCapIndex = mesh.addVertex (glm::vec3 (0.0f, radius, 0.0f));
+  const unsigned int botCapIndex = mesh.addVertex (glm::vec3 (0.0f,-radius, 0.0f));
 
   // inner rings indices
   for (unsigned int r = 0; r < rings - 2; r++) {
     for (unsigned int s = 0; s < sectors; s++) {
-      addFace ( mesh
-              , (sectors * r) + s
-              , (sectors * (r+1)) + s
-              , (sectors * (r+1)) + ((s+1) % sectors) 
-              , (sectors * r) + ((s+1) % sectors) );
+      MeshUtil::addFace ( mesh
+                        , (sectors * r) + s
+                        , (sectors * (r+1)) + s
+                        , (sectors * (r+1)) + ((s+1) % sectors) 
+                        , (sectors * r) + ((s+1) % sectors) );
     }
   }
 
   // caps indices
   for (unsigned int s = 0; s < sectors; s++) {
-    addFace (mesh, topCapIndex, s, (s+1) % sectors);
+    MeshUtil::addFace (mesh, topCapIndex, s, (s+1) % sectors);
 
-    addFace ( mesh
-            , botCapIndex
-            , (sectors * (rings-2)) + ((s+1) % sectors)
-            , (sectors * (rings-2)) + s);
+    MeshUtil::addFace ( mesh
+                      , botCapIndex
+                      , (sectors * (rings-2)) + ((s+1) % sectors)
+                      , (sectors * (rings-2)) + s);
   }
   return finalized (mesh);
 }
@@ -127,7 +124,7 @@ Mesh MeshUtil :: icosphere (unsigned int numSubdivisions) {
 
   // adds new vertex to ico-sphere
   auto addIcoVertex = [&mesh] (const glm::vec3& v) -> unsigned int {
-    return addVertex (mesh, glm::normalize (v));
+    return mesh.addVertex (glm::normalize (v));
   };
 
   // looks up vertex in cache or computes a new one
@@ -156,7 +153,7 @@ Mesh MeshUtil :: icosphere (unsigned int numSubdivisions) {
     (unsigned int s,unsigned int i1, unsigned int i2, unsigned int i3) -> void 
     {
       if (s == 0) {
-        addFace (mesh, i1, i2, i3); 
+        MeshUtil::addFace (mesh, i1, i2, i3); 
       }
       else {
         const unsigned int i12 = lookupVertex (i1,i2);
@@ -221,19 +218,17 @@ Mesh MeshUtil :: cone (unsigned int numBaseVertices) {
   const float c = 2.0f * glm::pi <float> () / float (numBaseVertices);
 
   for (unsigned int i = 0; i < numBaseVertices; i++) {
-    addVertex (mesh, glm::vec3 ( glm::sin (float (i) * c)
-                               , -0.5f
-                               , glm::cos (float (i) * c)));
+    mesh.addVertex (glm::vec3 (glm::sin (float (i) * c), -0.5f, glm::cos (float (i) * c)));
   }
-  addVertex (mesh, glm::vec3 (0.0f, -0.5f, 0.0f));
-  addVertex (mesh, glm::vec3 (0.0f,  0.5f, 0.0f));
+  mesh.addVertex (glm::vec3 (0.0f, -0.5f, 0.0f));
+  mesh.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
 
   for (unsigned int i = 0; i < numBaseVertices - 1; i++) {
-    addFace (mesh, i, i + 1, numBaseVertices + 1);
-    addFace (mesh, i + 1, i, numBaseVertices);
+    MeshUtil::addFace (mesh, i, i + 1, numBaseVertices + 1);
+    MeshUtil::addFace (mesh, i + 1, i, numBaseVertices);
   }
-  addFace (mesh, numBaseVertices - 1, 0, numBaseVertices + 1);
-  addFace (mesh, 0, numBaseVertices - 1, numBaseVertices);
+  MeshUtil::addFace (mesh, numBaseVertices - 1, 0, numBaseVertices + 1);
+  MeshUtil::addFace (mesh, 0, numBaseVertices - 1, numBaseVertices);
 
   return finalized (mesh);
 }
@@ -245,28 +240,24 @@ Mesh MeshUtil :: cylinder (unsigned int numVertices) {
   const float c = 2.0f * glm::pi <float> () / float (numVertices);
 
   for (unsigned int i = 0; i < numVertices; i++) {
-    addVertex (mesh, glm::vec3 ( glm::sin (float (i) * c)
-                               , -0.5f
-                               , glm::cos (float (i) * c)));
+    mesh.addVertex (glm::vec3 (glm::sin (float (i) * c), -0.5f, glm::cos (float (i) * c)));
   }
   for (unsigned int i = 0; i < numVertices; i++) {
-    addVertex (mesh, glm::vec3 ( glm::sin (float (i) * c)
-                               , 0.5f
-                               , glm::cos (float (i) * c)));
+    mesh.addVertex (glm::vec3 ( glm::sin (float (i) * c), 0.5f, glm::cos (float (i) * c)));
   }
-  addVertex (mesh, glm::vec3 (0.0f, -0.5f, 0.0f));
-  addVertex (mesh, glm::vec3 (0.0f,  0.5f, 0.0f));
+  mesh.addVertex (glm::vec3 (0.0f, -0.5f, 0.0f));
+  mesh.addVertex (glm::vec3 (0.0f,  0.5f, 0.0f));
 
   for (unsigned int i = 0; i < numVertices - 1; i++) {
-    addFace (mesh, i, i + 1, i + numVertices + 1, i + numVertices);
+    MeshUtil::addFace (mesh, i, i + 1, i + numVertices + 1, i + numVertices);
 
-    addFace (mesh, i + 1, i, 2 * numVertices);
-    addFace (mesh, i + numVertices, i + numVertices + 1, (2 * numVertices) + 1);
+    MeshUtil::addFace (mesh, i + 1, i, 2 * numVertices);
+    MeshUtil::addFace (mesh, i + numVertices, i + numVertices + 1, (2 * numVertices) + 1);
   }
-  addFace (mesh, numVertices - 1, 0, numVertices, (2 * numVertices) - 1);
+  MeshUtil::addFace (mesh, numVertices - 1, 0, numVertices, (2 * numVertices) - 1);
 
-  addFace (mesh, 0, numVertices - 1, 2 * numVertices);
-  addFace (mesh, (2 * numVertices) - 1, numVertices, (2 * numVertices) + 1);
+  MeshUtil::addFace (mesh, 0, numVertices - 1, 2 * numVertices);
+  MeshUtil::addFace (mesh, (2 * numVertices) - 1, numVertices, (2 * numVertices) + 1);
 
   return finalized (mesh);
 }
@@ -431,61 +422,61 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
 
       // 3 non-negative
       if (s1 != Side::Negative && s2 != Side::Negative && s3 != Side::Negative) {
-        addFace (m, new1.first, new2.first, new3.first);
-        addFace (m, new3.second, new2.second, new1.second);
+        MeshUtil::addFace (m, new1.first, new2.first, new3.first);
+        MeshUtil::addFace (m, new3.second, new2.second, new1.second);
       }
       // 1 negative - 2 positive
       else if (s1 == Side::Positive && s2 == Side::Positive && s3 == Side::Negative) {
         unsigned int b1 = newBorderVertex (oldIndex1, oldIndex3);
         unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
 
-        addFace (m, new2.first, b2, new1.first);
-        addFace (m, new1.second, b2, new2.second);
+        MeshUtil::addFace (m, new2.first, b2, new1.first);
+        MeshUtil::addFace (m, new1.second, b2, new2.second);
 
-        addFace (m, new1.first, b2, b1);
-        addFace (m, b1, b2, new1.second);
+        MeshUtil::addFace (m, new1.first, b2, b1);
+        MeshUtil::addFace (m, b1, b2, new1.second);
       }
       else if (s1 == Side::Positive && s2 == Side::Negative && s3 == Side::Positive) {
         unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
         unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
 
-        addFace (m, new1.first, b1, new3.first);
-        addFace (m, new3.second, b1, new1.second);
+        MeshUtil::addFace (m, new1.first, b1, new3.first);
+        MeshUtil::addFace (m, new3.second, b1, new1.second);
 
-        addFace (m, new3.first, b1, b2);
-        addFace (m, b2, b1, new3.second);
+        MeshUtil::addFace (m, new3.first, b1, b2);
+        MeshUtil::addFace (m, b2, b1, new3.second);
       }
       else if (s1 == Side::Negative && s2 == Side::Positive && s3 == Side::Positive) {
         unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
         unsigned int b2 = newBorderVertex (oldIndex1, oldIndex3);
 
-        addFace (m, new3.first, b2, new2.first);
-        addFace (m, new2.second, b2, new3.second);
+        MeshUtil::addFace (m, new3.first, b2, new2.first);
+        MeshUtil::addFace (m, new2.second, b2, new3.second);
 
-        addFace (m, new2.first, b2, b1);
-        addFace (m, b1, b2, new2.second);
+        MeshUtil::addFace (m, new2.first, b2, b1);
+        MeshUtil::addFace (m, b1, b2, new2.second);
       }
       // 1 positive - 2 negative
       else if (s1 == Side::Positive && s2 == Side::Negative && s3 == Side::Negative) {
         unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
         unsigned int b2 = newBorderVertex (oldIndex1, oldIndex3);
 
-        addFace (m, new1.first, b1, b2);
-        addFace (m, b2, b1, new1.second);
+        MeshUtil::addFace (m, new1.first, b1, b2);
+        MeshUtil::addFace (m, b2, b1, new1.second);
       }
       else if (s1 == Side::Negative && s2 == Side::Positive && s3 == Side::Negative) {
         unsigned int b1 = newBorderVertex (oldIndex1, oldIndex2);
         unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
 
-        addFace (m, new2.first, b2, b1);
-        addFace (m, b1, b2, new2.second);
+        MeshUtil::addFace (m, new2.first, b2, b1);
+        MeshUtil::addFace (m, b1, b2, new2.second);
       }
       else if (s1 == Side::Negative && s2 == Side::Negative && s3 == Side::Positive) {
         unsigned int b1 = newBorderVertex (oldIndex1, oldIndex3);
         unsigned int b2 = newBorderVertex (oldIndex2, oldIndex3);
 
-        addFace (m, new3.first, b1, b2);
-        addFace (m, b2, b1, new3.second);
+        MeshUtil::addFace (m, new3.first, b1, b2);
+        MeshUtil::addFace (m, b2, b1, new3.second);
       }
       // 1 positive - 1 border - 1 negative
       else if (s1 == Side::Positive && s2 == Side::Border && s3 == Side::Negative) {
@@ -493,48 +484,48 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
 
         unsigned int b = newBorderVertex (oldIndex1, oldIndex3);
 
-        addFace (m, new1.first, new2.first, b);
-        addFace (m, b, new2.second, new1.second);
+        MeshUtil::addFace (m, new1.first, new2.first, b);
+        MeshUtil::addFace (m, b, new2.second, new1.second);
       }
       else if (s1 == Side::Border && s2 == Side::Positive && s3 == Side::Negative) {
         assert (borderFlags [oldIndex1] == BorderFlag::ConnectsBoth);
 
         unsigned int b = newBorderVertex (oldIndex2, oldIndex3);
 
-        addFace (m, new1.first, new2.first, b);
-        addFace (m, b, new2.second, new1.second);
+        MeshUtil::addFace (m, new1.first, new2.first, b);
+        MeshUtil::addFace (m, b, new2.second, new1.second);
       }
       else if (s1 == Side::Positive && s2 == Side::Negative && s3 == Side::Border) {
         assert (borderFlags [oldIndex3] == BorderFlag::ConnectsBoth);
 
         unsigned int b = newBorderVertex (oldIndex1, oldIndex2);
 
-        addFace (m, new1.first, b, new3.first);
-        addFace (m, new3.second, b, new1.second);
+        MeshUtil::addFace (m, new1.first, b, new3.first);
+        MeshUtil::addFace (m, new3.second, b, new1.second);
       }
       else if (s1 == Side::Border && s2 == Side::Negative && s3 == Side::Positive) {
         assert (borderFlags [oldIndex1] == BorderFlag::ConnectsBoth);
 
         unsigned int b = newBorderVertex (oldIndex2, oldIndex3);
 
-        addFace (m, new1.first, b, new3.first);
-        addFace (m, new3.second, b, new1.second);
+        MeshUtil::addFace (m, new1.first, b, new3.first);
+        MeshUtil::addFace (m, new3.second, b, new1.second);
       }
       else if (s1 == Side::Negative && s2 == Side::Positive && s3 == Side::Border) {
         assert (borderFlags [oldIndex3] == BorderFlag::ConnectsBoth);
 
         unsigned int b = newBorderVertex (oldIndex1, oldIndex2);
 
-        addFace (m, new2.first, new3.first, b);
-        addFace (m, b, new3.second, new2.second);
+        MeshUtil::addFace (m, new2.first, new3.first, b);
+        MeshUtil::addFace (m, b, new3.second, new2.second);
       }
       else if (s1 == Side::Negative && s2 == Side::Border && s3 == Side::Positive) {
         assert (borderFlags [oldIndex2] == BorderFlag::ConnectsBoth);
 
         unsigned int b = newBorderVertex (oldIndex1, oldIndex3);
 
-        addFace (m, new2.first, new3.first, b);
-        addFace (m, b, new3.second, new2.second);
+        MeshUtil::addFace (m, new2.first, new3.first, b);
+        MeshUtil::addFace (m, b, new3.second, new2.second);
       }
       else {
         DILAY_IMPOSSIBLE
@@ -601,102 +592,4 @@ bool MeshUtil :: checkConsistency (const Mesh& mesh) {
     }
   }
   return true;
-}
-
-void MeshUtil :: toObjFile (std::ostream& stream, const Mesh& mesh) {
-  for (unsigned int i = 0; i < mesh.numVertices (); i++) {
-    stream << "v " << mesh.vertex (i) << std::endl;
-  }
-  for (unsigned int i = 0; i < mesh.numIndices (); i += 3) {
-    stream << "f " << mesh.index (i + 0) + 1 << " " 
-                   << mesh.index (i + 1) + 1 << " " 
-                   << mesh.index (i + 2) + 1 << std::endl;
-  }
-}
-
-bool MeshUtil :: fromObjFile (std::istream& stream, std::vector <Mesh>& meshes) {
-  unsigned int lineNumber = 1;
-
-  meshes.clear ();
-
-  auto extractFirst = [] (const std::string& string, unsigned int& value) -> bool {
-    auto slashPos = string.find ('/');
-    return Util::fromString (string.substr (0, slashPos), value);
-  };
-
-  for (std::string line; std::getline (stream, line); ) {
-    std::istringstream lineStream (line);
-    std::string        keyword;
-
-    lineStream >> keyword;
-
-    if (keyword.empty () == false) {
-      if (keyword == "o") {
-        meshes.push_back (Mesh ());
-      }
-      else {
-        if (meshes.empty ()) {
-          meshes.push_back (Mesh ());
-        }
-        if (keyword == "v") {
-          glm::vec3 vertex;
-          lineStream >> vertex;
-
-          if (lineStream.fail ()) {
-            DILAY_WARN ("could not parse vertex at line %u", lineNumber)
-            return false;
-          }
-          else {
-            addVertex (meshes.back (), vertex);
-          }
-        }
-        else if (keyword == "f") {
-          std::string v1String, v2String, v3String;
-          unsigned int v1, v2, v3;
-
-          lineStream >> v1String >> v2String >> v3String;
-
-          if ( lineStream.fail () || extractFirst (v1String, v1) == false
-                                  || extractFirst (v2String, v2) == false
-                                  || extractFirst (v3String, v3) == false )
-          {
-            DILAY_WARN ("could not parse face at line %u", lineNumber)
-            return false;
-          }
-          else {
-            std::string  v4String;
-            unsigned int v4;
-            lineStream >> v4String;
-
-            if (lineStream.fail ()) {
-              lineStream.clear ();
-              addFace (meshes.back (), v1-1, v2-1, v3-1);
-            }
-            else if (extractFirst (v4String, v4) == false) {
-              DILAY_WARN ("could not parse face at line %u", lineNumber)
-              return false;
-            }
-            else {
-              addFace (meshes.back (), v1-1, v2-1, v3-1, v4-1);
-            }
-          }
-        }
-      }
-    }
-    lineNumber++;
-  }
-  meshes.erase ( std::remove_if ( meshes.begin ()
-                                , meshes.end   ()
-                                , [] (Mesh& m) { return m.numVertices () == 0; } )
-               , meshes.end () );
-
-  if (std::all_of ( meshes.begin (), meshes.end ()
-                  , [] (Mesh& m) { return checkConsistency (m); } ))
-  {
-    return true;
-  }
-  else {
-    meshes.clear ();
-    return false;
-  }
 }

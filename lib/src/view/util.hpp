@@ -51,6 +51,7 @@ namespace ViewUtil {
   bool              question       (QWidget&, const QString&);
   void              error          (QWidget&, const QString&);
   void              about          (QWidget&, const QString&);
+  void              info           (QWidget&, const QString&);
 };
 
 #endif

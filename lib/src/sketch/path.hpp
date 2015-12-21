@@ -27,17 +27,23 @@ class SketchPath {
 
     DECLARE_BIG6 (SketchPath);
 
-    const Spheres&   spheres    () const;
-    const glm::vec3& minimum    () const;
-    const glm::vec3& maximum    () const;
-    bool             isEmpty    () const;
-    PrimAABox        aabox      () const;
-    void             addSphere  (const glm::vec3&, const glm::vec3&, float);
-    void             render     (Camera&, Mesh&) const;
-    bool             intersects (const PrimRay&, SketchMesh&, SketchPathIntersection&);
-    SketchPath       mirror     (const PrimPlane&);
-    void             smooth     ( const PrimSphere&, unsigned int
-                                , SketchPathSmoothEffect, const PrimSphere*, const PrimSphere* );
+    const Spheres&   spheres           () const;
+    const glm::vec3& minimum           () const;
+    const glm::vec3& maximum           () const;
+    const glm::vec3& intersectionFirst () const;
+    const glm::vec3& intersectionLast  () const;
+    void             intersectionFirst (const glm::vec3&);
+    void             intersectionLast  (const glm::vec3&);
+    void             reset             ();
+    bool             isEmpty           () const;
+    PrimAABox        aabox             () const;
+    void             addSphere         (const glm::vec3&, const glm::vec3&, float);
+    void             render            (Camera&, Mesh&) const;
+    bool             intersects        (const PrimRay&, SketchMesh&, SketchPathIntersection&);
+    SketchPath       mirror            (const PrimPlane&);
+    void             smooth            ( const PrimSphere&, unsigned int
+                                       , SketchPathSmoothEffect, const PrimSphere*
+                                       , const PrimSphere* );
 
   private:
     IMPLEMENTATION

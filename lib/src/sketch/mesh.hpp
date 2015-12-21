@@ -27,6 +27,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
 
     unsigned int       index           () const;
     const SketchTree&  tree            () const;
+    SketchTree&        tree            ();
     const SketchPaths& paths           () const;
     bool               isEmpty         () const;
     void               fromTree        (const SketchTree&);
@@ -41,7 +42,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     PrimPlane          mirrorPlane     (Dimension);
     SketchNode&        addChild        (SketchNode&, const glm::vec3&, float, const Dimension*);
     SketchNode&        addParent       (SketchNode&, const glm::vec3&, float, const Dimension*);
-    void               addPath         (const SketchPath&);
+    SketchPath&        addPath         (const SketchPath&);
     void               addSphere       (bool, const glm::vec3&, const glm::vec3&, float, const Dimension*);
     void               move            (SketchNode&, const glm::vec3&, bool, const Dimension*);
     void               scale           (SketchNode&, float, bool, const Dimension*);

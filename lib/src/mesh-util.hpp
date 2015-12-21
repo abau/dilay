@@ -5,13 +5,13 @@
 #ifndef DILAY_MESH_UTIL
 #define DILAY_MESH_UTIL
 
-#include <iosfwd>
-#include <vector>
-
 class Mesh;
 class PrimPlane;
 
 namespace MeshUtil {
+  void addFace          (Mesh&, unsigned int, unsigned int, unsigned int);
+  void addFace          (Mesh&, unsigned int, unsigned int, unsigned int, unsigned int);
+
   Mesh cube             ();
   Mesh sphere           (unsigned int, unsigned int);
   Mesh icosphere        (unsigned int);
@@ -20,8 +20,6 @@ namespace MeshUtil {
 
   Mesh mirror           (const Mesh&, const PrimPlane&);
   bool checkConsistency (const Mesh&);
-  void toObjFile        (std::ostream&, const Mesh&);
-  bool fromObjFile      (std::istream&, std::vector <Mesh>&);
 };
 
 #endif

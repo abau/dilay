@@ -42,6 +42,7 @@ namespace Util {
   bool         fromString         (const std::string&, unsigned int&);
   bool         fromString         (const std::string&, float&);
   unsigned int countOnes          (unsigned int);
+  bool         hasSuffix          (const std::string&, const std::string&);
 
   constexpr float        epsilon      () { return 0.0001f; }
   constexpr unsigned int invalidIndex () { return std::numeric_limits <unsigned int>::max (); }

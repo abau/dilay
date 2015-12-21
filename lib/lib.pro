@@ -51,6 +51,7 @@ SOURCES += \
            src/render-mode.cpp \
            src/renderer.cpp \
            src/scene.cpp \
+           src/scene-util.cpp \
            src/sculpt-brush.cpp \
            src/shader.cpp \
            src/sketch/bone-intersection.cpp \
@@ -157,6 +158,7 @@ HEADERS += \
            src/render-mode.hpp \
            src/renderer.hpp \
            src/scene.hpp \
+           src/scene-util.hpp \
            src/sculpt-brush.hpp \
            src/shader.hpp \
            src/sketch/bone-intersection.hpp \

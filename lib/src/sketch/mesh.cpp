@@ -437,8 +437,9 @@ struct SketchMesh::Impl {
     return newNode;
   }
 
-  void addPath (const SketchPath& path) {
+  SketchPath& addPath (const SketchPath& path) {
     this->paths.push_back (path);
+    return this->paths.back ();
   }
 
   void addSphere ( bool newPath, const glm::vec3& intersection
@@ -744,6 +745,7 @@ DELEGATE1_CONST (bool                , SketchMesh, operator==, const SketchMesh&
 DELEGATE1_CONST (bool                , SketchMesh, operator!=, const SketchMesh&)
 GETTER_CONST    (unsigned int        , SketchMesh, index)
 GETTER_CONST    (const SketchTree&   , SketchMesh, tree)
+GETTER          (SketchTree&         , SketchMesh, tree)
 GETTER_CONST    (const SketchPaths&  , SketchMesh, paths)
 DELEGATE_CONST  (bool                , SketchMesh, isEmpty)
 DELEGATE1       (void                , SketchMesh, fromTree, const SketchTree&)
@@ -758,7 +760,7 @@ DELEGATE1       (void                , SketchMesh, renderWireframe, bool)
 DELEGATE1       (PrimPlane           , SketchMesh, mirrorPlane, Dimension)
 DELEGATE4       (SketchNode&         , SketchMesh, addChild, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (SketchNode&         , SketchMesh, addParent, SketchNode&, const glm::vec3&, float, const Dimension*)
-DELEGATE1       (void                , SketchMesh, addPath, const SketchPath&)
+DELEGATE1       (SketchPath&         , SketchMesh, addPath, const SketchPath&)
 DELEGATE5       (void                , SketchMesh, addSphere, bool, const glm::vec3&, const glm::vec3&, float, const Dimension*)
 DELEGATE4       (void                , SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE4       (void                , SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
