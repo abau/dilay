@@ -58,6 +58,7 @@ struct ToolConvertSketch::Impl {
       SketchMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         this->self->snapshotAll ();
+        intersection.mesh ().optimizePaths ();
         this->self->state ().scene ().newWingedMesh 
           ( this->self->state ().config ()
           , SketchConversion::convert ( intersection.mesh ()

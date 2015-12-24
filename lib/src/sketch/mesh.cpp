@@ -8,6 +8,7 @@
 #include "color.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
+#include "distance.hpp"
 #include "mesh-util.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/cone.hpp"
@@ -733,6 +734,43 @@ struct SketchMesh::Impl {
     }
   }
 
+  void optimizePaths () {
+    for (SketchPath& p1 : this->paths) {
+      for (SketchPath& p2 : this->paths) {
+        if (&p1 < &p2) {
+          for (const PrimSphere& s1 : p1.spheres ()) {
+            for (const PrimSphere& s2 : p2.spheres ()) {
+              const float d  = glm::distance (s1.center (), s2.center ());
+
+              if (s1.radius () > d + s2.radius ()) {
+                p2.deleteSphere (s2);
+              }
+              else if (s2.radius () > d + s1.radius ()) {
+                p1.deleteSphere (s1);
+              }
+            }
+          }
+        }
+      }
+
+      if (this->tree.hasRoot ()) {
+        this->tree.root ().forEachNode ([this, &p1] (SketchNode& node) {
+          if (node.parent ()) {
+            const PrimConeSphere coneSphere (node.data (), node.parent ()->data ());
+
+            for (const PrimSphere& s1 : p1.spheres ()) {
+              const float d = Distance::distance (coneSphere, s1.center ());
+
+              if (d < -s1.radius ()) {
+                p1.deleteSphere (s1);
+              }
+            }
+          }
+        });
+      }
+    }
+  }
+
   void runFromConfig (const Config& config) {
     this->renderConfig.nodeColor   = config.get <Color> ("editor/sketch/node/color");
     this->renderConfig.bubbleColor = config.get <Color> ("editor/sketch/bubble/color");
@@ -771,4 +809,5 @@ DELEGATE1       (void                , SketchMesh, rebalance, SketchNode&)
 DELEGATE2       (SketchNode&         , SketchMesh, snap, SketchNode&, Dimension)
 DELEGATE2_CONST (void                , SketchMesh, minMax, glm::vec3&, glm::vec3&)
 DELEGATE5       (void                , SketchMesh, smoothPath, SketchPath&, const PrimSphere&, unsigned int, SketchPathSmoothEffect, const Dimension*)
+DELEGATE        (void                , SketchMesh, optimizePaths)
 DELEGATE1       (void                , SketchMesh, runFromConfig, const Config&)

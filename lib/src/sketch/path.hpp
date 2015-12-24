@@ -38,6 +38,7 @@ class SketchPath {
     bool             isEmpty           () const;
     PrimAABox        aabox             () const;
     void             addSphere         (const glm::vec3&, const glm::vec3&, float);
+    void             deleteSphere      (const PrimSphere&);
     void             render            (Camera&, Mesh&) const;
     bool             intersects        (const PrimRay&, SketchMesh&, SketchPathIntersection&);
     SketchPath       mirror            (const PrimPlane&);

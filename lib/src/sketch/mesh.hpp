@@ -54,6 +54,7 @@ class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item 
     void               minMax          (glm::vec3&, glm::vec3&) const;
     void               smoothPath      ( SketchPath&, const PrimSphere&, unsigned int
                                        , SketchPathSmoothEffect, const Dimension* );
+    void               optimizePaths   ();
 
   private:
     IMPLEMENTATION

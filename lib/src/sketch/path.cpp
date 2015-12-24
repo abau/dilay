@@ -63,6 +63,11 @@ struct SketchPath :: Impl {
     this->spheres.emplace_back (position, radius);
   }
 
+  void deleteSphere (const PrimSphere& sphere) {
+    this->spheres.erase ( this->spheres.begin ()
+                        + Util::findIndexByReference (this->spheres, sphere) );
+  }
+
   void render (Camera& camera, Mesh& mesh) const {
     for (const PrimSphere& s : this->spheres) {
       mesh.position (s.center ());
@@ -195,6 +200,7 @@ DELEGATE        (void                      , SketchPath, reset)
 DELEGATE_CONST  (bool                      , SketchPath, isEmpty)
 DELEGATE_CONST  (PrimAABox                 , SketchPath, aabox)
 DELEGATE3       (void                      , SketchPath, addSphere, const glm::vec3&, const glm::vec3&, float)
+DELEGATE1       (void                      , SketchPath, deleteSphere, const PrimSphere&)
 DELEGATE2_CONST (void                      , SketchPath, render, Camera&, Mesh&)
 DELEGATE3       (bool                      , SketchPath, intersects, const PrimRay&, SketchMesh&, SketchPathIntersection&)
 DELEGATE1       (SketchPath                , SketchPath, mirror, const PrimPlane&)
