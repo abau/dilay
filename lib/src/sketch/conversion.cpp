@@ -4,6 +4,7 @@
  */
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
+#include <thread>
 #include <vector>
 #include "../mesh.hpp"
 #include "distance.hpp"
@@ -515,22 +516,39 @@ namespace {
     return distance;
   }
 
-  void sample (const SketchMesh& mesh, Parameters& params) {
-    params.samples.resize (params.numSamples.x * params.numSamples.y * params.numSamples.z, 0.0f);
-
+  void sampleThread ( const SketchMesh& mesh, Parameters& params
+                    , unsigned int numThreads, unsigned int threadId )
+  {
     for (unsigned int z = 0; z < params.numSamples.z; z++) {
       for (unsigned int y = 0; y < params.numSamples.y; y++) {
         for (unsigned int x = 0; x < params.numSamples.x; x++) {
-          const glm::vec3    pos   = params.samplePos   (x,y,z);
           const unsigned int index = params.sampleIndex (x,y,z);
 
-          params.samples.at (index) = sampleAt (mesh, pos);
+          if (index % numThreads == threadId) {
+            const glm::vec3    pos   = params.samplePos   (x,y,z);
 
-          assert ((x > 0 && x < params.numSamples.x-1) || params.samples.at (index) > 0.0f);
-          assert ((y > 0 && y < params.numSamples.y-1) || params.samples.at (index) > 0.0f);
-          assert ((z > 0 && z < params.numSamples.z-1) || params.samples.at (index) > 0.0f);
+            params.samples.at (index) = sampleAt (mesh, pos);
+
+            assert ((x > 0 && x < params.numSamples.x-1) || params.samples.at (index) > 0.0f);
+            assert ((y > 0 && y < params.numSamples.y-1) || params.samples.at (index) > 0.0f);
+            assert ((z > 0 && z < params.numSamples.z-1) || params.samples.at (index) > 0.0f);
+          }
         }
       }
+    }
+  }
+
+  void sample (const SketchMesh& mesh, Parameters& params) {
+    params.samples.resize (params.numSamples.x * params.numSamples.y * params.numSamples.z, 0.0f);
+
+    const unsigned int        numThreads = std::thread::hardware_concurrency();
+    std::vector <std::thread> threads;
+
+    for (unsigned int i = 0; i < numThreads; i++) {
+      threads.emplace_back (sampleThread, std::ref (mesh), std::ref (params), numThreads, i);
+    }
+    for (unsigned int i = 0; i < numThreads; i++) {
+      threads.at (i).join ();
     }
   }
 
