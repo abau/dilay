@@ -8,6 +8,7 @@
 #include <vector>
 #include "../mesh.hpp"
 #include "distance.hpp"
+#include "mesh-util.hpp"
 #include "primitive/cone-sphere.hpp"
 #include "sketch/conversion.hpp"
 #include "sketch/mesh.hpp"
@@ -792,6 +793,8 @@ namespace {
         }
       }
     }
+
+    assert (MeshUtil::checkConsistency (mesh));
     return mesh;
   }
 }
