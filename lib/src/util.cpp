@@ -130,7 +130,7 @@ unsigned int Util :: solveQuadraticEq (float a, float b, float c, float& s1, flo
 }
 
 bool Util :: isNaN (const glm::vec3& v) {
-  return glm::isnan (v.x) || glm::isnan (v.y) || glm::isnan (v.z);
+  return glm::any (glm::isnan (v));
 }
 
 
