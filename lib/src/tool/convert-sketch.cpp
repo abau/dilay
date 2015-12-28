@@ -2,6 +2,7 @@
  * Copyright © 2015 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QCheckBox>
 #include <QMouseEvent>
 #include "cache.hpp"
 #include "mesh.hpp"
@@ -15,18 +16,34 @@
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
+#include "winged/mesh.hpp"
+
+namespace {
+  glm::vec3 computeCenter (const SketchMesh& mesh) {
+    if (mesh.tree ().hasRoot ()) {
+      return mesh.tree ().root ().data ().center ();
+    }
+    else {
+      glm::vec3 min, max;
+      mesh.minMax (min, max);
+      return ((min + max) * 0.5f);
+    }
+  }
+}
 
 struct ToolConvertSketch::Impl {
   ToolConvertSketch* self;
   const float        minResolution;
   const float        maxResolution;
   float              resolution;
+  bool               moveToCenter;
 
   Impl (ToolConvertSketch* s) 
     : self          (s)
     , minResolution (0.01f)
     , maxResolution (0.1f)
     , resolution    (s->cache ().get <float> ("resolution", 0.06))
+    , moveToCenter  (s->cache ().get <bool>  ("move-to-center", true))
   {
     this->self->renderMirror (false);
 
@@ -45,6 +62,14 @@ struct ToolConvertSketch::Impl {
       this->self->cache ().set ("resolution", r);
     });
     properties.addStacked (QObject::tr ("Resolution"), resolutionEdit);
+
+    QCheckBox& moveToCenterEdit = ViewUtil::checkBox ( QObject::tr ("Move to center")
+                                                     , this->moveToCenter );
+    ViewUtil::connect (moveToCenterEdit, [this] (bool m) {
+      this->moveToCenter = m;
+      this->self->cache ().set ("move-to-center", m);
+    });
+    properties.add (moveToCenterEdit);
   }
 
   void setupToolTip () {
@@ -57,14 +82,24 @@ struct ToolConvertSketch::Impl {
     if (e.button () == Qt::LeftButton) {
       SketchMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
+        SketchMesh& sMesh = intersection.mesh ();
+        glm::vec3 center = computeCenter (sMesh);
+
         this->self->snapshotAll ();
-        intersection.mesh ().optimizePaths ();
-        this->self->state ().scene ().newWingedMesh 
-          ( this->self->state ().config ()
-          , SketchConversion::convert ( intersection.mesh ()
-                                      , this->maxResolution + this->minResolution 
-                                                            - this->resolution ) );
-        this->self->state ().scene ().deleteMesh (intersection.mesh ());
+        sMesh.optimizePaths ();
+
+        Mesh mesh = SketchConversion::convert ( sMesh
+                                              , this->maxResolution + this->minResolution 
+                                                                    - this->resolution );
+        WingedMesh& wMesh = this->self->state ().scene ()
+                                                .newWingedMesh ( this->self->state ().config ()
+                                                               , mesh );
+        if (this->moveToCenter) {
+          wMesh.translate (-center);
+          wMesh.normalize ();
+          wMesh.bufferData ();
+        }
+        this->self->state ().scene ().deleteMesh (sMesh);
         return ToolResponse::Redraw;
       }
     }
