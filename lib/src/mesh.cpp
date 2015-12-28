@@ -335,7 +335,9 @@ struct Mesh::Impl {
 
     for (unsigned int i = 0; i < this->numVertices (); i++) {
       this->setVertex (i, Util::transformPosition (model, this->vertex (i)));
-      this->setNormal (i, glm::normalize (modelNormal * this->normal (i)));
+      if (Util::isNotNull (this->normal (i))) {
+        this->setNormal (i, glm::normalize (modelNormal * this->normal (i)));
+      }
     }
     this->position       (glm::vec3   (0.0f));
     this->scaling        (glm::vec3   (1.0f));

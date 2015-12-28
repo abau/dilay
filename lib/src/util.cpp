@@ -133,6 +133,9 @@ bool Util :: isNaN (const glm::vec3& v) {
   return glm::any (glm::isnan (v));
 }
 
+bool Util :: isNotNull (const glm::vec3& v) {
+  return glm::any (glm::greaterThan (v, glm::vec3 (Util::epsilon ())));
+}
 
 void Util :: warn (const char* file, unsigned int line, const char* format, ...) {
   va_list args1;
