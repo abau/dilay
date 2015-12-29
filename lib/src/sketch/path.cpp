@@ -63,9 +63,8 @@ struct SketchPath :: Impl {
     this->spheres.emplace_back (position, radius);
   }
 
-  void deleteSphere (const PrimSphere& sphere) {
-    this->spheres.erase ( this->spheres.begin ()
-                        + Util::findIndexByReference (this->spheres, sphere) );
+  SketchPath::Spheres::iterator deleteSphere (SketchPath::Spheres::const_iterator it) {
+    return this->spheres.erase (it);
   }
 
   void render (Camera& camera, Mesh& mesh) const {
@@ -189,19 +188,19 @@ struct SketchPath :: Impl {
 };
 
 DELEGATE_BIG6_SELF (SketchPath)
-GETTER_CONST    (const SketchPath::Spheres&, SketchPath, spheres)
-GETTER_CONST    (const glm::vec3&          , SketchPath, minimum)
-GETTER_CONST    (const glm::vec3&          , SketchPath, maximum)
-GETTER_CONST    (const glm::vec3&          , SketchPath, intersectionFirst)
-GETTER_CONST    (const glm::vec3&          , SketchPath, intersectionLast)
-SETTER          (const glm::vec3&          , SketchPath, intersectionFirst)
-SETTER          (const glm::vec3&          , SketchPath, intersectionLast)
-DELEGATE        (void                      , SketchPath, reset)
-DELEGATE_CONST  (bool                      , SketchPath, isEmpty)
-DELEGATE_CONST  (PrimAABox                 , SketchPath, aabox)
-DELEGATE3       (void                      , SketchPath, addSphere, const glm::vec3&, const glm::vec3&, float)
-DELEGATE1       (void                      , SketchPath, deleteSphere, const PrimSphere&)
-DELEGATE2_CONST (void                      , SketchPath, render, Camera&, Mesh&)
-DELEGATE3       (bool                      , SketchPath, intersects, const PrimRay&, SketchMesh&, SketchPathIntersection&)
-DELEGATE1       (SketchPath                , SketchPath, mirror, const PrimPlane&)
-DELEGATE5       (void                      , SketchPath, smooth, const PrimSphere&, unsigned int, SketchPathSmoothEffect, const PrimSphere*, const PrimSphere*)
+GETTER_CONST    (const SketchPath::Spheres&   , SketchPath, spheres)
+GETTER_CONST    (const glm::vec3&             , SketchPath, minimum)
+GETTER_CONST    (const glm::vec3&             , SketchPath, maximum)
+GETTER_CONST    (const glm::vec3&             , SketchPath, intersectionFirst)
+GETTER_CONST    (const glm::vec3&             , SketchPath, intersectionLast)
+SETTER          (const glm::vec3&             , SketchPath, intersectionFirst)
+SETTER          (const glm::vec3&             , SketchPath, intersectionLast)
+DELEGATE        (void                         , SketchPath, reset)
+DELEGATE_CONST  (bool                         , SketchPath, isEmpty)
+DELEGATE_CONST  (PrimAABox                    , SketchPath, aabox)
+DELEGATE3       (void                         , SketchPath, addSphere, const glm::vec3&, const glm::vec3&, float)
+DELEGATE1       (SketchPath::Spheres::iterator, SketchPath, deleteSphere, SketchPath::Spheres::const_iterator)
+DELEGATE2_CONST (void                         , SketchPath, render, Camera&, Mesh&)
+DELEGATE3       (bool                         , SketchPath, intersects, const PrimRay&, SketchMesh&, SketchPathIntersection&)
+DELEGATE1       (SketchPath                   , SketchPath, mirror, const PrimPlane&)
+DELEGATE5       (void                         , SketchPath, smooth, const PrimSphere&, unsigned int, SketchPathSmoothEffect, const PrimSphere*, const PrimSphere*)

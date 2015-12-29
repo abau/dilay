@@ -738,31 +738,46 @@ struct SketchMesh::Impl {
     for (SketchPath& p1 : this->paths) {
       for (SketchPath& p2 : this->paths) {
         if (&p1 < &p2) {
-          for (const PrimSphere& s1 : p1.spheres ()) {
-            for (const PrimSphere& s2 : p2.spheres ()) {
-              const float d  = glm::distance (s1.center (), s2.center ());
+          for (auto it1 = p1.spheres ().begin (); it1 != p1.spheres ().end (); ) {
+            bool deletedP1Sphere = false;
 
-              if (s1.radius () > d + s2.radius ()) {
-                p2.deleteSphere (s2);
+            for (auto it2 = p2.spheres ().begin (); it2 != p2.spheres ().end (); ) {
+              const PrimSphere& s1 = *it1;
+              const PrimSphere& s2 = *it2;
+              const float       d  = glm::distance (s1.center (), s2.center ());
+
+              if (s2.radius () > d + s1.radius ()) {
+                it1             = p1.deleteSphere (it1);
+                deletedP1Sphere = true;
+                break;
               }
-              else if (s2.radius () > d + s1.radius ()) {
-                p1.deleteSphere (s1);
+              else if (s1.radius () > d + s2.radius ()) {
+                it2 = p2.deleteSphere (it2);
               }
+              else {
+                ++it2;
+              }
+            }
+            if (deletedP1Sphere == false) {
+              ++it1;
             }
           }
         }
       }
-
       if (this->tree.hasRoot ()) {
         this->tree.root ().forEachNode ([this, &p1] (SketchNode& node) {
           if (node.parent ()) {
             const PrimConeSphere coneSphere (node.data (), node.parent ()->data ());
 
-            for (const PrimSphere& s1 : p1.spheres ()) {
-              const float d = Distance::distance (coneSphere, s1.center ());
+            for (auto it1 = p1.spheres ().begin (); it1 != p1.spheres ().end (); ) {
+              const PrimSphere& s1 = *it1;
+              const float       d  = Distance::distance (coneSphere, s1.center ());
 
               if (d < -s1.radius ()) {
-                p1.deleteSphere (s1);
+                it1 = p1.deleteSphere (it1);
+              }
+              else {
+                ++it1;
               }
             }
           }
