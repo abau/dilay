@@ -234,17 +234,19 @@ namespace SceneUtil {
           }
         }
         else if (keyword == "dly_sketch_path") {
-          if (sketch == nullptr) {
-            DILAY_WARN ("could not parse sketch path: no sketch found at line %u", lineNumber)
-            return false;
-          }
           lineStream >> intersectionFirst >> intersectionLast;
 
           if (lineStream.fail ()) {
             DILAY_WARN ("could not parse sketch path at line %u", lineNumber)
             return false;
           }
-          sketchPath = &sketch->addPath (SketchPath ());
+          if (sketch) {
+            sketchPath = &sketch->addPath (SketchPath ());
+          }
+          else {
+            DILAY_WARN ("could not parse sketch path: no sketch found at line %u", lineNumber)
+            return false;
+          }
         }
         else if (keyword == "dly_sketch_sphere") {
           glm::vec3 center;
@@ -257,11 +259,17 @@ namespace SceneUtil {
             return false;
           }
 
-          if (sketchPath->isEmpty ()) {
-            sketchPath->addSphere (intersectionFirst, center, radius);
+          if (sketchPath) {
+            if (sketchPath->isEmpty ()) {
+              sketchPath->addSphere (intersectionFirst, center, radius);
+            }
+            else {
+              sketchPath->addSphere (intersectionLast, center, radius);
+            }
           }
           else {
-            sketchPath->addSphere (intersectionLast, center, radius);
+            DILAY_WARN ("could not parse sketch sphere: no sketch path found at line %u", lineNumber)
+            return false;
           }
         }
       }
