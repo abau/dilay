@@ -107,3 +107,21 @@ void Action :: sculpt (const SculptBrush& brush) {
     Action::finalize (brush.meshRef (), domain);
   }
 }
+
+void Action :: smoothMesh (WingedMesh& mesh) {
+  if (mesh.isEmpty () == false) {
+    AffectedFaces faces;
+
+    mesh.forEachEdge ([&mesh, &faces] (WingedEdge& e) {
+      faces.insert (e.leftFaceRef ());
+      faces.insert (e.rightFaceRef ());
+
+      PartialAction::relaxEdge (mesh, e, faces);
+
+      faces.commit ();
+    });
+
+    PartialAction::smooth (mesh, faces.toVertexSet (), 1, faces);
+    Action::finalize (mesh, faces);
+  }
+}
