@@ -20,11 +20,11 @@
 #include "view/util.hpp"
 
 namespace {
-  enum class Mode { DeleteMesh, DeleteNode, DeleteSpheres };
+  enum class Mode { DeleteSketch, DeleteNode, DeleteSpheres };
 
   int fromMode (Mode m) {
     switch (m) {
-      case Mode::DeleteMesh:    return 0;
+      case Mode::DeleteSketch:  return 0;
       case Mode::DeleteNode:    return 1;
       case Mode::DeleteSpheres: return 2;
       default:                  DILAY_IMPOSSIBLE;
@@ -33,7 +33,7 @@ namespace {
 
   Mode toMode (int m) {
     switch (m) {
-      case  0: return Mode::DeleteMesh;
+      case  0: return Mode::DeleteSketch;
       case  1: return Mode::DeleteNode;
       case  2: return Mode::DeleteSpheres;
       default: DILAY_IMPOSSIBLE;
@@ -73,14 +73,14 @@ struct ToolDeleteSketch::Impl {
     ViewUtil::connect (mirrorEdit, [this] (bool m) {
       this->self->mirror (m);
     });
-    mirrorEdit.setEnabled (this->mode != Mode::DeleteMesh);
+    mirrorEdit.setEnabled (this->mode != Mode::DeleteSketch);
 
-    QRadioButton& deleteMeshEdit = ViewUtil::radioButton ( QObject::tr ("Delete mesh")
-                                                         , this->mode == Mode::DeleteMesh );
-    ViewUtil::connect (deleteMeshEdit, 
+    QRadioButton& deleteSketchEdit = ViewUtil::radioButton ( QObject::tr ("Delete sketch")
+                                                           , this->mode == Mode::DeleteSketch );
+    ViewUtil::connect (deleteSketchEdit, 
       [this, &deleteChildrenEdit, &mirrorEdit] (bool m)
     {
-      this->mode = Mode::DeleteMesh;
+      this->mode = Mode::DeleteSketch;
       this->self->cache ().set ("mode", fromMode (this->mode));
 
       deleteChildrenEdit.setEnabled (!m);
@@ -111,7 +111,7 @@ struct ToolDeleteSketch::Impl {
       mirrorEdit        .setEnabled (m);
     });
 
-    properties.add (deleteMeshEdit);
+    properties.add (deleteSketchEdit);
     properties.add (deleteNodeEdit);
     properties.add (deleteSpheresEdit);
     properties.add (ViewUtil::horizontalLine ());
@@ -128,7 +128,7 @@ struct ToolDeleteSketch::Impl {
   ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
     if (e.button () == Qt::LeftButton) {
       switch (this->mode) {
-        case Mode::DeleteMesh: {
+        case Mode::DeleteSketch: {
           SketchMeshIntersection intersection;
           if (this->self->intersectsScene (e, intersection)) {
             this->self->snapshotSketchMeshes ();
