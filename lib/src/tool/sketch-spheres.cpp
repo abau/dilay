@@ -118,9 +118,7 @@ struct ToolSketchSpheres::Impl {
     ViewToolTip toolTip;
     toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sketch"));
     toolTip.add ( ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift
-                , QObject::tr ("Drag to shrink"));
-    toolTip.add ( ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Ctrl
-                , QObject::tr ("Drag to enlarge"));
+                , QObject::tr ("Drag to smooth"));
     toolTip.add ( ViewToolTip::MouseEvent::Wheel, ViewToolTip::Modifier::Shift
                 , QObject::tr ("Change radius") );
     this->self->showToolTip (toolTip);
