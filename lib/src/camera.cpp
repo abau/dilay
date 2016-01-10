@@ -30,7 +30,8 @@ struct Camera::Impl {
   Impl (Camera* s, const Config& config) 
     : self         (s)
     , renderer     (config)
-    , resolution   ( 1024, 768 )
+    , resolution   ( config.get <int> ("window/initial-width")
+                   , config.get <int> ("window/initial-height") )
   {
     this->runFromConfig (config);
   }
