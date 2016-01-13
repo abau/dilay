@@ -36,13 +36,11 @@ struct ViewAxis::Impl {
     this->cylinderMesh.scaling    (glm::vec3 (0.01f, 0.3f , 0.01f));
     this->cylinderMesh.renderMode ().constantShading (true);
     this->cylinderMesh.renderMode ().cameraRotationOnly (true);
-    this->cylinderMesh.color      (this->axisColor);
     this->cylinderMesh.bufferData ();
 
     this->coneMesh.scaling        (glm::vec3 (0.03f, 0.1f, 0.03f));
     this->coneMesh.renderMode     ().constantShading (true);
     this->coneMesh.renderMode     ().cameraRotationOnly (true);
-    this->coneMesh.color          (this->axisColor);
     this->coneMesh.bufferData     ();
 
     this->initializeGrid          ();
@@ -69,7 +67,6 @@ struct ViewAxis::Impl {
     this->gridMesh.renderMode ().constantShading (true);
     this->gridMesh.renderMode ().cameraRotationOnly (true);
     this->gridMesh.bufferData ();
-    this->gridMesh.color      (this->axisColor);
   }
 
   void render (Camera& camera) {
@@ -80,6 +77,7 @@ struct ViewAxis::Impl {
 
     this->cylinderMesh.position       (glm::vec3 (0.0f, 0.15f, 0.0f));
     this->cylinderMesh.rotationMatrix (glm::mat4x4 (1.0f));
+    this->cylinderMesh.color          (this->axisColor);
     this->cylinderMesh.render         (camera);
 
     this->cylinderMesh.position       (glm::vec3 (0.15f, 0.0f, 0.0f));
@@ -92,6 +90,7 @@ struct ViewAxis::Impl {
 
     this->coneMesh.position           (glm::vec3 (0.0f, 0.3f, 0.0f));
     this->coneMesh.rotationMatrix     (glm::mat4x4 (1.0f));
+    this->coneMesh.color              (this->axisColor);
     this->coneMesh.render             (camera);
 
     this->coneMesh.position           (glm::vec3 (0.3f, 0.0f, 0.0f));
@@ -119,6 +118,7 @@ struct ViewAxis::Impl {
         this->gridMesh.rotationMatrix (glm::mat4x4 (1.0f));
         break;
     }
+    this->gridMesh.color       (this->axisColor);
     this->gridMesh.renderLines (camera);
   }
 
