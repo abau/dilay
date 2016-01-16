@@ -93,25 +93,17 @@ DELEGATE2 (void, ViewPropertiesPart, add, QButtonGroup&, const std::vector <QStr
 struct ViewProperties::Impl {
   ViewProperties*    self;
   QVBoxLayout        layout;
-  QWidget            partsWidget;
-  QVBoxLayout        partsLayout;
   ViewPropertiesPart header;
   ViewPropertiesPart body;
   ViewPropertiesPart footer;
 
   Impl (ViewProperties* s) 
-    : self          (s) 
-    , header        (this->partsLayout, 0)
-    , body          (this->partsLayout, 1)
-    , footer        (this->partsLayout, 2)
+    : self   (s) 
+    , header (this->layout, 0)
+    , body   (this->layout, 1)
+    , footer (this->layout, 2)
   {
     this->self->setLayout (&this->layout);
-
-    this->partsWidget.setLayout (&this->partsLayout);
-    this->partsLayout.setSpacing         (0);
-    this->partsLayout.setContentsMargins (0,0,0,0);
-
-    this->layout.insertWidget (0, &this->partsWidget);
   }
 
   void reset () {
