@@ -53,7 +53,7 @@ struct ToolModifySketch::Impl {
   }
 
   void setupProperties () {
-    ViewPropertiesPart& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->properties ().body ();
 
     properties.add (QObject::tr ("Move along"), ViewUtil::emptyWidget ());
     this->movement.addProperties (properties, [this] () {

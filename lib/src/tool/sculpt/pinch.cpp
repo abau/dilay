@@ -22,7 +22,7 @@ struct ToolSculptPinch::Impl {
 
   void runSetupCursor (ViewCursor&) {}
 
-  void runSetupProperties (ViewPropertiesPart& properties) {
+  void runSetupProperties (ViewTwoColumnGrid& properties) {
     auto& params = this->self->brush ().parameters <SBPinchParameters> ();
 
     QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), params.invert ());

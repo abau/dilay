@@ -97,6 +97,7 @@ SOURCES += \
            src/view/menu-bar.cpp \
            src/view/properties.cpp \
            src/view/tool-tip.cpp \
+           src/view/two-column-grid.cpp \
            src/view/util.cpp \
            src/winged/edge.cpp \
            src/winged/face.cpp \
@@ -191,6 +192,7 @@ HEADERS += \
            src/view/menu-bar.hpp \
            src/view/properties.hpp \
            src/view/tool-tip.hpp \
+           src/view/two-column-grid.hpp \
            src/view/util.hpp \
            src/winged/edge.hpp \
            src/winged/face.hpp \

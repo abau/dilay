@@ -26,7 +26,7 @@ struct ToolSculptSmooth::Impl {
 
   void runSetupCursor (ViewCursor&) {}
 
-  void runSetupProperties (ViewPropertiesPart& properties) {
+  void runSetupProperties (ViewTwoColumnGrid& properties) {
     auto& params = this->self->brush ().parameters <SBSmoothParameters> ();
 
     ViewDoubleSlider& intensityEdit = ViewUtil::slider (2, 0.1f, params.intensity (), 1.0f);

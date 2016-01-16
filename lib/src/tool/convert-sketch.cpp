@@ -55,7 +55,7 @@ struct ToolConvertSketch::Impl {
   }
 
   void setupProperties () {
-    ViewPropertiesPart& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->properties ().body ();
 
     ViewDoubleSlider& resolutionEdit = ViewUtil::slider (2, this->minResolution
                                                           , this->resolution

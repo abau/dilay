@@ -34,7 +34,7 @@ struct ToolSculptGrab::Impl {
 
   void runSetupCursor (ViewCursor&) {}
 
-  void runSetupProperties (ViewPropertiesPart& properties) {
+  void runSetupProperties (ViewTwoColumnGrid& properties) {
     auto& params = this->self->brush ().parameters <SBDraglikeParameters> ();
   
     QCheckBox& primPlaneEdit = ViewUtil::checkBox 

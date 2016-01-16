@@ -25,7 +25,7 @@ struct ToolSculptCarve::Impl {
 
   void runSetupCursor (ViewCursor&) {}
 
-  void runSetupProperties (ViewPropertiesPart& properties) {
+  void runSetupProperties (ViewTwoColumnGrid& properties) {
     auto& params = this->self->brush ().parameters <SBCarveParameters> ();
 
     ViewDoubleSlider& intensityEdit = ViewUtil::slider (3, 0.0f, params.intensity (), 0.05f);

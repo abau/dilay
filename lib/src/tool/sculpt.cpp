@@ -77,7 +77,7 @@ struct ToolSculpt::Impl {
   }
 
   void setupProperties () {
-    ViewPropertiesPart& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->properties ().body ();
 
     this->radiusEdit.setDoubleValue (this->brush.radius ());
     ViewUtil::connect (this->radiusEdit, [this] (float r) {

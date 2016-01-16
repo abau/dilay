@@ -162,7 +162,7 @@ struct ToolUtilMovement::Impl {
     this->position         = p;
   }
 
-  void addProperties (ViewPropertiesPart& properties, const std::function <void ()>& onClick) {
+  void addProperties (ViewTwoColumnGrid& properties, const std::function <void ()>& onClick) {
     QButtonGroup& constraintEdit = *new QButtonGroup;
     properties.add ( constraintEdit , { QObject::tr ("X-axis")
                                       , QObject::tr ("Y-axis")
@@ -200,4 +200,4 @@ GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
 SETTER          (const glm::vec3&  , ToolUtilMovement, position)
 DELEGATE2       (bool              , ToolUtilMovement, move, const QMouseEvent&, bool)
 DELEGATE1       (void              , ToolUtilMovement, resetPosition, const glm::vec3&)
-DELEGATE2       (void              , ToolUtilMovement, addProperties, ViewPropertiesPart&, const std::function <void ()>&)
+DELEGATE2       (void              , ToolUtilMovement, addProperties, ViewTwoColumnGrid&, const std::function <void ()>&)

@@ -11,7 +11,7 @@
 
 class Camera;
 class QMouseEvent;
-class ViewPropertiesPart;
+class ViewTwoColumnGrid;
 
 enum class MovementConstraint { XAxis, YAxis, ZAxis
                               , XYPlane, XZPlane, YZPlane
@@ -29,7 +29,7 @@ class ToolUtilMovement {
           void         position      (const glm::vec3&);
           bool         move          (const QMouseEvent&, bool);
           void         resetPosition (const glm::vec3&);
-          void         addProperties (ViewPropertiesPart&, const std::function <void ()>&);
+          void         addProperties (ViewTwoColumnGrid&, const std::function <void ()>&);
 
   private:
     IMPLEMENTATION

@@ -10,7 +10,7 @@
 class SculptBrush;
 class ToolUtilMovement;
 class ViewCursor;
-class ViewPropertiesPart;
+class ViewTwoColumnGrid;
 
 class ToolSculpt : public Tool {
   public:
@@ -39,7 +39,7 @@ class ToolSculpt : public Tool {
     virtual const char* key                      () const = 0;
     virtual void        runSetupBrush            (SculptBrush&) = 0;
     virtual void        runSetupCursor           (ViewCursor&) = 0;
-    virtual void        runSetupProperties       (ViewPropertiesPart&) = 0;
+    virtual void        runSetupProperties       (ViewTwoColumnGrid&) = 0;
     virtual void        runSetupToolTip          (ViewToolTip&) = 0;
     virtual void        runSculptMouseMoveEvent  (const QMouseEvent&) = 0;
     virtual bool        runSculptMousePressEvent (const QMouseEvent&) = 0;
@@ -53,7 +53,7 @@ class ToolSculpt : public Tool {
       const char* key                () const { return theKey ; }                    \
       void        runSetupBrush      (SculptBrush&);                                 \
       void        runSetupCursor     (ViewCursor&);                                  \
-      void        runSetupProperties (ViewPropertiesPart&);                          \
+      void        runSetupProperties (ViewTwoColumnGrid&);                           \
       void        runSetupToolTip    (ViewToolTip&);                                 \
       void        runSculptMouseMoveEvent  (const QMouseEvent&);                     \
       bool        runSculptMousePressEvent (const QMouseEvent&);                     \
@@ -64,7 +64,7 @@ class ToolSculpt : public Tool {
                      , ToolSculpt, (s,this->key ()) )                                \
   DELEGATE1 (void, name, runSetupBrush, SculptBrush&);                               \
   DELEGATE1 (void, name, runSetupCursor, ViewCursor&);                               \
-  DELEGATE1 (void, name, runSetupProperties, ViewPropertiesPart&);                   \
+  DELEGATE1 (void, name, runSetupProperties, ViewTwoColumnGrid&);                    \
   DELEGATE1 (void, name, runSetupToolTip, ViewToolTip&);                             \
   DELEGATE1 (void, name, runSculptMouseMoveEvent, const QMouseEvent&)                \
   DELEGATE1 (bool, name, runSculptMousePressEvent, const QMouseEvent&)

@@ -35,7 +35,7 @@ struct ToolSculptDrag::Impl {
 
   void runSetupCursor (ViewCursor&) {}
 
-  void runSetupProperties (ViewPropertiesPart& properties) {
+  void runSetupProperties (ViewTwoColumnGrid& properties) {
     auto& params = this->self->brush ().parameters <SBDraglikeParameters> ();
 
     ViewDoubleSlider& smoothnessEdit = ViewUtil::slider (2, 0.0f, params.smoothness (), 1.0f);
