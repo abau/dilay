@@ -23,6 +23,7 @@ class ViewGlWidget : public QOpenGLWidget {
     ToolMoveCamera& toolMoveCamera ();
     State&          state          ();
     glm::ivec2      cursorPosition ();
+    void            fromConfig     ();
        
   protected:
     void initializeGL       ();

@@ -18,6 +18,7 @@ Color :: Color (float v)                   : Color (v, v, v, 1.0f) {}
 Color :: Color (float r, float g, float b) : Color (r, g, b, 1.0f) {}
 Color :: Color (const glm::vec3& v)        : Color (v.x, v.y, v.z) {}
 Color :: Color (const glm::vec4& v)        : Color (v.x, v.y, v.z, v.w) {}
+Color :: Color (const QColor& c)           : Color (c.redF (), c.greenF (), c.blueF ()) {}
 Color :: Color (const Color& c, float f)   : Color (c) {
   this->scale (f);
 }

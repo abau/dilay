@@ -14,6 +14,7 @@ class QButtonGroup;
 class QCheckBox;
 class QDoubleSpinBox;
 class QFrame;
+class QLineEdit;
 class QMouseEvent;
 class QPoint;
 class QPushButton;
@@ -34,6 +35,7 @@ namespace ViewUtil {
   ViewDoubleSlider& slider         (unsigned short, float, float, float, unsigned short = 1);
   QFrame&           horizontalLine ();
   QWidget&          emptyWidget    ();
+  QLineEdit&        lineEdit       (float, unsigned short = 2);
   glm::uvec2        toUVec2        (const QPoint&);
   glm::uvec2        toUVec2        (const QMouseEvent&);
   glm::ivec2        toIVec2        (const QPoint&);
@@ -46,6 +48,7 @@ namespace ViewUtil {
   void              connect        (const QRadioButton&, const std::function <void (bool)>&);
   void              connect        (const QSlider&, const std::function <void (int)>&);
   void              connect        (const ViewDoubleSlider&, const std::function <void (float)>&);
+  void              connect        (const QLineEdit&, const std::function <void (float)>&);
   QWidget&          stretcher      (bool, bool);
   void              deselect       (QAbstractSpinBox&);
   bool              question       (QWidget&, const QString&);

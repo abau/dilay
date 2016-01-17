@@ -59,6 +59,13 @@ struct ViewGlWidget::Impl {
     return ViewUtil::toIVec2 (this->self->mapFromGlobal (QCursor::pos ()));
   }
 
+  void fromConfig () {
+    assert (this->axis);
+
+    this->state ().fromConfig ();
+    this->axis->fromConfig (this->config);
+  }
+
   void initializeGL () {
     OpenGL::initializeFunctions ();
 
@@ -129,6 +136,7 @@ DELEGATE3_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 GETTER    (ToolMoveCamera&, ViewGlWidget, toolMoveCamera)
 DELEGATE  (State&         , ViewGlWidget, state)
 DELEGATE  (glm::ivec2     , ViewGlWidget, cursorPosition)
+DELEGATE  (void           , ViewGlWidget, fromConfig)
 DELEGATE  (void           , ViewGlWidget, initializeGL)
 DELEGATE2 (void           , ViewGlWidget, resizeGL, int, int)
 DELEGATE  (void           , ViewGlWidget, paintGL)

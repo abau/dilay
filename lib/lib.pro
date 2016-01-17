@@ -88,6 +88,8 @@ SOURCES += \
            src/tool/util/scaling.cpp \
            src/util.cpp \
            src/view/axis.cpp \
+           src/view/color-button.cpp \
+           src/view/configuration.cpp \
            src/view/cursor.cpp \
            src/view/double-slider.cpp \
            src/view/gl-widget.cpp \
@@ -99,6 +101,7 @@ SOURCES += \
            src/view/tool-tip.cpp \
            src/view/two-column-grid.cpp \
            src/view/util.cpp \
+           src/view/vector-edit.cpp \
            src/winged/edge.cpp \
            src/winged/face.cpp \
            src/winged/face-intersection.cpp \
@@ -183,6 +186,8 @@ HEADERS += \
            src/util.hpp \
            src/variant.hpp \
            src/view/axis.hpp \
+           src/view/color-button.hpp \
+           src/view/configuration.hpp \
            src/view/cursor.hpp \
            src/view/double-slider.hpp \
            src/view/gl-widget.hpp \
@@ -194,6 +199,7 @@ HEADERS += \
            src/view/tool-tip.hpp \
            src/view/two-column-grid.hpp \
            src/view/util.hpp \
+           src/view/vector-edit.hpp \
            src/winged/edge.hpp \
            src/winged/face.hpp \
            src/winged/face-intersection.hpp \

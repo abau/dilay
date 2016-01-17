@@ -5,6 +5,7 @@
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include <QDoubleValidator>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -93,6 +94,17 @@ QWidget& ViewUtil :: emptyWidget () {
   return *new QWidget;
 }
 
+QLineEdit& ViewUtil :: lineEdit (float value, unsigned short numDecimals) {
+  QLineEdit&        edit      = *new QLineEdit;
+  QDoubleValidator& validator = *new QDoubleValidator (&edit);
+
+  validator.setDecimals (numDecimals);
+  edit.setValidator (&validator);
+  edit.setText (QString::number (value, 'f', numDecimals));
+
+  return edit;
+}
+
 glm::uvec2 ViewUtil :: toUVec2 (const QPoint& p) {
   assert (p.x () >= 0);
   assert (p.y () >= 0);
@@ -151,6 +163,17 @@ void ViewUtil :: connect (const QSlider& s, const std::function <void (int)>& f)
 
 void ViewUtil :: connect (const ViewDoubleSlider& s, const std::function <void (float)>& f) {
   QObject::connect (&s, &ViewDoubleSlider::doubleValueChanged, f);
+}
+
+void ViewUtil :: connect (const QLineEdit& e, const std::function <void (float)>& f) {
+  QObject::connect (&e, &QLineEdit::textEdited, [&e,f] (const QString& text) {
+    if (e.hasAcceptableInput ()) {
+      bool  ok;
+      float value = text.toFloat (&ok);
+      assert (ok);
+      f (value);
+    }
+  });
 }
 
 QWidget& ViewUtil :: stretcher (bool horizontal, bool vertical) {

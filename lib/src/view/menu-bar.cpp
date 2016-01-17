@@ -10,6 +10,7 @@
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool/move-camera.hpp"
+#include "view/configuration.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
@@ -135,6 +136,11 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
   });
   addAction (editMenu, QObject::tr ("&Redo"), QKeySequence::Redo, [&glWidget] () {
     glWidget.state ().redo ();
+  });
+  addAction ( editMenu, QObject::tr ("&Configuration"), QKeySequence ()
+            , [&mainWindow, &glWidget] ()
+  {
+    ViewConfiguration::show (mainWindow, glWidget);
   });
   addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::Key_C, [&glWidget] () {
     glWidget.toolMoveCamera ().snap (glWidget.state (), false);

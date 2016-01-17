@@ -18,6 +18,7 @@ class Color {
              Color (float,float,float,float);
     explicit Color (const glm::vec3&);
     explicit Color (const glm::vec4&);
+    explicit Color (const QColor&);
 
     // copies and scales a color using `scale`
     Color (const Color&, float);
