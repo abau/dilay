@@ -136,6 +136,8 @@ struct History::Impl {
   }
 
   void snapshot (const Scene& scene, const SnapshotConfig& config) {
+    assert (undoDepth > 0);
+
     this->future.clear ();
 
     while (this->past.size () >= this->undoDepth) {
