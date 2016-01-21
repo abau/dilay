@@ -50,18 +50,17 @@ class ToolSculpt : public Tool {
     DECLARE_BIG2 (name, State&)                                                      \
     private:                                                                         \
       IMPLEMENTATION                                                                 \
-      const char* key                () const { return theKey ; }                    \
-      void        runSetupBrush      (SculptBrush&);                                 \
-      void        runSetupCursor     (ViewCursor&);                                  \
-      void        runSetupProperties (ViewTwoColumnGrid&);                           \
-      void        runSetupToolTip    (ViewToolTip&);                                 \
+      const char* key                      () const { return theKey ; }              \
+      void        runSetupBrush            (SculptBrush&);                           \
+      void        runSetupCursor           (ViewCursor&);                            \
+      void        runSetupProperties       (ViewTwoColumnGrid&);                     \
+      void        runSetupToolTip          (ViewToolTip&);                           \
       void        runSculptMouseMoveEvent  (const QMouseEvent&);                     \
       bool        runSculptMousePressEvent (const QMouseEvent&);                     \
   };
 
 #define DELEGATE_TOOL_SCULPT(name)                                                   \
-  DELEGATE_BIG2_BASE ( name, (State& s), (this)                                      \
-                     , ToolSculpt, (s,this->key ()) )                                \
+  DELEGATE_BIG2_BASE (name, (State& s), (this), ToolSculpt, (s,this->key ()))        \
   DELEGATE1 (void, name, runSetupBrush, SculptBrush&);                               \
   DELEGATE1 (void, name, runSetupCursor, ViewCursor&);                               \
   DELEGATE1 (void, name, runSetupProperties, ViewTwoColumnGrid&);                    \
