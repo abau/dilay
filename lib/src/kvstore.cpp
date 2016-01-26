@@ -65,9 +65,10 @@ struct KVStore::Impl {
 
   template <class T>
   void set (const std::string& p, const T& t) {
+    this->remove (p);
+
     Value value;
-    value.set <T>     (t);
-    this->map.erase   (this->path (p));
+    value.set <T> (t);
     this->map.emplace (this->path (p), value);
   }
 
@@ -233,6 +234,10 @@ struct KVStore::Impl {
     }
   }
 
+  void remove (const std::string& p) {
+    this->map.erase (this->path (p));
+  }
+
   void reset () {
     this->map.clear ();
   }
@@ -241,6 +246,7 @@ struct KVStore::Impl {
 DELEGATE1_BIG2  (KVStore, const std::string&)
 DELEGATE1       (void, KVStore, fromFile, const std::string&);
 DELEGATE1_CONST (void, KVStore, toFile, const std::string&);
+DELEGATE1       (void, KVStore, remove, const std::string&);
 DELEGATE        (void, KVStore, reset);
 
 template <class T>

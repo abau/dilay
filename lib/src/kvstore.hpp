@@ -20,6 +20,7 @@ class KVStore {
 
     void fromFile (const std::string&);
     void toFile   (const std::string&) const;
+    void remove   (const std::string&);
     void reset    ();
 
   private:
