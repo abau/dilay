@@ -33,6 +33,9 @@ struct Camera::Impl {
     , resolution   ( config.get <int> ("window/initial-width")
                    , config.get <int> ("window/initial-height") )
   {
+    this->set ( glm::vec3 (0.0f, 0.0f, 0.0f)
+              , glm::vec3 (0.0f, 0.0f, 6.0f)
+              , glm::vec3 (0.0f, 1.0f, 0.0f) );
     this->runFromConfig (config);
   }
 
@@ -164,10 +167,6 @@ struct Camera::Impl {
 
     this->nearClipping = config.get <float> ("editor/camera/near-clipping");
     this->farClipping  = config.get <float> ("editor/camera/far-clipping");
-
-    this->set ( config.get <glm::vec3> ("editor/camera/gaze-point")
-              , config.get <glm::vec3> ("editor/camera/eye-point")
-              , config.get <glm::vec3> ("editor/camera/up") );
 
     this->updateProjection ();
   }

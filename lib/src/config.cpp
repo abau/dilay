@@ -7,7 +7,7 @@
 #include "config.hpp"
 
 namespace {
-  static constexpr int latestVersion = 4;
+  static constexpr int latestVersion = 5;
 }
 
 Config :: Config () 
@@ -26,9 +26,6 @@ void Config :: reset () {
 
   this->set ("editor/background", Color (0.1f, 0.1f, 0.2f));
 
-  this->set ("editor/camera/gaze-point",      glm::vec3 (0.0f, 0.0f, 0.0f));
-  this->set ("editor/camera/eye-point",       glm::vec3 (0.0f, 0.0f, 6.0f));
-  this->set ("editor/camera/up",              glm::vec3 (0.0f, 1.0f, 0.0f));
   this->set ("editor/camera/near-clipping",   0.01f);
   this->set ("editor/camera/far-clipping",    1000.0f);
   this->set ("editor/camera/rotation-factor", 1.0f);
@@ -79,6 +76,12 @@ void Config :: update () {
     case 2: break;
     case 3:
       updateValue ("editor/undo-depth", 5, 15);
+      break;
+
+    case 4:
+      this->remove ("editor/camera/gaze-point");
+      this->remove ("editor/camera/eye-point");
+      this->remove ("editor/camera/up");
       break;
 
     case latestVersion:

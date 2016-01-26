@@ -35,6 +35,10 @@ class Config {
       this->store.toFile (fileName);
     }
 
+    void remove (const std::string& path) {
+      this->store.remove (path);
+    }
+
   private:
     void reset  ();
     void update ();
