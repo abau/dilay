@@ -24,7 +24,6 @@ class Mesh {
 
     unsigned int       numVertices       () const;
     unsigned int       numIndices        () const;
-    unsigned int       numNormals        () const;
     unsigned int       sizeOfVertices    () const;
     unsigned int       sizeOfIndices     () const;
     unsigned int       sizeOfNormals     () const;

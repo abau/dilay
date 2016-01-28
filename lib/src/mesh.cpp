@@ -376,7 +376,6 @@ Mesh :: Mesh (const Mesh& source, bool copyGeometry)
 
 DELEGATE_CONST   (unsigned int      , Mesh, numVertices)
 DELEGATE_CONST   (unsigned int      , Mesh, numIndices)
-DELEGATE_CONST   (unsigned int      , Mesh, numNormals)
 DELEGATE_CONST   (unsigned int      , Mesh, sizeOfVertices)
 DELEGATE_CONST   (unsigned int      , Mesh, sizeOfIndices)
 DELEGATE_CONST   (unsigned int      , Mesh, sizeOfNormals)
