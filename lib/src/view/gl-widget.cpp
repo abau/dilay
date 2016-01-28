@@ -64,6 +64,7 @@ struct ViewGlWidget::Impl {
 
     this->state ().fromConfig ();
     this->axis->fromConfig (this->config);
+    this->toolMoveCamera.fromConfig (this->config);
   }
 
   void initializeGL () {

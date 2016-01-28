@@ -16,11 +16,14 @@ class ViewTwoColumnGrid : public QWidget {
   public:
     DECLARE_BIG2 (ViewTwoColumnGrid)
 
-    void add        (QWidget&);
-    void add        (const QString&, QWidget&);
-    void add        (QWidget&, QWidget&);
-    void addStacked (const QString&, QWidget&);
-    void add        (QButtonGroup&, const std::vector <QString>&);
+    void add          (QWidget&);
+    void add          (const QString&, QWidget&);
+    void add          (QWidget&, QWidget&);
+    void addStacked   (const QString&, QWidget&);
+    void add          (QButtonGroup&, const std::vector <QString>&);
+    void addLeft      (const QString&);
+    void addCenter    (const QString&);
+    void addStretcher ();
 
   private:
     IMPLEMENTATION

@@ -2,7 +2,7 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QLineEdit>
 #include "view/util.hpp"
 #include "view/vector-edit.hpp"
@@ -18,7 +18,7 @@ struct ViewVectorEdit::Impl {
     : self       (s) 
     , vectorData (v)
   { 
-    QHBoxLayout* layout = new QHBoxLayout;
+    QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing         (0);
     layout->setContentsMargins (0,11,0,11);
     this->self->setLayout      (layout);
@@ -26,7 +26,7 @@ struct ViewVectorEdit::Impl {
     for (int i = 0; i <= 2; i++) {
       this->edit[i] = &ViewUtil::lineEdit (v[i], Impl::numDecimals);
 
-      ViewUtil::connect (*this->edit[i], [this,i] (float v) {
+      ViewUtil::connectFloat (*this->edit[i], [this,i] (float v) {
         this->vectorData[i] = v;
         emit this->self->vectorEdited (this->vectorData);
       });

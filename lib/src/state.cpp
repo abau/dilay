@@ -84,8 +84,13 @@ struct State::Impl {
   }
 
   void fromConfig () {
-    this->camera.fromConfig (this->config);
-    this->scene .fromConfig (this->config);
+    this->camera .fromConfig (this->config);
+    this->history.fromConfig (this->config);
+    this->scene  .fromConfig (this->config);
+
+    if (this->hasTool ()) {
+      this->toolPtr->fromConfig ();
+    }
   }
 
   void undo () {

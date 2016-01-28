@@ -41,6 +41,7 @@ struct Tool::Impl {
   }
 
   ToolResponse initialize () { 
+    this->fromConfig ();
     return this->self->runInitialize ();
   }
 
@@ -71,6 +72,13 @@ struct Tool::Impl {
 
   void close () { 
     return this->self->runClose (); 
+  }
+
+  void fromConfig () {
+    if (this->hasMirror ()) {
+      this->_mirror->fromConfig (this->config ());
+    }
+    this->self->runFromConfig ();
   }
 
   void updateGlWidget () {
@@ -205,6 +213,7 @@ DELEGATE1       (ToolResponse    , Tool, mousePressEvent, const QMouseEvent&)
 DELEGATE1       (ToolResponse    , Tool, mouseReleaseEvent, const QMouseEvent&)
 DELEGATE1       (ToolResponse    , Tool, wheelEvent, const QWheelEvent&)
 DELEGATE        (void            , Tool, close)
+DELEGATE        (void            , Tool, fromConfig)
 GETTER_CONST    (State&          , Tool, state)
 DELEGATE        (void            , Tool, updateGlWidget)
 DELEGATE_CONST  (ViewProperties& , Tool, properties)

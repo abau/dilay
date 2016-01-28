@@ -56,7 +56,7 @@ struct ToolSketchSpheres::Impl {
   ViewDoubleSlider&      radiusEdit;
   ViewDoubleSlider&      heightEdit;
   SketchPathSmoothEffect smoothEffect;
-  const float            stepWidthFactor;
+  float                  stepWidthFactor;
   glm::vec3              previousPosition;
   SketchMesh*            mesh;
 
@@ -68,7 +68,7 @@ struct ToolSketchSpheres::Impl {
                                         , 0.45f ))
     , smoothEffect    (toSmoothEffect (s->cache ().get <int> 
                         ("smooth-effect", toInt (SketchPathSmoothEffect::Embed))))
-    , stepWidthFactor (s->config ().get <float> ("editor/tool/sketch-spheres/step-width-factor"))
+    , stepWidthFactor (0.0f)
     , mesh            (nullptr)
   {}
 
@@ -127,8 +127,6 @@ struct ToolSketchSpheres::Impl {
   void setupCursor () {
     this->cursor.disable ();
     this->cursor.radius  (this->radiusEdit.doubleValue ());
-    this->cursor.color   (this->self->config ().get <Color>
-                           ("editor/tool/sketch-spheres/cursor-color"));
   }
 
   ToolResponse runInitialize () {
@@ -293,6 +291,13 @@ struct ToolSketchSpheres::Impl {
     }
     return ToolResponse::Redraw;
   }
+
+  void runFromConfig () {
+    const Config& config = this->self->config ();
+
+    this->cursor.color (config.get <Color> ("editor/tool/sketch-spheres/cursor-color"));
+    this->stepWidthFactor = config.get <float> ("editor/tool/sketch-spheres/step-width-factor");
+  }
 };
 
 DELEGATE_TOOL                         (ToolSketchSpheres)
@@ -302,3 +307,4 @@ DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT   (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT   (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_FROM_CONFIG         (ToolSketchSpheres)

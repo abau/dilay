@@ -13,10 +13,10 @@ namespace {
 Config :: Config () 
   : store ("config") 
 {
-  this->reset ();
+  this->restoreDefaults ();
 }
 
-void Config :: reset () {
+void Config :: restoreDefaults () {
   this->store.reset ();
 
   this->set ("version", latestVersion);
@@ -88,7 +88,7 @@ void Config :: update () {
       return;
 
     default:
-      this->reset ();
+      this->restoreDefaults ();
       return;
   }
   this->set ("version", version + 1);

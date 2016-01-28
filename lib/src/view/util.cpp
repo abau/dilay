@@ -6,6 +6,7 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QDoubleValidator>
+#include <QIntValidator>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -95,12 +96,35 @@ QWidget& ViewUtil :: emptyWidget () {
 }
 
 QLineEdit& ViewUtil :: lineEdit (float value, unsigned short numDecimals) {
+  return ViewUtil::lineEdit ( std::numeric_limits <float>::lowest (), value
+                            , std::numeric_limits <float>::max (), numDecimals );
+}
+
+QLineEdit& ViewUtil :: lineEdit (float min, float value, float max, unsigned short numDecimals) {
   QLineEdit&        edit      = *new QLineEdit;
   QDoubleValidator& validator = *new QDoubleValidator (&edit);
 
-  validator.setDecimals (numDecimals);
+  validator.setRange (min, max, numDecimals);
   edit.setValidator (&validator);
   edit.setText (QString::number (value, 'f', numDecimals));
+
+  return edit;
+}
+
+QLineEdit& ViewUtil :: lineEdit (int value) {
+  QLineEdit& edit = *new QLineEdit;
+
+  edit.setText (QString::number (value));
+
+  return edit;
+}
+
+QLineEdit& ViewUtil :: lineEdit (int min, int value, int max) {
+  QLineEdit&     edit      = ViewUtil::lineEdit (value);
+  QIntValidator& validator = *new QIntValidator (&edit);
+
+  validator.setRange (min, max);
+  edit.setValidator (&validator);
 
   return edit;
 }
@@ -165,11 +189,22 @@ void ViewUtil :: connect (const ViewDoubleSlider& s, const std::function <void (
   QObject::connect (&s, &ViewDoubleSlider::doubleValueChanged, f);
 }
 
-void ViewUtil :: connect (const QLineEdit& e, const std::function <void (float)>& f) {
+void ViewUtil :: connectFloat (const QLineEdit& e, const std::function <void (float)>& f) {
   QObject::connect (&e, &QLineEdit::textEdited, [&e,f] (const QString& text) {
     if (e.hasAcceptableInput ()) {
       bool  ok;
       float value = text.toFloat (&ok);
+      assert (ok);
+      f (value);
+    }
+  });
+}
+
+void ViewUtil :: connectInt (const QLineEdit& e, const std::function <void (int)>& f) {
+  QObject::connect (&e, &QLineEdit::textEdited, [&e,f] (const QString& text) {
+    if (e.hasAcceptableInput ()) {
+      bool  ok;
+      float value = text.toInt (&ok);
       assert (ok);
       f (value);
     }

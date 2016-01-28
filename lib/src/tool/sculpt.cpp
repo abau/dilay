@@ -47,14 +47,10 @@ struct ToolSculpt::Impl {
   }
 
   void setupBrush () {
-    const Config&     config = this->self->config ();
     const CacheProxy& cCache = this->commonCache;
 
-    this->brush.detailFactor    (config.get <float> ("editor/tool/sculpt/detail-factor"));
-    this->brush.stepWidthFactor (config.get <float> ("editor/tool/sculpt/step-width-factor"));
-
-    this->brush.radius          (cCache.get <float> ("radius"   , 0.2f));
-    this->brush.subdivide       (cCache.get <bool>  ("subdivide", true));
+    this->brush.radius    (cCache.get <float> ("radius"   , 0.2f));
+    this->brush.subdivide (cCache.get <bool>  ("subdivide", true));
 
     this->self->runSetupBrush (this->brush);
   }
@@ -71,7 +67,6 @@ struct ToolSculpt::Impl {
       this->cursor.disable ();
     }
     this->cursor.radius (this->brush.radius ());
-    this->cursor.color  (this->self->config ().get <Color> ("editor/tool/sculpt/cursor-color"));
 
     this->self->runSetupCursor (this->cursor);
   }
@@ -168,6 +163,15 @@ struct ToolSculpt::Impl {
       }
     }
     return ToolResponse::Redraw;
+  }
+
+  void runFromConfig () {
+    const Config& config = this->self->config ();
+
+    this->brush.detailFactor    (config.get <float> ("editor/tool/sculpt/detail-factor"));
+    this->brush.stepWidthFactor (config.get <float> ("editor/tool/sculpt/step-width-factor"));
+
+    this->cursor.color  (this->self->config ().get <Color> ("editor/tool/sculpt/cursor-color"));
   }
 
   void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode) {
@@ -318,3 +322,4 @@ DELEGATE1       (ToolResponse, ToolSculpt, runMouseMoveEvent, const QMouseEvent&
 DELEGATE1       (ToolResponse, ToolSculpt, runMousePressEvent, const QMouseEvent&)
 DELEGATE1       (ToolResponse, ToolSculpt, runMouseReleaseEvent, const QMouseEvent&)
 DELEGATE1       (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
+DELEGATE        (void        , ToolSculpt, runFromConfig)

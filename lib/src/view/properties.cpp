@@ -19,6 +19,7 @@ struct ViewProperties::Impl {
     , _footer (nullptr)
   {
     this->self->setLayout (&this->layout);
+    this->layout.setContentsMargins (0,0,0,0);
     this->reset ();
   }
 

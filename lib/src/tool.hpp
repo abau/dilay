@@ -36,6 +36,7 @@ class Tool {
     ToolResponse     mouseReleaseEvent      (const QMouseEvent&);
     ToolResponse     wheelEvent             (const QWheelEvent&);
     void             close                  ();
+    void             fromConfig             ();
 
   protected:
     State&           state                  () const;
@@ -74,6 +75,7 @@ class Tool {
     virtual ToolResponse runMouseReleaseEvent (const QMouseEvent&) { return ToolResponse::None; }
     virtual ToolResponse runWheelEvent        (const QWheelEvent&) { return ToolResponse::None; }
     virtual void         runClose             ()                   {}
+    virtual void         runFromConfig        ()                   {}
 };
 
 #define DECLARE_TOOL(name,theKey,otherMethods)                       \
@@ -91,6 +93,7 @@ class Tool {
 #define DECLARE_TOOL_RUN_MOUSE_RELEASE_EVENT ToolResponse runMouseReleaseEvent (const QMouseEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT   ToolResponse runWheelEvent        (const QWheelEvent&);
 #define DECLARE_TOOL_RUN_CLOSE               void         runClose             ();
+#define DECLARE_TOOL_RUN_FROM_CONFIG         void         runFromConfig        ();
 
 #define DELEGATE_TOOL(name) \
   DELEGATE_BIG2_BASE (name, (State& s), (this), Tool, (s, this->key ()))
@@ -102,5 +105,6 @@ class Tool {
 #define DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT(n) DELEGATE1      (ToolResponse, n, runMouseReleaseEvent, const QMouseEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT(n)   DELEGATE1      (ToolResponse, n, runWheelEvent, const QWheelEvent&)
 #define DELEGATE_TOOL_RUN_CLOSE(n)               DELEGATE       (void        , n, runClose)
+#define DELEGATE_TOOL_RUN_FROM_CONFIG(n)         DELEGATE       (void        , n, runFromConfig)
 
 #endif

@@ -39,8 +39,9 @@ class Config {
       this->store.remove (path);
     }
 
+    void restoreDefaults ();
+
   private:
-    void reset  ();
     void update ();
 
     KVStore store;
