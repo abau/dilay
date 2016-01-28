@@ -24,9 +24,6 @@ class Mesh {
 
     unsigned int       numVertices       () const;
     unsigned int       numIndices        () const;
-    unsigned int       sizeOfVertices    () const;
-    unsigned int       sizeOfIndices     () const;
-    unsigned int       sizeOfNormals     () const;
     glm::vec3          vertex            (unsigned int) const;
     unsigned int       index             (unsigned int) const;
     glm::vec3          normal            (unsigned int) const;
