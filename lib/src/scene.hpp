@@ -46,8 +46,7 @@ class Scene : public Configurable {
     void               forEachConstMesh   (const std::function <void (const SketchMesh&)>&) const;
     void               sanitizeMeshes     ();
     void               reset              ();
-    const RenderMode&  commonRenderMode   () const;
-    void               commonRenderMode   (const RenderMode&);
+    bool               renderWireframe    () const;
     void               renderWireframe    (bool);
     void               toggleWireframe    ();
     void               toggleShading      ();

@@ -20,7 +20,7 @@ struct Scene :: Impl {
   Scene*                            self;
   IntrusiveIndexedList <WingedMesh> wingedMeshes;
   IntrusiveIndexedList <SketchMesh> sketchMeshes;
-  RenderMode                       _commonRenderMode;
+  RenderMode                        commonRenderMode;
   std::string                       fileName;
 
   Impl (Scene* s, const Config& config)
@@ -28,7 +28,7 @@ struct Scene :: Impl {
   {
     this->runFromConfig (config);
 
-    this->_commonRenderMode.smoothShading (true);
+    this->commonRenderMode.smoothShading (true);
   }
 
   WingedMesh& newWingedMesh (const Config& config, const Mesh& mesh) {
@@ -36,7 +36,7 @@ struct Scene :: Impl {
 
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
-    wingedMesh.renderMode () = this->_commonRenderMode;
+    wingedMesh.renderMode () = this->commonRenderMode;
 
     this->runFromConfig (config, wingedMesh);
     return wingedMesh;
@@ -46,7 +46,7 @@ struct Scene :: Impl {
     SketchMesh& mesh = this->sketchMeshes.emplaceBack ();
 
     mesh.fromTree        (tree);
-    mesh.renderWireframe (this->_commonRenderMode.renderWireframe ());
+    mesh.renderWireframe (this->commonRenderMode.renderWireframe ());
     mesh.fromConfig      (config);
 
     return mesh;
@@ -191,40 +191,37 @@ struct Scene :: Impl {
     }
   }
 
-  const RenderMode& commonRenderMode () {
-    return this->_commonRenderMode;
-  }
-
-  void commonRenderMode (const RenderMode& mode) {
-    this->_commonRenderMode = mode;
-    this->forEachMesh ([&mode] (WingedMesh& mesh) {
-      mesh.renderMode () = mode; 
+  void setCommonRenderMode (const RenderMode& mode) {
+    this->commonRenderMode = mode;
+    this->forEachMesh ([this] (WingedMesh& mesh) {
+      mesh.renderMode () = this->commonRenderMode; 
     });
     this->forEachMesh ([&mode] (SketchMesh& mesh) {
       mesh.renderWireframe (mode.renderWireframe ()); 
     });
   }
 
+  bool renderWireframe () const {
+    return this->commonRenderMode.renderWireframe ();
+  }
+
   void renderWireframe (bool value) {
-    RenderMode mode = this->commonRenderMode ();
-    mode.renderWireframe (value);
-    this->commonRenderMode (mode);
+    this->commonRenderMode.renderWireframe (value);
+    this->setCommonRenderMode (this->commonRenderMode);
   }
 
   void toggleWireframe () {
-    this->renderWireframe (! this->commonRenderMode ().renderWireframe ());
+    this->renderWireframe (! this->commonRenderMode.renderWireframe ());
   }
 
   void toggleShading () {
-    RenderMode mode = this->commonRenderMode ();
-
-    if (mode.smoothShading ()) {
-      mode.flatShading (true);
+    if (this->commonRenderMode.smoothShading ()) {
+      this->commonRenderMode.flatShading (true);
     }
-    else if (mode.flatShading ()) {
-      mode.smoothShading (true);
+    else if (this->commonRenderMode.flatShading ()) {
+      this->commonRenderMode.smoothShading (true);
     }
-    this->commonRenderMode (mode);
+    this->setCommonRenderMode (this->commonRenderMode);
   }
 
   bool isEmpty () const {
@@ -323,8 +320,7 @@ DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::functio
 DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const SketchMesh&)>&)
 DELEGATE        (void              , Scene, sanitizeMeshes)
 DELEGATE        (void              , Scene, reset)
-DELEGATE_CONST  (const RenderMode& , Scene, commonRenderMode)
-DELEGATE1       (void              , Scene, commonRenderMode, const RenderMode&)
+DELEGATE_CONST  (bool              , Scene, renderWireframe)
 DELEGATE1       (void              , Scene, renderWireframe, bool)
 DELEGATE        (void              , Scene, toggleWireframe)
 DELEGATE        (void              , Scene, toggleShading)

@@ -17,7 +17,7 @@ struct ToolRebalanceSketch::Impl {
 
   Impl (ToolRebalanceSketch* s) 
     : self            (s)
-    , renderWireframe (s->state ().scene ().commonRenderMode ().renderWireframe ())
+    , renderWireframe (s->state ().scene ().renderWireframe ())
   {
     this->self->renderMirror (false);
     this->self->state ().scene ().renderWireframe (true);
