@@ -28,7 +28,6 @@ class Mesh {
     unsigned int       index             (unsigned int) const;
     glm::vec3          normal            (unsigned int) const;
     unsigned int       addIndex          (unsigned int);
-    void               resizeIndices     (unsigned int);
     void               reserveIndices    (unsigned int);
     unsigned int       addVertex         (const glm::vec3&);
     unsigned int       addVertex         (const glm::vec3&, const glm::vec3&);

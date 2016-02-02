@@ -101,10 +101,6 @@ struct Mesh::Impl {
     return this->indices.size () - 1;
   }
 
-  void resizeIndices (unsigned int n) { 
-    this->indices.resize (n, Util::invalidIndex ());
-  }
-
   void reserveIndices (unsigned int n) { 
     this->indices.reserve (n);
   }
@@ -376,7 +372,6 @@ DELEGATE1_CONST  (unsigned int      , Mesh, index, unsigned int)
 DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
 
 DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
-DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 DELEGATE1        (void              , Mesh, reserveIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
 DELEGATE2        (unsigned int      , Mesh, addVertex, const glm::vec3&, const glm::vec3&)

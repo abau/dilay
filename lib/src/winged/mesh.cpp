@@ -95,8 +95,10 @@ struct WingedMesh::Impl {
 
     this->addFaceToOctree (face, geometry);
 
-    if ((3 * face.index ()) + 2 >= this->mesh.numIndices ()) {
-      this->mesh.resizeIndices ((3 * face.index ()) + 3);
+    if (3 * face.index () == this->mesh.numIndices ()) {
+      this->mesh.addIndex (Util::invalidIndex ());
+      this->mesh.addIndex (Util::invalidIndex ());
+      this->mesh.addIndex (Util::invalidIndex ());
     }
     return face;
   }
