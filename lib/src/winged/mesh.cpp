@@ -66,20 +66,15 @@ struct WingedMesh::Impl {
 
   WingedVertex& addVertex (const glm::vec3& pos) {
     WingedVertex& vertex = this->vertices.emplaceBack ();
-    this->addVertexToInternalMesh (vertex, pos);
-    return vertex;
-  }
 
-  void addVertexToInternalMesh (WingedVertex& vertex, const glm::vec3& pos) {
     if (vertex.index () == this->mesh.numVertices ()) {
       this->mesh.addVertex (pos);
     }
     else {
-      if (vertex.index () >= this->mesh.numVertices ()) {
-        this->mesh.resizeVertices (vertex.index () + 1);
-      }
+      assert (vertex.index () < this->mesh.numVertices ());
       this->mesh.setVertex (vertex.index (), pos);
     }
+    return vertex;
   }
 
   WingedEdge& addEdge () {

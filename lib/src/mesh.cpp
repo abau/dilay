@@ -128,11 +128,6 @@ struct Mesh::Impl {
     return this->numVertices () - 1;
   }
 
-  void resizeVertices (unsigned int n) { 
-    this->vertices.resize (3*n, std::numeric_limits <float>::quiet_NaN ());
-    this->normals .resize (3*n, std::numeric_limits <float>::quiet_NaN ());
-  }
-
   void reserveVertices (unsigned int n) { 
     this->vertices.reserve (3*n);
     this->normals .reserve (3*n);
@@ -385,7 +380,6 @@ DELEGATE1        (void              , Mesh, resizeIndices, unsigned int)
 DELEGATE1        (void              , Mesh, reserveIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
 DELEGATE2        (unsigned int      , Mesh, addVertex, const glm::vec3&, const glm::vec3&)
-DELEGATE1        (void              , Mesh, resizeVertices, unsigned int)
 DELEGATE1        (void              , Mesh, reserveVertices, unsigned int)
 DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
 DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
