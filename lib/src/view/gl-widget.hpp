@@ -26,14 +26,15 @@ class ViewGlWidget : public QOpenGLWidget {
     void            fromConfig     ();
        
   protected:
-    void initializeGL       ();
-    void resizeGL           (int,int);
-    void paintGL            ();
+    void initializeGL      ();
+    void resizeGL          (int,int);
+    void paintGL           ();
  
-    void mouseMoveEvent     (QMouseEvent*);
-    void mousePressEvent    (QMouseEvent*);
-    void mouseReleaseEvent  (QMouseEvent*);
-    void wheelEvent         (QWheelEvent*);
+    void mouseMoveEvent    (QMouseEvent*);
+    void mousePressEvent   (QMouseEvent*);
+    void mouseReleaseEvent (QMouseEvent*);
+    void wheelEvent        (QWheelEvent*);
+    void tabletEvent       (QTabletEvent*);
 
   private:
     IMPLEMENTATION

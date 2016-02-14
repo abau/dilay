@@ -247,6 +247,30 @@ struct SculptBrush :: Impl {
     }
   }
 
+  float intensity () const {
+    return this->parameters.caseOf <float>
+      ( [] (const SBCarveParameters&    p) { return p.intensity (); }
+      , [] (const SBDraglikeParameters&  ) { return 0.0f; }
+      , [] (const SBSmoothParameters&   p) { return p.intensity (); }
+      , [] (const SBFlattenParameters&  p) { return p.intensity (); }
+      , [] (const SBCreaseParameters&   p) { return p.intensity (); }
+      , [] (const SBPinchParameters&     ) { return 0.0f; }
+      , [] (const SBReduceParameters&   p) { return p.intensity (); }
+      );
+  }
+
+  void intensity (float value) {
+    this->parameters.caseOf <void>
+      ( [value] (SBCarveParameters&    p) { p.intensity (value); }
+      , [     ] (SBDraglikeParameters&  ) { }
+      , [value] (SBSmoothParameters&   p) { p.intensity (value); }
+      , [value] (SBFlattenParameters&  p) { p.intensity (value); }
+      , [value] (SBCreaseParameters&   p) { p.intensity (value); }
+      , [     ] (SBPinchParameters&     ) { }
+      , [value] (SBReduceParameters&   p) { p.intensity (value); }
+      );
+  }
+
   void sculpt (const SBReduceParameters&, AffectedFaces& faces) const {
     this->self->meshRef ().intersects (PrimSphere (this->position (), this->radius), faces);
   }
@@ -327,11 +351,13 @@ GETTER_CONST    (float            , SculptBrush, detailFactor)
 GETTER_CONST    (float            , SculptBrush, stepWidthFactor)
 GETTER_CONST    (bool             , SculptBrush, subdivide)
 GETTER_CONST    (WingedMesh*      , SculptBrush, mesh)
+DELEGATE_CONST  (float            , SculptBrush, intensity)
 SETTER          (float            , SculptBrush, radius)
 SETTER          (float            , SculptBrush, detailFactor)
 SETTER          (float            , SculptBrush, stepWidthFactor)
 SETTER          (bool             , SculptBrush, subdivide)
 SETTER          (WingedMesh*      , SculptBrush, mesh)
+DELEGATE1       (void             , SculptBrush, intensity, float)
 DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
 GETTER_CONST    (bool             , SculptBrush, hasPosition)
 DELEGATE_CONST  (const glm::vec3& , SculptBrush, lastPosition)

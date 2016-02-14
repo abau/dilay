@@ -95,12 +95,14 @@ class SculptBrush {
     float            stepWidthFactor     () const;
     bool             subdivide           () const;
     WingedMesh*      mesh                () const;
+    float            intensity           () const;
 
     void             radius              (float);
     void             detailFactor        (float);
     void             stepWidthFactor     (float);
     void             subdivide           (bool);
     void             mesh                (WingedMesh*);
+    void             intensity           (float);
 
     float            subdivThreshold     () const;
     bool             hasPosition         () const;

@@ -24,6 +24,7 @@ class ViewPointingEvent {
     bool                  primaryButton   () const { return this->_primaryButton; }
     bool                  secondaryButton () const { return this->_secondaryButton; }
     const glm::ivec2&     ivec2           () const { return this->_ivec2; }
+    float                 intensity       () const { return this->_intensity; }
 
   private:
     Qt::KeyboardModifiers _modifiers;
@@ -33,5 +34,6 @@ class ViewPointingEvent {
     bool                  _primaryButton;
     bool                  _secondaryButton;
     glm::ivec2            _ivec2;
+    float                 _intensity;
 };
 #endif

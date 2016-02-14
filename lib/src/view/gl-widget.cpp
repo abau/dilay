@@ -134,6 +134,10 @@ struct ViewGlWidget::Impl {
       this->state ().handleToolResponse (this->state ().tool ().wheelEvent (*e));
     }
   }
+
+  void tabletEvent (QTabletEvent* e) {
+    this->pointingEvent (ViewPointingEvent (*e));
+  }
 };
 
 DELEGATE3_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
@@ -148,3 +152,4 @@ DELEGATE1 (void           , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
 DELEGATE1 (void           , ViewGlWidget, mousePressEvent  , QMouseEvent*)
 DELEGATE1 (void           , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
 DELEGATE1 (void           , ViewGlWidget, wheelEvent       , QWheelEvent*)
+DELEGATE1 (void           , ViewGlWidget, tabletEvent      , QTabletEvent*)
