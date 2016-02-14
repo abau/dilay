@@ -4,7 +4,6 @@
  */
 #include <QCheckBox>
 #include <QFrame>
-#include <QMouseEvent>
 #include <QPushButton>
 #include <QSlider>
 #include "cache.hpp"
@@ -18,6 +17,7 @@
 #include "tool/util/movement.hpp"
 #include "tool/util/scaling.hpp"
 #include "tools.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -109,8 +109,8 @@ struct ToolModifySketch::Impl {
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    if (e.buttons () == Qt::LeftButton && this->node) {
+  ToolResponse runMoveEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton () && this->node) {
       if (e.modifiers () == Qt::ShiftModifier) {
         if (this->scaling.move (e)) {
           if (this->parent) {
@@ -136,7 +136,7 @@ struct ToolModifySketch::Impl {
     }
   }
 
-  ToolResponse runMousePressEvent (const QMouseEvent& e) {
+  ToolResponse runPressEvent (const ViewPointingEvent& e) {
 
     auto handleNodeIntersection = [this, &e] (SketchNodeIntersection &intersection) {
       this->self->snapshotSketchMeshes ();
@@ -187,7 +187,7 @@ struct ToolModifySketch::Impl {
       }
     };
 
-    if (e.button () == Qt::LeftButton) {
+    if (e.primaryButton ()) {
       SketchNodeIntersection nodeIntersection;
       SketchBoneIntersection boneIntersection;
 
@@ -201,10 +201,10 @@ struct ToolModifySketch::Impl {
     return ToolResponse::None;
   }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
     bool redraw = false;
 
-    if (e.button () == Qt::LeftButton) {
+    if (e.primaryButton ()) {
       if (this->snap && this->mesh && this->self->hasMirror ()) {
         PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
 
@@ -230,7 +230,7 @@ struct ToolModifySketch::Impl {
   }
 };
 
-DELEGATE_TOOL                         (ToolModifySketch)
-DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolModifySketch)
-DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT   (ToolModifySketch)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolModifySketch)
+DELEGATE_TOOL                   (ToolModifySketch)
+DELEGATE_TOOL_RUN_MOVE_EVENT    (ToolModifySketch)
+DELEGATE_TOOL_RUN_PRESS_EVENT   (ToolModifySketch)
+DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolModifySketch)

@@ -39,18 +39,10 @@ struct ToolSculptReduce::Impl {
     this->self->addDefaultToolTip (toolTip, false);
   }
 
-  bool runMouseEvent (const QMouseEvent& e) {
+  bool runSculptPointingEvent (const ViewPointingEvent& e) {
     const bool result = this->self->carvelikeStroke (e, false);
     this->self->state ().scene ().deleteEmptyMeshes ();
     return result;
-  }
-
-  void runSculptMouseMoveEvent (const QMouseEvent& e) {
-    this->runMouseEvent (e);
-  }
-
-  bool runSculptMousePressEvent (const QMouseEvent& e) {
-    return this->runMouseEvent (e);
   }
 };
 

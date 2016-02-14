@@ -4,7 +4,6 @@
  */
 #include <QAbstractButton>
 #include <QButtonGroup>
-#include <QMouseEvent>
 #include "../../util.hpp"
 #include "camera.hpp"
 #include "dimension.hpp"
@@ -13,6 +12,7 @@
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "tool/util/movement.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/util.hpp"
 
@@ -152,9 +152,8 @@ struct ToolUtilMovement::Impl {
     }
   }
 
-  bool move (const QMouseEvent& e, bool considerShift) {
-    return this->move ( ViewUtil::toIVec2 (e)
-                      , considerShift && e.modifiers () == Qt::ShiftModifier );
+  bool move (const ViewPointingEvent& e, bool considerShift) {
+    return this->move (e.ivec2 (), considerShift && e.modifiers () == Qt::ShiftModifier);
   }
 
   void resetPosition (const glm::vec3& p) {
@@ -198,6 +197,6 @@ SETTER          (MovementConstraint, ToolUtilMovement, constraint)
 DELEGATE_CONST  (glm::vec3         , ToolUtilMovement, delta)
 GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
 SETTER          (const glm::vec3&  , ToolUtilMovement, position)
-DELEGATE2       (bool              , ToolUtilMovement, move, const QMouseEvent&, bool)
+DELEGATE2       (bool              , ToolUtilMovement, move, const ViewPointingEvent&, bool)
 DELEGATE1       (void              , ToolUtilMovement, resetPosition, const glm::vec3&)
 DELEGATE2       (void              , ToolUtilMovement, addProperties, ViewTwoColumnGrid&, const std::function <void ()>&)

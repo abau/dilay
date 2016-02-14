@@ -9,6 +9,7 @@
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/util.hpp"
 
@@ -69,12 +70,9 @@ struct ToolSculptDrag::Impl {
     this->self->addDefaultToolTip (toolTip, false);
   }
 
-  void runSculptMouseMoveEvent (const QMouseEvent& e) {
-    this->self->draglikeStroke (e, this->movement);
-  }
-
-  bool runSculptMousePressEvent (const QMouseEvent& e) {
-    return this->self->initializeDraglikeStroke (e, this->movement);
+  bool runSculptPointingEvent (const ViewPointingEvent& e) {
+    return e.pressEvent () ? this->self->initializeDraglikeStroke (e, this->movement)
+                           : this->self->draglikeStroke (e, this->movement);
   }
 };
 

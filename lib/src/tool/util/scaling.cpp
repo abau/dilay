@@ -2,14 +2,13 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QMouseEvent>
 #include "camera.hpp"
 #include "intersection.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "tool/util/scaling.hpp"
 #include "util.hpp"
-#include "view/util.hpp"
+#include "view/pointing-event.hpp"
 
 struct ToolUtilScaling::Impl {
   const Camera&               camera;
@@ -43,9 +42,9 @@ struct ToolUtilScaling::Impl {
     return false;
   }
 
-  bool move (const QMouseEvent& e) {
+  bool move (const ViewPointingEvent& e) {
     glm::vec3 p;
-    if (this->plane && this->intersects (ViewUtil::toIVec2 (e), p)) {
+    if (this->plane && this->intersects (e.ivec2 (), p)) {
       this->previousPosition = this->position;
       this->position         = p;
       return true;
@@ -74,5 +73,5 @@ struct ToolUtilScaling::Impl {
 
 DELEGATE1_BIG3 (ToolUtilScaling, const Camera&)
 DELEGATE_CONST (float, ToolUtilScaling, factor)
-DELEGATE1      (bool , ToolUtilScaling, move, const QMouseEvent&)
+DELEGATE1      (bool , ToolUtilScaling, move, const ViewPointingEvent&)
 DELEGATE2      (void , ToolUtilScaling, resetPosition, const glm::vec3&, const glm::vec3&)

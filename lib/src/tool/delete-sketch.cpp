@@ -4,7 +4,6 @@
  */
 #include <QCheckBox>
 #include <QFrame>
-#include <QMouseEvent>
 #include <QRadioButton>
 #include "cache.hpp"
 #include "dimension.hpp"
@@ -15,6 +14,7 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "util.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -125,8 +125,8 @@ struct ToolDeleteSketch::Impl {
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton ()) {
       switch (this->mode) {
         case Mode::DeleteSketch: {
           SketchMeshIntersection intersection;
@@ -167,5 +167,5 @@ struct ToolDeleteSketch::Impl {
   }
 };
 
-DELEGATE_TOOL                         (ToolDeleteSketch)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolDeleteSketch)
+DELEGATE_TOOL                   (ToolDeleteSketch)
+DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolDeleteSketch)

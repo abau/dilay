@@ -9,14 +9,14 @@
 #include "macro.hpp"
 
 class Camera;
-class QMouseEvent;
+class ViewPointingEvent;
 
 class ToolUtilScaling {
   public:
     DECLARE_BIG3 (ToolUtilScaling, const Camera&)
 
     float factor        () const;
-    bool  move          (const QMouseEvent&);
+    bool  move          (const ViewPointingEvent&);
     void  resetPosition (const glm::vec3&, const glm::vec3&);
 
   private:

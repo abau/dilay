@@ -16,7 +16,7 @@
 #include "view/gl-widget.hpp"
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
-#include "view/util.hpp"
+#include "view/pointing-event.hpp"
 
 struct ToolMoveCamera::Impl {
   glm::ivec2 oldPos;
@@ -86,11 +86,11 @@ struct ToolMoveCamera::Impl {
     state.mainWindow ().mainWidget ().glWidget ().update ();
   }
 
-  void mouseMoveEvent (State& state, const QMouseEvent& event) {
-    if (event.buttons () == Qt::MiddleButton) {
+  void moveEvent (State& state, const ViewPointingEvent& event) {
+    if (event.secondaryButton ()) {
             Camera&     cam        = state.camera ();
       const glm::uvec2& resolution = cam.resolution ();
-            glm::ivec2  newPos     = ViewUtil::toIVec2 (event);
+            glm::ivec2  newPos     = event.ivec2 ();
             glm::ivec2  delta      = newPos - oldPos;
 
       if (event.modifiers () == Qt::NoModifier) {
@@ -116,14 +116,14 @@ struct ToolMoveCamera::Impl {
     }
   }
 
-  void mousePressEvent (State& state, const QMouseEvent& event) {
-    if (event.button () == Qt::MiddleButton) {
-      this->oldPos = ViewUtil::toIVec2 (event);
+  void pressEvent (State& state, const ViewPointingEvent& event) {
+    if (event.secondaryButton ()) {
+      this->oldPos = event.ivec2 ();
 
       if (event.modifiers () == Qt::ControlModifier) {
         Camera& cam = state.camera ();
         Intersection intersection;
-        if (state.scene ().intersects (cam.ray (ViewUtil::toIVec2 (event)), intersection)) {
+        if (state.scene ().intersects (cam.ray (event.ivec2 ()), intersection)) {
           cam.set ( intersection.position ()
                   , cam.position () - intersection.position ()
                   , cam.up () );
@@ -155,7 +155,7 @@ struct ToolMoveCamera::Impl {
 DELEGATE1_BIG3 (ToolMoveCamera, const Config&)
 DELEGATE2 (void, ToolMoveCamera, snap, State&, bool)
 DELEGATE1 (void, ToolMoveCamera, resetGazePoint, State&)
-DELEGATE2 (void, ToolMoveCamera, mouseMoveEvent, State&, const QMouseEvent&)
-DELEGATE2 (void, ToolMoveCamera, mousePressEvent, State&, const QMouseEvent&)
+DELEGATE2 (void, ToolMoveCamera, moveEvent, State&, const ViewPointingEvent&)
+DELEGATE2 (void, ToolMoveCamera, pressEvent, State&, const ViewPointingEvent&)
 DELEGATE2 (void, ToolMoveCamera, wheelEvent, State&, const QWheelEvent&)
 DELEGATE1 (void, ToolMoveCamera, runFromConfig, const Config&)

@@ -4,7 +4,6 @@
  */
 #include <QCheckBox>
 #include <QFrame>
-#include <QMouseEvent>
 #include <QPushButton>
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
@@ -19,6 +18,7 @@
 #include "tool/util/movement.hpp"
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -30,11 +30,13 @@ struct ToolSculpt::Impl {
   ViewCursor        cursor;
   CacheProxy        commonCache;
   ViewDoubleSlider& radiusEdit;
+  bool              sculpted;
 
   Impl (ToolSculpt* s) 
     : self        (s) 
     , commonCache (this->self->cache ("sculpt"))
     , radiusEdit  (ViewUtil::slider  (2, 0.01f, 0.01f, 2.0f, 3))
+    , sculpted    (false)
   {}
 
   ToolResponse runInitialize () {
@@ -129,26 +131,29 @@ struct ToolSculpt::Impl {
     }
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    this->self->runSculptMouseMoveEvent (e);
-    return ToolResponse::Redraw;
-  }
+  ToolResponse runPointingEvent (const ViewPointingEvent& e) {
+    if (e.releaseEvent ()) {
+      if (e.primaryButton ()) {
+        this->brush.resetPointOfAction ();
 
-  ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    this->self->snapshotWingedMeshes ();
-
-    if (this->self->runSculptMousePressEvent (e) == false) {
-      this->self->state ().history ().dropSnapshot ();
+        if (this->sculpted == false) {
+          this->self->state ().history ().dropSnapshot ();
+        }
+      }
+      this->cursor.enable ();
+      return ToolResponse::Redraw;
     }
-    return ToolResponse::Redraw;
-  }
+    else {
+      if (e.pressEvent () && e.primaryButton ()) {
+        this->self->snapshotWingedMeshes ();
+        this->sculpted = false;
+      }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
-      this->brush.resetPointOfAction ();
+      if (this->self->runSculptPointingEvent (e)) {
+        this->sculpted = true;
+      }
+      return ToolResponse::Redraw;
     }
-    this->cursor.enable ();
-    return ToolResponse::Redraw;
   }
 
   ToolResponse runWheelEvent (const QWheelEvent& e) {
@@ -192,7 +197,7 @@ struct ToolSculpt::Impl {
     }
   }
 
-  void updateCursorByIntersection (const QMouseEvent& e) {
+  void updateCursorByIntersection (const ViewPointingEvent& e) {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsScene (e, intersection)) {
@@ -204,14 +209,14 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool updateBrushAndCursorByIntersection (const QMouseEvent& e, bool useRecentOctree) {
+  bool updateBrushAndCursorByIntersection (const ViewPointingEvent& e, bool useRecentOctree) {
     WingedFaceIntersection intersection;
 
     if (this->self->intersectsScene (e, intersection)) {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
 
-      if (e.button () == Qt::LeftButton || e.buttons () == Qt::LeftButton) {
+      if (e.primaryButton ()) {
         this->brush.mesh (&intersection.mesh ());
 
         if (useRecentOctree) {
@@ -240,7 +245,7 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool carvelikeStroke ( const QMouseEvent& e, bool useRecentOctree
+  bool carvelikeStroke ( const ViewPointingEvent& e, bool useRecentOctree
                        , const std::function <void ()>* toggle )
   {
     if (this->updateBrushAndCursorByIntersection (e, useRecentOctree)) {
@@ -259,8 +264,8 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool initializeDraglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
-    if (e.button () == Qt::LeftButton) {
+  bool initializeDraglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement) {
+    if (e.primaryButton ()) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         this->brush.mesh (&intersection.mesh ());
@@ -283,12 +288,12 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool draglikeStroke (const QMouseEvent& e, ToolUtilMovement& movement) {
-    if (e.buttons () == Qt::NoButton) {
+  bool draglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement) {
+    if (e.primaryButton () == false) {
       this->updateCursorByIntersection (e);
       return false;
     }
-    else if (e.buttons () == Qt::LeftButton && this->brush.hasPosition ()) {
+    else if (this->brush.hasPosition ()) {
       const glm::vec3 oldBrushPos = this->brush.position ();
 
       if ( movement.move (e, false)
@@ -313,13 +318,11 @@ GETTER          (SculptBrush&, ToolSculpt, brush)
 GETTER          (ViewCursor& , ToolSculpt, cursor)
 DELEGATE2_CONST (void        , ToolSculpt, addDefaultToolTip, ViewToolTip&, bool)
 DELEGATE        (void        , ToolSculpt, sculpt)
-DELEGATE3       (bool        , ToolSculpt, carvelikeStroke, const QMouseEvent&, bool, const std::function <void ()>*)
-DELEGATE2       (bool        , ToolSculpt, initializeDraglikeStroke, const QMouseEvent&, ToolUtilMovement&)
-DELEGATE2       (bool        , ToolSculpt, draglikeStroke, const QMouseEvent&, ToolUtilMovement&)
+DELEGATE3       (bool        , ToolSculpt, carvelikeStroke, const ViewPointingEvent&, bool, const std::function <void ()>*)
+DELEGATE2       (bool        , ToolSculpt, initializeDraglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
+DELEGATE2       (bool        , ToolSculpt, draglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
 DELEGATE        (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST  (void        , ToolSculpt, runRender)
-DELEGATE1       (ToolResponse, ToolSculpt, runMouseMoveEvent, const QMouseEvent&)
-DELEGATE1       (ToolResponse, ToolSculpt, runMousePressEvent, const QMouseEvent&)
-DELEGATE1       (ToolResponse, ToolSculpt, runMouseReleaseEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse, ToolSculpt, runPointingEvent, const ViewPointingEvent&)
 DELEGATE1       (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
 DELEGATE        (void        , ToolSculpt, runFromConfig)

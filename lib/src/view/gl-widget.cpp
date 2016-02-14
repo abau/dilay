@@ -15,6 +15,7 @@
 #include "view/axis.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
+#include "view/pointing-event.hpp"
 #include "view/util.hpp"
 
 struct ViewGlWidget::Impl {
@@ -99,28 +100,30 @@ struct ViewGlWidget::Impl {
     this->state ().camera ().updateResolution (glm::uvec2 (w,h));
   }
 
+  void pointingEvent (const ViewPointingEvent& e) {
+    if (e.valid ()) {
+      if (e.secondaryButton () && e.moveEvent ()) {
+        this->toolMoveCamera.moveEvent (this->state (), e);
+      }
+      else if (e.secondaryButton () && e.pressEvent ()) {
+        this->toolMoveCamera.pressEvent (this->state (), e);
+      }
+      else if (this->state ().hasTool ()) {
+        this->state ().handleToolResponse (this->state ().tool ().pointingEvent (e));
+      }
+    }
+  }
+
   void mouseMoveEvent (QMouseEvent* e) {
-    if (e->buttons () == Qt::MiddleButton) {
-      this->toolMoveCamera.mouseMoveEvent (this->state (), *e);
-    }
-    else if (this->state ().hasTool ()) {
-      this->state ().handleToolResponse (this->state ().tool ().mouseMoveEvent (*e));
-    }
+    this->pointingEvent (ViewPointingEvent (*e));
   }
 
   void mousePressEvent (QMouseEvent* e) {
-    if (e->button () == Qt::MiddleButton) {
-      this->toolMoveCamera.mousePressEvent (this->state (), *e);
-    }
-    else if (this->state ().hasTool ()) {
-      this->state ().handleToolResponse (this->state ().tool ().mousePressEvent (*e));
-    }
+    this->pointingEvent (ViewPointingEvent (*e));
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    if (this->state ().hasTool ()) {
-      this->state ().handleToolResponse (this->state ().tool ().mouseReleaseEvent (*e));
-    }
+    this->pointingEvent (ViewPointingEvent (*e));
   }
 
   void wheelEvent (QWheelEvent* e) {

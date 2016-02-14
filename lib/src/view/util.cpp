@@ -9,7 +9,6 @@
 #include <QIntValidator>
 #include <QLineEdit>
 #include <QMessageBox>
-#include <QMouseEvent>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSlider>
@@ -135,16 +134,8 @@ glm::uvec2 ViewUtil :: toUVec2 (const QPoint& p) {
   return glm::uvec2 (p.x (), p.y ());
 }
 
-glm::uvec2 ViewUtil :: toUVec2 (const QMouseEvent& e) {
-  return ViewUtil::toUVec2 (e.pos ());
-}
-
 glm::ivec2 ViewUtil :: toIVec2 (const QPoint& p) {
   return glm::ivec2 (p.x (), p.y ());
-}
-
-glm::ivec2 ViewUtil :: toIVec2 (const QMouseEvent& e) {
-  return ViewUtil::toIVec2 (e.pos ());
 }
 
 void ViewUtil :: connect (const QSpinBox& s, const std::function <void (int)>& f) {

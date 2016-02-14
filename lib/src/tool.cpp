@@ -19,8 +19,8 @@
 #include "view/gl-widget.hpp"
 #include "view/main-widget.hpp"
 #include "view/main-window.hpp"
+#include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
-#include "view/util.hpp"
 #include "winged/mesh.hpp"
 
 struct Tool::Impl {
@@ -52,17 +52,12 @@ struct Tool::Impl {
     }
   }
 
-  ToolResponse mouseMoveEvent (const QMouseEvent& e) { 
-    return this->self->runMouseMoveEvent (e);
-  }
+  ToolResponse pointingEvent (const ViewPointingEvent& e) {
+    ToolResponse response = this->self->runPointingEvent (e);
 
-  ToolResponse mousePressEvent (const QMouseEvent& e) {
-    return this->self->runMousePressEvent (e);
-  }
-
-  ToolResponse mouseReleaseEvent (const QMouseEvent& e) {
-    ToolResponse response = this->self->runMouseReleaseEvent (e);
-    this->state.scene ().sanitizeMeshes ();
+    if (e.releaseEvent ()) {
+      this->state.scene ().sanitizeMeshes ();
+    }
     return response;
   }
 
@@ -121,10 +116,10 @@ struct Tool::Impl {
     this->state.history ().snapshotSketchMeshes (this->state.scene ());
   }
 
-  bool intersectsRecentOctree (const QMouseEvent& e, Intersection& intersection) const {
+  bool intersectsRecentOctree (const ViewPointingEvent& e, Intersection& intersection) const {
     assert (this->state.history ().hasRecentOctrees ());
 
-    const PrimRay ray = this->state.camera ().ray (ViewUtil::toIVec2 (e));
+    const PrimRay ray = this->state.camera ().ray (e.ivec2 ());
 
     this->state.history ().forEachRecentOctree (
       [&ray, &intersection] (const Mesh& mesh, const IndexOctree& octree) {
@@ -199,18 +194,28 @@ struct Tool::Impl {
   }
 
   template <typename T, typename ... Ts>
-  bool intersectsScene (const QMouseEvent& e, T& intersection, Ts ... args) {
-    return this->intersectsScene ( ViewUtil::toIVec2 (e), intersection 
-                                 , std::forward <Ts> (args) ... );
+  bool intersectsScene (const ViewPointingEvent& e, T& intersection, Ts ... args) {
+    return this->intersectsScene (e.ivec2 (), intersection, std::forward <Ts> (args) ...);
+  }
+
+  ToolResponse runPointingEvent (const ViewPointingEvent& e) {
+    if (e.pressEvent ()) {
+      return this->self->runPressEvent (e);
+    }
+    else if (e.moveEvent ()) {
+      return this->self->runMoveEvent (e);
+    }
+    else if (e.releaseEvent ()) {
+      return this->self->runReleaseEvent (e);
+    }
+    return ToolResponse::None;
   }
 };
 
 DELEGATE2_BIG3_SELF (Tool, State&, const char*)
 DELEGATE        (ToolResponse    , Tool, initialize)
 DELEGATE_CONST  (void            , Tool, render)
-DELEGATE1       (ToolResponse    , Tool, mouseMoveEvent, const QMouseEvent&)
-DELEGATE1       (ToolResponse    , Tool, mousePressEvent, const QMouseEvent&)
-DELEGATE1       (ToolResponse    , Tool, mouseReleaseEvent, const QMouseEvent&)
+DELEGATE1       (ToolResponse    , Tool, pointingEvent, const ViewPointingEvent&)
 DELEGATE1       (ToolResponse    , Tool, wheelEvent, const QWheelEvent&)
 DELEGATE        (void            , Tool, close)
 DELEGATE        (void            , Tool, fromConfig)
@@ -225,7 +230,7 @@ DELEGATE_CONST  (glm::ivec2      , Tool, cursorPosition)
 DELEGATE        (void            , Tool, snapshotAll)
 DELEGATE        (void            , Tool, snapshotWingedMeshes)
 DELEGATE        (void            , Tool, snapshotSketchMeshes)
-DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const QMouseEvent&, Intersection&)
+DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const ViewPointingEvent&, Intersection&)
 DELEGATE_CONST  (bool            , Tool, hasMirror)
 DELEGATE_CONST  (const Mirror&   , Tool, mirror)
 DELEGATE1       (void            , Tool, mirror, bool)
@@ -233,6 +238,7 @@ SETTER          (bool            , Tool, renderMirror)
 DELEGATE_CONST  (const Dimension*, Tool, mirrorDimension)
 DELEGATE        (void            , Tool, mirrorWingedMeshes)
 DELEGATE        (void            , Tool, mirrorSketchMeshes)
+DELEGATE1       (ToolResponse    , Tool, runPointingEvent, const ViewPointingEvent&)
 
 template <typename T, typename ... Ts>
 bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {
@@ -240,21 +246,21 @@ bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... arg
 }
 
 template <typename T, typename ... Ts>
-bool Tool :: intersectsScene (const QMouseEvent& e, T& intersection, Ts ... args) {
+bool Tool :: intersectsScene (const ViewPointingEvent& e, T& intersection, Ts ... args) {
   return this->impl->intersectsScene (e, intersection, std::forward <Ts> (args) ...);
 }
 
 template bool Tool :: intersectsScene (const glm::ivec2&, WingedFaceIntersection&);
-template bool Tool :: intersectsScene (const QMouseEvent&, WingedFaceIntersection&);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, WingedFaceIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchNodeIntersection&);
-template bool Tool :: intersectsScene (const QMouseEvent&, SketchNodeIntersection&);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchNodeIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchBoneIntersection&);
-template bool Tool :: intersectsScene (const QMouseEvent&, SketchBoneIntersection&);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchBoneIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchMeshIntersection&);
-template bool Tool :: intersectsScene (const QMouseEvent&, SketchMeshIntersection&);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchMeshIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchMeshIntersection&, unsigned int);
-template bool Tool :: intersectsScene (const QMouseEvent&, SketchMeshIntersection&, unsigned int);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchMeshIntersection&, unsigned int);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchPathIntersection&);
-template bool Tool :: intersectsScene (const QMouseEvent&, SketchPathIntersection&);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchPathIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, Intersection&);
-template bool Tool :: intersectsScene (const QMouseEvent&, Intersection&);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, Intersection&);

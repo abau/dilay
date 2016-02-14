@@ -2,10 +2,11 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QMouseEvent>
+#include <QObject>
 #include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"
+#include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
 #include "winged/face-intersection.hpp"
 
@@ -20,8 +21,8 @@ struct ToolDeleteMesh::Impl {
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton ()) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         Scene& scene = this->self->state ().scene ();
@@ -34,5 +35,5 @@ struct ToolDeleteMesh::Impl {
   }
 };
 
-DELEGATE_TOOL                         (ToolDeleteMesh)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolDeleteMesh)
+DELEGATE_TOOL                   (ToolDeleteMesh)
+DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolDeleteMesh)

@@ -5,8 +5,8 @@
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QFrame>
-#include <QMouseEvent>
 #include <QPushButton>
+#include <QWheelEvent>
 #include "cache.hpp"
 #include "camera.hpp"
 #include "config.hpp"
@@ -24,6 +24,7 @@
 #include "util.hpp"
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -158,13 +159,13 @@ struct ToolSketchSpheres::Impl {
     }
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
+  ToolResponse runMoveEvent (const ViewPointingEvent& e) {
     auto minDistance = [this] (const Intersection& intersection) -> bool {
       const float d = this->radiusEdit.doubleValue () * this->stepWidthFactor;
       return glm::distance (this->previousPosition, intersection.position ()) > d;
     };
 
-    if (e.buttons () == Qt::LeftButton) {
+    if (e.primaryButton ()) {
       if (e.modifiers () == Qt::ShiftModifier) {
         SketchPathIntersection intersection;
 
@@ -192,7 +193,7 @@ struct ToolSketchSpheres::Impl {
 
         if (this->self->intersectsScene (e, intersection, numExcludedLastPaths) == false) {
           const Camera&   camera = this->self->state ().camera ();
-          const PrimRay   ray    = camera.ray (ViewUtil::toIVec2 (e));
+          const PrimRay   ray    = camera.ray (e.ivec2 ());
           const PrimPlane plane  = PrimPlane ( this->previousPosition
                                              , DimensionUtil::vector (camera.primaryDimension ()) );
           float t;
@@ -226,7 +227,7 @@ struct ToolSketchSpheres::Impl {
     return ToolResponse::Redraw;
   }
 
-  ToolResponse runMousePressEvent (const QMouseEvent& e) {
+  ToolResponse runPressEvent (const ViewPointingEvent& e) {
     auto setupOnIntersection = [this] (const SketchMeshIntersection& intersection) {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
@@ -237,7 +238,7 @@ struct ToolSketchSpheres::Impl {
       this->previousPosition = intersection.position ();
     };
 
-    if (e.button () == Qt::LeftButton) {
+    if (e.primaryButton ()) {
       if (e.modifiers () == Qt::ShiftModifier) {
         SketchPathIntersection intersection;
         if (this->self->intersectsScene (e, intersection)) {
@@ -273,7 +274,7 @@ struct ToolSketchSpheres::Impl {
     }
   }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent&) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent&) {
     this->mesh = nullptr;
     return ToolResponse::None;
   }
@@ -300,11 +301,11 @@ struct ToolSketchSpheres::Impl {
   }
 };
 
-DELEGATE_TOOL                         (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_INITIALIZE          (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_RENDER              (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT   (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT   (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_FROM_CONFIG         (ToolSketchSpheres)
+DELEGATE_TOOL                       (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_INITIALIZE        (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_RENDER            (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_MOVE_EVENT        (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_PRESS_EVENT       (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_RELEASE_EVENT     (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_FROM_CONFIG       (ToolSketchSpheres)

@@ -2,7 +2,7 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QMouseEvent>
+#include <QObject>
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -10,6 +10,7 @@
 #include "view/tool-tip.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/node-intersection.hpp"
+#include "view/pointing-event.hpp"
 
 struct ToolRebalanceSketch::Impl {
   ToolRebalanceSketch* self;
@@ -27,8 +28,8 @@ struct ToolRebalanceSketch::Impl {
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton ()) {
       SketchNodeIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         this->self->snapshotSketchMeshes ();
@@ -44,6 +45,6 @@ struct ToolRebalanceSketch::Impl {
   }
 };
 
-DELEGATE_TOOL                         (ToolRebalanceSketch)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolRebalanceSketch)
-DELEGATE_TOOL_RUN_CLOSE               (ToolRebalanceSketch)
+DELEGATE_TOOL                   (ToolRebalanceSketch)
+DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRebalanceSketch)
+DELEGATE_TOOL_RUN_CLOSE         (ToolRebalanceSketch)

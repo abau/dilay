@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
-#include <QMouseEvent>
 #include "action/sculpt.hpp"
 #include "cache.hpp"
 #include "mesh.hpp"
@@ -14,6 +13,7 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
@@ -89,8 +89,8 @@ struct ToolConvertSketch::Impl {
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton ()) {
       SketchMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         SketchMesh& sMesh = intersection.mesh ();
@@ -121,5 +121,5 @@ struct ToolConvertSketch::Impl {
   }
 };
 
-DELEGATE_TOOL                         (ToolConvertSketch)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolConvertSketch)
+DELEGATE_TOOL                   (ToolConvertSketch)
+DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolConvertSketch)

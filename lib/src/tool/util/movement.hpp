@@ -10,7 +10,7 @@
 #include "macro.hpp"
 
 class Camera;
-class QMouseEvent;
+class ViewPointingEvent;
 class ViewTwoColumnGrid;
 
 enum class MovementConstraint { XAxis, YAxis, ZAxis
@@ -27,7 +27,7 @@ class ToolUtilMovement {
           glm::vec3    delta         () const;
     const glm::vec3&   position      () const;
           void         position      (const glm::vec3&);
-          bool         move          (const QMouseEvent&, bool);
+          bool         move          (const ViewPointingEvent&, bool);
           void         resetPosition (const glm::vec3&);
           void         addProperties (ViewTwoColumnGrid&, const std::function <void ()>&);
 

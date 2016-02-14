@@ -2,12 +2,12 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QMouseEvent>
 #include <glm/glm.hpp>
 #include "cache.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
+#include "view/pointing-event.hpp"
 #include "view/properties.hpp"
 #include "view/tool-tip.hpp"
 #include "winged/mesh.hpp"
@@ -49,8 +49,8 @@ struct ToolMoveMesh::Impl {
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMouseMoveEvent (const QMouseEvent& e) {
-    if (e.buttons () == Qt::LeftButton && this->mesh && this->movement.move (e, true)) {
+  ToolResponse runMoveEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton () && this->mesh && this->movement.move (e, true)) {
       this->mesh->translate  (this->movement.delta ());
       return ToolResponse::Redraw;
     }
@@ -59,8 +59,8 @@ struct ToolMoveMesh::Impl {
     }
   }
 
-  ToolResponse runMousePressEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton) {
+  ToolResponse runPressEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton ()) {
       WingedFaceIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         this->mesh = &intersection.mesh ();
@@ -72,8 +72,8 @@ struct ToolMoveMesh::Impl {
     return ToolResponse::None;
   }
 
-  ToolResponse runMouseReleaseEvent (const QMouseEvent& e) {
-    if (e.button () == Qt::LeftButton && this->mesh) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
+    if (e.primaryButton () && this->mesh) {
       this->mesh->normalize  ();
       this->mesh->bufferData ();
       this->mesh = nullptr;
@@ -82,7 +82,7 @@ struct ToolMoveMesh::Impl {
   }
 };
 
-DELEGATE_TOOL                         (ToolMoveMesh)
-DELEGATE_TOOL_RUN_MOUSE_MOVE_EVENT    (ToolMoveMesh)
-DELEGATE_TOOL_RUN_MOUSE_PRESS_EVENT   (ToolMoveMesh)
-DELEGATE_TOOL_RUN_MOUSE_RELEASE_EVENT (ToolMoveMesh)
+DELEGATE_TOOL                   (ToolMoveMesh)
+DELEGATE_TOOL_RUN_MOVE_EVENT    (ToolMoveMesh)
+DELEGATE_TOOL_RUN_PRESS_EVENT   (ToolMoveMesh)
+DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolMoveMesh)

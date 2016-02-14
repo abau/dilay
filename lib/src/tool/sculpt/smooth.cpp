@@ -50,11 +50,7 @@ struct ToolSculptSmooth::Impl {
     this->self->addDefaultToolTip (toolTip, false);
   }
 
-  void runSculptMouseMoveEvent (const QMouseEvent& e) {
-    this->self->carvelikeStroke (e, false);
-  }
-
-  bool runSculptMousePressEvent (const QMouseEvent& e) {
+  bool runSculptPointingEvent (const ViewPointingEvent& e) {
     return this->self->carvelikeStroke (e, false);
   }
 };

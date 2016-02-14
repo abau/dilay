@@ -21,43 +21,39 @@ class ToolSculpt : public Tool {
     ViewCursor&  cursor                   ();
     void         addDefaultToolTip        (ViewToolTip&, bool) const;
     void         sculpt                   ();
-    bool         carvelikeStroke          ( const QMouseEvent&, bool
+    bool         carvelikeStroke          ( const ViewPointingEvent&, bool
                                           , const std::function <void ()>* = nullptr );
-    bool         initializeDraglikeStroke (const QMouseEvent&, ToolUtilMovement&);
-    bool         draglikeStroke           (const QMouseEvent&, ToolUtilMovement&);
+    bool         initializeDraglikeStroke (const ViewPointingEvent&, ToolUtilMovement&);
+    bool         draglikeStroke           (const ViewPointingEvent&, ToolUtilMovement&);
 
   private:
     IMPLEMENTATION
 
-    ToolResponse runInitialize        ();
-    void         runRender            () const;
-    ToolResponse runMouseMoveEvent    (const QMouseEvent&);
-    ToolResponse runMousePressEvent   (const QMouseEvent&);
-    ToolResponse runMouseReleaseEvent (const QMouseEvent&);
-    ToolResponse runWheelEvent        (const QWheelEvent&);
-    void         runFromConfig        ();
+    ToolResponse runInitialize    ();
+    void         runRender        () const;
+    ToolResponse runPointingEvent (const ViewPointingEvent&);
+    ToolResponse runWheelEvent    (const QWheelEvent&);
+    void         runFromConfig    ();
 
-    virtual const char* key                      () const = 0;
-    virtual void        runSetupBrush            (SculptBrush&) = 0;
-    virtual void        runSetupCursor           (ViewCursor&) = 0;
-    virtual void        runSetupProperties       (ViewTwoColumnGrid&) = 0;
-    virtual void        runSetupToolTip          (ViewToolTip&) = 0;
-    virtual void        runSculptMouseMoveEvent  (const QMouseEvent&) = 0;
-    virtual bool        runSculptMousePressEvent (const QMouseEvent&) = 0;
+    virtual const char* key                    () const = 0;
+    virtual void        runSetupBrush          (SculptBrush&) = 0;
+    virtual void        runSetupCursor         (ViewCursor&) = 0;
+    virtual void        runSetupProperties     (ViewTwoColumnGrid&) = 0;
+    virtual void        runSetupToolTip        (ViewToolTip&) = 0;
+    virtual bool        runSculptPointingEvent (const ViewPointingEvent&) = 0;
 };
 
-#define DECLARE_TOOL_SCULPT(name,theKey)                                             \
-  class name : public ToolSculpt { public:                                           \
-    DECLARE_BIG2 (name, State&)                                                      \
-    private:                                                                         \
-      IMPLEMENTATION                                                                 \
-      const char* key                      () const { return theKey ; }              \
-      void        runSetupBrush            (SculptBrush&);                           \
-      void        runSetupCursor           (ViewCursor&);                            \
-      void        runSetupProperties       (ViewTwoColumnGrid&);                     \
-      void        runSetupToolTip          (ViewToolTip&);                           \
-      void        runSculptMouseMoveEvent  (const QMouseEvent&);                     \
-      bool        runSculptMousePressEvent (const QMouseEvent&);                     \
+#define DECLARE_TOOL_SCULPT(name,theKey)                                           \
+  class name : public ToolSculpt { public:                                         \
+    DECLARE_BIG2 (name, State&)                                                    \
+    private:                                                                       \
+      IMPLEMENTATION                                                               \
+      const char* key                    () const { return theKey ; }              \
+      void        runSetupBrush          (SculptBrush&);                           \
+      void        runSetupCursor         (ViewCursor&);                            \
+      void        runSetupProperties     (ViewTwoColumnGrid&);                     \
+      void        runSetupToolTip        (ViewToolTip&);                           \
+      bool        runSculptPointingEvent (const ViewPointingEvent&);               \
   };
 
 #define DELEGATE_TOOL_SCULPT(name)                                                   \
@@ -66,7 +62,6 @@ class ToolSculpt : public Tool {
   DELEGATE1 (void, name, runSetupCursor, ViewCursor&);                               \
   DELEGATE1 (void, name, runSetupProperties, ViewTwoColumnGrid&);                    \
   DELEGATE1 (void, name, runSetupToolTip, ViewToolTip&);                             \
-  DELEGATE1 (void, name, runSculptMouseMoveEvent, const QMouseEvent&)                \
-  DELEGATE1 (bool, name, runSculptMousePressEvent, const QMouseEvent&)
+  DELEGATE1 (bool, name, runSculptPointingEvent, const ViewPointingEvent&)
 
 #endif
