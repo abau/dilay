@@ -2,6 +2,7 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QGuiApplication>
 #include <QMouseEvent>
 #include <QTabletEvent>
 #include "view/pointing-event.hpp"
@@ -20,7 +21,7 @@ ViewPointingEvent :: ViewPointingEvent (const QMouseEvent& event)
 {}
 
 ViewPointingEvent :: ViewPointingEvent (const QTabletEvent& event)
-  : _modifiers       (event.modifiers ())
+  : _modifiers       (QGuiApplication::queryKeyboardModifiers ())
   , _pressEvent      (event.type () == QEvent::TabletPress)
   , _moveEvent       (event.type () == QEvent::TabletMove)
   , _releaseEvent    (event.type () == QEvent::TabletRelease)

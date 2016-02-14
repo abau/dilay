@@ -29,6 +29,7 @@ struct ViewGlWidget::Impl {
   ToolMoveCamera  toolMoveCamera;
   AxisPtr         axis;
   StatePtr       _state;
+  bool            tabletPressed;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
     : self           (s)
@@ -38,6 +39,7 @@ struct ViewGlWidget::Impl {
     , toolMoveCamera (cfg)
     , axis           (nullptr)
     ,_state          (nullptr)
+    , tabletPressed  (false)
   {
     this->self->setAutoFillBackground (false);
   }
@@ -115,15 +117,21 @@ struct ViewGlWidget::Impl {
   }
 
   void mouseMoveEvent (QMouseEvent* e) {
-    this->pointingEvent (ViewPointingEvent (*e));
+    if (this->tabletPressed == false) {
+      this->pointingEvent (ViewPointingEvent (*e));
+    }
   }
 
   void mousePressEvent (QMouseEvent* e) {
-    this->pointingEvent (ViewPointingEvent (*e));
+    if (this->tabletPressed == false) {
+      this->pointingEvent (ViewPointingEvent (*e));
+    }
   }
 
   void mouseReleaseEvent (QMouseEvent* e) {
-    this->pointingEvent (ViewPointingEvent (*e));
+    if (this->tabletPressed == false) {
+      this->pointingEvent (ViewPointingEvent (*e));
+    }
   }
 
   void wheelEvent (QWheelEvent* e) {
@@ -136,7 +144,15 @@ struct ViewGlWidget::Impl {
   }
 
   void tabletEvent (QTabletEvent* e) {
-    this->pointingEvent (ViewPointingEvent (*e));
+    const ViewPointingEvent pointingEvent (*e);
+
+    if (pointingEvent.pressEvent ()) {
+      this->tabletPressed = true;
+    }
+    else if (pointingEvent.releaseEvent ()) {
+      this->tabletPressed = false;
+    }
+    this->pointingEvent (pointingEvent);
   }
 };
 
