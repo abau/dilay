@@ -51,7 +51,7 @@ struct Camera::Impl {
     return glm::colMajor4 ( glm::vec4 (x, 0.0f)
                           , glm::vec4 (y, 0.0f)
                           , glm::vec4 (z, 0.0f)
-                          , glm::vec4 (p, 1.0f));
+                          , glm::vec4 (p, 1.0f) );
   }
 
   void updateResolution (const glm::uvec2& dimension) {
@@ -138,10 +138,9 @@ struct Camera::Impl {
 
   void updateProjection () {
     OpenGL::glViewport (0, 0, this->resolution.x, this->resolution.y);
-    this->projection = glm::perspective ( 
-        this->fieldOfView
-      , float (this->resolution.x) / float (this->resolution.y)
-      , this->nearClipping, this->farClipping);
+    this->projection = glm::perspective ( this->fieldOfView
+                                        , float (this->resolution.x) / float (this->resolution.y)
+                                        , this->nearClipping, this->farClipping );
   }
 
   void updateView () {
