@@ -31,6 +31,7 @@ void Config :: restoreDefaults () {
   this->set ("editor/camera/rotation-factor", 1.0f);
   this->set ("editor/camera/movement-factor", 0.01f);
   this->set ("editor/camera/zoom-in-factor",  0.9f);
+  this->set ("editor/camera/field-of-view",   45.0f);
 
   this->set ("editor/light/light1/direction",  glm::vec3 (-0.2f, 1.0f, 0.2f));
   this->set ("editor/light/light1/color",      Color (1.0f, 1.0f, 1.0f));

@@ -121,6 +121,8 @@ namespace {
                  , Util::epsilon (), 100.f );
     addFloatEdit ( glWidget, *grid, "editor/camera/zoom-in-factor", QObject::tr ("Zoom factor")
                  , Util::epsilon (), 100.f );
+    addFloatEdit ( glWidget, *grid, "editor/camera/field-of-view", QObject::tr ("Field of view")
+                 , Util::epsilon (), 120.f );
 
     grid->addStretcher ();
 

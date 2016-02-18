@@ -26,6 +26,7 @@ struct Camera::Impl {
   glm::uvec2   resolution;
   float        nearClipping;
   float        farClipping;
+  float        fieldOfView;
 
   Impl (Camera* s, const Config& config) 
     : self         (s)
@@ -138,7 +139,7 @@ struct Camera::Impl {
   void updateProjection () {
     OpenGL::glViewport (0, 0, this->resolution.x, this->resolution.y);
     this->projection = glm::perspective ( 
-        glm::radians (45.0f)
+        this->fieldOfView
       , float (this->resolution.x) / float (this->resolution.y)
       , this->nearClipping, this->farClipping);
   }
@@ -167,6 +168,7 @@ struct Camera::Impl {
 
     this->nearClipping = config.get <float> ("editor/camera/near-clipping");
     this->farClipping  = config.get <float> ("editor/camera/far-clipping");
+    this->fieldOfView  = glm::radians (config.get <float> ("editor/camera/field-of-view"));
 
     this->updateProjection ();
   }
