@@ -170,6 +170,11 @@ struct ToolSculpt::Impl {
     return ToolResponse::Redraw;
   }
 
+  ToolResponse runCursorUpdate (const glm::ivec2& pos) {
+    this->updateBrushAndCursorByIntersection (pos, false, false);
+    return ToolResponse::Redraw;
+  }
+
   void runFromConfig () {
     const Config& config = this->self->config ();
 
@@ -197,19 +202,21 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool updateBrushAndCursorByIntersection (const ViewPointingEvent& e, bool useRecentOctree) {
+  bool updateBrushAndCursorByIntersection ( const glm::ivec2& pos, bool buttonPressed
+                                          , bool useRecentOctree )
+  {
     WingedFaceIntersection intersection;
 
-    if (this->self->intersectsScene (e, intersection)) {
+    if (this->self->intersectsScene (pos, intersection)) {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
 
-      if (e.primaryButton ()) {
+      if (buttonPressed) {
         this->brush.mesh (&intersection.mesh ());
 
         if (useRecentOctree) {
           Intersection octreeIntersection;
-          if (this->self->intersectsRecentOctree (e, octreeIntersection)) {
+          if (this->self->intersectsRecentOctree (pos, octreeIntersection)) {
             return this->brush.updatePointOfAction ( octreeIntersection.position ()
                                                    , octreeIntersection.normal () );
           }
@@ -231,6 +238,11 @@ struct ToolSculpt::Impl {
       this->cursor.disable ();
       return false;
     }
+  }
+
+  bool updateBrushAndCursorByIntersection (const ViewPointingEvent& e, bool useRecentOctree) {
+    return this->updateBrushAndCursorByIntersection ( e.ivec2 (), e.primaryButton ()
+                                                    , useRecentOctree );
   }
 
   bool carvelikeStroke ( const ViewPointingEvent& e, bool useRecentOctree
@@ -319,4 +331,5 @@ DELEGATE        (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST  (void        , ToolSculpt, runRender)
 DELEGATE1       (ToolResponse, ToolSculpt, runPointingEvent, const ViewPointingEvent&)
 DELEGATE1       (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
+DELEGATE1       (ToolResponse, ToolSculpt, runCursorUpdate, const glm::ivec2&)
 DELEGATE        (void        , ToolSculpt, runFromConfig)

@@ -106,9 +106,11 @@ struct ViewGlWidget::Impl {
     if (e.valid ()) {
       if (e.secondaryButton () && e.moveEvent ()) {
         this->toolMoveCamera.moveEvent (this->state (), e);
+        this->updateCursorInTool ();
       }
       else if (e.secondaryButton () && e.pressEvent ()) {
         this->toolMoveCamera.pressEvent (this->state (), e);
+        this->updateCursorInTool ();
       }
       else if (this->state ().hasTool ()) {
         this->state ().handleToolResponse (this->state ().tool ().pointingEvent (e));
@@ -137,6 +139,7 @@ struct ViewGlWidget::Impl {
   void wheelEvent (QWheelEvent* e) {
     if (e->modifiers () == Qt::NoModifier) {
       this->toolMoveCamera.wheelEvent (this->state (), *e);
+      this->updateCursorInTool ();
     }
     else if (this->state ().hasTool ()) {
       this->state ().handleToolResponse (this->state ().tool ().wheelEvent (*e));
@@ -153,6 +156,13 @@ struct ViewGlWidget::Impl {
       this->tabletPressed = false;
     }
     this->pointingEvent (pointingEvent);
+  }
+
+  void updateCursorInTool () {
+    if (this->state ().hasTool ()) {
+      this->state ().handleToolResponse (this->state ().tool ()
+                    .cursorUpdate (this->cursorPosition ()));
+    }
   }
 };
 

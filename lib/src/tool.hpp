@@ -33,6 +33,7 @@ class Tool {
     void             render                 () const;
     ToolResponse     pointingEvent          (const ViewPointingEvent&);
     ToolResponse     wheelEvent             (const QWheelEvent&);
+    ToolResponse     cursorUpdate           (const glm::ivec2&);
     void             close                  ();
     void             fromConfig             ();
 
@@ -48,7 +49,7 @@ class Tool {
     void             snapshotAll            ();
     void             snapshotWingedMeshes   ();
     void             snapshotSketchMeshes   ();
-    bool             intersectsRecentOctree (const ViewPointingEvent&, Intersection&) const;
+    bool             intersectsRecentOctree (const glm::ivec2&, Intersection&) const;
     bool             hasMirror              () const;
     const Mirror&    mirror                 () const;
     void             mirror                 (bool);
@@ -73,6 +74,7 @@ class Tool {
     virtual ToolResponse runMoveEvent     (const ViewPointingEvent&) { return ToolResponse::None; }
     virtual ToolResponse runReleaseEvent  (const ViewPointingEvent&) { return ToolResponse::None; }
     virtual ToolResponse runWheelEvent    (const QWheelEvent&)       { return ToolResponse::None; }
+    virtual ToolResponse runCursorUpdate  (const glm::ivec2&)        { return ToolResponse::None; }
     virtual void         runClose         ()                         {}
     virtual void         runFromConfig    ()                         {}
 };
@@ -92,6 +94,7 @@ class Tool {
 #define DECLARE_TOOL_RUN_MOVE_EVENT        ToolResponse runMoveEvent     (const ViewPointingEvent&);
 #define DECLARE_TOOL_RUN_RELEASE_EVENT     ToolResponse runReleaseEvent  (const ViewPointingEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT ToolResponse runWheelEvent    (const QWheelEvent&);
+#define DECLARE_TOOL_RUN_CURSOR_UPDATE     ToolResponse runCursorUpdate  (const glm::ivec2&);
 #define DECLARE_TOOL_RUN_CLOSE             void         runClose         ();
 #define DECLARE_TOOL_RUN_FROM_CONFIG       void         runFromConfig    ();
 
@@ -105,6 +108,7 @@ class Tool {
 #define DELEGATE_TOOL_RUN_MOVE_EVENT(n)        DELEGATE1      (ToolResponse, n, runMoveEvent, const ViewPointingEvent&)
 #define DELEGATE_TOOL_RUN_RELEASE_EVENT(n)     DELEGATE1      (ToolResponse, n, runReleaseEvent, const ViewPointingEvent&)
 #define DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT(n) DELEGATE1      (ToolResponse, n, runWheelEvent, const QWheelEvent&)
+#define DELEGATE_TOOL_RUN_CURSOR_UPDATE(n)     DELEGATE1      (ToolResponse, n, runCursorUpdate, const glm::ivec2&)
 #define DELEGATE_TOOL_RUN_CLOSE(n)             DELEGATE       (void        , n, runClose)
 #define DELEGATE_TOOL_RUN_FROM_CONFIG(n)       DELEGATE       (void        , n, runFromConfig)
 

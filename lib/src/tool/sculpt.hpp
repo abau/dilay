@@ -33,6 +33,7 @@ class ToolSculpt : public Tool {
     void         runRender        () const;
     ToolResponse runPointingEvent (const ViewPointingEvent&);
     ToolResponse runWheelEvent    (const QWheelEvent&);
+    ToolResponse runCursorUpdate  (const glm::ivec2&);
     void         runFromConfig    ();
 
     virtual const char* key                    () const = 0;

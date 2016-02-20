@@ -44,5 +44,6 @@ DECLARE_TOOL (ToolSketchSpheres, "sketch-spheres", DECLARE_TOOL_RUN_INITIALIZE
                                                    DECLARE_TOOL_RUN_PRESS_EVENT
                                                    DECLARE_TOOL_RUN_RELEASE_EVENT
                                                    DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT
+                                                   DECLARE_TOOL_RUN_CURSOR_UPDATE
                                                    DECLARE_TOOL_RUN_FROM_CONFIG )
 #endif

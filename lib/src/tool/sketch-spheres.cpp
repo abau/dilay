@@ -213,18 +213,11 @@ struct ToolSketchSpheres::Impl {
                                 , this->self->mirrorDimension () );
         }
       }
+      return ToolResponse::Redraw;
     }
     else {
-      SketchMeshIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
-        this->cursor.enable   ();
-        this->cursor.position (intersection.position ());
-      }
-      else {
-        this->cursor.disable ();
-      }
+      return this->runCursorUpdate (e.ivec2 ());
     }
-    return ToolResponse::Redraw;
   }
 
   ToolResponse runPressEvent (const ViewPointingEvent& e) {
@@ -293,6 +286,18 @@ struct ToolSketchSpheres::Impl {
     return ToolResponse::Redraw;
   }
 
+  ToolResponse runCursorUpdate (const glm::ivec2& pos) {
+    SketchMeshIntersection intersection;
+    if (this->self->intersectsScene (pos, intersection)) {
+      this->cursor.enable   ();
+      this->cursor.position (intersection.position ());
+    }
+    else {
+      this->cursor.disable ();
+    }
+    return ToolResponse::Redraw;
+  }
+
   void runFromConfig () {
     const Config& config = this->self->config ();
 
@@ -308,4 +313,5 @@ DELEGATE_TOOL_RUN_MOVE_EVENT        (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_PRESS_EVENT       (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_RELEASE_EVENT     (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_CURSOR_UPDATE     (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_FROM_CONFIG       (ToolSketchSpheres)

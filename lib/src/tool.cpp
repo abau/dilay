@@ -65,6 +65,10 @@ struct Tool::Impl {
     return this->self->runWheelEvent (e);
   }
 
+  ToolResponse cursorUpdate (const glm::ivec2& pos) {
+    return this->self->runCursorUpdate (pos);
+  }
+
   void close () { 
     return this->self->runClose (); 
   }
@@ -116,10 +120,10 @@ struct Tool::Impl {
     this->state.history ().snapshotSketchMeshes (this->state.scene ());
   }
 
-  bool intersectsRecentOctree (const ViewPointingEvent& e, Intersection& intersection) const {
+  bool intersectsRecentOctree (const glm::ivec2& pos, Intersection& intersection) const {
     assert (this->state.history ().hasRecentOctrees ());
 
-    const PrimRay ray = this->state.camera ().ray (e.ivec2 ());
+    const PrimRay ray = this->state.camera ().ray (pos);
 
     this->state.history ().forEachRecentOctree (
       [&ray, &intersection] (const Mesh& mesh, const IndexOctree& octree) {
@@ -217,6 +221,7 @@ DELEGATE        (ToolResponse    , Tool, initialize)
 DELEGATE_CONST  (void            , Tool, render)
 DELEGATE1       (ToolResponse    , Tool, pointingEvent, const ViewPointingEvent&)
 DELEGATE1       (ToolResponse    , Tool, wheelEvent, const QWheelEvent&)
+DELEGATE1       (ToolResponse    , Tool, cursorUpdate, const glm::ivec2&)
 DELEGATE        (void            , Tool, close)
 DELEGATE        (void            , Tool, fromConfig)
 GETTER_CONST    (State&          , Tool, state)
@@ -230,7 +235,7 @@ DELEGATE_CONST  (glm::ivec2      , Tool, cursorPosition)
 DELEGATE        (void            , Tool, snapshotAll)
 DELEGATE        (void            , Tool, snapshotWingedMeshes)
 DELEGATE        (void            , Tool, snapshotSketchMeshes)
-DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const ViewPointingEvent&, Intersection&)
+DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const glm::ivec2&, Intersection&)
 DELEGATE_CONST  (bool            , Tool, hasMirror)
 DELEGATE_CONST  (const Mirror&   , Tool, mirror)
 DELEGATE1       (void            , Tool, mirror, bool)
