@@ -197,18 +197,6 @@ struct ToolSculpt::Impl {
     }
   }
 
-  void updateCursorByIntersection (const ViewPointingEvent& e) {
-    WingedFaceIntersection intersection;
-
-    if (this->self->intersectsScene (e, intersection)) {
-      this->cursor.enable   ();
-      this->cursor.position (intersection.position ());
-    }
-    else {
-      this->cursor.disable ();
-    }
-  }
-
   bool updateBrushAndCursorByIntersection (const ViewPointingEvent& e, bool useRecentOctree) {
     WingedFaceIntersection intersection;
 
@@ -296,7 +284,7 @@ struct ToolSculpt::Impl {
 
   bool draglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement) {
     if (e.primaryButton () == false) {
-      this->updateCursorByIntersection (e);
+      this->updateBrushAndCursorByIntersection (e, false);
       return false;
     }
     else if (this->brush.hasPosition ()) {
