@@ -73,11 +73,11 @@ namespace {
     addColorButton (glWidget, *grid, "editor/background"          , QObject::tr ("Background"));
     addColorButton (glWidget, *grid, "editor/axis/color/normal"   , QObject::tr ("Axis"));
     addColorButton (glWidget, *grid, "editor/axis/color/label"    , QObject::tr ("Axis label"));
-    addColorButton (glWidget, *grid, "editor/mesh/color/normal"   , QObject::tr ("Mesh color"));
-    addColorButton (glWidget, *grid, "editor/mesh/color/wireframe", QObject::tr ("Wireframe color"));
-    addColorButton (glWidget, *grid, "editor/sketch/bubble/color" , QObject::tr ("Sketch color"));
-    addColorButton (glWidget, *grid, "editor/sketch/node/color"   , QObject::tr ("Sketch-node color"));
-    addColorButton (glWidget, *grid, "editor/sketch/sphere/color" , QObject::tr ("Sketch-sphere color"));
+    addColorButton (glWidget, *grid, "editor/mesh/color/normal"   , QObject::tr ("Mesh"));
+    addColorButton (glWidget, *grid, "editor/mesh/color/wireframe", QObject::tr ("Wireframe"));
+    addColorButton (glWidget, *grid, "editor/sketch/bubble/color" , QObject::tr ("Sketch"));
+    addColorButton (glWidget, *grid, "editor/sketch/node/color"   , QObject::tr ("Sketch-node"));
+    addColorButton (glWidget, *grid, "editor/sketch/sphere/color" , QObject::tr ("Sketch-sphere"));
 
     grid->addStretcher ();
 
