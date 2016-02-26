@@ -130,6 +130,12 @@ struct Camera::Impl {
                           , this->view, this->projection, this->viewport ());
   }
 
+  float toWorld (float length, float z) {
+    const float onNearPlane = 2.0f * this->nearClipping * glm::tan (this->fieldOfView * 0.5f)
+                            * length / float (this->resolution.x);
+    return onNearPlane * (this->nearClipping + z) / this->nearClipping;
+  }
+
   PrimRay ray (const glm::ivec2& p) const {
     const glm::vec3 w   = this->toWorld  (p);
     const glm::vec3 eye = this->position ();
@@ -195,6 +201,7 @@ DELEGATE1       (void       , Camera, verticalRotation, float)
 DELEGATE1       (void       , Camera, horizontalRotation, float) 
 DELEGATE3_CONST (glm::ivec2 , Camera, fromWorld, const glm::vec3&, const glm::mat4x4&, bool)
 DELEGATE2_CONST (glm::vec3  , Camera, toWorld, const glm::ivec2&, float)
+DELEGATE2_CONST (float      , Camera, toWorld, float, float)
 DELEGATE1_CONST (PrimRay    , Camera, ray, const glm::ivec2&)
 DELEGATE_CONST  (Dimension  , Camera, primaryDimension)
 DELEGATE1       (void       , Camera, runFromConfig, const Config&)

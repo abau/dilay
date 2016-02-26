@@ -8,6 +8,7 @@
 #include <QWheelEvent>
 #include "action/sculpt.hpp"
 #include "cache.hpp"
+#include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
 #include "mirror.hpp"
@@ -30,13 +31,17 @@ struct ToolSculpt::Impl {
   ViewCursor        cursor;
   CacheProxy        commonCache;
   ViewDoubleSlider& radiusEdit;
+  bool              absoluteRadius;
   bool              sculpted;
 
   Impl (ToolSculpt* s) 
-    : self        (s) 
-    , commonCache (this->self->cache ("sculpt"))
-    , radiusEdit  (ViewUtil::slider  (2, 0.01f, 0.01f, 2.0f, 3))
-    , sculpted    (false)
+    : self           (s)
+    , commonCache    (this->self->cache ("sculpt"))
+    , radiusEdit     (ViewUtil::slider  (2, 0.01f
+                                          , this->commonCache.get <float> ("radius", 0.1f)
+                                          , 1.0f, 3))
+    , absoluteRadius (this->commonCache.get <bool> ("absolute-radius", false))
+    , sculpted       (false)
   {}
 
   ToolResponse runInitialize () {
@@ -49,11 +54,14 @@ struct ToolSculpt::Impl {
   }
 
   void setupBrush () {
-    const CacheProxy& cCache = this->commonCache;
+    this->brush.subdivide (this->commonCache.get <bool> ("subdivide", true));
 
-    this->brush.radius    (cCache.get <float> ("radius"   , 0.2f));
-    this->brush.subdivide (cCache.get <bool>  ("subdivide", true));
-
+    if (this->absoluteRadius) {
+      this->setAbsoluteRadius ();
+    }
+    else {
+      this->setRelativeRadius ();
+    }
     this->self->runSetupBrush (this->brush);
   }
 
@@ -76,13 +84,31 @@ struct ToolSculpt::Impl {
   void setupProperties () {
     ViewTwoColumnGrid& properties = this->self->properties ().body ();
 
-    this->radiusEdit.setDoubleValue (this->brush.radius ());
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
-      this->brush.radius (r);
-      this->cursor.radius (r);
+      if (this->absoluteRadius) {
+        this->setAbsoluteRadius ();
+      }
+      else {
+        this->setRelativeRadius ();
+      }
       this->commonCache.set ("radius", r);
+      this->self->updateGlWidget ();
     });
     properties.addStacked (QObject::tr ("Radius"), this->radiusEdit);
+
+    QCheckBox& absRadiusEdit = ViewUtil::checkBox ( QObject::tr ("Absolute radius")
+                                                  , this->absoluteRadius );
+    ViewUtil::connect (absRadiusEdit, [this] (bool a) {
+      if (a) {
+        this->setAbsoluteRadius ();
+      }
+      else {
+        this->setRelativeRadius ();
+      }
+      this->commonCache.set ("absolute-radius", a);
+      this->self->updateGlWidget ();
+    });
+    properties.add (absRadiusEdit);
 
     QCheckBox& subdivEdit = ViewUtil::checkBox ( QObject::tr ("Subdivide")
                                                , this->brush.subdivide () );
@@ -211,6 +237,10 @@ struct ToolSculpt::Impl {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
 
+      if (this->absoluteRadius == false) {
+        this->setRelativeRadius (intersection.distance ());
+      }
+
       if (buttonPressed) {
         this->brush.mesh (&intersection.mesh ());
 
@@ -316,6 +346,30 @@ struct ToolSculpt::Impl {
     else {
       return false;
     }
+  }
+
+  void setRelativeRadius (float distance) {
+    const Camera& cam    = this->self->state ().camera ();
+    const float   factor = this->radiusEdit.doubleValue ();
+    const float   radius = cam.toWorld (float (cam.resolution ().x) * factor, distance);
+
+    this->absoluteRadius = false;
+    this->cursor.radius (radius);
+    this->brush.radius (radius);
+  }
+
+  void setRelativeRadius () {
+    this->setRelativeRadius (glm::distance ( this->cursor.position ()
+                                           , this->self->state ().camera ().position () ));
+  }
+
+  void setAbsoluteRadius () {
+    const float max    = this->self->config ().get <float> ("editor/tool/sculpt/max-absolute-radius");
+    const float factor = this->radiusEdit.doubleValue ();
+
+    this->absoluteRadius = true;
+    this->brush.radius (factor * max);
+    this->cursor.radius (factor * max);
   }
 };
 

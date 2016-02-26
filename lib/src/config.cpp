@@ -48,11 +48,12 @@ void Config :: restoreDefaults () {
   this->set ("editor/sketch/bubble/color", Color (0.5f, 0.5f, 0.7f));
   this->set ("editor/sketch/sphere/color", Color (0.7f, 0.7f, 0.9f));
 
-  this->set ("editor/tool/sculpt/detail-factor",     0.75f);
-  this->set ("editor/tool/sculpt/step-width-factor", 0.1f);
-  this->set ("editor/tool/sculpt/cursor-color",      Color (1.0f, 0.9f, 0.9f));
-  this->set ("editor/tool/sculpt/mirror/width",      0.02f);
-  this->set ("editor/tool/sculpt/mirror/color",      Color (0.8f, 0.8f, 0.8f));
+  this->set ("editor/tool/sculpt/detail-factor",       0.75f);
+  this->set ("editor/tool/sculpt/step-width-factor",   0.1f);
+  this->set ("editor/tool/sculpt/cursor-color",        Color (1.0f, 0.9f, 0.9f));
+  this->set ("editor/tool/sculpt/max-absolute-radius", 2.0f);
+  this->set ("editor/tool/sculpt/mirror/width",        0.02f);
+  this->set ("editor/tool/sculpt/mirror/color",        Color (0.8f, 0.8f, 0.8f));
 
   this->set ("editor/tool/sketch-spheres/cursor-color"     , Color (1.0f, 0.9f, 0.9f));
   this->set ("editor/tool/sketch-spheres/step-width-factor", 0.1f);

@@ -143,6 +143,8 @@ namespace {
                    , QObject::tr ("Step width factor"), Util::epsilon (), 1.0f );
     addColorButton ( glWidget, *gridSculpt, "editor/tool/sculpt/cursor-color"
                    , QObject::tr ("Cursor color") );
+    addFloatEdit   ( glWidget, *gridSculpt, "editor/tool/sculpt/max-absolute-radius"
+                   , QObject::tr ("Maximum absolute radius"), Util::epsilon (), 100.0f );
     addFloatEdit   ( glWidget, *gridSculpt, "editor/tool/sculpt/mirror/width"
                    , QObject::tr ("Mirror width"), Util::epsilon (), 1.0f );
     addColorButton ( glWidget, *gridSculpt, "editor/tool/sculpt/mirror/color"
