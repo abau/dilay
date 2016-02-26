@@ -22,7 +22,10 @@ struct ViewAxis::Impl {
   glm::uvec2   axisResolution;
   Color        axisColor;
   Color        axisLabelColor;
+  glm::vec3    axisScaling;
+  glm::vec3    axisArrowScaling;
   unsigned int gridResolution;
+
 
   Impl (const Config& config) {
     this->runFromConfig (config);
@@ -33,12 +36,10 @@ struct ViewAxis::Impl {
     this->coneMesh       = MeshUtil::cone     (10);
     this->cylinderMesh   = MeshUtil::cylinder (10);
 
-    this->cylinderMesh.scaling    (glm::vec3 (0.01f, 0.3f , 0.01f));
     this->cylinderMesh.renderMode ().constantShading (true);
     this->cylinderMesh.renderMode ().cameraRotationOnly (true);
     this->cylinderMesh.bufferData ();
 
-    this->coneMesh.scaling        (glm::vec3 (0.03f, 0.1f, 0.03f));
     this->coneMesh.renderMode     ().constantShading (true);
     this->coneMesh.renderMode     ().cameraRotationOnly (true);
     this->coneMesh.bufferData     ();
@@ -47,7 +48,7 @@ struct ViewAxis::Impl {
   }
 
   void initializeGrid () {
-    float gridSpace = 0.3f / float (gridResolution - 1);
+    float gridSpace = 1.0f / float (gridResolution - 1);
 
     for (unsigned int j = 0; j < gridResolution; j++) {
       for (unsigned int i = 0; i < gridResolution; i++) {
@@ -75,29 +76,33 @@ struct ViewAxis::Impl {
     const glm::uvec2  resolution = camera.resolution ();
     camera.updateResolution (glm::uvec2 (200,200));
 
-    this->cylinderMesh.position       (glm::vec3 (0.0f, 0.15f, 0.0f));
+    this->cylinderMesh.scaling        (this->axisScaling);
+
+    this->cylinderMesh.position       (glm::vec3 (0.0f, this->axisScaling.y * 0.5f, 0.0f));
     this->cylinderMesh.rotationMatrix (glm::mat4x4 (1.0f));
     this->cylinderMesh.color          (this->axisColor);
     this->cylinderMesh.render         (camera);
 
-    this->cylinderMesh.position       (glm::vec3 (0.15f, 0.0f, 0.0f));
+    this->cylinderMesh.position       (glm::vec3 (this->axisScaling.y * 0.5f, 0.0f, 0.0f));
     this->cylinderMesh.rotationZ      (0.5f * glm::pi<float> ());
     this->cylinderMesh.render         (camera);
 
-    this->cylinderMesh.position       (glm::vec3 (0.0f, 0.0f, 0.15f));
+    this->cylinderMesh.position       (glm::vec3 (0.0f, 0.0f, this->axisScaling.y * 0.5f));
     this->cylinderMesh.rotationX      (0.5f * glm::pi<float> ());
     this->cylinderMesh.render         (camera);
 
-    this->coneMesh.position           (glm::vec3 (0.0f, 0.3f, 0.0f));
+    this->coneMesh.scaling            (this->axisArrowScaling);
+
+    this->coneMesh.position           (glm::vec3 (0.0f, this->axisScaling.y, 0.0f));
     this->coneMesh.rotationMatrix     (glm::mat4x4 (1.0f));
     this->coneMesh.color              (this->axisColor);
     this->coneMesh.render             (camera);
 
-    this->coneMesh.position           (glm::vec3 (0.3f, 0.0f, 0.0f));
+    this->coneMesh.position           (glm::vec3 (this->axisScaling.y, 0.0f, 0.0f));
     this->coneMesh.rotationZ          (- 0.5f * glm::pi<float> ());
     this->coneMesh.render             (camera);
 
-    this->coneMesh.position           (glm::vec3 (0.0f, 0.0f, 0.3f));
+    this->coneMesh.position           (glm::vec3 (0.0f, 0.0f, this->axisScaling.y));
     this->coneMesh.rotationX          (0.5f * glm::pi<float> ());
     this->coneMesh.render             (camera);
 
@@ -118,6 +123,7 @@ struct ViewAxis::Impl {
         this->gridMesh.rotationMatrix (glm::mat4x4 (1.0f));
         break;
     }
+    this->gridMesh.scaling     (glm::vec3 (this->axisScaling.y));
     this->gridMesh.color       (this->axisColor);
     this->gridMesh.renderLines (camera);
   }
@@ -125,14 +131,16 @@ struct ViewAxis::Impl {
   void render (Camera& camera, QPainter& painter) {
     this->coneMesh.rotationMatrix (glm::mat4x4 (1.0f));
 
-    QFont        font       = this->makeFont ();
+    QFont font;
+    font.setWeight (QFont::Bold);
+
     QFontMetrics metrics (font); 
     int          w          = glm::max (metrics.maxWidth (), metrics.height ());
     glm::uvec2   resolution = camera.resolution ();
     camera.updateResolution (this->axisResolution);
 
-    auto f = [this, &resolution, &painter, w, &camera] 
-             (const glm::vec3& p, const QString& l) 
+    auto renderLabel = [this, &resolution, &painter, w, &camera] 
+                       (const glm::vec3& p, const QString& l) 
     {
       this->coneMesh.position (p);
 
@@ -149,22 +157,20 @@ struct ViewAxis::Impl {
     painter.setPen  (this->axisLabelColor.qColor ());
     painter.setFont (font);
 
-    f (glm::vec3 (0.35f, 0.0f , 0.0f ), "X");
-    f (glm::vec3 (0.0f , 0.35f, 0.0f ), "Y");
-    f (glm::vec3 (0.0f , 0.0f , 0.35f), "Z");
+    const float labelPosition = this->axisScaling.y + (this->axisArrowScaling.y * 0.5f);
+
+    renderLabel (glm::vec3 (labelPosition, 0.0f , 0.0f ), "X");
+    renderLabel (glm::vec3 (0.0f , labelPosition, 0.0f ), "Y");
+    renderLabel (glm::vec3 (0.0f , 0.0f , labelPosition), "Z");
 
     camera.updateResolution (resolution);
   }
 
-  QFont makeFont () {
-    QFont font;
-    font.setWeight (QFont::Bold);
-    return font;
-  }
-
   void runFromConfig (const Config& config) {
-    this->axisLabelColor = config.get <Color> ("editor/axis/color/label");
-    this->axisColor      = config.get <Color> ("editor/axis/color/normal");
+    this->axisLabelColor   = config.get <Color>     ("editor/axis/color/label");
+    this->axisColor        = config.get <Color>     ("editor/axis/color/normal");
+    this->axisScaling      = config.get <glm::vec3> ("editor/axis/scaling");
+    this->axisArrowScaling = config.get <glm::vec3> ("editor/axis/arrow-scaling");
   }
 };
 

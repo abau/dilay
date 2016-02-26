@@ -21,8 +21,10 @@ void Config :: restoreDefaults () {
 
   this->set ("version", latestVersion);
 
-  this->set ("editor/axis/color/normal", Color (0.3f, 0.3f, 0.4f));
-  this->set ("editor/axis/color/label",  Color (1.0f, 1.0f, 1.0f));
+  this->set ("editor/axis/color/normal",  Color (0.3f, 0.3f, 0.4f));
+  this->set ("editor/axis/color/label",   Color (1.0f, 1.0f, 1.0f));
+  this->set ("editor/axis/scaling",       glm::vec3 (0.01f, 0.3f , 0.01f));
+  this->set ("editor/axis/arrow-scaling", glm::vec3 (0.03f, 0.1f , 0.03f));
 
   this->set ("editor/background", Color (0.1f, 0.1f, 0.2f));
 

@@ -174,6 +174,8 @@ namespace {
                , 1, std::numeric_limits <int>::max () );
     addIntEdit ( glWidget, *grid, "window/initial-height", QObject::tr ("Initial window height")
                , 1, std::numeric_limits <int>::max () );
+    addVectorEdit (glWidget, *grid, "editor/axis/scaling", QObject::tr ("Axis scaling"));
+    addVectorEdit (glWidget, *grid, "editor/axis/arrow-scaling", QObject::tr ("Axis-arrow scaling"));
 
     grid->addStretcher ();
 
