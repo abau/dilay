@@ -92,6 +92,7 @@ SOURCES += \
            src/view/configuration.cpp \
            src/view/cursor.cpp \
            src/view/double-slider.cpp \
+           src/view/floor-plane.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
            src/view/main-widget.cpp \
@@ -191,6 +192,7 @@ HEADERS += \
            src/view/configuration.hpp \
            src/view/cursor.hpp \
            src/view/double-slider.hpp \
+           src/view/floor-plane.cpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
            src/view/main-widget.hpp \

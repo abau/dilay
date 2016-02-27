@@ -11,6 +11,7 @@
 #include "state.hpp"
 #include "tool/move-camera.hpp"
 #include "view/configuration.hpp"
+#include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
@@ -27,6 +28,18 @@ namespace {
     a->setShortcut (keySequence);
     menu.addAction (a);
     QObject::connect (a, &QAction::triggered, f);
+    return *a;
+  }
+
+  QAction& addCheckableAction ( QMenu& menu, const QString& label, const QKeySequence& keySequence
+                              , bool state, const std::function <void (bool)>& f )
+  {
+    QAction* a = new QAction (label, nullptr);
+    a->setShortcut (keySequence);
+    a->setCheckable (true);
+    a->setChecked  (state);
+    menu.addAction (a);
+    QObject::connect (a, &QAction::toggled, f);
     return *a;
   }
 
@@ -161,6 +174,12 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
             , [&mainWindow, &glWidget] ()
   {
     glWidget.state ().scene ().toggleShading ();
+    mainWindow.update ();
+  });
+  addCheckableAction ( viewMenu, QObject::tr ("Show &floor plane"), Qt::Key_F
+                     , false, [&mainWindow, &glWidget] (bool a)
+  {
+    glWidget.floorPlane ().isActive (a);
     mainWindow.update ();
   });
   addAction (helpMenu, QObject::tr ("&Manual..."), QKeySequence (), [&mainWindow] () {

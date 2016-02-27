@@ -73,6 +73,7 @@ namespace {
     addColorButton (glWidget, *grid, "editor/background"          , QObject::tr ("Background"));
     addColorButton (glWidget, *grid, "editor/axis/color/normal"   , QObject::tr ("Axis"));
     addColorButton (glWidget, *grid, "editor/axis/color/label"    , QObject::tr ("Axis label"));
+    addColorButton (glWidget, *grid, "editor/floor-plane/color"   , QObject::tr ("Floor-plane"));
     addColorButton (glWidget, *grid, "editor/mesh/color/normal"   , QObject::tr ("Mesh"));
     addColorButton (glWidget, *grid, "editor/mesh/color/wireframe", QObject::tr ("Wireframe"));
     addColorButton (glWidget, *grid, "editor/sketch/bubble/color" , QObject::tr ("Sketch"));
@@ -174,8 +175,12 @@ namespace {
                , 1, std::numeric_limits <int>::max () );
     addIntEdit ( glWidget, *grid, "window/initial-height", QObject::tr ("Initial window height")
                , 1, std::numeric_limits <int>::max () );
+
     addVectorEdit (glWidget, *grid, "editor/axis/scaling", QObject::tr ("Axis scaling"));
     addVectorEdit (glWidget, *grid, "editor/axis/arrow-scaling", QObject::tr ("Axis-arrow scaling"));
+
+    addFloatEdit ( glWidget, *grid, "editor/floor-plane/tile-width"
+                 , QObject::tr ("Floor-plane tile-width"), Util::epsilon (), 10.0f );
 
     grid->addStretcher ();
 

@@ -13,6 +13,7 @@ class Cache;
 class Config;
 class State;
 class ToolMoveCamera;
+class ViewFloorPlane;
 class ViewMainWindow;
 
 class ViewGlWidget : public QOpenGLWidget {
@@ -22,6 +23,7 @@ class ViewGlWidget : public QOpenGLWidget {
 
     ToolMoveCamera& toolMoveCamera ();
     State&          state          ();
+    ViewFloorPlane& floorPlane     ();
     glm::ivec2      cursorPosition ();
     void            fromConfig     ();
        

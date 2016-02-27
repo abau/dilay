@@ -13,22 +13,25 @@
 #include "tool.hpp"
 #include "tool/move-camera.hpp"
 #include "view/axis.hpp"
+#include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/util.hpp"
 
 struct ViewGlWidget::Impl {
-  typedef std::unique_ptr <State>    StatePtr;
-  typedef std::unique_ptr <ViewAxis> AxisPtr;
+  typedef std::unique_ptr <State>          StatePtr;
+  typedef std::unique_ptr <ViewAxis>       AxisPtr;
+  typedef std::unique_ptr <ViewFloorPlane> FloorPlanePtr;
 
   ViewGlWidget*   self;
   ViewMainWindow& mainWindow;
   Config&         config;
   Cache&          cache;
   ToolMoveCamera  toolMoveCamera;
-  AxisPtr         axis;
   StatePtr       _state;
+  AxisPtr         axis;
+  FloorPlanePtr  _floorPlane;
   bool            tabletPressed;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
@@ -37,8 +40,9 @@ struct ViewGlWidget::Impl {
     , config         (cfg)
     , cache          (cch)
     , toolMoveCamera (cfg)
-    , axis           (nullptr)
     ,_state          (nullptr)
+    , axis           (nullptr)
+    ,_floorPlane     (nullptr)
     , tabletPressed  (false)
   {
     this->self->setAutoFillBackground (false);
@@ -47,8 +51,9 @@ struct ViewGlWidget::Impl {
   ~Impl () {
     this->self->makeCurrent ();
 
-    this-> axis .reset (nullptr);
-    this->_state.reset (nullptr);
+    this->_state     .reset (nullptr);
+    this-> axis      .reset (nullptr);
+    this->_floorPlane.reset (nullptr);
 
     this->self->doneCurrent ();
   }
@@ -56,6 +61,11 @@ struct ViewGlWidget::Impl {
   State& state () {
     assert (this->_state);
     return *this->_state;
+  }
+
+  ViewFloorPlane& floorPlane () {
+    assert (this->_floorPlane);
+    return *this->_floorPlane;
   }
 
   glm::ivec2 cursorPosition () {
@@ -67,14 +77,19 @@ struct ViewGlWidget::Impl {
 
     this->state ().fromConfig ();
     this->axis->fromConfig (this->config);
+
+    this->floorPlane ().fromConfig (this->config);
+    this->floorPlane ().update (this->state ().camera ());
+
     this->toolMoveCamera.fromConfig (this->config);
   }
 
   void initializeGL () {
     OpenGL::initializeFunctions ();
 
-    this-> axis .reset (new ViewAxis (this->config));
-    this->_state.reset (new State (this->mainWindow, this->config, this->cache));
+    this->_state     .reset (new State (this->mainWindow, this->config, this->cache));
+    this-> axis      .reset (new ViewAxis (this->config));
+    this->_floorPlane.reset (new ViewFloorPlane (this->config, this->state ().camera ()));
 
     this->self->setMouseTracking (true);
   }
@@ -85,6 +100,7 @@ struct ViewGlWidget::Impl {
 
     this->state ().camera ().renderer ().setupRendering ();
     this->state ().scene  ().render (this->state ().camera ());
+    this->floorPlane ().render (this->state ().camera ());
 
     if (this->state ().hasTool ()) {
       this->state ().tool ().render ();
@@ -140,6 +156,7 @@ struct ViewGlWidget::Impl {
     if (e->modifiers () == Qt::NoModifier) {
       this->toolMoveCamera.wheelEvent (this->state (), *e);
       this->updateCursorInTool ();
+      this->floorPlane ().update (this->state ().camera ());
     }
     else if (this->state ().hasTool ()) {
       this->state ().handleToolResponse (this->state ().tool ().wheelEvent (*e));
@@ -169,6 +186,7 @@ struct ViewGlWidget::Impl {
 DELEGATE3_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 GETTER    (ToolMoveCamera&, ViewGlWidget, toolMoveCamera)
 DELEGATE  (State&         , ViewGlWidget, state)
+DELEGATE  (ViewFloorPlane&, ViewGlWidget, floorPlane)
 DELEGATE  (glm::ivec2     , ViewGlWidget, cursorPosition)
 DELEGATE  (void           , ViewGlWidget, fromConfig)
 DELEGATE  (void           , ViewGlWidget, initializeGL)
