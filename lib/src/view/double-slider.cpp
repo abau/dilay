@@ -3,6 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/glm.hpp>
+#include "../util.hpp"
 #include "view/double-slider.hpp"
 
 struct ViewDoubleSlider::Impl {
@@ -46,13 +47,12 @@ struct ViewDoubleSlider::Impl {
       return int (std::round (value * this->factor));
     }
     else {
-      const double min  = double (this->self->minimum ()) / this->factor;
-      const double max  = double (this->self->maximum ()) / this->factor;
-      const double norm = (value - min) / (max - min);
+      const double min   = double (this->self->minimum ()) / this->factor;
+      const double max   = double (this->self->maximum ()) / this->factor;
+      const double norm  = (value - min) / (max - min);
+      const double slope = norm <= Util::epsilon () ? 0.0f : glm::pow (norm, 1.0f / float (o));
 
-      return int (std::round ( this->factor 
-                             * (min + (glm::pow (norm, 1.0f / float (o)) * (max - min))) 
-                             ));
+      return int (std::round (this->factor * (min + (slope * (max - min)))));
     }
   }
 
