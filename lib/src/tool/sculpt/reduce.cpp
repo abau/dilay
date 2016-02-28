@@ -33,10 +33,12 @@ struct ToolSculptReduce::Impl {
       this->self->cache ().set ("intensity", i);
     });
     properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
+    this->self->registerSecondarySlider (intensityEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    this->self->addDefaultToolTip (toolTip, false);
+    this->self->addDefaultToolTip        (toolTip, false);
+    this->self->addSecSliderWheelToolTip (toolTip, QObject::tr ("Change intensity"));
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {

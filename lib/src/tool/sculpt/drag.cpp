@@ -45,6 +45,7 @@ struct ToolSculptDrag::Impl {
       this->self->cache ().set ("smoothness", f);
     });
     properties.addStacked (QObject::tr ("Smoothness"), smoothnessEdit);
+    this->self->registerSecondarySlider (smoothnessEdit);
 
     QCheckBox& primPlaneEdit = ViewUtil::checkBox 
       ( QObject::tr ("Along primary plane")
@@ -67,7 +68,8 @@ struct ToolSculptDrag::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    this->self->addDefaultToolTip (toolTip, false);
+    this->self->addDefaultToolTip        (toolTip, false);
+    this->self->addSecSliderWheelToolTip (toolTip, QObject::tr ("Change smoothness"));
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {

@@ -36,6 +36,7 @@ struct ToolSculptSmooth::Impl {
     });
     intensityEdit.setEnabled (!params.relaxOnly ());
     properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
+    this->self->registerSecondarySlider (intensityEdit);
 
     QCheckBox& relaxEdit = ViewUtil::checkBox (QObject::tr ("Relax only"), params.relaxOnly ());
     ViewUtil::connect (relaxEdit, [this,&params,&intensityEdit] (bool r) {
@@ -47,7 +48,8 @@ struct ToolSculptSmooth::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    this->self->addDefaultToolTip (toolTip, false);
+    this->self->addDefaultToolTip        (toolTip, false);
+    this->self->addSecSliderWheelToolTip (toolTip, QObject::tr ("Change intensity"));
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {

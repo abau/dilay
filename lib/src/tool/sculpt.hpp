@@ -7,9 +7,11 @@
 
 #include "tool.hpp"
 
+class QString;
 class SculptBrush;
 class ToolUtilMovement;
 class ViewCursor;
+class ViewDoubleSlider;
 class ViewTwoColumnGrid;
 
 class ToolSculpt : public Tool {
@@ -20,11 +22,13 @@ class ToolSculpt : public Tool {
     SculptBrush& brush                    ();
     ViewCursor&  cursor                   ();
     void         addDefaultToolTip        (ViewToolTip&, bool) const;
+    void         addSecSliderWheelToolTip (ViewToolTip&, const QString&) const;
     void         sculpt                   ();
     bool         carvelikeStroke          ( const ViewPointingEvent&, bool
                                           , const std::function <void ()>* = nullptr );
     bool         initializeDraglikeStroke (const ViewPointingEvent&, ToolUtilMovement&);
     bool         draglikeStroke           (const ViewPointingEvent&, ToolUtilMovement&);
+    void         registerSecondarySlider  (ViewDoubleSlider&);
 
   private:
     IMPLEMENTATION

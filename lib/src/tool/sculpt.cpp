@@ -31,17 +31,19 @@ struct ToolSculpt::Impl {
   ViewCursor        cursor;
   CacheProxy        commonCache;
   ViewDoubleSlider& radiusEdit;
+  ViewDoubleSlider* secondarySlider;
   bool              absoluteRadius;
   bool              sculpted;
 
   Impl (ToolSculpt* s) 
-    : self           (s)
-    , commonCache    (this->self->cache ("sculpt"))
-    , radiusEdit     (ViewUtil::slider  (2, 0.01f
-                                          , this->commonCache.get <float> ("radius", 0.1f)
-                                          , 1.0f, 3))
-    , absoluteRadius (this->commonCache.get <bool> ("absolute-radius", false))
-    , sculpted       (false)
+    : self            (s)
+    , commonCache     (this->self->cache ("sculpt"))
+    , radiusEdit      (ViewUtil::slider  (2, 0.01f
+                                           , this->commonCache.get <float> ("radius", 0.1f)
+                                           , 1.0f, 3))
+    , secondarySlider (nullptr)
+    , absoluteRadius  (this->commonCache.get <bool> ("absolute-radius", false))
+    , sculpted        (false)
   {}
 
   ToolResponse runInitialize () {
@@ -183,14 +185,21 @@ struct ToolSculpt::Impl {
   }
 
   ToolResponse runWheelEvent (const QWheelEvent& e) {
-    if (e.orientation () == Qt::Vertical && e.modifiers () == Qt::ShiftModifier) {
+    auto updateSlider = [&e] (ViewDoubleSlider& slider) {
       if (e.delta () > 0) {
-        this->radiusEdit.setIntValue ( this->radiusEdit.intValue ()
-                                     + this->radiusEdit.intSingleStep () );
+        slider.setIntValue (slider.intValue () + slider.intSingleStep ());
       }
       else if (e.delta () < 0) {
-        this->radiusEdit.setIntValue ( this->radiusEdit.intValue ()
-                                     - this->radiusEdit.intSingleStep () );
+        slider.setIntValue (slider.intValue () - slider.intSingleStep ());
+      }
+    };
+
+    if (e.orientation () == Qt::Vertical) {
+      if (e.modifiers () == Qt::ShiftModifier) {
+        updateSlider (this->radiusEdit);
+      }
+      else if (this->secondarySlider && e.modifiers () == Qt::ControlModifier) {
+        updateSlider (*this->secondarySlider);
       }
     }
     return ToolResponse::Redraw;
@@ -217,6 +226,10 @@ struct ToolSculpt::Impl {
       toolTip.add ( ViewToolTip::MouseEvent::Left
                   , ViewToolTip::Modifier::Shift, QObject::tr ("Drag to sculpt inverted"));
     }
+  }
+
+  void addSecSliderWheelToolTip (ViewToolTip& toolTip, const QString& label) {
+    toolTip.add (ViewToolTip::MouseEvent::Wheel, ViewToolTip::Modifier::Ctrl, label);
   }
 
   void sculpt () {
@@ -348,6 +361,10 @@ struct ToolSculpt::Impl {
     }
   }
 
+  void registerSecondarySlider (ViewDoubleSlider& slider) {
+    this->secondarySlider = &slider;
+  }
+
   void setRelativeRadius (float distance) {
     const Camera& cam    = this->self->state ().camera ();
     const float   factor = this->radiusEdit.doubleValue ();
@@ -377,10 +394,12 @@ DELEGATE_BIG2_BASE (ToolSculpt, (State& s, const char* k), (this), Tool, (s, k))
 GETTER          (SculptBrush&, ToolSculpt, brush)
 GETTER          (ViewCursor& , ToolSculpt, cursor)
 DELEGATE2_CONST (void        , ToolSculpt, addDefaultToolTip, ViewToolTip&, bool)
+DELEGATE2_CONST (void        , ToolSculpt, addSecSliderWheelToolTip, ViewToolTip&, const QString&)
 DELEGATE        (void        , ToolSculpt, sculpt)
 DELEGATE3       (bool        , ToolSculpt, carvelikeStroke, const ViewPointingEvent&, bool, const std::function <void ()>*)
 DELEGATE2       (bool        , ToolSculpt, initializeDraglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
 DELEGATE2       (bool        , ToolSculpt, draglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
+DELEGATE1       (void        , ToolSculpt, registerSecondarySlider, ViewDoubleSlider&)
 DELEGATE        (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST  (void        , ToolSculpt, runRender)
 DELEGATE1       (ToolResponse, ToolSculpt, runPointingEvent, const ViewPointingEvent&)

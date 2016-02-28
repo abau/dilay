@@ -34,6 +34,7 @@ struct ToolSculptCarve::Impl {
       this->self->cache ().set ("intensity", i);
     });
     properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
+    this->self->registerSecondarySlider (intensityEdit);
 
     QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), params.invert ());
     ViewUtil::connect (invertEdit, [this,&params] (bool i) {
@@ -51,7 +52,8 @@ struct ToolSculptCarve::Impl {
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
-    this->self->addDefaultToolTip (toolTip, true);
+    this->self->addDefaultToolTip        (toolTip, true);
+    this->self->addSecSliderWheelToolTip (toolTip, QObject::tr ("Change intensity"));
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {
