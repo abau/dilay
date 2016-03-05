@@ -3,6 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QPushButton>
+#include <QScrollArea>
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include "state.hpp"
@@ -28,16 +29,19 @@ struct ViewMainWidget :: Impl {
   }
 
   QWidget* initalizeLeftPane () {
+    QScrollArea* leftScrollArea = new QScrollArea;
     QWidget*     leftPane       = new QWidget;
     QVBoxLayout* leftPaneLayout = new QVBoxLayout;
 
+    leftScrollArea->setWidget          (leftPane);
+    leftScrollArea->setWidgetResizable (true);
     leftPane->setLayout (leftPaneLayout);
     leftPaneLayout->setSpacing (0);
     leftPaneLayout->addWidget  (this->initalizeToolPane ());
     leftPaneLayout->addWidget  (&this->properties);
     leftPaneLayout->addStretch (1);
 
-    return leftPane;
+    return leftScrollArea;
   }
 
   QWidget* initalizeToolPane () {
