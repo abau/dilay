@@ -42,7 +42,7 @@ struct ToolSculpt::Impl {
                                            , this->commonCache.get <float> ("radius", 0.1f)
                                            , 1.0f, 3))
     , secondarySlider (nullptr)
-    , absoluteRadius  (this->commonCache.get <bool> ("absolute-radius", false))
+    , absoluteRadius  (this->commonCache.get <bool> ("absolute-radius", true))
     , sculpted        (false)
   {}
 
