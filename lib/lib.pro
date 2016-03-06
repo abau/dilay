@@ -9,7 +9,6 @@ CONFIG      += staticlib
 SOURCES += \
            src/action/finalize.cpp \
            src/action/sculpt.cpp \
-           src/action/subdivide-mesh.cpp \
            src/adjacent-iterator.cpp \
            src/affected-faces.cpp \
            src/camera.cpp \
@@ -115,7 +114,6 @@ SOURCES += \
 HEADERS += \
            src/action/finalize.hpp \
            src/action/sculpt.hpp \
-           src/action/subdivide-mesh.hpp \
            src/adjacent-iterator.hpp \
            src/affected-faces.hpp \
            src/bitset.hpp \
