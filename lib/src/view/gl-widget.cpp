@@ -111,6 +111,10 @@ struct ViewGlWidget::Impl {
     painter.endNativePainting ();
 
     this->axis->render (this->state ().camera (), painter);
+    if (this->state ().hasTool ()) {
+      this->state ().tool ().paint (painter);
+    }
+
     this->mainWindow.showNumFaces (this->state ().scene ().numFaces ());
   }
 

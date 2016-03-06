@@ -52,6 +52,10 @@ struct Tool::Impl {
     }
   }
 
+  void paint (QPainter& painter) const {
+    this->self->runPaint (painter);
+  }
+
   ToolResponse pointingEvent (const ViewPointingEvent& e) {
     ToolResponse response = this->self->runPointingEvent (e);
 
@@ -219,6 +223,7 @@ struct Tool::Impl {
 DELEGATE2_BIG3_SELF (Tool, State&, const char*)
 DELEGATE        (ToolResponse    , Tool, initialize)
 DELEGATE_CONST  (void            , Tool, render)
+DELEGATE1_CONST (void            , Tool, paint, QPainter&)
 DELEGATE1       (ToolResponse    , Tool, pointingEvent, const ViewPointingEvent&)
 DELEGATE1       (ToolResponse    , Tool, wheelEvent, const QWheelEvent&)
 DELEGATE1       (ToolResponse    , Tool, cursorUpdate, const glm::ivec2&)
