@@ -107,7 +107,7 @@ struct ViewGlWidget::Impl {
     }
     this->axis->render (this->state ().camera ());
 
-    OpenGL::glDisable (OpenGL::DepthTest ()); 
+    this->state ().camera ().renderer ().shutdownRendering ();
     painter.endNativePainting ();
 
     this->axis->render (this->state ().camera (), painter);

@@ -94,6 +94,11 @@ struct Renderer::Impl {
                            | OpenGL::DepthBufferBit () );
   }
 
+  void shutdownRendering () {
+    OpenGL::glDisable (OpenGL::DepthTest ()); 
+    OpenGL::glDisable (OpenGL::CullFace  ());
+  }
+
   unsigned int shaderIndex (const RenderMode& renderMode) {
     if (renderMode.smoothShading ()) {
       return renderMode.renderWireframe () ? 0 : 1;
@@ -237,6 +242,7 @@ struct Renderer::Impl {
 DELEGATE1_BIG3 (Renderer, const Config&)
 
 DELEGATE  (void, Renderer, setupRendering)
+DELEGATE  (void, Renderer, shutdownRendering)
 DELEGATE1 (void, Renderer, setProgram        , const RenderMode&)
 DELEGATE2 (void, Renderer, setModel          , const float*, const float*)
 DELEGATE1 (void, Renderer, setView           , const float*)

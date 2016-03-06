@@ -18,6 +18,7 @@ class Renderer : public Configurable {
     DECLARE_BIG3 (Renderer, const Config&)
 
     void setupRendering       ();
+    void shutdownRendering    ();
     void setProgram           (const RenderMode&);
     void setModel             (const float*, const float*);
     void setView              (const float*);
