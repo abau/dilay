@@ -4,6 +4,7 @@
  */
 #include <QColor>
 #include <glm/glm.hpp>
+#include <iostream>
 #include "color.hpp"
 
 Color :: Color (float r, float g, float b, float o) 
