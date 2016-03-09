@@ -5,6 +5,7 @@
 #ifndef DILAY_HISTORY
 #define DILAY_HISTORY
 
+#include <functional>
 #include "configurable.hpp"
 #include "macro.hpp"
 
