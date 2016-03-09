@@ -5,6 +5,7 @@
 #ifndef DILAY_UTIL
 #define DILAY_UTIL
 
+#include <cstdlib>
 #include <glm/fwd.hpp>
 #include <iosfwd>
 #include <limits>
