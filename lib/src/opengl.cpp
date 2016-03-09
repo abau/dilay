@@ -50,14 +50,14 @@ namespace OpenGL {
 
   void initializeFunctions () {
     fun = QOpenGLContext::currentContext ()->versionFunctions <QOpenGLFunctions_2_1> ();
-    if (fun == false) {
+    if (fun == nullptr) {
       DILAY_PANIC ("could not obtain OpenGL 2.1 context")
     }
     fun->initializeOpenGLFunctions ();
 
     if (OpenGL::supportsGeometryShader ()) {
       gsFun = std::make_unique <QOpenGLExtension_EXT_geometry_shader4> ();
-      if (gsFun == false) {
+      if (gsFun == nullptr) {
         DILAY_PANIC ("could not initialize GL_EXT_geometry_shader4 extension")
       }
       gsFun->initializeOpenGLFunctions ();
