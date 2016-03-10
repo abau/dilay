@@ -73,6 +73,8 @@ struct KVStore::Impl {
   }
 
   void fromFile (const std::string& fileName) {
+    Util::setCLocale ();
+
     QFile file (fileName.c_str ());
 
     if (file.open (QIODevice::ReadOnly | QIODevice::Text) == false) {
@@ -96,6 +98,7 @@ struct KVStore::Impl {
       throw (std::runtime_error 
           ("Error while parsing kv-store file '" + fileName + "': " + e.what ()));
     }
+    Util::setSystemLocale ();
   }
 
   void loadNode (const QString& prefix, QDomNode& node) {
@@ -166,6 +169,8 @@ struct KVStore::Impl {
   }
 
   void toFile (const std::string& fileName) const {
+    Util::setCLocale ();
+
     QDomDocument doc;
 
     for (auto& c : this->map) {
@@ -186,6 +191,7 @@ struct KVStore::Impl {
         throw (std::runtime_error ("Can not save kv-store file '" + fileName + "'"));
       }
     }
+    Util::setSystemLocale ();
   }
 
   void appendAsDomChild ( QDomDocument& doc, QDomNode& parent

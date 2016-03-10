@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <iostream>
+#include <locale>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -195,4 +196,12 @@ bool Util :: hasSuffix (const std::string& string, const std::string& suffix) {
   else {
     return false;
   }
+}
+
+void Util :: setCLocale () {
+  std::locale::global (std::locale::classic ());
+}
+
+void Util :: setSystemLocale () {
+  std::locale::global (std::locale (""));
 }
