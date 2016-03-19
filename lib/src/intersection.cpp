@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/glm.hpp>
-#include <glm/gtc/epsilon.hpp>
 #include <glm/gtx/norm.hpp>
 #include "intersection.hpp"
 #include "primitive/aabox.hpp"
@@ -179,7 +178,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimSphere& spher
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane, float* t) {
   const float d = glm::dot (ray.direction (), plane.normal ());
 
-  if (glm::epsilonEqual (d, 0.0f, Util::epsilon ())) {
+  if (Util::almostEqual (d, 0.0f)) {
     return false;
   }
   const float s = glm::dot (plane.point () - ray.origin (), plane.normal ()) / d;
@@ -197,7 +196,7 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimTriangle& tri, float* t) {
   const float dot = glm::dot (ray.direction (), tri.normal ());
 
-  if (glm::epsilonEqual (dot, 0.0f, Util::epsilon ())) {
+  if (Util::almostEqual (dot, 0.0f)) {
     return false;
   }
   const glm::vec3 e1     = tri.vertex2 () - tri.vertex1 ();

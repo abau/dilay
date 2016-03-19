@@ -60,7 +60,7 @@ bool Util :: colinear (const glm::vec3& v1, const glm::vec3& v2) {
 }
 
 bool Util :: colinearUnit (const glm::vec3& v1, const glm::vec3& v2) {
-  return glm::epsilonEqual (glm::abs (glm::dot (v1, v2)), 1.0f, Util::epsilon ());
+  return Util::almostEqual (glm::abs (glm::dot (v1, v2)), 1.0f);
 }
 
 float Util :: smoothStep ( const glm::vec3& v, const glm::vec3& center
@@ -136,6 +136,10 @@ bool Util :: isNaN (const glm::vec3& v) {
 
 bool Util :: isNotNull (const glm::vec3& v) {
   return glm::any (glm::greaterThan (v, glm::vec3 (Util::epsilon ())));
+}
+
+bool Util :: almostEqual (float a, float b) {
+  return glm::epsilonEqual (a, b, Util::epsilon ());
 }
 
 void Util :: warn (const char* file, unsigned int line, const char* format, ...) {

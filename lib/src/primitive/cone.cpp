@@ -2,7 +2,6 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/gtc/epsilon.hpp>
 #include <sstream>
 #include "primitive/cone.hpp"
 #include "util.hpp"
@@ -14,7 +13,7 @@ PrimCone :: PrimCone (const glm::vec3& c1, float r1, const glm::vec3& c2, float 
   , _radius2    (r1 > r2 ? r2 : r1) 
   , _length     (l)
   , _direction  ((this->_center2 - this->_center1) / glm::vec3 (l))
-  , _isCylinder (glm::epsilonEqual (r1, r2, Util::epsilon ()))
+  , _isCylinder (Util::almostEqual (r1, r2))
   , _apex       (this->_isCylinder ? glm::vec3 (0.0f)
                                    : this->_center1 + ( this->_radius1
                                                       * (this->_center2 - this->_center1)

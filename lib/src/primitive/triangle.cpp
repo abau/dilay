@@ -2,7 +2,6 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <glm/gtc/epsilon.hpp>
 #include <glm/gtx/norm.hpp>
 #include <sstream>
 #include "primitive/triangle.hpp"
@@ -58,9 +57,9 @@ bool PrimTriangle :: isDegenerated () const {
   const float d2 = glm::distance (this->_vertex2, this->_vertex3);
   const float d3 = glm::distance (this->_vertex1, this->_vertex3);
 
-  return glm::epsilonEqual (d1, d2 + d3, Util::epsilon ())
-      || glm::epsilonEqual (d2, d1 + d3, Util::epsilon ())
-      || glm::epsilonEqual (d3, d1 + d2, Util::epsilon ());
+  return Util::almostEqual (d1, d2 + d3)
+      || Util::almostEqual (d2, d1 + d3)
+      || Util::almostEqual (d3, d1 + d2);
 }
 
 float PrimTriangle :: incircleRadiusSqr () const {

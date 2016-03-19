@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtc/constants.hpp>
-#include <glm/gtc/epsilon.hpp>
 #include <sstream>
 #include "primitive/cone.hpp"
 #include "primitive/cone-sphere.hpp"
@@ -25,7 +24,7 @@ float PrimConeSphere :: delta () const {
 }
 
 bool PrimConeSphere :: sameRadii () const {
-  return glm::epsilonEqual (this->delta (), 0.0f, Util::epsilon ());
+  return Util::almostEqual (this->delta (), 0.0f);
 }
 
 bool PrimConeSphere :: hasCone () const {
