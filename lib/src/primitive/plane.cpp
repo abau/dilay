@@ -19,6 +19,10 @@ float PrimPlane :: absDistance (const glm::vec3& p) const {
   return glm::abs (this->distance (p));
 }
 
+bool PrimPlane :: onPlane (const glm::vec3& p) const {
+  return this->absDistance (p) < Util::epsilon ();
+}
+
 glm::vec3 PrimPlane :: project (const glm::vec3& p) const {
   return p - (this->_normal * this->distance (p));
 }

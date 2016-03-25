@@ -17,6 +17,7 @@ class PrimPlane {
 
     float     distance         (const glm::vec3&) const;
     float     absDistance      (const glm::vec3&) const;
+    bool      onPlane          (const glm::vec3&) const;
     glm::vec3 project          (const glm::vec3&) const;
     glm::vec3 projectDirection (const glm::vec3&) const;
     glm::vec3 mirror           (const glm::vec3&) const;
