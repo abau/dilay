@@ -221,7 +221,7 @@ namespace OpenGL {
 
       gsFun->glProgramParameteriEXT (programId, GL_GEOMETRY_VERTICES_OUT_EXT, 3);
       gsFun->glProgramParameteriEXT (programId, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
-      gsFun->glProgramParameteriEXT (programId, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLES);
+      gsFun->glProgramParameteriEXT (programId, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
     }
 
     fun->glBindAttribLocation (programId, OpenGL::PositionIndex, "position");
