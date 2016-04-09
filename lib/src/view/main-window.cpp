@@ -106,6 +106,11 @@ struct ViewMainWindow :: Impl {
     this->numFacesLabel.setText (QString::number (n).append (" faces"));
   }
 
+  void update () {
+    this->self->QMainWindow::update ();
+    this->mainWidget.update ();
+  }
+
   void closeEvent (QCloseEvent* e) {
 #ifndef NDEBUG
     e->accept ();
@@ -126,4 +131,5 @@ DELEGATE1 (void           , ViewMainWindow, showMessage, const QString&)
 DELEGATE1 (void           , ViewMainWindow, showToolTip, const ViewToolTip&)
 DELEGATE  (void           , ViewMainWindow, showDefaultToolTip)
 DELEGATE1 (void           , ViewMainWindow, showNumFaces, unsigned int)
+DELEGATE  (void           , ViewMainWindow, update)
 DELEGATE1 (void           , ViewMainWindow, closeEvent, QCloseEvent*)

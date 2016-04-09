@@ -123,9 +123,15 @@ struct ViewMainWidget :: Impl {
       b->setChecked (false);
     }
   }
+
+  void update () {
+    this->self->QSplitter::update ();
+    this->glWidget.update ();
+  }
 };
 
 DELEGATE3_BIG2_SELF (ViewMainWidget, ViewMainWindow&, Config&, Cache&)
 GETTER   (ViewGlWidget&  , ViewMainWidget, glWidget)
 GETTER   (ViewProperties&, ViewMainWidget, properties)
 DELEGATE (void           , ViewMainWidget, deselectTool)
+DELEGATE (void           , ViewMainWidget, update)

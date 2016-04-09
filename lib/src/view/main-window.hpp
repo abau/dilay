@@ -24,6 +24,7 @@ class ViewMainWindow : public QMainWindow {
     void            showToolTip        (const ViewToolTip&);
     void            showDefaultToolTip ();
     void            showNumFaces       (unsigned int);
+    void            update             ();
 
   protected:
     void            closeEvent         (QCloseEvent*);

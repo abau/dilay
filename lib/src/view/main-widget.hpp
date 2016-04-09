@@ -21,6 +21,7 @@ class ViewMainWidget : public QSplitter {
     ViewGlWidget&   glWidget     ();
     ViewProperties& properties   ();
     void            deselectTool ();
+    void            update       ();
 
   private:
     IMPLEMENTATION
