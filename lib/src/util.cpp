@@ -209,3 +209,12 @@ void Util :: setCLocale () {
 void Util :: setSystemLocale () {
   std::locale::global (std::locale (""));
 }
+
+namespace Util {
+  template <>
+  void withCLocale (const std::function <void ()>& f) {
+    setCLocale ();
+    f ();
+    setSystemLocale ();
+  }
+}

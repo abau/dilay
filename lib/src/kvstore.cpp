@@ -73,32 +73,31 @@ struct KVStore::Impl {
   }
 
   void fromFile (const std::string& fileName) {
-    Util::setCLocale ();
+    Util::withCLocale <void> ([this, &fileName] () {
+      QFile file (fileName.c_str ());
 
-    QFile file (fileName.c_str ());
-
-    if (file.open (QIODevice::ReadOnly | QIODevice::Text) == false) {
-      throw (std::runtime_error ("Can not open kv-store file '" + fileName + "'"));
-    }
-    QDomDocument doc (fileName.c_str ());
-    QString      errorMsg;
-    int          errorLine   = -1;
-    int          errorColumn = -1;
-    if (doc.setContent (&file, &errorMsg, &errorLine, &errorColumn) == false) {
+      if (file.open (QIODevice::ReadOnly | QIODevice::Text) == false) {
+        throw (std::runtime_error ("Can not open kv-store file '" + fileName + "'"));
+      }
+      QDomDocument doc (fileName.c_str ());
+      QString      errorMsg;
+      int          errorLine   = -1;
+      int          errorColumn = -1;
+      if (doc.setContent (&file, &errorMsg, &errorLine, &errorColumn) == false) {
+        file.close();
+        throw (std::runtime_error 
+            ( "Error while loading kv-store file '" + fileName + "': " + errorMsg.toStdString ()
+            + " (" + std::to_string (errorLine) + ","  + std::to_string (errorColumn) + ")"));
+      }
       file.close();
-      throw (std::runtime_error 
-          ( "Error while loading kv-store file '" + fileName + "': " + errorMsg.toStdString ()
-          + " (" + std::to_string (errorLine) + ","  + std::to_string (errorColumn) + ")"));
-    }
-    file.close();
-    try {
-      this->loadNode ("", doc);
-    }
-    catch (std::runtime_error& e) {
-      throw (std::runtime_error 
-          ("Error while parsing kv-store file '" + fileName + "': " + e.what ()));
-    }
-    Util::setSystemLocale ();
+      try {
+        this->loadNode ("", doc);
+      }
+      catch (std::runtime_error& e) {
+        throw (std::runtime_error 
+            ("Error while parsing kv-store file '" + fileName + "': " + e.what ()));
+      }
+    });
   }
 
   void loadNode (const QString& prefix, QDomNode& node) {
@@ -169,29 +168,28 @@ struct KVStore::Impl {
   }
 
   void toFile (const std::string& fileName) const {
-    Util::setCLocale ();
+    Util::withCLocale <void> ([this, &fileName] () {
+      QDomDocument doc;
 
-    QDomDocument doc;
+      for (auto& c : this->map) {
+        const std::string& key   = c.first;
+        const Value&       value = c.second;
+              QStringList  path  = QString (key.c_str ()).split ("/", QString::SkipEmptyParts);
 
-    for (auto& c : this->map) {
-      const std::string& key   = c.first;
-      const Value&       value = c.second;
-            QStringList  path  = QString (key.c_str ()).split ("/", QString::SkipEmptyParts);
-
-      this->appendAsDomChild (doc, doc, path, value);
-    }
-    if (doc.isNull () == false) {
-      QFile file (fileName.c_str ());
-      if (file.open (QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream stream (&file);
-        doc.save (stream, 2);
-        file.close ();
+        this->appendAsDomChild (doc, doc, path, value);
       }
-      else {
-        throw (std::runtime_error ("Can not save kv-store file '" + fileName + "'"));
+      if (doc.isNull () == false) {
+        QFile file (fileName.c_str ());
+        if (file.open (QIODevice::WriteOnly | QIODevice::Text)) {
+          QTextStream stream (&file);
+          doc.save (stream, 2);
+          file.close ();
+        }
+        else {
+          throw (std::runtime_error ("Can not save kv-store file '" + fileName + "'"));
+        }
       }
-    }
-    Util::setSystemLocale ();
+    });
   }
 
   void appendAsDomChild ( QDomDocument& doc, QDomNode& parent

@@ -6,6 +6,7 @@
 #define DILAY_UTIL
 
 #include <cstdlib>
+#include <functional>
 #include <glm/fwd.hpp>
 #include <iosfwd>
 #include <limits>
@@ -63,6 +64,16 @@ namespace Util {
   unsigned int findIndexByReference (const std::vector <T>& vec, const T& obj) {
     return &obj - &vec.at (0);
   }
+
+  template <typename T>
+  T withCLocale (const std::function <T ()>& f) {
+    setCLocale ();
+    T result = f ();
+    setSystemLocale ();
+    return result;
+  }
+  template <>
+  void withCLocale (const std::function <void ()>& f);
 }
 
 #endif

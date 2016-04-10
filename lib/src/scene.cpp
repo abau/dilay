@@ -12,6 +12,7 @@
 #include "sketch/mesh-intersection.hpp"
 #include "sketch/node-intersection.hpp"
 #include "sketch/path-intersection.hpp"
+#include "util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
@@ -251,13 +252,15 @@ struct Scene :: Impl {
   bool toDlyFile (bool isObjFile) {
     assert (this->hasFileName ());
 
-    if (SceneUtil::toDlyFile (this->fileName, *this->self, isObjFile)) {
-      return true;
-    }
-    else {
-      this->fileName.clear ();
-      return false;
-    }
+    return Util::withCLocale <bool> ([this, isObjFile] () {
+      if (SceneUtil::toDlyFile (this->fileName, *this->self, isObjFile)) {
+        return true;
+      }
+      else {
+        this->fileName.clear ();
+        return false;
+      }
+    });
   }
 
   bool toDlyFile (const std::string& newFileName, bool isObjFile) {
