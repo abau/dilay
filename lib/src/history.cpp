@@ -13,6 +13,7 @@
 #include "sketch/mesh.hpp"
 #include "sketch/path.hpp"
 #include "state.hpp"
+#include "util.hpp"
 #include "winged/mesh.hpp"
 
 namespace {
@@ -37,6 +38,7 @@ namespace {
   };
 
   struct WingedMeshSnapshot {
+    const unsigned int  index;
     Mesh                mesh;
     Maybe <IndexOctree> octree;
   };
@@ -64,7 +66,7 @@ namespace {
         if (config.copyOctree) {
           std::vector <unsigned int> newFaceIndices;
 
-          WingedMeshSnapshot meshSnapshot = { mesh.makePrunedMesh (&newFaceIndices)
+          WingedMeshSnapshot meshSnapshot = { mesh.index (), mesh.makePrunedMesh (&newFaceIndices)
                                             , mesh.octree () };
 
           if (newFaceIndices.empty () == false) {
@@ -73,7 +75,8 @@ namespace {
           snapshot.wingedMeshes.push_back (std::move (meshSnapshot));
         }
         else {
-          snapshot.wingedMeshes.push_back ({ mesh.makePrunedMesh (), Maybe <IndexOctree> () });
+          snapshot.wingedMeshes.push_back ({ mesh.index (), mesh.makePrunedMesh ()
+                                           , Maybe <IndexOctree> () });
         }
       });
     }
@@ -194,6 +197,15 @@ struct History::Impl {
     }
   }
 
+  const Mesh& meshSnapshot (unsigned int index) const {
+    for (const WingedMeshSnapshot& s : this->past.front ().wingedMeshes) {
+      if (s.index == index) {
+        return s.mesh;
+      }
+    }
+    DILAY_IMPOSSIBLE;
+  }
+
   void reset () {
     this->past  .clear ();
     this->future.clear ();
@@ -205,13 +217,14 @@ struct History::Impl {
 };
 
 DELEGATE1_BIG3  (History, const Config&)
-DELEGATE1       (void, History, snapshotAll, const Scene&)
-DELEGATE1       (void, History, snapshotWingedMeshes, const Scene&)
-DELEGATE1       (void, History, snapshotSketchMeshes, const Scene&)
-DELEGATE        (void, History, dropSnapshot)
-DELEGATE1       (void, History, undo, State&)
-DELEGATE1       (void, History, redo, State&)
-DELEGATE1       (void, History, runFromConfig, const Config&)
-DELEGATE_CONST  (bool, History, hasRecentOctrees)
-DELEGATE        (void, History, reset)
-DELEGATE1_CONST (void, History, forEachRecentOctree, const std::function <void (const Mesh&, const IndexOctree&)>&)
+DELEGATE1       (void,        History, snapshotAll, const Scene&)
+DELEGATE1       (void,        History, snapshotWingedMeshes, const Scene&)
+DELEGATE1       (void,        History, snapshotSketchMeshes, const Scene&)
+DELEGATE        (void,        History, dropSnapshot)
+DELEGATE1       (void,        History, undo, State&)
+DELEGATE1       (void,        History, redo, State&)
+DELEGATE_CONST  (bool,        History, hasRecentOctrees)
+DELEGATE1_CONST (void,        History, forEachRecentOctree, const std::function <void (const Mesh&, const IndexOctree&)>&)
+DELEGATE1_CONST (const Mesh&, History, meshSnapshot, unsigned int)
+DELEGATE        (void,        History, reset)
+DELEGATE1       (void,        History, runFromConfig, const Config&)
