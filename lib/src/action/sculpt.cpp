@@ -22,29 +22,21 @@ namespace {
     const float maxLengthSqr (maxLength * maxLength);
     WingedMesh& mesh         (brush.meshRef ());
 
-    auto isSubdividable = [&] (WingedEdge& edge) -> bool {
-      return edge.lengthSqr (mesh) > maxLengthSqr;
-    };
-
     auto subdivideEdges = [&] () {
       for (WingedEdge* e : domain.toEdgeVec ()) {
-        if (isSubdividable (*e)) {
+        if (e->lengthSqr (mesh) > maxLengthSqr) {
           PartialAction::subdivideEdge (mesh, *e, domain);
         }
       }
       domain.commit ();
     };
 
-    auto isCollapsable = [&] (WingedEdge& edge, float avgLength) -> bool {
-      const auto& params = brush.constParameters <SBReduceParameters> ();
-      const float l2     = avgLength * avgLength;
-      const float i2     = params.intensity () * params.intensity ();
-      return edge.lengthSqr (mesh) < l2 * i2;
-    };
-
-    auto collapseEdges = [&] () {
-      EdgePtrVec                 edges     = domain.toEdgeVec ();
-      const float                avgLength = WingedUtil::averageLength (mesh, edges);
+    auto reduceEdges = [&] () {
+      const SBReduceParameters&  params       = brush.constParameters <SBReduceParameters> ();
+      EdgePtrVec                 edges        = domain.toEdgeVec ();
+      const float                avgLength    = WingedUtil::averageLength (mesh, edges);
+      const float                avgLengthSqr = avgLength * avgLength;
+      const float                intensitySqr = params.intensity () * params.intensity ();
       std::vector <unsigned int> indices;
 
       for (WingedEdge* e : edges) {
@@ -55,7 +47,7 @@ namespace {
       for (unsigned int i : indices) {
         WingedEdge* e = mesh.edge (i);
 
-        if (e && isCollapsable (*e, avgLength)) {
+        if (e && e->lengthSqr (mesh) < avgLengthSqr * intensitySqr) {
           PartialAction::collapseEdge (mesh, *e, domain);
 
           if (mesh.isEmpty ()) {
@@ -78,7 +70,7 @@ namespace {
     };
 
     if (brush.reduce ()) {
-      collapseEdges ();
+      reduceEdges ();
 
       if (mesh.isEmpty ()) {
         return;
