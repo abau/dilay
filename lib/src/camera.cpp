@@ -139,7 +139,7 @@ struct Camera::Impl {
   PrimRay ray (const glm::ivec2& p) const {
     const glm::vec3 w   = this->toWorld  (p);
     const glm::vec3 eye = this->position ();
-    return PrimRay (eye, glm::normalize (w - eye));
+    return PrimRay (eye, w - eye);
   }
 
   void updateProjection () {
