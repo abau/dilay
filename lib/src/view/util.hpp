@@ -40,6 +40,8 @@ namespace ViewUtil {
   QLineEdit&        lineEdit       (int, int, int);
   glm::uvec2        toUVec2        (const QPoint&);
   glm::ivec2        toIVec2        (const QPoint&);
+  QPoint            toQPoint       (const glm::uvec2&);
+  QPoint            toQPoint       (const glm::ivec2&);
   void              connect        (const QSpinBox&, const std::function <void (int)>&);
   void              connect        (const QDoubleSpinBox&, const std::function <void (double)>&);
   void              connect        (const QPushButton&, const std::function <void ()>&);

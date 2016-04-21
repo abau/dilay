@@ -138,6 +138,14 @@ glm::ivec2 ViewUtil :: toIVec2 (const QPoint& p) {
   return glm::ivec2 (p.x (), p.y ());
 }
 
+QPoint ViewUtil :: toQPoint (const glm::uvec2& p) {
+  return QPoint (int (p.x), int (p.y));
+}
+
+QPoint ViewUtil :: toQPoint (const glm::ivec2& p) {
+  return QPoint (p.x, p.y);
+}
+
 void ViewUtil :: connect (const QSpinBox& s, const std::function <void (int)>& f) {
   void (QSpinBox::* ptr)(int) = &QSpinBox::valueChanged;
   QObject::connect (&s, ptr, f);
