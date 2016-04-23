@@ -385,17 +385,25 @@ struct WingedMesh::Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
-    this->octree.intersects (sphere, [this, &sphere, &faces] (unsigned int i) {
-      WingedFace&        face = this->self->faceRef (i);
-      const PrimTriangle tri  = face.triangle (*this->self);
+  template <typename T, typename ... Ts>
+  bool intersectsT (const T& t, AffectedFaces& faces, const Ts& ... args) {
+    this->octree.intersects (t, [this, &t, &faces, &args ...] (unsigned int i) {
+      WingedFace& face = this->self->faceRef (i);
 
-      if (IntersectionUtil::intersects (sphere, tri)) {
+      if (IntersectionUtil::intersects (t, face.triangle (*this->self), args ...)) {
         faces.insert (face);
       }
     });
     faces.commit ();
     return faces.isEmpty () == false;
+  }
+
+  bool intersects (const PrimRay& ray, AffectedFaces& faces) {
+    return this->intersectsT <PrimRay> (ray, faces, nullptr);
+  }
+
+  bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
+    return this->intersectsT <PrimSphere> (sphere, faces);
   }
 
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
@@ -515,6 +523,7 @@ DELEGATE_CONST  (const RenderMode&, WingedMesh, renderMode)
 DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, AffectedFaces&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)

@@ -79,6 +79,7 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     RenderMode&        renderMode          ();
     
     bool               intersects          (const PrimRay&, WingedFaceIntersection&);
+    bool               intersects          (const PrimRay&, AffectedFaces&);
     bool               intersects          (const PrimSphere&, AffectedFaces&);
 
     void               scale               (const glm::vec3&);
