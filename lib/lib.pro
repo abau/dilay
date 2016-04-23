@@ -37,6 +37,7 @@ SOURCES += \
            src/partial-action/relax-edge.cpp \
            src/partial-action/smooth.cpp \
            src/partial-action/subdivide-edge.cpp \
+           src/partial-action/subdivide-face.cpp \
            src/partial-action/triangulate-6-gon.cpp \
            src/partial-action/triangulate-quad.cpp \
            src/primitive/aabox.cpp \
@@ -149,6 +150,7 @@ HEADERS += \
            src/partial-action/relax-edge.hpp \
            src/partial-action/smooth.hpp \
            src/partial-action/subdivide-edge.hpp \
+           src/partial-action/subdivide-face.hpp \
            src/partial-action/triangulate-6-gon.hpp \
            src/partial-action/triangulate-quad.hpp \
            src/primitive/aabox.hpp \
