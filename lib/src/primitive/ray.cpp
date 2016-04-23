@@ -21,6 +21,17 @@ glm::vec3 PrimRay :: pointAt (float t) const {
   return this->_origin + (this->_direction * glm::vec3 (t));
 }
 
+float PrimRay :: distance (const glm::vec3& p) const {
+  const float t = glm::dot (this->_direction, p - this->_origin);
+
+  return t >= 0.0f || this->_isLine ? glm::distance (p, this->pointAt (t))
+                                    : glm::distance (p, this->_origin);
+}
+
+bool PrimRay :: onRay (const glm::vec3& p) const {
+  return this->distance (p) < Util::epsilon ();
+}
+
 std::ostream& operator<<(std::ostream& os, const PrimRay& ray) {
   os << "PrimRay { origin = "    << (ray.origin    ())
              << ", direction = " << (ray.direction ()) << " }";

@@ -18,6 +18,8 @@ class PrimRay {
     const glm::vec3& direction () const { return this->_direction; }
 
           glm::vec3  pointAt   (float) const;
+          float      distance  (const glm::vec3&) const;
+          bool       onRay     (const glm::vec3&) const;
 
   private:
     const bool      _isLine;
