@@ -27,10 +27,14 @@ void Action :: collapseDegeneratedFaces (WingedMesh& mesh, AffectedFaces& affect
   }
 }
 
-void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces) {
+void Action :: realignFaces (WingedMesh& mesh, AffectedFaces& affectedFaces) {
   for (WingedFace* f : affectedFaces.faces ()) {
     mesh.realignFace (*f);
   }
+}
+
+void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces) {
+  Action::realignFaces             (mesh, affectedFaces);
   Action::collapseDegeneratedFaces (mesh, affectedFaces);
 
   for (WingedVertex* v : affectedFaces.toVertexSet ()) {
