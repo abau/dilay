@@ -19,6 +19,12 @@
                                 std::abort (); }
 #define DILAY_IMPOSSIBLE DILAY_PANIC ("the impossible happend")
 
+#ifndef NDEBUG
+#define DILAY_WARN_DEBUG(fmt, ...) DILAY_WARN(fmt, ##__VA_ARGS__);
+#else
+#define DILAY_WARN_DEBUG(fmt, ...) (void)0;
+#endif
+
 std::ostream& operator<<(std::ostream&, const glm::ivec2&);
 std::ostream& operator<<(std::ostream&, const glm::uvec2&);
 std::ostream& operator<<(std::ostream&, const glm::vec3&);
