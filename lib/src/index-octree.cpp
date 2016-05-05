@@ -37,18 +37,20 @@ namespace {
   };
 
   struct IndexOctreeNode {
+    const glm::vec3            center;
+    const float                width;
+    const int                  depth;
+    const PrimAABox            looseAABox;
     std::array <Child, 8>      children;
-    glm::vec3                  center;
-    float                      width;
-    int                        depth;
     std::vector <unsigned int> indices;
 
     static constexpr float relativeMinElementExtent = 0.1f;
 
     IndexOctreeNode (const glm::vec3& c, float w, int d) 
-      : center (c)
-      , width  (w)
-      , depth  (d)
+      : center     (c)
+      , width      (w)
+      , depth      (d)
+      , looseAABox (c, 2.0f * w, 2.0f * w, 2.0f * w)
     {
       static_assert (IndexOctreeNode::relativeMinElementExtent < 0.5f, "relativeMinElementExtent must be smaller than 0.5f");
     }
@@ -185,14 +187,9 @@ namespace {
     }
 #endif
 
-    PrimAABox looseAABox () const {
-      const float looseWidth = this->width * 2.0f;
-      return PrimAABox (this->center, looseWidth, looseWidth, looseWidth);
-    }
-
     template <typename T>
     void intersectsT (const T& t, const IndexOctree::IntersectionCallback& f) const {
-      if (IntersectionUtil::intersects (t, this->looseAABox ())) {
+      if (IntersectionUtil::intersects (t, this->looseAABox)) {
         for (unsigned int index : this->indices) {
           f (index);
         }
