@@ -11,6 +11,8 @@
 #include "macro.hpp"
 
 class Camera;
+class PrimAABox;
+class PrimPlane;
 class PrimRay;
 class PrimSphere;
 
@@ -31,6 +33,8 @@ class IndexOctree {
     void             render                 (Camera&);
     void             intersects             (const PrimRay&, const IntersectionCallback&) const;
     void             intersects             (const PrimSphere&, const IntersectionCallback&) const;
+    void             intersects             (const PrimPlane&, const IntersectionCallback&) const;
+    void             intersects             (const PrimAABox&, const IntersectionCallback&) const;
     unsigned int     numDegeneratedElements () const;
     unsigned int     someDegeneratedElement () const;
     void             rewriteIndices         (const std::vector <unsigned int>&);

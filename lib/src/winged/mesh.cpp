@@ -406,6 +406,14 @@ struct WingedMesh::Impl {
     return this->intersectsT <PrimSphere> (sphere, faces);
   }
 
+  bool intersects (const PrimPlane& plane, AffectedFaces& faces) {
+    return this->intersectsT <PrimPlane> (plane, faces);
+  }
+
+  bool intersects (const PrimAABox& box, AffectedFaces& faces) {
+    return this->intersectsT <PrimAABox> (box, faces);
+  }
+
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
   void               scaling        (const glm::vec3& v)   { return this->mesh.scaling (v); }
   glm::vec3          scaling        () const               { return this->mesh.scaling (); }
@@ -525,6 +533,8 @@ DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, AffectedFaces&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimPlane&, AffectedFaces&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimAABox&, AffectedFaces&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
 DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)

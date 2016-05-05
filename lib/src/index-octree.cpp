@@ -10,6 +10,7 @@
 #include "intersection.hpp"
 #include "maybe.hpp"
 #include "primitive/aabox.hpp"
+#include "primitive/plane.hpp"
 #include "primitive/sphere.hpp"
 #include "util.hpp"
 
@@ -197,18 +198,10 @@ namespace {
         }
         if (this->hasChildren ()) {
           for (const Child& c : this->children) {
-            c->intersectsT (t, f);
+            c->intersectsT <T> (t, f);
           }
         }
       }
-    }
-
-    void intersects (const PrimRay& ray, const IndexOctree::IntersectionCallback& f) const {
-      this->intersectsT <PrimRay> (ray, f);
-    }
-
-    void intersects (const PrimSphere& sphere, const IndexOctree::IntersectionCallback& f) const {
-      this->intersectsT <PrimSphere> (sphere, f);
     }
 
     unsigned int numElements () const { return this->indices.size (); }
@@ -493,13 +486,25 @@ struct IndexOctree::Impl {
 
   void intersects (const PrimRay& ray, const IndexOctree::IntersectionCallback& f) const {
     if (this->hasRoot ()) {
-      return this->root->intersects (ray, f);
+      return this->root->intersectsT <PrimRay> (ray, f);
     }
   }
 
   void intersects (const PrimSphere& sphere, const IndexOctree::IntersectionCallback& f) const {
     if (this->hasRoot ()) {
-      return this->root->intersects (sphere, f);
+      return this->root->intersectsT <PrimSphere> (sphere, f);
+    }
+  }
+
+  void intersects (const PrimPlane& plane, const IndexOctree::IntersectionCallback& f) const {
+    if (this->hasRoot ()) {
+      return this->root->intersectsT <PrimPlane> (plane, f);
+    }
+  }
+
+  void intersects (const PrimAABox& box, const IndexOctree::IntersectionCallback& f) const {
+    if (this->hasRoot ()) {
+      return this->root->intersectsT <PrimAABox> (box, f);
     }
   }
 
@@ -558,6 +563,8 @@ DELEGATE        (void        , IndexOctree, reset)
 DELEGATE1       (void        , IndexOctree, render, Camera&)
 DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimRay&, const IndexOctree::IntersectionCallback&)
 DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimSphere&, const IndexOctree::IntersectionCallback&)
+DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimPlane&, const IndexOctree::IntersectionCallback&)
+DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimAABox&, const IndexOctree::IntersectionCallback&)
 DELEGATE_CONST  (unsigned int, IndexOctree, numDegeneratedElements)
 DELEGATE_CONST  (unsigned int, IndexOctree, someDegeneratedElement)
 DELEGATE1       (void        , IndexOctree, rewriteIndices, const std::vector <unsigned int>&)

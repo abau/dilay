@@ -359,3 +359,73 @@ bool IntersectionUtil :: intersects (const PrimCone& cone, const glm::vec3& poin
     return dot >= 0.0f && dot <= cone.length () && glm::dot (t,t) <= r * r;
   }
 }
+
+bool IntersectionUtil :: intersects (const PrimAABox& a, const PrimAABox& b) {
+  const bool overlap1 = glm::all (glm::greaterThanEqual (a.minimum (), b.maximum ()));
+  const bool overlap2 = glm::all (glm::greaterThanEqual (b.minimum (), a.maximum ()));
+  const bool contain1 = glm::all (glm::greaterThan (a.maximum (), b.maximum ()))
+                     && glm::all (glm::lessThan    (a.minimum (), b.minimum ()));
+  const bool contain2 = glm::all (glm::greaterThan (b.maximum (), a.maximum ()))
+                     && glm::all (glm::lessThan    (b.minimum (), a.minimum ()));
+                   
+  return overlap1 || overlap2 || contain1 || contain2;
+}
+
+// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/tribox_tam.pdf
+bool IntersectionUtil :: intersects (const PrimAABox& box, const PrimTriangle& tri) {
+  const glm::vec3 v0 = tri.vertex1 () - box.center ();
+  const glm::vec3 v1 = tri.vertex2 () - box.center ();
+  const glm::vec3 v2 = tri.vertex3 () - box.center ();
+  const glm::vec3 e0 = v1 - v0;
+  const glm::vec3 e1 = v2 - v1;
+  const glm::vec3 e2 = v0 - v2;
+  const glm::vec3 hw = box.halfWidth ();
+  const glm::vec3 x  = glm::vec3 (1.0f, 0.0f, 0.0f);
+  const glm::vec3 y  = glm::vec3 (0.0f, 1.0f, 0.0f);
+  const glm::vec3 z  = glm::vec3 (0.0f, 0.0f, 1.0f);
+
+  auto sepAxis = [&v0,&v1,&v2,&hw] (const glm::vec3& a) -> bool {
+    const float radius = glm::dot (hw, glm::abs (a));
+    const float p0     = glm::dot (a, v0);
+    const float p1     = glm::dot (a, v1);
+    const float p2     = glm::dot (a, v2);
+    const float min    = glm::min (p0, glm::min (p1, p2));
+    const float max    = glm::max (p0, glm::max (p1, p2));
+
+    return min > radius || max < -radius;
+  };
+
+  const bool sep1 = glm::min (v0.x, glm::min (v1.x, v2.x)) >  hw.x;
+  const bool sep2 = glm::max (v0.x, glm::max (v1.x, v2.x)) < -hw.x;
+
+  const bool sep3 = glm::min (v0.y, glm::min (v1.y, v2.y)) >  hw.y;
+  const bool sep4 = glm::max (v0.y, glm::max (v1.y, v2.y)) < -hw.y;
+
+  const bool sep5 = glm::min (v0.z, glm::min (v1.z, v2.z)) >  hw.z;
+  const bool sep6 = glm::max (v0.z, glm::max (v1.z, v2.z)) < -hw.z;
+
+  if (sep1 || sep2 || sep3 || sep4 || sep5 || sep6) {
+    return false;
+  }
+
+  const bool sep7  = sepAxis (glm::cross (x, e0));
+  const bool sep8  = sepAxis (glm::cross (x, e1));
+  const bool sep9  = sepAxis (glm::cross (x, e2));
+
+  const bool sep10 = sepAxis (glm::cross (y, e0));
+  const bool sep11 = sepAxis (glm::cross (y, e1));
+  const bool sep12 = sepAxis (glm::cross (y, e2));
+
+  const bool sep13 = sepAxis (glm::cross (z, e0));
+  const bool sep14 = sepAxis (glm::cross (z, e1));
+  const bool sep15 = sepAxis (glm::cross (z, e2));
+
+  if (sep7 || sep8 || sep9 || sep10 || sep11 || sep12 || sep13 || sep14 || sep15) {
+    return false;
+  }
+  else {
+    const PrimPlane triPlane (tri.vertex1 (), tri.normal ());
+
+    return IntersectionUtil::intersects (triPlane, box);
+  }
+}

@@ -16,6 +16,7 @@ class Camera;
 class Color;
 class IndexOctree;
 class Mesh;
+class PrimAABox;
 class PrimPlane;
 class PrimRay;
 class PrimSphere;
@@ -81,6 +82,8 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     bool               intersects          (const PrimRay&, WingedFaceIntersection&);
     bool               intersects          (const PrimRay&, AffectedFaces&);
     bool               intersects          (const PrimSphere&, AffectedFaces&);
+    bool               intersects          (const PrimPlane&, AffectedFaces&);
+    bool               intersects          (const PrimAABox&, AffectedFaces&);
 
     void               scale               (const glm::vec3&);
     void               scaling             (const glm::vec3&);
