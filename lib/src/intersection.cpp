@@ -308,15 +308,13 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCone& cone
 }
 
 bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimAABox& box) {
-  const float x  = box.xWidth () * 0.5f;
-  const float y  = box.yWidth () * 0.5f;
-  const float z  = box.zWidth () * 0.5f;
-  const float d1 = plane.distance (box.center () + glm::vec3 ( x  , 0.0f, 0.0f));
-  const float d2 = plane.distance (box.center () + glm::vec3 (-x  , 0.0f, 0.0f));
-  const float d3 = plane.distance (box.center () + glm::vec3 (0.0f,    y, 0.0f));
-  const float d4 = plane.distance (box.center () + glm::vec3 (0.0f,   -y, 0.0f));
-  const float d5 = plane.distance (box.center () + glm::vec3 (0.0f, 0.0f,    z));
-  const float d6 = plane.distance (box.center () + glm::vec3 (0.0f, 0.0f,   -z));
+  const glm::vec3 hw = box.halfWidth ();
+  const float     d1 = plane.distance (box.center () + glm::vec3 ( hw.x, 0.0f,  0.0f));
+  const float     d2 = plane.distance (box.center () + glm::vec3 (-hw.x, 0.0f,  0.0f));
+  const float     d3 = plane.distance (box.center () + glm::vec3 (0.0f,   hw.y, 0.0f));
+  const float     d4 = plane.distance (box.center () + glm::vec3 (0.0f,  -hw.y, 0.0f));
+  const float     d5 = plane.distance (box.center () + glm::vec3 (0.0f,  0.0f,   hw.z));
+  const float     d6 = plane.distance (box.center () + glm::vec3 (0.0f,  0.0f,  -hw.z));
 
   const bool less    = d1 < Util::epsilon ()
                     || d2 < Util::epsilon ()

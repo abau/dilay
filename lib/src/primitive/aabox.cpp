@@ -19,7 +19,6 @@ PrimAABox :: PrimAABox (const glm::vec3& pos, float w)
   : PrimAABox (pos, w, w, w) 
 {}
 
-float PrimAABox :: xWidth () const { return this->_maximum.x - this->_minimum.x; }
-float PrimAABox :: yWidth () const { return this->_maximum.y - this->_minimum.y; }
-float PrimAABox :: zWidth () const { return this->_maximum.z - this->_minimum.z; }
-
+glm::vec3 PrimAABox :: halfWidth () const {
+  return (this->_maximum - this->_minimum) * 0.5f;
+}
