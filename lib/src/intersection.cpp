@@ -308,29 +308,16 @@ bool IntersectionUtil :: intersects ( const PrimRay& ray, const PrimCone& cone
 }
 
 bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimAABox& box) {
-  const glm::vec3 hw = box.halfWidth ();
-  const float     d1 = plane.distance (box.center () + glm::vec3 ( hw.x, 0.0f,  0.0f));
-  const float     d2 = plane.distance (box.center () + glm::vec3 (-hw.x, 0.0f,  0.0f));
-  const float     d3 = plane.distance (box.center () + glm::vec3 (0.0f,   hw.y, 0.0f));
-  const float     d4 = plane.distance (box.center () + glm::vec3 (0.0f,  -hw.y, 0.0f));
-  const float     d5 = plane.distance (box.center () + glm::vec3 (0.0f,  0.0f,   hw.z));
-  const float     d6 = plane.distance (box.center () + glm::vec3 (0.0f,  0.0f,  -hw.z));
+  const glm::vec3& max = box.maximum ();
+  const glm::vec3& min = box.minimum ();
+  const glm::vec3  p   = glm::vec3 ( plane.normal ().x >= 0.0f ? max.x : min.x
+                                   , plane.normal ().y >= 0.0f ? max.y : min.y
+                                   , plane.normal ().z >= 0.0f ? max.z : min.z );
+  const glm::vec3  n   = glm::vec3 ( plane.normal ().x >= 0.0f ? min.x : max.x
+                                   , plane.normal ().y >= 0.0f ? min.y : max.y
+                                   , plane.normal ().z >= 0.0f ? min.z : max.z );
 
-  const bool less    = d1 < Util::epsilon ()
-                    || d2 < Util::epsilon ()
-                    || d3 < Util::epsilon ()
-                    || d4 < Util::epsilon ()
-                    || d5 < Util::epsilon ()
-                    || d6 < Util::epsilon ();
-
-  const bool greater = d1 > -Util::epsilon ()
-                    || d2 > -Util::epsilon ()
-                    || d3 > -Util::epsilon ()
-                    || d4 > -Util::epsilon ()
-                    || d5 > -Util::epsilon ()
-                    || d6 > -Util::epsilon ();
-
-  return less && greater;
+  return plane.distance (p) * plane.distance (n) < 0.0f;
 }
 
 bool IntersectionUtil :: intersects (const PrimPlane& plane, const PrimTriangle& tri) {
