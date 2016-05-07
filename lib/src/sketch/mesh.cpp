@@ -688,8 +688,8 @@ struct SketchMesh::Impl {
   }
 
   void minMax (glm::vec3& min, glm::vec3& max) const {
-    min = glm::vec3 (std::numeric_limits <float>::max ());
-    max = glm::vec3 (std::numeric_limits <float>::lowest ());
+    min = glm::vec3 (Util::maxFloat ());
+    max = glm::vec3 (Util::minFloat ());
 
     if (this->tree.hasRoot ()) {
       this->tree.root ().forEachConstNode ([&min, &max] (const SketchNode& node) {

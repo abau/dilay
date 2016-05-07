@@ -57,6 +57,10 @@ namespace Util {
   void         setSystemLocale    ();
 
   constexpr float        epsilon      () { return 0.0001f; }
+  constexpr float        minFloat     () { return std::numeric_limits <float>::lowest (); }
+  constexpr float        maxFloat     () { return std::numeric_limits <float>::max (); }
+  constexpr int          minInt       () { return std::numeric_limits <int>::lowest (); }
+  constexpr int          maxInt       () { return std::numeric_limits <int>::max (); }
   constexpr unsigned int invalidIndex () { return std::numeric_limits <unsigned int>::max (); }
 
   template <typename T>

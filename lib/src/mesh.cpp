@@ -344,8 +344,8 @@ struct Mesh::Impl {
   }
 
   void minMax (glm::vec3& min, glm::vec3& max) const {
-    min = glm::vec3 (std::numeric_limits <float>::max    ());
-    max = glm::vec3 (std::numeric_limits <float>::lowest ());
+    min = glm::vec3 (Util::maxFloat ());
+    max = glm::vec3 (Util::minFloat ());
 
     for (unsigned int i = 0; i < this->numVertices (); i++) {
       min.x = glm::min (min.x, this->vertices [(3 * i) + 0]);

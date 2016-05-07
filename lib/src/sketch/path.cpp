@@ -22,8 +22,8 @@ struct SketchPath :: Impl {
   }
 
   void resetMinMax () {
-    this->minimum = glm::vec3 (std::numeric_limits <float>::max ());
-    this->maximum = glm::vec3 (std::numeric_limits <float>::lowest ());
+    this->minimum = glm::vec3 (Util::maxFloat ());
+    this->maximum = glm::vec3 (Util::minFloat ());
   }
 
   void reset () {

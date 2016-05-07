@@ -14,6 +14,7 @@
 #include <QSlider>
 #include <QToolButton>
 #include <glm/glm.hpp>
+#include "../util.hpp"
 #include "view/double-slider.hpp"
 #include "view/util.hpp"
 
@@ -95,8 +96,7 @@ QWidget& ViewUtil :: emptyWidget () {
 }
 
 QLineEdit& ViewUtil :: lineEdit (float value, unsigned short numDecimals) {
-  return ViewUtil::lineEdit ( std::numeric_limits <float>::lowest (), value
-                            , std::numeric_limits <float>::max (), numDecimals );
+  return ViewUtil::lineEdit (Util::minFloat (), value, Util::maxFloat (), numDecimals);
 }
 
 QLineEdit& ViewUtil :: lineEdit (float min, float value, float max, unsigned short numDecimals) {

@@ -526,8 +526,8 @@ struct IndexOctree::Impl {
 
   void printStatistics () const {
     IndexOctreeStatistics stats { 0, 0
-                                , std::numeric_limits <int>::max ()
-                                , std::numeric_limits <int>::min ()
+                                , Util::maxInt ()
+                                , Util::minInt ()
                                 , 0 
                                 , IndexOctreeStatistics::DepthMap ()
                                 , IndexOctreeStatistics::DepthMap () };

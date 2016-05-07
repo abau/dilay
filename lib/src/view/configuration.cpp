@@ -115,7 +115,7 @@ namespace {
     addFloatEdit ( glWidget, *grid, "editor/camera/near-clipping", QObject::tr ("Near clipping plane")
                  , Util::epsilon (), 1.0f );
     addFloatEdit ( glWidget, *grid, "editor/camera/far-clipping", QObject::tr ("Far clipping plane")
-                 , 100.0f, std::numeric_limits <float>::max () );
+                 , 100.0f, Util::maxFloat () );
     addFloatEdit ( glWidget, *grid, "editor/camera/rotation-factor", QObject::tr ("Rotation factor")
                  , Util::epsilon (), 100.f );
     addFloatEdit ( glWidget, *grid, "editor/camera/movement-factor", QObject::tr ("Movement factor")
@@ -170,11 +170,11 @@ namespace {
     ViewTwoColumnGrid* grid = new ViewTwoColumnGrid;
 
     addIntEdit ( glWidget, *grid, "editor/undo-depth", QObject::tr ("Undo depth")
-               , 1, std::numeric_limits <int>::max () );
+               , 1, Util::maxInt () );
     addIntEdit ( glWidget, *grid, "window/initial-width", QObject::tr ("Initial window width")
-               , 1, std::numeric_limits <int>::max () );
+               , 1, Util::maxInt () );
     addIntEdit ( glWidget, *grid, "window/initial-height", QObject::tr ("Initial window height")
-               , 1, std::numeric_limits <int>::max () );
+               , 1, Util::maxInt () );
 
     addVectorEdit (glWidget, *grid, "editor/axis/scaling", QObject::tr ("Axis scaling"));
     addVectorEdit (glWidget, *grid, "editor/axis/arrow-scaling", QObject::tr ("Axis-arrow scaling"));

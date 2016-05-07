@@ -30,7 +30,7 @@
  * 4------------5          o-----6------o
  */
 namespace {
-  static glm::vec3 invalidVec3 = glm::vec3 (std::numeric_limits <float>::lowest ());
+  static glm::vec3 invalidVec3 = glm::vec3 (Util::minFloat ());
 
   static int edgeVertexIndices[256][12] = {
       {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
@@ -496,7 +496,7 @@ namespace {
   }
 
   float sampleAt (const SketchMesh& mesh, const glm::vec3& pos) {
-    float distance = std::numeric_limits <float>::max ();
+    float distance = Util::maxFloat ();
       
     if (mesh.tree ().hasRoot ()) {
       mesh.tree ().root ().forEachConstNode ([&pos, &distance] (const SketchNode& node) {
