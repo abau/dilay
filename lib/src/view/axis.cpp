@@ -144,11 +144,11 @@ struct ViewAxis::Impl {
     {
       this->coneMesh.position (p);
 
-      glm::ivec2 pos = camera.fromWorld ( glm::vec3 (0.0f)
-                                        , this->coneMesh.modelMatrix ()
-                                        , true);
-      QRect rect ( pos.x - (w / 2)
-                 , resolution.y - this->axisResolution.y + pos.y - (w / 2)
+      glm::vec2 pos = camera.fromWorld ( glm::vec3 (0.0f)
+                                       , this->coneMesh.modelMatrix ()
+                                       , true);
+      QRect rect ( int (pos.x) - (w / 2)
+                 , resolution.y - this->axisResolution.y + int (pos.y) - (w / 2)
                  , w, w );
 
       painter.drawText (rect, Qt::AlignCenter, l);

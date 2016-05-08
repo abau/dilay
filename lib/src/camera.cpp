@@ -115,12 +115,12 @@ struct Camera::Impl {
     return glm::vec4 (0, 0, this->resolution.x, this->resolution.y);
   }
 
-  glm::ivec2 fromWorld (const glm::vec3& p, const glm::mat4x4& model, bool onlyRotation) const {
+  glm::vec2 fromWorld (const glm::vec3& p, const glm::mat4x4& model, bool onlyRotation) const {
     const glm::mat4x4 mv = onlyRotation ? this->viewRotation * model
                                         : this->view         * model;
     const glm::vec3 w = glm::project (p, mv, this->projection, this->viewport ());
 
-    return glm::ivec2 (int (w.x), int (resolution.y - w.y));
+    return glm::vec2 (w.x, float (resolution.y) - w.y);
   }
 
   glm::vec3 toWorld (const glm::ivec2& p, float z = 0.0f) const {
@@ -199,7 +199,7 @@ DELEGATE1       (void       , Camera, setGaze, const glm::vec3&)
 DELEGATE1       (void       , Camera, stepAlongGaze, float) 
 DELEGATE1       (void       , Camera, verticalRotation, float) 
 DELEGATE1       (void       , Camera, horizontalRotation, float) 
-DELEGATE3_CONST (glm::ivec2 , Camera, fromWorld, const glm::vec3&, const glm::mat4x4&, bool)
+DELEGATE3_CONST (glm::vec2  , Camera, fromWorld, const glm::vec3&, const glm::mat4x4&, bool)
 DELEGATE2_CONST (glm::vec3  , Camera, toWorld, const glm::ivec2&, float)
 DELEGATE2_CONST (float      , Camera, toWorld, float, float)
 DELEGATE1_CONST (PrimRay    , Camera, ray, const glm::ivec2&)
