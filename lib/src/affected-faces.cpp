@@ -10,38 +10,38 @@
 
 struct AffectedFaces::Impl {
   FacePtrSet faces;
-  FacePtrSet uncommitedFaces;
+  FacePtrSet uncommittedFaces;
 
   void insert (WingedFace& face) {
-    this->uncommitedFaces.insert (&face);
+    this->uncommittedFaces.insert (&face);
   }
 
   void insert (const AffectedFaces& faces) {
     for (WingedFace* f : faces.faces ()) {
       this->insert (*f);
     }
-    for (WingedFace* f : faces.uncommitedFaces ()) {
+    for (WingedFace* f : faces.uncommittedFaces ()) {
       this->insert (*f);
     }
   }
 
   void remove (WingedFace& face) {
-    this->uncommitedFaces.erase (&face);
+    this->uncommittedFaces.erase (&face);
     this->faces          .erase (&face);
   }
 
   void reset () {
-    this->faces          .clear ();
-    this->uncommitedFaces.clear ();
+    this->faces           .clear ();
+    this->uncommittedFaces.clear ();
   }
 
   void commit () { 
-    this->faces.insert (this->uncommitedFaces.begin (), this->uncommitedFaces.end ());
-    this->uncommitedFaces.clear ();
+    this->faces.insert (this->uncommittedFaces.begin (), this->uncommittedFaces.end ());
+    this->uncommittedFaces.clear ();
   }
 
   bool isEmpty () const {
-    return this->faces.empty () && this->uncommitedFaces.empty ();
+    return this->faces.empty () && this->uncommittedFaces.empty ();
   }
 
   bool contains (WingedFace& face) const { 
@@ -49,7 +49,7 @@ struct AffectedFaces::Impl {
   }
 
   bool contains (WingedFace* face) const { 
-    return this->faces.count (face) > 0 || this->uncommitedFaces.count (face) > 0;
+    return this->faces.count (face) > 0 || this->uncommittedFaces.count (face) > 0;
   }
 
   void discardBackfaces (const WingedMesh& mesh, const glm::vec3& normal) {
@@ -65,9 +65,9 @@ struct AffectedFaces::Impl {
         ++it;
       }
     }
-    for (auto it = uncommitedFaces.begin (); it != uncommitedFaces.end (); ) {
+    for (auto it = uncommittedFaces.begin (); it != uncommittedFaces.end (); ) {
       if (discard (*it)) {
-        it = this->uncommitedFaces.erase (it);
+        it = this->uncommittedFaces.erase (it);
       }
       else {
         ++it;
@@ -110,6 +110,6 @@ DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace*)
 DELEGATE2       (void,              AffectedFaces, discardBackfaces, const WingedMesh&, const glm::vec3&)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)
-GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommitedFaces)
+GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommittedFaces)
 DELEGATE_CONST  (VertexPtrSet,      AffectedFaces, toVertexSet)
 DELEGATE_CONST  (EdgePtrVec,        AffectedFaces, toEdgeVec)

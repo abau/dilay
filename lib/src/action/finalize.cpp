@@ -19,7 +19,7 @@ void Action :: collapseDegeneratedFaces (WingedMesh& mesh, AffectedFaces& affect
   while ((degenerated = mesh.someDegeneratedFace ()) != nullptr) {
     PartialAction::collapseFace (mesh, *degenerated, affectedFaces);
 
-    FacePtrSet affectedByCollapse = affectedFaces.uncommitedFaces ();
+    FacePtrSet affectedByCollapse = affectedFaces.uncommittedFaces ();
     for (WingedFace* f : affectedByCollapse) {
       mesh.realignFace (*f);
     }

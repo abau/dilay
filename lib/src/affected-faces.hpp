@@ -24,7 +24,7 @@ class AffectedFaces {
     void discardBackfaces (const WingedMesh&, const glm::vec3&);
 
     const FacePtrSet&    faces            () const;
-    const FacePtrSet&    uncommitedFaces  () const;
+    const FacePtrSet&    uncommittedFaces () const;
           VertexPtrSet   toVertexSet      () const;
           EdgePtrVec     toEdgeVec        () const;
 
