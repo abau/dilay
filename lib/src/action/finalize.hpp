@@ -12,7 +12,7 @@ namespace Action {
 
   void collapseDegeneratedFaces (WingedMesh&);
   void collapseDegeneratedFaces (WingedMesh&, AffectedFaces&);
-  void realignFaces             (WingedMesh&, AffectedFaces&);
+  void realignFaces             (WingedMesh&, const AffectedFaces&);
   void finalize                 (WingedMesh&, AffectedFaces&);
 }
 

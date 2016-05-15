@@ -27,7 +27,7 @@ void Action :: collapseDegeneratedFaces (WingedMesh& mesh, AffectedFaces& affect
   }
 }
 
-void Action :: realignFaces (WingedMesh& mesh, AffectedFaces& affectedFaces) {
+void Action :: realignFaces (WingedMesh& mesh, const AffectedFaces& affectedFaces) {
   for (WingedFace* f : affectedFaces.faces ()) {
     mesh.realignFace (*f);
   }
