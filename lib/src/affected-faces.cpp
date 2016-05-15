@@ -35,6 +35,10 @@ struct AffectedFaces::Impl {
     this->uncommittedFaces.clear ();
   }
 
+  void resetCommitted () {
+    this->faces.clear ();
+  }
+
   void commit () { 
     this->faces.insert (this->uncommittedFaces.begin (), this->uncommittedFaces.end ());
     this->uncommittedFaces.clear ();
@@ -104,6 +108,7 @@ DELEGATE1       (void,              AffectedFaces, insert, WingedFace&)
 DELEGATE1       (void,              AffectedFaces, insert, const AffectedFaces&)
 DELEGATE1       (void,              AffectedFaces, remove, WingedFace&)
 DELEGATE        (void,              AffectedFaces, reset)
+DELEGATE        (void,              AffectedFaces, resetCommitted)
 DELEGATE        (void,              AffectedFaces, commit)
 DELEGATE_CONST  (bool,              AffectedFaces, isEmpty)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace&)

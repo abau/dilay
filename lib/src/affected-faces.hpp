@@ -17,6 +17,7 @@ class AffectedFaces {
     void insert           (const AffectedFaces&);
     void remove           (WingedFace&);
     void reset            ();
+    void resetCommitted   ();
     void commit           ();
     bool isEmpty          () const;
     bool contains         (WingedFace&) const;
