@@ -13,6 +13,18 @@
 #include <vector>
 #include "util.hpp"
 
+namespace {
+  template <typename T>
+  bool colinearUnitT (const T& v1, const T& v2) {
+    return Util::almostEqual (glm::abs (glm::dot (v1, v2)), 1.0f);
+  }
+
+  template <typename T>
+  bool colinearT (const T& v1, const T& v2) {
+    return colinearUnitT <T> (glm::normalize (v1), glm::normalize (v2));
+  }
+}
+
 std::ostream& operator<<(std::ostream& os, const glm::ivec2& v) {
   os << v.x << " " << v.y;
   return os;
@@ -55,12 +67,20 @@ glm::vec3 Util :: orthogonal (const glm::vec3& v) {
                                          : glm::vec3 (0.0f, -v.z, v.y);
 }
 
+bool Util :: colinear (const glm::vec2& v1, const glm::vec2& v2) {
+  return colinearT <glm::vec2> (v1, v2);
+}
+
 bool Util :: colinear (const glm::vec3& v1, const glm::vec3& v2) {
-  return Util::colinearUnit (glm::normalize (v1), glm::normalize (v2));
+  return colinearT <glm::vec3> (v1, v2);
+}
+
+bool Util :: colinearUnit (const glm::vec2& v1, const glm::vec2& v2) {
+  return colinearUnitT <glm::vec2> (v1, v2);
 }
 
 bool Util :: colinearUnit (const glm::vec3& v1, const glm::vec3& v2) {
-  return Util::almostEqual (glm::abs (glm::dot (v1, v2)), 1.0f);
+  return colinearUnitT <glm::vec3> (v1, v2);
 }
 
 float Util :: smoothStep ( const glm::vec3& v, const glm::vec3& center
