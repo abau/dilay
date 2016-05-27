@@ -88,6 +88,10 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
                                                           , fileDialogFilters ()
                                                           , &filter ).toStdString ();
     if (fileName.empty () == false) {
+#ifndef NDEBUG
+      scene.reset ();
+      glWidget.state ().history ().reset ();
+#else
       if (scene.isEmpty () == false) {
         if (ViewUtil::question (mainWindow, QObject::tr ("Replace existent scene?"))) {
           scene.reset ();
@@ -97,6 +101,7 @@ void ViewMenuBar :: setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget) {
           glWidget.state ().history ().snapshotAll (scene);
         }
       }
+#endif
       if (scene.fromDlyFile (glWidget.state ().config (), fileName) == false) {
         ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
       }
