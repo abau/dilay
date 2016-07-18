@@ -235,7 +235,7 @@ namespace VariantDetails {
         return branch (*this->t);
       }
       else {
-        return this->ts.template caseOf (i-1, branches ...);
+        return this->ts.template caseOf <U> (i-1, branches ...);
       }
     }
   };
