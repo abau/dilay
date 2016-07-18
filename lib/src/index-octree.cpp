@@ -2,6 +2,7 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <functional>
 #include <glm/glm.hpp>
 #include <array>
 #include <iostream>
