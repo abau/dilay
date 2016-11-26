@@ -172,13 +172,18 @@ struct WingedMesh::Impl {
         && this->numIndices  () == 0;
   }
 
-  Mesh makePrunedMesh (std::vector <unsigned int>* newFaceIndices) const {
+  Mesh makePrunedMesh ( std::vector <unsigned int>* newFaceIndices
+                      , std::vector <unsigned int>* newVertexIndices ) const
+  {
     Mesh prunedMesh (this->mesh, false);
 
     if (this->vertices.hasFreeIndices () || this->faces.hasFreeIndices ()) {
-      std::vector <unsigned int> newVertexIndices;
+      std::vector <unsigned int>  localNewVertexIndices;
+      std::vector <unsigned int>& refNewVertexIndices = newVertexIndices ? *newVertexIndices
+                                                                         :  localNewVertexIndices;
 
-      newVertexIndices.resize    (this->mesh.numVertices (), Util::invalidIndex ());
+      refNewVertexIndices.clear  ();
+      refNewVertexIndices.resize (this->mesh.numVertices (), Util::invalidIndex ());
       prunedMesh.reserveVertices (this->mesh.numVertices ());
       prunedMesh.reserveIndices  (this->mesh.numIndices  ());
 
@@ -189,17 +194,17 @@ struct WingedMesh::Impl {
         newFaceIndices->resize (this->mesh.numIndices () / 3, Util::invalidIndex ());
       }
 
-      this->forEachConstVertex ([&prunedMesh, &newVertexIndices, this] (const WingedVertex& v) {
+      this->forEachConstVertex ([&prunedMesh, &refNewVertexIndices, this] (const WingedVertex& v) {
         const unsigned int newIndex = prunedMesh.addVertex ( v.position    (*this->self)
                                                            , v.savedNormal (*this->self) );
-        newVertexIndices [v.index ()] = newIndex;
+        refNewVertexIndices [v.index ()] = newIndex;
       });
-      this->forEachConstFace ( [&prunedMesh, &newVertexIndices, &newFaceIndices]
+      this->forEachConstFace ( [&prunedMesh, &refNewVertexIndices, &newFaceIndices]
                                (const WingedFace& f) 
       {
-        const unsigned int newV1 = newVertexIndices [f.vertexRef (0).index ()];
-        const unsigned int newV2 = newVertexIndices [f.vertexRef (1).index ()];
-        const unsigned int newV3 = newVertexIndices [f.vertexRef (2).index ()];
+        const unsigned int newV1 = refNewVertexIndices [f.vertexRef (0).index ()];
+        const unsigned int newV2 = refNewVertexIndices [f.vertexRef (1).index ()];
+        const unsigned int newV3 = refNewVertexIndices [f.vertexRef (2).index ()];
 
         assert (newV1 != Util::invalidIndex ());
         assert (newV2 != Util::invalidIndex ());
@@ -361,7 +366,7 @@ struct WingedMesh::Impl {
   }
 
   void mirror (const PrimPlane& plane) {
-    this->fromMesh (this->makePrunedMesh (nullptr), &plane);
+    this->fromMesh (this->makePrunedMesh (nullptr, nullptr), &plane);
   }
 
   void setupOctreeRoot (const glm::vec3& center, float width) {
@@ -518,7 +523,7 @@ DELEGATE_CONST  (unsigned int     , WingedMesh, numFaces)
 DELEGATE_CONST  (unsigned int     , WingedMesh, numIndices)
 DELEGATE_CONST  (bool             , WingedMesh, isEmpty)
 
-DELEGATE1_CONST (Mesh             , WingedMesh, makePrunedMesh, std::vector <unsigned int>*)
+DELEGATE2_CONST (Mesh             , WingedMesh, makePrunedMesh, std::vector <unsigned int>*, std::vector <unsigned int>*)
 DELEGATE2       (void             , WingedMesh, fromMesh, const Mesh&, const PrimPlane*)
 DELEGATE        (void             , WingedMesh, writeAllIndices)
 DELEGATE        (void             , WingedMesh, writeAllNormals)

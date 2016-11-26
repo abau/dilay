@@ -5,6 +5,8 @@
 #ifndef DILAY_PARTIAL_ACTION_SUBDIVIDE_EDGE
 #define DILAY_PARTIAL_ACTION_SUBDIVIDE_EDGE
 
+#include <glm/fwd.hpp>
+
 class WingedMesh;
 class WingedEdge;
 class AffectedFaces;
@@ -13,6 +15,7 @@ namespace PartialAction {
 
   void extendDomain  (AffectedFaces&);
   void subdivideEdge (WingedMesh&, WingedEdge&, AffectedFaces&);
+  void subdivideEdge (WingedMesh&, WingedEdge&, AffectedFaces&, const glm::vec3&);
 }
 
 #endif

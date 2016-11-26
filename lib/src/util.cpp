@@ -145,6 +145,38 @@ unsigned int Util :: solveQuadraticEq (float a, float b, float c, float& s1, flo
   }
 }
 
+unsigned int Util :: solveCubicEq ( float a, float b, float c, float d
+                                  , float& s1, float& s2, float& s3 )
+{
+  return Util::solveCubicEq (b / a, c / a, d / a, s1, s2, s3);
+}
+
+unsigned int Util :: solveCubicEq ( float a, float b, float c
+                                  , float& s1, float& s2, float& s3 )
+{
+  const float q = ((a * a) - (3.0f * b)) / 9.0f;
+  const float r = ((2.0f * a * a * a) - (9.0f * a * b) + (27.0f * c)) / 54.0f;
+  const float w = (r * r) - (q * q * q);
+  const float s = a / 3.0f;
+
+  if (w < 0.0f) {
+    const float theta = glm::acos (r / glm::sqrt (q * q * q));
+    const float f     = -2.0f * glm::sqrt (q);
+
+    s1 = (f * glm::cos (theta / 3.0f)) - s;
+    s2 = (f * glm::cos ((theta + glm::two_pi <float> ()) / 3.0f)) - s;
+    s3 = (f * glm::cos ((theta - glm::two_pi <float> ()) / 3.0f)) - s;
+    return 3;
+  }
+  else {
+    const float x = -glm::sign (r) * glm::pow (glm::abs (r) + glm::sqrt (w), 1.0f / 3.0f);
+    const float y = Util::almostEqual (x, 0.0f) ? 0.0f : q / x;
+
+    s1 = x + y - s;
+    return 1;
+  }
+}
+
 bool Util :: isNaN (const glm::vec3& v) {
   return glm::any (glm::isnan (v));
 }

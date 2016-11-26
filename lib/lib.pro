@@ -84,6 +84,10 @@ SOURCES += \
            src/tool/sculpt/reduce.cpp \
            src/tool/sculpt/smooth.cpp \
            src/tool/sketch-spheres.cpp \
+           src/tool/trim-mesh/action.cpp \
+           src/tool/trim-mesh/border.cpp \
+           src/tool/trim-mesh/split-mesh.cpp \
+           src/tool/trim-mesh.cpp \
            src/tool/util/movement.cpp \
            src/tool/util/scaling.cpp \
            src/util.cpp \
@@ -181,6 +185,9 @@ HEADERS += \
            src/tool.hpp \
            src/tool/move-camera.hpp \
            src/tool/sculpt.hpp \
+           src/tool/trim-mesh/action.hpp \
+           src/tool/trim-mesh/border.hpp \
+           src/tool/trim-mesh/split-mesh.hpp \
            src/tool/util/movement.hpp \
            src/tool/util/scaling.hpp \
            src/tools.hpp \

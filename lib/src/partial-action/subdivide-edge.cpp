@@ -73,6 +73,13 @@ void PartialAction :: extendDomain (AffectedFaces& domain) {
 void PartialAction :: subdivideEdge ( WingedMesh& mesh, WingedEdge& edge
                                     , AffectedFaces& affectedFaces )
 {
+  PartialAction::subdivideEdge ( mesh, edge, affectedFaces
+                               , SubdivisionButterfly::subdivideEdge (mesh, edge) );
+}
+
+void PartialAction :: subdivideEdge ( WingedMesh& mesh, WingedEdge& edge
+                                    , AffectedFaces& affectedFaces, const glm::vec3& newPos )
+{
 #ifndef NDEBUG
   const unsigned int valence1 = edge.vertex1Ref ().valence ();
   const unsigned int valence2 = edge.vertex2Ref ().valence ();
@@ -83,9 +90,7 @@ void PartialAction :: subdivideEdge ( WingedMesh& mesh, WingedEdge& edge
   const unsigned int valence3 = v3.valence ();
   const unsigned int valence4 = v4.valence ();
 #endif
-
-  const glm::vec3 newPos  = SubdivisionButterfly::subdivideEdge (mesh, edge);
-  WingedEdge&     newEdge = PartialAction::insertEdgeVertex (mesh, edge, newPos);
+  WingedEdge& newEdge = PartialAction::insertEdgeVertex (mesh, edge, newPos);
 
   PartialAction::triangulateQuad  (mesh, edge.leftFaceRef  (), affectedFaces);
   PartialAction::triangulateQuad  (mesh, edge.rightFaceRef (), affectedFaces);
