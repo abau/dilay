@@ -9,7 +9,7 @@
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptGrab::Impl {

@@ -18,8 +18,8 @@
 #include "tool/util/scaling.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 struct ToolModifySketch::Impl {
@@ -53,7 +53,7 @@ struct ToolModifySketch::Impl {
   }
 
   void setupProperties () {
-    ViewTwoColumnGrid& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->makeProperties ();
 
     properties.add (QObject::tr ("Move along"), ViewUtil::emptyWidget ());
     this->movement.addProperties (properties, [this] () {

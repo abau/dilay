@@ -15,8 +15,8 @@
 #include "tools.hpp"
 #include "util.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 namespace {
@@ -58,7 +58,7 @@ struct ToolDeleteSketch::Impl {
   }
 
   void setupProperties () {
-    ViewTwoColumnGrid& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->makeProperties ();
 
     QCheckBox& deleteChildrenEdit = ViewUtil::checkBox ( QObject::tr ("Delete children")
                                                        , this->deleteChildren );

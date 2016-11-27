@@ -9,45 +9,61 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/gl-widget.hpp"
-#include "view/main-widget.hpp"
-#include "view/properties.hpp"
+#include "view/tool-pane.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-struct ViewMainWidget :: Impl {
-  ViewMainWidget*            self;
+struct ViewToolPane::Impl {
+  ViewToolPane*              self;
   ViewGlWidget&              glWidget;
-  ViewProperties&            properties;
+  QVBoxLayout&               layout;
+  ViewTwoColumnGrid*         properties;
   std::vector <QPushButton*> toolButtons;
 
-  Impl (ViewMainWidget* s, ViewMainWindow& mW, Config& config, Cache& cache) 
-    : self       (s) 
-    , glWidget   (*new ViewGlWidget (mW, config, cache))
-    , properties (*new ViewProperties)
+  Impl (ViewToolPane* s, ViewGlWidget& g)
+    : self       (s)
+    , glWidget   (g)
+    , layout     (*new QVBoxLayout)
+    , properties (nullptr)
   {
-    this->self->addWidget (this->initalizeLeftPane ());
-    this->self->addWidget (&this->glWidget);
+    QScrollArea* scrollArea = new QScrollArea;
+    QWidget*     pane       = new QWidget;
+
+    scrollArea->setWidgetResizable (true);
+    scrollArea->setWidget (pane);
+    pane->setLayout (&this->layout);
+
+    this->layout.setSpacing (0);
+    this->layout.addWidget  (this->initializeToolSelection ());
+    this->layout.addStretch (1);
+
+    this->self->setWidget       (scrollArea);
+    this->self->setFeatures     (DockWidgetMovable);
+    this->self->setAllowedAreas (Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   }
 
-  QWidget* initalizeLeftPane () {
-    QScrollArea* leftScrollArea = new QScrollArea;
-    QWidget*     leftPane       = new QWidget;
-    QVBoxLayout* leftPaneLayout = new QVBoxLayout;
+  ViewTwoColumnGrid& makeProperties () {
+    this->resetProperties ();
 
-    leftScrollArea->setWidget          (leftPane);
-    leftScrollArea->setWidgetResizable (true);
-    leftPane->setLayout (leftPaneLayout);
-    leftPaneLayout->setSpacing (0);
-    leftPaneLayout->addWidget  (this->initalizeToolPane ());
-    leftPaneLayout->addWidget  (&this->properties);
-    leftPaneLayout->addStretch (1);
+    assert (this->layout.count () == 2);
 
-    return leftScrollArea;
+    this->properties = new ViewTwoColumnGrid;
+    this->layout.insertWidget (1, this->properties);
+    return *this->properties;
   }
 
-  QWidget* initalizeToolPane () {
+  void resetProperties () {
+    if (this->properties) {
+      this->layout.removeWidget (this->properties);
+      delete this->properties;
+      this->properties = nullptr;
+    }
+  }
+
+  QWidget* initializeToolSelection () {
     QTabWidget* toolPane = new QTabWidget;
-    toolPane->addTab (this->initalizeSculptToolPane (), QObject::tr ("Sculpt"));
-    toolPane->addTab (this->initalizeSketchToolPane (), QObject::tr ("Sketch"));
+    toolPane->addTab (this->initalizeSculptSelection (), QObject::tr ("Sculpt"));
+    toolPane->addTab (this->initalizeSketchSelection (), QObject::tr ("Sketch"));
 
     QObject::connect (toolPane, &QTabWidget::currentChanged, [this] (int) {
       this->glWidget.state ().resetTool ();
@@ -55,7 +71,7 @@ struct ViewMainWidget :: Impl {
     return toolPane;
   }
 
-  QWidget* initalizeSculptToolPane () {
+  QWidget* initalizeSculptSelection () {
     QWidget*     toolPane       = new QWidget;
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
@@ -75,10 +91,11 @@ struct ViewMainWidget :: Impl {
     this->addToolButton <ToolSculptReduce>  (toolPaneLayout, QObject::tr ("Reduce"));
 
     toolPaneLayout->addStretch (1);
+
     return toolPane;
   }
 
-  QWidget* initalizeSketchToolPane () {
+  QWidget* initalizeSketchSelection () {
     QWidget*     toolPane       = new QWidget;
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
@@ -93,6 +110,7 @@ struct ViewMainWidget :: Impl {
     this->addToolButton <ToolConvertSketch>    (toolPaneLayout, QObject::tr ("Convert sketch"));
 
     toolPaneLayout->addStretch (1);
+
     return toolPane;
   }
 
@@ -102,37 +120,28 @@ struct ViewMainWidget :: Impl {
     button.setCheckable (true);
     
     ViewUtil::connect (button, [this, &button] () {
-      this->selectOnly (button);
+      for (QPushButton* b : this->toolButtons) {
+        b->setChecked (b == &button);
+      }
 
       State& s = this->glWidget.state ();
-      s.resetTool (false);
+      s.resetTool ();
       s.setTool   (std::move (*new T (s)));
     });
     layout->addWidget           (&button);
     this->toolButtons.push_back (&button);
   }
 
-  void selectOnly (QPushButton& button) {
-    for (QPushButton* b : this->toolButtons) {
-      b->setChecked (b == &button);
-    }
-  }
-
   void deselectTool () {
     assert (this->glWidget.state ().hasTool () == false);
+
     for (QPushButton* b : this->toolButtons) {
       b->setChecked (false);
     }
   }
-
-  void update () {
-    this->self->QSplitter::update ();
-    this->glWidget.update ();
-  }
 };
 
-DELEGATE3_BIG2_SELF (ViewMainWidget, ViewMainWindow&, Config&, Cache&)
-GETTER   (ViewGlWidget&  , ViewMainWidget, glWidget)
-GETTER   (ViewProperties&, ViewMainWidget, properties)
-DELEGATE (void           , ViewMainWidget, deselectTool)
-DELEGATE (void           , ViewMainWidget, update)
+DELEGATE_BIG2_BASE (ViewToolPane, (ViewGlWidget& g, QWidget* p), (this, g), QDockWidget, (p))
+DELEGATE (ViewTwoColumnGrid&, ViewToolPane, makeProperties)
+DELEGATE (void,               ViewToolPane, resetProperties)
+DELEGATE (void,               ViewToolPane, deselectTool)

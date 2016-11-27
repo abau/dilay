@@ -10,6 +10,7 @@
 
 class ViewDoubleSlider;
 class QAbstractSpinBox;
+class QAction;
 class QButtonGroup;
 class QCheckBox;
 class QDoubleSpinBox;
@@ -50,6 +51,7 @@ namespace ViewUtil {
   void              connect        (const QRadioButton&, const std::function <void (bool)>&);
   void              connect        (const QSlider&, const std::function <void (int)>&);
   void              connect        (const ViewDoubleSlider&, const std::function <void (float)>&);
+  void              connect        (const QAction&, const std::function <void ()>&);
   void              connectFloat   (const QLineEdit&, const std::function <void (float)>&);
   void              connectInt     (const QLineEdit&, const std::function <void (int)>&);
   QWidget&          stretcher      (bool, bool);

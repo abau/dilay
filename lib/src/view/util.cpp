@@ -2,6 +2,7 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QAction>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QDoubleSpinBox>
@@ -186,6 +187,10 @@ void ViewUtil :: connect (const QSlider& s, const std::function <void (int)>& f)
 
 void ViewUtil :: connect (const ViewDoubleSlider& s, const std::function <void (float)>& f) {
   QObject::connect (&s, &ViewDoubleSlider::doubleValueChanged, f);
+}
+
+void ViewUtil :: connect (const QAction& a, const std::function <void ()>& f) {
+  QObject::connect (&a, &QAction::triggered, f);
 }
 
 void ViewUtil :: connectFloat (const QLineEdit& e, const std::function <void (float)>& f) {

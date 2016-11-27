@@ -11,7 +11,8 @@
 class Cache;
 class Config;
 class QCloseEvent;
-class ViewMainWidget;
+class ViewGlWidget;
+class ViewToolPane;
 class ViewToolTip;
 
 class ViewMainWindow : public QMainWindow {
@@ -19,15 +20,16 @@ class ViewMainWindow : public QMainWindow {
   public:
     DECLARE_BIG2 (ViewMainWindow, Config&, Cache&)
 
-    ViewMainWidget& mainWidget         ();
-    void            showMessage        (const QString&);
-    void            showToolTip        (const ViewToolTip&);
-    void            showDefaultToolTip ();
-    void            showNumFaces       (unsigned int);
-    void            update             ();
+    ViewGlWidget& glWidget           ();
+    ViewToolPane& toolPane           ();
+    void          showMessage        (const QString&);
+    void          showToolTip        (const ViewToolTip&);
+    void          showDefaultToolTip ();
+    void          showNumFaces       (unsigned int);
+    void          update             ();
 
   protected:
-    void            closeEvent         (QCloseEvent*);
+    void          closeEvent         (QCloseEvent*);
 
   private:
     IMPLEMENTATION

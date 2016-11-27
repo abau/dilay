@@ -10,29 +10,32 @@
 #include "state.hpp"
 #include "tool/move-camera.hpp"
 #include "view/gl-widget.hpp"
-#include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
+#include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
 struct ViewMainWindow :: Impl {
   ViewMainWindow* self;
-  ViewMainWidget& mainWidget;
+  ViewGlWidget&   glWidget;
+  ViewToolPane&   toolPane;
   QStatusBar&     statusBar;
   QLabel&         messageLabel;
   QLabel&         numFacesLabel;
 
   Impl (ViewMainWindow* s, Config& config, Cache& cache) 
     : self          (s) 
-    , mainWidget    (*new ViewMainWidget (*this->self, config, cache))
+    , glWidget      (*new ViewGlWidget (*this->self, config, cache))
+    , toolPane      (*new ViewToolPane (this->glWidget))
     , statusBar     (*new QStatusBar)
     , messageLabel  (*new QLabel)
     , numFacesLabel (*new QLabel)
   {
-    this->self->setCentralWidget (&this->mainWidget);
+    this->self->setCentralWidget (&this->glWidget);
+    this->self->addDockWidget    (Qt::LeftDockWidgetArea, &this->toolPane);
 
-    ViewMenuBar::setup (*this->self, this->mainWidget.glWidget ());
+    ViewMenuBar::setup (*this->self, this->glWidget);
 
     this->setupShortcuts ();
     this->setupStatusBar ();
@@ -46,8 +49,8 @@ struct ViewMainWindow :: Impl {
     };
 
     addShortcut (Qt::Key_Escape, [this] () {
-      if (this->mainWidget.glWidget ().state ().hasTool ()) {
-        this->mainWidget.glWidget ().state ().resetTool ();
+      if (this->glWidget.state ().hasTool ()) {
+        this->glWidget.state ().resetTool ();
       }
 #ifndef NDEBUG
       else {
@@ -57,16 +60,15 @@ struct ViewMainWindow :: Impl {
     });
 #ifndef NDEBUG
     addShortcut (Qt::Key_I, [this] () {
-      this->mainWidget.glWidget ().state ().scene ().printStatistics (false);
+      this->glWidget.state ().scene ().printStatistics (false);
     });
     addShortcut (Qt::SHIFT + Qt::Key_I, [this] () {
-      this->mainWidget.glWidget ().state ().scene ().printStatistics (true);
+      this->glWidget.state ().scene ().printStatistics (true);
     });
 #endif
     addShortcut (Qt::SHIFT + Qt::Key_C, [this] () {
-      this->mainWidget.glWidget ()
-                      .toolMoveCamera ()
-                      .snap (this->mainWidget.glWidget ().state (), true);
+      this->glWidget.toolMoveCamera ()
+                    .snap (this->glWidget.state (), true);
     });
   }
 
@@ -108,7 +110,7 @@ struct ViewMainWindow :: Impl {
 
   void update () {
     this->self->QMainWindow::update ();
-    this->mainWidget.update ();
+    this->glWidget.update ();
   }
 
   void closeEvent (QCloseEvent* e) {
@@ -126,10 +128,11 @@ struct ViewMainWindow :: Impl {
 };
 
 DELEGATE2_BIG2_SELF (ViewMainWindow, Config&, Cache&)
-GETTER    (ViewMainWidget&, ViewMainWindow, mainWidget)
-DELEGATE1 (void           , ViewMainWindow, showMessage, const QString&)
-DELEGATE1 (void           , ViewMainWindow, showToolTip, const ViewToolTip&)
-DELEGATE  (void           , ViewMainWindow, showDefaultToolTip)
-DELEGATE1 (void           , ViewMainWindow, showNumFaces, unsigned int)
-DELEGATE  (void           , ViewMainWindow, update)
-DELEGATE1 (void           , ViewMainWindow, closeEvent, QCloseEvent*)
+GETTER    (ViewGlWidget&, ViewMainWindow, glWidget)
+GETTER    (ViewToolPane&, ViewMainWindow, toolPane)
+DELEGATE1 (void         , ViewMainWindow, showMessage, const QString&)
+DELEGATE1 (void         , ViewMainWindow, showToolTip, const ViewToolTip&)
+DELEGATE  (void         , ViewMainWindow, showDefaultToolTip)
+DELEGATE1 (void         , ViewMainWindow, showNumFaces, unsigned int)
+DELEGATE  (void         , ViewMainWindow, update)
+DELEGATE1 (void         , ViewMainWindow, closeEvent, QCloseEvent*)

@@ -18,8 +18,8 @@ class QPainter;
 class QWheelEvent;
 class State;
 class ViewPointingEvent;
-class ViewProperties;
 class ViewToolTip;
+class ViewTwoColumnGrid;
 class WingedFaceIntersection;
 
 enum class ToolResponse {
@@ -30,35 +30,35 @@ class Tool {
   public:
     DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
 
-    ToolResponse     initialize             ();
-    void             render                 () const;
-    void             paint                  (QPainter&) const;
-    ToolResponse     pointingEvent          (const ViewPointingEvent&);
-    ToolResponse     wheelEvent             (const QWheelEvent&);
-    ToolResponse     cursorUpdate           (const glm::ivec2&);
-    void             close                  ();
-    void             fromConfig             ();
+    ToolResponse       initialize             ();
+    void               render                 () const;
+    void               paint                  (QPainter&) const;
+    ToolResponse       pointingEvent          (const ViewPointingEvent&);
+    ToolResponse       wheelEvent             (const QWheelEvent&);
+    ToolResponse       cursorUpdate           (const glm::ivec2&);
+    void               close                  ();
+    void               fromConfig             ();
 
   protected:
-    State&           state                  () const;
-    void             updateGlWidget         ();
-    ViewProperties&  properties             () const;
-    void             showToolTip            (const ViewToolTip&);
-    Config&          config                 () const;
-    CacheProxy&      cache                  ();
-    CacheProxy       cache                  (const char*) const;
-    glm::ivec2       cursorPosition         () const;
-    void             snapshotAll            ();
-    void             snapshotWingedMeshes   ();
-    void             snapshotSketchMeshes   ();
-    bool             intersectsRecentOctree (const glm::ivec2&, Intersection&) const;
-    bool             hasMirror              () const;
-    const Mirror&    mirror                 () const;
-    void             mirror                 (bool);
-    void             renderMirror           (bool);
-    const Dimension* mirrorDimension        () const;
-    void             mirrorWingedMeshes     ();
-    void             mirrorSketchMeshes     ();
+    State&             state                  () const;
+    void               updateGlWidget         ();
+    ViewTwoColumnGrid& makeProperties         () const;
+    void               showToolTip            (const ViewToolTip&);
+    Config&            config                 () const;
+    CacheProxy&        cache                  ();
+    CacheProxy         cache                  (const char*) const;
+    glm::ivec2         cursorPosition         () const;
+    void               snapshotAll            ();
+    void               snapshotWingedMeshes   ();
+    void               snapshotSketchMeshes   ();
+    bool               intersectsRecentOctree (const glm::ivec2&, Intersection&) const;
+    bool               hasMirror              () const;
+    const Mirror&      mirror                 () const;
+    void               mirror                 (bool);
+    void               renderMirror           (bool);
+    const Dimension*   mirrorDimension        () const;
+    void               mirrorWingedMeshes     ();
+    void               mirrorSketchMeshes     ();
 
     template <typename T, typename ... Ts>
     bool intersectsScene (const glm::ivec2&, T&, Ts ...);

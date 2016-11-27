@@ -25,8 +25,8 @@
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 namespace {
@@ -74,7 +74,7 @@ struct ToolSketchSpheres::Impl {
   {}
 
   void setupProperties () {
-    ViewTwoColumnGrid& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->makeProperties ();
 
     QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
     ViewUtil::connect (syncButton, [this] () {

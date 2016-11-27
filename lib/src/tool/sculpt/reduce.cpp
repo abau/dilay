@@ -8,7 +8,7 @@
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"
-#include "view/properties.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 struct ToolSculptReduce::Impl {

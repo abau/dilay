@@ -13,7 +13,7 @@
 #include "primitive/ray.hpp"
 #include "tool/util/movement.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 namespace {

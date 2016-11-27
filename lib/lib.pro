@@ -99,11 +99,10 @@ SOURCES += \
            src/view/floor-plane.cpp \
            src/view/gl-widget.cpp \
            src/view/light.cpp \
-           src/view/main-widget.cpp \
            src/view/main-window.cpp \
            src/view/menu-bar.cpp \
            src/view/pointing-event.cpp \
-           src/view/properties.cpp \
+           src/view/tool-pane.cpp \
            src/view/tool-tip.cpp \
            src/view/two-column-grid.cpp \
            src/view/util.cpp \
@@ -202,11 +201,10 @@ HEADERS += \
            src/view/floor-plane.cpp \
            src/view/gl-widget.hpp \
            src/view/light.hpp \
-           src/view/main-widget.hpp \
            src/view/main-window.hpp \
            src/view/menu-bar.hpp \
            src/view/pointing-event.hpp \
-           src/view/properties.hpp \
+           src/view/tool-pane.hpp \
            src/view/tool-tip.hpp \
            src/view/two-column-grid.hpp \
            src/view/util.hpp \

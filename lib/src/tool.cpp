@@ -17,9 +17,9 @@
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
-#include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
+#include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
 #include "winged/mesh.hpp"
 
@@ -85,11 +85,11 @@ struct Tool::Impl {
   }
 
   void updateGlWidget () {
-    this->state.mainWindow ().mainWidget ().glWidget ().update ();
+    this->state.mainWindow ().glWidget ().update ();
   }
 
-  ViewProperties& properties () const {
-    return this->state.mainWindow ().mainWidget ().properties ();
+  ViewTwoColumnGrid& makeProperties () const {
+    return this->state.mainWindow ().toolPane ().makeProperties ();
   }
 
   void showToolTip (const ViewToolTip& toolTip) {
@@ -109,7 +109,7 @@ struct Tool::Impl {
   }
 
   glm::ivec2 cursorPosition () {
-    return this->state.mainWindow ().mainWidget ().glWidget ().cursorPosition ();
+    return this->state.mainWindow ().glWidget ().cursorPosition ();
   }
 
   void snapshotAll () {
@@ -220,35 +220,35 @@ struct Tool::Impl {
   }
 };
 
-DELEGATE2_BIG3_SELF (Tool, State&, const char*)
-DELEGATE        (ToolResponse    , Tool, initialize)
-DELEGATE_CONST  (void            , Tool, render)
-DELEGATE1_CONST (void            , Tool, paint, QPainter&)
-DELEGATE1       (ToolResponse    , Tool, pointingEvent, const ViewPointingEvent&)
-DELEGATE1       (ToolResponse    , Tool, wheelEvent, const QWheelEvent&)
-DELEGATE1       (ToolResponse    , Tool, cursorUpdate, const glm::ivec2&)
-DELEGATE        (void            , Tool, close)
-DELEGATE        (void            , Tool, fromConfig)
-GETTER_CONST    (State&          , Tool, state)
-DELEGATE        (void            , Tool, updateGlWidget)
-DELEGATE_CONST  (ViewProperties& , Tool, properties)
-DELEGATE1       (void            , Tool, showToolTip, const ViewToolTip&)
-DELEGATE_CONST  (Config&         , Tool, config)
-DELEGATE        (CacheProxy&     , Tool, cache)
-DELEGATE1_CONST (CacheProxy      , Tool, cache, const char*)
-DELEGATE_CONST  (glm::ivec2      , Tool, cursorPosition)
-DELEGATE        (void            , Tool, snapshotAll)
-DELEGATE        (void            , Tool, snapshotWingedMeshes)
-DELEGATE        (void            , Tool, snapshotSketchMeshes)
-DELEGATE2_CONST (bool            , Tool, intersectsRecentOctree, const glm::ivec2&, Intersection&)
-DELEGATE_CONST  (bool            , Tool, hasMirror)
-DELEGATE_CONST  (const Mirror&   , Tool, mirror)
-DELEGATE1       (void            , Tool, mirror, bool)
-SETTER          (bool            , Tool, renderMirror)
-DELEGATE_CONST  (const Dimension*, Tool, mirrorDimension)
-DELEGATE        (void            , Tool, mirrorWingedMeshes)
-DELEGATE        (void            , Tool, mirrorSketchMeshes)
-DELEGATE1       (ToolResponse    , Tool, runPointingEvent, const ViewPointingEvent&)
+DELEGATE2_BIG3_SELF (Tool, State&  , const char*)
+DELEGATE        (ToolResponse      , Tool, initialize)
+DELEGATE_CONST  (void              , Tool, render)
+DELEGATE1_CONST (void              , Tool, paint, QPainter&)
+DELEGATE1       (ToolResponse      , Tool, pointingEvent, const ViewPointingEvent&)
+DELEGATE1       (ToolResponse      , Tool, wheelEvent, const QWheelEvent&)
+DELEGATE1       (ToolResponse      , Tool, cursorUpdate, const glm::ivec2&)
+DELEGATE        (void              , Tool, close)
+DELEGATE        (void              , Tool, fromConfig)
+GETTER_CONST    (State&            , Tool, state)
+DELEGATE        (void              , Tool, updateGlWidget)
+DELEGATE_CONST  (ViewTwoColumnGrid&, Tool, makeProperties)
+DELEGATE1       (void              , Tool, showToolTip, const ViewToolTip&)
+DELEGATE_CONST  (Config&           , Tool, config)
+DELEGATE        (CacheProxy&       , Tool, cache)
+DELEGATE1_CONST (CacheProxy        , Tool, cache, const char*)
+DELEGATE_CONST  (glm::ivec2        , Tool, cursorPosition)
+DELEGATE        (void              , Tool, snapshotAll)
+DELEGATE        (void              , Tool, snapshotWingedMeshes)
+DELEGATE        (void              , Tool, snapshotSketchMeshes)
+DELEGATE2_CONST (bool              , Tool, intersectsRecentOctree, const glm::ivec2&, Intersection&)
+DELEGATE_CONST  (bool              , Tool, hasMirror)
+DELEGATE_CONST  (const Mirror&     , Tool, mirror)
+DELEGATE1       (void              , Tool, mirror, bool)
+SETTER          (bool              , Tool, renderMirror)
+DELEGATE_CONST  (const Dimension*  , Tool, mirrorDimension)
+DELEGATE        (void              , Tool, mirrorWingedMeshes)
+DELEGATE        (void              , Tool, mirrorSketchMeshes)
+DELEGATE1       (ToolResponse      , Tool, runPointingEvent, const ViewPointingEvent&)
 
 template <typename T, typename ... Ts>
 bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {

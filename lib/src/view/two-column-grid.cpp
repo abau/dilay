@@ -82,7 +82,7 @@ struct ViewTwoColumnGrid::Impl {
   }
 };
 
-DELEGATE_BIG2_SELF (ViewTwoColumnGrid)
+DELEGATE_BIG2_BASE (ViewTwoColumnGrid, (QWidget* p), (this), QWidget, (p))
 DELEGATE1 (void, ViewTwoColumnGrid, add, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, QWidget&, QWidget&)

@@ -8,8 +8,8 @@
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "winged/mesh.hpp"
 #include "winged/face-intersection.hpp"
 
@@ -30,7 +30,7 @@ struct ToolMoveMesh::Impl {
   }
 
   void setupProperties () {
-    this->movement.addProperties ( this->self->properties ().body ()
+    this->movement.addProperties ( this->self->makeProperties ()
                                  , [this] ()
     {
       this->setupToolTip ();

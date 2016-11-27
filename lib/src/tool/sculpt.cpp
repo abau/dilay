@@ -20,8 +20,8 @@
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 
@@ -84,7 +84,7 @@ struct ToolSculpt::Impl {
   }
 
   void setupProperties () {
-    ViewTwoColumnGrid& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->makeProperties ();
 
     ViewUtil::connect (this->radiusEdit, [this] (float r) {
       if (this->absoluteRadius) {

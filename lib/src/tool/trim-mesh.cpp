@@ -14,7 +14,6 @@
 #include "tool/trim-mesh/split-mesh.hpp"
 #include "tools.hpp"
 #include "view/gl-widget.hpp"
-#include "view/main-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
@@ -82,7 +81,6 @@ struct ToolTrimMesh::Impl {
 
   void runPaint (QPainter& painter) const {
     const QPoint cursorPos (ViewUtil::toQPoint (this->self->state ().mainWindow     ()
-                                                                    .mainWidget     ()
                                                                     .glWidget       ()
                                                                     .cursorPosition ()));
     QPen pen (Color::Red ().qColor ());

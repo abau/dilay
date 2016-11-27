@@ -14,7 +14,7 @@ class QString;
 
 class ViewTwoColumnGrid : public QWidget {
   public:
-    DECLARE_BIG2 (ViewTwoColumnGrid)
+    DECLARE_BIG2 (ViewTwoColumnGrid, QWidget* = nullptr)
 
     void add          (QWidget&);
     void add          (const QString&, QWidget&);

@@ -14,8 +14,8 @@
 #include "tools.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
-#include "view/properties.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 #include "winged/mesh.hpp"
 
@@ -55,7 +55,7 @@ struct ToolConvertSketch::Impl {
   }
 
   void setupProperties () {
-    ViewTwoColumnGrid& properties = this->self->properties ().body ();
+    ViewTwoColumnGrid& properties = this->self->makeProperties ();
 
     ViewDoubleSlider& resolutionEdit = ViewUtil::slider (2, this->minResolution
                                                           , this->resolution
