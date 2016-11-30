@@ -13,7 +13,7 @@ class Color;
 class ViewColorButton : public QPushButton {
   Q_OBJECT
   public:
-    DECLARE_BIG2 (ViewColorButton, const Color&)
+    DECLARE_BIG2 (ViewColorButton, const Color&, QWidget* = nullptr)
 
   signals:
     void colorChanged (const Color&);

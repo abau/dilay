@@ -44,5 +44,5 @@ struct ViewColorButton::Impl {
   }
 };
 
-DELEGATE1_BIG2_SELF (ViewColorButton, const Color&)
+DELEGATE_BIG2_BASE (ViewColorButton, (const Color& c, QWidget* p), (this,c), QPushButton, (p))
 DELEGATE1 (void, ViewColorButton, paintEvent, QPaintEvent*)

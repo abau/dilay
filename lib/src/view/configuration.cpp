@@ -30,7 +30,9 @@ namespace {
   void addColorButton ( ViewGlWidget& glWidget, ViewTwoColumnGrid& grid
                       , const std::string& path, const QString& label )
   {
-    ViewColorButton& button = *new ViewColorButton (glWidget.state ().config ().get <Color> (path));
+    const Color&     color  = glWidget.state ().config ().get <Color> (path);
+    ViewColorButton& button = *new ViewColorButton (color, &glWidget);
+
     QObject::connect (&button, &ViewColorButton::colorChanged, [&glWidget, path] (const Color& c) {
       setAndUpdate (glWidget, path, c);
     });
