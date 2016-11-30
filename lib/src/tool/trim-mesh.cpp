@@ -5,6 +5,7 @@
 #include <QPainter>
 #include "camera.hpp"
 #include "color.hpp"
+#include "config.hpp"
 #include "history.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -13,8 +14,6 @@
 #include "tool/trim-mesh/border.hpp"
 #include "tool/trim-mesh/split-mesh.hpp"
 #include "tools.hpp"
-#include "view/gl-widget.hpp"
-#include "view/main-window.hpp"
 #include "view/util.hpp"
 #include "winged/face-intersection.hpp"
 #include "winged/mesh.hpp"
@@ -80,10 +79,8 @@ struct ToolTrimMesh::Impl {
   }
 
   void runPaint (QPainter& painter) const {
-    const QPoint cursorPos (ViewUtil::toQPoint (this->self->state ().mainWindow     ()
-                                                                    .glWidget       ()
-                                                                    .cursorPosition ()));
-    QPen pen (Color::Red ().qColor ());
+    const QPoint cursorPos (ViewUtil::toQPoint (this->self->cursorPosition ()));
+    QPen pen (this->self->config ().get <Color> ("editor/on-screen-color").qColor ());
 
     pen    .setWidth (2);
     painter.setPen   (pen);

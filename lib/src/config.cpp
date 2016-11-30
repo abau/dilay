@@ -29,7 +29,8 @@ void Config :: restoreDefaults () {
   this->set ("editor/floor-plane/color",      Color (0.3f, 0.3f, 0.4f));
   this->set ("editor/floor-plane/tile-width", 1.0f);
 
-  this->set ("editor/background", Color (0.1f, 0.1f, 0.2f));
+  this->set ("editor/background",      Color (0.1f, 0.1f, 0.2f));
+  this->set ("editor/on-screen-color", Color (0.4f, 0.4f, 0.9f));
 
   this->set ("editor/camera/near-clipping",   0.01f);
   this->set ("editor/camera/far-clipping",    1000.0f);

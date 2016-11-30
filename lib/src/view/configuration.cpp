@@ -71,6 +71,7 @@ namespace {
     ViewTwoColumnGrid* grid = new ViewTwoColumnGrid;
 
     addColorButton (glWidget, *grid, "editor/background"          , QObject::tr ("Background"));
+    addColorButton (glWidget, *grid, "editor/on-screen-color"     , QObject::tr ("On-Screen"));
     addColorButton (glWidget, *grid, "editor/axis/color/normal"   , QObject::tr ("Axis"));
     addColorButton (glWidget, *grid, "editor/axis/color/label"    , QObject::tr ("Axis label"));
     addColorButton (glWidget, *grid, "editor/floor-plane/color"   , QObject::tr ("Floor-plane"));
