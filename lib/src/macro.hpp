@@ -93,19 +93,29 @@
   from :: from () : impl (new Impl ()) {}
 
 #define DELEGATE1_CONSTRUCTOR(from,t1) \
-  from :: from (t1 a1) : impl (new Impl (a1)) {}
+  from :: from (t1 a1) : impl (new Impl ( std::forward<t1>(a1) )) {}
 
 #define DELEGATE2_CONSTRUCTOR(from,t1,t2) \
-  from :: from (t1 a1,t2 a2) : impl (new Impl (a1,a2)) {}
+  from :: from (t1 a1,t2 a2) : impl (new Impl ( std::forward<t1>(a1) \
+                                              , std::forward<t2>(a2) )) {}
 
 #define DELEGATE3_CONSTRUCTOR(from,t1,t2,t3) \
-  from :: from (t1 a1,t2 a2,t3 a3) : impl (new Impl (a1,a2,a3)) {}
+  from :: from (t1 a1,t2 a2,t3 a3) : impl (new Impl ( std::forward<t1>(a1) \
+                                                    , std::forward<t2>(a2) \
+                                                    , std::forward<t3>(a3) )) {}
 
 #define DELEGATE4_CONSTRUCTOR(from,t1,t2,t3,t4) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) : impl (new Impl (a1,a2,a3,a4)) {}
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4) : impl (new Impl ( std::forward<t1>(a1) \
+                                                          , std::forward<t2>(a2) \
+                                                          , std::forward<t3>(a3) \
+                                                          , std::forward<t4>(a4) )) {}
 
 #define DELEGATE5_CONSTRUCTOR(from,t1,t2,t3,t4,t5) \
-  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) : impl (new Impl (a1,a2,a3,a4,a5)) {}
+  from :: from (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) : impl (new Impl ( std::forward<t1>(a1) \
+                                                                , std::forward<t2>(a2) \
+                                                                , std::forward<t3>(a3) \
+                                                                , std::forward<t4>(a4) \
+                                                                , std::forward<t5>(a5) )) {}
 
 #define DELEGATE_CONSTRUCTOR_SELF(from) \
   from :: from () : impl (new Impl (this)) {}
