@@ -23,10 +23,8 @@ class Renderer : public Configurable {
     void setModel             (const float*, const float*);
     void setView              (const float*);
     void setProjection        (const float*);
-    void setColor3            (const Color&);
-    void setColor4            (const Color&);
-    void setWireframeColor3   (const Color&);
-    void setWireframeColor4   (const Color&);
+    void setColor             (const Color&, bool = false);
+    void setWireframeColor    (const Color&, bool = false);
     void setEyePoint          (const glm::vec3&);
     void setLightDirection    (unsigned int, const glm::vec3&);
     void setLightColor        (unsigned int, const Color&);

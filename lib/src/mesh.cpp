@@ -201,8 +201,8 @@ struct Mesh::Impl {
     else {
       camera.renderer ().setProgram (this->renderMode);
     }
-    camera.renderer ().setColor3          (this->color);
-    camera.renderer ().setWireframeColor3 (this->wireframeColor);
+    camera.renderer ().setColor          (this->color);
+    camera.renderer ().setWireframeColor (this->wireframeColor);
 
     this->setModelMatrix              (camera, this->renderMode.cameraRotationOnly ());
 

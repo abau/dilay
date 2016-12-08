@@ -186,24 +186,26 @@ struct Renderer::Impl {
     OpenGL::glUniformMatrix4fv (this->activeShaderIndex->projectionId, 1, false, projection);
   }
 
-  void setColor3 (const Color& c) {
+  void setColor (const Color& c, bool withOpacity) {
     assert (this->activeShaderIndex);
-    OpenGL::glUniformVec3 (this->activeShaderIndex->colorId, c.vec3 ());
+
+    if (withOpacity) {
+      OpenGL::glUniformVec4 (this->activeShaderIndex->colorId, c.vec4 ());
+    }
+    else {
+      OpenGL::glUniformVec3 (this->activeShaderIndex->colorId, c.vec3 ());
+    }
   }
 
-  void setColor4 (const Color& c) {
+  void setWireframeColor (const Color& c, bool withOpacity) {
     assert (this->activeShaderIndex);
-    OpenGL::glUniformVec4 (this->activeShaderIndex->colorId, c.vec4 ());
-  }
 
-  void setWireframeColor3 (const Color& c) {
-    assert (this->activeShaderIndex);
-    OpenGL::glUniformVec3 (this->activeShaderIndex->wireframeColorId, c.vec3 ());
-  }
-
-  void setWireframeColor4 (const Color& c) {
-    assert (this->activeShaderIndex);
-    OpenGL::glUniformVec4 (this->activeShaderIndex->wireframeColorId, c.vec4 ());
+    if (withOpacity) {
+      OpenGL::glUniformVec4 (this->activeShaderIndex->wireframeColorId, c.vec4 ());
+    }
+    else {
+      OpenGL::glUniformVec3 (this->activeShaderIndex->wireframeColorId, c.vec3 ());
+    }
   }
 
   void setEyePoint (const glm::vec3& e) {
@@ -247,10 +249,8 @@ DELEGATE1 (void, Renderer, setProgram        , const RenderMode&)
 DELEGATE2 (void, Renderer, setModel          , const float*, const float*)
 DELEGATE1 (void, Renderer, setView           , const float*)
 DELEGATE1 (void, Renderer, setProjection     , const float*)
-DELEGATE1 (void, Renderer, setColor3         , const Color&)
-DELEGATE1 (void, Renderer, setColor4         , const Color&)
-DELEGATE1 (void, Renderer, setWireframeColor3, const Color&)
-DELEGATE1 (void, Renderer, setWireframeColor4, const Color&)
+DELEGATE2 (void, Renderer, setColor          , const Color&, bool)
+DELEGATE2 (void, Renderer, setWireframeColor , const Color&, bool)
 DELEGATE1 (void, Renderer, setEyePoint       , const glm::vec3&)
 DELEGATE2 (void, Renderer, setLightDirection , unsigned int, const glm::vec3&)
 DELEGATE2 (void, Renderer, setLightColor     , unsigned int, const Color&)
