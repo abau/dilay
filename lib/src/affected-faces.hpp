@@ -13,21 +13,20 @@ class AffectedFaces {
   public:
     DECLARE_BIG6 (AffectedFaces)
 
-    void insert           (WingedFace&);
-    void insert           (const AffectedFaces&);
-    void remove           (WingedFace&);
-    void reset            ();
-    void resetCommitted   ();
-    void commit           ();
-    bool isEmpty          () const;
-    bool contains         (WingedFace&) const;
-    bool contains         (WingedFace*) const;
-    void discardBackfaces (const WingedMesh&, const glm::vec3&);
+    void insert         (WingedFace&);
+    void insert         (const AffectedFaces&);
+    void remove         (WingedFace&);
+    void reset          ();
+    void resetCommitted ();
+    void commit         ();
+    bool isEmpty        () const;
+    bool contains       (WingedFace&) const;
+    bool contains       (WingedFace*) const;
 
-    const FacePtrSet&    faces            () const;
-    const FacePtrSet&    uncommittedFaces () const;
-          VertexPtrSet   toVertexSet      () const;
-          EdgePtrVec     toEdgeVec        () const;
+    const FacePtrSet&  faces            () const;
+    const FacePtrSet&  uncommittedFaces () const;
+          VertexPtrSet toVertexSet      () const;
+          EdgePtrVec   toEdgeVec        () const;
 
   private:
     IMPLEMENTATION

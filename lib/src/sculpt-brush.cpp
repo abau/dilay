@@ -3,6 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtx/norm.hpp>
+#include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
 #include "primitive/plane.hpp"
@@ -69,6 +70,33 @@ struct SculptBrush :: Impl {
     , hasPosition     (false)
   {}
 
+  VertexPtrSet getVerticesToSculpt (bool lastPosition, bool discardBack) const {
+    VertexPtrSet vertices;
+    this->mesh->intersects (PrimSphere ( lastPosition ? this->lastPosition ()
+                                                      : this->position ()
+                                       , this->radius ), vertices);
+    if (discardBack) {
+      for (auto it = vertices.begin (); it != vertices.end (); ) {
+        if (glm::dot (this->direction (), (*it)->savedNormal (*this->mesh)) <= 0.0f) {
+          it = vertices.erase (it);
+        }
+        else {
+          ++it;
+        }
+      }
+    }
+    return vertices;
+  }
+
+  void addAffectedFaces (const VertexPtrSet& vertices, AffectedFaces& faces) const {
+    for (WingedVertex* v : vertices) {
+      for (WingedFace& f : v->adjacentFaces ()) {
+        faces.insert (f);
+      }
+    }
+    faces.commit ();
+  }
+
   void sculpt (AffectedFaces& faces) const {
     assert (this->parameters.isSet ());
 
@@ -84,18 +112,13 @@ struct SculptBrush :: Impl {
   }
 
   void sculpt (const SBCarveParameters& parameters, AffectedFaces& faces) const {
-    PrimSphere  sphere (this->position (), this->radius);
-    WingedMesh& mesh   (this->self->meshRef ());
+    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
+    WingedMesh&  mesh     = this->self->meshRef ();
 
-    mesh.intersects (sphere, faces);
-    faces.discardBackfaces (mesh, this->direction ());
-
-    if (faces.isEmpty () == false) {
-      VertexPtrSet vertices (faces.toVertexSet ());
-
-      const glm::vec3 avgDir ( parameters.inflate ()
+    if (vertices.empty () == false) {
+      const glm::vec3 avgDir = parameters.inflate ()
                              ? glm::vec3 (0.0f)
-                             : parameters.invert (WingedUtil::averageNormal (mesh, vertices)) );
+                             : parameters.invert (WingedUtil::averageNormal (mesh, vertices));
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos    = v->position (mesh);
@@ -111,46 +134,33 @@ struct SculptBrush :: Impl {
         v->writePosition (mesh, newPos);
       }
     }
+    this->addAffectedFaces (vertices, faces);
   }
 
   void sculpt (const SBDraglikeParameters& parameters, AffectedFaces& faces) const {
-    PrimSphere  sphere (this->lastPosition (), this->radius);
-    WingedMesh& mesh   (this->self->meshRef ());
+    VertexPtrSet vertices = this->getVerticesToSculpt (true, parameters.discardBackfaces ());
+    WingedMesh&  mesh     = this->self->meshRef ();
 
-    mesh.intersects (sphere, faces);
+    float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
+      parameters.linearStep () ? Util::linearStep : Util::smoothStep;
 
-    if (parameters.discardBackfaces ()) {
-      faces.discardBackfaces (mesh, this->direction ());
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 oldPos      = v->position (mesh);
+      const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
+      const float     factor      = stepFunction ( oldPos, this->lastPosition ()
+                                                 , innerRadius, this->radius );
+      const glm::vec3 newPos      = oldPos + (factor * this->direction ());
+
+      v->writePosition (mesh, newPos);
     }
-
-    if (faces.isEmpty () == false) {
-      VertexPtrSet vertices (faces.toVertexSet ());
-
-      float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
-        parameters.linearStep () ? Util::linearStep : Util::smoothStep;
-
-      for (WingedVertex* v : vertices) {
-        const glm::vec3 oldPos      = v->position (mesh);
-        const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
-        const float     factor      = stepFunction ( oldPos, this->lastPosition ()
-                                                   , innerRadius, this->radius );
-        const glm::vec3 newPos      = oldPos + (factor * this->direction ());
-
-        v->writePosition (mesh, newPos);
-      }
-    }
+    this->addAffectedFaces (vertices, faces);
   }
 
   void sculpt (const SBSmoothParameters& parameters, AffectedFaces& faces) const {
-    PrimSphere  sphere (this->_position, this->radius);
-    WingedMesh& mesh   (this->self->meshRef ());
+    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
+    WingedMesh&  mesh     = this->self->meshRef ();
 
-    mesh .intersects (sphere, faces);
-    faces.discardBackfaces (mesh, this->direction ());
-
-    if (faces.isEmpty () == false && parameters.relaxOnly () == false) {
-      VertexPtrSet vertices (faces.toVertexSet ());
-
+    if (parameters.relaxOnly () == false) {
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos = v->position (mesh);
         const float     factor = parameters.intensity ()
@@ -161,19 +171,16 @@ struct SculptBrush :: Impl {
         v->writePosition (mesh, newPos);
       }
     }
+    this->addAffectedFaces (vertices, faces);
   }
 
   void sculpt (const SBFlattenParameters& parameters, AffectedFaces& faces) const {
-    PrimSphere  sphere (this->_position, this->radius);
-    WingedMesh& mesh   (this->self->meshRef ());
+    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
+    WingedMesh&  mesh     = this->self->meshRef ();
 
-    mesh.intersects (sphere, faces);
-    faces.discardBackfaces (mesh, this->direction ());
-
-    if (faces.isEmpty () == false) {
-      VertexPtrSet    vertices (faces.toVertexSet ());
-      const glm::vec3 normal   (WingedUtil::averageNormal (mesh, vertices));
-      const PrimPlane plane    (WingedUtil::center (mesh, vertices), normal);
+    if (vertices.empty () == false) {
+      const glm::vec3 normal = WingedUtil::averageNormal (mesh, vertices);
+      const PrimPlane plane (WingedUtil::center (mesh, vertices), normal);
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos   = v->position (mesh);
@@ -186,21 +193,18 @@ struct SculptBrush :: Impl {
         v->writePosition (mesh, newPos);
       }
     }
+    this->addAffectedFaces (vertices, faces);
   }
 
   void sculpt (const SBCreaseParameters& parameters, AffectedFaces& faces) const {
-    PrimSphere  sphere (this->position (), this->radius);
-    WingedMesh& mesh   (this->self->meshRef ());
-
-    mesh.intersects (sphere, faces);
-
-    faces.discardBackfaces (mesh, this->direction ());
+    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
+    WingedMesh&  mesh     = this->self->meshRef ();
 
     if (faces.isEmpty () == false) {
-      VertexPtrSet    vertices (faces.toVertexSet ());
-      const glm::vec3 avgDir   (parameters.invert (WingedUtil::averageNormal (mesh, vertices)));
-      const glm::vec3 refPos   (this->position () + (avgDir * parameters.intensity () * this->radius));
-      const PrimPlane plane    (refPos, avgDir);
+      const glm::vec3 avgDir = parameters.invert (WingedUtil::averageNormal (mesh, vertices));
+      const glm::vec3 refPos = this->position () + (avgDir * parameters.intensity () * this->radius);
+
+      const PrimPlane plane (refPos, avgDir);
 
       for (WingedVertex* v : vertices) {
         const glm::vec3 oldPos   = v->position (mesh);
@@ -218,33 +222,31 @@ struct SculptBrush :: Impl {
         }
       }
     }
+    this->addAffectedFaces (vertices, faces);
   }
 
   void sculpt (const SBPinchParameters& parameters, AffectedFaces& faces) const {
-    PrimSphere  sphere (this->position (), this->radius);
-    WingedMesh& mesh   (this->self->meshRef ());
+    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
+    WingedMesh&  mesh     = this->self->meshRef ();
 
-    mesh.intersects (sphere, faces);
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 oldPos   = v->position (mesh);
+      const float     distance = glm::distance (oldPos, this->position ());
 
-    faces.discardBackfaces (mesh, this->direction ());
+      if (distance > 0.001f) {
+        const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
+        const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
+        const glm::vec3 direction   = parameters.invert (glm::normalize (this->position () - oldPos));
+        const glm::vec3 newPos      = oldPos + (factor * direction);
 
-    if (faces.isEmpty () == false) {
-      VertexPtrSet    vertices (faces.toVertexSet ());
-
-      for (WingedVertex* v : vertices) {
-        const glm::vec3 oldPos   = v->position (mesh);
-        const float     distance = glm::distance (oldPos, this->position ());
-
-        if (distance > 0.001f) {
-          const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
-          const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
-          const glm::vec3 direction   = parameters.invert (glm::normalize (this->position () - oldPos));
-          const glm::vec3 newPos      = oldPos + (factor * direction);
-
-          v->writePosition (mesh, newPos);
-        }
+        v->writePosition (mesh, newPos);
       }
     }
+    this->addAffectedFaces (vertices, faces);
+  }
+
+  void sculpt (const SBReduceParameters&, AffectedFaces& faces) const {
+    this->addAffectedFaces (this->getVerticesToSculpt (false, true), faces);
   }
 
   float intensity () const {
@@ -269,10 +271,6 @@ struct SculptBrush :: Impl {
       , [     ] (SBPinchParameters&     ) { }
       , [value] (SBReduceParameters&   p) { p.intensity (value); }
       );
-  }
-
-  void sculpt (const SBReduceParameters&, AffectedFaces& faces) const {
-    this->self->meshRef ().intersects (PrimSphere (this->position (), this->radius), faces);
   }
 
   float subdivThreshold () const {
