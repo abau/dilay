@@ -32,7 +32,7 @@ class State {
     bool            hasTool            ();
     Tool&           tool               ();
     void            setTool            (Tool&&);
-    void            resetTool          (bool = true);
+    void            resetTool          (bool);
     void            fromConfig         ();
     void            undo               ();
     void            redo               ();

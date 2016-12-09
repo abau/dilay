@@ -66,7 +66,7 @@ struct ViewToolPane::Impl {
     toolPane->addTab (this->initalizeSketchSelection (), QObject::tr ("Sketch"));
 
     QObject::connect (toolPane, &QTabWidget::currentChanged, [this] (int) {
-      this->glWidget.state ().resetTool ();
+      this->glWidget.state ().resetTool (true);
     });
     return toolPane;
   }
@@ -125,7 +125,7 @@ struct ViewToolPane::Impl {
       }
 
       State& s = this->glWidget.state ();
-      s.resetTool ();
+      s.resetTool (false);
       s.setTool   (std::move (*new T (s)));
     });
     layout->addWidget           (&button);
