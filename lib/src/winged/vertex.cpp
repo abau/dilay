@@ -48,16 +48,16 @@ glm::vec3 WingedVertex :: interpolatedNormal (const WingedMesh& mesh) const {
   return normal / float (n);
 }
 
-void WingedVertex :: writePosition (WingedMesh& mesh, const glm::vec3& pos) {
+void WingedVertex :: setPosition (WingedMesh& mesh, const glm::vec3& pos) {
   mesh.setVertex (this->_index, pos);
 }
 
-void WingedVertex :: writeNormal (WingedMesh& mesh, const glm::vec3& normal) {
+void WingedVertex :: setNormal (WingedMesh& mesh, const glm::vec3& normal) {
   mesh.setNormal (this->_index, normal);
 }
 
-void WingedVertex :: writeInterpolatedNormal (WingedMesh& mesh) {
-  this->writeNormal (mesh, this->interpolatedNormal (mesh));
+void WingedVertex :: setInterpolatedNormal (WingedMesh& mesh) {
+  this->setNormal (mesh, this->interpolatedNormal (mesh));
 }
 
 unsigned int WingedVertex :: valence () const {

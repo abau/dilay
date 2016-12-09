@@ -319,20 +319,12 @@ struct WingedMesh::Impl {
     if (this->octree.numDegeneratedElements () > 0) {
       Action::collapseDegeneratedFaces (*this->self);
     }
-    this->writeAllNormals ();
-    this->bufferData      ();
-  }
 
-  void writeAllIndices () {
-    this->faces.forEachElement ([this] (WingedFace& face) {
-      face.writeIndices (*this->self);
-    });
-  }
-
-  void writeAllNormals () {
     this->vertices.forEachElement ([this] (WingedVertex& v) {
-      v.writeNormal (*this->self, v.interpolatedNormal (*this->self));
+      v.setInterpolatedNormal (*this->self);
     });
+
+    this->bufferData             ();
   }
 
   void bufferData  () { 
@@ -534,8 +526,6 @@ DELEGATE_CONST  (bool             , WingedMesh, isEmpty)
 
 DELEGATE2_CONST (Mesh             , WingedMesh, makePrunedMesh, std::vector <unsigned int>*, std::vector <unsigned int>*)
 DELEGATE2       (void             , WingedMesh, fromMesh, const Mesh&, const PrimPlane*)
-DELEGATE        (void             , WingedMesh, writeAllIndices)
-DELEGATE        (void             , WingedMesh, writeAllNormals)
 DELEGATE        (void             , WingedMesh, bufferData)
 DELEGATE1       (void             , WingedMesh, render, Camera&)
 DELEGATE        (void             , WingedMesh, reset)

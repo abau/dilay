@@ -131,7 +131,7 @@ struct SculptBrush :: Impl {
                                   : avgDir;
         const glm::vec3 newPos    = oldPos + (factor * direction);
 
-        v->writePosition (mesh, newPos);
+        v->setPosition (mesh, newPos);
       }
     }
     this->addAffectedFaces (vertices, faces);
@@ -151,7 +151,7 @@ struct SculptBrush :: Impl {
                                                  , innerRadius, this->radius );
       const glm::vec3 newPos      = oldPos + (factor * this->direction ());
 
-      v->writePosition (mesh, newPos);
+      v->setPosition (mesh, newPos);
     }
     this->addAffectedFaces (vertices, faces);
   }
@@ -168,7 +168,7 @@ struct SculptBrush :: Impl {
                                                   , 0.0f, this->radius );
         const glm::vec3 newPos = oldPos + (factor * (WingedUtil::center (mesh, *v) - oldPos));
 
-        v->writePosition (mesh, newPos);
+        v->setPosition (mesh, newPos);
       }
     }
     this->addAffectedFaces (vertices, faces);
@@ -190,7 +190,7 @@ struct SculptBrush :: Impl {
         const float     distance = glm::max (0.0f, plane.distance (oldPos));
         const glm::vec3 newPos   = oldPos - (normal * factor * distance);
 
-        v->writePosition (mesh, newPos);
+        v->setPosition (mesh, newPos);
       }
     }
     this->addAffectedFaces (vertices, faces);
@@ -218,7 +218,7 @@ struct SculptBrush :: Impl {
                                                        + (2.0f * (refPos - projPos)) );
           const glm::vec3 newPos      = oldPos + (factor * direction);
 
-          v->writePosition (mesh, newPos);
+          v->setPosition (mesh, newPos);
         }
       }
     }
@@ -239,7 +239,7 @@ struct SculptBrush :: Impl {
         const glm::vec3 direction   = parameters.invert (glm::normalize (this->position () - oldPos));
         const glm::vec3 newPos      = oldPos + (factor * direction);
 
-        v->writePosition (mesh, newPos);
+        v->setPosition (mesh, newPos);
       }
     }
     this->addAffectedFaces (vertices, faces);

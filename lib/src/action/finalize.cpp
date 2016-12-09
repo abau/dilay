@@ -38,7 +38,7 @@ void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces) {
   Action::collapseDegeneratedFaces (mesh, affectedFaces);
 
   for (WingedVertex* v : affectedFaces.toVertexSet ()) {
-    v->writeInterpolatedNormal (mesh);
+    v->setInterpolatedNormal (mesh);
   }
   mesh.bufferData ();
 

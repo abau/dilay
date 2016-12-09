@@ -71,8 +71,6 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     Mesh               makePrunedMesh      ( std::vector <unsigned int>* = nullptr
                                            , std::vector <unsigned int>* = nullptr ) const;
     void               fromMesh            (const Mesh&, const PrimPlane* = nullptr);
-    void               writeAllIndices     (); 
-    void               writeAllNormals     (); 
     void               bufferData          ();
     void               render              (Camera&);
     void               reset               ();
