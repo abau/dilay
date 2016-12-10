@@ -15,6 +15,10 @@
 #include "renderer.hpp"
 #include "util.hpp"
 
+namespace {
+  typedef Bitset <unsigned short> VertexFlags;
+}
+
 struct Mesh::Impl {
   // cf. copy-constructor, reset
   glm::mat4x4                 scalingMatrix;
@@ -23,6 +27,7 @@ struct Mesh::Impl {
   std::vector <float>         vertices;
   std::vector <unsigned int>  indices;
   std::vector <float>         normals;
+  std::vector <VertexFlags>   verticesFlags;
   Color                       color;
   Color                       wireframeColor;
 
@@ -49,9 +54,10 @@ struct Mesh::Impl {
     : scalingMatrix       (source.scalingMatrix)
     , rotationMatrix      (source.rotationMatrix)
     , translationMatrix   (source.translationMatrix)
-    , vertices            (copyGeometry ? source.vertices : std::vector <float>        ())
-    , indices             (copyGeometry ? source.indices  : std::vector <unsigned int> ())
-    , normals             (copyGeometry ? source.normals  : std::vector <float>        ())
+    , vertices            (copyGeometry ? source.vertices      : std::vector <float>        ())
+    , indices             (copyGeometry ? source.indices       : std::vector <unsigned int> ())
+    , normals             (copyGeometry ? source.normals       : std::vector <float>        ())
+    , verticesFlags       (copyGeometry ? source.verticesFlags : std::vector <VertexFlags>  ())
     , color               (source.color)
     , wireframeColor      (source.wireframeColor)
     , renderMode          (source.renderMode) 
@@ -59,9 +65,10 @@ struct Mesh::Impl {
 
   ~Impl () { this->reset (); }
 
-  unsigned int numVertices () const { return this->vertices.size () / 3; }
-  unsigned int numIndices  () const { return this->indices.size  (); }
-  unsigned int numNormals  () const { return this->normals.size () / 3; }
+  unsigned int numVertices      () const { return this->vertices.size () / 3; }
+  unsigned int numIndices       () const { return this->indices.size  (); }
+  unsigned int numNormals       () const { return this->normals.size () / 3; }
+  unsigned int numVerticesFlags () const { return this->verticesFlags.size (); }
 
   unsigned int sizeOfVertices () const { 
     return this->vertices.size () * sizeof (float);
@@ -121,6 +128,9 @@ struct Mesh::Impl {
     this->normals.push_back (n.y);
     this->normals.push_back (n.z);
 
+    this->verticesFlags.emplace_back ();
+    this->isNewVertex (this->numVertices () - 1, true);
+
     return this->numVertices () - 1;
   }
 
@@ -150,6 +160,16 @@ struct Mesh::Impl {
     this->normals [(3*i) + 0] = n.x;
     this->normals [(3*i) + 1] = n.y;
     this->normals [(3*i) + 2] = n.z;
+  }
+
+  bool isNewVertex (unsigned int i) const {
+    assert (i < this->numVerticesFlags ());
+    return this->verticesFlags[i].get <0> ();
+  }
+
+  void isNewVertex (unsigned int i, bool v) {
+    assert (i < this->numVerticesFlags ());
+    this->verticesFlags[i].set <0> (v);
   }
 
   void bufferData () {
@@ -255,15 +275,17 @@ struct Mesh::Impl {
     this->vertices      .clear ();
     this->indices       .clear ();
     this->normals       .clear ();
+    this->verticesFlags .clear ();
     this->vertexBufferId.reset ();
     this->indexBufferId .reset ();
     this->normalBufferId.reset ();
   }
 
   void resetGeometry () {
-    this->vertices.clear ();
-    this->indices .clear ();
-    this->normals .clear ();
+    this->vertices     .clear ();
+    this->indices      .clear ();
+    this->normals      .clear ();
+    this->verticesFlags.clear ();
   }
 
   void scale (const glm::vec3& v) {
@@ -379,6 +401,9 @@ DELEGATE1        (void              , Mesh, reserveVertices, unsigned int)
 DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
 DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
 DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)
+
+DELEGATE1_CONST  (bool              , Mesh, isNewVertex, unsigned int)
+DELEGATE2        (void              , Mesh, isNewVertex, unsigned int, bool)
 
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)

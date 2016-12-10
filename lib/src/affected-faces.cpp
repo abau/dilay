@@ -6,6 +6,7 @@
 #include "affected-faces.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
+#include "winged/vertex.hpp"
 
 struct AffectedFaces::Impl {
   FacePtrSet faces;
@@ -55,6 +56,14 @@ struct AffectedFaces::Impl {
     return this->faces.count (face) > 0 || this->uncommittedFaces.count (face) > 0;
   }
 
+  void unsetNewVertexFlags (WingedMesh& mesh) {
+    for (WingedFace* f : this->faces) {
+      for (WingedVertex& v : f->adjacentVertices ()) {
+        v.isNewVertex (mesh, false);
+      }
+    }
+  }
+
   VertexPtrSet toVertexSet () const {
     VertexPtrSet vertices;
     for (WingedFace* f : this->faces) {
@@ -89,6 +98,7 @@ DELEGATE        (void,              AffectedFaces, commit)
 DELEGATE_CONST  (bool,              AffectedFaces, isEmpty)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace*)
+DELEGATE1       (void,              AffectedFaces, unsetNewVertexFlags, WingedMesh&)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommittedFaces)
 DELEGATE_CONST  (VertexPtrSet,      AffectedFaces, toVertexSet)

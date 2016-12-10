@@ -36,6 +36,9 @@ class Mesh {
     void               setVertex         (unsigned int, const glm::vec3&);
     void               setNormal         (unsigned int, const glm::vec3&);
 
+    bool               isNewVertex       (unsigned int) const;
+    void               isNewVertex       (unsigned int, bool);
+
     void               bufferData        ();
     glm::mat4x4        modelMatrix       () const;
     glm::mat3x3        modelNormalMatrix () const;

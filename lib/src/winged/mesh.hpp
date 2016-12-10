@@ -39,6 +39,7 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     glm::vec3          vector              (unsigned int) const;
     unsigned int       index               (unsigned int) const;
     glm::vec3          normal              (unsigned int) const;
+    bool               isNewVertex         (unsigned int) const;
     WingedVertex*      vertex              (unsigned int);
     WingedEdge*        edge                (unsigned int);
     WingedFace*        face                (unsigned int);
@@ -49,6 +50,7 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     void               setIndex            (unsigned int, unsigned int);
     void               setVertex           (unsigned int, const glm::vec3&);
     void               setNormal           (unsigned int, const glm::vec3&);
+    void               isNewVertex         (unsigned int, bool);
 
     const IndexOctree& octree              () const;
     const Mesh&        mesh                () const;

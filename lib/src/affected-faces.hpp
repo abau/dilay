@@ -13,15 +13,16 @@ class AffectedFaces {
   public:
     DECLARE_BIG6 (AffectedFaces)
 
-    void insert         (WingedFace&);
-    void insert         (const AffectedFaces&);
-    void remove         (WingedFace&);
-    void reset          ();
-    void resetCommitted ();
-    void commit         ();
-    bool isEmpty        () const;
-    bool contains       (WingedFace&) const;
-    bool contains       (WingedFace*) const;
+    void insert              (WingedFace&);
+    void insert              (const AffectedFaces&);
+    void remove              (WingedFace&);
+    void reset               ();
+    void resetCommitted      ();
+    void commit              ();
+    bool isEmpty             () const;
+    bool contains            (WingedFace&) const;
+    bool contains            (WingedFace*) const;
+    void unsetNewVertexFlags (WingedMesh&);
 
     const FacePtrSet&  faces            () const;
     const FacePtrSet&  uncommittedFaces () const;
