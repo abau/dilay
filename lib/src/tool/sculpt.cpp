@@ -292,9 +292,10 @@ struct ToolSculpt::Impl {
                        , const std::function <void ()>* toggle )
   {
     if (this->updateBrushAndCursorByIntersection (e, useRecentOctree)) {
-      const float defaultIntesity = this->brush.intensity ();
+      SBParameters& parameters      = this->brush.parameters <SBParameters> ();
+      const float   defaultIntesity = parameters.intensity ();
 
-      this->brush.intensity (defaultIntesity * e.intensity ());
+      parameters.intensity (defaultIntesity * e.intensity ());
 
       if (toggle && e.modifiers () == Qt::ShiftModifier) {
         (*toggle) ();
@@ -305,7 +306,7 @@ struct ToolSculpt::Impl {
         this->sculpt ();
       }
 
-      this->brush.intensity (defaultIntesity);
+      parameters.intensity (defaultIntesity);
       return true;
     }
     else {

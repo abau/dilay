@@ -10,7 +10,6 @@
 #include <vector>
 #include "intrusive-list.hpp"
 #include "macro.hpp"
-#include "winged/fwd.hpp"
 
 class AffectedFaces;
 class Camera;
@@ -83,9 +82,9 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     
     bool               intersects          (const PrimRay&, WingedFaceIntersection&);
     bool               intersects          (const PrimRay&, AffectedFaces&);
+    bool               intersects          (const PrimSphere&, AffectedFaces&);
     bool               intersects          (const PrimPlane&, AffectedFaces&);
     bool               intersects          (const PrimAABox&, AffectedFaces&);
-    bool               intersects          (const PrimSphere&, VertexPtrSet&);
 
     void               scale               (const glm::vec3&);
     void               scaling             (const glm::vec3&);

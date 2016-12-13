@@ -16,7 +16,7 @@ struct ToolSculptCrease::Impl {
   Impl (ToolSculptCrease* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBCreaseParameters> ();
+    auto& params = brush.initParameters <SBCreaseParameters> ();
 
     brush.detailFactor (brush.detailFactor () + 0.5f);
     params.intensity   (this->self->cache ().get <float> ("intensity", 0.5f));

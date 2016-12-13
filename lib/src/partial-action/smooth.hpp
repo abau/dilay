@@ -11,7 +11,8 @@ class AffectedFaces;
 
 namespace PartialAction {
 
-  void smooth (WingedMesh&, const VertexPtrSet&, unsigned int, AffectedFaces&);
+  void smooth (WingedMesh&, const VertexPtrSet&, AffectedFaces&);
+  void relaxEdge (WingedMesh&, WingedEdge&, AffectedFaces&);
 };
 
 #endif

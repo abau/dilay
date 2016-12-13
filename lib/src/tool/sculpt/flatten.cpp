@@ -16,7 +16,7 @@ struct ToolSculptFlatten::Impl {
   Impl (ToolSculptFlatten* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBFlattenParameters> ();
+    auto& params = brush.initParameters <SBFlattenParameters> ();
 
     params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
   }

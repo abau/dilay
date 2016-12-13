@@ -16,7 +16,7 @@ struct ToolSculptCarve::Impl {
   Impl (ToolSculptCarve* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBCarveParameters> ();
+    auto& params = brush.initParameters <SBCarveParameters> ();
 
     params.intensity (this->self->cache ().get <float> ("intensity", 0.02f));
     params.invert    (this->self->cache ().get <bool>  ("invert",    false));

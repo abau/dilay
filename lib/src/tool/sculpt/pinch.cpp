@@ -15,7 +15,7 @@ struct ToolSculptPinch::Impl {
   Impl (ToolSculptPinch* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBPinchParameters> ();
+    auto& params = brush.initParameters <SBPinchParameters> ();
 
     params.invert (this->self->cache ().get <bool>  ("invert"   , false));
   }

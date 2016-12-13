@@ -6,7 +6,6 @@
 #include "affected-faces.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
-#include "winged/vertex.hpp"
 
 struct AffectedFaces::Impl {
   FacePtrSet faces;
@@ -27,7 +26,7 @@ struct AffectedFaces::Impl {
 
   void remove (WingedFace& face) {
     this->uncommittedFaces.erase (&face);
-    this->faces          .erase (&face);
+    this->faces           .erase (&face);
   }
 
   void reset () {
@@ -56,10 +55,21 @@ struct AffectedFaces::Impl {
     return this->faces.count (face) > 0 || this->uncommittedFaces.count (face) > 0;
   }
 
-  void unsetNewVertexFlags (WingedMesh& mesh) {
-    for (WingedFace* f : this->faces) {
-      for (WingedVertex& v : f->adjacentVertices ()) {
-        v.isNewVertex (mesh, false);
+  void filter (const std::function <bool (const WingedFace&)>& f) {
+    for (auto it = this->faces.begin (); it != this->faces.end (); ) {
+      if (f (**it)) {
+        it = this->faces.erase (it);
+      }
+      else {
+        ++it;
+      }
+    }
+    for (auto it = this->uncommittedFaces.begin (); it != this->uncommittedFaces.end (); ) {
+      if (f (**it)) {
+        it = this->uncommittedFaces.erase (it);
+      }
+      else {
+        ++it;
       }
     }
   }
@@ -98,7 +108,7 @@ DELEGATE        (void,              AffectedFaces, commit)
 DELEGATE_CONST  (bool,              AffectedFaces, isEmpty)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace*)
-DELEGATE1       (void,              AffectedFaces, unsetNewVertexFlags, WingedMesh&)
+DELEGATE1       (void,              AffectedFaces, filter, const std::function <bool (const WingedFace&)>&)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommittedFaces)
 DELEGATE_CONST  (VertexPtrSet,      AffectedFaces, toVertexSet)

@@ -26,20 +26,11 @@ SOURCES += \
            src/mirror.cpp \
            src/opengl.cpp \
            src/opengl-buffer-id.cpp \
-           src/partial-action/collapse-edge.cpp \
-           src/partial-action/collapse-face.cpp \
-           src/partial-action/delete-edge-face.cpp \
-           src/partial-action/delete-valence-3-vertex.cpp \
-           src/partial-action/delete-vertex.cpp \
-           src/partial-action/flip-edge.cpp \
-           src/partial-action/insert-edge-face.cpp \
-           src/partial-action/insert-edge-vertex.cpp \
-           src/partial-action/relax-edge.cpp \
+           src/partial-action/collapse.cpp \
+           src/partial-action/delete.cpp \
+           src/partial-action/insert.cpp \
            src/partial-action/smooth.cpp \
-           src/partial-action/subdivide-edge.cpp \
-           src/partial-action/subdivide-face.cpp \
-           src/partial-action/triangulate-6-gon.cpp \
-           src/partial-action/triangulate-quad.cpp \
+           src/partial-action/triangulate.cpp \
            src/primitive/aabox.cpp \
            src/primitive/cone.cpp \
            src/primitive/cone-sphere.cpp \
@@ -62,7 +53,6 @@ SOURCES += \
            src/sketch/path.cpp \
            src/sketch/path-intersection.cpp \
            src/state.cpp \
-           src/subdivision-butterfly.cpp \
            src/time-delta.cpp \
            src/tool.cpp \
            src/tool/convert-sketch.cpp \
@@ -142,20 +132,11 @@ HEADERS += \
            src/mirror.hpp \
            src/opengl.hpp \
            src/opengl-buffer-id.hpp \
-           src/partial-action/collapse-edge.hpp \
-           src/partial-action/collapse-face.hpp \
-           src/partial-action/delete-edge-face.hpp \
-           src/partial-action/delete-valence-3-vertex.hpp \
-           src/partial-action/delete-vertex.hpp \
-           src/partial-action/flip-edge.hpp \
-           src/partial-action/insert-edge-face.hpp \
-           src/partial-action/insert-edge-vertex.hpp \
-           src/partial-action/relax-edge.hpp \
+           src/partial-action/collapse.hpp \
+           src/partial-action/delete.hpp \
+           src/partial-action/insert.hpp \
            src/partial-action/smooth.hpp \
-           src/partial-action/subdivide-edge.hpp \
-           src/partial-action/subdivide-face.hpp \
-           src/partial-action/triangulate-6-gon.hpp \
-           src/partial-action/triangulate-quad.hpp \
+           src/partial-action/triangulate.hpp \
            src/primitive/aabox.hpp \
            src/primitive/cone.hpp \
            src/primitive/cone-sphere.hpp \
@@ -179,7 +160,6 @@ HEADERS += \
            src/sketch/path.hpp \
            src/sketch/path-intersection.hpp \
            src/state.hpp \
-           src/subdivision-butterfly.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
            src/tool/move-camera.hpp \

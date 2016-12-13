@@ -17,7 +17,7 @@ struct ToolSculptReduce::Impl {
   Impl (ToolSculptReduce* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBReduceParameters> ();
+    auto& params = brush.initParameters <SBReduceParameters> ();
 
     params.intensity (this->self->cache ().get <float> ("intensity", 0.75f));
   }

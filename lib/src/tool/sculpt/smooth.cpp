@@ -18,7 +18,7 @@ struct ToolSculptSmooth::Impl {
   {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBSmoothParameters> ();
+    auto& params = brush.initParameters <SBSmoothParameters> ();
 
     params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
     params.relaxOnly (this->self->cache ().get <bool>  ("relax-only", false));

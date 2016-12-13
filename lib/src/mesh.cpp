@@ -129,7 +129,6 @@ struct Mesh::Impl {
     this->normals.push_back (n.z);
 
     this->verticesFlags.emplace_back ();
-    this->isNewVertex (this->numVertices () - 1, true);
 
     return this->numVertices () - 1;
   }

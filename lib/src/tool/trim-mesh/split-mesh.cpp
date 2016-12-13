@@ -7,8 +7,7 @@
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
-#include "partial-action/subdivide-edge.hpp"
-#include "partial-action/subdivide-face.hpp"
+#include "partial-action/triangulate.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
@@ -75,7 +74,7 @@ namespace {
     }
   }
 
-  void subdivideAtEdges (WingedMesh& mesh, const ToolTrimMeshBorder& border) {
+  void splitAtEdges (WingedMesh& mesh, const ToolTrimMeshBorder& border) {
     AffectedFaces affected;
 
     for (unsigned int i = 0; i < border.numSegments () - 1; i++) {
@@ -111,10 +110,10 @@ namespace {
                 }
               }
               if (onFaceEdge) {
-                PartialAction::subdivideEdge (mesh, *onFaceEdge, affected, intersectionPos);
+                PartialAction::splitAndTriangulate (mesh, *onFaceEdge, intersectionPos, affected);
               }
               else {
-                PartialAction::subdivideFace (mesh, *f, affected, intersectionPos);
+                PartialAction::splitAndTriangulate (mesh, *f, intersectionPos, affected);
               }
             }
           }
@@ -153,7 +152,7 @@ namespace {
 
       if (checkIntersection) {
         if (segment.intersects (line, t) && t > 0.0f && t < glm::distance (v1,v2)) {
-          PartialAction::subdivideEdge (mesh, edge, affected, line.pointAt (t));
+          PartialAction::splitAndTriangulate (mesh, edge, line.pointAt (t), affected);
           borderVertices.emplace (edge.vertex1 (), BorderVertexStats (i, false));
           return;
         }
@@ -245,7 +244,7 @@ namespace {
 bool ToolTrimMeshSplitMesh::splitMesh (WingedMesh& mesh, ToolTrimMeshBorder& border) {
   BorderVertices borderVertices;
 
-  subdivideAtEdges (mesh, border);
+  splitAtEdges (mesh, border);
   splitMesh (mesh, border, borderVertices);
 
   if (borderVertices.empty () == false) {

@@ -26,11 +26,11 @@ struct ToolSculptGrab::Impl {
   }
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.parameters <SBDraglikeParameters> ();
+    auto& params = brush.initParameters <SBDraglikeParameters> ();
 
-    params.smoothness       (1.0f);
-    params.linearStep       (true);
-    params.discardBackfaces (this->self->cache ().get <bool>  ("discard-backfaces", false));
+    params.smoothness  (1.0f);
+    params.linearStep  (true);
+    params.discardBack (this->self->cache ().get <bool>  ("discard-back", false));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -50,10 +50,10 @@ struct ToolSculptGrab::Impl {
     properties.add (primPlaneEdit);
 
     QCheckBox& discardEdit = ViewUtil::checkBox ( QObject::tr ("Discard backfaces")
-                                                , params.discardBackfaces () );
+                                                , params.discardBack () );
     ViewUtil::connect (discardEdit, [this,&params] (bool d) {
-      params.discardBackfaces (d);
-      this->self->cache ().set ("discard-backfaces", d);
+      params.discardBack (d);
+      this->self->cache ().set ("discard-back", d);
     });
     properties.add (discardEdit);
   }

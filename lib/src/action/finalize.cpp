@@ -5,7 +5,7 @@
 #include "action/finalize.hpp"
 #include "affected-faces.hpp"
 #include "index-octree.hpp"
-#include "partial-action/collapse-face.hpp"
+#include "partial-action/collapse.hpp"
 #include "winged/mesh.hpp"
 #include "winged/vertex.hpp"
 

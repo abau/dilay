@@ -6,114 +6,192 @@
 #include <glm/gtx/norm.hpp>
 #include "action/finalize.hpp"
 #include "action/sculpt.hpp"
+#include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
+#include "intersection.hpp"
 #include "sculpt-brush.hpp"
-#include "partial-action/collapse-edge.hpp"
-#include "partial-action/relax-edge.hpp"
+#include "partial-action/collapse.hpp"
+#include "partial-action/insert.hpp"
 #include "partial-action/smooth.hpp"
-#include "partial-action/subdivide-edge.hpp"
+#include "partial-action/triangulate.hpp"
+#include "primitive/sphere.hpp"
+#include "primitive/triangle.hpp"
+#include "util.hpp"
 #include "winged/edge.hpp"
+#include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
+#include "winged/vertex.hpp"
 
 namespace {
-  void postprocessEdges (const SculptBrush& brush, AffectedFaces& domain) {
-    const float maxLength    ((4.0f/3.0f) * brush.subdivThreshold ());
-    const float maxLengthSqr (maxLength * maxLength);
-    WingedMesh& mesh         (brush.meshRef ());
+  glm::vec3 getSplitPosition ( const WingedMesh& mesh, const WingedVertex& v1
+                             , const WingedVertex& v2 )
+  {
+    const glm::vec3 p1 = v1.position (mesh);
+    const glm::vec3 n1 = v1.interpolatedNormal (mesh);
+    const glm::vec3 p2 = v2.position (mesh);
+    const glm::vec3 n2 = v2.interpolatedNormal (mesh);
 
-    auto subdivideEdges = [&] () {
-      for (WingedEdge* e : domain.toEdgeVec ()) {
-        if (e->lengthSqr (mesh) > maxLengthSqr) {
-          PartialAction::subdivideEdge (mesh, *e, domain);
-        }
-      }
-      domain.commit ();
-    };
-
-    auto reduceEdges = [&] () {
-      const SBReduceParameters&  params       = brush.constParameters <SBReduceParameters> ();
-      EdgePtrVec                 edges        = domain.toEdgeVec ();
-      const float                avgLength    = WingedUtil::averageLength (mesh, edges);
-      const float                avgLengthSqr = avgLength * avgLength;
-      const float                intensitySqr = params.intensity () * params.intensity ();
-      std::vector <unsigned int> indices;
-
-      for (WingedEdge* e : edges) {
-        indices.push_back (e->index ());
-      }
-      domain.reset ();
-
-      for (unsigned int i : indices) {
-        WingedEdge* e = mesh.edge (i);
-
-        if (e && e->lengthSqr (mesh) < avgLengthSqr * intensitySqr) {
-          PartialAction::collapseEdge (mesh, *e, domain);
-
-          if (mesh.isEmpty ()) {
-            return;
-          }
-        }
-      }
-      domain.commit ();
-    };
-
-    auto relaxEdges = [&] () {
-      for (WingedEdge* e : domain.toEdgeVec ()) {
-        PartialAction::relaxEdge (mesh, *e, domain);
-      }
-      domain.commit ();
-    };
-    auto smoothVertices = [&] () {
-      PartialAction::smooth (mesh, domain.toVertexSet (), 1, domain);
-      domain.commit ();
-    };
-
-    if (brush.reduce ()) {
-      reduceEdges ();
-
-      if (mesh.isEmpty ()) {
-        return;
-      }
+    if (Util::colinearUnit (n1, n2)) {
+      return 0.5f * (p1 + p2);
     }
     else {
-      PartialAction::extendDomain (domain);
-      if (brush.subdivide ()) {
-        subdivideEdges ();
+      const glm::vec3 n3 = glm::normalize (glm::cross (n1, n2));
+      const float     d1 = glm::dot (p1, n1);
+      const float     d2 = glm::dot (p2, n2);
+      const float     d3 = glm::dot (p1, n3);
+      const glm::vec3 p3 = ( (d1 * glm::cross (n2, n3)) 
+                           + (d2 * glm::cross (n3, n1)) 
+                           + (d3 * glm::cross (n1, n2)) 
+                           ) / (glm::dot (n1, glm::cross (n2, n3)));
+
+      return (p1 * 0.25f) + (p3 * 0.5f) + (p2 * 0.25f);
+    }
+  }
+
+  void splitEdges (WingedMesh& mesh, float maxLength, AffectedFaces& domain) {
+    assert (domain.uncommittedFaces ().empty ());
+
+    for (WingedEdge* e : domain.toEdgeVec ()) {
+      if (e->lengthSqr (mesh) > maxLength * maxLength) {
+        glm::vec3 newPos = getSplitPosition (mesh, e->vertex1Ref (), e->vertex2Ref ());
+        WingedEdge& edge = PartialAction::insertEdgeVertex (mesh, *e, newPos, domain);
+        edge.vertex2Ref ().isNewVertex (mesh, true);
       }
     }
-    relaxEdges     ();
-    smoothVertices ();
   }
-}
 
-void Action :: sculpt (const SculptBrush& brush) { 
-  AffectedFaces domain;
+  void triangulateFaces (WingedMesh& mesh, AffectedFaces& domain) {
+    FacePtrSet facesToTriangulate = domain.uncommittedFaces ();
 
-  brush.sculpt (domain);
-
-  if (domain.isEmpty () == false) {
-    postprocessEdges (brush, domain);
+    for (WingedFace* f : facesToTriangulate) {
+      PartialAction::triangulate (mesh, *f, domain);
+    }
+    domain.commit ();
   }
-  if (brush.meshRef ().isEmpty () == false) {
-    Action::finalize (brush.meshRef (), domain);
+
+  void relaxEdges (WingedMesh& mesh, AffectedFaces& domain) {
+    for (WingedEdge* e : domain.toEdgeVec ()) {
+      PartialAction::relaxEdge (mesh, *e, domain);
+    }
+    domain.commit ();
   }
-}
 
-void Action :: smoothMesh (WingedMesh& mesh) {
-  if (mesh.isEmpty () == false) {
-    AffectedFaces faces;
+  void smoothVertices (WingedMesh& mesh, AffectedFaces& domain) {
+    PartialAction::smooth (mesh, domain.toVertexSet (), domain);
+    domain.commit ();
+  }
 
-    mesh.forEachEdge ([&mesh, &faces] (WingedEdge& e) {
-      faces.insert (e.leftFaceRef ());
-      faces.insert (e.rightFaceRef ());
+  void reduceEdges (WingedMesh& mesh, const SBParameters& params, AffectedFaces& domain) {
+    assert (params.reduce ());
 
-      PartialAction::relaxEdge (mesh, e, faces);
+    EdgePtrVec                 edges        = domain.toEdgeVec ();
+    const float                avgLength    = WingedUtil::averageLength (mesh, edges);
+    const float                avgLengthSqr = avgLength * avgLength;
+    const float                intensitySqr = params.intensity () * params.intensity ();
+    std::vector <unsigned int> indices;
 
-      faces.commit ();
+    for (WingedEdge* e : edges) {
+      indices.push_back (e->index ());
+    }
+    domain.reset ();
+
+    for (unsigned int i : indices) {
+      WingedEdge* e = mesh.edge (i);
+
+      if (e && e->lengthSqr (mesh) < avgLengthSqr * intensitySqr) {
+        PartialAction::collapseEdge (mesh, *e, domain);
+
+        if (mesh.isEmpty ()) {
+          return;
+        }
+      }
+    }
+    domain.commit ();
+  }
+
+  void unsetNewVertexFlags (WingedMesh& mesh, const AffectedFaces& domain) {
+    for (WingedFace* f : domain.faces ()) {
+      for (WingedVertex& v : f->adjacentVertices ()) {
+        v.isNewVertex (mesh, false);
+      }
+    }
+  }
+
+  void extendDomain (AffectedFaces& domain) {
+    for (WingedFace* f : domain.faces ()) {
+      for (WingedFace& a : f->adjacentFaces ()) {
+        domain.insert (a);
+      }
+    }
+    domain.commit ();
+  }
+
+  void restrictDomain (const SculptBrush& brush, AffectedFaces& domain) {
+    PrimSphere sphere = brush.sphere ();
+
+    domain.filter ([&brush, &sphere] (const WingedFace& f) {
+      return IntersectionUtil::intersects (sphere, f.triangle (brush.meshRef ())) == false;
     });
+  }
+}
 
-    PartialAction::smooth (mesh, faces.toVertexSet (), 1, faces);
-    Action::finalize (mesh, faces);
+namespace Action {
+
+  void sculpt (const SculptBrush& brush) { 
+    WingedMesh&   mesh          = brush.meshRef ();
+    AffectedFaces domain        = brush.getAffectedFaces ();
+    AffectedFaces allAffected;
+    bool          splittedEdges = false;
+
+    if (brush.parameters ().reduce ()) {
+      reduceEdges (mesh, brush.parameters (), domain);
+    }
+    else {
+      do {
+        splitEdges (mesh, brush.subdivThreshold (), domain);
+
+        splittedEdges = domain.uncommittedFaces ().empty () == false;
+
+        if (splittedEdges) {
+          triangulateFaces (mesh, domain);
+          unsetNewVertexFlags (mesh, domain);
+          extendDomain (domain);
+        }
+        relaxEdges (mesh, domain);
+        smoothVertices (mesh, domain);
+        allAffected.insert (domain);
+        restrictDomain (brush, domain);
+      } 
+      while (splittedEdges);
+    }
+
+    brush.sculpt (domain.toVertexSet ());
+    relaxEdges (mesh, domain);
+    smoothVertices (mesh, domain);
+    allAffected.insert (domain);
+    allAffected.commit ();
+
+    if (mesh.isEmpty () == false) {
+      Action::finalize (mesh, allAffected);
+    }
+  }
+
+  void smoothMesh (WingedMesh& mesh) {
+    if (mesh.isEmpty () == false) {
+      AffectedFaces faces;
+
+      mesh.forEachEdge ([&mesh, &faces] (WingedEdge& e) {
+        faces.insert (e.leftFaceRef ());
+        faces.insert (e.rightFaceRef ());
+
+        PartialAction::relaxEdge (mesh, e, faces);
+
+        faces.commit ();
+      });
+
+      PartialAction::smooth (mesh, faces.toVertexSet (), faces);
+      Action::finalize (mesh, faces);
+    }
   }
 }

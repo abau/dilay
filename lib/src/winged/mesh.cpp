@@ -5,7 +5,6 @@
 #include "../mesh.hpp"
 #include "../util.hpp"
 #include "action/finalize.hpp"
-#include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "edge-map.hpp"
 #include "hash.hpp"
@@ -13,7 +12,6 @@
 #include "intersection.hpp"
 #include "mesh-util.hpp"
 #include "primitive/ray.hpp"
-#include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
@@ -407,23 +405,16 @@ struct WingedMesh::Impl {
     return this->intersectsT <PrimRay> (ray, faces, nullptr);
   }
 
+  bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
+    return this->intersectsT <PrimSphere> (sphere, faces);
+  }
+
   bool intersects (const PrimPlane& plane, AffectedFaces& faces) {
     return this->intersectsT <PrimPlane> (plane, faces);
   }
 
   bool intersects (const PrimAABox& box, AffectedFaces& faces) {
     return this->intersectsT <PrimAABox> (box, faces);
-  }
-
-  bool intersects (const PrimSphere& sphere, VertexPtrSet& vertices) {
-    this->octree.intersects (sphere, [this, &sphere, &vertices] (unsigned int i) {
-      for (WingedVertex& v : this->self->faceRef (i).adjacentVertices ()) {
-        if (sphere.contains (v.position (*this->self))) {
-          vertices.insert (&v);
-        }
-      }
-    });
-    return vertices.empty () == false;
   }
 
   void               scale          (const glm::vec3& v)   { return this->mesh.scale (v); }
@@ -544,9 +535,9 @@ DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, AffectedFaces&)
+DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimPlane&, AffectedFaces&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimAABox&, AffectedFaces&)
-DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, VertexPtrSet&)
 
 DELEGATE1       (void              , WingedMesh, scale, const glm::vec3&)
 DELEGATE1       (void              , WingedMesh, scaling, const glm::vec3&)

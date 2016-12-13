@@ -3,43 +3,143 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtx/norm.hpp>
+#include <memory>
 #include "adjacent-iterator.hpp"
 #include "affected-faces.hpp"
 #include "intersection.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/sphere.hpp"
+#include "primitive/triangle.hpp"
 #include "sculpt-brush.hpp"
 #include "util.hpp"
+#include "winged/face.hpp"
 #include "winged/mesh.hpp"
 #include "winged/util.hpp"
 #include "winged/vertex.hpp"
-#include "variant.hpp"
 
-SBIntensityParameters :: SBIntensityParameters ()
-  : _intensity (0.0f)
-{}
+void SBCarveParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& vertices) const {
+  WingedMesh& mesh = brush.meshRef ();
 
-SBInvertParameters :: SBInvertParameters ()
-  : _invert (false)
-{}
+  if (vertices.empty () == false) {
+    const glm::vec3 avgDir = this->inflate ()
+                           ? glm::vec3 (0.0f)
+                           : this->invert (WingedUtil::averageNormal (mesh, vertices));
 
-glm::vec3 SBInvertParameters :: invert (const glm::vec3& v) const {
-  return this->_invert ? -v : v;
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 oldPos    = v->position (mesh);
+      const float     intensity = this->intensity () * brush.radius ();
+      const float     factor    = intensity
+                                * Util::smoothStep ( oldPos, brush.position ()
+                                                   , 0.0f, brush.radius () );
+      const glm::vec3 direction = this->inflate ()
+                                ? this->invert (v->savedNormal (mesh))
+                                : avgDir;
+      const glm::vec3 newPos    = oldPos + (factor * direction);
+
+      v->setPosition (mesh, newPos);
+    }
+  }
 }
 
-SBCarveParameters :: SBCarveParameters ()
-  : _inflate (false)
-{}
+void SBDraglikeParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& vertices) const {
+  WingedMesh& mesh = brush.meshRef ();
 
-SBDraglikeParameters :: SBDraglikeParameters ()
-  : _smoothness       (1.0f)
-  , _discardBackfaces (true)
-  , _linearStep       (false)
-{}
+  float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
+    this->linearStep () ? Util::linearStep : Util::smoothStep;
 
-SBSmoothParameters :: SBSmoothParameters ()
-  : _relaxOnly (false)
-{}
+  for (WingedVertex* v : vertices) {
+    const glm::vec3 oldPos      = v->position (mesh);
+    const float     innerRadius = (1.0f - this->smoothness ()) * brush.radius ();
+    const float     factor      = stepFunction ( oldPos, brush.lastPosition ()
+                                               , innerRadius, brush.radius () );
+    const glm::vec3 newPos      = oldPos + (factor * brush.direction ());
+
+    v->setPosition (mesh, newPos);
+  }
+}
+
+void SBSmoothParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& vertices) const {
+  WingedMesh& mesh = brush.meshRef ();
+
+  if (this->relaxOnly () == false) {
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 oldPos = v->position (mesh);
+      const float     factor = this->intensity ()
+                             * Util::smoothStep ( oldPos, brush.position ()
+                                                , 0.0f, brush.radius () );
+      const glm::vec3 newPos = oldPos + (factor * (WingedUtil::center (mesh, *v) - oldPos));
+
+      v->setPosition (mesh, newPos);
+    }
+  }
+}
+
+void SBReduceParameters :: sculpt (const SculptBrush&, const VertexPtrSet&) const {}
+
+void SBFlattenParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& vertices) const {
+  WingedMesh& mesh = brush.meshRef ();
+
+  if (vertices.empty () == false) {
+    const glm::vec3 normal = WingedUtil::averageNormal (mesh, vertices);
+    const PrimPlane plane (WingedUtil::center (mesh, vertices), normal);
+
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 oldPos   = v->position (mesh);
+      const float     factor   = this->intensity ()
+                               * Util::linearStep ( oldPos, brush.position ()
+                                                  , 0.0f, brush.radius () );
+      const float     distance = glm::max (0.0f, plane.distance (oldPos));
+      const glm::vec3 newPos   = oldPos - (normal * factor * distance);
+
+      v->setPosition (mesh, newPos);
+    }
+  }
+}
+
+void SBCreaseParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& vertices) const {
+  WingedMesh& mesh = brush.meshRef ();
+
+  if (vertices.empty () == false) {
+    const glm::vec3 avgDir = this->invert (WingedUtil::averageNormal (mesh, vertices));
+    const glm::vec3 refPos = brush.position () + (avgDir * this->intensity () * brush.radius ());
+
+    const PrimPlane plane (refPos, avgDir);
+
+    for (WingedVertex* v : vertices) {
+      const glm::vec3 oldPos   = v->position (mesh);
+      const glm::vec3 projPos  = plane.project (oldPos);
+      const float     distance = glm::distance (projPos, refPos);
+
+      if (glm::distance (projPos, refPos) > 0.001f) {
+        const float     relDistance = glm::clamp (distance / brush.radius (), 0.0f, 1.0f);
+        const float     factor      = 0.1f * brush.radius () * glm::min (0.5f, 1.0f - relDistance);
+        const glm::vec3 direction   = glm::normalize ( (projPos - oldPos)
+                                                     + (2.0f * (refPos - projPos)) );
+        const glm::vec3 newPos      = oldPos + (factor * direction);
+
+        v->setPosition (mesh, newPos);
+      }
+    }
+  }
+}
+
+void SBPinchParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& vertices) const {
+  WingedMesh& mesh = brush.meshRef ();
+
+  for (WingedVertex* v : vertices) {
+    const glm::vec3 oldPos   = v->position (mesh);
+    const float     distance = glm::distance (oldPos, brush.position ());
+
+    if (distance > 0.001f) {
+      const float     relDistance = glm::clamp (distance / brush.radius (), 0.0f, 1.0f);
+      const float     factor      = 0.1f * brush.radius () * glm::min (0.5f, 1.0f - relDistance);
+      const glm::vec3 direction   = this->invert (glm::normalize (brush.position () - oldPos));
+      const glm::vec3 newPos      = oldPos + (factor * direction);
+
+      v->setPosition (mesh, newPos);
+    }
+  }
+}
 
 struct SculptBrush :: Impl {
   SculptBrush*  self;
@@ -53,13 +153,7 @@ struct SculptBrush :: Impl {
   glm::vec3    _position;
   glm::vec3    _direction;
 
-  Variant < SBCarveParameters
-          , SBDraglikeParameters
-          , SBSmoothParameters
-          , SBFlattenParameters
-          , SBCreaseParameters
-          , SBPinchParameters
-          , SBReduceParameters > parameters;
+  std::unique_ptr <SBParameters> _parameters;
 
   Impl (SculptBrush* s) 
     : self            (s)
@@ -69,209 +163,6 @@ struct SculptBrush :: Impl {
     , subdivide       (false)
     , hasPosition     (false)
   {}
-
-  VertexPtrSet getVerticesToSculpt (bool lastPosition, bool discardBack) const {
-    VertexPtrSet vertices;
-    this->mesh->intersects (PrimSphere ( lastPosition ? this->lastPosition ()
-                                                      : this->position ()
-                                       , this->radius ), vertices);
-    if (discardBack) {
-      for (auto it = vertices.begin (); it != vertices.end (); ) {
-        if (glm::dot (this->direction (), (*it)->savedNormal (*this->mesh)) <= 0.0f) {
-          it = vertices.erase (it);
-        }
-        else {
-          ++it;
-        }
-      }
-    }
-    return vertices;
-  }
-
-  void addAffectedFaces (const VertexPtrSet& vertices, AffectedFaces& faces) const {
-    for (WingedVertex* v : vertices) {
-      for (WingedFace& f : v->adjacentFaces ()) {
-        faces.insert (f);
-      }
-    }
-    faces.commit ();
-  }
-
-  void sculpt (AffectedFaces& faces) const {
-    assert (this->parameters.isSet ());
-
-    this->parameters.caseOf <void>
-      ( [this,&faces] (const SBCarveParameters&    p) { this->sculpt (p, faces); }
-      , [this,&faces] (const SBDraglikeParameters& p) { this->sculpt (p, faces); }
-      , [this,&faces] (const SBSmoothParameters&   p) { this->sculpt (p, faces); }
-      , [this,&faces] (const SBFlattenParameters&  p) { this->sculpt (p, faces); }
-      , [this,&faces] (const SBCreaseParameters&   p) { this->sculpt (p, faces); }
-      , [this,&faces] (const SBPinchParameters&    p) { this->sculpt (p, faces); }
-      , [this,&faces] (const SBReduceParameters&   p) { this->sculpt (p, faces); }
-      );
-  }
-
-  void sculpt (const SBCarveParameters& parameters, AffectedFaces& faces) const {
-    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
-    WingedMesh&  mesh     = this->self->meshRef ();
-
-    if (vertices.empty () == false) {
-      const glm::vec3 avgDir = parameters.inflate ()
-                             ? glm::vec3 (0.0f)
-                             : parameters.invert (WingedUtil::averageNormal (mesh, vertices));
-
-      for (WingedVertex* v : vertices) {
-        const glm::vec3 oldPos    = v->position (mesh);
-        const float     intensity = parameters.intensity () * this->radius;
-        const float     factor    = intensity
-                                  * Util::smoothStep ( oldPos, this->position ()
-                                                     , 0.0f, this->radius );
-        const glm::vec3 direction = parameters.inflate ()
-                                  ? parameters.invert (v->savedNormal (mesh))
-                                  : avgDir;
-        const glm::vec3 newPos    = oldPos + (factor * direction);
-
-        v->setPosition (mesh, newPos);
-      }
-    }
-    this->addAffectedFaces (vertices, faces);
-  }
-
-  void sculpt (const SBDraglikeParameters& parameters, AffectedFaces& faces) const {
-    VertexPtrSet vertices = this->getVerticesToSculpt (true, parameters.discardBackfaces ());
-    WingedMesh&  mesh     = this->self->meshRef ();
-
-    float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
-      parameters.linearStep () ? Util::linearStep : Util::smoothStep;
-
-    for (WingedVertex* v : vertices) {
-      const glm::vec3 oldPos      = v->position (mesh);
-      const float     innerRadius = (1.0f - parameters.smoothness ()) * this->radius;
-      const float     factor      = stepFunction ( oldPos, this->lastPosition ()
-                                                 , innerRadius, this->radius );
-      const glm::vec3 newPos      = oldPos + (factor * this->direction ());
-
-      v->setPosition (mesh, newPos);
-    }
-    this->addAffectedFaces (vertices, faces);
-  }
-
-  void sculpt (const SBSmoothParameters& parameters, AffectedFaces& faces) const {
-    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
-    WingedMesh&  mesh     = this->self->meshRef ();
-
-    if (parameters.relaxOnly () == false) {
-      for (WingedVertex* v : vertices) {
-        const glm::vec3 oldPos = v->position (mesh);
-        const float     factor = parameters.intensity ()
-                               * Util::smoothStep ( oldPos, this->position ()
-                                                  , 0.0f, this->radius );
-        const glm::vec3 newPos = oldPos + (factor * (WingedUtil::center (mesh, *v) - oldPos));
-
-        v->setPosition (mesh, newPos);
-      }
-    }
-    this->addAffectedFaces (vertices, faces);
-  }
-
-  void sculpt (const SBFlattenParameters& parameters, AffectedFaces& faces) const {
-    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
-    WingedMesh&  mesh     = this->self->meshRef ();
-
-    if (vertices.empty () == false) {
-      const glm::vec3 normal = WingedUtil::averageNormal (mesh, vertices);
-      const PrimPlane plane (WingedUtil::center (mesh, vertices), normal);
-
-      for (WingedVertex* v : vertices) {
-        const glm::vec3 oldPos   = v->position (mesh);
-        const float     factor   = parameters.intensity ()
-                                 * Util::linearStep ( oldPos, this->position ()
-                                                    , 0.0f, this->radius );
-        const float     distance = glm::max (0.0f, plane.distance (oldPos));
-        const glm::vec3 newPos   = oldPos - (normal * factor * distance);
-
-        v->setPosition (mesh, newPos);
-      }
-    }
-    this->addAffectedFaces (vertices, faces);
-  }
-
-  void sculpt (const SBCreaseParameters& parameters, AffectedFaces& faces) const {
-    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
-    WingedMesh&  mesh     = this->self->meshRef ();
-
-    if (faces.isEmpty () == false) {
-      const glm::vec3 avgDir = parameters.invert (WingedUtil::averageNormal (mesh, vertices));
-      const glm::vec3 refPos = this->position () + (avgDir * parameters.intensity () * this->radius);
-
-      const PrimPlane plane (refPos, avgDir);
-
-      for (WingedVertex* v : vertices) {
-        const glm::vec3 oldPos   = v->position (mesh);
-        const glm::vec3 projPos  = plane.project (oldPos);
-        const float     distance = glm::distance (projPos, refPos);
-
-        if (glm::distance (projPos, refPos) > 0.001f) {
-          const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
-          const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
-          const glm::vec3 direction   = glm::normalize ( (projPos - oldPos)
-                                                       + (2.0f * (refPos - projPos)) );
-          const glm::vec3 newPos      = oldPos + (factor * direction);
-
-          v->setPosition (mesh, newPos);
-        }
-      }
-    }
-    this->addAffectedFaces (vertices, faces);
-  }
-
-  void sculpt (const SBPinchParameters& parameters, AffectedFaces& faces) const {
-    VertexPtrSet vertices = this->getVerticesToSculpt (false, true);
-    WingedMesh&  mesh     = this->self->meshRef ();
-
-    for (WingedVertex* v : vertices) {
-      const glm::vec3 oldPos   = v->position (mesh);
-      const float     distance = glm::distance (oldPos, this->position ());
-
-      if (distance > 0.001f) {
-        const float     relDistance = glm::clamp (distance / this->radius, 0.0f, 1.0f);
-        const float     factor      = 0.1f * this->radius * glm::min (0.5f, 1.0f - relDistance);
-        const glm::vec3 direction   = parameters.invert (glm::normalize (this->position () - oldPos));
-        const glm::vec3 newPos      = oldPos + (factor * direction);
-
-        v->setPosition (mesh, newPos);
-      }
-    }
-    this->addAffectedFaces (vertices, faces);
-  }
-
-  void sculpt (const SBReduceParameters&, AffectedFaces& faces) const {
-    this->addAffectedFaces (this->getVerticesToSculpt (false, true), faces);
-  }
-
-  float intensity () const {
-    return this->parameters.caseOf <float>
-      ( [] (const SBCarveParameters&    p) { return p.intensity (); }
-      , [] (const SBDraglikeParameters&  ) { return 0.0f; }
-      , [] (const SBSmoothParameters&   p) { return p.intensity (); }
-      , [] (const SBFlattenParameters&  p) { return p.intensity (); }
-      , [] (const SBCreaseParameters&   p) { return p.intensity (); }
-      , [] (const SBPinchParameters&     ) { return 0.0f; }
-      , [] (const SBReduceParameters&   p) { return p.intensity (); }
-      );
-  }
-
-  void intensity (float value) {
-    this->parameters.caseOf <void>
-      ( [value] (SBCarveParameters&    p) { p.intensity (value); }
-      , [     ] (SBDraglikeParameters&  ) { }
-      , [value] (SBSmoothParameters&   p) { p.intensity (value); }
-      , [value] (SBFlattenParameters&  p) { p.intensity (value); }
-      , [value] (SBCreaseParameters&   p) { p.intensity (value); }
-      , [     ] (SBPinchParameters&     ) { }
-      , [value] (SBReduceParameters&   p) { p.intensity (value); }
-      );
-  }
 
   float subdivThreshold () const {
     return (1.0f - this->detailFactor) * this->radius;
@@ -295,6 +186,12 @@ struct SculptBrush :: Impl {
   glm::vec3 delta () const {
     assert (this->hasPosition);
     return this->_position - this->_lastPosition;
+  }
+
+  PrimSphere sphere () const {
+    const glm::vec3& pos = this->_parameters->useLastPos () ? this->lastPosition ()
+                                                            : this->position ();
+    return PrimSphere (pos, this->radius);
   }
 
   void setPointOfAction (const glm::vec3& p, const glm::vec3& d) {
@@ -328,10 +225,6 @@ struct SculptBrush :: Impl {
     this->hasPosition = false;
   }
 
-  bool reduce () const {
-    return this->parameters.is <SBReduceParameters> ();
-  }
-
   void mirror (const PrimPlane& plane) {
     if (this->hasPosition) {
       this->_lastPosition = plane.mirror          (this->_lastPosition);
@@ -339,66 +232,60 @@ struct SculptBrush :: Impl {
       this->_direction    = plane.mirrorDirection (this->_direction);
     }
   }
+
+  AffectedFaces getAffectedFaces () const {
+    assert (this->mesh);
+    assert (this->_parameters);
+
+    AffectedFaces faces;
+    this->mesh->intersects (this->sphere (), faces);
+
+    if (this->_parameters->discardBack ()) {
+      faces.filter ([this] (const WingedFace& f) {
+        return glm::dot (this->direction (), f.triangle (*this->mesh).cross ()) <= 0.0f;
+      });
+    }
+    return faces;
+  }
+
+  void sculpt (const VertexPtrSet& vertices) const {
+    assert (this->_parameters);
+    this->_parameters->sculpt (*this->self, vertices);
+  }
+
+  SBParameters* parametersPointer () const {
+    return this->_parameters.get ();
+  }
+
+  void parametersPointer (SBParameters* p) {
+    this->_parameters.reset (p);
+  }
 };
 
-DELEGATE_BIG6_SELF (SculptBrush)
+DELEGATE_BIG4MOVE_SELF (SculptBrush)
   
-DELEGATE1_CONST (void             , SculptBrush, sculpt, AffectedFaces&)
-GETTER_CONST    (float            , SculptBrush, radius)
-GETTER_CONST    (float            , SculptBrush, detailFactor)
-GETTER_CONST    (float            , SculptBrush, stepWidthFactor)
-GETTER_CONST    (bool             , SculptBrush, subdivide)
-GETTER_CONST    (WingedMesh*      , SculptBrush, mesh)
-DELEGATE_CONST  (float            , SculptBrush, intensity)
-SETTER          (float            , SculptBrush, radius)
-SETTER          (float            , SculptBrush, detailFactor)
-SETTER          (float            , SculptBrush, stepWidthFactor)
-SETTER          (bool             , SculptBrush, subdivide)
-SETTER          (WingedMesh*      , SculptBrush, mesh)
-DELEGATE1       (void             , SculptBrush, intensity, float)
-DELEGATE_CONST  (float            , SculptBrush, subdivThreshold)
-GETTER_CONST    (bool             , SculptBrush, hasPosition)
-DELEGATE_CONST  (const glm::vec3& , SculptBrush, lastPosition)
-DELEGATE_CONST  (const glm::vec3& , SculptBrush, position)
-DELEGATE_CONST  (const glm::vec3& , SculptBrush, direction)
-DELEGATE_CONST  (glm::vec3        , SculptBrush, delta)
-DELEGATE2       (void             , SculptBrush, setPointOfAction, const glm::vec3&, const glm::vec3&)
-DELEGATE2       (bool             , SculptBrush, updatePointOfAction, const glm::vec3&, const glm::vec3&)
-DELEGATE        (void             , SculptBrush, resetPointOfAction)
-DELEGATE_CONST  (bool             , SculptBrush, reduce)
-DELEGATE1       (void             , SculptBrush, mirror, const PrimPlane&)
-
-template <typename T> 
-const T& SculptBrush::constParameters () const {
-  return this->impl->parameters.get <T> ();
-}
-
-
-template <typename T>
-T& SculptBrush::parameters () {
-  if (this->impl->parameters.is <T> () == false) {
-    this->impl->parameters.init <T> ();
-  }
-  return this->impl->parameters.get <T> ();
-}
-
-template const SBCarveParameters& SculptBrush::constParameters <SBCarveParameters> () const;
-template       SBCarveParameters& SculptBrush::parameters      <SBCarveParameters> ();
-
-template const SBDraglikeParameters& SculptBrush::constParameters <SBDraglikeParameters> () const;
-template       SBDraglikeParameters& SculptBrush::parameters      <SBDraglikeParameters> ();
-
-template const SBSmoothParameters& SculptBrush::constParameters <SBSmoothParameters> () const;
-template       SBSmoothParameters& SculptBrush::parameters      <SBSmoothParameters> ();
-
-template const SBFlattenParameters& SculptBrush::constParameters <SBFlattenParameters> () const;
-template       SBFlattenParameters& SculptBrush::parameters      <SBFlattenParameters> ();
-
-template const SBCreaseParameters& SculptBrush::constParameters <SBCreaseParameters> () const;
-template       SBCreaseParameters& SculptBrush::parameters      <SBCreaseParameters> ();
-
-template const SBPinchParameters& SculptBrush::constParameters <SBPinchParameters> () const;
-template       SBPinchParameters& SculptBrush::parameters      <SBPinchParameters> ();
-
-template const SBReduceParameters& SculptBrush::constParameters <SBReduceParameters> () const;
-template       SBReduceParameters& SculptBrush::parameters      <SBReduceParameters> ();
+GETTER_CONST    (float              , SculptBrush, radius)
+GETTER_CONST    (float              , SculptBrush, detailFactor)
+GETTER_CONST    (float              , SculptBrush, stepWidthFactor)
+GETTER_CONST    (bool               , SculptBrush, subdivide)
+GETTER_CONST    (WingedMesh*        , SculptBrush, mesh)
+SETTER          (float              , SculptBrush, radius)
+SETTER          (float              , SculptBrush, detailFactor)
+SETTER          (float              , SculptBrush, stepWidthFactor)
+SETTER          (bool               , SculptBrush, subdivide)
+SETTER          (WingedMesh*        , SculptBrush, mesh)
+DELEGATE_CONST  (float              , SculptBrush, subdivThreshold)
+GETTER_CONST    (bool               , SculptBrush, hasPosition)
+DELEGATE_CONST  (const glm::vec3&   , SculptBrush, lastPosition)
+DELEGATE_CONST  (const glm::vec3&   , SculptBrush, position)
+DELEGATE_CONST  (const glm::vec3&   , SculptBrush, direction)
+DELEGATE_CONST  (glm::vec3          , SculptBrush, delta)
+DELEGATE_CONST  (PrimSphere         , SculptBrush, sphere)
+DELEGATE2       (void               , SculptBrush, setPointOfAction, const glm::vec3&, const glm::vec3&)
+DELEGATE2       (bool               , SculptBrush, updatePointOfAction, const glm::vec3&, const glm::vec3&)
+DELEGATE        (void               , SculptBrush, resetPointOfAction)
+DELEGATE1       (void               , SculptBrush, mirror, const PrimPlane&)
+DELEGATE_CONST  (AffectedFaces      , SculptBrush, getAffectedFaces)
+DELEGATE1_CONST (void               , SculptBrush, sculpt, const VertexPtrSet&)
+DELEGATE_CONST  (SBParameters*      , SculptBrush, parametersPointer)
+DELEGATE1       (void               , SculptBrush, parametersPointer, SBParameters*)
