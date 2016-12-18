@@ -11,6 +11,7 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
+#include "winged/util.hpp"
 #include "winged/vertex.hpp"
 
 namespace {
@@ -82,90 +83,39 @@ namespace {
 
 namespace PartialAction {
   void smooth (WingedMesh& mesh, const VertexPtrSet& vertices, AffectedFaces& affectedFaces) {
-    typedef std::vector <PrimTriangle> AdjTriangles;
-
-    auto getData = [&mesh] ( const WingedVertex& v
-                           , glm::vec3& position, glm::vec3& delta, AdjTriangles& adjTriangles ) 
-    {
-      assert (adjTriangles.empty ());
-
-      position = v.position (mesh);
-      delta    = glm::vec3 (0.0f);
-
-      AdjFaces     adjFaces (v.adjacentFaces ());
-      unsigned int valence  (0);
-
-      for (auto it = adjFaces.begin (); it != adjFaces.end (); ++it) {
-        adjTriangles.push_back (it->triangle (mesh));
-        delta += it.edge ()->otherVertexRef (v).position (mesh) - position;
-        valence++;
-      }
-      delta /= float (valence);
-    };
-
-    auto getInterpolatedNormal = [] (const AdjTriangles& triangles) -> glm::vec3 {
-      glm::vec3    normal = glm::vec3 (0.0f);
-      unsigned int n      = 0;
-
-      for (const PrimTriangle& tri : triangles) {
-        if (tri.isDegenerated () == false) {
-          normal += tri.normal ();
-          n++;
-        }
-      }
-      return n == 0 ? glm::vec3 (0.0f) : normal / float (n);
-    };
-
     std::vector <glm::vec3> newPositions;
     newPositions.reserve (vertices.size ());
 
     for (WingedVertex* v : vertices) {
-      glm::vec3    position;
-      glm::vec3    delta;
-      AdjTriangles adjTriangles;
+      const glm::vec3 center = WingedUtil::center (mesh, *v);
+      const glm::vec3 delta = center - v->position (mesh);
+      const glm::vec3 normal = v->savedNormal (mesh);
+      const glm::vec3 tangentialPos = center - (normal * glm::dot (normal, delta));
+      const PrimRay ray (true, tangentialPos, normal);
 
-      getData (*v, position, delta, adjTriangles);
-
-      const glm::vec3 normal (getInterpolatedNormal (adjTriangles));
-
-      if (normal == glm::vec3 (0.0f)) {
-        newPositions.push_back (position);
-      }
-      else {
-        const float     dot  (glm::dot (normal, delta));
-        const glm::vec3 newP ((position + delta) - (normal * dot));
-        const PrimRay   ray  (true, newP, normal);
-
-        bool intersected (false);
-        for (const PrimTriangle& tri : adjTriangles) {
-          if (tri.isDegenerated ()) {
-            continue;
-          }
-          else {
-            float t;
-            if (IntersectionUtil::intersects (ray, tri, &t)) {
-              newPositions.push_back (ray.pointAt (t));
-              intersected = true;
-              break;
-            }
-          }
-        }
+      bool intersected = false;
+      for (WingedFace& f : v->adjacentFaces ()) {
         if (intersected == false) {
-          newPositions.push_back (newP);
+          const PrimTriangle triangle = f.triangle (mesh);
+          float t;
+          if (IntersectionUtil::intersects (ray, triangle, &t)) {
+            newPositions.push_back (ray.pointAt (t));
+            intersected = true;
+          }
         }
+        affectedFaces.insert (f);
+      }
+      if (intersected == false) {
+        newPositions.push_back (tangentialPos);
       }
     }
 
-    auto posIt = newPositions.begin ();
+    unsigned int i = 0;
     for (WingedVertex* v : vertices) {
-      assert (posIt != newPositions.end ());
+      assert (i < newPositions.size ());
 
-      mesh.setVertex (v->index (), *posIt);
-      ++posIt;
-
-      for (WingedFace& f : v->adjacentFaces ()) {
-        affectedFaces.insert (f);
-      }
+      mesh.setVertex (v->index (), newPositions [i]);
+      ++i;
     }
   }
 

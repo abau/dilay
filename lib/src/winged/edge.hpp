@@ -73,6 +73,7 @@ class WingedEdge : public IntrusiveList <WingedEdge>::Item {
     WingedEdge*     predecessor      (const WingedFace&, unsigned int) const;
     WingedVertex*   vertex           (const WingedFace&, unsigned int) const;
     glm::vec3       middle           (const WingedMesh&) const;
+    WingedEdge*     adjacentSibling  (const WingedMesh&, const WingedVertex&) const;
 
     SAFE_REF_CONST  (WingedVertex, vertex1)
     SAFE_REF_CONST  (WingedVertex, vertex2)
