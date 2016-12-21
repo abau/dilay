@@ -24,92 +24,26 @@
 #include "winged/vertex.hpp"
 
 namespace {
-  typedef std::vector <glm::vec3> Adjacents;
+  glm::vec3 getSplitPosition (const WingedMesh& mesh, const WingedEdge& e) {
+    const glm::vec3 p1 = e.vertex1Ref ().position (mesh);
+    const glm::vec3 n1 = e.vertex1Ref ().interpolatedNormal (mesh);
+    const glm::vec3 p2 = e.vertex2Ref ().position (mesh);
+    const glm::vec3 n2 = e.vertex2Ref ().interpolatedNormal (mesh);
 
-  glm::vec3 getSplitPositionK6 (const Adjacents& a1, const Adjacents& a2) {
-    return (0.5f    * a1[0]) + (0.5f    * a2[0])
-         + (0.125f  * a1[1]) + (0.125f  * a2[1])
-         - (0.0625f * a1[2]) - (0.0625f * a2[2])
-         - (0.0625f * a1[4]) - (0.0625f * a2[4]);
-  }
-
-  glm::vec3 getSplitPositionK (const glm::vec3& center, const Adjacents& a) {
-    glm::vec3 v (0.0f,0.0f,0.0f);
-
-    if (a.size () == 3) {
-      v = ((5.0f / 12.0f) * (a[0] - center))
-        - ((1.0f / 12.0f) * (a[1] - center))
-        - ((1.0f / 12.0f) * (a[2] - center));
-    }
-    else if (a.size () == 4) {
-      v = (0.375f * (a[0] - center))
-        - (0.125f * (a[2] - center));
+    if (Util::colinearUnit (n1, n2)) {
+      return 0.5f * (p1 + p2);
     }
     else {
-      const float K = float (a.size ());
+      const glm::vec3 n3 = glm::normalize (glm::cross (n1, n2));
+      const float     d1 = glm::dot (p1, n1);
+      const float     d2 = glm::dot (p2, n2);
+      const float     d3 = glm::dot (p1, n3);
+      const glm::vec3 p3 = ( (d1 * glm::cross (n2, n3)) 
+                           + (d2 * glm::cross (n3, n1)) 
+                           + (d3 * glm::cross (n1, n2)) 
+                           ) / (glm::dot (n1, glm::cross (n2, n3)));
 
-      for (unsigned int i = 0; i < a.size (); i++) {
-        const float j   = float (i);
-        const float s_j = ( 0.25f 
-                          +         cos ( 2.0f * glm::pi <float> () * j / K ) 
-                          + (0.5f * cos ( 4.0f * glm::pi <float> () * j / K ))
-                          ) / K;
-
-        v = v + (s_j * (a[i] - center));
-      }
-    }
-    return v + center;
-  }
-
-  glm::vec3 getSplitPositionExtraordinary (const Adjacents& a1, const Adjacents& a2) {
-    return 0.5f * (getSplitPositionK (a2[0], a1) + getSplitPositionK (a1[0], a2));
-  }
-
-  Adjacents adjacents (const WingedMesh& mesh, WingedEdge& edge, const WingedVertex& vertex) {
-    const float edgeLength = glm::length (edge.vector (mesh));
-
-    std::function < glm::vec3 (const WingedEdge&, const WingedVertex&, float) > traverse =
-      [&mesh, &traverse, edgeLength] 
-      (const WingedEdge& e, const WingedVertex& o, float oLength) -> glm::vec3 {
-        WingedEdge* sibling = e.adjacentSibling (mesh, o);
-
-        if (sibling) {
-          const float sLength = oLength + glm::length (sibling->vector (mesh));
-          if (glm::abs (edgeLength - oLength) < glm::abs (edgeLength - sLength) ) {
-            return o.position (mesh);
-          }
-          else {
-            return traverse (*sibling, sibling->otherVertexRef (o), sLength);
-          }
-        }
-        else {
-          return o.position (mesh);
-        }
-    };
-
-    Adjacents adjacents;
-    for (WingedEdge& e : vertex.adjacentEdges (edge)) {
-      WingedVertex& a = e.otherVertexRef (vertex);
-
-      adjacents.push_back (traverse (e, a, glm::length (e.vector (mesh))));
-    }
-    return adjacents;
-  }
-
-  glm::vec3 getSplitPosition (const WingedMesh& mesh, WingedEdge& edge) {
-    Adjacents a1 = adjacents (mesh, edge, edge.vertex1Ref ());
-    Adjacents a2 = adjacents (mesh, edge, edge.vertex2Ref ());
-    const glm::vec3 p1 = edge.vertex1Ref ().position (mesh);
-    const glm::vec3 p2 = edge.vertex2Ref ().position (mesh);
-
-    if (a1.size () == 6 && a2.size () == 6)
-      return getSplitPositionK6 (a1,a2);
-    else if (a1.size () == 6 && a2.size () != 6)
-      return getSplitPositionK (p2, a2);
-    else if (a1.size () != 6 && a2.size () == 6)
-      return getSplitPositionK (p1, a1);
-    else {
-      return getSplitPositionExtraordinary (a1,a2);
+      return (p1 * 0.25f) + (p3 * 0.5f) + (p2 * 0.25f);
     }
   }
 

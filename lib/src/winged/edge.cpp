@@ -4,7 +4,6 @@
  */
 #include <glm/glm.hpp>
 #include "../util.hpp"
-#include "adjacent-iterator.hpp"
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/vertex.hpp"
@@ -173,19 +172,4 @@ WingedVertex* WingedEdge :: vertex (const WingedFace& face,unsigned int index) c
 glm::vec3 WingedEdge :: middle (const WingedMesh& mesh) const {
   return Util :: between ( this->vertex1 ()->position (mesh)
                          , this->vertex2 ()->position (mesh));
-}
-
-WingedEdge* WingedEdge :: adjacentSibling (const WingedMesh& mesh, const WingedVertex& vertex) const {
-  const glm::vec3   thisV = glm::normalize (this->vector (mesh, vertex));
-        WingedEdge* edge  = nullptr;
-        float       dot   = -0.5f;
-
-  for (WingedEdge& e : vertex.adjacentEdges ()) {
-    const float d = glm::dot (thisV, glm::normalize (e.vector (mesh, vertex)));
-    if (d < dot) {
-      edge = &e;
-      dot  = d;
-    }
-  }
-  return edge;
 }
