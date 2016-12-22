@@ -242,7 +242,7 @@ struct SculptBrush :: Impl {
 
     if (this->_parameters->discardBack ()) {
       faces.filter ([this] (const WingedFace& f) {
-        return glm::dot (this->direction (), f.triangle (*this->mesh).cross ()) <= 0.0f;
+        return glm::dot (this->direction (), f.triangle (*this->mesh).cross ()) > 0.0f;
       });
     }
     return faces;

@@ -22,7 +22,7 @@ class AffectedFaces {
     bool               isEmpty          () const;
     bool               contains         (WingedFace&) const;
     bool               contains         (WingedFace*) const;
-    void               filter           (const std::function <bool (const WingedFace&)>&);
+    void               filter           (const std::function <bool (WingedFace&)>&);
     const FacePtrSet&  faces            () const;
     const FacePtrSet&  uncommittedFaces () const;
           VertexPtrSet toVertexSet      () const;

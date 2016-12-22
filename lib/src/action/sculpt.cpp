@@ -127,19 +127,21 @@ namespace {
 
   void restrictDomain (const SculptBrush& brush, AffectedFaces& domain) {
     PrimSphere sphere = brush.sphere ();
+    AffectedFaces removed;
 
-    domain.filter ([&brush, &sphere] (const WingedFace& f) {
-      return IntersectionUtil::intersects (sphere, f.triangle (brush.meshRef ())) == false;
+    Action::collapseDegeneratedFaces (brush.meshRef (), domain);
+
+    domain.filter ([&brush, &sphere, &removed] (WingedFace& f) {
+      if (IntersectionUtil::intersects (sphere, f.triangle (brush.meshRef ()))) {
+        return true;
+      }
+      else {
+        removed.insert (f);
+        return false;
+      }
     });
-  }
-
-  void cleanup (WingedMesh& mesh, AffectedFaces& domain) {
-    Action::realignFaces             (mesh, domain);
-    Action::collapseDegeneratedFaces (mesh, domain);
-
-    for (WingedVertex* v : domain.toVertexSet ()) {
-      v->setInterpolatedNormal (mesh);
-    }
+    removed.commit ();
+    Action::finalize (brush.meshRef (), removed, false);
   }
 }
 
@@ -164,23 +166,13 @@ namespace Action {
           unsetNewVertexFlags (mesh, domain);
         }
         relaxEdges (mesh, domain);
-        cleanup (mesh, domain);
         smoothVertices (mesh, domain);
-        cleanup (mesh, domain);
         restrictDomain (brush, domain);
       } 
       while (splittedEdges);
     }
-
     brush.sculpt (domain.toVertexSet ());
-    relaxEdges (mesh, domain);
-    cleanup (mesh, domain);
-    smoothVertices (mesh, domain);
-    cleanup (mesh, domain);
-
-    if (mesh.isEmpty () == false) {
-      mesh.bufferData ();
-    }
+    Action::finalize (mesh, domain);
   }
 
   void smoothMesh (WingedMesh& mesh) {

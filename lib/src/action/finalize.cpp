@@ -15,6 +15,8 @@ void Action :: collapseDegeneratedFaces (WingedMesh& mesh) {
 }
 
 void Action :: collapseDegeneratedFaces (WingedMesh& mesh, AffectedFaces& affectedFaces) {
+  Action::realignFaces (mesh, affectedFaces);
+
   WingedFace* degenerated = nullptr;
   while ((degenerated = mesh.someDegeneratedFace ()) != nullptr) {
     PartialAction::collapseFace (mesh, *degenerated, affectedFaces);
@@ -25,6 +27,7 @@ void Action :: collapseDegeneratedFaces (WingedMesh& mesh, AffectedFaces& affect
     }
     affectedFaces.commit ();
   }
+  assert (mesh.octree ().numDegeneratedElements () == 0);
 }
 
 void Action :: realignFaces (WingedMesh& mesh, const AffectedFaces& affectedFaces) {
@@ -33,14 +36,13 @@ void Action :: realignFaces (WingedMesh& mesh, const AffectedFaces& affectedFace
   }
 }
 
-void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces) {
-  Action::realignFaces             (mesh, affectedFaces);
+void Action :: finalize (WingedMesh& mesh, AffectedFaces& affectedFaces, bool bufferData) {
   Action::collapseDegeneratedFaces (mesh, affectedFaces);
 
   for (WingedVertex* v : affectedFaces.toVertexSet ()) {
     v->setInterpolatedNormal (mesh);
   }
-  mesh.bufferData ();
-
-  assert (mesh.octree ().numDegeneratedElements () == 0);
+  if (bufferData) {
+    mesh.bufferData ();
+  }
 }

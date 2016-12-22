@@ -89,7 +89,7 @@ namespace PartialAction {
     for (WingedVertex* v : vertices) {
       const glm::vec3 center = WingedUtil::center (mesh, *v);
       const glm::vec3 delta = center - v->position (mesh);
-      const glm::vec3 normal = v->savedNormal (mesh);
+      const glm::vec3 normal = v->interpolatedNormal (mesh);
       const glm::vec3 tangentialPos = center - (normal * glm::dot (normal, delta));
       const PrimRay ray (true, tangentialPos, normal);
 
@@ -98,7 +98,9 @@ namespace PartialAction {
         if (intersected == false) {
           const PrimTriangle triangle = f.triangle (mesh);
           float t;
-          if (IntersectionUtil::intersects (ray, triangle, &t)) {
+          if (triangle.isDegenerated () == false &&
+              IntersectionUtil::intersects (ray, triangle, &t))
+          {
             newPositions.push_back (ray.pointAt (t));
             intersected = true;
           }

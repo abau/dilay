@@ -55,9 +55,9 @@ struct AffectedFaces::Impl {
     return this->faces.count (face) > 0 || this->uncommittedFaces.count (face) > 0;
   }
 
-  void filter (const std::function <bool (const WingedFace&)>& f) {
+  void filter (const std::function <bool (WingedFace&)>& f) {
     for (auto it = this->faces.begin (); it != this->faces.end (); ) {
-      if (f (**it)) {
+      if (f (**it) == false) {
         it = this->faces.erase (it);
       }
       else {
@@ -108,7 +108,7 @@ DELEGATE        (void,              AffectedFaces, commit)
 DELEGATE_CONST  (bool,              AffectedFaces, isEmpty)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace&)
 DELEGATE1_CONST (bool,              AffectedFaces, contains, WingedFace*)
-DELEGATE1       (void,              AffectedFaces, filter, const std::function <bool (const WingedFace&)>&)
+DELEGATE1       (void,              AffectedFaces, filter, const std::function <bool (WingedFace&)>&)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, faces)
 GETTER_CONST    (const FacePtrSet&, AffectedFaces, uncommittedFaces)
 DELEGATE_CONST  (VertexPtrSet,      AffectedFaces, toVertexSet)
