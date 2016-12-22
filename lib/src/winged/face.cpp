@@ -40,6 +40,12 @@ PrimTriangle WingedFace :: triangle (const WingedMesh& mesh) const {
                       , mesh.vector (mesh.index ((3 * this->_index) + 2)) );
 }
 
+void WingedFace :: triangle (const WingedMesh& mesh, glm::vec3& a, glm::vec3& b, glm::vec3& c) {
+  a = mesh.vector (mesh.index ((3 * this->_index) + 0));
+  b = mesh.vector (mesh.index ((3 * this->_index) + 1));
+  c = mesh.vector (mesh.index ((3 * this->_index) + 2));
+}
+
 unsigned int WingedFace :: numEdges () const {
   unsigned int i             = 0;
   AdjEdges     adjacentEdges = this->adjacentEdges ();

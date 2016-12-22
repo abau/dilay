@@ -132,7 +132,10 @@ namespace {
     Action::collapseDegeneratedFaces (brush.meshRef (), domain);
 
     domain.filter ([&brush, &sphere, &removed] (WingedFace& f) {
-      if (IntersectionUtil::intersects (sphere, f.triangle (brush.meshRef ()))) {
+      glm::vec3 a,b,c;
+      f.triangle (brush.meshRef (), a, b, c);
+
+      if (IntersectionUtil::intersects (sphere, a, b, c)) {
         return true;
       }
       else {

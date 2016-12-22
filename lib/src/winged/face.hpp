@@ -33,6 +33,7 @@ class WingedFace : public IntrusiveList <WingedFace>::Item {
     WingedVertex* vertex           (unsigned int) const;
     void          writeIndices     (WingedMesh&);
     PrimTriangle  triangle         (const WingedMesh&) const;
+    void          triangle         (const WingedMesh&, glm::vec3&, glm::vec3&, glm::vec3&);
     unsigned int  numEdges         () const;
     bool          isTriangle       () const;
 

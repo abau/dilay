@@ -406,7 +406,17 @@ struct WingedMesh::Impl {
   }
 
   bool intersects (const PrimSphere& sphere, AffectedFaces& faces) {
-    return this->intersectsT <PrimSphere> (sphere, faces);
+    this->octree.intersects (sphere, [this, &sphere, &faces] (unsigned int i) {
+      WingedFace& face = this->self->faceRef (i);
+      glm::vec3 a,b,c;
+      face.triangle (*this->self, a, b, c);
+
+      if (IntersectionUtil::intersects (sphere, a, b, c)) {
+        faces.insert (face);
+      }
+    });
+    faces.commit ();
+    return faces.isEmpty () == false;
   }
 
   bool intersects (const PrimPlane& plane, AffectedFaces& faces) {

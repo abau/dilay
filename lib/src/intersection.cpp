@@ -94,10 +94,12 @@ namespace {
 }
 
 // see http://realtimecollisiondetection.net/blog/?p=103
-bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimTriangle& triangle) {
-  const glm::vec3 A    = triangle.vertex1 () - sphere.center ();
-  const glm::vec3 B    = triangle.vertex2 () - sphere.center ();
-  const glm::vec3 C    = triangle.vertex3 () - sphere.center ();
+bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& v1,
+                                     const glm::vec3& v2, const glm::vec3& v3)
+{
+  const glm::vec3 A    = v1 - sphere.center ();
+  const glm::vec3 B    = v2 - sphere.center ();
+  const glm::vec3 C    = v3 - sphere.center ();
 
   const float     rr   = sphere.radius () * sphere.radius ();
   const glm::vec3 V    = glm::cross (B-A, C-A);
