@@ -19,7 +19,7 @@
 namespace {
   Mesh& finalized (Mesh& mesh) {
     for (unsigned int i = 0; i < mesh.numVertices (); i++) {
-      mesh.setNormal (i, glm::normalize (mesh.vertex (i)));
+      mesh.normal (i, glm::normalize (mesh.vertex (i)));
     }
     return mesh;
   }

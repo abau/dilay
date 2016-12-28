@@ -22,7 +22,7 @@ bool WingedVertex::operator!= (const WingedVertex& other) const {
 }
 
 void WingedVertex :: writeIndex (WingedMesh& mesh, unsigned int index) {
-  mesh.setIndex (index, this->_index);
+  mesh.index (index, this->_index);
 }
 
 const glm::vec3& WingedVertex :: position (const WingedMesh& mesh) const {
@@ -52,16 +52,16 @@ bool WingedVertex :: isNewVertex (const WingedMesh& mesh) const {
   return mesh.isNewVertex (this->_index);
 }
 
-void WingedVertex :: setPosition (WingedMesh& mesh, const glm::vec3& pos) {
-  mesh.setVertex (this->_index, pos);
+void WingedVertex :: position (WingedMesh& mesh, const glm::vec3& pos) {
+  mesh.vertex (this->_index, pos);
 }
 
-void WingedVertex :: setNormal (WingedMesh& mesh, const glm::vec3& normal) {
-  mesh.setNormal (this->_index, normal);
+void WingedVertex :: normal (WingedMesh& mesh, const glm::vec3& normal) {
+  mesh.normal (this->_index, normal);
 }
 
 void WingedVertex :: setInterpolatedNormal (WingedMesh& mesh) {
-  this->setNormal (mesh, this->interpolatedNormal (mesh));
+  this->normal (mesh, this->interpolatedNormal (mesh));
 }
 
 void WingedVertex :: isNewVertex (WingedMesh& mesh, bool value) {

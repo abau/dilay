@@ -32,9 +32,9 @@ class Mesh {
     unsigned int       addVertex         (const glm::vec3&);
     unsigned int       addVertex         (const glm::vec3&, const glm::vec3&);
     void               reserveVertices   (unsigned int);
-    void               setIndex          (unsigned int, unsigned int);
-    void               setVertex         (unsigned int, const glm::vec3&);
-    void               setNormal         (unsigned int, const glm::vec3&);
+    void               index             (unsigned int, unsigned int);
+    void               vertex            (unsigned int, const glm::vec3&);
+    void               normal            (unsigned int, const glm::vec3&);
 
     bool               isNewVertex       (unsigned int) const;
     void               isNewVertex       (unsigned int, bool);

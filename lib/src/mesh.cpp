@@ -128,19 +128,19 @@ struct Mesh::Impl {
     this->normals .reserve (3*n);
   }
 
-  void setIndex (unsigned int index, unsigned int vertexIndex) {
+  void index (unsigned int index, unsigned int vertexIndex) {
     assert (index < this->indices.size ());
     this->indices[index] = vertexIndex;
   }
 
-  void setVertex (unsigned int i, const glm::vec3& v) {
+  void vertex (unsigned int i, const glm::vec3& v) {
     assert (i < this->numVertices ());
     assert (Util::isNaN (v) == false);
 
     this->vertices [i] = v;
   }
 
-  void setNormal (unsigned int i, const glm::vec3& n) {
+  void normal (unsigned int i, const glm::vec3& n) {
     assert (i < this->numNormals ());
     assert (Util::isNaN (n) == false);
 
@@ -332,9 +332,9 @@ struct Mesh::Impl {
     const glm::mat3x3 modelNormal = this->modelNormalMatrix ();
 
     for (unsigned int i = 0; i < this->numVertices (); i++) {
-      this->setVertex (i, Util::transformPosition (model, this->vertex (i)));
+      this->vertex (i, Util::transformPosition (model, this->vertex (i)));
       if (Util::isNotNull (this->normal (i))) {
-        this->setNormal (i, glm::normalize (modelNormal * this->normal (i)));
+        this->normal (i, glm::normalize (modelNormal * this->normal (i)));
       }
     }
     this->position (glm::vec3 (0.0f));
@@ -378,9 +378,9 @@ DELEGATE1        (void              , Mesh, reserveIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
 DELEGATE2        (unsigned int      , Mesh, addVertex, const glm::vec3&, const glm::vec3&)
 DELEGATE1        (void              , Mesh, reserveVertices, unsigned int)
-DELEGATE2        (void              , Mesh, setIndex, unsigned int, unsigned int)
-DELEGATE2        (void              , Mesh, setVertex, unsigned int, const glm::vec3&)
-DELEGATE2        (void              , Mesh, setNormal, unsigned int, const glm::vec3&)
+DELEGATE2        (void              , Mesh, index, unsigned int, unsigned int)
+DELEGATE2        (void              , Mesh, vertex, unsigned int, const glm::vec3&)
+DELEGATE2        (void              , Mesh, normal, unsigned int, const glm::vec3&)
 
 DELEGATE1_CONST  (bool              , Mesh, isNewVertex, unsigned int)
 DELEGATE2        (void              , Mesh, isNewVertex, unsigned int, bool)

@@ -36,7 +36,7 @@ void SBCarveParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& 
                                 : avgDir;
       const glm::vec3 newPos    = oldPos + (factor * direction);
 
-      v->setPosition (mesh, newPos);
+      v->position (mesh, newPos);
     }
   }
 }
@@ -54,7 +54,7 @@ void SBDraglikeParameters :: sculpt (const SculptBrush& brush, const VertexPtrSe
                                                , innerRadius, brush.radius () );
     const glm::vec3 newPos      = oldPos + (factor * brush.direction ());
 
-    v->setPosition (mesh, newPos);
+    v->position (mesh, newPos);
   }
 }
 
@@ -69,7 +69,7 @@ void SBSmoothParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet&
                                                 , 0.0f, brush.radius () );
       const glm::vec3 newPos = oldPos + (factor * (WingedUtil::center (mesh, *v) - oldPos));
 
-      v->setPosition (mesh, newPos);
+      v->position (mesh, newPos);
     }
   }
 }
@@ -91,7 +91,7 @@ void SBFlattenParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet
       const float     distance = glm::max (0.0f, plane.distance (oldPos));
       const glm::vec3 newPos   = oldPos - (normal * factor * distance);
 
-      v->setPosition (mesh, newPos);
+      v->position (mesh, newPos);
     }
   }
 }
@@ -117,7 +117,7 @@ void SBCreaseParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet&
                                                      + (2.0f * (refPos - projPos)) );
         const glm::vec3 newPos      = oldPos + (factor * direction);
 
-        v->setPosition (mesh, newPos);
+        v->position (mesh, newPos);
       }
     }
   }
@@ -136,7 +136,7 @@ void SBPinchParameters :: sculpt (const SculptBrush& brush, const VertexPtrSet& 
       const glm::vec3 direction   = this->invert (glm::normalize (brush.position () - oldPos));
       const glm::vec3 newPos      = oldPos + (factor * direction);
 
-      v->setPosition (mesh, newPos);
+      v->position (mesh, newPos);
     }
   }
 }

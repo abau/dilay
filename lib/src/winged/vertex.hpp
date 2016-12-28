@@ -34,8 +34,8 @@ class WingedVertex : public IntrusiveList <WingedVertex>::Item {
     const glm::vec3& savedNormal           (const WingedMesh&) const;
     glm::vec3        interpolatedNormal    (const WingedMesh&) const;
     bool             isNewVertex           (const WingedMesh&) const;
-    void             setPosition           (WingedMesh&, const glm::vec3&);
-    void             setNormal             (WingedMesh&, const glm::vec3&);
+    void             position              (WingedMesh&, const glm::vec3&);
+    void             normal                (WingedMesh&, const glm::vec3&);
     void             setInterpolatedNormal (WingedMesh&);
     void             isNewVertex           (WingedMesh&, bool);
     unsigned int     valence               () const;

@@ -116,7 +116,7 @@ namespace PartialAction {
     for (WingedVertex* v : vertices) {
       assert (i < newPositions.size ());
 
-      mesh.setVertex (v->index (), newPositions [i]);
+      mesh.vertex (v->index (), newPositions [i]);
       ++i;
     }
   }
