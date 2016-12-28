@@ -5,11 +5,12 @@
 #ifndef DILAY_TREE
 #define DILAY_TREE
 
-#include "intrusive-list.hpp"
+#include <list>
 #include "maybe.hpp"
+#include "util.hpp"
 
 template <typename T>
-class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
+class TreeNode {
   public:
     TreeNode (const T& d, TreeNode* p = nullptr)
       : _data   (d)
@@ -22,8 +23,7 @@ class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
     {}
 
     TreeNode (const TreeNode& o)
-      : IntrusiveList <TreeNode <T>>::Item (o)
-      , _data     (o._data)
+      : _data     (o._data)
       , _parent   (nullptr)
       , _children (o._children)
     {
@@ -44,29 +44,39 @@ class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
 
     template <typename ... Args>
     TreeNode& emplaceChild (Args&& ... args) {
-      this->_children.emplaceBack (make (std::forward <Args> (args) ... ));
+      this->_children.emplace_back (make (std::forward <Args> (args) ... ));
       this->_children.back ()._parent = this;
 
       return this->_children.back ();
     }
 
     TreeNode& addChild (const TreeNode& node) {
-      this->_children.emplaceBack (node);
+      this->_children.emplace_back (node);
       this->_children.back ()._parent = this;
 
       return this->_children.back ();
     }
 
     void deleteChild (TreeNode& child) {
-      this->_children.deleteElement (child);
+      for (auto it = this->_children.begin (); it != this->_children.end (); ++it) {
+        if (&*it == &child) {
+          this->_children.erase (it);
+          return;
+        }
+      }
+      DILAY_IMPOSSIBLE
     }
 
     void forEachChild (const std::function <void (TreeNode&)>& f) {
-      this->_children.forEachElement (f);
+      for (TreeNode& c : this->_children) {
+        f (c);
+      }
     }
 
     void forEachConstChild (const std::function <void (const TreeNode&)>& f) const {
-      this->_children.forEachConstElement (f);
+      for (const TreeNode& c : this->_children) {
+        f (c);
+      }
     }
 
     void forEachNode (const std::function <void (TreeNode&)>& f) {
@@ -96,7 +106,7 @@ class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
     }
 
     unsigned int numChildren () const {
-      return this->_children.numElements ();
+      return this->_children.size ();
     }
 
     unsigned int numNodes () const {
@@ -106,13 +116,20 @@ class TreeNode : public IntrusiveList <TreeNode <T>>::Item {
     }
 
     void deleteChildIf (const std::function <bool (const TreeNode&)>& f) {
-      this->_children.deleteElementIf (f);
+      for (auto it = this->_children.begin (); it != this->_children.end (); ) {
+        if (f (*it)) {
+          it = this->_children.erase (it);
+        }
+        else {
+          ++it;
+        }
+      }
     }
 
   private:
-    T                        _data;
-    TreeNode*                _parent;
-    IntrusiveList <TreeNode> _children;
+    T                    _data;
+    TreeNode*            _parent;
+    std::list <TreeNode> _children;
 };
 
 template <typename T>
