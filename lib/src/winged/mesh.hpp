@@ -35,9 +35,9 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     bool               operator!=          (const WingedMesh&) const;
 
     unsigned int       index               () const;
-    glm::vec3          vector              (unsigned int) const;
+    const glm::vec3&   vector              (unsigned int) const;
     unsigned int       index               (unsigned int) const;
-    glm::vec3          normal              (unsigned int) const;
+    const glm::vec3&   normal              (unsigned int) const;
     bool               isNewVertex         (unsigned int) const;
     WingedVertex*      vertex              (unsigned int);
     WingedEdge*        edge                (unsigned int);

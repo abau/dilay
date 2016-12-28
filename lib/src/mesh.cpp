@@ -17,6 +17,8 @@
 
 namespace {
   typedef Bitset <unsigned short> VertexFlags;
+
+  static_assert (sizeof (glm::vec3) == 3 * sizeof (float), "Unexpected memory layout");
 }
 
 struct Mesh::Impl {
@@ -24,9 +26,9 @@ struct Mesh::Impl {
   glm::mat4x4                 scalingMatrix;
   glm::mat4x4                 rotationMatrix;
   glm::mat4x4                 translationMatrix;
-  std::vector <float>         vertices;
+  std::vector <glm::vec3>     vertices;
   std::vector <unsigned int>  indices;
-  std::vector <float>         normals;
+  std::vector <glm::vec3>     normals;
   std::vector <VertexFlags>   verticesFlags;
   Color                       color;
   Color                       wireframeColor;
@@ -54,9 +56,9 @@ struct Mesh::Impl {
     : scalingMatrix       (source.scalingMatrix)
     , rotationMatrix      (source.rotationMatrix)
     , translationMatrix   (source.translationMatrix)
-    , vertices            (copyGeometry ? source.vertices      : std::vector <float>        ())
+    , vertices            (copyGeometry ? source.vertices      : std::vector <glm::vec3>    ())
     , indices             (copyGeometry ? source.indices       : std::vector <unsigned int> ())
-    , normals             (copyGeometry ? source.normals       : std::vector <float>        ())
+    , normals             (copyGeometry ? source.normals       : std::vector <glm::vec3>    ())
     , verticesFlags       (copyGeometry ? source.verticesFlags : std::vector <VertexFlags>  ())
     , color               (source.color)
     , wireframeColor      (source.wireframeColor)
@@ -65,13 +67,13 @@ struct Mesh::Impl {
 
   ~Impl () { this->reset (); }
 
-  unsigned int numVertices      () const { return this->vertices.size () / 3; }
+  unsigned int numVertices      () const { return this->vertices.size (); }
   unsigned int numIndices       () const { return this->indices.size  (); }
-  unsigned int numNormals       () const { return this->normals.size () / 3; }
+  unsigned int numNormals       () const { return this->normals.size (); }
   unsigned int numVerticesFlags () const { return this->verticesFlags.size (); }
 
   unsigned int sizeOfVertices () const { 
-    return this->vertices.size () * sizeof (float);
+    return this->vertices.size () * sizeof (glm::vec3);
   }
 
   unsigned int sizeOfIndices () const { 
@@ -79,15 +81,12 @@ struct Mesh::Impl {
   }
 
   unsigned int sizeOfNormals () const { 
-    return this->normals.size () * sizeof (float);
+    return this->normals.size () * sizeof (glm::vec3);
   }
 
-  glm::vec3 vertex (unsigned int i) const {
+  const glm::vec3& vertex (unsigned int i) const {
     assert (i < this->numVertices ());
-    return glm::vec3 ( this->vertices [(3 * i) + 0]
-                     , this->vertices [(3 * i) + 1]
-                     , this->vertices [(3 * i) + 2]
-        );
+    return this->vertices [i];
   }
 
   unsigned int index (unsigned int i) const { 
@@ -95,12 +94,9 @@ struct Mesh::Impl {
     return this->indices [i]; 
   }
 
-  glm::vec3 normal (unsigned int i) const {
+  const glm::vec3& normal (unsigned int i) const {
     assert (i < this->numNormals ());
-    return glm::vec3 ( this->normals [(3 * i) + 0]
-                     , this->normals [(3 * i) + 1]
-                     , this->normals [(3 * i) + 2]
-        );
+    return this->normals [i];
   }
 
   unsigned int addIndex (unsigned int i) { 
@@ -120,14 +116,8 @@ struct Mesh::Impl {
     assert (Util::isNaN (v) == false);
     assert (Util::isNaN (n) == false);
 
-    this->vertices.push_back (v.x);
-    this->vertices.push_back (v.y);
-    this->vertices.push_back (v.z);
-
-    this->normals.push_back (n.x);
-    this->normals.push_back (n.y);
-    this->normals.push_back (n.z);
-
+    this->vertices.push_back (v);
+    this->normals.push_back (n);
     this->verticesFlags.emplace_back ();
 
     return this->numVertices () - 1;
@@ -147,18 +137,14 @@ struct Mesh::Impl {
     assert (i < this->numVertices ());
     assert (Util::isNaN (v) == false);
 
-    this->vertices [(3*i) + 0] = v.x;
-    this->vertices [(3*i) + 1] = v.y;
-    this->vertices [(3*i) + 2] = v.z;
+    this->vertices [i] = v;
   }
 
   void setNormal (unsigned int i, const glm::vec3& n) {
     assert (i < this->numNormals ());
     assert (Util::isNaN (n) == false);
 
-    this->normals [(3*i) + 0] = n.x;
-    this->normals [(3*i) + 1] = n.y;
-    this->normals [(3*i) + 2] = n.z;
+    this->normals [i] = n;
   }
 
   bool isNewVertex (unsigned int i) const {
@@ -369,13 +355,8 @@ struct Mesh::Impl {
     max = glm::vec3 (Util::minFloat ());
 
     for (unsigned int i = 0; i < this->numVertices (); i++) {
-      min.x = glm::min (min.x, this->vertices [(3 * i) + 0]);
-      min.y = glm::min (min.y, this->vertices [(3 * i) + 1]);
-      min.z = glm::min (min.z, this->vertices [(3 * i) + 2]);
-
-      max.x = glm::max (max.x, this->vertices [(3 * i) + 0]);
-      max.y = glm::max (max.y, this->vertices [(3 * i) + 1]);
-      max.z = glm::max (max.z, this->vertices [(3 * i) + 2]);
+      min = glm::min (min, this->vertices [i]);
+      max = glm::max (max, this->vertices [i]);
     }
   }
 };
@@ -388,9 +369,9 @@ Mesh :: Mesh (const Mesh& source, bool copyGeometry)
 
 DELEGATE_CONST   (unsigned int      , Mesh, numVertices)
 DELEGATE_CONST   (unsigned int      , Mesh, numIndices)
-DELEGATE1_CONST  (glm::vec3         , Mesh, vertex, unsigned int)
+DELEGATE1_CONST  (const glm::vec3&  , Mesh, vertex, unsigned int)
 DELEGATE1_CONST  (unsigned int      , Mesh, index, unsigned int)
-DELEGATE1_CONST  (glm::vec3         , Mesh, normal, unsigned int)
+DELEGATE1_CONST  (const glm::vec3&  , Mesh, normal, unsigned int)
 
 DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
 DELEGATE1        (void              , Mesh, reserveIndices, unsigned int)

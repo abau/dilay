@@ -32,9 +32,9 @@ class PrimTriangle {
           float      longestEdgeSqr    () const;
 
   private:
-    const glm::vec3 _vertex1;
-    const glm::vec3 _vertex2;
-    const glm::vec3 _vertex3;
+    const glm::vec3& _vertex1;
+    const glm::vec3& _vertex2;
+    const glm::vec3& _vertex3;
 };
 
 std::ostream& operator<<(std::ostream&, const PrimTriangle&);
