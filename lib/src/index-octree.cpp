@@ -300,26 +300,7 @@ struct IndexOctree::Impl {
     ,  nodeMesh            (other.nodeMesh)
 #endif
   {
-    std::function <void (IndexOctreeNode&)> makeElementNodeMap = 
-      [this, &makeElementNodeMap] (IndexOctreeNode& node) 
-    {
-      for (unsigned i : node.indices) {
-        assert (this->elementNodeMap [i] == nullptr);
-        this->elementNodeMap [i] = &node;
-      }
-      if (node.hasChildren ()) {
-        for (Child& c : node.children) {
-          makeElementNodeMap (*c);
-        }
-      }
-    };
-    this->elementNodeMap.resize (other.elementNodeMap.size (), nullptr);
-    if (this->root) {
-      makeElementNodeMap (*this->root);
-    }
-    if (this->degeneratedElements) {
-      makeElementNodeMap (*this->degeneratedElements);
-    }
+    this->makeElementNodeMap ();
 #ifdef DILAY_RENDER_OCTREE
     this->nodeMesh.bufferData ();
 #endif
@@ -332,6 +313,25 @@ struct IndexOctree::Impl {
   void setupRoot (const glm::vec3& position, float width) {
     assert (this->hasRoot () == false);
     this->root = IndexOctreeNode (position, width, 0);
+  }
+
+  void makeElementNodeMap () {
+    std::function <void (IndexOctreeNode&)> traverse = [this, &traverse] (IndexOctreeNode& node) {
+      for (unsigned i : node.indices) {
+        this->addToElementNodeMap (i, node);
+      }
+      if (node.hasChildren ()) {
+        for (Child& c : node.children) {
+          traverse (*c);
+        }
+      }
+    };
+    if (this->root) {
+      traverse (*this->root);
+    }
+    if (this->degeneratedElements) {
+      traverse (*this->degeneratedElements);
+    }
   }
 
   void addToElementNodeMap (unsigned int index, IndexOctreeNode& node) {
