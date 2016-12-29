@@ -250,17 +250,12 @@ namespace {
 struct IndexOctree::Impl {
   Child                          root;
   Child                          degeneratedElements;
-  glm::vec3                      rootPosition;
-  float                          rootWidth;
-  bool                           rootWasSetUp;
   std::vector <IndexOctreeNode*> elementNodeMap;
 #ifdef DILAY_RENDER_OCTREE
   Mesh                           nodeMesh;
 #endif
 
-  Impl () 
-    : rootWasSetUp (false)
-  {
+  Impl () {
 #ifdef DILAY_RENDER_OCTREE
     this->nodeMesh.addVertex (glm::vec3 (-1.0f, -1.0f, -1.0f));
     this->nodeMesh.addVertex (glm::vec3 (-1.0f, -1.0f,  1.0f));
@@ -301,9 +296,6 @@ struct IndexOctree::Impl {
   Impl (const Impl& other)
     :  root                (other.root)
     ,  degeneratedElements (other.degeneratedElements)
-    ,  rootPosition        (other.rootPosition)
-    ,  rootWidth           (other.rootWidth)
-    ,  rootWasSetUp        (other.rootWasSetUp)
 #ifdef DILAY_RENDER_OCTREE
     ,  nodeMesh            (other.nodeMesh)
 #endif
@@ -339,9 +331,7 @@ struct IndexOctree::Impl {
 
   void setupRoot (const glm::vec3& position, float width) {
     assert (this->hasRoot () == false);
-    this->rootWasSetUp = true;
-    this->rootPosition = position;
-    this->rootWidth    = width;
+    this->root = IndexOctreeNode (position, width, 0);
   }
 
   void addToElementNodeMap (unsigned int index, IndexOctreeNode& node) {
@@ -389,13 +379,7 @@ struct IndexOctree::Impl {
   }
 
   void addElement (unsigned int index, const glm::vec3& position, float maxDimExtent) {
-    if (this->hasRoot () == false) {
-      if (this->rootWasSetUp == false) {
-        this->rootPosition = position;
-        this->rootWidth    = maxDimExtent + Util::epsilon ();
-      }
-      this->root = IndexOctreeNode (this->rootPosition, this->rootWidth, 0);
-    }
+    assert (this->hasRoot ());
 
     if (this->root->approxContains (position, maxDimExtent)) {
       IndexOctreeNode& node = this->root->addElement (index, position, maxDimExtent);
@@ -467,7 +451,6 @@ struct IndexOctree::Impl {
     this->root               .reset ();
     this->degeneratedElements.reset ();
     this->elementNodeMap     .clear ();
-    this->rootWasSetUp = false;
   }
 
 #ifdef DILAY_RENDER_OCTREE
