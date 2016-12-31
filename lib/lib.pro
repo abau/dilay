@@ -130,6 +130,7 @@ HEADERS += \
            src/mesh.hpp \
            src/mesh-util.hpp \
            src/mirror.hpp \
+           src/monotone-deque.hpp \
            src/opengl.hpp \
            src/opengl-buffer-id.hpp \
            src/partial-action/collapse.hpp \

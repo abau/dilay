@@ -10,6 +10,7 @@
 #include "test-intrusive-list.hpp"
 #include "test-maybe.hpp"
 #include "test-misc.hpp"
+#include "test-monotone-deque.hpp"
 #include "test-octree.hpp"
 #include "test-tree.hpp"
 
@@ -29,6 +30,8 @@ int main () {
   TestTree         ::test2 ();
   TestMisc         ::test  ();
   TestDistance     ::test  ();
+  TestMonotoneDeque::test1 ();
+  TestMonotoneDeque::test2 ();
 
   std::cout << "all tests run successfully\n";
   return 0;

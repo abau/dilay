@@ -14,6 +14,7 @@ SOURCES += \
            src/test-intrusive-list.cpp \
            src/test-maybe.cpp \
            src/test-misc.cpp \
+           src/test-monotone-deque.cpp \
            src/test-octree.cpp \
            src/test-tree.cpp
 
@@ -24,6 +25,7 @@ HEADERS += \
            src/test-intrusive-list.hpp \
            src/test-maybe.hpp \
            src/test-misc.hpp \
+           src/test-monotone-deque.hpp \
            src/test-octree.hpp \
            src/test-tree.hpp
 
