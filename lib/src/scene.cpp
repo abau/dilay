@@ -2,8 +2,10 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <memory>
 #include "config.hpp"
 #include "intersection.hpp"
+#include "monotone-deque.hpp"
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "scene-util.hpp"
@@ -18,11 +20,11 @@
 #include "winged/util.hpp"
 
 struct Scene :: Impl {
-  Scene*                            self;
-  IntrusiveIndexedList <WingedMesh> wingedMeshes;
-  IntrusiveIndexedList <SketchMesh> sketchMeshes;
-  RenderMode                        commonRenderMode;
-  std::string                       fileName;
+  Scene*                        self;
+  MonotonePtrDeque <WingedMesh> wingedMeshes;
+  MonotonePtrDeque <SketchMesh> sketchMeshes;
+  RenderMode                    commonRenderMode;
+  std::string                   fileName;
 
   Impl (Scene* s, const Config& config)
     : self (s)
@@ -33,7 +35,7 @@ struct Scene :: Impl {
   }
 
   WingedMesh& newWingedMesh (const Config& config, const Mesh& mesh) {
-    WingedMesh& wingedMesh = this->wingedMeshes.emplaceBack ();
+    WingedMesh& wingedMesh = this->wingedMeshes.emplaceElement ();
 
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
@@ -44,7 +46,7 @@ struct Scene :: Impl {
   }
 
   SketchMesh& newSketchMesh (const Config& config, const SketchTree& tree) {
-    SketchMesh& mesh = this->sketchMeshes.emplaceBack ();
+    SketchMesh& mesh = this->sketchMeshes.emplaceElement ();
 
     mesh.fromTree        (tree);
     mesh.renderWireframe (this->commonRenderMode.renderWireframe ());
@@ -85,11 +87,11 @@ struct Scene :: Impl {
   }
 
   WingedMesh* wingedMesh (unsigned int index) { 
-    return this->wingedMeshes.get (index); 
+    return this->wingedMeshes.element (index); 
   }
 
   SketchMesh* sketchMesh (unsigned int index) { 
-    return this->sketchMeshes.get (index); 
+    return this->sketchMeshes.element (index); 
   }
 
   void render (Camera& camera) {
