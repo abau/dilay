@@ -279,14 +279,7 @@ struct WingedMesh::Impl {
                                : mesh;
 
     // octree
-    glm::vec3 minVertex, maxVertex;
-    this->mesh.minMax (minVertex, maxVertex);
-
-    const glm::vec3 center = (maxVertex + minVertex) * glm::vec3 (0.5f);
-    const glm::vec3 delta  =  maxVertex - minVertex;
-    const float     width  = glm::max (glm::max (delta.x, delta.y), delta.z);
-
-    this->setupOctreeRoot (center, width);
+    this->setupOctreeRoot ();
 
     // vertices
     for (unsigned int i = 0; i < this->mesh.numVertices (); i++) {
@@ -367,8 +360,16 @@ struct WingedMesh::Impl {
     this->fromMesh (this->makePrunedMesh (nullptr, nullptr), &plane);
   }
 
-  void setupOctreeRoot (const glm::vec3& center, float width) {
+  void setupOctreeRoot () {
     assert (this->octree.hasRoot () == false);
+
+    glm::vec3 minVertex, maxVertex;
+    this->mesh.minMax (minVertex, maxVertex);
+
+    const glm::vec3 center = (maxVertex + minVertex) * glm::vec3 (0.5f);
+    const glm::vec3 delta  =  maxVertex - minVertex;
+    const float     width  = glm::max (glm::max (delta.x, delta.y), delta.z);
+
     this->octree.setupRoot (center,width);
   }
 
@@ -442,6 +443,7 @@ struct WingedMesh::Impl {
   void normalize () {
     this->mesh.normalize ();
     this->octree.reset ();
+    this->setupOctreeRoot ();
 
     this->forEachFace ([this] (WingedFace& face) { 
       this->addFaceToOctree (face, face.triangle (*this->self));
@@ -539,7 +541,6 @@ DELEGATE        (void             , WingedMesh, bufferData)
 DELEGATE1       (void             , WingedMesh, render, Camera&)
 DELEGATE        (void             , WingedMesh, reset)
 DELEGATE1       (void             , WingedMesh, mirror, const PrimPlane&)
-DELEGATE2       (void             , WingedMesh, setupOctreeRoot, const glm::vec3&, float)
 DELEGATE_CONST  (const RenderMode&, WingedMesh, renderMode)
 DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 

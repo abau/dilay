@@ -76,7 +76,6 @@ class WingedMesh : public IntrusiveList <WingedMesh>::Item {
     void               render              (Camera&);
     void               reset               ();
     void               mirror              (const PrimPlane&);
-    void               setupOctreeRoot     (const glm::vec3&, float);
     const RenderMode&  renderMode          () const;
     RenderMode&        renderMode          ();
     
