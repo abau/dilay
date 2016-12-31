@@ -11,6 +11,7 @@
 #include "index-octree.hpp"
 #include "intersection.hpp"
 #include "mesh-util.hpp"
+#include "monotone-deque.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
@@ -20,13 +21,13 @@
 #include "winged/vertex.hpp"
 
 struct WingedMesh::Impl {
-  WingedMesh*                         self;
-  const unsigned int                 _index;
-  Mesh                                mesh;
-  IntrusiveIndexedList <WingedVertex> vertices;
-  IntrusiveIndexedList <WingedEdge>   edges;
-  IntrusiveIndexedList <WingedFace>   faces;
-  IndexOctree                         octree;
+  WingedMesh*                  self;
+  const unsigned int          _index;
+  Mesh                         mesh;
+  MonotoneDeque <WingedVertex> vertices;
+  MonotoneDeque <WingedEdge>   edges;
+  MonotoneDeque <WingedFace>   faces;
+  IndexOctree                  octree;
 
   Impl (WingedMesh* s, unsigned int i) 
     :  self   (s)
@@ -48,15 +49,15 @@ struct WingedMesh::Impl {
   bool             isNewVertex (unsigned int i) const { return this->mesh.isNewVertex (i); }
 
   WingedVertex* vertex (unsigned int i) {
-    return this->vertices.get (i);
+    return this->vertices.element (i);
   }
 
   WingedEdge* edge (unsigned int i) {
-    return this->edges.get (i);
+    return this->edges.element (i);
   }
 
   WingedFace* face (unsigned int i) {
-    return this->faces.get (i);
+    return this->faces.element (i);
   }
 
   WingedFace* someDegeneratedFace () {
@@ -66,7 +67,7 @@ struct WingedMesh::Impl {
   }
 
   WingedVertex& addVertex (const glm::vec3& pos) {
-    WingedVertex& vertex = this->vertices.emplaceBack ();
+    WingedVertex& vertex = this->vertices.emplaceElement ();
 
     if (vertex.index () == this->mesh.numVertices ()) {
       this->mesh.addVertex (pos);
@@ -79,7 +80,7 @@ struct WingedMesh::Impl {
   }
 
   WingedEdge& addEdge () {
-    return this->edges.emplaceBack ();
+    return this->edges.emplaceElement ();
   }
 
   void addFaceToOctree (const WingedFace& face, const PrimTriangle& geometry) {
@@ -92,7 +93,7 @@ struct WingedMesh::Impl {
   }
 
   WingedFace& addFace (const PrimTriangle& geometry) {
-    WingedFace& face = this->faces.emplaceBack ();
+    WingedFace& face = this->faces.emplaceElement ();
 
     this->addFaceToOctree (face, geometry);
 
@@ -109,17 +110,17 @@ struct WingedMesh::Impl {
   }
 
   void vertex (unsigned int index, const glm::vec3& v) {
-    assert (this->vertices.isFreeSLOW (index) == false);
+    assert (this->vertices.isFree (index) == false);
     return this->mesh.vertex (index,v);
   }
 
   void normal (unsigned int index, const glm::vec3& n) {
-    assert (this->vertices.isFreeSLOW (index) == false);
+    assert (this->vertices.isFree (index) == false);
     return this->mesh.normal (index,n);
   }
 
   void isNewVertex (unsigned int index, bool value) {
-    assert (this->vertices.isFreeSLOW (index) == false);
+    assert (this->vertices.isFree (index) == false);
     return this->mesh.isNewVertex (index, value);
   }
 
@@ -283,7 +284,7 @@ struct WingedMesh::Impl {
 
     // vertices
     for (unsigned int i = 0; i < this->mesh.numVertices (); i++) {
-      this->vertices.emplaceBack ();
+      this->vertices.emplaceElement ();
     }
 
     // faces & edges
@@ -325,19 +326,15 @@ struct WingedMesh::Impl {
   }
 
   void bufferData  () { 
-    auto resetFreeFaceIndices = [this] () {
-      if (this->numFaces () > 0) {
-        WingedFace& someFace = this->faces.front ();
+    if (this->numFaces () > 0 && this->faces.hasFreeIndices ()) {
+      const unsigned int nonFree = this->faces.findSomeNonFreeIndex ();
 
-        for (unsigned int index : this->faces.freeIndices ()) {
-          this->index ((3 * index) + 0, this->index ((3 * someFace.index ()) + 0));
-          this->index ((3 * index) + 1, this->index ((3 * someFace.index ()) + 1));
-          this->index ((3 * index) + 2, this->index ((3 * someFace.index ()) + 2));
-        }
-      }
-    };
-
-    resetFreeFaceIndices  ();
+      this->faces.forEachFreeIndex ([this, nonFree] (unsigned int index) {
+        this->index ((3 * index) + 0, this->index ((3 * nonFree) + 0));
+        this->index ((3 * index) + 1, this->index ((3 * nonFree) + 1));
+        this->index ((3 * index) + 2, this->index ((3 * nonFree) + 2));
+      });
+    }
     this->mesh.bufferData (); 
   }
 

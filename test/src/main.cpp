@@ -7,7 +7,6 @@
 #include "test-bitset.hpp"
 #include "test-distance.hpp"
 #include "test-intersection.hpp"
-#include "test-intrusive-list.hpp"
 #include "test-maybe.hpp"
 #include "test-misc.hpp"
 #include "test-monotone-deque.hpp"
@@ -23,9 +22,6 @@ int main () {
   TestMaybe        ::test3 ();
   TestOctree       ::test  ();
   TestBitset       ::test  ();
-  TestIntrusiveList::test1 ();
-  TestIntrusiveList::test2 ();
-  TestIntrusiveList::test3 ();
   TestTree         ::test1 ();
   TestTree         ::test2 ();
   TestMisc         ::test  ();

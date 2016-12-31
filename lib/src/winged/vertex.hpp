@@ -6,7 +6,6 @@
 #define DILAY_WINGED_VERTEX
 
 #include <glm/fwd.hpp>
-#include "intrusive-list.hpp"
 #include "macro.hpp"
 
 class AdjEdges;
@@ -15,11 +14,9 @@ class AdjFaces;
 class WingedEdge;
 class WingedMesh;
 
-class WingedVertex : public IntrusiveList <WingedVertex>::Item {
+class WingedVertex {
   public: 
     WingedVertex (unsigned int);
-    WingedVertex (const WingedVertex&)  = delete;
-    WingedVertex (      WingedVertex&&) = default;
 
     bool             operator== (const WingedVertex&) const;
     bool             operator!= (const WingedVertex&) const;
@@ -45,8 +42,8 @@ class WingedVertex : public IntrusiveList <WingedVertex>::Item {
 
     SAFE_REF_CONST (WingedEdge, edge)
   private:
-    const unsigned int _index;
-    WingedEdge*        _edge;
+    unsigned int _index;
+    WingedEdge*  _edge;
 };
 
 #endif

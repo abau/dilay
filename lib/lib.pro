@@ -123,7 +123,6 @@ HEADERS += \
            src/history.hpp \
            src/index-octree.hpp \
            src/intersection.hpp \
-           src/intrusive-list.hpp \
            src/kvstore.hpp \
            src/macro.hpp \
            src/maybe.hpp \

@@ -7,7 +7,6 @@
 
 #include <glm/glm.hpp>
 #include "configurable.hpp"
-#include "intrusive-list.hpp"
 #include "macro.hpp"
 #include "sketch/fwd.hpp"
 
@@ -18,7 +17,7 @@ class PrimRay;
 class PrimSphere;
 enum class SketchPathSmoothEffect;
 
-class SketchMesh : public Configurable, public IntrusiveList <SketchMesh>::Item {
+class SketchMesh : public Configurable {
   public: 
     DECLARE_BIG3 (SketchMesh, unsigned int);
 
