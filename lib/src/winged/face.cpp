@@ -58,21 +58,14 @@ unsigned int WingedFace :: numEdges () const {
 
 bool WingedFace :: isTriangle () const { return this->numEdges () == 3; }
 
-AdjEdges WingedFace :: adjacentEdges (WingedEdge& e) const {
-  return AdjEdges (*this, e);
-}
 AdjEdges WingedFace :: adjacentEdges () const {
-  return this->adjacentEdges (this->edgeRef ());
+  return AdjEdges (*this, this->edgeRef ());
 }
-AdjVertices WingedFace :: adjacentVertices (WingedEdge& e) const {
-  return AdjVertices (*this, e);
-}
+
 AdjVertices WingedFace :: adjacentVertices () const {
-  return this->adjacentVertices (this->edgeRef ());
+  return AdjVertices (*this, this->edgeRef ());
 }
-AdjFaces WingedFace :: adjacentFaces (WingedEdge& e) const {
-  return AdjFaces (*this, e);
-}
+
 AdjFaces WingedFace :: adjacentFaces () const {
-  return this->adjacentFaces (this->edgeRef ());
+  return AdjFaces (*this, this->edgeRef ());
 }

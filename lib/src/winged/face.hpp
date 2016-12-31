@@ -36,13 +36,9 @@ class WingedFace : public IntrusiveList <WingedFace>::Item {
     void          triangle         (const WingedMesh&, glm::vec3&, glm::vec3&, glm::vec3&);
     unsigned int  numEdges         () const;
     bool          isTriangle       () const;
-
-    AdjEdges      adjacentEdges    (WingedEdge&) const;
-    AdjEdges      adjacentEdges    ()            const;
-    AdjVertices   adjacentVertices (WingedEdge&) const;
-    AdjVertices   adjacentVertices ()            const;
-    AdjFaces      adjacentFaces    (WingedEdge&) const;
-    AdjFaces      adjacentFaces    ()            const;
+    AdjEdges      adjacentEdges    () const;
+    AdjVertices   adjacentVertices () const;
+    AdjFaces      adjacentFaces    () const;
 
     SAFE_REF_CONST  (WingedEdge  , edge)
     SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)

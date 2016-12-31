@@ -39,13 +39,9 @@ class WingedVertex : public IntrusiveList <WingedVertex>::Item {
     void             setInterpolatedNormal (WingedMesh&);
     void             isNewVertex           (WingedMesh&, bool);
     unsigned int     valence               () const;
-
-    AdjEdges         adjacentEdges    (WingedEdge&) const;
-    AdjEdges         adjacentEdges    ()            const;
-    AdjVertices      adjacentVertices (WingedEdge&) const;
-    AdjVertices      adjacentVertices ()            const;
-    AdjFaces         adjacentFaces    (WingedEdge&) const;
-    AdjFaces         adjacentFaces    ()            const;
+    AdjEdges         adjacentEdges         () const;
+    AdjVertices      adjacentVertices      () const;
+    AdjFaces         adjacentFaces         () const;
 
     SAFE_REF_CONST (WingedEdge, edge)
   private:

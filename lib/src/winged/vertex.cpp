@@ -77,21 +77,14 @@ unsigned int WingedVertex :: valence () const {
   return i;
 }
 
-AdjEdges WingedVertex :: adjacentEdges (WingedEdge& e) const {
-  return AdjEdges (*this, e);
-}
 AdjEdges WingedVertex :: adjacentEdges () const {
-  return this->adjacentEdges (this->edgeRef ());
+  return AdjEdges (*this, this->edgeRef ());
 }
-AdjVertices WingedVertex :: adjacentVertices (WingedEdge& e) const {
-  return AdjVertices (*this, e);
-}
+
 AdjVertices WingedVertex :: adjacentVertices () const {
-  return this->adjacentVertices (this->edgeRef ());
+  return AdjVertices (*this, this->edgeRef ());
 }
-AdjFaces WingedVertex :: adjacentFaces (WingedEdge& e) const {
-  return AdjFaces (*this, e);
-}
+
 AdjFaces WingedVertex :: adjacentFaces () const {
-  return this->adjacentFaces (this->edgeRef ());
+  return AdjFaces (*this, this->edgeRef ());
 }
