@@ -16,60 +16,68 @@ class WingedEdge {
   public:
     WingedEdge (unsigned int);
 
-    bool            operator==       (const WingedEdge&) const;
-    bool            operator!=       (const WingedEdge&) const;
+    bool            operator==            (const WingedEdge&) const;
+    bool            operator!=            (const WingedEdge&) const;
 
-    unsigned int    index            () const { return this->_index; }
-    WingedVertex*   vertex1          () const { return this->_vertex1; }
-    WingedVertex*   vertex2          () const { return this->_vertex2; }
-    WingedFace*     leftFace         () const { return this->_leftFace; }
-    WingedFace*     rightFace        () const { return this->_rightFace; }
-    WingedEdge*     leftPredecessor  () const { return this->_leftPredecessor; }
-    WingedEdge*     leftSuccessor    () const { return this->_leftSuccessor; }
-    WingedEdge*     rightPredecessor () const { return this->_rightPredecessor; }
-    WingedEdge*     rightSuccessor   () const { return this->_rightSuccessor; }
+    unsigned int    index                 () const { return this->_index; }
+    unsigned int    vertex1Index          () const { return this->_vertex1Index; }
+    unsigned int    vertex2Index          () const { return this->_vertex2Index; }
+    unsigned int    leftFaceIndex         () const { return this->_leftFaceIndex; }
+    unsigned int    rightFaceIndex        () const { return this->_rightFaceIndex; }
+    unsigned int    leftPredecessorIndex  () const { return this->_leftPredecessorIndex; }
+    unsigned int    leftSuccessorIndex    () const { return this->_leftSuccessorIndex; }
+    unsigned int    rightPredecessorIndex () const { return this->_rightPredecessorIndex; }
+    unsigned int    rightSuccessorIndex   () const { return this->_rightSuccessorIndex; }
+    WingedVertex*   vertex1               () const { return this->_vertex1; }
+    WingedVertex*   vertex2               () const { return this->_vertex2; }
+    WingedFace*     leftFace              () const { return this->_leftFace; }
+    WingedFace*     rightFace             () const { return this->_rightFace; }
+    WingedEdge*     leftPredecessor       () const { return this->_leftPredecessor; }
+    WingedEdge*     leftSuccessor         () const { return this->_leftSuccessor; }
+    WingedEdge*     rightPredecessor      () const { return this->_rightPredecessor; }
+    WingedEdge*     rightSuccessor        () const { return this->_rightSuccessor; }
 
-    bool            isLeftFace       (const WingedFace&)   const;
-    bool            isRightFace      (const WingedFace&)   const;
-    bool            isVertex1        (const WingedVertex&) const;
-    bool            isVertex2        (const WingedVertex&) const;
+    bool            isLeftFace            (const WingedFace&)   const;
+    bool            isRightFace           (const WingedFace&)   const;
+    bool            isVertex1             (const WingedVertex&) const;
+    bool            isVertex2             (const WingedVertex&) const;
 
-    WingedVertex*   firstVertex      (const WingedFace&)   const;
-    WingedVertex*   secondVertex     (const WingedFace&)   const;
-    WingedEdge*     predecessor      (const WingedFace&)   const;
-    WingedEdge*     successor        (const WingedFace&)   const;
-    WingedFace*     otherFace        (const WingedFace&)   const;
-    WingedVertex*   otherVertex      (const WingedVertex&) const;
+    WingedVertex*   firstVertex           (const WingedFace&)   const;
+    WingedVertex*   secondVertex          (const WingedFace&)   const;
+    WingedEdge*     predecessor           (const WingedFace&)   const;
+    WingedEdge*     successor             (const WingedFace&)   const;
+    WingedFace*     otherFace             (const WingedFace&)   const;
+    WingedVertex*   otherVertex           (const WingedVertex&) const;
 
-    void            setGeometry      ( WingedVertex*, WingedVertex*
-                                     , WingedFace*, WingedFace*
-                                     , WingedEdge*, WingedEdge*
-                                     , WingedEdge*, WingedEdge* );
+    void            setGeometry           ( WingedVertex*, WingedVertex*
+                                          , WingedFace*, WingedFace*
+                                          , WingedEdge*, WingedEdge*
+                                          , WingedEdge*, WingedEdge* );
 
-    void            vertex1          (WingedVertex* v) { this->_vertex1          = v; }
-    void            vertex2          (WingedVertex* v) { this->_vertex2          = v; }
-    void            leftFace         (WingedFace* f)   { this->_leftFace         = f; }
-    void            rightFace        (WingedFace* f)   { this->_rightFace        = f; }
-    void            leftPredecessor  (WingedEdge* e)   { this->_leftPredecessor  = e; }
-    void            leftSuccessor    (WingedEdge* e)   { this->_leftSuccessor    = e; }
-    void            rightPredecessor (WingedEdge* e)   { this->_rightPredecessor = e; }
-    void            rightSuccessor   (WingedEdge* e)   { this->_rightSuccessor   = e; }
+    void            vertex1               (WingedVertex*);
+    void            vertex2               (WingedVertex*);
+    void            leftFace              (WingedFace*);
+    void            rightFace             (WingedFace*);
+    void            leftPredecessor       (WingedEdge*);
+    void            leftSuccessor         (WingedEdge*);
+    void            rightPredecessor      (WingedEdge*);
+    void            rightSuccessor        (WingedEdge*);
 
-    void            firstVertex      (const WingedFace&, WingedVertex*);
-    void            secondVertex     (const WingedFace&, WingedVertex*);
-    void            vertex           (const WingedVertex&, WingedVertex*);
-    void            face             (const WingedFace&, WingedFace*);
-    void            predecessor      (const WingedFace&, WingedEdge*);
-    void            successor        (const WingedFace&, WingedEdge*);
+    void            firstVertex           (const WingedFace&, WingedVertex*);
+    void            secondVertex          (const WingedFace&, WingedVertex*);
+    void            vertex                (const WingedVertex&, WingedVertex*);
+    void            face                  (const WingedFace&, WingedFace*);
+    void            predecessor           (const WingedFace&, WingedEdge*);
+    void            successor             (const WingedFace&, WingedEdge*);
 
-    glm::vec3       vector           (const WingedMesh&) const;
-    glm::vec3       vector           (const WingedMesh&, const WingedVertex&) const;
-    float           length           (const WingedMesh&) const;
-    float           lengthSqr        (const WingedMesh&) const;
-    WingedEdge*     successor        (const WingedFace&, unsigned int) const;
-    WingedEdge*     predecessor      (const WingedFace&, unsigned int) const;
-    WingedVertex*   vertex           (const WingedFace&, unsigned int) const;
-    glm::vec3       middle           (const WingedMesh&) const;
+    glm::vec3       vector                (const WingedMesh&) const;
+    glm::vec3       vector                (const WingedMesh&, const WingedVertex&) const;
+    float           length                (const WingedMesh&) const;
+    float           lengthSqr             (const WingedMesh&) const;
+    WingedEdge*     successor             (const WingedFace&, unsigned int) const;
+    WingedEdge*     predecessor           (const WingedFace&, unsigned int) const;
+    WingedVertex*   vertex                (const WingedFace&, unsigned int) const;
+    glm::vec3       middle                (const WingedMesh&) const;
 
     SAFE_REF_CONST  (WingedVertex, vertex1)
     SAFE_REF_CONST  (WingedVertex, vertex2)
@@ -93,16 +101,21 @@ class WingedEdge {
 
   private:
     unsigned int  _index;
+    unsigned int  _vertex1Index;
+    unsigned int  _vertex2Index;
+    unsigned int  _leftFaceIndex;
+    unsigned int  _rightFaceIndex;
+    unsigned int  _leftPredecessorIndex;
+    unsigned int  _leftSuccessorIndex;
+    unsigned int  _rightPredecessorIndex;
+    unsigned int  _rightSuccessorIndex;
 
     WingedVertex* _vertex1;
     WingedVertex* _vertex2;
-
     WingedFace*   _leftFace;
     WingedFace*   _rightFace;
-
     WingedEdge*   _leftPredecessor;
     WingedEdge*   _leftSuccessor;
-
     WingedEdge*   _rightPredecessor;
     WingedEdge*   _rightSuccessor;
 };

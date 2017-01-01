@@ -2,6 +2,7 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include "../util.hpp"
 #include "adjacent-iterator.hpp"
 #include "primitive/triangle.hpp"
 #include "winged/edge.hpp"
@@ -10,8 +11,9 @@
 #include "winged/vertex.hpp"
 
 WingedFace :: WingedFace (unsigned int i)
-  : _index      (i)
-  , _edge       (nullptr)
+  : _index     (i)
+  , _edgeIndex (Util::invalidIndex ())
+  , _edge      (nullptr)
   {}
 
 bool WingedFace::operator== (const WingedFace& other) const {
@@ -20,6 +22,11 @@ bool WingedFace::operator== (const WingedFace& other) const {
 
 bool WingedFace::operator!= (const WingedFace& other) const {
   return ! this->operator== (other);
+}
+
+void WingedFace :: edge (WingedEdge* e) {
+  this->_edgeIndex = e ? e->index () : Util::invalidIndex ();
+  this->_edge = e;
 }
 
 WingedVertex* WingedFace :: vertex (unsigned int index) const { 

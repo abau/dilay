@@ -23,10 +23,10 @@ class WingedFace {
     bool          operator!=       (const WingedFace&) const;
 
     unsigned int  index            () const { return this->_index; }
+    unsigned int  edgeIndex        () const { return this->_edgeIndex; }
     WingedEdge*   edge             () const { return this->_edge; }
 
-    void          edge             (WingedEdge*  e) { this->_edge = e; }
-
+    void          edge             (WingedEdge*);
     WingedVertex* vertex           (unsigned int) const;
     void          writeIndices     (WingedMesh&);
     PrimTriangle  triangle         (const WingedMesh&) const;
@@ -41,6 +41,7 @@ class WingedFace {
     SAFE_REF1_CONST (WingedVertex, vertex, unsigned int)
   private:
     unsigned int _index;
+    unsigned int _edgeIndex;
     WingedEdge*  _edge;
 };
 

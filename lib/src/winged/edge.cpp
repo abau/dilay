@@ -9,15 +9,23 @@
 #include "winged/vertex.hpp"
 
 WingedEdge :: WingedEdge (unsigned int i) 
-  : _index            (i)
-  , _vertex1          (nullptr)
-  , _vertex2          (nullptr)
-  , _leftFace         (nullptr)
-  , _rightFace        (nullptr)
-  , _leftPredecessor  (nullptr)
-  , _leftSuccessor    (nullptr)
-  , _rightPredecessor (nullptr)
-  , _rightSuccessor   (nullptr)
+  : _index                 (i)
+  , _vertex1Index          (Util::invalidIndex ())
+  , _vertex2Index          (Util::invalidIndex ())
+  , _leftFaceIndex         (Util::invalidIndex ())
+  , _rightFaceIndex        (Util::invalidIndex ())
+  , _leftPredecessorIndex  (Util::invalidIndex ())
+  , _leftSuccessorIndex    (Util::invalidIndex ())
+  , _rightPredecessorIndex (Util::invalidIndex ())
+  , _rightSuccessorIndex   (Util::invalidIndex ())
+  , _vertex1               (nullptr)
+  , _vertex2               (nullptr)
+  , _leftFace              (nullptr)
+  , _rightFace             (nullptr)
+  , _leftPredecessor       (nullptr)
+  , _leftSuccessor         (nullptr)
+  , _rightPredecessor      (nullptr)
+  , _rightSuccessor        (nullptr)
   {}
 
 bool WingedEdge::operator== (const WingedEdge& other) const {
@@ -77,6 +85,46 @@ WingedFace* WingedEdge :: otherFace (const WingedFace& face) const {
 
 WingedVertex* WingedEdge :: otherVertex (const WingedVertex& vertex) const {
   return this->isVertex1 (vertex) ? this->vertex2 () : this->vertex1 (); }
+
+void WingedEdge :: vertex1 (WingedVertex* v) {
+  this->_vertex1Index = v ? v->index () : Util::invalidIndex ();
+  this->_vertex1 = v;
+}
+
+void WingedEdge :: vertex2 (WingedVertex* v) {
+  this->_vertex2Index = v ? v->index () : Util::invalidIndex ();
+  this->_vertex2 = v;
+}
+
+void WingedEdge :: leftFace (WingedFace* f) {
+  this->_leftFaceIndex = f ? f->index () : Util::invalidIndex ();
+  this->_leftFace = f;
+}
+
+void WingedEdge :: rightFace (WingedFace* f) {
+  this->_rightFaceIndex = f ? f->index () : Util::invalidIndex ();
+  this->_rightFace = f;
+}
+
+void WingedEdge :: leftPredecessor (WingedEdge* e) {
+  this->_leftPredecessorIndex = e ? e->index () : Util::invalidIndex ();
+  this->_leftPredecessor = e;
+}
+
+void WingedEdge :: leftSuccessor (WingedEdge* e) {
+  this->_leftSuccessorIndex = e ? e->index () : Util::invalidIndex ();
+  this->_leftSuccessor = e;
+}
+
+void WingedEdge :: rightPredecessor (WingedEdge* e) {
+  this->_rightPredecessorIndex = e ? e->index () : Util::invalidIndex ();
+  this->_rightPredecessor = e;
+}
+
+void WingedEdge :: rightSuccessor (WingedEdge* e) {
+  this->_rightSuccessorIndex = e ? e->index () : Util::invalidIndex ();
+  this->_rightSuccessor = e;
+}
 
 void WingedEdge :: setGeometry ( WingedVertex* v1, WingedVertex* v2
                                , WingedFace* left, WingedFace* right

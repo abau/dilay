@@ -14,42 +14,29 @@
 #include "winged/vertex.hpp"
 
 void WingedUtil :: printStatistics (const WingedMesh& mesh, const WingedVertex& v) {
-  std::cout   << "vertex "               << v.index       () 
-              << "\n\tposition:\t"       << v.position    (mesh)
-              << "\n\tedge:\t\t"         << v.edge        ()->index ();
-    std::cout << "\n\tnormal:\t\t"       << v.savedNormal (mesh);
+  std::cout   << "vertex "         << v.index       () 
+              << "\n\tposition:\t" << v.position    (mesh)
+              << "\n\tedge:\t\t"   << v.edgeIndex   ();
+    std::cout << "\n\tnormal:\t\t" << v.savedNormal (mesh);
   std::cout   << std::endl;
 }
 
 void WingedUtil :: printStatistics (const WingedEdge& e) {
-  auto maybeEdgeIndex = [] (WingedEdge* edge) {
-    return bool (edge) ? std::to_string (edge->index ())
-                       : std::string ("NULL");
-  };
-  auto maybeFaceIndex = [] (WingedFace* face) {
-    return bool (face) ? std::to_string (face->index ())
-                       : std::string ("NULL");
-  };
-  auto maybeVertexIndex = [] (WingedVertex* vertex) {
-    return bool (vertex) ? std::to_string (vertex->index ())
-                         : std::string ("NULL");
-  };
-
-  std::cout << "edge " << e.index () 
-    << "\n\tvertex 1:\t\t"        << maybeVertexIndex (e.vertex1          ())
-    <<   "\tvertex 2:\t\t"        << maybeVertexIndex (e.vertex2          ())
-    << "\n\tleft face:\t\t"       << maybeFaceIndex   (e.leftFace         ())
-    <<   "\tright face:\t\t"      << maybeFaceIndex   (e.rightFace        ())
-    << "\n\tleft predecessor:\t"  << maybeEdgeIndex   (e.leftPredecessor  ())
-    <<   "\tleft successor:\t\t"  << maybeEdgeIndex   (e.leftSuccessor    ())
-    << "\n\tright predecessor:\t" << maybeEdgeIndex   (e.rightPredecessor ())
-    <<   "\tright successor:\t"   << maybeEdgeIndex   (e.rightSuccessor   ())
+  std::cout << "edge " << e.index ()
+    << "\n\tvertex 1:\t\t"        << e.vertex1Index ()
+    <<   "\tvertex 2:\t\t"        << e.vertex2Index ()
+    << "\n\tleft face:\t\t"       << e.leftFaceIndex ()
+    <<   "\tright face:\t\t"      << e.rightFaceIndex ()
+    << "\n\tleft predecessor:\t"  << e.leftPredecessorIndex ()
+    <<   "\tleft successor:\t\t"  << e.leftSuccessorIndex ()
+    << "\n\tright predecessor:\t" << e.rightPredecessorIndex ()
+    <<   "\tright successor:\t"   << e.rightSuccessorIndex ()
     << std::endl;
 }
 
 void WingedUtil :: printStatistics (const WingedFace& f) {
-  std::cout   << "face "                << f.index () 
-              << "\n\tedge:\t\t\t"      << f.edgeRef ().index ()
+  std::cout   << "face "           << f.index () 
+              << "\n\tedge:\t\t\t" << f.edgeIndex ()
               << std::endl;
 }
 

@@ -21,11 +21,11 @@ class WingedVertex {
     bool             operator== (const WingedVertex&) const;
     bool             operator!= (const WingedVertex&) const;
 
-    unsigned int     index    () const { return this->_index; }
-    WingedEdge*      edge     () const { return this->_edge; }
+    unsigned int     index     () const { return this->_index; }
+    unsigned int     edgeIndex () const { return this->_edgeIndex; }
+    WingedEdge*      edge      () const { return this->_edge; }
 
-    void             edge     (WingedEdge* e) { this->_edge = e; }
-
+    void             edge                  (WingedEdge*);
     void             writeIndex            (WingedMesh&, unsigned int);
     const glm::vec3& position              (const WingedMesh&) const;
     const glm::vec3& savedNormal           (const WingedMesh&) const;
@@ -43,6 +43,7 @@ class WingedVertex {
     SAFE_REF_CONST (WingedEdge, edge)
   private:
     unsigned int _index;
+    unsigned int _edgeIndex;
     WingedEdge*  _edge;
 };
 
