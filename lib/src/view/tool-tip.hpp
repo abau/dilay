@@ -11,7 +11,7 @@ class QString;
 
 class ViewToolTip {
   public:
-    DECLARE_BIG4COPY (ViewToolTip)
+    DECLARE_BIG2 (ViewToolTip)
 
     enum class MouseEvent { Left, Middle, Wheel, Right };
     enum class Modifier   { None, Ctrl, Shift, Alt };

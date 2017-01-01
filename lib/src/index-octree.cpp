@@ -531,7 +531,7 @@ struct IndexOctree::Impl {
   }
 };
 
-DELEGATE_BIG4COPY (IndexOctree)
+DELEGATE_BIG4_COPY (IndexOctree)
 
 DELEGATE_CONST  (bool        , IndexOctree, hasRoot)
 DELEGATE2       (void        , IndexOctree, setupRoot, const glm::vec3&, float)

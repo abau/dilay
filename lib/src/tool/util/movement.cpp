@@ -191,12 +191,12 @@ MovementConstraint KVStore :: getFrom (const std::string& path, const MovementCo
   return constraintFromInt (this->get (path, constraintToInt (c)));
 }
 
-DELEGATE2_BIG4COPY (ToolUtilMovement, const Camera&, MovementConstraint)
-GETTER_CONST    (MovementConstraint, ToolUtilMovement, constraint)
-SETTER          (MovementConstraint, ToolUtilMovement, constraint)
-DELEGATE_CONST  (glm::vec3         , ToolUtilMovement, delta)
-GETTER_CONST    (const glm::vec3&  , ToolUtilMovement, position)
-SETTER          (const glm::vec3&  , ToolUtilMovement, position)
-DELEGATE2       (bool              , ToolUtilMovement, move, const ViewPointingEvent&, bool)
-DELEGATE1       (void              , ToolUtilMovement, resetPosition, const glm::vec3&)
-DELEGATE2       (void              , ToolUtilMovement, addProperties, ViewTwoColumnGrid&, const std::function <void ()>&)
+DELEGATE2_BIG3 (ToolUtilMovement, const Camera&, MovementConstraint)
+GETTER_CONST   (MovementConstraint, ToolUtilMovement, constraint)
+SETTER         (MovementConstraint, ToolUtilMovement, constraint)
+DELEGATE_CONST (glm::vec3         , ToolUtilMovement, delta)
+GETTER_CONST   (const glm::vec3&  , ToolUtilMovement, position)
+SETTER         (const glm::vec3&  , ToolUtilMovement, position)
+DELEGATE2      (bool              , ToolUtilMovement, move, const ViewPointingEvent&, bool)
+DELEGATE1      (void              , ToolUtilMovement, resetPosition, const glm::vec3&)
+DELEGATE2      (void              , ToolUtilMovement, addProperties, ViewTwoColumnGrid&, const std::function <void ()>&)

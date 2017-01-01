@@ -262,7 +262,7 @@ struct SculptBrush :: Impl {
   }
 };
 
-DELEGATE_BIG4MOVE_SELF (SculptBrush)
+DELEGATE_BIG3_SELF (SculptBrush)
   
 GETTER_CONST    (float              , SculptBrush, radius)
 GETTER_CONST    (float              , SculptBrush, detailFactor)

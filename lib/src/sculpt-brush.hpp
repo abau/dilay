@@ -127,7 +127,7 @@ class SBPinchParameters : public SBInvertParameter {
 
 class SculptBrush {
   public:
-    DECLARE_BIG4MOVE (SculptBrush)
+    DECLARE_BIG3 (SculptBrush)
 
     float               radius              () const;
     float               detailFactor        () const;

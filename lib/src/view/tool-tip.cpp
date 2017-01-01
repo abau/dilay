@@ -93,7 +93,7 @@ struct ViewToolTip::Impl {
   }
 };
 
-DELEGATE_BIG4COPY (ViewToolTip)
+DELEGATE_BIG2 (ViewToolTip)
 DELEGATE_CONST (QString, ViewToolTip, toString)
 DELEGATE3      (void   , ViewToolTip, add, ViewToolTip::MouseEvent, ViewToolTip::Modifier, const QString&)
 DELEGATE2      (void   , ViewToolTip, add, ViewToolTip::MouseEvent, const QString&)

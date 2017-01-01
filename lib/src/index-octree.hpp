@@ -18,7 +18,7 @@ class PrimSphere;
 
 class IndexOctree { 
   public: 
-    DECLARE_BIG4COPY (IndexOctree)
+    DECLARE_BIG4_EXPLICIT_COPY (IndexOctree)
 
     typedef std::function <void (unsigned int)> IntersectionCallback;
 

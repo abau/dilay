@@ -11,8 +11,8 @@
 
 class TimeDelta {
   public: 
-    DECLARE_BIG4COPY (TimeDelta)
-    TimeDelta    (const char*,int);
+    DECLARE_BIG3 (TimeDelta)
+    TimeDelta    (const char*, int);
 
     void printGlobal (const char* = nullptr) const;
     void printLocal  (const char* = nullptr);
