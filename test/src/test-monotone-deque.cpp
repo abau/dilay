@@ -16,6 +16,11 @@ namespace {
       , _value (v)
     {}
 
+    A (const A& other)
+      : _index (other._index)
+      , _value (other._value)
+    {}
+
     unsigned int index () const {
       return this->_index;
     }
@@ -59,6 +64,24 @@ namespace {
     assert (value2_2.index () == 1);
     assert (value2_2.value () == 66);
     assert (v.elementRef (1).value () == 66);
+
+    A& value1_2 = v.insertElement (A (0, 42));
+
+    assert (v.numElements () == 3);
+    assert (v.hasFreeIndices () == false);
+    assert (value1_2.index () == 0);
+    assert (value1_2.value () == 42);
+    assert (v.elementRef (0).value () == 42);
+
+    const A foo (2, 69);
+
+    A& value3_2 = v.insertElement (foo);
+
+    assert (v.numElements () == 3);
+    assert (v.hasFreeIndices () == false);
+    assert (value3_2.index () == 2);
+    assert (value3_2.value () == 69);
+    assert (v.elementRef (2).value () == 69);
   }
 }
 

@@ -83,21 +83,28 @@ class MonotoneDeque {
     }
 
     T& insertElement (unsigned int index, T&& element) {
-      assert (index == this->nextFreeIndex ());
-
       if (index == this->elements.size ()) {
         this->elements.push_back (std::move (element));
         return this->elements.back ();
       }
-      else if (index == *this->freeIndices.begin ()) {
-        this->freeIndices.erase (this->freeIndices.begin ());
-
+      else if (index < this->elements.size ()) {
+        if (this->hasFreeIndices () && index == *this->freeIndices.begin ()) {
+          this->freeIndices.erase (this->freeIndices.begin ());
+        }
         this->elements [index] = std::move (element);
         return this->elements [index];
       }
       else {
         DILAY_IMPOSSIBLE
       }
+    }
+
+    T& insertElement (const T& element) {
+      return this->insertElement (element.index (), T (element));
+    }
+
+    T& insertElement (T&& element) {
+      return this->insertElement (element.index (), std::move (element));
     }
 
     template <typename ... Args>
@@ -208,6 +215,18 @@ class MonotonePtrDeque {
       std::unique_ptr <T> ptr   = std::make_unique <T> (index, std::forward <Args> (args) ...);
 
       return *this->vector.insertElement (index, std::move (ptr));
+    }
+
+    T& insertElement (const T& element) {
+      std::unique_ptr <T> ptr = std::make_unique <T> (element);
+
+      return *this->vector.insertElement (element.index (), std::move (ptr));
+    }
+
+    T& insertElement (T&& element) {
+      std::unique_ptr <T> ptr = std::make_unique <T> (std::move (element));
+
+      return *this->vector.insertElement (ptr->index (), std::move (ptr));
     }
 
     void deleteElement (unsigned int index) {
