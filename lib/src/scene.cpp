@@ -40,8 +40,8 @@ struct Scene :: Impl {
     wingedMesh.fromMesh (mesh);
     wingedMesh.bufferData ();
     wingedMesh.renderMode () = this->commonRenderMode;
+    wingedMesh.fromConfig (config);
 
-    this->runFromConfig (config, wingedMesh);
     return wingedMesh;
   }
 
@@ -282,16 +282,9 @@ struct Scene :: Impl {
     }
   }
   
-  void runFromConfig (const Config& config, WingedMesh& mesh) {
-    ConfigProxy wingedMeshConfig (config, "editor/mesh/");
-
-    mesh.color          (wingedMeshConfig.get <Color> ("color/normal"));
-    mesh.wireframeColor (wingedMeshConfig.get <Color> ("color/wireframe"));
-  }
-
   void runFromConfig (const Config& config) {
     this->forEachMesh ([this, &config] (WingedMesh& mesh) {
-      this->runFromConfig (config, mesh);
+      mesh.fromConfig (config);
     });
     this->forEachMesh ([this, &config] (SketchMesh& mesh) {
       mesh.fromConfig (config);

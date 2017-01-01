@@ -8,6 +8,7 @@
 #include <functional>
 #include <glm/fwd.hpp>
 #include <vector>
+#include "configurable.hpp"
 #include "macro.hpp"
 
 class AffectedFaces;
@@ -26,7 +27,7 @@ class WingedFace;
 class WingedFaceIntersection;
 class WingedVertex;
 
-class WingedMesh {
+class WingedMesh : public Configurable {
   public: 
     DECLARE_BIG3 (WingedMesh, unsigned int);
 
@@ -114,6 +115,8 @@ class WingedMesh {
     SAFE_REF1 (WingedFace  , face  , unsigned int)
   private:
     IMPLEMENTATION
+
+    void runFromConfig (const Config&);
 };
 
 #endif

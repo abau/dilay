@@ -6,6 +6,7 @@
 #include "../util.hpp"
 #include "action/finalize.hpp"
 #include "affected-faces.hpp"
+#include "config.hpp"
 #include "edge-map.hpp"
 #include "hash.hpp"
 #include "index-octree.hpp"
@@ -490,6 +491,11 @@ struct WingedMesh::Impl {
   void forEachConstFace (const std::function <void (const WingedFace&)>& f) const {
     this->faces.forEachConstElement (f);
   }
+
+  void runFromConfig (const Config& config) {
+    this->color (config.get <Color> ("editor/mesh/color/normal"));
+    this->wireframeColor (config.get <Color> ("editor/mesh/color/wireframe"));
+  }
 };
 
 DELEGATE1_BIG3_SELF (WingedMesh, unsigned int)
@@ -570,3 +576,4 @@ DELEGATE1       (void              , WingedMesh, forEachEdge, const std::functio
 DELEGATE1_CONST (void              , WingedMesh, forEachConstEdge  , const std::function <void (const WingedEdge&)>&)
 DELEGATE1       (void              , WingedMesh, forEachFace, const std::function <void (WingedFace&)>&)
 DELEGATE1_CONST (void              , WingedMesh, forEachConstFace, const std::function <void (const WingedFace&)>&)
+DELEGATE1       (void              , WingedMesh, runFromConfig, const Config&)
