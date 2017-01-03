@@ -15,6 +15,7 @@ class AffectedFaces;
 class Camera;
 class Color;
 class IndexOctree;
+class Intersection;
 class Mesh;
 class PrimAABox;
 class PrimPlane;
@@ -30,6 +31,7 @@ class WingedVertex;
 class WingedMesh : public Configurable {
   public: 
     DECLARE_BIG3 (WingedMesh, unsigned int);
+    WingedMesh (const WingedMesh&, bool);
 
     bool               operator==          (const WingedMesh&) const;
     bool               operator!=          (const WingedMesh&) const;
@@ -79,6 +81,7 @@ class WingedMesh : public Configurable {
     const RenderMode&  renderMode          () const;
     RenderMode&        renderMode          ();
     
+    bool               intersects          (const PrimRay&, Intersection&) const;
     bool               intersects          (const PrimRay&, WingedFaceIntersection&);
     bool               intersects          (const PrimRay&, AffectedFaces&);
     bool               intersects          (const PrimSphere&, AffectedFaces&);

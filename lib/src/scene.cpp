@@ -34,24 +34,38 @@ struct Scene :: Impl {
     this->commonRenderMode.smoothShading (true);
   }
 
+  WingedMesh& newWingedMesh (const Config& config, const WingedMesh& other) {
+    WingedMesh mesh (other, true);
+    return this->setupNewMesh (config, this->wingedMeshes.insertElement (std::move (mesh)));
+  }
+
   WingedMesh& newWingedMesh (const Config& config, const Mesh& mesh) {
     WingedMesh& wingedMesh = this->wingedMeshes.emplaceElement ();
-
     wingedMesh.fromMesh (mesh);
-    wingedMesh.bufferData ();
-    wingedMesh.renderMode () = this->commonRenderMode;
-    wingedMesh.fromConfig (config);
+    return this->setupNewMesh (config, wingedMesh);
+  }
 
-    return wingedMesh;
+  WingedMesh& setupNewMesh (const Config& config, WingedMesh& mesh) {
+    mesh.bufferData ();
+    mesh.renderMode () = this->commonRenderMode;
+    mesh.fromConfig (config);
+    return mesh;
+  }
+
+  SketchMesh& newSketchMesh (const Config& config, const SketchMesh& other) {
+    SketchMesh mesh (other);
+    return this->setupNewMesh (config, this->sketchMeshes.insertElement (std::move (mesh)));
   }
 
   SketchMesh& newSketchMesh (const Config& config, const SketchTree& tree) {
     SketchMesh& mesh = this->sketchMeshes.emplaceElement ();
+    mesh.fromTree (tree);
+    return this->setupNewMesh (config, mesh);
+  }
 
-    mesh.fromTree        (tree);
+  SketchMesh& setupNewMesh (const Config& config, SketchMesh& mesh) {
     mesh.renderWireframe (this->commonRenderMode.renderWireframe ());
-    mesh.fromConfig      (config);
-
+    mesh.fromConfig (config);
     return mesh;
   }
 
@@ -294,7 +308,9 @@ struct Scene :: Impl {
 
 DELEGATE1_BIG3_SELF (Scene, const Config&)
 
+DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const WingedMesh&)
 DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
+DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchMesh&)
 DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchTree&)
 DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
 DELEGATE1       (void              , Scene, deleteMesh, SketchMesh&)

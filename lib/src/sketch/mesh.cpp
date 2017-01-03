@@ -89,6 +89,19 @@ struct SketchMesh::Impl {
     this->boneMesh.bufferData ();
   }
 
+  Impl (const Impl& other)
+    : self         (nullptr)
+    , index        (other.index)
+    , tree         (other.tree)
+    , paths        (other.paths)
+    , sphereMesh   (other.sphereMesh)
+    , boneMesh     (other.boneMesh)
+    , renderConfig (other.renderConfig)
+  {
+    this->sphereMesh.bufferData ();
+    this->boneMesh.bufferData ();
+  }
+
   bool operator== (const SketchMesh& other) const {
     return this->index == other.index ();
   }
@@ -793,7 +806,7 @@ struct SketchMesh::Impl {
   }
 };
 
-DELEGATE1_BIG3_SELF (SketchMesh, unsigned int);
+DELEGATE1_BIG4_COPY_SELF (SketchMesh, unsigned int);
 DELEGATE1_CONST (bool                , SketchMesh, operator==, const SketchMesh&)
 DELEGATE1_CONST (bool                , SketchMesh, operator!=, const SketchMesh&)
 GETTER_CONST    (unsigned int        , SketchMesh, index)

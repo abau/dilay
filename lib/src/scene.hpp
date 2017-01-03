@@ -22,7 +22,9 @@ class Scene : public Configurable {
   public: 
     DECLARE_BIG3 (Scene, const Config&)
 
+    WingedMesh&        newWingedMesh      (const Config&, const WingedMesh&);
     WingedMesh&        newWingedMesh      (const Config&, const Mesh&);
+    SketchMesh&        newSketchMesh      (const Config&, const SketchMesh&);
     SketchMesh&        newSketchMesh      (const Config&, const SketchTree&);
     void               deleteMesh         (WingedMesh&);
     void               deleteMesh         (SketchMesh&);

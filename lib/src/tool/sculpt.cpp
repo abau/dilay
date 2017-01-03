@@ -242,7 +242,7 @@ struct ToolSculpt::Impl {
   }
 
   bool updateBrushAndCursorByIntersection ( const glm::ivec2& pos, bool buttonPressed
-                                          , bool useRecentOctree )
+                                          , bool useRecentWingedMesh )
   {
     WingedFaceIntersection intersection;
 
@@ -257,11 +257,11 @@ struct ToolSculpt::Impl {
       if (buttonPressed) {
         this->brush.mesh (&intersection.mesh ());
 
-        if (useRecentOctree) {
-          Intersection octreeIntersection;
-          if (this->self->intersectsRecentOctree (pos, octreeIntersection)) {
-            return this->brush.updatePointOfAction ( octreeIntersection.position ()
-                                                   , octreeIntersection.normal () );
+        if (useRecentWingedMesh) {
+          Intersection recentIntersection;
+          if (this->self->intersectsRecentWingedMesh (pos, recentIntersection)) {
+            return this->brush.updatePointOfAction ( recentIntersection.position ()
+                                                   , recentIntersection.normal () );
           }
           else {
             return this->brush.updatePointOfAction ( intersection.position ()
@@ -283,15 +283,15 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool updateBrushAndCursorByIntersection (const ViewPointingEvent& e, bool useRecentOctree) {
+  bool updateBrushAndCursorByIntersection (const ViewPointingEvent& e, bool useRecentWingedMesh) {
     return this->updateBrushAndCursorByIntersection ( e.ivec2 (), e.primaryButton ()
-                                                    , useRecentOctree );
+                                                    , useRecentWingedMesh );
   }
 
-  bool carvelikeStroke ( const ViewPointingEvent& e, bool useRecentOctree
+  bool carvelikeStroke ( const ViewPointingEvent& e, bool useRecentWingedMesh
                        , const std::function <void ()>* toggle )
   {
-    if (this->updateBrushAndCursorByIntersection (e, useRecentOctree)) {
+    if (this->updateBrushAndCursorByIntersection (e, useRecentWingedMesh)) {
       SBParameters& parameters      = this->brush.parameters <SBParameters> ();
       const float   defaultIntesity = parameters.intensity ();
 

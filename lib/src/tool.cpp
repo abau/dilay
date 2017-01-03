@@ -124,25 +124,14 @@ struct Tool::Impl {
     this->state.history ().snapshotSketchMeshes (this->state.scene ());
   }
 
-  bool intersectsRecentOctree (const glm::ivec2& pos, Intersection& intersection) const {
-    assert (this->state.history ().hasRecentOctrees ());
+  bool intersectsRecentWingedMesh (const glm::ivec2& pos, Intersection& intersection) const {
+    assert (this->state.history ().hasRecentWingedMesh ());
 
     const PrimRay ray = this->state.camera ().ray (pos);
 
-    this->state.history ().forEachRecentOctree (
-      [&ray, &intersection] (const Mesh& mesh, const IndexOctree& octree) {
-        octree.intersects (ray, [&ray, &mesh, &intersection] (unsigned int i) {
-          const PrimTriangle tri ( mesh.vertex (mesh.index ((3 * i) + 0))
-                                 , mesh.vertex (mesh.index ((3 * i) + 1))
-                                 , mesh.vertex (mesh.index ((3 * i) + 2)) );
-          float t;
-
-          if (IntersectionUtil::intersects (ray, tri, &t)) {
-            intersection.update (t, ray.pointAt (t), tri.normal ());
-          }
-        });
-      }
-    );
+    this->state.history ().forEachRecentWingedMesh ([&ray, &intersection] (const WingedMesh& mesh) {
+      mesh.intersects (ray, intersection);
+    });
     return intersection.isIntersection ();
   }
 
@@ -240,7 +229,7 @@ DELEGATE_CONST  (glm::ivec2        , Tool, cursorPosition)
 DELEGATE        (void              , Tool, snapshotAll)
 DELEGATE        (void              , Tool, snapshotWingedMeshes)
 DELEGATE        (void              , Tool, snapshotSketchMeshes)
-DELEGATE2_CONST (bool              , Tool, intersectsRecentOctree, const glm::ivec2&, Intersection&)
+DELEGATE2_CONST (bool              , Tool, intersectsRecentWingedMesh, const glm::ivec2&, Intersection&)
 DELEGATE_CONST  (bool              , Tool, hasMirror)
 DELEGATE_CONST  (const Mirror&     , Tool, mirror)
 DELEGATE1       (void              , Tool, mirror, bool)

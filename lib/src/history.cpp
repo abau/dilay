@@ -19,39 +19,20 @@
 namespace {
   struct SnapshotConfig {
     bool snapshotWingedMeshes;
-    bool copyOctree;
     bool snapshotSketchMeshes;
 
-    SnapshotConfig (bool w, bool o, bool s)
+    SnapshotConfig (bool w, bool s)
       : snapshotWingedMeshes (w)
-      , copyOctree           (o)
       , snapshotSketchMeshes (s)
     {
-      assert (!this->copyOctree || this->snapshotWingedMeshes);
+      assert (this->snapshotWingedMeshes || this->snapshotSketchMeshes);
     }
-
-    SnapshotConfig withoutOctrees () const {
-      return SnapshotConfig ( this->snapshotWingedMeshes
-                            , false
-                            , this->snapshotSketchMeshes );
-    }
-  };
-
-  struct WingedMeshSnapshot {
-    const unsigned int  index;
-    Mesh                mesh;
-    Maybe <IndexOctree> octree;
-  };
-
-  struct SketchMeshSnapshot {
-    SketchTree  tree;
-    SketchPaths paths;
   };
 
   struct SceneSnapshot {
-    const SnapshotConfig           config;
-    std::list <WingedMeshSnapshot> wingedMeshes;
-    std::list <SketchMeshSnapshot> sketchMeshes;
+    const SnapshotConfig   config;
+    std::list <WingedMesh> wingedMeshes;
+    std::list <SketchMesh> sketchMeshes;
 
     SceneSnapshot (const SnapshotConfig& c) : config (c) {}
   };
@@ -63,26 +44,12 @@ namespace {
 
     if (config.snapshotWingedMeshes) {
       scene.forEachConstMesh ([&config, &snapshot] (const WingedMesh& mesh) {
-        if (config.copyOctree) {
-          std::vector <unsigned int> newFaceIndices;
-
-          WingedMeshSnapshot meshSnapshot = { mesh.index (), mesh.makePrunedMesh (&newFaceIndices)
-                                            , mesh.octree () };
-
-          if (newFaceIndices.empty () == false) {
-            meshSnapshot.octree->rewriteIndices (newFaceIndices);
-          }
-          snapshot.wingedMeshes.push_back (std::move (meshSnapshot));
-        }
-        else {
-          snapshot.wingedMeshes.push_back ({ mesh.index (), mesh.makePrunedMesh ()
-                                           , Maybe <IndexOctree> () });
-        }
+        snapshot.wingedMeshes.emplace_back (mesh, false);
       });
     }
     if (config.snapshotSketchMeshes) {
       scene.forEachConstMesh ([&config, &snapshot] (const SketchMesh& mesh) {
-        snapshot.sketchMeshes.push_back ({ mesh.tree (), mesh.paths () });
+        snapshot.sketchMeshes.emplace_back (mesh);
       });
     }
     return snapshot;
@@ -94,25 +61,16 @@ namespace {
     if (snapshot.config.snapshotWingedMeshes) {
       scene.deleteWingedMeshes ();
 
-      for (const WingedMeshSnapshot& meshSnapshot : snapshot.wingedMeshes) {
-        scene.newWingedMesh (state.config (), meshSnapshot.mesh);
+      for (const WingedMesh& mesh : snapshot.wingedMeshes) {
+        scene.newWingedMesh (state.config (), mesh);
       }
     }
     if (snapshot.config.snapshotSketchMeshes) {
       scene.deleteSketchMeshes ();
 
-      for (const SketchMeshSnapshot& meshSnapshot : snapshot.sketchMeshes) {
-        SketchMesh& sketch = scene.newSketchMesh (state.config (), meshSnapshot.tree);
-        for (const SketchPath& p : meshSnapshot.paths) {
-          sketch.addPath (p);
-        }
+      for (const SketchMesh& mesh : snapshot.sketchMeshes) {
+        scene.newSketchMesh (state.config (), mesh);
       }
-    }
-  }
-
-  void deleteOctreeSnapshot (SceneSnapshot& sceneSnapshot) {
-    for (WingedMeshSnapshot& meshSnapshot : sceneSnapshot.wingedMeshes) {
-      meshSnapshot.octree.reset ();
     }
   }
 }
@@ -127,15 +85,15 @@ struct History::Impl {
   }
 
   void snapshotAll (const Scene& scene) {
-    this->snapshot (scene, SnapshotConfig (true, true, true));
+    this->snapshot (scene, SnapshotConfig (true, true));
   }
 
   void snapshotWingedMeshes (const Scene& scene) {
-    this->snapshot (scene, SnapshotConfig (true, true, false));
+    this->snapshot (scene, SnapshotConfig (true, false));
   }
 
   void snapshotSketchMeshes (const Scene& scene) {
-    this->snapshot (scene, SnapshotConfig (false, false, true));
+    this->snapshot (scene, SnapshotConfig (false, true));
   }
 
   void snapshot (const Scene& scene, const SnapshotConfig& config) {
@@ -145,9 +103,6 @@ struct History::Impl {
 
     while (this->past.size () >= this->undoDepth) {
       this->past.pop_back ();
-    }
-    if (this->past.empty () == false) {
-      deleteOctreeSnapshot (this->past.front ());
     }
     this->past.push_front (std::move (sceneSnapshot (scene, config)));
   }
@@ -160,7 +115,7 @@ struct History::Impl {
 
   void undo (State& state) {
     if (this->past.empty () == false) {
-      SnapshotConfig config = this->past.front ().config.withoutOctrees ();
+      const SnapshotConfig& config = this->past.front ().config;
 
       this->future.push_front (std::move (sceneSnapshot (state.scene (), config)));
       resetToSnapshot (this->past.front (), state);
@@ -170,10 +125,7 @@ struct History::Impl {
 
   void redo (State& state) {
     if (this->future.empty () == false) {
-      if (this->past.empty () == false) {
-        deleteOctreeSnapshot (this->past.front ());
-      }
-      SnapshotConfig config = this->future.front ().config.withoutOctrees ();
+      const SnapshotConfig& config = this->future.front ().config;
 
       this->past.push_front (std::move (sceneSnapshot (state.scene (), config)));
       resetToSnapshot (this->future.front (), state);
@@ -181,26 +133,22 @@ struct History::Impl {
     }
   }
 
-  bool hasRecentOctrees () const {
-    return this->past.empty () == false 
-      && this->past.front ().config.snapshotWingedMeshes
-      && bool (this->past.front ().wingedMeshes.front ().octree);
+  bool hasRecentWingedMesh () const {
+    return this->past.empty () == false && this->past.front ().config.snapshotWingedMeshes;
   }
 
-  void forEachRecentOctree (const std::function <void ( const Mesh& m
-                                                      , const IndexOctree& )>& f) const
-  {
-    assert (this->hasRecentOctrees ());
-    for (const WingedMeshSnapshot& s : this->past.front ().wingedMeshes) {
-      assert (s.octree);
-      f (s.mesh, *s.octree);
+  void forEachRecentWingedMesh (const std::function <void (const WingedMesh&)>& f) const {
+    assert (this->hasRecentWingedMesh ());
+
+    for (const WingedMesh& m : this->past.front ().wingedMeshes) {
+      f (m);
     }
   }
 
   const Mesh& meshSnapshot (unsigned int index) const {
-    for (const WingedMeshSnapshot& s : this->past.front ().wingedMeshes) {
-      if (s.index == index) {
-        return s.mesh;
+    for (const WingedMesh& mesh : this->past.front ().wingedMeshes) {
+      if (mesh.index () == index) {
+        return mesh.mesh ();
       }
     }
     DILAY_IMPOSSIBLE;
@@ -223,8 +171,8 @@ DELEGATE1       (void,        History, snapshotSketchMeshes, const Scene&)
 DELEGATE        (void,        History, dropSnapshot)
 DELEGATE1       (void,        History, undo, State&)
 DELEGATE1       (void,        History, redo, State&)
-DELEGATE_CONST  (bool,        History, hasRecentOctrees)
-DELEGATE1_CONST (void,        History, forEachRecentOctree, const std::function <void (const Mesh&, const IndexOctree&)>&)
+DELEGATE_CONST  (bool,        History, hasRecentWingedMesh)
+DELEGATE1_CONST (void,        History, forEachRecentWingedMesh, const std::function <void (const WingedMesh&)>&)
 DELEGATE1_CONST (const Mesh&, History, meshSnapshot, unsigned int)
 DELEGATE        (void,        History, reset)
 DELEGATE1       (void,        History, runFromConfig, const Config&)

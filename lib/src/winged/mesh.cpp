@@ -31,9 +31,39 @@ struct WingedMesh::Impl {
   IndexOctree                  octree;
 
   Impl (WingedMesh* s, unsigned int i) 
-    :  self   (s)
-    , _index  (i)
+    :  self  (s)
+    , _index (i)
   {}
+
+  Impl (WingedMesh* s, const Impl& other, bool restorePointer)
+    :  self     (s)
+    , _index    (other._index)
+    ,  mesh     (other.mesh)
+    ,  vertices (other.vertices)
+    ,  edges    (other.edges)
+    ,  faces    (other.faces)
+    ,  octree   (other.octree)
+  {
+    if (restorePointer) {
+      this->forEachVertex ([this] (WingedVertex& vertex) {
+        vertex.edge (this->edges.element (vertex.edgeIndex ()));
+      });
+      this->forEachFace ([this] (WingedFace& face) {
+        face.edge (this->edges.element (face.edgeIndex ()));
+      });
+      this->forEachEdge ([this] (WingedEdge& edge) {
+        edge.setGeometry ( this->vertices.element (edge.vertex1Index ())
+                         , this->vertices.element (edge.vertex2Index ())
+                         , this->faces.element    (edge.leftFaceIndex ())
+                         , this->faces.element    (edge.rightFaceIndex ())
+                         , this->edges.element    (edge.leftPredecessorIndex ())
+                         , this->edges.element    (edge.leftSuccessorIndex ())
+                         , this->edges.element    (edge.rightPredecessorIndex ())
+                         , this->edges.element    (edge.rightSuccessorIndex ())
+                         );
+      });
+    }
+  }
 
   bool operator== (const WingedMesh& other) const {
     return this->_index == other.index ();
@@ -374,6 +404,18 @@ struct WingedMesh::Impl {
   const RenderMode& renderMode () const { return this->mesh.renderMode (); }
   RenderMode&       renderMode ()       { return this->mesh.renderMode (); }
 
+  bool intersects (const PrimRay& ray, Intersection& intersection) const {
+    this->octree.intersects (ray, [this, &ray, &intersection] (unsigned int i) {
+      const PrimTriangle tri = this->self->faceRef (i).triangle (*this->self);
+      float              t;
+
+      if (IntersectionUtil::intersects (ray, tri, &t)) {
+        intersection.update (t, ray.pointAt (t), tri.normal ());
+      }
+    });
+    return intersection.isIntersection ();
+  }
+
   bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
     this->octree.intersects (ray, [this, &ray, &intersection] (unsigned int i) {
       WingedFace&        face = this->self->faceRef (i);
@@ -500,6 +542,10 @@ struct WingedMesh::Impl {
 
 DELEGATE1_BIG3_SELF (WingedMesh, unsigned int)
 
+WingedMesh :: WingedMesh (const WingedMesh& other, bool restorePointer)
+  : impl (new Impl (this, *other.impl, restorePointer))
+{}
+
 DELEGATE1_CONST (bool            , WingedMesh, operator==, const WingedMesh&)
 DELEGATE1_CONST (bool            , WingedMesh, operator!=, const WingedMesh&)
 
@@ -547,6 +593,7 @@ DELEGATE1       (void             , WingedMesh, mirror, const PrimPlane&)
 DELEGATE_CONST  (const RenderMode&, WingedMesh, renderMode)
 DELEGATE        (RenderMode&      , WingedMesh, renderMode)
 
+DELEGATE2_CONST (bool, WingedMesh, intersects, const PrimRay&, Intersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, WingedFaceIntersection&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimRay&, AffectedFaces&)
 DELEGATE2       (bool, WingedMesh, intersects, const PrimSphere&, AffectedFaces&)
