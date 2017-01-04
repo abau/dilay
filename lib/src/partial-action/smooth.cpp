@@ -83,41 +83,17 @@ namespace {
 
 namespace PartialAction {
   void smooth (WingedMesh& mesh, const VertexPtrSet& vertices, AffectedFaces& affectedFaces) {
-    std::vector <glm::vec3> newPositions;
-    newPositions.reserve (vertices.size ());
-
     for (WingedVertex* v : vertices) {
       const glm::vec3 center = WingedUtil::center (mesh, *v);
       const glm::vec3 delta = center - v->position (mesh);
       const glm::vec3 normal = v->interpolatedNormal (mesh);
       const glm::vec3 tangentialPos = center - (normal * glm::dot (normal, delta));
-      const PrimRay ray (true, tangentialPos, normal);
 
-      bool intersected = false;
+      v->position (mesh,tangentialPos);
+
       for (WingedFace& f : v->adjacentFaces ()) {
-        if (intersected == false) {
-          const PrimTriangle triangle = f.triangle (mesh);
-          float t;
-          if (triangle.isDegenerated () == false &&
-              IntersectionUtil::intersects (ray, triangle, &t))
-          {
-            newPositions.push_back (ray.pointAt (t));
-            intersected = true;
-          }
-        }
         affectedFaces.insert (f);
       }
-      if (intersected == false) {
-        newPositions.push_back (tangentialPos);
-      }
-    }
-
-    unsigned int i = 0;
-    for (WingedVertex* v : vertices) {
-      assert (i < newPositions.size ());
-
-      mesh.vertex (v->index (), newPositions [i]);
-      ++i;
     }
   }
 

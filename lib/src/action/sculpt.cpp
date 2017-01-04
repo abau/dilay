@@ -118,8 +118,10 @@ namespace {
 
   void extendDomain (AffectedFaces& domain) {
     for (WingedFace* f : domain.faces ()) {
-      for (WingedFace& a : f->adjacentFaces ()) {
-        domain.insert (a);
+      for (WingedVertex& v : f->adjacentVertices ()) {
+        for (WingedFace& a : v.adjacentFaces ()) {
+          domain.insert (a);
+        }
       }
     }
     domain.commit ();
@@ -159,6 +161,7 @@ namespace Action {
     }
     else {
       do {
+        extendDomain (domain);
         extendDomain (domain);
         splitEdges (mesh, brush.subdivThreshold (), domain);
 
