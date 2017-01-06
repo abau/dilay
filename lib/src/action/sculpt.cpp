@@ -124,6 +124,14 @@ namespace {
         }
       }
     }
+    FacePtrSet firstRing = domain.uncommittedFaces ();
+    for (WingedFace* f : firstRing) {
+      for (WingedVertex& v : f->adjacentVertices ()) {
+        for (WingedFace& a : v.adjacentFaces ()) {
+          domain.insert (a);
+        }
+      }
+    }
     domain.commit ();
   }
 
@@ -161,7 +169,6 @@ namespace Action {
     }
     else {
       do {
-        extendDomain (domain);
         extendDomain (domain);
         splitEdges (mesh, brush.subdivThreshold (), domain);
 
