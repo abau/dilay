@@ -11,7 +11,6 @@
 #include "winged/edge.hpp"
 #include "winged/face.hpp"
 #include "winged/mesh.hpp"
-#include "winged/util.hpp"
 #include "winged/vertex.hpp"
 
 namespace {
@@ -84,16 +83,31 @@ namespace {
 namespace PartialAction {
   void smooth (WingedMesh& mesh, const VertexPtrSet& vertices, AffectedFaces& affectedFaces) {
     for (WingedVertex* v : vertices) {
-      const glm::vec3 center = WingedUtil::center (mesh, *v);
+      unsigned int valence = 0;
+      unsigned int numTriangles = 0;
+      glm::vec3 center = glm::vec3 (0.0f);
+      glm::vec3 normal = glm::vec3 (0.0f);
+
+      for (WingedEdge& e : v->adjacentEdges ()) {
+        WingedFace& face = e.isVertex1 (*v) ? e.rightFaceRef () : e.leftFaceRef ();
+        const PrimTriangle triangle = face.triangle (mesh);
+
+        center += e.otherVertexRef (*v).position (mesh);
+        valence++;
+
+        if (triangle.isDegenerated () == false) {
+          normal += triangle.normal ();
+          numTriangles++;
+        }
+        affectedFaces.insert (face);
+      }
+      center /= float (valence);
+      normal /= float (numTriangles);
+
       const glm::vec3 delta = center - v->position (mesh);
-      const glm::vec3 normal = v->interpolatedNormal (mesh);
       const glm::vec3 tangentialPos = center - (normal * glm::dot (normal, delta));
 
       v->position (mesh,tangentialPos);
-
-      for (WingedFace& f : v->adjacentFaces ()) {
-        affectedFaces.insert (f);
-      }
     }
   }
 
