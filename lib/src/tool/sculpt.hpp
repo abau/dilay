@@ -26,7 +26,6 @@ class ToolSculpt : public Tool {
     void         sculpt                   ();
     bool         carvelikeStroke          ( const ViewPointingEvent&, bool
                                           , const std::function <void ()>* = nullptr );
-    bool         initializeDraglikeStroke (const ViewPointingEvent&, ToolUtilMovement&);
     bool         draglikeStroke           (const ViewPointingEvent&, ToolUtilMovement&);
     void         registerSecondarySlider  (ViewDoubleSlider&);
 

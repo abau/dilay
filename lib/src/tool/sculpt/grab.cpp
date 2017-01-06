@@ -63,8 +63,7 @@ struct ToolSculptGrab::Impl {
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {
-    return e.pressEvent () ? this->self->initializeDraglikeStroke (e, this->movement)
-                           : this->self->draglikeStroke (e, this->movement);
+    return this->self->draglikeStroke (e, this->movement);
   }
 };
 

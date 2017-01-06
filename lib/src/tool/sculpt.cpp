@@ -314,16 +314,23 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool initializeDraglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement) {
-    if (e.primaryButton ()) {
-      WingedFaceIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
-        this->brush.mesh (&intersection.mesh ());
-        this->brush.setPointOfAction (intersection.position (), intersection.normal ());
-        
-        this->cursor.disable ();
-        movement.resetPosition (intersection.position ());
-        return true;
+  bool draglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement) {
+    if (e.pressEvent ()) {
+      if (e.primaryButton ()) {
+        WingedFaceIntersection intersection;
+        if (this->self->intersectsScene (e, intersection)) {
+          this->brush.mesh (&intersection.mesh ());
+          this->brush.setPointOfAction (intersection.position (), intersection.normal ());
+          
+          this->cursor.disable ();
+          movement.resetPosition (intersection.position ());
+          return true;
+        }
+        else {
+          this->cursor.enable ();
+          this->brush.resetPointOfAction ();
+          return false;
+        }
       }
       else {
         this->cursor.enable ();
@@ -332,33 +339,27 @@ struct ToolSculpt::Impl {
       }
     }
     else {
-      this->cursor.enable ();
-      this->brush.resetPointOfAction ();
-      return false;
-    }
-  }
+      if (e.primaryButton () == false) {
+        this->updateBrushAndCursorByIntersection (e, false);
+        return false;
+      }
+      else if (this->brush.hasPosition ()) {
+        const glm::vec3 oldBrushPos = this->brush.position ();
 
-  bool draglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement) {
-    if (e.primaryButton () == false) {
-      this->updateBrushAndCursorByIntersection (e, false);
-      return false;
-    }
-    else if (this->brush.hasPosition ()) {
-      const glm::vec3 oldBrushPos = this->brush.position ();
-
-      if ( movement.move (e, false)
-        && this->brush.updatePointOfAction ( movement.position ()
-                                           , movement.position () - oldBrushPos ) )
-      {
-        this->sculpt ();
-        return true;
+        if ( movement.move (e, false)
+          && this->brush.updatePointOfAction ( movement.position ()
+                                             , movement.position () - oldBrushPos ) )
+        {
+          this->sculpt ();
+          return true;
+        }
+        else {
+          return false;
+        }
       }
       else {
         return false;
       }
-    }
-    else {
-      return false;
     }
   }
 
@@ -398,7 +399,6 @@ DELEGATE2_CONST (void        , ToolSculpt, addDefaultToolTip, ViewToolTip&, bool
 DELEGATE2_CONST (void        , ToolSculpt, addSecSliderWheelToolTip, ViewToolTip&, const QString&)
 DELEGATE        (void        , ToolSculpt, sculpt)
 DELEGATE3       (bool        , ToolSculpt, carvelikeStroke, const ViewPointingEvent&, bool, const std::function <void ()>*)
-DELEGATE2       (bool        , ToolSculpt, initializeDraglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
 DELEGATE2       (bool        , ToolSculpt, draglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
 DELEGATE1       (void        , ToolSculpt, registerSecondarySlider, ViewDoubleSlider&)
 DELEGATE        (ToolResponse, ToolSculpt, runInitialize)
