@@ -145,7 +145,7 @@ class SculptBrush {
     bool                hasPosition         () const;
     const glm::vec3&    lastPosition        () const;
     const glm::vec3&    position            () const;
-    const glm::vec3&    direction           () const;
+    const glm::vec3&    normal              () const;
     glm::vec3           delta               () const;
     PrimSphere          sphere              () const;
     void                setPointOfAction    (const glm::vec3&, const glm::vec3&);

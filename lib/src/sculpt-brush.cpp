@@ -52,7 +52,7 @@ void SBDraglikeParameters :: sculpt (const SculptBrush& brush, const VertexPtrSe
     const float     innerRadius = (1.0f - this->smoothness ()) * brush.radius ();
     const float     factor      = stepFunction ( oldPos, brush.lastPosition ()
                                                , innerRadius, brush.radius () );
-    const glm::vec3 newPos      = oldPos + (factor * brush.direction ());
+    const glm::vec3 newPos      = oldPos + (factor * brush.delta ());
 
     v->position (mesh, newPos);
   }
@@ -151,7 +151,7 @@ struct SculptBrush :: Impl {
   bool          hasPosition;
   glm::vec3    _lastPosition;
   glm::vec3    _position;
-  glm::vec3    _direction;
+  glm::vec3    _normal;
 
   std::unique_ptr <SBParameters> _parameters;
 
@@ -178,9 +178,9 @@ struct SculptBrush :: Impl {
     return this->_position;
   }
 
-  const glm::vec3& direction () const {
+  const glm::vec3& normal () const {
     assert (this->hasPosition);
-    return this->_direction;
+    return this->_normal;
   }
 
   glm::vec3 delta () const {
@@ -194,21 +194,21 @@ struct SculptBrush :: Impl {
     return PrimSphere (pos, this->radius);
   }
 
-  void setPointOfAction (const glm::vec3& p, const glm::vec3& d) {
+  void setPointOfAction (const glm::vec3& p, const glm::vec3& n) {
     this->hasPosition   = true;
     this->_lastPosition = p;
     this->_position     = p;
-    this->_direction    = d;
+    this->_normal       = n;
   }
 
-  bool updatePointOfAction (const glm::vec3& p, const glm::vec3& d) {
+  bool updatePointOfAction (const glm::vec3& p, const glm::vec3& n) {
     if (this->hasPosition) {
       const float stepWidth = this->stepWidthFactor * glm::log (this->self->radius () + 1);
 
       if (glm::distance2 (p, this->_position) > stepWidth * stepWidth) {
         this->_lastPosition = this->_position;
         this->_position     = p;
-        this->_direction    = d;
+        this->_normal       = n;
         return true;
       }
       else {
@@ -216,7 +216,7 @@ struct SculptBrush :: Impl {
       }
     }
     else {
-      this->setPointOfAction (p, d);
+      this->setPointOfAction (p, n);
       return true;
     }
   }
@@ -229,7 +229,7 @@ struct SculptBrush :: Impl {
     if (this->hasPosition) {
       this->_lastPosition = plane.mirror          (this->_lastPosition);
       this->_position     = plane.mirror          (this->_position);
-      this->_direction    = plane.mirrorDirection (this->_direction);
+      this->_normal       = plane.mirrorDirection (this->_normal);
     }
   }
 
@@ -242,7 +242,7 @@ struct SculptBrush :: Impl {
 
     if (this->_parameters->discardBack ()) {
       faces.filter ([this] (const WingedFace& f) {
-        return glm::dot (this->direction (), f.triangle (*this->mesh).cross ()) > 0.0f;
+        return glm::dot (this->normal (), f.triangle (*this->mesh).cross ()) > 0.0f;
       });
     }
     return faces;
@@ -278,7 +278,7 @@ DELEGATE_CONST  (float              , SculptBrush, subdivThreshold)
 GETTER_CONST    (bool               , SculptBrush, hasPosition)
 DELEGATE_CONST  (const glm::vec3&   , SculptBrush, lastPosition)
 DELEGATE_CONST  (const glm::vec3&   , SculptBrush, position)
-DELEGATE_CONST  (const glm::vec3&   , SculptBrush, direction)
+DELEGATE_CONST  (const glm::vec3&   , SculptBrush, normal)
 DELEGATE_CONST  (glm::vec3          , SculptBrush, delta)
 DELEGATE_CONST  (PrimSphere         , SculptBrush, sphere)
 DELEGATE2       (void               , SculptBrush, setPointOfAction, const glm::vec3&, const glm::vec3&)

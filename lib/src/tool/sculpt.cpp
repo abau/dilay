@@ -344,11 +344,8 @@ struct ToolSculpt::Impl {
         return false;
       }
       else if (this->brush.hasPosition ()) {
-        const glm::vec3 oldBrushPos = this->brush.position ();
-
-        if ( movement.move (e, false)
-          && this->brush.updatePointOfAction ( movement.position ()
-                                             , movement.position () - oldBrushPos ) )
+        if ( movement.move (e, false) && this->brush.updatePointOfAction ( movement.position ()
+                                                                         , glm::vec3 (0.0f) ) )
         {
           this->sculpt ();
           return true;
