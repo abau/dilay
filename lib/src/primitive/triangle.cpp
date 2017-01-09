@@ -6,7 +6,6 @@
 #include <sstream>
 #include "primitive/triangle.hpp"
 #include "util.hpp"
-#include "winged/vertex.hpp"
 
 PrimTriangle :: PrimTriangle (const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3) 
   : _vertex1 (v1)
@@ -14,21 +13,14 @@ PrimTriangle :: PrimTriangle (const glm::vec3& v1, const glm::vec3& v2, const gl
   , _vertex3 (v3) 
 {}
 
-PrimTriangle :: PrimTriangle ( const WingedMesh& mesh, const WingedVertex& v1
-                             , const WingedVertex& v2, const WingedVertex& v3)
-  : PrimTriangle ( v1.position (mesh)
-                 , v2.position (mesh)
-                 , v3.position (mesh) ) 
-{}
-
-glm::vec3 PrimTriangle :: cross () const { 
-  assert (this->isDegenerated () == false);
-  return glm::cross ( this->_vertex2 - this->_vertex1
-                    , this->_vertex3 - this->_vertex2 );
+glm::vec3 PrimTriangle :: cross () const {
+  return glm::cross (this->_vertex2 - this->_vertex1, this->_vertex3 - this->_vertex1);
 }
 
-glm::vec3 PrimTriangle :: normal () const { 
-  return glm::normalize (this->cross ());
+glm::vec3 PrimTriangle :: normal () const {
+  const float l = glm::length (this->cross ());
+
+  return l > 0.0f ? (this->cross () / l) : glm::vec3 (0.0f);
 }
 
 glm::vec3 PrimTriangle :: center () const {
@@ -52,19 +44,7 @@ float PrimTriangle :: maxDimExtent () const {
   return glm::max (glm::max (extent.x, extent.y), extent.z);
 }
 
-bool PrimTriangle :: isDegenerated () const {
-  const float d1 = glm::distance (this->_vertex1, this->_vertex2);
-  const float d2 = glm::distance (this->_vertex2, this->_vertex3);
-  const float d3 = glm::distance (this->_vertex1, this->_vertex3);
-
-  return Util::almostEqual (d1, d2 + d3)
-      || Util::almostEqual (d2, d1 + d3)
-      || Util::almostEqual (d3, d1 + d2);
-}
-
 float PrimTriangle :: incircleRadiusSqr () const {
-  assert (this->isDegenerated () == false);
-
   const float a = glm::distance (this->_vertex1,this->_vertex2);
   const float b = glm::distance (this->_vertex2,this->_vertex3);
   const float c = glm::distance (this->_vertex1,this->_vertex3);

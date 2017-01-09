@@ -4,7 +4,7 @@
  */
 #include <QCheckBox>
 #include "cache.hpp"
-#include "sculpt-brush.hpp"
+#include "tool/sculpt/util/brush.hpp"
 #include "tools.hpp"
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"

@@ -19,6 +19,7 @@ namespace OpenGL {
   unsigned int ArrayBuffer        ();
   unsigned int Back               ();
   unsigned int Blend              ();
+  unsigned int BufferSize         ();
   unsigned int ColorBufferBit     ();
   unsigned int CullFace           ();
   unsigned int CW                 ();
@@ -57,6 +58,7 @@ namespace OpenGL {
   void glBlendEquation            (unsigned int);
   void glBlendFunc                (unsigned int, unsigned);
   void glBufferData               (unsigned int, unsigned int, const void*, unsigned int);
+  void glBufferSubData            (unsigned int, unsigned int, unsigned int, const void*);
   void glClear                    (unsigned int);
   void glClearColor               (float, float, float, float);
   void glClearStencil             (int);
@@ -71,6 +73,7 @@ namespace OpenGL {
   void glEnableVertexAttribArray  (unsigned int);
   void glFrontFace                (unsigned int);
   void glGenBuffers               (unsigned int, unsigned int*);
+  void glGetBufferParameteriv     (unsigned int, unsigned int, int*);
   int  glGetUniformLocation       (unsigned int, const char*);
   bool glIsBuffer                 (unsigned int);
   bool glIsProgram                (unsigned int);
@@ -97,6 +100,8 @@ namespace OpenGL {
   void         safeDeleteShader       (unsigned int&);
   void         safeDeleteProgram      (unsigned int&);
   unsigned int loadProgram            (const char*, const char*, bool);
+  void         clearError             ();
+  void         printError             ();
 }
 
 #endif

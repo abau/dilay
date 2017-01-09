@@ -6,6 +6,7 @@
 #include <QOpenGLExtensions>
 #include <QOpenGLFunctions_2_1>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <memory>
 #include "opengl.hpp"
 #include "shader.hpp"
@@ -68,6 +69,7 @@ namespace OpenGL {
   DELEGATE_GL_CONSTANT (ArrayBuffer, GL_ARRAY_BUFFER);
   DELEGATE_GL_CONSTANT (Back, GL_BACK);
   DELEGATE_GL_CONSTANT (Blend, GL_BLEND);
+  DELEGATE_GL_CONSTANT (BufferSize, GL_BUFFER_SIZE);
   DELEGATE_GL_CONSTANT (ColorBufferBit, GL_COLOR_BUFFER_BIT);
   DELEGATE_GL_CONSTANT (CullFace, GL_CULL_FACE);
   DELEGATE_GL_CONSTANT (CW, GL_CW);
@@ -106,6 +108,7 @@ namespace OpenGL {
   DELEGATE1_GL (void, glBlendEquation, unsigned int)
   DELEGATE2_GL (void, glBlendFunc, unsigned int, unsigned int)
   DELEGATE4_GL (void, glBufferData, unsigned int, unsigned int, const void*, unsigned int)
+  DELEGATE4_GL (void, glBufferSubData, unsigned int, unsigned int, unsigned int, const void*)
   DELEGATE1_GL (void, glClear, unsigned int)
   DELEGATE4_GL (void, glClearColor, float, float, float, float)
   DELEGATE1_GL (void, glClearStencil, int)
@@ -120,6 +123,7 @@ namespace OpenGL {
   DELEGATE1_GL (void, glEnableVertexAttribArray, unsigned int)
   DELEGATE1_GL (void, glFrontFace, unsigned int)
   DELEGATE2_GL (void, glGenBuffers, unsigned int, unsigned int*)
+  DELEGATE3_GL (void, glGetBufferParameteriv, unsigned int, unsigned int, int*)
   DELEGATE2_GL (int , glGetUniformLocation, unsigned int, const char*)
   DELEGATE1_GL (bool, glIsBuffer, unsigned int)
   DELEGATE1_GL (bool, glIsProgram, unsigned int)
@@ -241,5 +245,43 @@ namespace OpenGL {
     OpenGL::safeDeleteShader (fsId);
     OpenGL::safeDeleteShader (gmId);
     return programId;
+  }
+
+  void clearError () {
+    fun->glGetError ();
+  }
+
+  void printError () {
+    const unsigned int glError = fun->glGetError ();
+
+    switch (glError) {
+      case GL_NO_ERROR:
+        std::cout << "GL_NO_ERROR\n";
+        break;
+      case GL_INVALID_ENUM:
+        std::cout << "GL_INVALID_ENUM\n";
+        break;
+      case GL_INVALID_VALUE:
+        std::cout << "GL_INVALID_VALUE\n";
+        break;
+      case GL_INVALID_OPERATION:
+        std::cout << "GL_INVALID_OPERATION\n";
+        break;
+      case GL_INVALID_FRAMEBUFFER_OPERATION:
+        std::cout << "GL_INVALID_FRAMEBUFFER_OPERATION\n";
+        break;
+      case GL_OUT_OF_MEMORY:
+        std::cout << "GL_OUT_OF_MEMORY\n";
+        break;
+      case GL_STACK_UNDERFLOW:
+        std::cout << "GL_STACK_UNDERFLOW\n";
+        break;
+      case GL_STACK_OVERFLOW:
+        std::cout << "GL_STACK_OVERFLOW\n";
+        break;
+      default:
+        std::cout << "Unknown OpenGL error '" << glError << "'\n";
+        break;
+    }
   }
 }

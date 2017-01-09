@@ -6,16 +6,20 @@
 #include <QFrame>
 #include <QPushButton>
 #include <QWheelEvent>
-#include "action/sculpt.hpp"
 #include "cache.hpp"
 #include "camera.hpp"
 #include "config.hpp"
+#include "dynamic/mesh.hpp"
+#include "dynamic/mesh-intersection.hpp"
 #include "history.hpp"
+#include "maybe.hpp"
 #include "mirror.hpp"
+#include "primitive/ray.hpp"
 #include "scene.hpp"
-#include "sculpt-brush.hpp"
 #include "state.hpp"
 #include "tool/sculpt.hpp"
+#include "tool/sculpt/util/action.hpp"
+#include "tool/sculpt/util/brush.hpp"
 #include "tool/util/movement.hpp"
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
@@ -23,7 +27,6 @@
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
-#include "winged/face-intersection.hpp"
 
 struct ToolSculpt::Impl {
   ToolSculpt*       self;
@@ -70,7 +73,7 @@ struct ToolSculpt::Impl {
   void setupCursor () {
     assert (this->brush.radius () > 0.0f);
 
-    WingedFaceIntersection intersection;
+    DynamicMeshIntersection intersection;
     if (this->self->intersectsScene (this->self->cursorPosition (), intersection)) {
       this->cursor.enable   ();
       this->cursor.position (intersection.position ());
@@ -122,7 +125,7 @@ struct ToolSculpt::Impl {
 
     QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
     ViewUtil::connect (syncButton, [this] () {
-      this->self->mirrorWingedMeshes ();
+      this->self->mirrorDynamicMeshes ();
       this->self->updateGlWidget ();
     });
     syncButton.setEnabled (this->self->hasMirror ());
@@ -173,7 +176,7 @@ struct ToolSculpt::Impl {
     }
     else {
       if (e.pressEvent () && e.primaryButton ()) {
-        this->self->snapshotWingedMeshes ();
+        this->self->snapshotDynamicMeshes ();
         this->sculpted = false;
       }
 
@@ -206,7 +209,8 @@ struct ToolSculpt::Impl {
   }
 
   ToolResponse runCursorUpdate (const glm::ivec2& pos) {
-    this->updateBrushAndCursorByIntersection (pos, false, false);
+    DynamicMeshIntersection cursorIntersection;
+    this->setCursorByIntersection (pos, cursorIntersection);
     return ToolResponse::Redraw;
   }
 
@@ -233,49 +237,29 @@ struct ToolSculpt::Impl {
   }
 
   void sculpt () {
-    Action::sculpt (this->brush);
-    if (this->self->hasMirror ()) {
+    assert (this->brush.hasPointOfAction ());
+
+    ToolSculptAction::sculpt (this->brush);
+    if (this->self->hasMirror () && this->brush.mesh ().isEmpty () == false) {
       this->brush.mirror (this->self->mirror ().plane ());
-      Action::sculpt (this->brush);
+      ToolSculptAction::sculpt (this->brush);
       this->brush.mirror (this->self->mirror ().plane ());
+    }
+
+    if (this->brush.mesh ().isEmpty ()) {
+      this->self->state ().scene ().deleteEmptyMeshes ();
+      this->brush.resetPointOfAction ();
     }
   }
 
-  bool updateBrushAndCursorByIntersection ( const glm::ivec2& pos, bool buttonPressed
-                                          , bool useRecentWingedMesh )
-  {
-    WingedFaceIntersection intersection;
-
+  bool setCursorByIntersection (const glm::ivec2& pos, DynamicMeshIntersection& intersection) {
     if (this->self->intersectsScene (pos, intersection)) {
-      this->cursor.enable   ();
-      this->cursor.position (intersection.position ());
-
       if (this->absoluteRadius == false) {
         this->setRelativeRadius (intersection.distance ());
       }
-
-      if (buttonPressed) {
-        this->brush.mesh (&intersection.mesh ());
-
-        if (useRecentWingedMesh) {
-          Intersection recentIntersection;
-          if (this->self->intersectsRecentWingedMesh (pos, recentIntersection)) {
-            return this->brush.updatePointOfAction ( recentIntersection.position ()
-                                                   , recentIntersection.normal () );
-          }
-          else {
-            return this->brush.updatePointOfAction ( intersection.position ()
-                                                   , intersection.normal () );
-          }
-        }
-        else {
-          return this->brush.updatePointOfAction ( intersection.position ()
-                                                 , intersection.normal () );
-        }
-      }
-      else {
-        return false;
-      }
+      this->cursor.enable ();
+      this->cursor.position (intersection.position ());
+      return true;
     }
     else {
       this->cursor.disable ();
@@ -283,29 +267,95 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool updateBrushAndCursorByIntersection (const ViewPointingEvent& e, bool useRecentWingedMesh) {
-    return this->updateBrushAndCursorByIntersection ( e.ivec2 (), e.primaryButton ()
-                                                    , useRecentWingedMesh );
+  bool updateBrushStep (glm::vec3& brushStep, const glm::vec3& cursorPosition) const {
+    const glm::vec3 strokeDir = cursorPosition - brushStep;
+    const float     distance  = glm::length (strokeDir);
+    const float     stepWidth = this->brush.stepWidth ();
+
+    if (distance < stepWidth) {
+      return false;
+    }
+    else {
+      brushStep += strokeDir * (stepWidth / distance);
+      return true;
+    }
   }
 
-  bool carvelikeStroke ( const ViewPointingEvent& e, bool useRecentWingedMesh
+  bool updateBrushByIntersection (bool useRecentMesh, const glm::vec3& cursorStep) {
+    const glm::vec3 from = this->self->state ().camera ().position ();
+    const PrimRay   ray  = PrimRay (from, cursorStep - from);
+
+    DynamicMeshIntersection intersection;
+
+    if (this->self->intersectsScene (ray, intersection)) {
+      if (this->brush.hasPointOfAction () && (&this->brush.mesh () != &intersection.mesh ())) {
+        this->brush.mesh ().bufferData ();
+      }
+
+      if (useRecentMesh) {
+        Intersection rIntersection;
+        if (this->self->intersectsRecentDynamicMesh (ray, rIntersection)) {
+          this->brush.setPointOfAction ( intersection.mesh (), rIntersection.position ()
+                                       , rIntersection.normal () );
+        }
+        else {
+          this->brush.setPointOfAction ( intersection.mesh (), intersection.position ()
+                                       , intersection.normal () );
+        }
+      }
+      else {
+        this->brush.setPointOfAction ( intersection.mesh (), intersection.position ()
+                                     , intersection.normal () );
+      }
+      return true;
+    }
+    else {
+      this->brush.mesh ().bufferData ();
+      this->brush.resetPointOfAction ();
+      return false;
+    }
+  }
+
+  bool carvelikeStroke ( const ViewPointingEvent& e, bool useRecentMesh
                        , const std::function <void ()>* toggle )
   {
-    if (this->updateBrushAndCursorByIntersection (e, useRecentWingedMesh)) {
+    DynamicMeshIntersection cursorIntersection;
+
+    if (this->setCursorByIntersection (e.ivec2 (), cursorIntersection) && e.primaryButton ()) {
       SBParameters& parameters      = this->brush.parameters <SBParameters> ();
       const float   defaultIntesity = parameters.intensity ();
+      const bool    doToggle        = toggle && e.modifiers () == Qt::ShiftModifier;
 
       parameters.intensity (defaultIntesity * e.intensity ());
 
-      if (toggle && e.modifiers () == Qt::ShiftModifier) {
+      if (doToggle) {
         (*toggle) ();
-        this->sculpt ();
-        (*toggle) ();
-      }
-      else {
-        this->sculpt ();
       }
 
+      if (this->brush.hasPointOfAction ()) {
+        glm::vec3 brushStep = this->brush.position ();
+
+        while ( this->brush.hasPointOfAction () 
+             && this->updateBrushStep (brushStep, cursorIntersection.position ())) {
+          if (this->updateBrushByIntersection (useRecentMesh, brushStep)) {
+            this->sculpt ();
+          }
+        }
+      }
+      else {
+        if (this->updateBrushByIntersection (useRecentMesh, cursorIntersection.position ())) {
+          this->sculpt ();
+        }
+      }
+
+      if (this->brush.hasPointOfAction ()) {
+        assert (this->brush.mesh ().isEmpty () == false);
+        this->brush.mesh ().bufferData ();
+      }
+
+      if (doToggle) {
+        (*toggle) ();
+      }
       parameters.intensity (defaultIntesity);
       return true;
     }
@@ -315,19 +365,18 @@ struct ToolSculpt::Impl {
   }
 
   bool draglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement) {
+    DynamicMeshIntersection cursorIntersection;
+
     if (e.pressEvent ()) {
       if (e.primaryButton ()) {
-        WingedFaceIntersection intersection;
-        if (this->self->intersectsScene (e, intersection)) {
-          this->brush.mesh (&intersection.mesh ());
-          this->brush.setPointOfAction (intersection.position (), intersection.normal ());
-          
+        if (this->setCursorByIntersection (e.ivec2 (), cursorIntersection)) {
+          this->brush.setPointOfAction ( cursorIntersection.mesh (), cursorIntersection.position ()
+                                       , cursorIntersection.normal () );
           this->cursor.disable ();
-          movement.resetPosition (intersection.position ());
+          movement.resetPosition (cursorIntersection.position ());
           return true;
         }
         else {
-          this->cursor.enable ();
           this->brush.resetPointOfAction ();
           return false;
         }
@@ -340,14 +389,18 @@ struct ToolSculpt::Impl {
     }
     else {
       if (e.primaryButton () == false) {
-        this->updateBrushAndCursorByIntersection (e, false);
+        this->setCursorByIntersection (e.ivec2 (), cursorIntersection);
         return false;
       }
-      else if (this->brush.hasPosition ()) {
-        if ( movement.move (e, false) && this->brush.updatePointOfAction ( movement.position ()
-                                                                         , glm::vec3 (0.0f) ) )
-        {
+      else if (this->brush.hasPointOfAction ()) {
+        if (movement.move (e, false)) { 
+          this->brush.setPointOfAction ( this->brush.mesh (), movement.position ()
+                                       , glm::vec3 (0.0f) );
           this->sculpt ();
+          if (this->brush.hasPointOfAction ()) {
+            assert (this->brush.mesh ().isEmpty () == false);
+            this->brush.mesh ().bufferData ();
+          }
           return true;
         }
         else {

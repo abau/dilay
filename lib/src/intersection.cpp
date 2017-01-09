@@ -94,12 +94,10 @@ namespace {
 }
 
 // see http://realtimecollisiondetection.net/blog/?p=103
-bool IntersectionUtil :: intersects (const PrimSphere& sphere, const glm::vec3& v1,
-                                     const glm::vec3& v2, const glm::vec3& v3)
-{
-  const glm::vec3 A    = v1 - sphere.center ();
-  const glm::vec3 B    = v2 - sphere.center ();
-  const glm::vec3 C    = v3 - sphere.center ();
+bool IntersectionUtil :: intersects (const PrimSphere& sphere, const PrimTriangle& tri) {
+  const glm::vec3 A    = tri.vertex1 () - sphere.center ();
+  const glm::vec3 B    = tri.vertex2 () - sphere.center ();
+  const glm::vec3 C    = tri.vertex3 () - sphere.center ();
 
   const float     rr   = sphere.radius () * sphere.radius ();
   const glm::vec3 V    = glm::cross (B-A, C-A);
@@ -196,32 +194,27 @@ bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimPlane& plane,
 
 // see http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 bool IntersectionUtil :: intersects (const PrimRay& ray, const PrimTriangle& tri, float* t) {
-  if (tri.isDegenerated ()) {
+  const float dot = glm::dot (ray.direction (), tri.normal ());
+
+  if (dot > -Util::epsilon ()) {
+    return false;
+  }
+  const glm::vec3 e1     = tri.vertex2 () - tri.vertex1 ();
+  const glm::vec3 e2     = tri.vertex3 () - tri.vertex1 ();
+  const glm::vec3 s1     = glm::cross (ray.direction (), e2);
+  const float     invDet = 1.0f / glm::dot (s1, e1);
+  const glm::vec3 d      = ray.origin () - tri.vertex1 ();
+  const glm::vec3 s2     = glm::cross (d,e1);
+  const float     b1     = glm::dot (d,s1) * invDet;
+  const float     b2     = glm::dot (ray.direction (), s2) * invDet;
+  const float     tRay   = glm::dot (e2, s2) * invDet;
+
+  if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || (tRay < 0.0f && ray.isLine () == false)) {
     return false;
   }
   else {
-    const float dot = glm::dot (ray.direction (), tri.normal ());
-
-    if (Util::almostEqual (dot, 0.0f)) {
-      return false;
-    }
-    const glm::vec3 e1     = tri.vertex2 () - tri.vertex1 ();
-    const glm::vec3 e2     = tri.vertex3 () - tri.vertex1 ();
-    const glm::vec3 s1     = glm::cross (ray.direction (), e2);
-    const float     invDet = 1.0f / glm::dot (s1, e1);
-    const glm::vec3 d      = ray.origin () - tri.vertex1 ();
-    const glm::vec3 s2     = glm::cross (d,e1);
-    const float     b1     = glm::dot (d,s1) * invDet;
-    const float     b2     = glm::dot (ray.direction (), s2) * invDet;
-    const float     tRay   = glm::dot (e2, s2) * invDet;
-
-    if (b1 < 0.0f || b2 < 0.0f || b1 + b2 > 1.0f || (tRay < 0.0f && ray.isLine () == false)) {
-      return false;
-    }
-    else {
-      Util::setIfNotNull (t, tRay);
-      return true;
-    }
+    Util::setIfNotNull (t, tRay);
+    return true;
   }
 }
 
@@ -430,12 +423,7 @@ bool IntersectionUtil :: intersects (const PrimAABox& box, const PrimTriangle& t
   if (sep7 || sep8 || sep9 || sep10 || sep11 || sep12 || sep13 || sep14 || sep15) {
     return false;
   }
-  else if (tri.isDegenerated () == false) {
-    const PrimPlane triPlane (tri.vertex1 (), tri.normal ());
-
-    return IntersectionUtil::intersects (triPlane, box);
-  }
   else {
-    return false;
+    return IntersectionUtil::intersects (PrimPlane (tri.vertex1 (), tri.normal ()), box);
   }
 }

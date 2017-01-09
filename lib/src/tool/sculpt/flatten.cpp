@@ -3,7 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include "cache.hpp"
-#include "sculpt-brush.hpp"
+#include "tool/sculpt/util/brush.hpp"
 #include "tools.hpp"
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"

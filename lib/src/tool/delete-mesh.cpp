@@ -8,7 +8,7 @@
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
-#include "winged/face-intersection.hpp"
+#include "dynamic/mesh-intersection.hpp"
 
 struct ToolDeleteMesh::Impl {
   ToolDeleteMesh* self;
@@ -23,10 +23,10 @@ struct ToolDeleteMesh::Impl {
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
     if (e.primaryButton ()) {
-      WingedFaceIntersection intersection;
+      DynamicMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         Scene& scene = this->self->state ().scene ();
-        this->self->snapshotWingedMeshes ();
+        this->self->snapshotDynamicMeshes ();
         scene.deleteMesh (intersection.mesh ());
         return ToolResponse::Redraw;
       }

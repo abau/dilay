@@ -3,21 +3,21 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
-#include "action/sculpt.hpp"
 #include "cache.hpp"
+#include "dynamic/mesh.hpp"
 #include "mesh.hpp"
 #include "scene.hpp"
 #include "sketch/conversion.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/mesh-intersection.hpp"
 #include "state.hpp"
+#include "tool/sculpt/util/action.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
-#include "winged/mesh.hpp"
 
 namespace {
   glm::vec3 computeCenter (const SketchMesh& mesh) {
@@ -102,16 +102,16 @@ struct ToolConvertSketch::Impl {
         Mesh mesh = SketchConversion::convert ( sMesh
                                               , this->maxResolution + this->minResolution 
                                                                     - this->resolution );
-        WingedMesh& wMesh = this->self->state ().scene ()
-                                                .newWingedMesh ( this->self->state ().config ()
-                                                               , mesh );
+        DynamicMesh& dMesh = this->self->state ().scene ()
+                                                 .newDynamicMesh ( this->self->state ().config ()
+                                                                 , mesh );
         if (this->moveToCenter) {
-          wMesh.translate (-center);
-          wMesh.normalize ();
-          wMesh.bufferData ();
+          dMesh.translate (-center);
+          dMesh.normalize ();
+          dMesh.bufferData ();
         }
         if (this->smoothMesh) {
-          Action::smoothMesh (wMesh);
+          ToolSculptAction::smoothMesh (dMesh);
         }
         this->self->state ().scene ().deleteMesh (sMesh);
         return ToolResponse::Redraw;

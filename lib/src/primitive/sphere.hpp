@@ -8,6 +8,9 @@
 #include <glm/glm.hpp>
 #include <iosfwd>
 
+class PrimAABox;
+class PrimTriangle;
+
 class PrimSphere {
   public:
     PrimSphere (const glm::vec3&, float);
@@ -19,6 +22,8 @@ class PrimSphere {
     void radius   (float r)            { this->_radius = r; }
 
     bool contains (const glm::vec3&) const;
+    bool contains (const PrimAABox&) const;
+    bool contains (const PrimTriangle&) const;
 
   private:
     glm::vec3 _center;

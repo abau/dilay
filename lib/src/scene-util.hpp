@@ -12,8 +12,8 @@ class Config;
 class Scene;
 
 namespace SceneUtil {
-  void toDlyFile   (std::ostream&, const Scene&, bool);
-  bool toDlyFile   (const std::string&, const Scene&, bool);
+  void toDlyFile   (std::ostream&, Scene&, bool);
+  bool toDlyFile   (const std::string&, Scene&, bool);
   bool fromDlyFile (std::istream&, const Config&, Scene&);
   bool fromDlyFile (const std::string&, const Config&, Scene&);
 };

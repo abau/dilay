@@ -60,10 +60,7 @@ struct ViewMainWindow :: Impl {
     });
 #ifndef NDEBUG
     addShortcut (Qt::Key_I, [this] () {
-      this->glWidget.state ().scene ().printStatistics (false);
-    });
-    addShortcut (Qt::SHIFT + Qt::Key_I, [this] () {
-      this->glWidget.state ().scene ().printStatistics (true);
+      this->glWidget.state ().scene ().printStatistics ();
     });
 #endif
     addShortcut (Qt::SHIFT + Qt::Key_C, [this] () {

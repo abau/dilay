@@ -6,15 +6,14 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <random>
-#include "index-octree.hpp"
+#include "dynamic/octree.hpp"
 #include "primitive/triangle.hpp"
 #include "test-octree.hpp"
-#include "winged/util.hpp"
 
 void TestOctree::test () {
   const unsigned int numSamples = 10000;
 
-  IndexOctree octree;
+  DynamicOctree octree;
   octree.setupRoot (glm::vec3 (0.0f), 10.0f);
        
   std::default_random_engine gen; 
@@ -52,7 +51,7 @@ void TestOctree::test () {
     const glm::vec3    w1  = glm::vec3 (modelMatrix * glm::vec4 (m1, 1.0f));
     const glm::vec3    w2  = glm::vec3 (modelMatrix * glm::vec4 (m2, 1.0f));
     const glm::vec3    w3  = glm::vec3 (modelMatrix * glm::vec4 (m3, 1.0f));
-    const PrimTriangle tri = PrimTriangle (w1,w2,w3);
+    const PrimTriangle tri = PrimTriangle (w1, w2, w3);
 
     octree.addElement (i, tri.center (), tri.maxDimExtent ());
   }

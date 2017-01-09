@@ -2,10 +2,11 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <memory>
+#include <list>
 #include "config.hpp"
+#include "dynamic/mesh-intersection.hpp"
+#include "dynamic/mesh.hpp"
 #include "intersection.hpp"
-#include "monotone-deque.hpp"
 #include "render-mode.hpp"
 #include "scene.hpp"
 #include "scene-util.hpp"
@@ -15,16 +16,13 @@
 #include "sketch/node-intersection.hpp"
 #include "sketch/path-intersection.hpp"
 #include "util.hpp"
-#include "winged/face-intersection.hpp"
-#include "winged/mesh.hpp"
-#include "winged/util.hpp"
 
 struct Scene :: Impl {
-  Scene*                        self;
-  MonotonePtrDeque <WingedMesh> wingedMeshes;
-  MonotonePtrDeque <SketchMesh> sketchMeshes;
-  RenderMode                    commonRenderMode;
-  std::string                   fileName;
+  Scene*                  self;
+  std::list <DynamicMesh> dynamicMeshes;
+  std::list <SketchMesh>  sketchMeshes;
+  RenderMode              commonRenderMode;
+  std::string             fileName;
 
   Impl (Scene* s, const Config& config)
     : self (s)
@@ -34,18 +32,17 @@ struct Scene :: Impl {
     this->commonRenderMode.smoothShading (true);
   }
 
-  WingedMesh& newWingedMesh (const Config& config, const WingedMesh& other) {
-    WingedMesh mesh (other, true);
-    return this->setupNewMesh (config, this->wingedMeshes.insertElement (std::move (mesh)));
+  DynamicMesh& newDynamicMesh (const Config& config, const DynamicMesh& other) {
+    this->dynamicMeshes.emplace_back (other);
+    return this->setupNewMesh (config, this->dynamicMeshes.back ());
   }
 
-  WingedMesh& newWingedMesh (const Config& config, const Mesh& mesh) {
-    WingedMesh& wingedMesh = this->wingedMeshes.emplaceElement ();
-    wingedMesh.fromMesh (mesh);
-    return this->setupNewMesh (config, wingedMesh);
+  DynamicMesh& newDynamicMesh (const Config& config, const Mesh& mesh) {
+    this->dynamicMeshes.emplace_back (mesh);
+    return this->setupNewMesh (config, this->dynamicMeshes.back ());
   }
 
-  WingedMesh& setupNewMesh (const Config& config, WingedMesh& mesh) {
+  DynamicMesh& setupNewMesh (const Config& config, DynamicMesh& mesh) {
     mesh.bufferData ();
     mesh.renderMode () = this->commonRenderMode;
     mesh.fromConfig (config);
@@ -53,14 +50,14 @@ struct Scene :: Impl {
   }
 
   SketchMesh& newSketchMesh (const Config& config, const SketchMesh& other) {
-    SketchMesh mesh (other);
-    return this->setupNewMesh (config, this->sketchMeshes.insertElement (std::move (mesh)));
+    this->sketchMeshes.emplace_back (other);
+    return this->setupNewMesh (config, this->sketchMeshes.back ());
   }
 
   SketchMesh& newSketchMesh (const Config& config, const SketchTree& tree) {
-    SketchMesh& mesh = this->sketchMeshes.emplaceElement ();
-    mesh.fromTree (tree);
-    return this->setupNewMesh (config, mesh);
+    this->sketchMeshes.emplace_back ();
+    this->sketchMeshes.back ().fromTree (tree);
+    return this->setupNewMesh (config, this->sketchMeshes.back ());
   }
 
   SketchMesh& setupNewMesh (const Config& config, SketchMesh& mesh) {
@@ -69,47 +66,58 @@ struct Scene :: Impl {
     return mesh;
   }
 
-  void deleteMesh (WingedMesh& mesh) {
-    this->wingedMeshes.deleteElement (mesh);
-    this->resetIfEmpty ();
+  void deleteMesh (DynamicMesh& mesh) {
+    for (auto it = this->dynamicMeshes.begin (); it != this->dynamicMeshes.end (); ++it) {
+      if (&*it == &mesh) {
+        this->dynamicMeshes.erase (it);
+        this->resetIfEmpty ();
+        return;
+      }
+    }
+    DILAY_IMPOSSIBLE
   }
 
   void deleteMesh (SketchMesh& mesh) {
-    this->sketchMeshes.deleteElement (mesh);
-    this->resetIfEmpty ();
+    for (auto it = this->sketchMeshes.begin (); it != this->sketchMeshes.end (); ++it) {
+      if (&*it == &mesh) {
+        this->sketchMeshes.erase (it);
+        this->resetIfEmpty ();
+        return;
+      }
+    }
+    DILAY_IMPOSSIBLE
   }
 
-  void deleteWingedMeshes () {
-    this->wingedMeshes.reset ();
+  void deleteDynamicMeshes () {
+    this->dynamicMeshes.clear ();
   }
 
   void deleteSketchMeshes () {
-    this->sketchMeshes.reset ();
+    this->sketchMeshes.clear ();
   }
 
   void deleteEmptyMeshes () {
-    this->forEachMesh ([this] (WingedMesh& mesh) {
-      if (mesh.numFaces () == 0) {
-        this->deleteMesh (mesh);
+    for (auto it = this->dynamicMeshes.begin (); it != this->dynamicMeshes.end (); ) {
+      if (it->isEmpty ()) {
+        it = this->dynamicMeshes.erase (it);
       }
-    });
-    this->forEachMesh ([this] (SketchMesh& mesh) {
-      if (mesh.isEmpty ()) {
-        this->deleteMesh (mesh);
+      else {
+        ++it;
       }
-    });
-  }
-
-  WingedMesh* wingedMesh (unsigned int index) { 
-    return this->wingedMeshes.element (index); 
-  }
-
-  SketchMesh* sketchMesh (unsigned int index) { 
-    return this->sketchMeshes.element (index); 
+    }
+    for (auto it = this->sketchMeshes.begin (); it != this->sketchMeshes.end (); ) {
+      if (it->isEmpty ()) {
+        it = this->sketchMeshes.erase (it);
+      }
+      else {
+        ++it;
+      }
+    }
+    this->resetIfEmpty ();
   }
 
   void render (Camera& camera) {
-    this->forEachMesh ([&] (WingedMesh& m) {
+    this->forEachMesh ([&] (DynamicMesh& m) {
       m.render (camera);
     });
     this->forEachMesh ([&] (SketchMesh& m) {
@@ -125,8 +133,8 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  bool intersects (const PrimRay& ray, WingedFaceIntersection& intersection) {
-    return this->intersectsT <WingedMesh> (ray, intersection);
+  bool intersects (const PrimRay& ray, DynamicMeshIntersection& intersection) {
+    return this->intersectsT <DynamicMesh> (ray, intersection);
   }
 
   bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection) {
@@ -152,13 +160,13 @@ struct Scene :: Impl {
   }
 
   bool intersects (const PrimRay& ray, Intersection& intersection) {
-    WingedFaceIntersection wIntersection;
+    DynamicMeshIntersection dIntersection;
     SketchMeshIntersection sIntersection;
 
-    if (this->intersects (ray, wIntersection)) {
-      intersection.update ( wIntersection.distance ()
-                          , wIntersection.position ()
-                          , wIntersection.normal   () );
+    if (this->intersects (ray, dIntersection)) {
+      intersection.update ( dIntersection.distance ()
+                          , dIntersection.position ()
+                          , dIntersection.normal   () );
     }
     if (this->intersects (ray, sIntersection)) {
       intersection.update ( sIntersection.distance ()
@@ -168,36 +176,44 @@ struct Scene :: Impl {
     return intersection.isIntersection ();
   }
 
-  void printStatistics (bool printAll) const {
-    this->forEachConstMesh ([printAll] (const WingedMesh& m) {
-      WingedUtil::printStatistics (m, printAll);
+  void printStatistics () const {
+    this->forEachConstMesh ([] (const DynamicMesh& mesh) {
+      mesh.printStatistics ();
     });
   }
 
-  void forEachMesh (const std::function <void (WingedMesh&)>& f) {
-    this->wingedMeshes.forEachElement (f);
+  void forEachMesh (const std::function <void (DynamicMesh&)>& f) {
+    for (DynamicMesh& m : this->dynamicMeshes) {
+      f (m);
+    }
   }
 
   void forEachMesh (const std::function <void (SketchMesh&)>& f) {
-    this->sketchMeshes.forEachElement (f);
+    for (SketchMesh& m : this->sketchMeshes) {
+      f (m);
+    }
   }
 
-  void forEachConstMesh (const std::function <void (const WingedMesh&)>& f) const {
-    this->wingedMeshes.forEachConstElement (f);
+  void forEachConstMesh (const std::function <void (const DynamicMesh&)>& f) const {
+    for (const DynamicMesh& m : this->dynamicMeshes) {
+      f (m);
+    }
   }
 
   void forEachConstMesh (const std::function <void (const SketchMesh&)>& f) const {
-    this->sketchMeshes.forEachConstElement (f);
+    for (const SketchMesh& m : this->sketchMeshes) {
+      f (m);
+    }
   }
 
   void sanitizeMeshes () {
-    this->forEachMesh ([] (WingedMesh& mesh) {
+    this->forEachMesh ([] (DynamicMesh& mesh) {
       mesh.sanitize ();
     });
   }
 
   void reset () {
-    this->deleteWingedMeshes ();
+    this->deleteDynamicMeshes ();
     this->deleteSketchMeshes ();
     this->fileName.clear ();
   }
@@ -210,7 +226,7 @@ struct Scene :: Impl {
 
   void setCommonRenderMode (const RenderMode& mode) {
     this->commonRenderMode = mode;
-    this->forEachMesh ([this] (WingedMesh& mesh) {
+    this->forEachMesh ([this] (DynamicMesh& mesh) {
       mesh.renderMode () = this->commonRenderMode; 
     });
     this->forEachMesh ([&mode] (SketchMesh& mesh) {
@@ -242,21 +258,21 @@ struct Scene :: Impl {
   }
 
   bool isEmpty () const {
-    return this->numWingedMeshes () == 0 && this->numSketchMeshes () == 0;
+    return this->numDynamicMeshes () == 0 && this->numSketchMeshes () == 0;
   }
 
-  unsigned int numWingedMeshes () const {
-    return this->wingedMeshes.numElements ();
+  unsigned int numDynamicMeshes () const {
+    return this->dynamicMeshes.size ();
   }
 
   unsigned int numSketchMeshes () const {
-    return this->sketchMeshes.numElements ();
+    return this->sketchMeshes.size ();
   }
 
   unsigned int numFaces () const {
     unsigned int n = 0;
-    this->forEachConstMesh ([this, &n] (const WingedMesh& mesh) {
-      n = n + mesh.numFaces ();
+    this->forEachConstMesh ([this, &n] (const DynamicMesh& mesh) {
+      n += mesh.numFaces ();
     });
     return n;
   }
@@ -297,7 +313,7 @@ struct Scene :: Impl {
   }
   
   void runFromConfig (const Config& config) {
-    this->forEachMesh ([this, &config] (WingedMesh& mesh) {
+    this->forEachMesh ([this, &config] (DynamicMesh& mesh) {
       mesh.fromConfig (config);
     });
     this->forEachMesh ([this, &config] (SketchMesh& mesh) {
@@ -308,29 +324,27 @@ struct Scene :: Impl {
 
 DELEGATE1_BIG3_SELF (Scene, const Config&)
 
-DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const WingedMesh&)
-DELEGATE2       (WingedMesh&       , Scene, newWingedMesh, const Config&, const Mesh&)
+DELEGATE2       (DynamicMesh&      , Scene, newDynamicMesh, const Config&, const DynamicMesh&)
+DELEGATE2       (DynamicMesh&      , Scene, newDynamicMesh, const Config&, const Mesh&)
 DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchMesh&)
 DELEGATE2       (SketchMesh&       , Scene, newSketchMesh, const Config&, const SketchTree&)
-DELEGATE1       (void              , Scene, deleteMesh, WingedMesh&)
+DELEGATE1       (void              , Scene, deleteMesh, DynamicMesh&)
 DELEGATE1       (void              , Scene, deleteMesh, SketchMesh&)
-DELEGATE        (void              , Scene, deleteWingedMeshes)
+DELEGATE        (void              , Scene, deleteDynamicMeshes)
 DELEGATE        (void              , Scene, deleteSketchMeshes)
 DELEGATE        (void              , Scene, deleteEmptyMeshes)
-DELEGATE1       (WingedMesh*       , Scene, wingedMesh, unsigned int)
-DELEGATE1       (SketchMesh*       , Scene, sketchMesh, unsigned int)
 DELEGATE1       (void              , Scene, render, Camera&)
-DELEGATE2       (bool              , Scene, intersects, const PrimRay&, WingedFaceIntersection&)
+DELEGATE2       (bool              , Scene, intersects, const PrimRay&, DynamicMeshIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE3       (bool              , Scene, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, SketchPathIntersection&)
 DELEGATE2       (bool              , Scene, intersects, const PrimRay&, Intersection&)
-DELEGATE1_CONST (void              , Scene, printStatistics, bool)
-DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (WingedMesh&)>&)
+DELEGATE_CONST  (void              , Scene, printStatistics)
+DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (DynamicMesh&)>&)
 DELEGATE1       (void              , Scene, forEachMesh, const std::function <void (SketchMesh&)>&)
-DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const WingedMesh&)>&)
+DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const DynamicMesh&)>&)
 DELEGATE1_CONST (void              , Scene, forEachConstMesh, const std::function <void (const SketchMesh&)>&)
 DELEGATE        (void              , Scene, sanitizeMeshes)
 DELEGATE        (void              , Scene, reset)
@@ -339,7 +353,7 @@ DELEGATE1       (void              , Scene, renderWireframe, bool)
 DELEGATE        (void              , Scene, toggleWireframe)
 DELEGATE        (void              , Scene, toggleShading)
 DELEGATE_CONST  (bool              , Scene, isEmpty)
-DELEGATE_CONST  (unsigned int      , Scene, numWingedMeshes)
+DELEGATE_CONST  (unsigned int      , Scene, numDynamicMeshes)
 DELEGATE_CONST  (unsigned int      , Scene, numSketchMeshes)
 DELEGATE_CONST  (unsigned int      , Scene, numFaces)
 DELEGATE_CONST  (bool              , Scene, hasFileName)

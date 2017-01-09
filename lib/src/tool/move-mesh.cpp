@@ -4,18 +4,18 @@
  */
 #include <glm/glm.hpp>
 #include "cache.hpp"
+#include "dynamic/mesh.hpp"
+#include "dynamic/mesh-intersection.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
-#include "winged/mesh.hpp"
-#include "winged/face-intersection.hpp"
 
 struct ToolMoveMesh::Impl {
   ToolMoveMesh*    self;
-  WingedMesh*      mesh;
+  DynamicMesh*     mesh;
   ToolUtilMovement movement;
 
   Impl (ToolMoveMesh* s) 
@@ -61,12 +61,12 @@ struct ToolMoveMesh::Impl {
 
   ToolResponse runPressEvent (const ViewPointingEvent& e) {
     if (e.primaryButton ()) {
-      WingedFaceIntersection intersection;
+      DynamicMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection)) {
         this->mesh = &intersection.mesh ();
         this->movement.resetPosition (intersection.position ());
 
-        this->self->snapshotWingedMeshes ();
+        this->self->snapshotDynamicMeshes ();
       }
     }
     return ToolResponse::None;

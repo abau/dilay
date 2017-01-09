@@ -7,18 +7,17 @@ INCLUDEPATH += src
 CONFIG      += staticlib
 
 SOURCES += \
-           src/action/finalize.cpp \
-           src/action/sculpt.cpp \
-           src/adjacent-iterator.cpp \
-           src/affected-faces.cpp \
            src/camera.cpp \
            src/color.cpp \
            src/config.cpp \
            src/configurable.cpp \
            src/dimension.cpp \
            src/distance.cpp \
+           src/dynamic/faces.cpp \
+           src/dynamic/mesh.cpp \
+           src/dynamic/mesh-intersection.cpp \
+           src/dynamic/octree.cpp \
            src/history.cpp \
-           src/index-octree.cpp \
            src/intersection.cpp \
            src/kvstore.cpp \
            src/mesh.cpp \
@@ -26,11 +25,6 @@ SOURCES += \
            src/mirror.cpp \
            src/opengl.cpp \
            src/opengl-buffer-id.cpp \
-           src/partial-action/collapse.cpp \
-           src/partial-action/delete.cpp \
-           src/partial-action/insert.cpp \
-           src/partial-action/smooth.cpp \
-           src/partial-action/triangulate.cpp \
            src/primitive/aabox.cpp \
            src/primitive/cone.cpp \
            src/primitive/cone-sphere.cpp \
@@ -43,7 +37,6 @@ SOURCES += \
            src/renderer.cpp \
            src/scene.cpp \
            src/scene-util.cpp \
-           src/sculpt-brush.cpp \
            src/shader.cpp \
            src/sketch/bone-intersection.cpp \
            src/sketch/conversion.cpp \
@@ -73,11 +66,9 @@ SOURCES += \
            src/tool/sculpt/pinch.cpp \
            src/tool/sculpt/reduce.cpp \
            src/tool/sculpt/smooth.cpp \
+           src/tool/sculpt/util/action.cpp \
+           src/tool/sculpt/util/brush.cpp \
            src/tool/sketch-spheres.cpp \
-           src/tool/trim-mesh/action.cpp \
-           src/tool/trim-mesh/border.cpp \
-           src/tool/trim-mesh/split-mesh.cpp \
-           src/tool/trim-mesh.cpp \
            src/tool/util/movement.cpp \
            src/tool/util/scaling.cpp \
            src/util.cpp \
@@ -97,19 +88,9 @@ SOURCES += \
            src/view/two-column-grid.cpp \
            src/view/util.cpp \
            src/view/vector-edit.cpp \
-           src/winged/edge.cpp \
-           src/winged/face.cpp \
-           src/winged/face-intersection.cpp \
-           src/winged/mesh.cpp \
-           src/winged/util.cpp \
-           src/winged/vertex.cpp \
            src/xml-conversion.cpp \
 
 HEADERS += \
-           src/action/finalize.hpp \
-           src/action/sculpt.hpp \
-           src/adjacent-iterator.hpp \
-           src/affected-faces.hpp \
            src/bitset.hpp \
            src/cache.hpp \
            src/camera.hpp \
@@ -118,10 +99,12 @@ HEADERS += \
            src/configurable.hpp \
            src/dimension.hpp \
            src/distance.hpp \
-           src/edge-map.hpp \
+           src/dynamic/faces.hpp \
+           src/dynamic/mesh.hpp \
+           src/dynamic/mesh-intersection.hpp \
+           src/dynamic/octree.hpp \
            src/hash.hpp \
            src/history.hpp \
-           src/index-octree.hpp \
            src/intersection.hpp \
            src/kvstore.hpp \
            src/macro.hpp \
@@ -129,14 +112,8 @@ HEADERS += \
            src/mesh.hpp \
            src/mesh-util.hpp \
            src/mirror.hpp \
-           src/monotone-deque.hpp \
            src/opengl.hpp \
            src/opengl-buffer-id.hpp \
-           src/partial-action/collapse.hpp \
-           src/partial-action/delete.hpp \
-           src/partial-action/insert.hpp \
-           src/partial-action/smooth.hpp \
-           src/partial-action/triangulate.hpp \
            src/primitive/aabox.hpp \
            src/primitive/cone.hpp \
            src/primitive/cone-sphere.hpp \
@@ -149,7 +126,6 @@ HEADERS += \
            src/renderer.hpp \
            src/scene.hpp \
            src/scene-util.hpp \
-           src/sculpt-brush.hpp \
            src/shader.hpp \
            src/sketch/bone-intersection.hpp \
            src/sketch/conversion.hpp \
@@ -164,9 +140,8 @@ HEADERS += \
            src/tool.hpp \
            src/tool/move-camera.hpp \
            src/tool/sculpt.hpp \
-           src/tool/trim-mesh/action.hpp \
-           src/tool/trim-mesh/border.hpp \
-           src/tool/trim-mesh/split-mesh.hpp \
+           src/tool/sculpt/util/action.hpp \
+           src/tool/sculpt/util/brush.hpp \
            src/tool/util/movement.hpp \
            src/tool/util/scaling.hpp \
            src/tools.hpp \
@@ -189,11 +164,4 @@ HEADERS += \
            src/view/two-column-grid.hpp \
            src/view/util.hpp \
            src/view/vector-edit.hpp \
-           src/winged/edge.hpp \
-           src/winged/face.hpp \
-           src/winged/face-intersection.hpp \
-           src/winged/fwd.hpp \
-           src/winged/mesh.hpp \
-           src/winged/util.hpp \
-           src/winged/vertex.hpp \
            src/xml-conversion.hpp \

@@ -4,8 +4,8 @@
  */
 #include <QCheckBox>
 #include "cache.hpp"
-#include "sculpt-brush.hpp"
 #include "state.hpp"
+#include "tool/sculpt/util/brush.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"

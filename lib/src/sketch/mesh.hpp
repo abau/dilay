@@ -19,12 +19,8 @@ enum class SketchPathSmoothEffect;
 
 class SketchMesh : public Configurable {
   public: 
-    DECLARE_BIG4_EXPLICIT_COPY (SketchMesh, unsigned int);
+    DECLARE_BIG4_EXPLICIT_COPY (SketchMesh);
 
-    bool operator== (const SketchMesh&) const;
-    bool operator!= (const SketchMesh&) const;
-
-    unsigned int       index           () const;
     const SketchTree&  tree            () const;
     SketchTree&        tree            ();
     const SketchPaths& paths           () const;

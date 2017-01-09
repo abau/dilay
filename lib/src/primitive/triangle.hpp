@@ -8,14 +8,9 @@
 #include <glm/glm.hpp>
 #include <iosfwd>
 
-class WingedMesh;
-class WingedVertex;
-
 class PrimTriangle {
   public:
     PrimTriangle (const glm::vec3&, const glm::vec3&, const glm::vec3&);
-    PrimTriangle ( const WingedMesh&, const WingedVertex&
-                 , const WingedVertex&, const WingedVertex&);
 
     const glm::vec3& vertex1           () const { return this->_vertex1; }
     const glm::vec3& vertex2           () const { return this->_vertex2; }
@@ -27,7 +22,6 @@ class PrimTriangle {
           glm::vec3  maximum           () const;
           float      maxExtent         () const;
           float      maxDimExtent      () const;
-          bool       isDegenerated     () const;
           float      incircleRadiusSqr () const;
           float      longestEdgeSqr    () const;
 

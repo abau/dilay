@@ -5,8 +5,8 @@
 #include "cache.hpp"
 #include "camera.hpp"
 #include "dimension.hpp"
+#include "dynamic/mesh.hpp"
 #include "history.hpp"
-#include "index-octree.hpp"
 #include "intersection.hpp"
 #include "mesh.hpp"
 #include "mirror.hpp"
@@ -21,7 +21,6 @@
 #include "view/pointing-event.hpp"
 #include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
-#include "winged/mesh.hpp"
 
 struct Tool::Impl {
   Tool*           self;
@@ -116,23 +115,25 @@ struct Tool::Impl {
     this->state.history ().snapshotAll (this->state.scene ());
   }
 
-  void snapshotWingedMeshes () {
-    this->state.history ().snapshotWingedMeshes (this->state.scene ());
+  void snapshotDynamicMeshes () {
+    this->state.history ().snapshotDynamicMeshes (this->state.scene ());
   }
 
   void snapshotSketchMeshes () {
     this->state.history ().snapshotSketchMeshes (this->state.scene ());
   }
 
-  bool intersectsRecentWingedMesh (const glm::ivec2& pos, Intersection& intersection) const {
-    assert (this->state.history ().hasRecentWingedMesh ());
+  bool intersectsRecentDynamicMesh (const PrimRay& ray, Intersection& intersection) const {
+    assert (this->state.history ().hasRecentDynamicMesh ());
 
-    const PrimRay ray = this->state.camera ().ray (pos);
-
-    this->state.history ().forEachRecentWingedMesh ([&ray, &intersection] (const WingedMesh& mesh) {
+    this->state.history ().forEachRecentDynamicMesh ([&ray, &intersection] (const DynamicMesh& mesh) {
       mesh.intersects (ray, intersection);
     });
     return intersection.isIntersection ();
+  }
+
+  bool intersectsRecentDynamicMesh (const glm::ivec2& pos, Intersection& intersection) const {
+    return this->intersectsRecentDynamicMesh (this->state.camera ().ray (pos), intersection);
   }
 
   bool hasMirror () const {
@@ -162,12 +163,12 @@ struct Tool::Impl {
     return this->hasMirror () ? &d : nullptr;
   }
 
-  void mirrorWingedMeshes () {
+  void mirrorDynamicMeshes () {
     assert (this->hasMirror ());
 
-    this->snapshotWingedMeshes ();
+    this->snapshotDynamicMeshes ();
     this->state.scene ().forEachMesh (
-      [this] (WingedMesh& mesh) {
+      [this] (DynamicMesh& mesh) {
         mesh.mirror (this->mirror ().plane ());
         mesh.bufferData ();
       }
@@ -185,9 +186,14 @@ struct Tool::Impl {
   }
 
   template <typename T, typename ... Ts>
+  bool intersectsScene (const PrimRay& ray, T& intersection, Ts ... args) {
+    return this->state.scene ().intersects (ray, intersection, std::forward <Ts> (args) ...);
+  }
+
+  template <typename T, typename ... Ts>
   bool intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {
-    return this->state.scene ().intersects ( this->state.camera ().ray (pos), intersection
-                                           , std::forward <Ts> (args) ... );
+    return this->intersectsScene ( this->state.camera ().ray (pos), intersection
+                                 , std::forward <Ts> (args) ... );
   }
 
   template <typename T, typename ... Ts>
@@ -227,17 +233,23 @@ DELEGATE        (CacheProxy&       , Tool, cache)
 DELEGATE1_CONST (CacheProxy        , Tool, cache, const char*)
 DELEGATE_CONST  (glm::ivec2        , Tool, cursorPosition)
 DELEGATE        (void              , Tool, snapshotAll)
-DELEGATE        (void              , Tool, snapshotWingedMeshes)
+DELEGATE        (void              , Tool, snapshotDynamicMeshes)
 DELEGATE        (void              , Tool, snapshotSketchMeshes)
-DELEGATE2_CONST (bool              , Tool, intersectsRecentWingedMesh, const glm::ivec2&, Intersection&)
+DELEGATE2_CONST (bool              , Tool, intersectsRecentDynamicMesh, const PrimRay&, Intersection&)
+DELEGATE2_CONST (bool              , Tool, intersectsRecentDynamicMesh, const glm::ivec2&, Intersection&)
 DELEGATE_CONST  (bool              , Tool, hasMirror)
 DELEGATE_CONST  (const Mirror&     , Tool, mirror)
 DELEGATE1       (void              , Tool, mirror, bool)
 SETTER          (bool              , Tool, renderMirror)
 DELEGATE_CONST  (const Dimension*  , Tool, mirrorDimension)
-DELEGATE        (void              , Tool, mirrorWingedMeshes)
+DELEGATE        (void              , Tool, mirrorDynamicMeshes)
 DELEGATE        (void              , Tool, mirrorSketchMeshes)
 DELEGATE1       (ToolResponse      , Tool, runPointingEvent, const ViewPointingEvent&)
+
+template <typename T, typename ... Ts>
+bool Tool :: intersectsScene (const PrimRay& ray, T& intersection, Ts ... args) {
+  return this->impl->intersectsScene (ray, intersection, std::forward <Ts> (args) ...);
+}
 
 template <typename T, typename ... Ts>
 bool Tool :: intersectsScene (const glm::ivec2& pos, T& intersection, Ts ... args) {
@@ -249,17 +261,24 @@ bool Tool :: intersectsScene (const ViewPointingEvent& e, T& intersection, Ts ..
   return this->impl->intersectsScene (e, intersection, std::forward <Ts> (args) ...);
 }
 
-template bool Tool :: intersectsScene (const glm::ivec2&, WingedFaceIntersection&);
-template bool Tool :: intersectsScene (const ViewPointingEvent&, WingedFaceIntersection&);
+template bool Tool :: intersectsScene (const PrimRay&, DynamicMeshIntersection&);
+template bool Tool :: intersectsScene (const glm::ivec2&, DynamicMeshIntersection&);
+template bool Tool :: intersectsScene (const ViewPointingEvent&, DynamicMeshIntersection&);
+template bool Tool :: intersectsScene (const PrimRay&, SketchNodeIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchNodeIntersection&);
 template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchNodeIntersection&);
+template bool Tool :: intersectsScene (const PrimRay&, SketchBoneIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchBoneIntersection&);
 template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchBoneIntersection&);
+template bool Tool :: intersectsScene (const PrimRay&, SketchMeshIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchMeshIntersection&);
 template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchMeshIntersection&);
+template bool Tool :: intersectsScene (const PrimRay&, SketchMeshIntersection&, unsigned int);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchMeshIntersection&, unsigned int);
 template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchMeshIntersection&, unsigned int);
+template bool Tool :: intersectsScene (const PrimRay&, SketchPathIntersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, SketchPathIntersection&);
 template bool Tool :: intersectsScene (const ViewPointingEvent&, SketchPathIntersection&);
+template bool Tool :: intersectsScene (const PrimRay&, Intersection&);
 template bool Tool :: intersectsScene (const glm::ivec2&, Intersection&);
 template bool Tool :: intersectsScene (const ViewPointingEvent&, Intersection&);

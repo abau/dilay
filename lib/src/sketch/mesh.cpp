@@ -68,16 +68,14 @@ namespace {
 
 struct SketchMesh::Impl {
   SketchMesh*        self;
-  const unsigned int index;
   SketchTree         tree;
   SketchPaths        paths;
   Mesh               sphereMesh;
   Mesh               boneMesh;
   RenderConfig       renderConfig;
 
-  Impl (SketchMesh* s, unsigned int i)
+  Impl (SketchMesh* s)
     : self  (s)
-    , index (i)
   {
     this->sphereMesh = MeshUtil::icosphere (3);
     this->sphereMesh.bufferData ();
@@ -91,7 +89,6 @@ struct SketchMesh::Impl {
 
   Impl (const Impl& other)
     : self         (nullptr)
-    , index        (other.index)
     , tree         (other.tree)
     , paths        (other.paths)
     , sphereMesh   (other.sphereMesh)
@@ -100,14 +97,6 @@ struct SketchMesh::Impl {
   {
     this->sphereMesh.bufferData ();
     this->boneMesh.bufferData ();
-  }
-
-  bool operator== (const SketchMesh& other) const {
-    return this->index == other.index ();
-  }
-
-  bool operator!= (const SketchMesh& other) const {
-    return ! this->operator== (other);
   }
 
   bool isEmpty () const {
@@ -806,10 +795,7 @@ struct SketchMesh::Impl {
   }
 };
 
-DELEGATE1_BIG4_COPY_SELF (SketchMesh, unsigned int);
-DELEGATE1_CONST (bool                , SketchMesh, operator==, const SketchMesh&)
-DELEGATE1_CONST (bool                , SketchMesh, operator!=, const SketchMesh&)
-GETTER_CONST    (unsigned int        , SketchMesh, index)
+DELEGATE_BIG4_COPY_SELF (SketchMesh);
 GETTER_CONST    (const SketchTree&   , SketchMesh, tree)
 GETTER          (SketchTree&         , SketchMesh, tree)
 GETTER_CONST    (const SketchPaths&  , SketchMesh, paths)

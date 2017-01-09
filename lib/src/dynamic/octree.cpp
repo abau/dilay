@@ -8,7 +8,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
-#include "index-octree.hpp"
+#include "dynamic/octree.hpp"
 #include "intersection.hpp"
 #include "maybe.hpp"
 #include "primitive/aabox.hpp"
@@ -17,8 +17,8 @@
 #include "util.hpp"
 
 #ifdef DILAY_RENDER_OCTREE
+#include "../mesh.hpp"
 #include "color.hpp"
-#include "mesh.hpp"
 #include "render-mode.hpp"
 #endif
 
@@ -55,11 +55,12 @@ namespace {
       , looseAABox (c, 2.0f * w, 2.0f * w, 2.0f * w)
     {
       static_assert (IndexOctreeNode::relativeMinElementExtent < 0.5f, "relativeMinElementExtent must be smaller than 0.5f");
+      assert (w > 0.0f);
     }
 
     bool approxContains (const glm::vec3& position, float maxDimExtent) const {
-      const glm::vec3 min = this->center - glm::vec3 (this->width * 0.5f);
-      const glm::vec3 max = this->center + glm::vec3 (this->width * 0.5f);
+      const glm::vec3 min = this->center - glm::vec3 (Util::epsilon () + (this->width * 0.5f));
+      const glm::vec3 max = this->center + glm::vec3 (Util::epsilon () + (this->width * 0.5f));
       return glm::all ( glm::lessThanEqual (min, position) )
          &&  glm::all ( glm::lessThanEqual (position, max) )
          &&  maxDimExtent <= this->width;
@@ -143,11 +144,6 @@ namespace {
       }
     }
 
-    IndexOctreeNode& addDegeneratedElement (unsigned int index) {
-      this->indices.insert (index);
-      return *this;
-    }
-
     bool isEmpty () const {
       return this->indices.empty () && this->hasChildren () == false;
     }
@@ -191,7 +187,25 @@ namespace {
 #endif
 
     template <typename T>
-    void intersectsT (const T& t, const IndexOctree::IntersectionCallback& f) const {
+    void containsOrIntersectsT ( const T& t
+                               , const DynamicOctree::ContainsIntersectionCallback& f ) const
+    {
+      const bool contains = t.contains (this->looseAABox);
+
+      if (contains || IntersectionUtil::intersects (t, this->looseAABox)) {
+        for (unsigned int index : this->indices) {
+          f (contains, index);
+        }
+        if (this->hasChildren ()) {
+          for (const Child& c : this->children) {
+            c->containsOrIntersectsT <T> (t, f);
+          }
+        }
+      }
+    }
+
+    template <typename T>
+    void intersectsT (const T& t, const DynamicOctree::IntersectionCallback& f) const {
       if (IntersectionUtil::intersects (t, this->looseAABox)) {
         for (unsigned int index : this->indices) {
           f (index);
@@ -205,6 +219,21 @@ namespace {
     }
 
     unsigned int numElements () const { return this->indices.size (); }
+
+    void updateIndices (const std::vector <unsigned int>& indexMap) {
+      std::unordered_set <unsigned int> newIndices;
+
+      for (unsigned int i : this->indices) {
+        assert (indexMap[i] != Util::invalidIndex ());
+
+        newIndices.insert (indexMap[i]);
+      }
+      this->indices = std::move (newIndices);
+
+      for (Child& c : this->children) {
+        c->updateIndices (indexMap);
+      }
+    }
 
     void updateStatistics (IndexOctreeStatistics& stats) const {
       stats.numNodes          += 1;
@@ -236,9 +265,8 @@ namespace {
   };
 }
 
-struct IndexOctree::Impl {
+struct DynamicOctree::Impl {
   Child                          root;
-  Child                          degeneratedElements;
   std::vector <IndexOctreeNode*> elementNodeMap;
 #ifdef DILAY_RENDER_OCTREE
   Mesh                           nodeMesh;
@@ -284,7 +312,6 @@ struct IndexOctree::Impl {
 
   Impl (const Impl& other)
     :  root                (other.root)
-    ,  degeneratedElements (other.degeneratedElements)
 #ifdef DILAY_RENDER_OCTREE
     ,  nodeMesh            (other.nodeMesh)
 #endif
@@ -317,9 +344,6 @@ struct IndexOctree::Impl {
     };
     if (this->root) {
       traverse (*this->root);
-    }
-    if (this->degeneratedElements) {
-      traverse (*this->degeneratedElements);
     }
   }
 
@@ -395,14 +419,6 @@ struct IndexOctree::Impl {
     }
   }
 
-  void addDegeneratedElement (unsigned int index) {
-    if (this->degeneratedElements == false) {
-      this->degeneratedElements = IndexOctreeNode (glm::vec3 (0.0f), 0.0f, 0);
-    }
-    this->degeneratedElements->addDegeneratedElement (index);
-    this->addToElementNodeMap (index, *this->degeneratedElements);
-  }
-
   void deleteElement (unsigned int index) {
     assert (index < this->elementNodeMap.size ()); 
     assert (this->elementNodeMap [index]); 
@@ -418,9 +434,6 @@ struct IndexOctree::Impl {
         this->shrinkRoot ();
       }
     }
-    if (this->degeneratedElements && this->degeneratedElements->isEmpty ()) {
-      this->degeneratedElements.reset ();
-    }
   }
 
   void deleteEmptyChildren () {
@@ -428,6 +441,12 @@ struct IndexOctree::Impl {
       if (this->root->deleteEmptyChildren ()) {
         this->root.reset ();
       }
+    }
+  }
+
+  void updateIndices (const std::vector <unsigned int>& newIndices) {
+    if (this->hasRoot ()) {
+      this->root->updateIndices (newIndices);
     }
   }
 
@@ -452,9 +471,8 @@ struct IndexOctree::Impl {
   }
 
   void reset () { 
-    this->root               .reset ();
-    this->degeneratedElements.reset ();
-    this->elementNodeMap     .clear ();
+    this->root.reset ();
+    this->elementNodeMap.clear ();
   }
 
 #ifdef DILAY_RENDER_OCTREE
@@ -469,38 +487,30 @@ struct IndexOctree::Impl {
   }
 #endif
 
-  void intersects (const PrimRay& ray, const IndexOctree::IntersectionCallback& f) const {
+  void intersects (const PrimRay& ray, const DynamicOctree::IntersectionCallback& f) const {
     if (this->hasRoot ()) {
       return this->root->intersectsT <PrimRay> (ray, f);
     }
   }
 
-  void intersects (const PrimSphere& sphere, const IndexOctree::IntersectionCallback& f) const {
-    if (this->hasRoot ()) {
-      return this->root->intersectsT <PrimSphere> (sphere, f);
-    }
-  }
-
-  void intersects (const PrimPlane& plane, const IndexOctree::IntersectionCallback& f) const {
+  void intersects (const PrimPlane& plane, const DynamicOctree::IntersectionCallback& f) const {
     if (this->hasRoot ()) {
       return this->root->intersectsT <PrimPlane> (plane, f);
     }
   }
 
-  void intersects (const PrimAABox& box, const IndexOctree::IntersectionCallback& f) const {
+  void intersects ( const PrimSphere& sphere
+                  , const DynamicOctree::ContainsIntersectionCallback& f ) const
+  {
     if (this->hasRoot ()) {
-      return this->root->intersectsT <PrimAABox> (box, f);
+      return this->root->containsOrIntersectsT <PrimSphere> (sphere, f);
     }
   }
 
-  unsigned int numDegeneratedElements () const { 
-    return this->degeneratedElements ? this->degeneratedElements->numElements ()
-                                     : 0;
-  }
-
-  unsigned int someDegeneratedElement () const {
-    assert (this->numDegeneratedElements () > 0);
-    return *this->degeneratedElements->indices.begin ();
+  void intersects (const PrimAABox& box, const DynamicOctree::ContainsIntersectionCallback& f) const {
+    if (this->hasRoot ()) {
+      return this->root->containsOrIntersectsT <PrimAABox> (box, f);
+    }
   }
 
   void printStatistics () const {
@@ -516,7 +526,6 @@ struct IndexOctree::Impl {
     std::cout << "octree:"
               << "\n\tnum nodes:\t\t\t"            << stats.numNodes
               << "\n\tnum elements:\t\t\t"         << stats.numElements
-              << "\n\tnum degenerated elements:\t" << this->numDegeneratedElements ()
               << "\n\tmax elements per node:\t\t"  << stats.maxElementsPerNode
               << "\n\tmin depth:\t\t\t"            << stats.minDepth
               << "\n\tmax depth:\t\t\t"            << stats.maxDepth
@@ -526,22 +535,20 @@ struct IndexOctree::Impl {
   }
 };
 
-DELEGATE_BIG4_COPY (IndexOctree)
+DELEGATE_BIG4_COPY (DynamicOctree)
 
-DELEGATE_CONST  (bool        , IndexOctree, hasRoot)
-DELEGATE2       (void        , IndexOctree, setupRoot, const glm::vec3&, float)
-DELEGATE3       (void        , IndexOctree, addElement, unsigned int, const glm::vec3&, float)
-DELEGATE3       (void        , IndexOctree, realignElement, unsigned int, const glm::vec3&, float)
-DELEGATE1       (void        , IndexOctree, addDegeneratedElement, unsigned int)
-DELEGATE1       (void        , IndexOctree, deleteElement, unsigned int)
-DELEGATE        (void        , IndexOctree, deleteEmptyChildren)
-DELEGATE        (void        , IndexOctree, shrinkRoot)
-DELEGATE        (void        , IndexOctree, reset)
-DELEGATE1       (void        , IndexOctree, render, Camera&)
-DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimRay&, const IndexOctree::IntersectionCallback&)
-DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimSphere&, const IndexOctree::IntersectionCallback&)
-DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimPlane&, const IndexOctree::IntersectionCallback&)
-DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimAABox&, const IndexOctree::IntersectionCallback&)
-DELEGATE_CONST  (unsigned int, IndexOctree, numDegeneratedElements)
-DELEGATE_CONST  (unsigned int, IndexOctree, someDegeneratedElement)
-DELEGATE_CONST  (void        , IndexOctree, printStatistics)
+DELEGATE_CONST  (bool, DynamicOctree, hasRoot)
+DELEGATE2       (void, DynamicOctree, setupRoot, const glm::vec3&, float)
+DELEGATE3       (void, DynamicOctree, addElement, unsigned int, const glm::vec3&, float)
+DELEGATE3       (void, DynamicOctree, realignElement, unsigned int, const glm::vec3&, float)
+DELEGATE1       (void, DynamicOctree, deleteElement, unsigned int)
+DELEGATE        (void, DynamicOctree, deleteEmptyChildren)
+DELEGATE1       (void, DynamicOctree, updateIndices, const std::vector <unsigned int>&)
+DELEGATE        (void, DynamicOctree, shrinkRoot)
+DELEGATE        (void, DynamicOctree, reset)
+DELEGATE1       (void, DynamicOctree, render, Camera&)
+DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimRay&, const DynamicOctree::IntersectionCallback&)
+DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimPlane&, const DynamicOctree::IntersectionCallback&)
+DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimSphere&, const DynamicOctree::ContainsIntersectionCallback&)
+DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimAABox&, const DynamicOctree::ContainsIntersectionCallback&)
+DELEGATE_CONST  (void, DynamicOctree, printStatistics)

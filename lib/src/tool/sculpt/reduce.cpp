@@ -3,9 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include "cache.hpp"
-#include "scene.hpp"
-#include "sculpt-brush.hpp"
-#include "state.hpp"
+#include "tool/sculpt/util/brush.hpp"
 #include "tools.hpp"
 #include "view/double-slider.hpp"
 #include "view/two-column-grid.hpp"
@@ -19,7 +17,7 @@ struct ToolSculptReduce::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.initParameters <SBReduceParameters> ();
 
-    params.intensity (this->self->cache ().get <float> ("intensity", 0.75f));
+    params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -42,9 +40,7 @@ struct ToolSculptReduce::Impl {
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {
-    const bool result = this->self->carvelikeStroke (e, false);
-    this->self->state ().scene ().deleteEmptyMeshes ();
-    return result;
+    return this->self->carvelikeStroke (e, false);
   }
 };
 

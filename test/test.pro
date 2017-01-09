@@ -13,7 +13,6 @@ SOURCES += \
            src/test-intersection.cpp \
            src/test-maybe.cpp \
            src/test-misc.cpp \
-           src/test-monotone-deque.cpp \
            src/test-octree.cpp \
            src/test-prune.cpp \
            src/test-tree.cpp
@@ -24,7 +23,6 @@ HEADERS += \
            src/test-intersection.hpp \
            src/test-maybe.hpp \
            src/test-misc.hpp \
-           src/test-monotone-deque.hpp \
            src/test-octree.hpp \
            src/test-prune.hpp \
            src/test-tree.hpp

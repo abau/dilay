@@ -16,9 +16,96 @@
 #include "util.hpp"
 
 namespace {
-  typedef Bitset <unsigned short> VertexFlags;
-
   static_assert (sizeof (glm::vec3) == 3 * sizeof (float), "Unexpected memory layout");
+
+  template <typename T>
+  struct BufferedData {
+    OpenGLBufferId id;
+    std::vector <T> data;
+    unsigned int dataLowerBound;
+    unsigned int dataUpperBound;
+    unsigned int bufferSize;
+
+    BufferedData () {
+      this->reset ();
+    }
+
+    void reset () {
+      this->id.reset ();
+      this->data.clear ();
+      this->resetBounds ();
+      this->bufferSize = 0;
+    }
+
+    void resetBounds () {
+      this->dataLowerBound = Util::maxUnsignedInt ();
+      this->dataUpperBound = 0;
+    }
+
+    unsigned int numElements () const {
+      return this->data.size ();
+    }
+
+    void reserve (unsigned int size) {
+      this->data.reserve (size);
+    }
+
+    void shrink (unsigned int size) {
+      assert (size <= this->data.size ());
+      this->data.resize (size);
+    }
+
+    void updateBounds (unsigned int index) {
+      this->dataLowerBound = glm::min (this->dataLowerBound, index);
+      this->dataUpperBound = glm::max (this->dataUpperBound, index);
+    }
+
+    unsigned int add (const T& value) {
+      this->data.push_back (value);
+      this->updateBounds (this->data.size () - 1);
+      return this->data.size () - 1;
+    }
+
+    void set (unsigned int index, const T& value) {
+      assert (index < this->data.size ());
+      this->data[index] = value;
+      this->updateBounds (index);
+    }
+
+    const T& get (unsigned int index) const {
+      assert (index < this->data.size ());
+      return this->data[index];
+    }
+
+    void bufferData (unsigned int target) {
+      if (this->id.isValid () == false) {
+        this->id.allocate ();
+        this->bufferSize = 0;
+      }
+      OpenGL::glBindBuffer (target, this->id.id ());
+
+      const unsigned int dataSize = this->data.size () * sizeof (T);
+
+      if (this->bufferSize == 0) {
+        OpenGL::glBufferData (target, dataSize, this->data.data (), OpenGL::StaticDraw ());
+        this->bufferSize = dataSize;
+      }
+      else if (this->bufferSize < dataSize) {
+        const unsigned int newBufferSize = this->bufferSize + (100 * (dataSize - this->bufferSize));
+
+        OpenGL::glBufferData (target, newBufferSize, nullptr, OpenGL::StaticDraw ());
+        OpenGL::glBufferSubData (target, 0, dataSize, this->data.data ());
+        this->bufferSize = newBufferSize;
+      }
+      else if (this->dataLowerBound <= this->dataUpperBound) {
+        const unsigned int size = (this->dataUpperBound - this->dataLowerBound + 1) * sizeof (T);
+
+        OpenGL::glBufferSubData ( target, this->dataLowerBound * sizeof (T), size
+                                , &this->get (this->dataLowerBound) );
+      }
+      this->resetBounds ();
+    }
+  };
 }
 
 struct Mesh::Impl {
@@ -26,16 +113,11 @@ struct Mesh::Impl {
   glm::mat4x4                 scalingMatrix;
   glm::mat4x4                 rotationMatrix;
   glm::mat4x4                 translationMatrix;
-  std::vector <glm::vec3>     vertices;
-  std::vector <unsigned int>  indices;
-  std::vector <glm::vec3>     normals;
-  std::vector <VertexFlags>   verticesFlags;
+  BufferedData <glm::vec3>    vertices;
+  BufferedData <unsigned int> indices;
+  BufferedData <glm::vec3>    normals;
   Color                       color;
   Color                       wireframeColor;
-
-  OpenGLBufferId              vertexBufferId;
-  OpenGLBufferId              indexBufferId;
-  OpenGLBufferId              normalBufferId;
 
   RenderMode                  renderMode;
 
@@ -49,63 +131,40 @@ struct Mesh::Impl {
     this->renderMode.smoothShading (true);
   }
 
-  Impl (const Impl& source) : Impl (source, true)
-  {}
-
-  Impl (const Impl& source, bool copyGeometry)
-    : scalingMatrix       (source.scalingMatrix)
-    , rotationMatrix      (source.rotationMatrix)
-    , translationMatrix   (source.translationMatrix)
-    , vertices            (copyGeometry ? source.vertices      : std::vector <glm::vec3>    ())
-    , indices             (copyGeometry ? source.indices       : std::vector <unsigned int> ())
-    , normals             (copyGeometry ? source.normals       : std::vector <glm::vec3>    ())
-    , verticesFlags       (copyGeometry ? source.verticesFlags : std::vector <VertexFlags>  ())
-    , color               (source.color)
-    , wireframeColor      (source.wireframeColor)
-    , renderMode          (source.renderMode) 
-  {}
-
-  ~Impl () { this->reset (); }
-
-  unsigned int numVertices      () const { return this->vertices.size (); }
-  unsigned int numIndices       () const { return this->indices.size  (); }
-  unsigned int numNormals       () const { return this->normals.size (); }
-  unsigned int numVerticesFlags () const { return this->verticesFlags.size (); }
-
-  unsigned int sizeOfVertices () const { 
-    return this->vertices.size () * sizeof (glm::vec3);
-  }
-
-  unsigned int sizeOfIndices () const { 
-    return this->indices.size () * sizeof (unsigned int);
-  }
-
-  unsigned int sizeOfNormals () const { 
-    return this->normals.size () * sizeof (glm::vec3);
-  }
+  unsigned int numVertices () const { return this->vertices.numElements (); }
+  unsigned int numIndices  () const { return this->indices.numElements  (); }
 
   const glm::vec3& vertex (unsigned int i) const {
-    assert (i < this->numVertices ());
-    return this->vertices [i];
+    return this->vertices.get (i);
   }
 
   unsigned int index (unsigned int i) const { 
-    assert (i < this->indices.size ());
-    return this->indices [i]; 
+    return this->indices.get (i);
   }
 
   const glm::vec3& normal (unsigned int i) const {
-    assert (i < this->numNormals ());
-    return this->normals [i];
+    return this->normals.get (i);
+  }
+
+  void copyNonGeometry (const Mesh& source) {
+    this->scalingMatrix = source.impl->scalingMatrix;
+    this->rotationMatrix = source.impl->rotationMatrix;
+    this->translationMatrix = source.impl->translationMatrix;
+    this->color = source.impl->color;
+    this->wireframeColor = source.impl->wireframeColor;
+    this->renderMode = source.impl->renderMode;
   }
 
   unsigned int addIndex (unsigned int i) { 
-    this->indices.push_back (i); 
-    return this->indices.size () - 1;
+    return this->indices.add (i);
   }
 
   void reserveIndices (unsigned int n) { 
     this->indices.reserve (n);
+  }
+
+  void shrinkIndices (unsigned int n) {
+    this->indices.shrink (n);
   }
 
   unsigned int addVertex (const glm::vec3& v) { 
@@ -115,70 +174,40 @@ struct Mesh::Impl {
   unsigned int addVertex (const glm::vec3& v, const glm::vec3& n) { 
     assert (Util::isNaN (v) == false);
     assert (Util::isNaN (n) == false);
+    assert (this->vertices.numElements () == this->normals.numElements ());
 
-    this->vertices.push_back (v);
-    this->normals.push_back (n);
-    this->verticesFlags.emplace_back ();
-
-    return this->numVertices () - 1;
+    this->vertices.add (v);
+    return this->normals.add (n);
   }
 
   void reserveVertices (unsigned int n) { 
-    this->vertices.reserve (3*n);
-    this->normals .reserve (3*n);
+    this->vertices.reserve (n);
+    this->normals.reserve (n);
   }
 
-  void index (unsigned int index, unsigned int vertexIndex) {
-    assert (index < this->indices.size ());
-    this->indices[index] = vertexIndex;
+  void shrinkVertices (unsigned int n) {
+    this->vertices.shrink (n);
+    this->normals.shrink (n);
+  }
+
+  void index (unsigned int i, unsigned int index) {
+    this->indices.set (i, index);
   }
 
   void vertex (unsigned int i, const glm::vec3& v) {
-    assert (i < this->numVertices ());
     assert (Util::isNaN (v) == false);
-
-    this->vertices [i] = v;
+    this->vertices.set (i, v);
   }
 
   void normal (unsigned int i, const glm::vec3& n) {
-    assert (i < this->numNormals ());
     assert (Util::isNaN (n) == false);
-
-    this->normals [i] = n;
-  }
-
-  bool isNewVertex (unsigned int i) const {
-    assert (i < this->numVerticesFlags ());
-    return this->verticesFlags[i].get <0> ();
-  }
-
-  void isNewVertex (unsigned int i, bool v) {
-    assert (i < this->numVerticesFlags ());
-    this->verticesFlags[i].set <0> (v);
+    this->normals.set (i, n);
   }
 
   void bufferData () {
-    if (this->vertexBufferId.isValid () == false) {
-      this->vertexBufferId.allocate ();
-    }
-    if (this->indexBufferId.isValid () == false) {
-      this->indexBufferId.allocate ();
-    }
-    if (this->normalBufferId.isValid () == false) {
-      this->normalBufferId.allocate ();
-    }
-
-    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->vertexBufferId.id ());
-    OpenGL::glBufferData ( OpenGL::ArrayBuffer (), this->sizeOfVertices ()
-                         , &this->vertices[0], OpenGL::StaticDraw () );
-
-    OpenGL::glBindBuffer (OpenGL::ElementArrayBuffer (), this->indexBufferId.id ());
-    OpenGL::glBufferData ( OpenGL::ElementArrayBuffer (), this->sizeOfIndices ()
-                         , &this->indices[0], OpenGL::StaticDraw () );
-
-    OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), this->normalBufferId.id ());
-    OpenGL::glBufferData ( OpenGL::ArrayBuffer (), this->sizeOfNormals ()
-                         , &this->normals[0], OpenGL::StaticDraw () );
+    this->vertices.bufferData (OpenGL::ArrayBuffer ());
+    this->indices.bufferData (OpenGL::ElementArrayBuffer ());
+    this->normals.bufferData (OpenGL::ArrayBuffer ());
 
     OpenGL::glBindBuffer (OpenGL::ElementArrayBuffer (), 0);
     OpenGL::glBindBuffer (OpenGL::ArrayBuffer (), 0);
@@ -211,14 +240,14 @@ struct Mesh::Impl {
 
     this->setModelMatrix              (camera, this->renderMode.cameraRotationOnly ());
 
-    OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertexBufferId.id ());
+    OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->vertices.id.id ());
     OpenGL::glEnableVertexAttribArray (OpenGL::PositionIndex);
     OpenGL::glVertexAttribPointer     (OpenGL::PositionIndex, 3, OpenGL::Float (), false, 0, 0);
 
-    OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indexBufferId.id ());
+    OpenGL::glBindBuffer              (OpenGL::ElementArrayBuffer (), this->indices.id.id ());
 
     if (this->renderMode.smoothShading ()) {
-      OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normalBufferId.id ());
+      OpenGL::glBindBuffer              (OpenGL::ArrayBuffer (), this->normals.id.id ());
       OpenGL::glEnableVertexAttribArray (OpenGL::NormalIndex);
       OpenGL::glVertexAttribPointer     (OpenGL::NormalIndex, 3, OpenGL::Float (), false, 0, 0);
     }
@@ -257,20 +286,13 @@ struct Mesh::Impl {
     this->scalingMatrix     = glm::mat4x4 (1.0f);
     this->rotationMatrix    = glm::mat4x4 (1.0f);
     this->translationMatrix = glm::mat4x4 (1.0f);
-    this->vertices      .clear ();
-    this->indices       .clear ();
-    this->normals       .clear ();
-    this->verticesFlags .clear ();
-    this->vertexBufferId.reset ();
-    this->indexBufferId .reset ();
-    this->normalBufferId.reset ();
+    this->resetGeometry ();
   }
 
   void resetGeometry () {
-    this->vertices     .clear ();
-    this->indices      .clear ();
-    this->normals      .clear ();
-    this->verticesFlags.clear ();
+    this->vertices.reset ();
+    this->indices.reset ();
+    this->normals.reset ();
   }
 
   void scale (const glm::vec3& v) {
@@ -355,35 +377,30 @@ struct Mesh::Impl {
     max = glm::vec3 (Util::minFloat ());
 
     for (unsigned int i = 0; i < this->numVertices (); i++) {
-      min = glm::min (min, this->vertices [i]);
-      max = glm::max (max, this->vertices [i]);
+      min = glm::min (min, this->vertices.get (i));
+      max = glm::max (max, this->vertices.get (i));
     }
   }
 };
 
 DELEGATE_BIG6 (Mesh)
-
-Mesh :: Mesh (const Mesh& source, bool copyGeometry)
-  : impl (new Impl (*source.impl, copyGeometry))
-{}
-
 DELEGATE_CONST   (unsigned int      , Mesh, numVertices)
 DELEGATE_CONST   (unsigned int      , Mesh, numIndices)
 DELEGATE1_CONST  (const glm::vec3&  , Mesh, vertex, unsigned int)
 DELEGATE1_CONST  (unsigned int      , Mesh, index, unsigned int)
 DELEGATE1_CONST  (const glm::vec3&  , Mesh, normal, unsigned int)
 
+DELEGATE1        (void              , Mesh, copyNonGeometry, const Mesh&)
 DELEGATE1        (unsigned int      , Mesh, addIndex, unsigned int)
 DELEGATE1        (void              , Mesh, reserveIndices, unsigned int)
+DELEGATE1        (void              , Mesh, shrinkIndices, unsigned int)
 DELEGATE1        (unsigned int      , Mesh, addVertex, const glm::vec3&)
 DELEGATE2        (unsigned int      , Mesh, addVertex, const glm::vec3&, const glm::vec3&)
 DELEGATE1        (void              , Mesh, reserveVertices, unsigned int)
+DELEGATE1        (void              , Mesh, shrinkVertices, unsigned int)
 DELEGATE2        (void              , Mesh, index, unsigned int, unsigned int)
 DELEGATE2        (void              , Mesh, vertex, unsigned int, const glm::vec3&)
 DELEGATE2        (void              , Mesh, normal, unsigned int, const glm::vec3&)
-
-DELEGATE1_CONST  (bool              , Mesh, isNewVertex, unsigned int)
-DELEGATE2        (void              , Mesh, isNewVertex, unsigned int, bool)
 
 DELEGATE         (void              , Mesh, bufferData)
 DELEGATE_CONST   (glm::mat4x4       , Mesh, modelMatrix)

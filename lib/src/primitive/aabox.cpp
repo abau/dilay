@@ -22,3 +22,8 @@ PrimAABox :: PrimAABox (const glm::vec3& pos, float w)
 glm::vec3 PrimAABox :: halfWidth () const {
   return (this->_maximum - this->_minimum) * 0.5f;
 }
+
+bool PrimAABox :: contains  (const PrimAABox& box) const {
+  return glm::all (glm::lessThanEqual (this->_minimum, box._minimum))
+      && glm::all (glm::greaterThanEqual (this->_maximum, box._maximum));
+}

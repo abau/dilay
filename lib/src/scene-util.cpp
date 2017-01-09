@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include "dynamic/mesh.hpp"
 #include "mesh.hpp"
 #include "mesh-util.hpp"
 #include "scene.hpp"
@@ -12,7 +13,6 @@
 #include "sketch/fwd.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/path.hpp"
-#include "winged/mesh.hpp"
 #include "util.hpp"
 
 namespace {
@@ -80,9 +80,10 @@ namespace {
 
 namespace SceneUtil {
 
-  void toDlyFile (std::ostream& stream, const Scene& scene, bool isObjFile) {
-    scene.forEachConstMesh ([&stream] (const WingedMesh& mesh) {
-      ::toDlyFile (stream, mesh.makePrunedMesh ());
+  void toDlyFile (std::ostream& stream, Scene& scene, bool isObjFile) {
+    scene.forEachMesh ([&stream] (DynamicMesh& mesh) {
+      mesh.prune ();
+      ::toDlyFile (stream, mesh.mesh ());
     });
 
     if (isObjFile == false) {
@@ -92,7 +93,7 @@ namespace SceneUtil {
     }
   }
 
-  bool toDlyFile (const std::string& fileName, const Scene& scene, bool isObjFile) {
+  bool toDlyFile (const std::string& fileName, Scene& scene, bool isObjFile) {
     std::ofstream file (fileName);
 
     if (file.is_open ()) {
@@ -284,7 +285,7 @@ namespace SceneUtil {
                     , [] (Mesh& m) { return MeshUtil::checkConsistency (m); } ))
     {
       for (Mesh& m : meshes) {
-        scene.newWingedMesh (config, m);
+        scene.newDynamicMesh (config, m);
       }
       return true;
     }

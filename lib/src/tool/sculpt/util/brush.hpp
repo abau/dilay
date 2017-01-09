@@ -2,14 +2,14 @@
  * Copyright © 2015,2016 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#ifndef DILAY_SCULPT_BRUSH
-#define DILAY_SCULPT_BRUSH
+#ifndef DILAY_TOOL_SCULPT_BRUSH
+#define DILAY_TOOL_SCULPT_BRUSH
 
 #include <glm/glm.hpp>
-#include "winged/fwd.hpp"
 #include "macro.hpp"
 
-class AffectedFaces;
+class DynamicFaces;
+class DynamicMesh;
 class PrimPlane;
 class PrimSphere;
 class SculptBrush;
@@ -25,7 +25,7 @@ class SBParameters {
     virtual bool  discardBack () const { return true;  }
     virtual bool  reduce      () const { return false; }
 
-    virtual void  sculpt (const SculptBrush&, const VertexPtrSet&) const = 0;
+    virtual void  sculpt (const SculptBrush&, const DynamicFaces&) const = 0;
 };
 
 class SBIntensityParameter : virtual public SBParameters {
@@ -59,7 +59,7 @@ class SBCarveParameters : public SBIntensityParameter, public SBInvertParameter 
     bool inflate () const { return this->_inflate; }
     void inflate (bool v) { this->_inflate = v; }
 
-    void sculpt (const SculptBrush&, const VertexPtrSet&) const;
+    void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
   private:
     bool _inflate;
@@ -82,7 +82,7 @@ class SBDraglikeParameters : public SBParameters {
     void  discardBack (bool v)  { this->_discardBack = v; }
     void  linearStep  (bool v)  { this->_linearStep  = v; }
 
-    void  sculpt (const SculptBrush&, const VertexPtrSet&) const;
+    void  sculpt (const SculptBrush&, const DynamicFaces&) const;
 
   private:
     float _smoothness;
@@ -97,7 +97,7 @@ class SBSmoothParameters : public SBIntensityParameter {
     bool relaxOnly () const { return this->_relaxOnly; }
     void relaxOnly (bool v) { this->_relaxOnly = v; }
 
-    void sculpt (const SculptBrush&, const VertexPtrSet&) const;
+    void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
   private:
     bool  _relaxOnly;
@@ -107,22 +107,22 @@ class SBReduceParameters  : public SBIntensityParameter {
   public:
     bool reduce () const override { return true; }
 
-    void sculpt (const SculptBrush&, const VertexPtrSet&) const;
+    void sculpt (const SculptBrush&, const DynamicFaces&) const;
 };
 
 class SBFlattenParameters : public SBIntensityParameter {
   public:
-    void sculpt (const SculptBrush&, const VertexPtrSet&) const;
+    void sculpt (const SculptBrush&, const DynamicFaces&) const;
 };
 
 class SBCreaseParameters : public SBIntensityParameter, public SBInvertParameter {
   public:
-    void sculpt (const SculptBrush&, const VertexPtrSet&) const;
+    void sculpt (const SculptBrush&, const DynamicFaces&) const;
 };
 
 class SBPinchParameters : public SBInvertParameter {
   public:
-    void sculpt (const SculptBrush&, const VertexPtrSet&) const;
+    void sculpt (const SculptBrush&, const DynamicFaces&) const;
 };
 
 class SculptBrush {
@@ -133,28 +133,28 @@ class SculptBrush {
     float               detailFactor        () const;
     float               stepWidthFactor     () const;
     bool                subdivide           () const;
-    WingedMesh*         mesh                () const;
+    bool                hasMesh             () const;
+    DynamicMesh&        mesh                () const;
 
     void                radius              (float);
     void                detailFactor        (float);
     void                stepWidthFactor     (float);
     void                subdivide           (bool);
-    void                mesh                (WingedMesh*);
 
     float               subdivThreshold     () const;
-    bool                hasPosition         () const;
     const glm::vec3&    lastPosition        () const;
     const glm::vec3&    position            () const;
     const glm::vec3&    normal              () const;
     glm::vec3           delta               () const;
     PrimSphere          sphere              () const;
-    void                setPointOfAction    (const glm::vec3&, const glm::vec3&);
-    bool                updatePointOfAction (const glm::vec3&, const glm::vec3&);
+    float               stepWidth           () const;
+    bool                hasPointOfAction    () const;
+    void                setPointOfAction    (DynamicMesh&, const glm::vec3&, const glm::vec3&);
     void                resetPointOfAction  ();
     void                mirror              (const PrimPlane&);
 
-    AffectedFaces       getAffectedFaces    () const;
-    void                sculpt              (const VertexPtrSet&) const;
+    DynamicFaces        getAffectedFaces    () const;
+    void                sculpt              (const DynamicFaces&) const;
 
     template <typename T>
     T& initParameters () {
@@ -171,7 +171,6 @@ class SculptBrush {
       return *this->parametersPointer ();
     }
 
-    SAFE_REF_CONST (WingedMesh, mesh)
   private:
     SBParameters* parametersPointer () const;
     void          parametersPointer (SBParameters*);

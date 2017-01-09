@@ -14,9 +14,9 @@ struct ToolNewMesh::Impl {
   Impl (ToolNewMesh* s) : self (s) {}
 
   ToolResponse runInitialize () const {
-    this->self->snapshotWingedMeshes ();
-    this->self->state ().scene ().newWingedMesh ( this->self->state ().config ()
-                                                , MeshUtil::icosphere (3) );
+    this->self->snapshotDynamicMeshes ();
+    this->self->state ().scene ().newDynamicMesh ( this->self->state ().config ()
+                                                 , MeshUtil::icosphere (3) );
     return ToolResponse::Terminate;
   }
 };

@@ -15,29 +15,24 @@ class RenderMode;
 
 class Mesh {
   public:
-    /** `bufferData` must be called on the mutated mesh after copy or assignment */
     DECLARE_BIG6 (Mesh)
-
-    /** `Mesh (m,b)` calls copy constructor, but only copies
-     * vertices, indices, and normals, if `b == true`. */
-    Mesh (const Mesh&, bool);
 
     unsigned int       numVertices       () const;
     unsigned int       numIndices        () const;
     const glm::vec3&   vertex            (unsigned int) const;
     unsigned int       index             (unsigned int) const;
     const glm::vec3&   normal            (unsigned int) const;
+    void               copyNonGeometry   (const Mesh&);
     unsigned int       addIndex          (unsigned int);
     void               reserveIndices    (unsigned int);
+    void               shrinkIndices     (unsigned int);
     unsigned int       addVertex         (const glm::vec3&);
     unsigned int       addVertex         (const glm::vec3&, const glm::vec3&);
     void               reserveVertices   (unsigned int);
+    void               shrinkVertices    (unsigned int);
     void               index             (unsigned int, unsigned int);
     void               vertex            (unsigned int, const glm::vec3&);
     void               normal            (unsigned int, const glm::vec3&);
-
-    bool               isNewVertex       (unsigned int) const;
-    void               isNewVertex       (unsigned int, bool);
 
     void               bufferData        ();
     glm::mat4x4        modelMatrix       () const;

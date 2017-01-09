@@ -7,7 +7,6 @@
 #include <glm/gtc/constants.hpp>
 #include <unordered_map>
 #include <vector>
-#include "edge-map.hpp"
 #include "hash.hpp"
 #include "intersection.hpp"
 #include "mesh.hpp"
@@ -17,6 +16,59 @@
 #include "util.hpp"
 
 namespace {
+  template <typename T>
+  class EdgeMap {
+    public:
+      EdgeMap () {}
+
+      EdgeMap (unsigned int numVertices) {
+        this->resize (numVertices);
+      }
+
+      void resize (unsigned int numVertices) {
+        this->elements.resize (numVertices - 1);
+      }
+
+      T* find (unsigned int i1, unsigned int i2) {
+        const unsigned int minI = glm::min (i1, i2);
+        const unsigned int maxI = glm::max (i1, i2);
+
+        if (minI < this->elements.size ()) {
+          return this->findInSequence (elements[minI], maxI);
+        }
+        else {
+          return nullptr;
+        }
+      }
+
+      void add (unsigned int i1, unsigned i2, const T& element) {
+        const unsigned int minI = glm::min (i1, i2);
+        const unsigned int maxI = glm::max (i1, i2);
+
+        assert (minI < this->elements.size ());
+        assert (this->findInSequence (this->elements[minI], maxI) == nullptr);
+
+        std::vector <std::pair <unsigned int, T>>& seq = this->elements[minI];
+
+        if (seq.empty ()) {
+          seq.reserve (6);
+        }
+        seq.push_back (std::make_pair (maxI, element));
+      }
+
+    private:
+      T* findInSequence (std::vector <std::pair <unsigned int, T>>& sequence , unsigned int i) {
+        for (std::pair <unsigned int, T>& p : sequence) {
+          if (p.first == i) {
+            return &p.second;
+          }
+        }
+        return nullptr;
+      }
+
+      std::vector <std::vector <std::pair <unsigned int, T>>> elements;
+  };
+
   Mesh& finalized (Mesh& mesh) {
     for (unsigned int i = 0; i < mesh.numVertices (); i++) {
       mesh.normal (i, glm::normalize (mesh.vertex (i)));
@@ -277,7 +329,7 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
                                : Side::Border );
   };
 
-  Mesh                       m (mesh, false);
+  Mesh                       m;
   std::vector <glm::vec3>    positions;
   std::vector <Side>         sides;
   std::vector <BorderFlag>   borderFlags;
@@ -334,6 +386,8 @@ Mesh MeshUtil :: mirror (const Mesh& mesh, const PrimPlane& plane) {
       return newIndex;
     }
   };
+
+  m.copyNonGeometry (mesh);
 
   positions  .reserve (mesh.numVertices ());
   sides      .reserve (mesh.numVertices ());
