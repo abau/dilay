@@ -204,19 +204,6 @@ namespace {
 
     unsigned int numElements () const { return this->indices.size (); }
 
-    void rewriteIndices (const std::vector <unsigned int>& map) {
-      for (unsigned int& i : this->indices) {
-        assert (map.size () > i);
-        assert (map [i] != Util::invalidIndex ());
-        i = map [i];
-      }
-      if (this->hasChildren ()) {
-        for (Child& c : this->children) {
-          c->rewriteIndices (map);
-        }
-      }
-    }
-
     void updateStatistics (IndexOctreeStatistics& stats) const {
       stats.numNodes          += 1;
       stats.numElements       += this->numElements ();
@@ -499,15 +486,6 @@ struct IndexOctree::Impl {
     return this->degeneratedElements->indices.front ();
   }
 
-  void rewriteIndices (const std::vector <unsigned int>& map) {
-    if (this->hasRoot ()) {
-      this->root->rewriteIndices (map);
-    }
-    if (this->degeneratedElements) {
-      this->degeneratedElements->rewriteIndices (map);
-    }
-  }
-
   void printStatistics () const {
     IndexOctreeStatistics stats { 0, 0
                                 , Util::maxInt ()
@@ -548,5 +526,4 @@ DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimPlane&, const 
 DELEGATE2_CONST (void        , IndexOctree, intersects, const PrimAABox&, const IndexOctree::IntersectionCallback&)
 DELEGATE_CONST  (unsigned int, IndexOctree, numDegeneratedElements)
 DELEGATE_CONST  (unsigned int, IndexOctree, someDegeneratedElement)
-DELEGATE1       (void        , IndexOctree, rewriteIndices, const std::vector <unsigned int>&)
 DELEGATE_CONST  (void        , IndexOctree, printStatistics)

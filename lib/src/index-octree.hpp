@@ -7,7 +7,6 @@
 
 #include <glm/fwd.hpp>
 #include <functional>
-#include <vector>
 #include "macro.hpp"
 
 class Camera;
@@ -37,7 +36,6 @@ class IndexOctree {
     void             intersects             (const PrimAABox&, const IntersectionCallback&) const;
     unsigned int     numDegeneratedElements () const;
     unsigned int     someDegeneratedElement () const;
-    void             rewriteIndices         (const std::vector <unsigned int>&);
     void             printStatistics        () const;
 
   private:
