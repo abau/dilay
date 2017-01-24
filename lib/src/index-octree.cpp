@@ -7,6 +7,7 @@
 #include <array>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 #include "index-octree.hpp"
 #include "intersection.hpp"
 #include "maybe.hpp"
@@ -38,12 +39,12 @@ namespace {
   };
 
   struct IndexOctreeNode {
-    const glm::vec3            center;
-    const float                width;
-    const int                  depth;
-    const PrimAABox            looseAABox;
-    std::array <Child, 8>      children;
-    std::vector <unsigned int> indices;
+    const glm::vec3                   center;
+    const float                       width;
+    const int                         depth;
+    const PrimAABox                   looseAABox;
+    std::array <Child, 8>             children;
+    std::unordered_set <unsigned int> indices;
 
     static constexpr float relativeMinElementExtent = 0.1f;
 
@@ -131,13 +132,13 @@ namespace {
         return this->insertIntoChild (index, position, maxDimExtent);
       }
       else {
-        this->indices.push_back (index);
+        this->indices.insert (index);
         return *this;
       }
     }
 
     IndexOctreeNode& addDegeneratedElement (unsigned int index) {
-      this->indices.push_back (index);
+      this->indices.insert (index);
       return *this;
     }
 
@@ -146,13 +147,8 @@ namespace {
     }
 
     void deleteElement (unsigned int index) {
-      for (auto it = this->indices.begin (); it != this->indices.end (); ++it) {
-        if (*it == index) {
-          this->indices.erase (it);
-          return;
-        }
-      }
-      DILAY_IMPOSSIBLE;
+      unsigned int n = this->indices.erase (index);
+      assert (n > 0);
     }
 
     bool deleteEmptyChildren () {
@@ -483,7 +479,7 @@ struct IndexOctree::Impl {
 
   unsigned int someDegeneratedElement () const {
     assert (this->numDegeneratedElements () > 0);
-    return this->degeneratedElements->indices.front ();
+    return *this->degeneratedElements->indices.begin ();
   }
 
   void printStatistics () const {
