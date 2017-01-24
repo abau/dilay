@@ -5,20 +5,12 @@
 #ifndef DILAY_TIME_DELTA
 #define DILAY_TIME_DELTA
 
-#include "macro.hpp"
+#define TIME_DELTA(X) TimeDelta::resetTimer (); X ; TimeDelta::addBreakpoint (#X);
 
-#define TIME_DELTA(t) TimeDelta t (__FILE__,__LINE__);
-
-class TimeDelta {
-  public: 
-    DECLARE_BIG3 (TimeDelta)
-    TimeDelta    (const char*, int);
-
-    void printGlobal (const char* = nullptr) const;
-    void printLocal  (const char* = nullptr);
-
-  private:
-    IMPLEMENTATION
-};
+namespace TimeDelta {
+  void initialize    ();
+  void resetTimer    ();
+  void addBreakpoint (const char*);
+}
 
 #endif

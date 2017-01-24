@@ -3,55 +3,51 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <unordered_map>
 #include "time-delta.hpp"
 
-struct TimeDelta :: Impl {
-  const std::clock_t globalStart;
-        std::clock_t localStart;
-  const char*        file;
-  const int          line;
+namespace TimeDelta {
+  std::unordered_map <const char*, std::clock_t> localTimes;
+  std::clock_t globalTime;
+  std::clock_t startTime;
 
-  Impl (const char* f, int l) 
-    : globalStart (std::clock ()) 
-    , localStart  (globalStart) 
-    , file        (f)
-    , line        (l)
-    {}
+  void printResults () {
+    if (localTimes.empty () == false) {
+      std::cout << "##### time-delta (" 
+                << (float (globalTime) / CLOCKS_PER_SEC) << "s) ######\n";
 
-  Impl () : Impl (nullptr,0) {}
-
-  void printTime (const char* msg, std::clock_t time) const {
-    std::string buffer ("delta-time");
-
-    if (this->file) {
-      buffer.append ( " (" 
-                    + std::string (this->file) 
-                    + ":" 
-                    + std::to_string (this->line) 
-                    + ")" );
+      for (auto pair : localTimes) {
+        std::cout << std::setw (80)
+                  << std::left << pair.first << std::resetiosflags (std::ios_base::left)
+                  << (float (pair.second) / CLOCKS_PER_SEC)
+                  << "s ("
+                  << (100.0f * float (pair.second) / float (globalTime)) << "%)\n";
+      }
     }
+  }
 
-    if (msg) {
-      buffer.append (" [" + std::string (msg) + "]");
+  void initialize () {
+    globalTime = 0;
+    std::atexit (TimeDelta::printResults);
+  }
+
+  void resetTimer () {
+    startTime = std::clock ();
+  }
+
+  void addBreakpoint (const char* name) {
+    const std::clock_t diff = std::clock () - startTime;
+    auto it = localTimes.find (name);
+
+    if (it == localTimes.end ()) {
+      localTimes.emplace (name, diff);
     }
-
-    buffer.append (": " + std::to_string (float (std::clock () - time) / CLOCKS_PER_SEC) + "s");
-
-    std::cout << buffer << std::endl;
+    else {
+      it->second += diff;
+    }
+    globalTime += diff;
+    TimeDelta::resetTimer ();
   }
-
-  void printGlobal (const char* msg) const {
-    this->printTime (msg, this->globalStart);
-  }
-
-  void printLocal (const char* msg) {
-    this->printTime (msg, this->localStart);
-    this->localStart = std::clock ();
-  }
-};
-
-DELEGATE_BIG3         (TimeDelta)
-DELEGATE2_CONSTRUCTOR (TimeDelta,const char*,int)
-DELEGATE1_CONST       (void, TimeDelta, printGlobal, const char*)
-DELEGATE1             (void, TimeDelta, printLocal, const char*)
+}

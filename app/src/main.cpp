@@ -8,6 +8,7 @@
 #include "cache.hpp"
 #include "config.hpp"
 #include "opengl.hpp"
+#include "time-delta.hpp"
 #include "view/main-window.hpp"
 
 int main (int argv, char **args) {
@@ -41,5 +42,6 @@ int main (int argv, char **args) {
       config.toFile (configDir.filePath ("dilay.config").toStdString ());
     }
   });
+  TimeDelta::initialize ();
   return app.exec();
 }
