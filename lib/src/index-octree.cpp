@@ -112,6 +112,10 @@ namespace {
       add (7, glm::vec3 ( q,  q,  q));
     }
 
+    bool insertIntoChild (float maxDimExtent) const {
+      return maxDimExtent <= this->width * IndexOctreeNode::relativeMinElementExtent;
+    }
+
     IndexOctreeNode& insertIntoChild ( unsigned int index, const glm::vec3& position
                                      , float maxDimExtent )
     {
@@ -128,7 +132,9 @@ namespace {
     IndexOctreeNode& addElement ( unsigned int index, const glm::vec3& position
                                 , float maxDimExtent )
     {
-      if (maxDimExtent <= this->width * IndexOctreeNode::relativeMinElementExtent) {
+      assert (this->approxContains (position, maxDimExtent));
+
+      if (this->insertIntoChild (maxDimExtent)) {
         return this->insertIntoChild (index, position, maxDimExtent);
       }
       else {
@@ -374,6 +380,21 @@ struct IndexOctree::Impl {
     }
   }
 
+  void realignElement (unsigned int index, const glm::vec3& position, float maxDimExtent) {
+    assert (this->hasRoot ());
+    assert (index < this->elementNodeMap.size ()); 
+    assert (this->elementNodeMap [index]); 
+
+    IndexOctreeNode* node = this->elementNodeMap [index];
+
+    if ( node->approxContains (position, maxDimExtent) == false
+      || node->insertIntoChild (maxDimExtent) )
+    {
+      this->deleteElement (index);
+      this->addElement (index, position, maxDimExtent);
+    }
+  }
+
   void addDegeneratedElement (unsigned int index) {
     if (this->degeneratedElements == false) {
       this->degeneratedElements = IndexOctreeNode (glm::vec3 (0.0f), 0.0f, 0);
@@ -510,6 +531,7 @@ DELEGATE_BIG4_COPY (IndexOctree)
 DELEGATE_CONST  (bool        , IndexOctree, hasRoot)
 DELEGATE2       (void        , IndexOctree, setupRoot, const glm::vec3&, float)
 DELEGATE3       (void        , IndexOctree, addElement, unsigned int, const glm::vec3&, float)
+DELEGATE3       (void        , IndexOctree, realignElement, unsigned int, const glm::vec3&, float)
 DELEGATE1       (void        , IndexOctree, addDegeneratedElement, unsigned int)
 DELEGATE1       (void        , IndexOctree, deleteElement, unsigned int)
 DELEGATE        (void        , IndexOctree, deleteEmptyChildren)

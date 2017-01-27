@@ -24,6 +24,7 @@ class IndexOctree {
     bool             hasRoot                () const;
     void             setupRoot              (const glm::vec3&, float);
     void             addElement             (unsigned int, const glm::vec3&, float);
+    void             realignElement         (unsigned int, const glm::vec3&, float);
     void             addDegeneratedElement  (unsigned int);
     void             deleteElement          (unsigned int);
     void             deleteEmptyChildren    ();

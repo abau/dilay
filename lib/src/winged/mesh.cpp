@@ -169,8 +169,13 @@ struct WingedMesh::Impl {
   }
 
   void realignFace (const WingedFace& face, const PrimTriangle& geometry) {
-    this->octree.deleteElement (face.index ());
-    this->addFaceToOctree (face, geometry);
+    if (geometry.isDegenerated ()) {
+      this->octree.deleteElement (face.index ());
+      this->octree.addDegeneratedElement (face.index ());
+    }
+    else {
+      this->octree.realignElement (face.index (), geometry.center (), geometry.maxDimExtent ());
+    }
   }
 
   void realignFace (const WingedFace& face) {
