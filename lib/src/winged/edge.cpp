@@ -37,6 +37,7 @@ bool WingedEdge::operator!= (const WingedEdge& other) const {
 }
 
 bool WingedEdge :: isLeftFace (const WingedFace& face) const {
+#ifndef NDEBUG
   if (face == *this->_leftFace) {
     return true;
   }
@@ -46,6 +47,9 @@ bool WingedEdge :: isLeftFace (const WingedFace& face) const {
   else {
     DILAY_IMPOSSIBLE
   }
+#else
+  return face == *this->_leftFace;
+#endif
 }
 
 bool WingedEdge :: isRightFace (const WingedFace& face) const { 
@@ -53,6 +57,7 @@ bool WingedEdge :: isRightFace (const WingedFace& face) const {
 }
 
 bool WingedEdge :: isVertex1 (const WingedVertex& vertex) const {
+#ifndef NDEBUG
   if (vertex == *this->_vertex1) {
     return true;
   }
@@ -62,6 +67,9 @@ bool WingedEdge :: isVertex1 (const WingedVertex& vertex) const {
   else {
     DILAY_IMPOSSIBLE
   }
+#else
+  return vertex == *this->_vertex1;
+#endif
 }
 
 bool WingedEdge :: isVertex2 (const WingedVertex& vertex) const { 
