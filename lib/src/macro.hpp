@@ -130,63 +130,60 @@
 #define DELEGATE_CONSTRUCTOR_BASE(from,params,fromArgs,base,baseArgs) \
   from :: from params : base baseArgs, impl (new Impl fromArgs ) {}
 
-#define DELEGATE_BASE(r,from,method,ifaceParams,implArgs) \
+#define DELEGATE_IMPL(r,from,method,ifaceParams,implArgs) \
   r from :: method ifaceParams { return this->impl-> method implArgs ; }
 
 #define DELEGATE(r,from,method) \
-  DELEGATE_BASE (r,from,method,(),())
+  DELEGATE_IMPL (r,from,method,(),())
 
 #define DELEGATE1(r,from,method,t1) \
-  DELEGATE_BASE (r,from,method,(t1 a1),( std::forward<t1>(a1) ))
+  DELEGATE_IMPL (r,from,method,(t1 a1),( std::forward<t1>(a1) ))
 
 #define DELEGATE2(r,from,method,t1,t2) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2), ( std::forward<t1>(a1) \
                                               , std::forward<t2>(a2) ))
 
 #define DELEGATE3(r,from,method,t1,t2,t3) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2,t3 a3), ( std::forward<t1>(a1) \
                                                     , std::forward<t2>(a2) \
                                                     , std::forward<t3>(a3) ))
 
 #define DELEGATE4(r,from,method,t1,t2,t3,t4) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4), ( std::forward<t1>(a1) \
                                                           , std::forward<t2>(a2) \
                                                           , std::forward<t3>(a3) \
                                                           , std::forward<t4>(a4) ))
 
 #define DELEGATE5(r,from,method,t1,t2,t3,t4,t5) \
-  DELEGATE_BASE (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5), ( std::forward<t1>(a1) \
                                                                 , std::forward<t2>(a2) \
                                                                 , std::forward<t3>(a3) \
                                                                 , std::forward<t4>(a4) \
                                                                 , std::forward<t5>(a5) ))
 
-#define DELEGATE_BASE_CONST(r,from,method,ifaceParams,implArgs) \
-  r from :: method ifaceParams const { return this->impl-> method implArgs ; }
-
 #define DELEGATE_CONST(r,from,method) \
-  DELEGATE_BASE_CONST (r,from,method,(),())
+  DELEGATE_IMPL (r,from,method,() const,())
 
 #define DELEGATE1_CONST(r,from,method,t1) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1), ( std::forward<t1>(a1) ))
+  DELEGATE_IMPL (r,from,method,(t1 a1) const, ( std::forward<t1>(a1) ))
 
 #define DELEGATE2_CONST(r,from,method,t1,t2) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2) const, ( std::forward<t1>(a1) \
                                                     , std::forward<t2>(a2) ))
 
 #define DELEGATE3_CONST(r,from,method,t1,t2,t3) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2,t3 a3) const, ( std::forward<t1>(a1) \
                                                           , std::forward<t2>(a2) \
                                                           , std::forward<t3>(a3) ))
 
 #define DELEGATE4_CONST(r,from,method,t1,t2,t3,t4) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4) const, ( std::forward<t1>(a1) \
                                                                 , std::forward<t2>(a2) \
                                                                 , std::forward<t3>(a3) \
                                                                 , std::forward<t4>(a4) ))
 
 #define DELEGATE5_CONST(r,from,method,t1,t2,t3,t4,t5) \
-  DELEGATE_BASE_CONST (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5), ( std::forward<t1>(a1) \
+  DELEGATE_IMPL (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) const, ( std::forward<t1>(a1) \
                                                                       , std::forward<t2>(a2) \
                                                                       , std::forward<t3>(a3) \
                                                                       , std::forward<t4>(a4) \
