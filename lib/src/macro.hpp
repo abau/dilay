@@ -210,6 +210,66 @@
 #define DELEGATE5_STATIC(r,from,method,t1,t2,t3,t4,t5) \
   DELEGATE_BASE_STATIC (r,from,method,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5),(a1,a2,a3,a4,a5))
 
+
+#define DELEGATE_IMPL_MEMBER(r,from,method,member,ifaceParams,implArgs) \
+  r from :: method ifaceParams { return this->impl-> member . method implArgs ; }
+
+#define DELEGATE_MEMBER(r,from,method,member) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(),())
+
+#define DELEGATE1_MEMBER(r,from,method,member,t1) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1),( std::forward<t1>(a1) ))
+
+#define DELEGATE2_MEMBER(r,from,method,member,t1,t2) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2), ( std::forward<t1>(a1) \
+                                                            , std::forward<t2>(a2) ))
+
+#define DELEGATE3_MEMBER(r,from,method,member,t1,t2,t3) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2,t3 a3), ( std::forward<t1>(a1) \
+                                                                  , std::forward<t2>(a2) \
+                                                                  , std::forward<t3>(a3) ))
+
+#define DELEGATE4_MEMBER(r,from,method,member,t1,t2,t3,t4) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2,t3 a3,t4 a4), ( std::forward<t1>(a1) \
+                                                                        , std::forward<t2>(a2) \
+                                                                        , std::forward<t3>(a3) \
+                                                                        , std::forward<t4>(a4) ))
+
+#define DELEGATE5_MEMBER(r,from,method,member,t1,t2,t3,t4,t5) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5), ( std::forward<t1>(a1) \
+                                                                              , std::forward<t2>(a2) \
+                                                                              , std::forward<t3>(a3) \
+                                                                              , std::forward<t4>(a4) \
+                                                                              , std::forward<t5>(a5) ))
+
+#define DELEGATE_MEMBER_CONST(r,from,method,member) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,() const,())
+
+#define DELEGATE1_MEMBER_CONST(r,from,method,member,t1) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1) const,( std::forward<t1>(a1) ))
+
+#define DELEGATE2_MEMBER_CONST(r,from,method,member,t1,t2) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2) const, ( std::forward<t1>(a1) \
+                                                                  , std::forward<t2>(a2) ))
+
+#define DELEGATE3_MEMBER_CONST(r,from,method,member,t1,t2,t3) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2,t3 a3) const, ( std::forward<t1>(a1) \
+                                                                        , std::forward<t2>(a2) \
+                                                                        , std::forward<t3>(a3) ))
+
+#define DELEGATE4_MEMBER_CONST(r,from,method,member,t1,t2,t3,t4) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2,t3 a3,t4 a4) const, ( std::forward<t1>(a1) \
+                                                                              , std::forward<t2>(a2) \
+                                                                              , std::forward<t3>(a3) \
+                                                                              , std::forward<t4>(a4) ))
+
+#define DELEGATE5_MEMBER_CONST(r,from,method,member,t1,t2,t3,t4,t5) \
+  DELEGATE_IMPL_MEMBER (r,from,method,member,(t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) const, ( std::forward<t1>(a1) \
+                                                                                    , std::forward<t2>(a2) \
+                                                                                    , std::forward<t3>(a3) \
+                                                                                    , std::forward<t4>(a4) \
+                                                                                    , std::forward<t5>(a5) ))
+
 // big 2 delegators
 
 #define DELEGATE_BIG2(from) \
