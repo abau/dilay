@@ -5,6 +5,7 @@
 #ifndef DILAY_UTIL
 #define DILAY_UTIL
 
+#include <algorithm>
 #include <cstdlib>
 #include <functional>
 #include <glm/fwd.hpp>
@@ -87,6 +88,44 @@ namespace Util {
   }
   template <>
   void withCLocale (const std::function <void ()>& f);
+
+  template <typename T>
+  void prune ( std::vector <T>& v, const std::function <bool (const T&)>& p
+             , std::vector <unsigned int>* indexMap = nullptr )
+  {
+    if (indexMap) {
+      indexMap->resize (v.size (), Util::invalidIndex ());
+    }
+    auto lastIt = std::find_if_not (v.rbegin (), v.rend (), p);
+
+    if (lastIt == v.rend ()) {
+      v.clear ();
+    }
+    else {
+      unsigned int last = v.size () - (lastIt - v.rbegin ()) - 1;
+
+      for (unsigned int i = 0; i <= last; i++) {
+        if (p (v[i])) {
+          v[i] = v[last];
+
+          if (indexMap) {
+            (*indexMap)[i] = Util::invalidIndex ();
+            (*indexMap)[last] = i;
+          }
+
+          do {
+            last--;
+          } while (p (v[last]));
+        }
+        else {
+          if (indexMap) {
+            (*indexMap)[i] = i;
+          }
+        }
+      }
+      v.resize (last + 1);
+    }
+  }
 }
 
 #endif

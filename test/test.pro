@@ -15,6 +15,7 @@ SOURCES += \
            src/test-misc.cpp \
            src/test-monotone-deque.cpp \
            src/test-octree.cpp \
+           src/test-prune.cpp \
            src/test-tree.cpp
 
 HEADERS += \
@@ -25,6 +26,7 @@ HEADERS += \
            src/test-misc.hpp \
            src/test-monotone-deque.hpp \
            src/test-octree.hpp \
+           src/test-prune.hpp \
            src/test-tree.hpp
 
 win32:CONFIG(release, debug|release):    LIBS += -L$$OUT_PWD/../lib/release/ -ldilay

@@ -11,6 +11,7 @@
 #include "test-misc.hpp"
 #include "test-monotone-deque.hpp"
 #include "test-octree.hpp"
+#include "test-prune.hpp"
 #include "test-tree.hpp"
 
 int main () {
@@ -28,6 +29,7 @@ int main () {
   TestDistance     ::test  ();
   TestMonotoneDeque::test1 ();
   TestMonotoneDeque::test2 ();
+  TestPrune        ::test  ();
 
   std::cout << "all tests run successfully\n";
   return 0;
