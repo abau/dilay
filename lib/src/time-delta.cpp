@@ -9,21 +9,39 @@
 #include "time-delta.hpp"
 
 namespace TimeDelta {
-  std::unordered_map <const char*, std::clock_t> localTimes;
+  struct TimeData {
+    unsigned int numCalls;
+    std::clock_t localTime;
+
+    TimeData (std::clock_t c)
+      : numCalls (1)
+      , localTime (c)
+    {}
+
+    void call (std::clock_t c) {
+      this->localTime += c;
+      this->numCalls++;
+    }
+  };
+
+  std::unordered_map <const char*, TimeData> data;
   std::clock_t globalTime;
   std::clock_t startTime;
 
   void printResults () {
-    if (localTimes.empty () == false) {
+    if (data.empty () == false) {
       std::cout << "##### time-delta (" 
                 << (float (globalTime) / CLOCKS_PER_SEC) << "s) ######\n";
 
-      for (auto pair : localTimes) {
+      for (auto pair : data) {
         std::cout << std::setw (80)
                   << std::left << pair.first << std::resetiosflags (std::ios_base::left)
-                  << (float (pair.second) / CLOCKS_PER_SEC)
+                  << (float (pair.second.localTime) / CLOCKS_PER_SEC)
                   << "s ("
-                  << (100.0f * float (pair.second) / float (globalTime)) << "%)\n";
+                  << (100.0f * float (pair.second.localTime) / float (globalTime)) << "%) "
+                  << "(" << pair.second.numCalls << " calls -> "
+                  << (1000.0f * (float (pair.second.localTime) / CLOCKS_PER_SEC) / float (pair.second.numCalls))
+                  << "ms / call)\n";
       }
     }
   }
@@ -39,13 +57,13 @@ namespace TimeDelta {
 
   void addBreakpoint (const char* name) {
     const std::clock_t diff = std::clock () - startTime;
-    auto it = localTimes.find (name);
+    auto it = data.find (name);
 
-    if (it == localTimes.end ()) {
-      localTimes.emplace (name, diff);
+    if (it == data.end ()) {
+      data.emplace (name, TimeData (diff));
     }
     else {
-      it->second += diff;
+      it->second.call (diff);
     }
     globalTime += diff;
     TimeDelta::resetTimer ();
