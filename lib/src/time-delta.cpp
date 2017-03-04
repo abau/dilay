@@ -24,7 +24,8 @@ namespace TimeDelta {
     }
   };
 
-  std::unordered_map <const char*, TimeData> data;
+  const unsigned int nameWidth = 80;
+  std::unordered_map <std::string, TimeData> data;
   std::clock_t globalTime;
   std::clock_t startTime;
 
@@ -34,7 +35,7 @@ namespace TimeDelta {
                 << (float (globalTime) / CLOCKS_PER_SEC) << "s) ######\n";
 
       for (auto pair : data) {
-        std::cout << std::setw (80)
+        std::cout << std::setw (nameWidth + 1)
                   << std::left << pair.first << std::resetiosflags (std::ios_base::left)
                   << (float (pair.second.localTime) / CLOCKS_PER_SEC)
                   << "s ("
@@ -57,10 +58,11 @@ namespace TimeDelta {
 
   void addBreakpoint (const char* name) {
     const std::clock_t diff = std::clock () - startTime;
-    auto it = data.find (name);
+    const std::string key = std::string (name).substr (0, nameWidth);
+    auto it = data.find (key);
 
     if (it == data.end ()) {
-      data.emplace (name, TimeData (diff));
+      data.emplace (key, TimeData (diff));
     }
     else {
       it->second.call (diff);
