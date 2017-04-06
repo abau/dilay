@@ -18,9 +18,9 @@ struct ToolSculptCarve::Impl {
   void runSetupBrush (SculptBrush& brush) {
     auto& params = brush.initParameters <SBCarveParameters> ();
 
-    params.intensity (this->self->cache ().get <float> ("intensity", 0.02f));
+    params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
     params.invert    (this->self->cache ().get <bool>  ("invert",    false));
-    params.inflate   (this->self->cache ().get <bool>  ("inflate",   false));
+    params.flat (this->self->cache ().get <bool>  ("flat", true));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -28,7 +28,7 @@ struct ToolSculptCarve::Impl {
   void runSetupProperties (ViewTwoColumnGrid& properties) {
     auto& params = this->self->brush ().parameters <SBCarveParameters> ();
 
-    ViewDoubleSlider& intensityEdit = ViewUtil::slider (3, 0.0f, params.intensity (), 0.05f);
+    ViewDoubleSlider& intensityEdit = ViewUtil::slider (2, 0.0f, params.intensity (), 1.0f);
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);
@@ -43,12 +43,12 @@ struct ToolSculptCarve::Impl {
     });
     properties.add (invertEdit);
 
-    QCheckBox& inflateEdit = ViewUtil::checkBox (QObject::tr ("Inflate"), params.inflate ());
-    ViewUtil::connect (inflateEdit, [this,&params] (bool i) {
-      params.inflate (i);
-      this->self->cache ().set ("inflate", i);
+    QCheckBox& flatEdit = ViewUtil::checkBox (QObject::tr ("Flat"), params.flat ());
+    ViewUtil::connect (flatEdit, [this,&params] (bool f) {
+      params.flat (f);
+      this->self->cache ().set ("flat", f);
     });
-    properties.add (inflateEdit);
+    properties.add (flatEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {

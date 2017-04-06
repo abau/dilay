@@ -13,23 +13,39 @@
 
 void SBCarveParameters :: sculpt (const SculptBrush& brush, const DynamicFaces& faces) const {
   if (faces.isEmpty () == false) {
-    const glm::vec3 avgDir = this->inflate () 
-                           ? glm::vec3 (0.0f) 
-                           : this->invert (brush.mesh ().averageNormal (faces));
+    if (this->flat ()) {
+      const float intensity = 0.3f * this->intensity ();
+      const glm::vec3 avgNormal = brush.mesh ().averageNormal (faces);
+      const glm::vec3 planePos = brush.position () + (avgNormal * intensity * brush.radius ());
+      const PrimPlane plane (planePos, avgNormal);
 
-    brush.mesh ().forEachVertex (faces, [this, &brush, &avgDir] (unsigned int i) {
-      const glm::vec3& oldPos    = brush.mesh ().vertex (i);
-      const float      intensity = this->intensity () * brush.radius ();
-      const float      factor    = intensity
-                                 * Util::smoothStep ( oldPos, brush.position ()
-                                                    , 0.0f, brush.radius () );
-      const glm::vec3 direction = this->inflate ()
-                                ? this->invert (brush.mesh ().vertexNormal (i))
-                                : avgDir;
-      const glm::vec3 newPos    = oldPos + (factor * direction);
+      brush.mesh ().forEachVertex (faces, [this, &brush, &avgNormal, &plane, intensity]
+                                          (unsigned int i)
+      {
+        const glm::vec3& oldPos   = brush.mesh ().vertex (i);
+        const float      factor   = intensity
+                                  * Util::linearStep ( oldPos, brush.position ()
+                                                     , 0.5f * brush.radius (), brush.radius () );
+        const float      distance = glm::min (0.0f, plane.distance (oldPos));
+        const glm::vec3  newPos   = oldPos - (avgNormal * factor * distance);
 
-      brush.mesh ().vertex (i, newPos);
-    });
+        brush.mesh ().vertex (i, newPos);
+      });
+    }
+    else {
+      const float intensity = 0.1f * this->intensity () * brush.radius ();
+      const glm::vec3 avgDir = this->invert (brush.mesh ().averageNormal (faces));
+
+      brush.mesh ().forEachVertex (faces, [this, &brush, &avgDir, intensity] (unsigned int i) {
+        const glm::vec3& oldPos    = brush.mesh ().vertex (i);
+        const float      factor    = intensity
+                                   * Util::smoothStep ( oldPos, brush.position ()
+                                                      , 0.0f, brush.radius () );
+        const glm::vec3 newPos = oldPos + (factor * avgDir);
+
+        brush.mesh ().vertex (i, newPos);
+      });
+    }
   }
 }
 

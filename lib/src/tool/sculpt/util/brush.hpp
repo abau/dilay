@@ -54,15 +54,15 @@ class SBInvertParameter : virtual public SBParameters {
 
 class SBCarveParameters : public SBIntensityParameter, public SBInvertParameter {
   public:
-    SBCarveParameters () : _inflate (false) {}
+    SBCarveParameters () : _flat (true) {}
 
-    bool inflate () const { return this->_inflate; }
-    void inflate (bool v) { this->_inflate = v; }
+    bool flat () const { return this->_flat; }
+    void flat (bool v) { this->_flat = v; }
 
     void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
   private:
-    bool _inflate;
+    bool _flat;
 };
 
 class SBDraglikeParameters : public SBParameters {
