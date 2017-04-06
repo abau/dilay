@@ -36,7 +36,7 @@ struct State::Impl {
     , history    (this->config)
     , scene      (this->config)
   {
-    this->scene.newDynamicMesh (this->config, MeshUtil::icosphere (3));
+    this->scene.newDynamicMesh (this->config, MeshUtil::icosphere (4));
   }
 
   ~Impl () {
