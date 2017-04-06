@@ -316,8 +316,8 @@ struct ToolSculpt::Impl {
     }
   }
 
-  bool carvelikeStroke ( const ViewPointingEvent& e, bool useRecentMesh
-                       , const std::function <void ()>* toggle )
+  bool drawlikeStroke ( const ViewPointingEvent& e, bool useRecentMesh
+                      , const std::function <void ()>* toggle )
   {
     DynamicMeshIntersection cursorIntersection;
 
@@ -448,7 +448,7 @@ GETTER          (ViewCursor& , ToolSculpt, cursor)
 DELEGATE2_CONST (void        , ToolSculpt, addDefaultToolTip, ViewToolTip&, bool)
 DELEGATE2_CONST (void        , ToolSculpt, addSecSliderWheelToolTip, ViewToolTip&, const QString&)
 DELEGATE        (void        , ToolSculpt, sculpt)
-DELEGATE3       (bool        , ToolSculpt, carvelikeStroke, const ViewPointingEvent&, bool, const std::function <void ()>*)
+DELEGATE3       (bool        , ToolSculpt, drawlikeStroke, const ViewPointingEvent&, bool, const std::function <void ()>*)
 DELEGATE2       (bool        , ToolSculpt, draglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
 DELEGATE1       (void        , ToolSculpt, registerSecondarySlider, ViewDoubleSlider&)
 DELEGATE        (ToolResponse, ToolSculpt, runInitialize)

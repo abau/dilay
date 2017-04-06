@@ -11,7 +11,7 @@
 #include "tool/sculpt/util/brush.hpp"
 #include "util.hpp"
 
-void SBCarveParameters :: sculpt (const SculptBrush& brush, const DynamicFaces& faces) const {
+void SBDrawParameters :: sculpt (const SculptBrush& brush, const DynamicFaces& faces) const {
   if (faces.isEmpty () == false) {
     if (this->flat ()) {
       const float intensity = 0.3f * this->intensity ();

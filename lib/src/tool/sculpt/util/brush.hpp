@@ -52,9 +52,9 @@ class SBInvertParameter : virtual public SBParameters {
     bool _invert;
 };
 
-class SBCarveParameters : public SBIntensityParameter, public SBInvertParameter {
+class SBDrawParameters : public SBIntensityParameter, public SBInvertParameter {
   public:
-    SBCarveParameters () : _flat (true) {}
+    SBDrawParameters () : _flat (true) {}
 
     bool flat () const { return this->_flat; }
     void flat (bool v) { this->_flat = v; }

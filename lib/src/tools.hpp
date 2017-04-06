@@ -16,7 +16,7 @@ DECLARE_TOOL (ToolDeleteMesh, "delete-mesh", DECLARE_TOOL_RUN_RELEASE_EVENT)
 
 DECLARE_TOOL (ToolNewMesh, "new-mesh", DECLARE_TOOL_RUN_INITIALIZE)
 
-DECLARE_TOOL_SCULPT (ToolSculptCarve  , "sculpt/carve")
+DECLARE_TOOL_SCULPT (ToolSculptDraw   , "sculpt/draw")
 DECLARE_TOOL_SCULPT (ToolSculptDrag   , "sculpt/drag")
 DECLARE_TOOL_SCULPT (ToolSculptGrab   , "sculpt/grab")
 DECLARE_TOOL_SCULPT (ToolSculptSmooth , "sculpt/smooth")

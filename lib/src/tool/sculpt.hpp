@@ -24,7 +24,7 @@ class ToolSculpt : public Tool {
     void         addDefaultToolTip        (ViewToolTip&, bool) const;
     void         addSecSliderWheelToolTip (ViewToolTip&, const QString&) const;
     void         sculpt                   ();
-    bool         carvelikeStroke          ( const ViewPointingEvent&, bool
+    bool         drawlikeStroke           ( const ViewPointingEvent&, bool
                                           , const std::function <void ()>* = nullptr );
     bool         draglikeStroke           (const ViewPointingEvent&, ToolUtilMovement&);
     void         registerSecondarySlider  (ViewDoubleSlider&);

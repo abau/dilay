@@ -40,7 +40,7 @@ struct ToolSculptReduce::Impl {
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {
-    return this->self->carvelikeStroke (e, false);
+    return this->self->drawlikeStroke (e, false);
   }
 };
 

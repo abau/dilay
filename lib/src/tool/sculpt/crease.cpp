@@ -53,7 +53,7 @@ struct ToolSculptCrease::Impl {
     const std::function <void ()> toggleInvert = [this] () {
       this->self->brush ().parameters <SBCreaseParameters> ().toggleInvert ();
     };
-    return this->self->carvelikeStroke (e, true, &toggleInvert);
+    return this->self->drawlikeStroke (e, true, &toggleInvert);
   }
 };
 

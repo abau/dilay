@@ -41,7 +41,7 @@ struct ToolSculptPinch::Impl {
     const std::function <void ()> toggleInvert = [this] () {
       this->self->brush ().parameters <SBPinchParameters> ().toggleInvert ();
     };
-    return this->self->carvelikeStroke (e, false, &toggleInvert);
+    return this->self->drawlikeStroke (e, false, &toggleInvert);
   }
 };
 

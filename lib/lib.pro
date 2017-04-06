@@ -58,7 +58,7 @@ SOURCES += \
            src/tool/new-sketch.cpp \
            src/tool/rebalance-sketch.cpp \
            src/tool/sculpt.cpp \
-           src/tool/sculpt/carve.cpp \
+           src/tool/sculpt/draw.cpp \
            src/tool/sculpt/crease.cpp \
            src/tool/sculpt/drag.cpp \
            src/tool/sculpt/flatten.cpp \

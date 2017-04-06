@@ -10,13 +10,13 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-struct ToolSculptCarve::Impl {
-  ToolSculptCarve* self;
+struct ToolSculptDraw::Impl {
+  ToolSculptDraw* self;
 
-  Impl (ToolSculptCarve* s) : self (s) {}
+  Impl (ToolSculptDraw* s) : self (s) {}
 
   void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.initParameters <SBCarveParameters> ();
+    auto& params = brush.initParameters <SBDrawParameters> ();
 
     params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
     params.invert    (this->self->cache ().get <bool>  ("invert",    false));
@@ -26,7 +26,7 @@ struct ToolSculptCarve::Impl {
   void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties) {
-    auto& params = this->self->brush ().parameters <SBCarveParameters> ();
+    auto& params = this->self->brush ().parameters <SBDrawParameters> ();
 
     ViewDoubleSlider& intensityEdit = ViewUtil::slider (2, 0.0f, params.intensity (), 1.0f);
     ViewUtil::connect (intensityEdit, [this,&params] (float i) {
@@ -58,10 +58,10 @@ struct ToolSculptCarve::Impl {
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {
     const std::function <void ()> toggleInvert = [this] () {
-      this->self->brush ().parameters <SBCarveParameters> ().toggleInvert ();
+      this->self->brush ().parameters <SBDrawParameters> ().toggleInvert ();
     };
-    return this->self->carvelikeStroke (e, false, &toggleInvert);
+    return this->self->drawlikeStroke (e, false, &toggleInvert);
   }
 };
 
-DELEGATE_TOOL_SCULPT (ToolSculptCarve)
+DELEGATE_TOOL_SCULPT (ToolSculptDraw)
