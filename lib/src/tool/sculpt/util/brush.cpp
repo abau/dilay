@@ -15,19 +15,16 @@ void SBDrawParameters :: sculpt (const SculptBrush& brush, const DynamicFaces& f
   if (faces.isEmpty () == false) {
     if (this->flat ()) {
       const float intensity = 0.3f * this->intensity ();
-      const glm::vec3 avgNormal = brush.mesh ().averageNormal (faces);
-      const glm::vec3 planePos = brush.position () + (avgNormal * intensity * brush.radius ());
-      const PrimPlane plane (planePos, avgNormal);
+      const glm::vec3 planePos = brush.position () + (brush.normal () * intensity * brush.radius ());
+      const PrimPlane plane (planePos, brush.normal ());
 
-      brush.mesh ().forEachVertex (faces, [this, &brush, &avgNormal, &plane, intensity]
-                                          (unsigned int i)
-      {
+      brush.mesh ().forEachVertex (faces, [this, &brush, &plane, intensity] (unsigned int i) {
         const glm::vec3& oldPos   = brush.mesh ().vertex (i);
         const float      factor   = intensity
                                   * Util::linearStep ( oldPos, brush.position ()
                                                      , 0.5f * brush.radius (), brush.radius () );
         const float      distance = glm::min (0.0f, plane.distance (oldPos));
-        const glm::vec3  newPos   = oldPos - (avgNormal * factor * distance);
+        const glm::vec3  newPos   = oldPos - (brush.normal () * factor * distance);
 
         brush.mesh ().vertex (i, newPos);
       });

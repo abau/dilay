@@ -21,6 +21,7 @@ struct ToolSculptDraw::Impl {
     params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
     params.invert    (this->self->cache ().get <bool>  ("invert",    false));
     params.flat (this->self->cache ().get <bool>  ("flat", true));
+    params.constantHeight (this->self->cache ().get <bool>  ("constant-height", true));
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -49,6 +50,14 @@ struct ToolSculptDraw::Impl {
       this->self->cache ().set ("flat", f);
     });
     properties.add (flatEdit);
+
+    QCheckBox& constantHeightEdit = ViewUtil::checkBox ( QObject::tr ("Constant height")
+                                                       , params.constantHeight ());
+    ViewUtil::connect (constantHeightEdit, [this,&params] (bool v) {
+      params.constantHeight (v);
+      this->self->cache ().set ("constant-height", v);
+    });
+    properties.add (constantHeightEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip) {
@@ -57,10 +66,12 @@ struct ToolSculptDraw::Impl {
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e) {
-    const std::function <void ()> toggleInvert = [this] () {
-      this->self->brush ().parameters <SBDrawParameters> ().toggleInvert ();
+    SBDrawParameters& params = this->self->brush ().parameters <SBDrawParameters> ();
+
+    const std::function <void ()> toggleInvert = [&params] () {
+      params.toggleInvert ();
     };
-    return this->self->drawlikeStroke (e, false, &toggleInvert);
+    return this->self->drawlikeStroke (e, params.constantHeight (), &toggleInvert);
   }
 };
 

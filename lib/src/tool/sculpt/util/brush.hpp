@@ -58,11 +58,14 @@ class SBDrawParameters : public SBIntensityParameter, public SBInvertParameter {
 
     bool flat () const { return this->_flat; }
     void flat (bool v) { this->_flat = v; }
+    bool constantHeight () const { return this->_constantHeight; }
+    void constantHeight (bool v) { this->_constantHeight = v; }
 
     void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
   private:
     bool _flat;
+    bool _constantHeight;
 };
 
 class SBDraglikeParameters : public SBParameters {
