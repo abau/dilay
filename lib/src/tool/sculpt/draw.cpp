@@ -20,7 +20,7 @@ struct ToolSculptDraw::Impl {
 
     params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
     params.invert    (this->self->cache ().get <bool>  ("invert",    false));
-    params.flat (this->self->cache ().get <bool>  ("flat", true));
+    params.flat (this->self->cache ().get <bool>  ("flat", false));
     params.constantHeight (this->self->cache ().get <bool>  ("constant-height", true));
   }
 
