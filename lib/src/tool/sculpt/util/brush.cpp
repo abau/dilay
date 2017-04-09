@@ -15,8 +15,9 @@ void SBDrawParameters :: sculpt (const SculptBrush& brush, const DynamicFaces& f
   if (faces.isEmpty () == false) {
     if (this->flat ()) {
       const float intensity = 0.3f * this->intensity ();
-      const glm::vec3 planePos = brush.position () + (brush.normal () * intensity * brush.radius ());
-      const PrimPlane plane (planePos, brush.normal ());
+      const glm::vec3 planeNormal = this->invert (brush.normal ());
+      const glm::vec3 planePos = brush.position () + (planeNormal * intensity * brush.radius ());
+      const PrimPlane plane (planePos, planeNormal);
 
       brush.mesh ().forEachVertex (faces, [this, &brush, &plane, intensity] (unsigned int i) {
         const glm::vec3& oldPos   = brush.mesh ().vertex (i);
@@ -24,7 +25,7 @@ void SBDrawParameters :: sculpt (const SculptBrush& brush, const DynamicFaces& f
                                   * Util::linearStep ( oldPos, brush.position ()
                                                      , 0.5f * brush.radius (), brush.radius () );
         const float      distance = glm::min (0.0f, plane.distance (oldPos));
-        const glm::vec3  newPos   = oldPos - (brush.normal () * factor * distance);
+        const glm::vec3  newPos   = oldPos - (plane.normal () * factor * distance);
 
         brush.mesh ().vertex (i, newPos);
       });
