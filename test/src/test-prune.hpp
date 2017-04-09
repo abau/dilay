@@ -5,7 +5,8 @@
 #ifndef DILAY_TEST_PRUNE
 #define DILAY_TEST_PRUNE
 
-namespace TestPrune {
+namespace TestPrune
+{
   void test ();
 }
 

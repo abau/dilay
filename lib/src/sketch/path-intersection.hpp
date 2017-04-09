@@ -9,15 +9,16 @@
 #include "sketch/fwd.hpp"
 #include "sketch/mesh-intersection.hpp"
 
-class SketchPathIntersection : public SketchMeshIntersection {
-  public:
-    DECLARE_BIG6 (SketchPathIntersection)
+class SketchPathIntersection : public SketchMeshIntersection
+{
+public:
+  DECLARE_BIG6 (SketchPathIntersection)
 
-    SketchPath& path   () const;
-    bool        update (float, const glm::vec3&, const glm::vec3&, SketchMesh&, SketchPath&);
+  SketchPath& path () const;
+  bool        update (float, const glm::vec3&, const glm::vec3&, SketchMesh&, SketchPath&);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

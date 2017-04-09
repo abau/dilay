@@ -10,27 +10,35 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-struct ToolSculptDraw::Impl {
+struct ToolSculptDraw::Impl
+{
   ToolSculptDraw* self;
 
-  Impl (ToolSculptDraw* s) : self (s) {}
-
-  void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.initParameters <SBDrawParameters> ();
-
-    params.intensity (this->self->cache ().get <float> ("intensity", 0.5f));
-    params.invert    (this->self->cache ().get <bool>  ("invert",    false));
-    params.flat (this->self->cache ().get <bool>  ("flat", false));
-    params.constantHeight (this->self->cache ().get <bool>  ("constant-height", true));
+  Impl (ToolSculptDraw* s)
+    : self (s)
+  {
   }
 
-  void runSetupCursor (ViewCursor&) {}
+  void runSetupBrush (SculptBrush& brush)
+  {
+    auto& params = brush.initParameters<SBDrawParameters> ();
 
-  void runSetupProperties (ViewTwoColumnGrid& properties) {
-    auto& params = this->self->brush ().parameters <SBDrawParameters> ();
+    params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
+    params.invert (this->self->cache ().get<bool> ("invert", false));
+    params.flat (this->self->cache ().get<bool> ("flat", false));
+    params.constantHeight (this->self->cache ().get<bool> ("constant-height", true));
+  }
+
+  void runSetupCursor (ViewCursor&)
+  {
+  }
+
+  void runSetupProperties (ViewTwoColumnGrid& properties)
+  {
+    auto& params = this->self->brush ().parameters<SBDrawParameters> ();
 
     ViewDoubleSlider& intensityEdit = ViewUtil::slider (2, 0.0f, params.intensity (), 1.0f);
-    ViewUtil::connect (intensityEdit, [this,&params] (float i) {
+    ViewUtil::connect (intensityEdit, [this, &params](float i) {
       params.intensity (i);
       this->self->cache ().set ("intensity", i);
     });
@@ -38,39 +46,39 @@ struct ToolSculptDraw::Impl {
     this->self->registerSecondarySlider (intensityEdit);
 
     QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), params.invert ());
-    ViewUtil::connect (invertEdit, [this,&params] (bool i) {
+    ViewUtil::connect (invertEdit, [this, &params](bool i) {
       params.invert (i);
       this->self->cache ().set ("invert", i);
     });
     properties.add (invertEdit);
 
     QCheckBox& flatEdit = ViewUtil::checkBox (QObject::tr ("Flat"), params.flat ());
-    ViewUtil::connect (flatEdit, [this,&params] (bool f) {
+    ViewUtil::connect (flatEdit, [this, &params](bool f) {
       params.flat (f);
       this->self->cache ().set ("flat", f);
     });
     properties.add (flatEdit);
 
-    QCheckBox& constantHeightEdit = ViewUtil::checkBox ( QObject::tr ("Constant height")
-                                                       , params.constantHeight ());
-    ViewUtil::connect (constantHeightEdit, [this,&params] (bool v) {
+    QCheckBox& constantHeightEdit =
+      ViewUtil::checkBox (QObject::tr ("Constant height"), params.constantHeight ());
+    ViewUtil::connect (constantHeightEdit, [this, &params](bool v) {
       params.constantHeight (v);
       this->self->cache ().set ("constant-height", v);
     });
     properties.add (constantHeightEdit);
   }
 
-  void runSetupToolTip (ViewToolTip& toolTip) {
-    this->self->addDefaultToolTip        (toolTip, true);
+  void runSetupToolTip (ViewToolTip& toolTip)
+  {
+    this->self->addDefaultToolTip (toolTip, true);
     this->self->addSecSliderWheelToolTip (toolTip, QObject::tr ("Change intensity"));
   }
 
-  bool runSculptPointingEvent (const ViewPointingEvent& e) {
-    SBDrawParameters& params = this->self->brush ().parameters <SBDrawParameters> ();
+  bool runSculptPointingEvent (const ViewPointingEvent& e)
+  {
+    SBDrawParameters& params = this->self->brush ().parameters<SBDrawParameters> ();
 
-    const std::function <void ()> toggleInvert = [&params] () {
-      params.toggleInvert ();
-    };
+    const std::function<void()> toggleInvert = [&params]() { params.toggleInvert (); };
     return this->self->drawlikeStroke (e, params.constantHeight (), &toggleInvert);
   }
 };

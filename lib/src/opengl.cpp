@@ -12,53 +12,83 @@
 #include "shader.hpp"
 #include "util.hpp"
 
-#define DELEGATE_GL_CONSTANT(method,constant) \
-  unsigned int method () { return constant; }
-#define DELEGATE_GL(r,method) \
-  r method () { return fun-> method (); }
-#define DELEGATE1_GL(r,method,t1) \
-  r method (t1 a1) { return fun-> method (a1); }
-#define DELEGATE2_GL(r,method,t1,t2) \
-  r method (t1 a1,t2 a2) { return fun-> method (a1,a2); }
-#define DELEGATE3_GL(r,method,t1,t2,t3) \
-  r method (t1 a1,t2 a2,t3 a3) { return fun-> method (a1,a2,a3); }
-#define DELEGATE4_GL(r,method,t1,t2,t3,t4) \
-  r method (t1 a1,t2 a2,t3 a3,t4 a4) { return fun-> method (a1,a2,a3,a4); }
-#define DELEGATE5_GL(r,method,t1,t2,t3,t4,t5) \
-  r method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5) { return fun-> method (a1,a2,a3,a4,a5); }
-#define DELEGATE6_GL(r,method,t1,t2,t3,t4,t5,t6) \
-  r method (t1 a1,t2 a2,t3 a3,t4 a4,t5 a5,t6 a6) { return fun-> method (a1,a2,a3,a4,a5,a6); }
+#define DELEGATE_GL_CONSTANT(method, constant) \
+  unsigned int method ()                       \
+  {                                            \
+    return constant;                           \
+  }
+#define DELEGATE_GL(r, method) \
+  r method ()                  \
+  {                            \
+    return fun->method ();     \
+  }
+#define DELEGATE1_GL(r, method, t1) \
+  r method (t1 a1)                  \
+  {                                 \
+    return fun->method (a1);        \
+  }
+#define DELEGATE2_GL(r, method, t1, t2) \
+  r method (t1 a1, t2 a2)               \
+  {                                     \
+    return fun->method (a1, a2);        \
+  }
+#define DELEGATE3_GL(r, method, t1, t2, t3) \
+  r method (t1 a1, t2 a2, t3 a3)            \
+  {                                         \
+    return fun->method (a1, a2, a3);        \
+  }
+#define DELEGATE4_GL(r, method, t1, t2, t3, t4) \
+  r method (t1 a1, t2 a2, t3 a3, t4 a4)         \
+  {                                             \
+    return fun->method (a1, a2, a3, a4);        \
+  }
+#define DELEGATE5_GL(r, method, t1, t2, t3, t4, t5) \
+  r method (t1 a1, t2 a2, t3 a3, t4 a4, t5 a5)      \
+  {                                                 \
+    return fun->method (a1, a2, a3, a4, a5);        \
+  }
+#define DELEGATE6_GL(r, method, t1, t2, t3, t4, t5, t6) \
+  r method (t1 a1, t2 a2, t3 a3, t4 a4, t5 a5, t6 a6)   \
+  {                                                     \
+    return fun->method (a1, a2, a3, a4, a5, a6);        \
+  }
 
-namespace OpenGL {
+namespace OpenGL
+{
   static_assert (sizeof (unsigned int) >= 4, "type does not meet size required by OpenGL");
   static_assert (sizeof (int) >= 4, "type does not meet size required by OpenGL");
   static_assert (sizeof (float) >= 4, "type does not meet size required by OpenGL");
 
-  static QOpenGLFunctions_2_1* fun = nullptr;
-  static std::unique_ptr <QOpenGLExtension_EXT_geometry_shader4> gsFun;
+  static QOpenGLFunctions_2_1*                                  fun = nullptr;
+  static std::unique_ptr<QOpenGLExtension_EXT_geometry_shader4> gsFun;
 
-  void setDefaultFormat () {
+  void setDefaultFormat ()
+  {
     QSurfaceFormat format;
 
-    format.setVersion           (2, 1);
-    format.setDepthBufferSize   (24);
+    format.setVersion (2, 1);
+    format.setDepthBufferSize (24);
     format.setStencilBufferSize (1);
-    format.setProfile           (QSurfaceFormat::NoProfile);
-    format.setRenderableType    (QSurfaceFormat::OpenGL);
+    format.setProfile (QSurfaceFormat::NoProfile);
+    format.setRenderableType (QSurfaceFormat::OpenGL);
 
     QSurfaceFormat::setDefaultFormat (format);
   }
 
-  void initializeFunctions () {
-    fun = QOpenGLContext::currentContext ()->versionFunctions <QOpenGLFunctions_2_1> ();
-    if (fun == nullptr) {
+  void initializeFunctions ()
+  {
+    fun = QOpenGLContext::currentContext ()->versionFunctions<QOpenGLFunctions_2_1> ();
+    if (fun == nullptr)
+    {
       DILAY_PANIC ("could not obtain OpenGL 2.1 context")
     }
     fun->initializeOpenGLFunctions ();
 
-    if (OpenGL::supportsGeometryShader ()) {
-      gsFun = std::make_unique <QOpenGLExtension_EXT_geometry_shader4> ();
-      if (gsFun == nullptr) {
+    if (OpenGL::supportsGeometryShader ())
+    {
+      gsFun = std::make_unique<QOpenGLExtension_EXT_geometry_shader4> ();
+      if (gsFun == nullptr)
+      {
         DILAY_PANIC ("could not initialize GL_EXT_geometry_shader4 extension")
       }
       gsFun->initializeOpenGLFunctions ();
@@ -124,7 +154,7 @@ namespace OpenGL {
   DELEGATE1_GL (void, glFrontFace, unsigned int)
   DELEGATE2_GL (void, glGenBuffers, unsigned int, unsigned int*)
   DELEGATE3_GL (void, glGetBufferParameteriv, unsigned int, unsigned int, int*)
-  DELEGATE2_GL (int , glGetUniformLocation, unsigned int, const char*)
+  DELEGATE2_GL (int, glGetUniformLocation, unsigned int, const char*)
   DELEGATE1_GL (bool, glIsBuffer, unsigned int)
   DELEGATE1_GL (bool, glIsProgram, unsigned int)
   DELEGATE2_GL (void, glPolygonMode, unsigned int, unsigned int)
@@ -135,43 +165,53 @@ namespace OpenGL {
   DELEGATE4_GL (void, glUniformMatrix3fv, int, unsigned int, bool, const float*)
   DELEGATE4_GL (void, glUniformMatrix4fv, int, unsigned int, bool, const float*)
   DELEGATE1_GL (void, glUseProgram, unsigned int)
-  DELEGATE6_GL (void, glVertexAttribPointer, unsigned int, int, unsigned int, bool, unsigned int, const void*)
+  DELEGATE6_GL (void, glVertexAttribPointer, unsigned int, int, unsigned int, bool, unsigned int,
+                const void*)
   DELEGATE4_GL (void, glViewport, unsigned int, unsigned int, unsigned int, unsigned int)
 
-  bool supportsGeometryShader () {
+  bool supportsGeometryShader ()
+  {
     return QOpenGLContext::currentContext ()->hasExtension (QByteArray ("GL_EXT_geometry_shader4"));
   }
 
-  void glUniformVec3 (unsigned int id, const glm::vec3& v) {
+  void glUniformVec3 (unsigned int id, const glm::vec3& v)
+  {
     fun->glUniform3f (id, v.x, v.y, v.z);
   }
-
-  void glUniformVec4 (unsigned int id, const glm::vec4& v) {
+  void glUniformVec4 (unsigned int id, const glm::vec4& v)
+  {
     fun->glUniform4f (id, v.x, v.y, v.z, v.w);
   }
 
-  void safeDeleteBuffer (unsigned int& id) {
-    if (id > 0) {
-      fun->glDeleteBuffers (1,&id);
+  void safeDeleteBuffer (unsigned int& id)
+  {
+    if (id > 0)
+    {
+      fun->glDeleteBuffers (1, &id);
     }
     id = 0;
   }
 
-  void safeDeleteShader (unsigned int& id) {
-    if (id > 0 && fun->glIsShader (id) == GL_TRUE) {
+  void safeDeleteShader (unsigned int& id)
+  {
+    if (id > 0 && fun->glIsShader (id) == GL_TRUE)
+    {
       fun->glDeleteShader (id);
     }
     id = 0;
   }
 
-  void safeDeleteProgram (unsigned int& id) {
-    if (id > 0 && fun->glIsProgram (id) == GL_TRUE) {
+  void safeDeleteProgram (unsigned int& id)
+  {
+    if (id > 0 && fun->glIsProgram (id) == GL_TRUE)
+    {
       GLsizei numShaders;
       GLuint  shaderIds[2];
 
-      fun->glGetAttachedShaders (id,2,&numShaders,shaderIds);
+      fun->glGetAttachedShaders (id, 2, &numShaders, shaderIds);
 
-      for(GLsizei i = 0; i < numShaders; i++) {
+      for (GLsizei i = 0; i < numShaders; i++)
+      {
         OpenGL::safeDeleteShader (shaderIds[i]);
       }
       fun->glDeleteProgram (id);
@@ -179,45 +219,45 @@ namespace OpenGL {
     id = 0;
   }
 
-  unsigned int loadProgram ( const char* vertexShader
-                           , const char* fragmentShader
-                           , bool loadGeometryShader ) 
+  unsigned int loadProgram (const char* vertexShader, const char* fragmentShader,
+                            bool loadGeometryShader)
   {
-    auto showInfoLog = [] (GLuint id) {
+    auto showInfoLog = [](GLuint id) {
       const int maxLogLength = 1000;
       char      logBuffer[maxLogLength];
       GLsizei   logLength;
-      fun->glGetShaderInfoLog(id, maxLogLength, &logLength, logBuffer);
-      if (logLength > 0) {
+      fun->glGetShaderInfoLog (id, maxLogLength, &logLength, logBuffer);
+      if (logLength > 0)
+      {
         DILAY_WARN ("%s", logBuffer)
       }
     };
 
-    auto compileShader = [&showInfoLog] 
-                         (GLenum shaderType, const char* shaderSource) -> GLuint 
-    {
-      GLuint      shaderId = fun->glCreateShader (shaderType);
-      fun->glShaderSource  (shaderId, 1, &shaderSource , NULL);
+    auto compileShader = [&showInfoLog](GLenum shaderType, const char* shaderSource) -> GLuint {
+      GLuint shaderId = fun->glCreateShader (shaderType);
+      fun->glShaderSource (shaderId, 1, &shaderSource, NULL);
       fun->glCompileShader (shaderId);
 
       GLint status;
       fun->glGetShaderiv (shaderId, GL_COMPILE_STATUS, &status);
-      if (status == GL_FALSE) {
+      if (status == GL_FALSE)
+      {
         showInfoLog (shaderId);
         DILAY_PANIC ("can not compile shader: see info log above")
       }
       return shaderId;
     };
 
-    GLuint programId = fun->glCreateProgram();
-    GLuint vsId      = compileShader (GL_VERTEX_SHADER, vertexShader);
-    GLuint fsId      = compileShader (GL_FRAGMENT_SHADER, fragmentShader);
-    GLuint gmId      = 0;
+    GLuint programId = fun->glCreateProgram ();
+    GLuint vsId = compileShader (GL_VERTEX_SHADER, vertexShader);
+    GLuint fsId = compileShader (GL_FRAGMENT_SHADER, fragmentShader);
+    GLuint gmId = 0;
 
     fun->glAttachShader (programId, vsId);
     fun->glAttachShader (programId, fsId);
 
-    if (loadGeometryShader) {
+    if (loadGeometryShader)
+    {
       assert (OpenGL::supportsGeometryShader ());
 
       gmId = compileShader (GL_GEOMETRY_SHADER_EXT, Shader::geometryShader ());
@@ -229,15 +269,16 @@ namespace OpenGL {
     }
 
     fun->glBindAttribLocation (programId, OpenGL::PositionIndex, "position");
-    fun->glBindAttribLocation (programId, OpenGL::NormalIndex,   "normal");
+    fun->glBindAttribLocation (programId, OpenGL::NormalIndex, "normal");
 
     fun->glLinkProgram (programId);
 
     GLint status;
     fun->glGetProgramiv (programId, GL_LINK_STATUS, &status);
 
-    if (status == GL_FALSE) {
-      showInfoLog               (programId);
+    if (status == GL_FALSE)
+    {
+      showInfoLog (programId);
       OpenGL::safeDeleteProgram (programId);
       DILAY_PANIC ("can not link shader program: see info log above")
     }
@@ -247,14 +288,17 @@ namespace OpenGL {
     return programId;
   }
 
-  void clearError () {
+  void clearError ()
+  {
     fun->glGetError ();
   }
 
-  void printError () {
+  void printError ()
+  {
     const unsigned int glError = fun->glGetError ();
 
-    switch (glError) {
+    switch (glError)
+    {
       case GL_NO_ERROR:
         std::cout << "GL_NO_ERROR\n";
         break;

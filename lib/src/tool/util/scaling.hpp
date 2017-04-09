@@ -11,16 +11,17 @@
 class Camera;
 class ViewPointingEvent;
 
-class ToolUtilScaling {
-  public:
-    DECLARE_BIG3 (ToolUtilScaling, const Camera&)
+class ToolUtilScaling
+{
+public:
+  DECLARE_BIG3 (ToolUtilScaling, const Camera&)
 
-    float factor        () const;
-    bool  move          (const ViewPointingEvent&);
-    void  resetPosition (const glm::vec3&, const glm::vec3&);
+  float factor () const;
+  bool  move (const ViewPointingEvent&);
+  void  resetPosition (const glm::vec3&, const glm::vec3&);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

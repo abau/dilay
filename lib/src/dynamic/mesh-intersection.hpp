@@ -10,16 +10,17 @@
 
 class DynamicMesh;
 
-class DynamicMeshIntersection : public Intersection {
-  public:
-    DECLARE_BIG6 (DynamicMeshIntersection)
+class DynamicMeshIntersection : public Intersection
+{
+public:
+  DECLARE_BIG6 (DynamicMeshIntersection)
 
-    DynamicMesh& mesh      () const;
-    unsigned int faceIndex () const;
-    bool         update    (float, const glm::vec3&, const glm::vec3&, unsigned int, DynamicMesh&);
+  DynamicMesh& mesh () const;
+  unsigned int faceIndex () const;
+  bool         update (float, const glm::vec3&, const glm::vec3&, unsigned int, DynamicMesh&);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

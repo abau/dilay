@@ -8,8 +8,8 @@
 class ViewGlWidget;
 class ViewMainWindow;
 
-namespace ViewConfiguration {
-
+namespace ViewConfiguration
+{
   void show (ViewMainWindow&, ViewGlWidget&);
 }
 

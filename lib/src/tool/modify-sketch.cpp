@@ -22,7 +22,8 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-struct ToolModifySketch::Impl {
+struct ToolModifySketch::Impl
+{
   ToolModifySketch* self;
   SketchMesh*       mesh;
   SketchNode*       node;
@@ -34,58 +35,57 @@ struct ToolModifySketch::Impl {
   QSlider&          snapWidthEdit;
 
   Impl (ToolModifySketch* s)
-    : self              (s)
-    , mesh              (nullptr)
-    , node              (nullptr)
-    , parent            (nullptr)
-    , movement          ( s->state ().camera ()
-                        , s->cache ().getFrom <MovementConstraint>
-                            ("constraint", MovementConstraint::PrimaryPlane) )
-    , scaling           (s->state ().camera ())
-    , transformChildren (s->cache ().get <bool> ("transform-children", false))
-    , snap              (s->cache ().get <bool> ("snap", true))
-    , snapWidthEdit     (ViewUtil::slider (1, s->cache ().get <int> ("snap-width", 5), 10))
+    : self (s)
+    , mesh (nullptr)
+    , node (nullptr)
+    , parent (nullptr)
+    , movement (s->state ().camera (), s->cache ().getFrom<MovementConstraint> (
+                                         "constraint", MovementConstraint::PrimaryPlane))
+    , scaling (s->state ().camera ())
+    , transformChildren (s->cache ().get<bool> ("transform-children", false))
+    , snap (s->cache ().get<bool> ("snap", true))
+    , snapWidthEdit (ViewUtil::slider (1, s->cache ().get<int> ("snap-width", 5), 10))
   {
     this->self->renderMirror (false);
 
     this->setupProperties ();
-    this->setupToolTip    ();
+    this->setupToolTip ();
   }
 
-  void setupProperties () {
+  void setupProperties ()
+  {
     ViewTwoColumnGrid& properties = this->self->makeProperties ();
 
     properties.add (QObject::tr ("Move along"), ViewUtil::emptyWidget ());
-    this->movement.addProperties (properties, [this] () {
+    this->movement.addProperties (properties, [this]() {
       this->self->cache ().set ("constraint", this->movement.constraint ());
     });
     properties.add (ViewUtil::horizontalLine ());
 
     QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
-    ViewUtil::connect (syncButton, [this] () {
+    ViewUtil::connect (syncButton, [this]() {
       this->self->mirrorSketchMeshes ();
       this->self->updateGlWidget ();
     });
     syncButton.setEnabled (this->self->hasMirror ());
 
-    QCheckBox& mirrorEdit = ViewUtil::checkBox ( QObject::tr ("Mirror")
-                                               , this->self->hasMirror () );
-    ViewUtil::connect (mirrorEdit, [this, &syncButton] (bool m) {
+    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->self->hasMirror ());
+    ViewUtil::connect (mirrorEdit, [this, &syncButton](bool m) {
       this->self->mirror (m);
       syncButton.setEnabled (m);
     });
     properties.add (mirrorEdit, syncButton);
 
-    QCheckBox& transformCEdit = ViewUtil::checkBox ( QObject::tr ("Transform children")
-                                                   , this->transformChildren );
-    ViewUtil::connect (transformCEdit, [this] (bool m) {
+    QCheckBox& transformCEdit =
+      ViewUtil::checkBox (QObject::tr ("Transform children"), this->transformChildren);
+    ViewUtil::connect (transformCEdit, [this](bool m) {
       this->transformChildren = m;
       this->self->cache ().set ("transform-children", m);
     });
     properties.add (transformCEdit);
 
     QCheckBox& snapEdit = ViewUtil::checkBox (QObject::tr ("Snap"), this->snap);
-    ViewUtil::connect (snapEdit, [this] (bool s) {
+    ViewUtil::connect (snapEdit, [this](bool s) {
       this->snap = s;
       this->snapWidthEdit.setEnabled (s);
       this->self->cache ().set ("snap", s);
@@ -93,144 +93,162 @@ struct ToolModifySketch::Impl {
     properties.add (snapEdit);
 
     this->snapWidthEdit.setEnabled (this->snap);
-    ViewUtil::connect (this->snapWidthEdit, [this] (int w) {
-      this->self->cache ().set ("snap-width", w);
-    });
+    ViewUtil::connect (this->snapWidthEdit,
+                       [this](int w) { this->self->cache ().set ("snap-width", w); });
     properties.addStacked (QObject::tr ("Snap width"), this->snapWidthEdit);
   }
 
-  void setupToolTip () {
+  void setupToolTip ()
+  {
     ViewToolTip toolTip;
-    toolTip.add ( ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to move"));
-    toolTip.add ( ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift
-                , QObject::tr ("Drag to scale") );
-    toolTip.add ( ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Ctrl
-                , QObject::tr ("Drag to add new node") );
+    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to move"));
+    toolTip.add (ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift,
+                 QObject::tr ("Drag to scale"));
+    toolTip.add (ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Ctrl,
+                 QObject::tr ("Drag to add new node"));
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMoveEvent (const ViewPointingEvent& e) {
-    if (e.primaryButton () && this->node) {
-      if (e.modifiers () == Qt::ShiftModifier) {
-        if (this->scaling.move (e)) {
-          if (this->parent) {
-            this->mesh->scale ( *this->parent, this->scaling.factor ()
-                              , false, this->self->mirrorDimension () );
+  ToolResponse runMoveEvent (const ViewPointingEvent& e)
+  {
+    if (e.primaryButton () && this->node)
+    {
+      if (e.modifiers () == Qt::ShiftModifier)
+      {
+        if (this->scaling.move (e))
+        {
+          if (this->parent)
+          {
+            this->mesh->scale (*this->parent, this->scaling.factor (), false,
+                               this->self->mirrorDimension ());
           }
-          this->mesh->scale ( *this->node, this->scaling.factor ()
-                            , this->transformChildren, this->self->mirrorDimension () );
+          this->mesh->scale (*this->node, this->scaling.factor (), this->transformChildren,
+                             this->self->mirrorDimension ());
         }
       }
-      else if (this->movement.move (e, false)) {
-        if (this->parent) {
-          this->mesh->move (*this->parent, this->movement.delta ()
-                           , false, this->self->mirrorDimension () );
+      else if (this->movement.move (e, false))
+      {
+        if (this->parent)
+        {
+          this->mesh->move (*this->parent, this->movement.delta (), false,
+                            this->self->mirrorDimension ());
         }
-        this->mesh->move (*this->node, this->movement.delta ()
-                         , this->transformChildren, this->self->mirrorDimension () );
+        this->mesh->move (*this->node, this->movement.delta (), this->transformChildren,
+                          this->self->mirrorDimension ());
       }
       return ToolResponse::Redraw;
     }
-    else {
+    else
+    {
       return ToolResponse::None;
     }
   }
 
-  ToolResponse runPressEvent (const ViewPointingEvent& e) {
-
-    auto handleNodeIntersection = [this, &e] (SketchNodeIntersection &intersection) {
+  ToolResponse runPressEvent (const ViewPointingEvent& e)
+  {
+    auto handleNodeIntersection = [this, &e](SketchNodeIntersection& intersection) {
       this->self->snapshotSketchMeshes ();
 
-      this->movement.resetPosition ( intersection.position ());
-      this->scaling .resetPosition ( intersection.node ().data ().center ()
-                                   , intersection.position () );
+      this->movement.resetPosition (intersection.position ());
+      this->scaling.resetPosition (intersection.node ().data ().center (),
+                                   intersection.position ());
 
-      this->mesh   = &intersection.mesh ();
+      this->mesh = &intersection.mesh ();
       this->parent = nullptr;
 
-      if (e.modifiers () == Qt::ControlModifier) {
+      if (e.modifiers () == Qt::ControlModifier)
+      {
         SketchNode& iNode = intersection.node ();
 
-        const float radius = iNode.numChildren () > 0
-                           ? iNode.lastChild ().data ().radius ()
-                           : iNode.data ().radius ();
+        const float radius =
+          iNode.numChildren () > 0 ? iNode.lastChild ().data ().radius () : iNode.data ().radius ();
 
-        this->node = &this->mesh->addChild ( iNode, iNode.data ().center ()
-                                           , radius, this->self->mirrorDimension () );
+        this->node = &this->mesh->addChild (iNode, iNode.data ().center (), radius,
+                                            this->self->mirrorDimension ());
       }
-      else {
+      else
+      {
         this->node = &intersection.node ();
       }
     };
 
-    auto handleBoneIntersection = [this, &e] (SketchBoneIntersection &intersection) {
+    auto handleBoneIntersection = [this, &e](SketchBoneIntersection& intersection) {
       this->self->snapshotSketchMeshes ();
 
-      this->movement.resetPosition ( intersection.position ());
-      this->scaling .resetPosition ( intersection.projectedPosition ()
-                                   , intersection.position () );
+      this->movement.resetPosition (intersection.position ());
+      this->scaling.resetPosition (intersection.projectedPosition (), intersection.position ());
 
       this->mesh = &intersection.mesh ();
 
-      if (e.modifiers () == Qt::ControlModifier) {
-        const float radius = glm::distance ( intersection.projectedPosition ()
-                                           , intersection.position () );
+      if (e.modifiers () == Qt::ControlModifier)
+      {
+        const float radius =
+          glm::distance (intersection.projectedPosition (), intersection.position ());
 
         this->parent = nullptr;
-        this->node   = &this->mesh->addParent ( intersection.child ()
-                                              , intersection.projectedPosition ()
-                                              , radius, this->self->mirrorDimension () );
+        this->node =
+          &this->mesh->addParent (intersection.child (), intersection.projectedPosition (), radius,
+                                  this->self->mirrorDimension ());
       }
-      else {
-        this->node   = &intersection.child  ();
+      else
+      {
+        this->node = &intersection.child ();
         this->parent = &intersection.parent ();
       }
     };
 
-    if (e.primaryButton ()) {
+    if (e.primaryButton ())
+    {
       SketchNodeIntersection nodeIntersection;
       SketchBoneIntersection boneIntersection;
 
-      if (this->self->intersectsScene (e, nodeIntersection)) {
+      if (this->self->intersectsScene (e, nodeIntersection))
+      {
         handleNodeIntersection (nodeIntersection);
       }
-      else if (this->self->intersectsScene (e, boneIntersection)) {
+      else if (this->self->intersectsScene (e, boneIntersection))
+      {
         handleBoneIntersection (boneIntersection);
       }
     }
     return ToolResponse::None;
   }
 
-  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e)
+  {
     bool redraw = false;
 
-    if (e.primaryButton ()) {
-      if (this->snap && this->mesh && this->self->hasMirror ()) {
+    if (e.primaryButton ())
+    {
+      if (this->snap && this->mesh && this->self->hasMirror ())
+      {
         PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
 
-        const auto isSnappable = [this, &mirrorPlane] (const SketchNode& node) -> bool {
+        const auto isSnappable = [this, &mirrorPlane](const SketchNode& node) -> bool {
           return mirrorPlane.absDistance (node.data ().center ()) <=
                  (this->snapWidthEdit.value ()) * this->self->mirror ().width ();
         };
 
-        if (this->node && isSnappable (*this->node)) {
+        if (this->node && isSnappable (*this->node))
+        {
           this->mesh->snap (*this->node, *this->self->mirrorDimension ());
           redraw = true;
         }
-        if (this->parent && isSnappable (*this->parent)) {
+        if (this->parent && isSnappable (*this->parent))
+        {
           this->mesh->snap (*this->parent, *this->self->mirrorDimension ());
           redraw = true;
         }
       }
-      this->mesh   = nullptr;
-      this->node   = nullptr;
+      this->mesh = nullptr;
+      this->node = nullptr;
       this->parent = nullptr;
     }
     return redraw ? ToolResponse::Redraw : ToolResponse::None;
   }
 };
 
-DELEGATE_TOOL                   (ToolModifySketch)
-DELEGATE_TOOL_RUN_MOVE_EVENT    (ToolModifySketch)
-DELEGATE_TOOL_RUN_PRESS_EVENT   (ToolModifySketch)
+DELEGATE_TOOL (ToolModifySketch)
+DELEGATE_TOOL_RUN_MOVE_EVENT (ToolModifySketch)
+DELEGATE_TOOL_RUN_PRESS_EVENT (ToolModifySketch)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolModifySketch)

@@ -12,57 +12,64 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-struct ToolSculptGrab::Impl {
+struct ToolSculptGrab::Impl
+{
   ToolSculptGrab*  self;
   ToolUtilMovement movement;
 
-  Impl (ToolSculptGrab* s) 
+  Impl (ToolSculptGrab* s)
     : self (s)
     , movement (this->self->state ().camera (), MovementConstraint::CameraPlane)
   {
-    if (this->self->cache ().get <bool> ("along-primary-plane", false)) {
+    if (this->self->cache ().get<bool> ("along-primary-plane", false))
+    {
       this->movement.constraint (MovementConstraint::PrimaryPlane);
     }
   }
 
-  void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.initParameters <SBDraglikeParameters> ();
+  void runSetupBrush (SculptBrush& brush)
+  {
+    auto& params = brush.initParameters<SBDraglikeParameters> ();
 
-    params.smoothness  (1.0f);
-    params.linearStep  (true);
-    params.discardBack (this->self->cache ().get <bool>  ("discard-back", false));
+    params.smoothness (1.0f);
+    params.linearStep (true);
+    params.discardBack (this->self->cache ().get<bool> ("discard-back", false));
   }
 
-  void runSetupCursor (ViewCursor&) {}
+  void runSetupCursor (ViewCursor&)
+  {
+  }
 
-  void runSetupProperties (ViewTwoColumnGrid& properties) {
-    auto& params = this->self->brush ().parameters <SBDraglikeParameters> ();
-  
-    QCheckBox& primPlaneEdit = ViewUtil::checkBox 
-      ( QObject::tr ("Along primary plane")
-      , this->movement.constraint () == MovementConstraint::PrimaryPlane
-      );
-    ViewUtil::connect (primPlaneEdit, [this] (bool p) {
-      this->movement.constraint ( p ? MovementConstraint::PrimaryPlane
-                                    : MovementConstraint::CameraPlane );
+  void runSetupProperties (ViewTwoColumnGrid& properties)
+  {
+    auto& params = this->self->brush ().parameters<SBDraglikeParameters> ();
+
+    QCheckBox& primPlaneEdit =
+      ViewUtil::checkBox (QObject::tr ("Along primary plane"),
+                          this->movement.constraint () == MovementConstraint::PrimaryPlane);
+    ViewUtil::connect (primPlaneEdit, [this](bool p) {
+      this->movement.constraint (p ? MovementConstraint::PrimaryPlane
+                                   : MovementConstraint::CameraPlane);
       this->self->cache ().set ("along-primary-plane", p);
     });
     properties.add (primPlaneEdit);
 
-    QCheckBox& discardEdit = ViewUtil::checkBox ( QObject::tr ("Discard backfaces")
-                                                , params.discardBack () );
-    ViewUtil::connect (discardEdit, [this,&params] (bool d) {
+    QCheckBox& discardEdit =
+      ViewUtil::checkBox (QObject::tr ("Discard backfaces"), params.discardBack ());
+    ViewUtil::connect (discardEdit, [this, &params](bool d) {
       params.discardBack (d);
       this->self->cache ().set ("discard-back", d);
     });
     properties.add (discardEdit);
   }
 
-  void runSetupToolTip (ViewToolTip& toolTip) {
+  void runSetupToolTip (ViewToolTip& toolTip)
+  {
     this->self->addDefaultToolTip (toolTip, false);
   }
 
-  bool runSculptPointingEvent (const ViewPointingEvent& e) {
+  bool runSculptPointingEvent (const ViewPointingEvent& e)
+  {
     return this->self->draglikeStroke (e, this->movement);
   }
 };

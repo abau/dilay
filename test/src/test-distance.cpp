@@ -9,13 +9,13 @@
 #include "test-distance.hpp"
 #include "util.hpp"
 
-void TestDistance::test () {
+void TestDistance::test ()
+{
   using Distance::distance;
 
   const float eps = Util::epsilon ();
 
-  PrimCylinder cyl ( glm::vec3 (0.0f, 0.0f, 0.0f)
-                   , glm::vec3 (1.0f, 0.0f, 0.0f), 0.5f );
+  PrimCylinder cyl (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f), 0.5f);
 
   assert (glm::epsilonEqual (distance (cyl, glm::vec3 (0.5f, 1.3f, 0.0f)), 0.8f, eps));
 
@@ -27,8 +27,8 @@ void TestDistance::test () {
 
   assert (glm::epsilonEqual (distance (cyl, glm::vec3 (-0.3f, 0.3f, 0.0f)), 0.3f, eps));
   assert (glm::epsilonEqual (distance (cyl, glm::vec3 (1.7f, 0.3f, 0.0f)), 0.7f, eps));
-  assert (glm::epsilonEqual ( distance (cyl, glm::vec3 (-2.0f, 2.0f, 0.0f))
-                            , glm::sqrt ((1.5f * 1.5f) + (2.0f * 2.0f)), eps ));
-  assert (glm::epsilonEqual ( distance (cyl, glm::vec3 (2.0f, 2.0f, 0.0f))
-                            , glm::sqrt ((1.5f * 1.5f) + (1.0f * 1.0f)), eps ));
+  assert (glm::epsilonEqual (distance (cyl, glm::vec3 (-2.0f, 2.0f, 0.0f)),
+                             glm::sqrt ((1.5f * 1.5f) + (2.0f * 2.0f)), eps));
+  assert (glm::epsilonEqual (distance (cyl, glm::vec3 (2.0f, 2.0f, 0.0f)),
+                             glm::sqrt ((1.5f * 1.5f) + (1.0f * 1.0f)), eps));
 }

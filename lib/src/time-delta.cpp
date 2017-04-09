@@ -8,63 +8,73 @@
 #include <unordered_map>
 #include "time-delta.hpp"
 
-namespace TimeDelta {
-  struct TimeData {
+namespace TimeDelta
+{
+  struct TimeData
+  {
     unsigned int numCalls;
     std::clock_t localTime;
 
     TimeData (std::clock_t c)
       : numCalls (1)
       , localTime (c)
-    {}
+    {
+    }
 
-    void call (std::clock_t c) {
+    void call (std::clock_t c)
+    {
       this->localTime += c;
       this->numCalls++;
     }
   };
 
   const unsigned int nameWidth = 80;
-  std::unordered_map <std::string, TimeData> data;
+  std::unordered_map<std::string, TimeData> data;
   std::clock_t globalTime;
   std::clock_t startTime;
 
-  void printResults () {
-    if (data.empty () == false) {
-      std::cout << "##### time-delta (" 
-                << (float (globalTime) / CLOCKS_PER_SEC) << "s) ######\n";
+  void printResults ()
+  {
+    if (data.empty () == false)
+    {
+      std::cout << "##### time-delta (" << (float(globalTime) / CLOCKS_PER_SEC) << "s) ######\n";
 
-      for (auto pair : data) {
-        std::cout << std::setw (nameWidth + 1)
-                  << std::left << pair.first << std::resetiosflags (std::ios_base::left)
-                  << (float (pair.second.localTime) / CLOCKS_PER_SEC)
-                  << "s ("
-                  << (100.0f * float (pair.second.localTime) / float (globalTime)) << "%) "
+      for (auto pair : data)
+      {
+        std::cout << std::setw (nameWidth + 1) << std::left << pair.first
+                  << std::resetiosflags (std::ios_base::left)
+                  << (float(pair.second.localTime) / CLOCKS_PER_SEC) << "s ("
+                  << (100.0f * float(pair.second.localTime) / float(globalTime)) << "%) "
                   << "(" << pair.second.numCalls << " calls -> "
-                  << (1000.0f * (float (pair.second.localTime) / CLOCKS_PER_SEC) / float (pair.second.numCalls))
+                  << (1000.0f * (float(pair.second.localTime) / CLOCKS_PER_SEC) /
+                      float(pair.second.numCalls))
                   << "ms / call)\n";
       }
     }
   }
 
-  void initialize () {
+  void initialize ()
+  {
     globalTime = 0;
     std::atexit (TimeDelta::printResults);
   }
 
-  void resetTimer () {
+  void resetTimer ()
+  {
     startTime = std::clock ();
   }
-
-  void addBreakpoint (const char* name) {
+  void addBreakpoint (const char* name)
+  {
     const std::clock_t diff = std::clock () - startTime;
-    const std::string key = std::string (name).substr (0, nameWidth);
-    auto it = data.find (key);
+    const std::string  key = std::string (name).substr (0, nameWidth);
+    auto               it = data.find (key);
 
-    if (it == data.end ()) {
+    if (it == data.end ())
+    {
       data.emplace (key, TimeData (diff));
     }
-    else {
+    else
+    {
       it->second.call (diff);
     }
     globalTime += diff;

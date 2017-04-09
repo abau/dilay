@@ -8,8 +8,8 @@
 class Mesh;
 class SketchMesh;
 
-namespace SketchConversion {
-
+namespace SketchConversion
+{
   Mesh convert (const SketchMesh&, float);
 };
 

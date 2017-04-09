@@ -9,13 +9,13 @@
 #include "tree.hpp"
 
 class SketchPath;
-using SketchPaths = std::vector <SketchPath>;
+using SketchPaths = std::vector<SketchPath>;
 class SketchNodeIntersection;
 class SketchBoneIntersection;
 class SketchMeshIntersection;
 class SketchPathIntersection;
-using SketchNode = TreeNode <PrimSphere>;
-using SketchTree = Tree <PrimSphere>;
+using SketchNode = TreeNode<PrimSphere>;
+using SketchTree = Tree<PrimSphere>;
 class SketchMesh;
 
 #endif

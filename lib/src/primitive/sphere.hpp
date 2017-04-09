@@ -11,25 +11,40 @@
 class PrimAABox;
 class PrimTriangle;
 
-class PrimSphere {
-  public:
-    PrimSphere (const glm::vec3&, float);
+class PrimSphere
+{
+public:
+  PrimSphere (const glm::vec3&, float);
 
-    const glm::vec3& center () const { return this->_center; }
-    float            radius () const { return this->_radius; }
+  const glm::vec3& center () const
+  {
+    return this->_center;
+  }
 
-    void center   (const glm::vec3& c) { this->_center = c; }
-    void radius   (float r)            { this->_radius = r; }
+  float radius () const
+  {
+    return this->_radius;
+  }
 
-    bool contains (const glm::vec3&) const;
-    bool contains (const PrimAABox&) const;
-    bool contains (const PrimTriangle&) const;
+  void center (const glm::vec3& c)
+  {
+    this->_center = c;
+  }
 
-  private:
-    glm::vec3 _center;
-    float     _radius;
+  void radius (float r)
+  {
+    this->_radius = r;
+  }
+
+  bool contains (const glm::vec3&) const;
+  bool contains (const PrimAABox&) const;
+  bool contains (const PrimTriangle&) const;
+
+private:
+  glm::vec3 _center;
+  float     _radius;
 };
 
-std::ostream& operator<<(std::ostream&, const PrimSphere&);
+std::ostream& operator<< (std::ostream&, const PrimSphere&);
 
 #endif

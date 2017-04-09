@@ -16,7 +16,8 @@
 #include "view/tool-tip.hpp"
 #include "view/util.hpp"
 
-struct ViewMainWindow :: Impl {
+struct ViewMainWindow::Impl
+{
   ViewMainWindow* self;
   ViewGlWidget&   glWidget;
   ViewToolPane&   toolPane;
@@ -24,16 +25,16 @@ struct ViewMainWindow :: Impl {
   QLabel&         messageLabel;
   QLabel&         numFacesLabel;
 
-  Impl (ViewMainWindow* s, Config& config, Cache& cache) 
-    : self          (s) 
-    , glWidget      (*new ViewGlWidget (*this->self, config, cache))
-    , toolPane      (*new ViewToolPane (this->glWidget))
-    , statusBar     (*new QStatusBar)
-    , messageLabel  (*new QLabel)
+  Impl (ViewMainWindow* s, Config& config, Cache& cache)
+    : self (s)
+    , glWidget (*new ViewGlWidget (*this->self, config, cache))
+    , toolPane (*new ViewToolPane (this->glWidget))
+    , statusBar (*new QStatusBar)
+    , messageLabel (*new QLabel)
     , numFacesLabel (*new QLabel)
   {
     this->self->setCentralWidget (&this->glWidget);
-    this->self->addDockWidget    (Qt::LeftDockWidgetArea, &this->toolPane);
+    this->self->addDockWidget (Qt::LeftDockWidgetArea, &this->toolPane);
 
     ViewMenuBar::setup (*this->self, this->glWidget);
 
@@ -41,83 +42,91 @@ struct ViewMainWindow :: Impl {
     this->setupStatusBar ();
   }
 
-  void setupShortcuts () {
-    auto addShortcut = [this] (const QKeySequence& keySequence, const std::function <void ()>& f) {
+  void setupShortcuts ()
+  {
+    auto addShortcut = [this](const QKeySequence& keySequence, const std::function<void()>& f) {
       QShortcut* s = new QShortcut (keySequence, this->self);
 
       QObject::connect (s, &QShortcut::activated, f);
     };
 
-    addShortcut (Qt::Key_Escape, [this] () {
-      if (this->glWidget.state ().hasTool ()) {
+    addShortcut (Qt::Key_Escape, [this]() {
+      if (this->glWidget.state ().hasTool ())
+      {
         this->glWidget.state ().resetTool (true);
       }
 #ifndef NDEBUG
-      else {
+      else
+      {
         this->self->close ();
       }
 #endif
     });
 #ifndef NDEBUG
-    addShortcut (Qt::Key_I, [this] () {
-      this->glWidget.state ().scene ().printStatistics ();
-    });
+    addShortcut (Qt::Key_I, [this]() { this->glWidget.state ().scene ().printStatistics (); });
 #endif
-    addShortcut (Qt::SHIFT + Qt::Key_C, [this] () {
-      this->glWidget.toolMoveCamera ()
-                    .snap (this->glWidget.state (), true);
+    addShortcut (Qt::SHIFT + Qt::Key_C, [this]() {
+      this->glWidget.toolMoveCamera ().snap (this->glWidget.state (), true);
     });
   }
 
-  void setupStatusBar () {
+  void setupStatusBar ()
+  {
     this->self->setStatusBar (&this->statusBar);
 
-    this->statusBar.setStyleSheet      ("QStatusBar::item { border: 0px solid black };");
+    this->statusBar.setStyleSheet ("QStatusBar::item { border: 0px solid black };");
     this->statusBar.setSizeGripEnabled (false);
-    this->statusBar.addPermanentWidget (&this->messageLabel,1);
+    this->statusBar.addPermanentWidget (&this->messageLabel, 1);
     this->statusBar.addPermanentWidget (&this->numFacesLabel);
 
     this->showDefaultToolTip ();
-    this->showNumFaces       (0);
+    this->showNumFaces (0);
   }
 
-  void showMessage (const QString& message) {
+  void showMessage (const QString& message)
+  {
     this->messageLabel.setText (message);
   }
 
-  void showToolTip (const ViewToolTip& tip) {
+  void showToolTip (const ViewToolTip& tip)
+  {
     this->showMessage (tip.toString ());
   }
 
-  void showDefaultToolTip () {
+  void showDefaultToolTip ()
+  {
     ViewToolTip tip;
 
-    tip.add ( ViewToolTip::MouseEvent::Middle, QObject::tr ("Drag to rotate"));
-    tip.add ( ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Shift
-            , QObject::tr ("Drag to move"));
-    tip.add ( ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Ctrl
-            , QObject::tr ("Gaze"));
+    tip.add (ViewToolTip::MouseEvent::Middle, QObject::tr ("Drag to rotate"));
+    tip.add (ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Shift,
+             QObject::tr ("Drag to move"));
+    tip.add (ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Ctrl, QObject::tr ("Gaze"));
 
     this->showToolTip (tip);
   }
 
-  void showNumFaces (unsigned int n) {
+  void showNumFaces (unsigned int n)
+  {
     this->numFacesLabel.setText (QString::number (n).append (" faces"));
   }
 
-  void update () {
+  void update ()
+  {
     this->self->QMainWindow::update ();
     this->glWidget.update ();
   }
 
-  void closeEvent (QCloseEvent* e) {
+  void closeEvent (QCloseEvent* e)
+  {
 #ifndef NDEBUG
     e->accept ();
 #else
-    if (ViewUtil::question (*this->self, QObject::tr ("Do you want to quit?"))) {
+    if (ViewUtil::question (*this->self, QObject::tr ("Do you want to quit?")))
+    {
       e->accept ();
     }
-    else {
+    else
+    {
       e->ignore ();
     }
 #endif
@@ -125,11 +134,11 @@ struct ViewMainWindow :: Impl {
 };
 
 DELEGATE2_BIG2_SELF (ViewMainWindow, Config&, Cache&)
-GETTER    (ViewGlWidget&, ViewMainWindow, glWidget)
-GETTER    (ViewToolPane&, ViewMainWindow, toolPane)
-DELEGATE1 (void         , ViewMainWindow, showMessage, const QString&)
-DELEGATE1 (void         , ViewMainWindow, showToolTip, const ViewToolTip&)
-DELEGATE  (void         , ViewMainWindow, showDefaultToolTip)
-DELEGATE1 (void         , ViewMainWindow, showNumFaces, unsigned int)
-DELEGATE  (void         , ViewMainWindow, update)
-DELEGATE1 (void         , ViewMainWindow, closeEvent, QCloseEvent*)
+GETTER (ViewGlWidget&, ViewMainWindow, glWidget)
+GETTER (ViewToolPane&, ViewMainWindow, toolPane)
+DELEGATE1 (void, ViewMainWindow, showMessage, const QString&)
+DELEGATE1 (void, ViewMainWindow, showToolTip, const ViewToolTip&)
+DELEGATE (void, ViewMainWindow, showDefaultToolTip)
+DELEGATE1 (void, ViewMainWindow, showNumFaces, unsigned int)
+DELEGATE (void, ViewMainWindow, update)
+DELEGATE1 (void, ViewMainWindow, closeEvent, QCloseEvent*)

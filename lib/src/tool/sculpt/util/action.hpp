@@ -8,7 +8,8 @@
 class DynamicMesh;
 class SculptBrush;
 
-namespace ToolSculptAction {
+namespace ToolSculptAction
+{
   void sculpt (const SculptBrush&);
   void smoothMesh (DynamicMesh&);
 };

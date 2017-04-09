@@ -12,21 +12,22 @@ class Camera;
 enum class Dimension;
 class PrimPlane;
 
-class Mirror : public Configurable {
-  public:
-    DECLARE_BIG2 (Mirror, const Config&, Dimension)
+class Mirror : public Configurable
+{
+public:
+  DECLARE_BIG2 (Mirror, const Config&, Dimension)
 
-    Dimension        dimension () const;
-    float            width     () const;
-    const PrimPlane& plane     () const;
+  Dimension        dimension () const;
+  float            width () const;
+  const PrimPlane& plane () const;
 
-    void             dimension (Dimension);
-    void             render    (Camera&) const;
+  void dimension (Dimension);
+  void render (Camera&) const;
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 
-    void runFromConfig (const Config&);
+  void runFromConfig (const Config&);
 };
 
 #endif

@@ -9,15 +9,16 @@
 #include "macro.hpp"
 #include "sketch/fwd.hpp"
 
-class SketchMeshIntersection : public Intersection {
-  public:
-    DECLARE_BIG6 (SketchMeshIntersection)
+class SketchMeshIntersection : public Intersection
+{
+public:
+  DECLARE_BIG6 (SketchMeshIntersection)
 
-    SketchMesh& mesh   () const;
-    bool        update (float, const glm::vec3&, const glm::vec3&, SketchMesh&);
+  SketchMesh& mesh () const;
+  bool        update (float, const glm::vec3&, const glm::vec3&, SketchMesh&);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

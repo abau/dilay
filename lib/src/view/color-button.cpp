@@ -8,17 +8,19 @@
 #include "view/color-button.hpp"
 #include "view/util.hpp"
 
-struct ViewColorButton::Impl {
+struct ViewColorButton::Impl
+{
   ViewColorButton* self;
   Color            color;
 
   Impl (ViewColorButton* s, const Color& c)
-    : self  (s)
+    : self (s)
     , color (c)
   {
-    ViewUtil::connect (*this->self, [this] () {
+    ViewUtil::connect (*this->self, [this]() {
       QColorDialog dialog (this->color.qColor (), this->self->parentWidget ());
-      if (dialog.exec () == QDialog::Accepted) {
+      if (dialog.exec () == QDialog::Accepted)
+      {
         this->color = Color (dialog.selectedColor ());
         this->self->update ();
         emit this->self->colorChanged (this->color);
@@ -26,23 +28,24 @@ struct ViewColorButton::Impl {
     });
   }
 
-  void paintEvent (QPaintEvent* event) {
+  void paintEvent (QPaintEvent* event)
+  {
     this->self->QPushButton::paintEvent (event);
 
     QPainter painter (this->self);
-    QRect    rect    (this->self->rect ());
+    QRect    rect (this->self->rect ());
 
-    const int dw = this->self->width  () / 10;
+    const int dw = this->self->width () / 10;
     const int dh = this->self->height () / 5;
 
-    rect.setLeft   (rect.left   () + dw);
-    rect.setRight  (rect.right  () - dw);
-    rect.setTop    (rect.top    () + dh);
+    rect.setLeft (rect.left () + dw);
+    rect.setRight (rect.right () - dw);
+    rect.setTop (rect.top () + dh);
     rect.setBottom (rect.bottom () - dh);
 
     painter.fillRect (rect, this->color.qColor ());
   }
 };
 
-DELEGATE_BIG2_BASE (ViewColorButton, (const Color& c, QWidget* p), (this,c), QPushButton, (p))
+DELEGATE_BIG2_BASE (ViewColorButton, (const Color& c, QWidget* p), (this, c), QPushButton, (p))
 DELEGATE1 (void, ViewColorButton, paintEvent, QPaintEvent*)

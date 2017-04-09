@@ -16,30 +16,31 @@ class ToolMoveCamera;
 class ViewFloorPlane;
 class ViewMainWindow;
 
-class ViewGlWidget : public QOpenGLWidget {
-    Q_OBJECT
-  public:
-    DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
+class ViewGlWidget : public QOpenGLWidget
+{
+  Q_OBJECT
+public:
+  DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 
-    ToolMoveCamera& toolMoveCamera ();
-    State&          state          ();
-    ViewFloorPlane& floorPlane     ();
-    glm::ivec2      cursorPosition ();
-    void            fromConfig     ();
-       
-  protected:
-    void initializeGL      ();
-    void resizeGL          (int,int);
-    void paintGL           ();
- 
-    void mouseMoveEvent    (QMouseEvent*);
-    void mousePressEvent   (QMouseEvent*);
-    void mouseReleaseEvent (QMouseEvent*);
-    void wheelEvent        (QWheelEvent*);
-    void tabletEvent       (QTabletEvent*);
+  ToolMoveCamera& toolMoveCamera ();
+  State&          state ();
+  ViewFloorPlane& floorPlane ();
+  glm::ivec2      cursorPosition ();
+  void            fromConfig ();
 
-  private:
-    IMPLEMENTATION
+protected:
+  void initializeGL ();
+  void resizeGL (int, int);
+  void paintGL ();
+
+  void mouseMoveEvent (QMouseEvent*);
+  void mousePressEvent (QMouseEvent*);
+  void mouseReleaseEvent (QMouseEvent*);
+  void wheelEvent (QWheelEvent*);
+  void tabletEvent (QTabletEvent*);
+
+private:
+  IMPLEMENTATION
 };
 
 #endif

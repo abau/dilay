@@ -9,21 +9,35 @@
 
 class QString;
 
-class ViewToolTip {
-  public:
-    DECLARE_BIG2 (ViewToolTip)
+class ViewToolTip
+{
+public:
+  DECLARE_BIG2 (ViewToolTip)
 
-    enum class MouseEvent { Left, Middle, Wheel, Right };
-    enum class Modifier   { None, Ctrl, Shift, Alt };
+  enum class MouseEvent
+  {
+    Left,
+    Middle,
+    Wheel,
+    Right
+  };
 
-    QString toString () const;
+  enum class Modifier
+  {
+    None,
+    Ctrl,
+    Shift,
+    Alt
+  };
 
-    void add   (MouseEvent, Modifier, const QString&);
-    void add   (MouseEvent, const QString&);
-    void reset ();
+  QString toString () const;
 
-  private:
-    IMPLEMENTATION
+  void add (MouseEvent, Modifier, const QString&);
+  void add (MouseEvent, const QString&);
+  void reset ();
+
+private:
+  IMPLEMENTATION
 };
 
 #endif

@@ -8,12 +8,17 @@
 #include "state.hpp"
 #include "tools.hpp"
 
-struct ToolNewSketch::Impl {
+struct ToolNewSketch::Impl
+{
   ToolNewSketch* self;
 
-  Impl (ToolNewSketch* s) : self (s) {}
+  Impl (ToolNewSketch* s)
+    : self (s)
+  {
+  }
 
-  ToolResponse runInitialize () const {
+  ToolResponse runInitialize () const
+  {
     this->self->snapshotSketchMeshes ();
 
     SketchTree tree;
@@ -24,5 +29,5 @@ struct ToolNewSketch::Impl {
   }
 };
 
-DELEGATE_TOOL                 (ToolNewSketch)
-DELEGATE_TOOL_RUN_INITIALIZE  (ToolNewSketch)
+DELEGATE_TOOL (ToolNewSketch)
+DELEGATE_TOOL_RUN_INITIALIZE (ToolNewSketch)

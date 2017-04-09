@@ -12,24 +12,25 @@ class Camera;
 class Color;
 class Mesh;
 
-class ViewCursor {
-  public: 
-    DECLARE_BIG6 (ViewCursor)
+class ViewCursor
+{
+public:
+  DECLARE_BIG6 (ViewCursor)
 
-          float      radius    () const;
-          glm::vec3  position  () const;
-    const Color&     color     () const;
-          bool       isEnabled () const;
+  float        radius () const;
+  glm::vec3    position () const;
+  const Color& color () const;
+  bool         isEnabled () const;
 
-    void  radius   (float);
-    void  position (const glm::vec3&);
-    void  color    (const Color&);
-    void  enable   ();
-    void  disable  ();
-    void  render   (Camera&) const;
+  void radius (float);
+  void position (const glm::vec3&);
+  void color (const Color&);
+  void enable ();
+  void disable ();
+  void render (Camera&) const;
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

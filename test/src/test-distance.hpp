@@ -5,7 +5,8 @@
 #ifndef DILAY_TEST_DISTANCE
 #define DILAY_TEST_DISTANCE
 
-namespace TestDistance {
+namespace TestDistance
+{
   void test ();
 }
 

@@ -8,32 +8,58 @@
 #include <functional>
 #include <unordered_set>
 
-class DynamicFaces {
-  public:
-    typedef std::unordered_set <unsigned int> Container;
+class DynamicFaces
+{
+public:
+  typedef std::unordered_set<unsigned int> Container;
 
-    const Container& indices         () const { return this->_indices; }
-    const Container& uncommitted     () const { return this->_uncommitted; }
+  const Container& indices () const
+  {
+    return this->_indices;
+  }
 
-    unsigned int numElements () const { return this->_indices.size (); }
+  const Container& uncommitted () const
+  {
+    return this->_uncommitted;
+  }
 
-    Container::iterator       begin ()       { return this->_indices.begin (); }
-    Container::iterator       end   ()       { return this->_indices.end   (); }
-    Container::const_iterator begin () const { return this->_indices.begin (); }
-    Container::const_iterator end   () const { return this->_indices.end   (); }
+  unsigned int numElements () const
+  {
+    return this->_indices.size ();
+  }
 
-    void insert           (unsigned int);
-    void insert           (const Container&);
-    void reset            ();
-    void commit           ();
-    bool contains         (unsigned int) const;
-    bool isEmpty          () const;
-    bool hasUncomitted    () const;
-    void filter           (const std::function <bool (unsigned int)>&);
+  Container::iterator begin ()
+  {
+    return this->_indices.begin ();
+  }
 
-  private:
-    Container _indices;
-    Container _uncommitted;
+  Container::iterator end ()
+  {
+    return this->_indices.end ();
+  }
+
+  Container::const_iterator begin () const
+  {
+    return this->_indices.begin ();
+  }
+
+  Container::const_iterator end () const
+  {
+    return this->_indices.end ();
+  }
+
+  void insert (unsigned int);
+  void insert (const Container&);
+  void reset ();
+  void commit ();
+  bool contains (unsigned int) const;
+  bool isEmpty () const;
+  bool hasUncomitted () const;
+  void filter (const std::function<bool(unsigned int)>&);
+
+private:
+  Container _indices;
+  Container _uncommitted;
 };
 
 #endif

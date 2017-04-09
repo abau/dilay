@@ -6,390 +6,428 @@
 #define VARIANT_35425680_d10a_41c7_b91e_2e48cfe545da
 
 #include <cassert>
-#include <type_traits>
 #include <functional>
+#include <type_traits>
 
 // `VariantDetails` encapsulates internal details of the variant implementation
-namespace VariantDetails {
-
-  template <typename ...>
-  union VariantUnion;
+namespace VariantDetails
+{
+  template <typename...> union VariantUnion;
 
   // Utility structure to initialize value in a union using its default constructor
-  template <unsigned int, typename, typename ...>
-  struct InitValue;
+  template <unsigned int, typename, typename...> struct InitValue;
 
-  template <typename U, typename T, typename ... Ts>
-  struct InitValue <0,U,T,Ts ...> {
-    static void run (VariantUnion <T, Ts ...>& variant) {
-      static_assert (std::is_same <T,U>::value, "variant type mismatch");
+  template <typename U, typename T, typename... Ts> struct InitValue<0, U, T, Ts...>
+  {
+    static void run (VariantUnion<T, Ts...>& variant)
+    {
+      static_assert (std::is_same<T, U>::value, "variant type mismatch");
       variant.t = new U ();
     }
   };
 
-  template <unsigned int i, typename U, typename T, typename ... Ts>
-  struct InitValue <i,U,T,Ts ...> {
-    static void run (VariantUnion <T,Ts ...>& variant) {
-      InitValue <i-1,U,Ts ...> :: run (variant.ts);
+  template <unsigned int i, typename U, typename T, typename... Ts> struct InitValue<i, U, T, Ts...>
+  {
+    static void run (VariantUnion<T, Ts...>& variant)
+    {
+      InitValue<i - 1, U, Ts...>::run (variant.ts);
     }
   };
 
   // Utility structure to set value in a union
-  template <unsigned int, typename, typename ...>
-  struct SetValue;
+  template <unsigned int, typename, typename...> struct SetValue;
 
-  template <typename U, typename T, typename ... Ts>
-  struct SetValue <0,U,T,Ts ...> {
-    static void run (VariantUnion <T, Ts ...>& variant, const U& u) {
-      static_assert (std::is_same <T,U>::value, "variant type mismatch");
+  template <typename U, typename T, typename... Ts> struct SetValue<0, U, T, Ts...>
+  {
+    static void run (VariantUnion<T, Ts...>& variant, const U& u)
+    {
+      static_assert (std::is_same<T, U>::value, "variant type mismatch");
       variant.t = new U (u);
     }
   };
 
-  template <unsigned int i, typename U, typename T, typename ... Ts>
-  struct SetValue <i,U,T,Ts ...> {
-    static void run (VariantUnion <T,Ts ...>& variant, const U& u) {
-      SetValue <i-1,U,Ts ...> :: run (variant.ts, u);
+  template <unsigned int i, typename U, typename T, typename... Ts> struct SetValue<i, U, T, Ts...>
+  {
+    static void run (VariantUnion<T, Ts...>& variant, const U& u)
+    {
+      SetValue<i - 1, U, Ts...>::run (variant.ts, u);
     }
   };
 
   // Utility structure to get the type of the i-th variant
-  template <unsigned int, typename ...>
-  struct GetType;
+  template <unsigned int, typename...> struct GetType;
 
-  template <typename T, typename ... Ts>
-  struct GetType <0,T,Ts ...> {
+  template <typename T, typename... Ts> struct GetType<0, T, Ts...>
+  {
     typedef T type;
   };
 
-  template <unsigned int i, typename T, typename ... Ts>
-  struct GetType <i,T,Ts ...> {
-    typedef typename GetType <i-1,Ts ...>::type type;
+  template <unsigned int i, typename T, typename... Ts> struct GetType<i, T, Ts...>
+  {
+    typedef typename GetType<i - 1, Ts...>::type type;
   };
 
   // Utility structure to get the index of the variant of a certain type
-  template <unsigned int,typename, typename ...>
-  struct GetIndex;
+  template <unsigned int, typename, typename...> struct GetIndex;
 
-  template <unsigned int i, typename U, typename T>
-  struct GetIndex <i,U,T> {
-    static constexpr bool         found = std::is_same <T,U>::value;
+  template <unsigned int i, typename U, typename T> struct GetIndex<i, U, T>
+  {
+    static constexpr bool         found = std::is_same<T, U>::value;
     static constexpr unsigned int index = i;
   };
 
-  template <unsigned int i, typename U, typename T, typename ... Ts>
-  struct GetIndex <i,U,T,Ts ...> {
-    static constexpr bool found = 
-      std::is_same <T,U>::value ? true : GetIndex <i+1,U,Ts ...>::found;
+  template <unsigned int i, typename U, typename T, typename... Ts> struct GetIndex<i, U, T, Ts...>
+  {
+    static constexpr bool found =
+      std::is_same<T, U>::value ? true : GetIndex<i + 1, U, Ts...>::found;
 
     static constexpr unsigned int index =
-      std::is_same <T,U>::value ? i : GetIndex <i+1,U,Ts ...>::index;
+      std::is_same<T, U>::value ? i : GetIndex<i + 1, U, Ts...>::index;
   };
 
   // `VariantUnion <T1,T2,...,Tn>` implements union over pointers of type `T1,T2,...,Tn`
   //
   // Case n == 1;
-  template <typename T>
-  union VariantUnion <T> {
-    static_assert (  std::is_object   <T>::value, "non-object types are not supported");
-    static_assert (! std::is_const    <T>::value, "const-qualified types are not supported");
-    static_assert (! std::is_volatile <T>::value, "volatile-qualified types are not supported");
+  template <typename T> union VariantUnion<T> {
+    static_assert (std::is_object<T>::value, "non-object types are not supported");
+    static_assert (!std::is_const<T>::value, "const-qualified types are not supported");
+    static_assert (!std::is_volatile<T>::value, "volatile-qualified types are not supported");
 
     T* t;
 
-    VariantUnion () : t (nullptr) {}
-    VariantUnion (const VariantUnion&)  = delete;
-    VariantUnion (      VariantUnion&&) = delete;
+    VariantUnion ()
+      : t (nullptr)
+    {
+    }
+    VariantUnion (const VariantUnion&) = delete;
+    VariantUnion (VariantUnion&&) = delete;
 
-    const VariantUnion& operator= (const VariantUnion&)  = delete;
-    const VariantUnion& operator= (      VariantUnion&&) = delete;
+    const VariantUnion& operator= (const VariantUnion&) = delete;
+    const VariantUnion& operator= (VariantUnion&&) = delete;
 
-    void copy (unsigned int i, const VariantUnion& other) {
+    void copy (unsigned int i, const VariantUnion& other)
+    {
       assert (i == 0);
       this->t = new T (*other.t);
     }
 
-    void move (unsigned int i, VariantUnion&& other) {
+    void move (unsigned int i, VariantUnion&& other)
+    {
       assert (i == 0);
       this->t = other.t;
       other.t = nullptr;
     }
 
-    void release (unsigned int i) {
+    void release (unsigned int i)
+    {
       assert (i == 0);
       delete this->t;
     }
 
-    template <unsigned int i, typename U>
-    void init () {
-      InitValue <i,U,T> :: run (*this);
+    template <unsigned int i, typename U> void init ()
+    {
+      InitValue<i, U, T>::run (*this);
     }
 
-    template <unsigned int i, typename U>
-    void set (const U& u) {
-      SetValue <i,U,T> :: run (*this, u);
+    template <unsigned int i, typename U> void set (const U& u)
+    {
+      SetValue<i, U, T>::run (*this, u);
     }
 
-    template <typename U>
-    U& get (unsigned int i) {
+    template <typename U> U& get (unsigned int i)
+    {
       assert (i == 0);
-      assert ((std::is_same <T,U>::value));
-      return *reinterpret_cast <U*> (this->t);
+      assert ((std::is_same<T, U>::value));
+      return *reinterpret_cast<U*> (this->t);
     }
 
-    template <typename U>
-    const U& get (unsigned int i) const {
+    template <typename U> const U& get (unsigned int i) const
+    {
       assert (i == 0);
-      assert ((std::is_same <T,U>::value));
-      return *reinterpret_cast <U*> (this->t);
+      assert ((std::is_same<T, U>::value));
+      return *reinterpret_cast<U*> (this->t);
     }
 
-    template <typename U>
-    U caseOf (unsigned int i, const std::function <U (T&)>& branch) const {
+    template <typename U> U caseOf (unsigned int i, const std::function<U (T&)>& branch) const
+    {
       assert (i == 0);
       return branch (*this->t);
     }
   };
 
   // Case n > 1;
-  template <typename T,typename ... Ts>
-  union VariantUnion <T, Ts ...> {
-    static_assert (  std::is_object   <T>::value, "non-object types are not supported");
-    static_assert (! std::is_const    <T>::value, "const-qualified types are not supported");
-    static_assert (! std::is_volatile <T>::value, "volatile-qualified types are not supported");
+  template <typename T, typename... Ts> union VariantUnion<T, Ts...> {
+    static_assert (std::is_object<T>::value, "non-object types are not supported");
+    static_assert (!std::is_const<T>::value, "const-qualified types are not supported");
+    static_assert (!std::is_volatile<T>::value, "volatile-qualified types are not supported");
 
-    T* t;
-    VariantUnion <Ts ...> ts;
+    T*                  t;
+    VariantUnion<Ts...> ts;
 
-    VariantUnion () : t (nullptr) {}
-    VariantUnion (const VariantUnion&)  = delete;
-    VariantUnion (      VariantUnion&&) = delete;
+    VariantUnion ()
+      : t (nullptr)
+    {
+    }
+    VariantUnion (const VariantUnion&) = delete;
+    VariantUnion (VariantUnion&&) = delete;
 
-    const VariantUnion& operator= (const VariantUnion&)  = delete;
-    const VariantUnion& operator= (      VariantUnion&&) = delete;
+    const VariantUnion& operator= (const VariantUnion&) = delete;
+    const VariantUnion& operator= (VariantUnion&&) = delete;
 
-    void copy (unsigned int i, const VariantUnion& other) {
-      if (i == 0) {
+    void copy (unsigned int i, const VariantUnion& other)
+    {
+      if (i == 0)
+      {
         this->t = new T (*other.t);
       }
-      else {
-        this->ts.copy (i-1, other.ts);
+      else
+      {
+        this->ts.copy (i - 1, other.ts);
       }
     }
 
-    void move (unsigned int i, VariantUnion&& other) {
-      if (i == 0) {
+    void move (unsigned int i, VariantUnion&& other)
+    {
+      if (i == 0)
+      {
         this->t = other.t;
         other.t = nullptr;
       }
-      else {
-        this->ts.move (i-1, std::move (other.ts));
+      else
+      {
+        this->ts.move (i - 1, std::move (other.ts));
       }
     }
 
-    void release (unsigned int i) {
-      if (i == 0) {
+    void release (unsigned int i)
+    {
+      if (i == 0)
+      {
         delete this->t;
       }
-      else {
-        this->ts.release (i-1);
+      else
+      {
+        this->ts.release (i - 1);
       }
     }
 
-    template <unsigned int i, typename U>
-    void init () {
-      InitValue <i,U,T,Ts ...> :: run (*this);
+    template <unsigned int i, typename U> void init ()
+    {
+      InitValue<i, U, T, Ts...>::run (*this);
     }
 
-    template <unsigned int i, typename U>
-    void set (const U& u) {
-      SetValue <i,U,T,Ts ...> :: run (*this, u);
+    template <unsigned int i, typename U> void set (const U& u)
+    {
+      SetValue<i, U, T, Ts...>::run (*this, u);
+    }
+
+    template <typename U> U& get (unsigned int i)
+    {
+      if (i == 0)
+      {
+        assert ((std::is_same<U, T>::value));
+        return *reinterpret_cast<U*> (this->t);
+      }
+      else
+      {
+        return this->ts.template get<U> (i - 1);
+      }
+    }
+
+    template <typename U> const U& get (unsigned int i) const
+    {
+      if (i == 0)
+      {
+        assert ((std::is_same<U, T>::value));
+        return *reinterpret_cast<U*> (this->t);
+      }
+      else
+      {
+        return this->ts.template get<U> (i - 1);
+      }
     }
 
     template <typename U>
-    U& get (unsigned int i) {
-      if (i == 0) {
-        assert ((std::is_same<U,T>::value));
-        return *reinterpret_cast <U*> (this->t);
-      }
-      else {
-        return this->ts.template get <U> (i-1);
-      }
-    }
-
-    template <typename U>
-    const U& get (unsigned int i) const {
-      if (i == 0) {
-        assert ((std::is_same<U,T>::value));
-        return *reinterpret_cast <U*> (this->t);
-      }
-      else {
-        return this->ts.template get <U> (i-1);
-      }
-    }
-
-    template <typename U>
-    U caseOf (unsigned int i, const std::function <U (T& )>&     branch
-                            , const std::function <U (Ts&)>& ... branches) const {
-      if (i == 0) {
+    U caseOf (unsigned int i, const std::function<U (T&)>& branch,
+              const std::function<U (Ts&)>&... branches) const
+    {
+      if (i == 0)
+      {
         return branch (*this->t);
       }
-      else {
-        return this->ts.template caseOf <U> (i-1, branches ...);
+      else
+      {
+        return this->ts.template caseOf<U> (i - 1, branches...);
       }
     }
   };
 };
 
 // `Variant` wraps `VariantUnion` and handles construction, access and destruction
-template <typename ... Ts>
-class Variant {
-  public:
-    Variant () 
-      : _varUnion ()
-      , _isSet    (false)
-      , _setTo    (0)
-      {}
+template <typename... Ts> class Variant
+{
+public:
+  Variant ()
+    : _varUnion ()
+    , _isSet (false)
+    , _setTo (0)
+  {
+  }
 
-    Variant (const Variant& other) 
-      : _varUnion ()
-      , _isSet    (other._isSet)
-      , _setTo    (other._setTo) 
+  Variant (const Variant& other)
+    : _varUnion ()
+    , _isSet (other._isSet)
+    , _setTo (other._setTo)
+  {
+    if (this->isSet ())
     {
-      if (this->isSet ()) {
-        this->_varUnion.copy (this->_setTo, other._varUnion);
-      }
+      this->_varUnion.copy (this->_setTo, other._varUnion);
     }
+  }
 
-    Variant (Variant&& other) 
-      : _varUnion ()
-      , _isSet    (other._isSet)
-      , _setTo    (other._setTo) 
+  Variant (Variant&& other)
+    : _varUnion ()
+    , _isSet (other._isSet)
+    , _setTo (other._setTo)
+  {
+    other._isSet = false;
+
+    if (this->isSet ())
     {
-      other._isSet = false;
-
-      if (this->isSet ()) {
-        this->_varUnion.move (this->_setTo, std::move (other._varUnion));
-      }
+      this->_varUnion.move (this->_setTo, std::move (other._varUnion));
     }
+  }
 
-    const Variant& operator= (const Variant& other) {
-      if (this == &other) {
-        return *this;
-      }
-      this->release ();
-      this->_isSet = other._isSet;
-      this->_setTo = other._setTo;
-
-      if (this->isSet ()) {
-        this->_varUnion.copy (this->_setTo, other._varUnion);
-      }
+  const Variant& operator= (const Variant& other)
+  {
+    if (this == &other)
+    {
       return *this;
     }
+    this->release ();
+    this->_isSet = other._isSet;
+    this->_setTo = other._setTo;
 
-    const Variant& operator= (Variant&& other) {
-      if (this == &other) {
-        return *this;
-      }
-      this->release ();
-      this->_isSet = other._isSet;
-      this->_setTo = other._setTo;
+    if (this->isSet ())
+    {
+      this->_varUnion.copy (this->_setTo, other._varUnion);
+    }
+    return *this;
+  }
 
-      other._isSet = false;
-
-      if (this->isSet ()) {
-        this->_varUnion.move (this->_setTo, std::move (other._varUnion));
-      }
+  const Variant& operator= (Variant&& other)
+  {
+    if (this == &other)
+    {
       return *this;
     }
+    this->release ();
+    this->_isSet = other._isSet;
+    this->_setTo = other._setTo;
 
-    ~Variant () {
+    other._isSet = false;
+
+    if (this->isSet ())
+    {
+      this->_varUnion.move (this->_setTo, std::move (other._varUnion));
+    }
+    return *this;
+  }
+
+  ~Variant ()
+  {
+    this->release ();
+  }
+
+  void release ()
+  {
+    if (this->isSet ())
+    {
+      this->_varUnion.release (this->_setTo);
+      this->_isSet = false;
+    }
+  }
+
+  template <typename U> U& get ()
+  {
+    assert (this->isSet ());
+    return this->_varUnion.template get<U> (this->_setTo);
+  }
+
+  template <typename U> const U& get () const
+  {
+    assert (this->isSet ());
+    return this->_varUnion.template get<U> (this->_setTo);
+  }
+
+  template <unsigned int i, typename U = VariantDetails::GetType<i, Ts...>> void initAt ()
+  {
+    this->template resetTo<i> ();
+    this->_varUnion.template init<i, U> ();
+  }
+
+  template <typename U> void init ()
+  {
+    constexpr bool         found = VariantDetails::GetIndex<0, U, Ts...>::found;
+    constexpr unsigned int index = VariantDetails::GetIndex<0, U, Ts...>::index;
+    static_assert (found, "variant type not found");
+    this->template initAt<index, U> ();
+  }
+
+  template <unsigned int i, typename U = VariantDetails::GetType<i, Ts...>> void setAt (const U& u)
+  {
+    this->template resetTo<i> ();
+    this->_varUnion.template set<i, U> (u);
+  }
+
+  template <typename U> void set (const U& u)
+  {
+    constexpr bool         found = VariantDetails::GetIndex<0, U, Ts...>::found;
+    constexpr unsigned int index = VariantDetails::GetIndex<0, U, Ts...>::index;
+    static_assert (found, "variant type not found");
+    this->template setAt<index, U> (u);
+  }
+
+  template <typename U> bool is () const
+  {
+    if (this->isSet ())
+    {
+      constexpr bool         found = VariantDetails::GetIndex<0, U, Ts...>::found;
+      constexpr unsigned int index = VariantDetails::GetIndex<0, U, Ts...>::index;
+      static_assert (found, "variant type not found");
+      return this->_setTo == index;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  template <typename U> U caseOf (std::function<U (Ts&)>... branches) const
+  {
+    assert (this->isSet ());
+    return this->_varUnion.template caseOf<U> (this->_setTo, branches...);
+  }
+
+  bool isSet () const
+  {
+    return this->_isSet;
+  }
+
+private:
+  VariantDetails::VariantUnion<Ts...> _varUnion;
+  bool                                _isSet;
+  unsigned int                        _setTo;
+
+  template <unsigned int i> void resetTo ()
+  {
+    if (this->isSet ())
+    {
       this->release ();
     }
-
-    void release () {
-      if (this->isSet ()) {
-        this->_varUnion.release (this->_setTo);
-        this->_isSet = false;
-      }
-    }
-
-    template <typename U>
-    U& get () {
-      assert (this->isSet ());
-      return this->_varUnion.template get <U> (this->_setTo);
-    }
-
-    template <typename U>
-    const U& get () const {
-      assert (this->isSet ());
-      return this->_varUnion.template get <U> (this->_setTo);
-    }
-
-    template <unsigned int i, typename U = VariantDetails::GetType <i,Ts ...> >
-    void initAt () {
-      this->template           resetTo <i>   ();
-      this->_varUnion.template init    <i,U> ();
-    }
-
-    template <typename U>
-    void init () {
-      constexpr bool         found = VariantDetails::GetIndex <0,U,Ts ...>::found;
-      constexpr unsigned int index = VariantDetails::GetIndex <0,U,Ts ...>::index;
-      static_assert (found, "variant type not found");
-      this->template initAt <index,U> ();
-    }
-
-    template <unsigned int i, typename U = VariantDetails::GetType <i,Ts ...> >
-    void setAt (const U& u) {
-      this->template           resetTo <i>   ();
-      this->_varUnion.template set     <i,U> (u);
-    }
-
-    template <typename U>
-    void set (const U& u) {
-      constexpr bool         found = VariantDetails::GetIndex <0,U,Ts ...>::found;
-      constexpr unsigned int index = VariantDetails::GetIndex <0,U,Ts ...>::index;
-      static_assert (found, "variant type not found");
-      this->template setAt <index,U> (u);
-    }
-
-    template <typename U>
-    bool is () const { 
-      if (this->isSet ()) {
-        constexpr bool         found = VariantDetails::GetIndex <0,U,Ts ...>::found;
-        constexpr unsigned int index = VariantDetails::GetIndex <0,U,Ts ...>::index;
-        static_assert (found, "variant type not found");
-        return this->_setTo == index; 
-      }
-      else {
-        return false;
-      }
-    }
-
-    template <typename U>
-    U caseOf (std::function <U (Ts&)> ... branches) const {
-      assert (this->isSet ());
-      return this->_varUnion.template caseOf <U> (this->_setTo, branches ...);
-    }
-
-    bool isSet () const {
-      return this->_isSet;
-    }
-
-  private:
-    VariantDetails::VariantUnion <Ts ...> _varUnion;
-    bool                                  _isSet;
-    unsigned int                          _setTo;
-
-    template <unsigned int i>
-    void resetTo () {
-      if (this->isSet ()) {
-        this->release ();
-      }
-      this->_isSet = true;
-      this->_setTo = i;
-    }
+    this->_isSet = true;
+    this->_setTo = i;
+  }
 };
 
 #endif

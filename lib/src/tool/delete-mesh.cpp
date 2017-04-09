@@ -3,17 +3,18 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QObject>
+#include "dynamic/mesh-intersection.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
-#include "dynamic/mesh-intersection.hpp"
 
-struct ToolDeleteMesh::Impl {
+struct ToolDeleteMesh::Impl
+{
   ToolDeleteMesh* self;
 
-  Impl (ToolDeleteMesh* s) 
+  Impl (ToolDeleteMesh* s)
     : self (s)
   {
     ViewToolTip toolTip;
@@ -21,10 +22,13 @@ struct ToolDeleteMesh::Impl {
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
-    if (e.primaryButton ()) {
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e)
+  {
+    if (e.primaryButton ())
+    {
       DynamicMeshIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
+      if (this->self->intersectsScene (e, intersection))
+      {
         Scene& scene = this->self->state ().scene ();
         this->self->snapshotDynamicMeshes ();
         scene.deleteMesh (intersection.mesh ());
@@ -35,5 +39,5 @@ struct ToolDeleteMesh::Impl {
   }
 };
 
-DELEGATE_TOOL                   (ToolDeleteMesh)
+DELEGATE_TOOL (ToolDeleteMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolDeleteMesh)

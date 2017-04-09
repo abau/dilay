@@ -15,23 +15,24 @@ class ViewGlWidget;
 class ViewToolPane;
 class ViewToolTip;
 
-class ViewMainWindow : public QMainWindow {
-    Q_OBJECT
-  public:
-    DECLARE_BIG2 (ViewMainWindow, Config&, Cache&)
+class ViewMainWindow : public QMainWindow
+{
+  Q_OBJECT
+public:
+  DECLARE_BIG2 (ViewMainWindow, Config&, Cache&)
 
-    ViewGlWidget& glWidget           ();
-    ViewToolPane& toolPane           ();
-    void          showMessage        (const QString&);
-    void          showToolTip        (const ViewToolTip&);
-    void          showDefaultToolTip ();
-    void          showNumFaces       (unsigned int);
-    void          update             ();
+  ViewGlWidget& glWidget ();
+  ViewToolPane& toolPane ();
+  void          showMessage (const QString&);
+  void          showToolTip (const ViewToolTip&);
+  void          showDefaultToolTip ();
+  void          showNumFaces (unsigned int);
+  void          update ();
 
-  protected:
-    void          closeEvent         (QCloseEvent*);
+protected:
+  void closeEvent (QCloseEvent*);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 #endif

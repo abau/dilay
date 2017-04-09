@@ -8,23 +8,24 @@
 #include <string>
 #include "macro.hpp"
 
-class KVStore {
-  public:   
-    DECLARE_BIG2 (KVStore, const std::string&)
+class KVStore
+{
+public:
+  DECLARE_BIG2 (KVStore, const std::string&)
 
-    template <class T> const T& get     (const std::string&) const;  
-    template <class T>       T  getFrom (const std::string&) const;  
-    template <class T> const T& get     (const std::string&, const T&) const;  
-    template <class T>       T  getFrom (const std::string&, const T&) const;  
-    template <class T> void     set     (const std::string&, const T&);  
+  template <class T> const T& get (const std::string&) const;
+  template <class T> T        getFrom (const std::string&) const;
+  template <class T> const T& get (const std::string&, const T&) const;
+  template <class T> T        getFrom (const std::string&, const T&) const;
+  template <class T> void     set (const std::string&, const T&);
 
-    void fromFile (const std::string&);
-    void toFile   (const std::string&) const;
-    void remove   (const std::string&);
-    void reset    ();
+  void fromFile (const std::string&);
+  void toFile (const std::string&) const;
+  void remove (const std::string&);
+  void reset ();
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

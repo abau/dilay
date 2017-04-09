@@ -5,7 +5,8 @@
 #ifndef DILAY_TEST_MISC
 #define DILAY_TEST_MISC
 
-namespace TestMisc {
+namespace TestMisc
+{
   void test ();
 }
 

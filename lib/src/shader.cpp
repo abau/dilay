@@ -33,7 +33,7 @@
   "        vsColor    = color * (light1 + light2);                                         \n" \
   "}                                                                                       \n"
 
-#define SMOOTH_FRAGMENT_SHADER(COLOR,FINAL)                                                    \
+#define SMOOTH_FRAGMENT_SHADER(COLOR, FINAL)                                                   \
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
   "uniform vec3 wireframeColor;                                                            \n" \
@@ -42,8 +42,8 @@
   "varying vec3 barycentric;                                                               \n" \
   "                                                                                        \n" \
   "void main () {                                                                          \n" \
-  "  gl_FragColor = vec4 (" COLOR ", 1.0);                                                 \n" \
-     FINAL                                                                                     \
+  "  gl_FragColor = vec4 (" COLOR                                                              \
+  ", 1.0);                                                 \n" FINAL                           \
   "}                                                                                       \n"
 
 #define FLAT_VERTEX_SHADER                                                                     \
@@ -61,7 +61,7 @@
   "  vsColor     = vec3 (model * vec4 (position, 1.0));                                    \n" \
   "}                                                                                       \n"
 
-#define FLAT_FRAGMENT_SHADER(COLOR,FINAL)                                                      \
+#define FLAT_FRAGMENT_SHADER(COLOR, FINAL)                                                     \
   "#version 120                                                                            \n" \
   "                                                                                        \n" \
   "uniform mat4  view;                                                                     \n" \
@@ -86,8 +86,8 @@
   "  vec3  light1     = light1Irradiance * light1Color * vec3 (light1Diff);                \n" \
   "  vec3  light2     = light2Irradiance * light2Color * vec3 (light2Diff);                \n" \
   "                                                                                        \n" \
-  "  gl_FragColor     = vec4 (color * (light1 + light2), 1.0);                             \n" \
-     FINAL                                                                                     \
+  "  gl_FragColor     = vec4 (color * (light1 + light2), 1.0);                             "   \
+  "\n" FINAL                                                                                   \
   "}                                                                                       \n"
 
 #define CONSTANT_VERTEX_SHADER                                                                 \
@@ -111,8 +111,8 @@
   "varying vec3 barycentric;                                                               \n" \
   "                                                                                        \n" \
   "void main(){                                                                            \n" \
-  "  gl_FragColor = vec4 (color, 1.0);                                                     \n" \
-     FINAL                                                                                     \
+  "  gl_FragColor = vec4 (color, 1.0);                                                     "   \
+  "\n" FINAL                                                                                   \
   "}                                                                                       \n"
 
 #define ADD_WIREFRAME                                                                          \
@@ -149,42 +149,52 @@
   "    EndPrimitive();                                                                     \n" \
   "}                                                                                       \n"
 
-const char* Shader::smoothVertexShader () {
+const char* Shader::smoothVertexShader ()
+{
   return SMOOTH_VERTEX_SHADER;
 }
 
-const char* Shader::smoothFragmentShader () {
-  return SMOOTH_FRAGMENT_SHADER ("vsColor","");
+const char* Shader::smoothFragmentShader ()
+{
+  return SMOOTH_FRAGMENT_SHADER ("vsColor", "");
 }
 
-const char* Shader::smoothWireframeFragmentShader () {
-  return SMOOTH_FRAGMENT_SHADER ("gsColor",ADD_WIREFRAME);
+const char* Shader::smoothWireframeFragmentShader ()
+{
+  return SMOOTH_FRAGMENT_SHADER ("gsColor", ADD_WIREFRAME);
 }
 
-const char* Shader::flatVertexShader () {
+const char* Shader::flatVertexShader ()
+{
   return FLAT_VERTEX_SHADER;
 }
 
-const char* Shader::flatFragmentShader () {
-  return FLAT_FRAGMENT_SHADER ("vsColor","");
+const char* Shader::flatFragmentShader ()
+{
+  return FLAT_FRAGMENT_SHADER ("vsColor", "");
 }
 
-const char* Shader::flatWireframeFragmentShader () {
-  return FLAT_FRAGMENT_SHADER ("gsColor",ADD_WIREFRAME);
+const char* Shader::flatWireframeFragmentShader ()
+{
+  return FLAT_FRAGMENT_SHADER ("gsColor", ADD_WIREFRAME);
 }
 
-const char* Shader::constantVertexShader () {
+const char* Shader::constantVertexShader ()
+{
   return CONSTANT_VERTEX_SHADER;
 }
 
-const char* Shader::constantFragmentShader () {
+const char* Shader::constantFragmentShader ()
+{
   return CONSTANT_FRAGMENT_SHADER ("");
 }
 
-const char* Shader::constantWireframeFragmentShader () {
+const char* Shader::constantWireframeFragmentShader ()
+{
   return CONSTANT_FRAGMENT_SHADER (ADD_WIREFRAME);
 }
 
-const char* Shader::geometryShader () {
+const char* Shader::geometryShader ()
+{
   return GEOMETRY_SHADER;
 }

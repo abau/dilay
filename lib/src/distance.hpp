@@ -12,7 +12,8 @@ class PrimConeSphere;
 class PrimCylinder;
 class PrimSphere;
 
-namespace Distance {
+namespace Distance
+{
   float distance (const PrimSphere&, const glm::vec3&);
   float distance (const PrimCylinder&, const glm::vec3&);
   float distance (const PrimCone&, const glm::vec3&);

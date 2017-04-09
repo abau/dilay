@@ -19,27 +19,28 @@ enum class ToolResponse;
 class ViewMainWindow;
 class WingedMesh;
 
-class State {
-  public:                                   
-    DECLARE_BIG2 (State, ViewMainWindow&, Config&, Cache&)
+class State
+{
+public:
+  DECLARE_BIG2 (State, ViewMainWindow&, Config&, Cache&)
 
-    ViewMainWindow& mainWindow         ();
-    Config&         config             ();
-    Cache&          cache              ();
-    Camera&         camera             ();
-    History&        history            ();
-    Scene&          scene              ();
-    bool            hasTool            ();
-    Tool&           tool               ();
-    void            setTool            (Tool&&);
-    void            resetTool          (bool);
-    void            fromConfig         ();
-    void            undo               ();
-    void            redo               ();
+  ViewMainWindow& mainWindow ();
+  Config&         config ();
+  Cache&          cache ();
+  Camera&         camera ();
+  History&        history ();
+  Scene&          scene ();
+  bool            hasTool ();
+  Tool&           tool ();
+  void            setTool (Tool&&);
+  void            resetTool (bool);
+  void            fromConfig ();
+  void            undo ();
+  void            redo ();
 
-    void            handleToolResponse (ToolResponse);
+  void handleToolResponse (ToolResponse);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 #endif

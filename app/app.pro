@@ -44,4 +44,7 @@ unix {
 
   target.path     = $$PREFIX/bin/
   INSTALLS       += target
+
+  format.commands = clang-format -style=file -i $$SOURCES $$HEADERS
+  QMAKE_EXTRA_TARGETS += format
 }

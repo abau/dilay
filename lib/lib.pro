@@ -165,3 +165,8 @@ HEADERS += \
            src/view/util.hpp \
            src/view/vector-edit.hpp \
            src/xml-conversion.hpp \
+
+unix {
+  format.commands = clang-format -style=file -i $$SOURCES $$HEADERS
+  QMAKE_EXTRA_TARGETS += format
+}

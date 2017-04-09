@@ -5,7 +5,8 @@
 #ifndef DILAY_TEST_MAYBE
 #define DILAY_TEST_MAYBE
 
-namespace TestMaybe {
+namespace TestMaybe
+{
   void test1 ();
   void test2 ();
   void test3 ();

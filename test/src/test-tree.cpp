@@ -3,20 +3,25 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <cassert>
-#include "tree.hpp"
 #include "test-tree.hpp"
+#include "tree.hpp"
 
-namespace {
-  struct Foo {
+namespace
+{
+  struct Foo
+  {
     int i;
 
-    Foo (int v) : i (v) {}
+    Foo (int v)
+      : i (v)
+    {
+    }
   };
 }
 
-void TestTree::test1 () {
-
-  Tree <Foo> tree;
+void TestTree::test1 ()
+{
+  Tree<Foo> tree;
 
   auto& n0 = tree.emplaceRoot (0);
   auto& n1 = n0.emplaceChild (100);
@@ -35,23 +40,24 @@ void TestTree::test1 () {
 
   assert (tree.root ().numNodes () == 4);
 
-  n0.deleteChildIf ([] (const auto& c) { return c.data ().i == 6; });
+  n0.deleteChildIf ([](const auto& c) { return c.data ().i == 6; });
 
   assert (tree.root ().numNodes () == 2);
   assert (n0.lastChild ().data ().i == 5);
 
-  Tree <Foo> copy (tree);
+  Tree<Foo> copy (tree);
 
   tree.reset ();
-  
+
   assert (copy.root ().numNodes () == 2);
   assert (copy.root ().data ().i == 0);
   assert (copy.root ().lastChild ().data ().i == 5);
   assert (copy.root ().lastChild ().parent () == &copy.root ());
 }
 
-void TestTree::test2 () {
-  Tree <int> t;
+void TestTree::test2 ()
+{
+  Tree<int> t;
 
   t.emplaceRoot (1).emplaceChild (2).emplaceChild (3).emplaceChild (4);
 

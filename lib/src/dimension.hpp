@@ -7,10 +7,16 @@
 
 #include <glm/fwd.hpp>
 
-enum class Dimension { X, Y, Z };
+enum class Dimension
+{
+  X,
+  Y,
+  Z
+};
 
-namespace DimensionUtil {
-  unsigned int index  (Dimension);
+namespace DimensionUtil
+{
+  unsigned int index (Dimension);
   glm::vec3    vector (Dimension);
 }
 

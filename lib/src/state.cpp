@@ -7,8 +7,8 @@
 #include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
-#include "mesh.hpp"
 #include "mesh-util.hpp"
+#include "mesh.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -17,48 +17,54 @@
 #include "view/tool-pane.hpp"
 #include "view/two-column-grid.hpp"
 
-struct State::Impl {
-  State*                 self;
-  ViewMainWindow&        mainWindow;
-  Config&                config;
-  Cache&                 cache;
-  Camera                 camera;
-  History                history;
-  Scene                  scene;
-  std::unique_ptr <Tool> toolPtr;
+struct State::Impl
+{
+  State*                self;
+  ViewMainWindow&       mainWindow;
+  Config&               config;
+  Cache&                cache;
+  Camera                camera;
+  History               history;
+  Scene                 scene;
+  std::unique_ptr<Tool> toolPtr;
 
-  Impl (State* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
-    : self       (s)
-    , mainWindow (mW) 
-    , config     (cfg)
-    , cache      (cch)
-    , camera     (this->config)
-    , history    (this->config)
-    , scene      (this->config)
+  Impl (State* s, ViewMainWindow& mW, Config& cfg, Cache& cch)
+    : self (s)
+    , mainWindow (mW)
+    , config (cfg)
+    , cache (cch)
+    , camera (this->config)
+    , history (this->config)
+    , scene (this->config)
   {
     this->scene.newDynamicMesh (this->config, MeshUtil::icosphere (4));
   }
 
-  ~Impl () {
+  ~Impl ()
+  {
     this->toolPtr.reset (nullptr);
   }
 
-  bool hasTool () const { 
-    return bool (this->toolPtr); 
+  bool hasTool () const
+  {
+    return bool(this->toolPtr);
   }
 
-  Tool& tool () { 
-    assert (this->hasTool ()); 
-    return *this->toolPtr; 
+  Tool& tool ()
+  {
+    assert (this->hasTool ());
+    return *this->toolPtr;
   }
 
-  void setTool (Tool&& tool) { 
+  void setTool (Tool&& tool)
+  {
     assert (this->hasTool () == false);
 
-    this->toolPtr.reset (&tool); 
+    this->toolPtr.reset (&tool);
 
     ToolResponse initResponse = tool.initialize ();
-    switch (initResponse) {
+    switch (initResponse)
+    {
       case ToolResponse::None:
         this->handleToolResponse (ToolResponse::Redraw);
         break;
@@ -68,44 +74,53 @@ struct State::Impl {
     }
   }
 
-  void resetTool (bool deselect) {
-    if (this->hasTool ()) {
+  void resetTool (bool deselect)
+  {
+    if (this->hasTool ())
+    {
       this->toolPtr->close ();
 
-      this->toolPtr.reset (); 
+      this->toolPtr.reset ();
       this->mainWindow.showDefaultToolTip ();
       this->mainWindow.toolPane ().resetProperties ();
 
-      if (deselect) {
+      if (deselect)
+      {
         this->mainWindow.toolPane ().deselectTool ();
       }
       this->mainWindow.update ();
     }
   }
 
-  void fromConfig () {
-    this->camera .fromConfig (this->config);
+  void fromConfig ()
+  {
+    this->camera.fromConfig (this->config);
     this->history.fromConfig (this->config);
-    this->scene  .fromConfig (this->config);
+    this->scene.fromConfig (this->config);
 
-    if (this->hasTool ()) {
+    if (this->hasTool ())
+    {
       this->toolPtr->fromConfig ();
     }
   }
 
-  void undo () {
+  void undo ()
+  {
     this->history.undo (*this->self);
     this->mainWindow.update ();
   }
 
-  void redo () {
+  void redo ()
+  {
     this->history.redo (*this->self);
     this->mainWindow.update ();
   }
 
-  void handleToolResponse (ToolResponse response) {
+  void handleToolResponse (ToolResponse response)
+  {
     assert (this->hasTool ());
-    switch (response) {
+    switch (response)
+    {
       case ToolResponse::None:
         break;
       case ToolResponse::Redraw:
@@ -120,17 +135,17 @@ struct State::Impl {
 
 DELEGATE3_BIG2_SELF (State, ViewMainWindow&, Config&, Cache&)
 
-GETTER    (ViewMainWindow&   , State, mainWindow)
-GETTER    (Config&           , State, config)
-GETTER    (Cache&            , State, cache)
-GETTER    (Camera&           , State, camera)
-GETTER    (History&          , State, history)
-GETTER    (Scene&            , State, scene)
-DELEGATE  (bool              , State, hasTool)
-DELEGATE  (Tool&             , State, tool)
-DELEGATE1 (void              , State, setTool, Tool&&)
-DELEGATE1 (void              , State, resetTool, bool)
-DELEGATE  (void              , State, fromConfig)
-DELEGATE  (void              , State, undo)
-DELEGATE  (void              , State, redo)
-DELEGATE1 (void              , State, handleToolResponse, ToolResponse)
+GETTER (ViewMainWindow&, State, mainWindow)
+GETTER (Config&, State, config)
+GETTER (Cache&, State, cache)
+GETTER (Camera&, State, camera)
+GETTER (History&, State, history)
+GETTER (Scene&, State, scene)
+DELEGATE (bool, State, hasTool)
+DELEGATE (Tool&, State, tool)
+DELEGATE1 (void, State, setTool, Tool&&)
+DELEGATE1 (void, State, resetTool, bool)
+DELEGATE (void, State, fromConfig)
+DELEGATE (void, State, undo)
+DELEGATE (void, State, redo)
+DELEGATE1 (void, State, handleToolResponse, ToolResponse)

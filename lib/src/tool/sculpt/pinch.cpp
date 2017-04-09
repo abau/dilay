@@ -9,37 +9,47 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-struct ToolSculptPinch::Impl {
+struct ToolSculptPinch::Impl
+{
   ToolSculptPinch* self;
 
-  Impl (ToolSculptPinch* s) : self (s) {}
-
-  void runSetupBrush (SculptBrush& brush) {
-    auto& params = brush.initParameters <SBPinchParameters> ();
-
-    params.invert (this->self->cache ().get <bool>  ("invert"   , false));
+  Impl (ToolSculptPinch* s)
+    : self (s)
+  {
   }
 
-  void runSetupCursor (ViewCursor&) {}
+  void runSetupBrush (SculptBrush& brush)
+  {
+    auto& params = brush.initParameters<SBPinchParameters> ();
 
-  void runSetupProperties (ViewTwoColumnGrid& properties) {
-    auto& params = this->self->brush ().parameters <SBPinchParameters> ();
+    params.invert (this->self->cache ().get<bool> ("invert", false));
+  }
+
+  void runSetupCursor (ViewCursor&)
+  {
+  }
+
+  void runSetupProperties (ViewTwoColumnGrid& properties)
+  {
+    auto& params = this->self->brush ().parameters<SBPinchParameters> ();
 
     QCheckBox& invertEdit = ViewUtil::checkBox (QObject::tr ("Invert"), params.invert ());
-    ViewUtil::connect (invertEdit, [this,&params] (bool i) {
+    ViewUtil::connect (invertEdit, [this, &params](bool i) {
       params.invert (i);
       this->self->cache ().set ("invert", i);
     });
     properties.add (invertEdit);
   }
 
-  void runSetupToolTip (ViewToolTip& toolTip) {
+  void runSetupToolTip (ViewToolTip& toolTip)
+  {
     this->self->addDefaultToolTip (toolTip, true);
   }
 
-  bool runSculptPointingEvent (const ViewPointingEvent& e) {
-    const std::function <void ()> toggleInvert = [this] () {
-      this->self->brush ().parameters <SBPinchParameters> ().toggleInvert ();
+  bool runSculptPointingEvent (const ViewPointingEvent& e)
+  {
+    const std::function<void()> toggleInvert = [this]() {
+      this->self->brush ().parameters<SBPinchParameters> ().toggleInvert ();
     };
     return this->self->drawlikeStroke (e, false, &toggleInvert);
   }

@@ -9,6 +9,7 @@ unix {
   gdb.commands      = gdb -ex run ./dilay_debug
   valgrind.commands = valgrind ./dilay_debug &> valgrind.log
   leak.commands     = valgrind --leak-check=yes ./dilay_debug &> valgrind.log
+  format.CONFIG     = recursive
 
-  QMAKE_EXTRA_TARGETS += gdb valgrind leak
+  QMAKE_EXTRA_TARGETS += gdb valgrind leak format
 }

@@ -5,7 +5,8 @@
 #ifndef DILAY_TEST_OCTREE
 #define DILAY_TEST_OCTREE
 
-namespace TestOctree {
+namespace TestOctree
+{
   void test ();
 }
 

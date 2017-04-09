@@ -11,7 +11,8 @@ class QDomDocument;
 class QDomElement;
 class Color;
 
-namespace XmlConversion {
+namespace XmlConversion
+{
   bool fromDomElement (QDomElement, float&);
   bool fromDomElement (QDomElement, int&);
   bool fromDomElement (QDomElement, bool&);

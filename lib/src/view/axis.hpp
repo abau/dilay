@@ -12,17 +12,18 @@ class Camera;
 class Config;
 class QPainter;
 
-class ViewAxis : public Configurable {
-  public:
-    DECLARE_BIG3 (ViewAxis, const Config&)
+class ViewAxis : public Configurable
+{
+public:
+  DECLARE_BIG3 (ViewAxis, const Config&)
 
-    void  render (Camera&);
-    void  render (Camera&, QPainter&);
+  void render (Camera&);
+  void render (Camera&, QPainter&);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 
-    void runFromConfig (const Config&);
+  void runFromConfig (const Config&);
 };
 
 #endif

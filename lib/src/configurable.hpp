@@ -8,20 +8,22 @@
 class Config;
 class ConfigProxy;
 
-class Configurable {
-  public:
-    void fromConfig (const Config&);
+class Configurable
+{
+public:
+  void fromConfig (const Config&);
 
-  private:
-    virtual void runFromConfig (const Config&) = 0;
+private:
+  virtual void runFromConfig (const Config&) = 0;
 };
 
-class ProxyConfigurable {
-  public:
-    void fromConfig (const ConfigProxy&);
+class ProxyConfigurable
+{
+public:
+  void fromConfig (const ConfigProxy&);
 
-  private:
-    virtual void runFromConfig (const ConfigProxy&) = 0;
+private:
+  virtual void runFromConfig (const ConfigProxy&) = 0;
 };
 
 #endif

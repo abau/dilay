@@ -5,19 +5,19 @@
 #include "maybe.hpp"
 #include "test-maybe.hpp"
 
-void TestMaybe::test1 () {
-
-  Maybe <int> m1 (5);
+void TestMaybe::test1 ()
+{
+  Maybe<int> m1 (5);
 
   assert (m1.hasValue ());
   assert (*m1 == 5);
 
-  Maybe <int> m2 (m1);
+  Maybe<int> m2 (m1);
 
   assert (*m1 == 5);
   assert (*m2 == 5);
 
-  Maybe <int> m3 (std::move (m1));
+  Maybe<int> m3 (std::move (m1));
 
   assert (m1.hasValue () == false);
   assert (*m3 == 5);
@@ -40,7 +40,7 @@ void TestMaybe::test1 () {
   m3 = 44;
   assert (*m3 == 44);
 
-  int *i = new int (55);
+  int* i = new int(55);
   m3 = i;
 
   assert (*m3 == 55);
@@ -50,28 +50,38 @@ void TestMaybe::test1 () {
   assert (m3.hasValue () == false);
 }
 
-namespace {
-  class Foo {
-    public:
-      Foo (int d) : _data (d) {}
+namespace
+{
+  class Foo
+  {
+  public:
+    Foo (int d)
+      : _data (d)
+    {
+    }
 
-      int data () const { return this->_data; }
+    int data () const
+    {
+      return this->_data;
+    }
 
-    private:
-      int _data;
+  private:
+    int _data;
   };
 }
 
-void TestMaybe::test2 () {
-  Maybe <Foo> m = Maybe <Foo>::make (5);
+void TestMaybe::test2 ()
+{
+  Maybe<Foo> m = Maybe<Foo>::make (5);
 
   assert (m.hasValue ());
   assert (m->data () == 5);
 }
 
-void TestMaybe::test3 () {
-  Maybe <int> m1 = 5;
-  Maybe <int> m2;
+void TestMaybe::test3 ()
+{
+  Maybe<int> m1 = 5;
+  Maybe<int> m2;
 
   assert (m1.hasValue ());
   assert (m2.hasValue () == false);

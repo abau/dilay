@@ -8,8 +8,8 @@
 class ViewGlWidget;
 class ViewMainWindow;
 
-namespace ViewMenuBar {
-
+namespace ViewMenuBar
+{
   void setup (ViewMainWindow&, ViewGlWidget&);
 }
 

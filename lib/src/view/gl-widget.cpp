@@ -19,60 +19,66 @@
 #include "view/pointing-event.hpp"
 #include "view/util.hpp"
 
-struct ViewGlWidget::Impl {
-  typedef std::unique_ptr <State>          StatePtr;
-  typedef std::unique_ptr <ViewAxis>       AxisPtr;
-  typedef std::unique_ptr <ViewFloorPlane> FloorPlanePtr;
+struct ViewGlWidget::Impl
+{
+  typedef std::unique_ptr<State>          StatePtr;
+  typedef std::unique_ptr<ViewAxis>       AxisPtr;
+  typedef std::unique_ptr<ViewFloorPlane> FloorPlanePtr;
 
   ViewGlWidget*   self;
   ViewMainWindow& mainWindow;
   Config&         config;
   Cache&          cache;
   ToolMoveCamera  toolMoveCamera;
-  StatePtr       _state;
+  StatePtr        _state;
   AxisPtr         axis;
-  FloorPlanePtr  _floorPlane;
+  FloorPlanePtr   _floorPlane;
   bool            tabletPressed;
 
-  Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& cfg, Cache& cch) 
-    : self           (s)
-    , mainWindow     (mW)
-    , config         (cfg)
-    , cache          (cch)
+  Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& cfg, Cache& cch)
+    : self (s)
+    , mainWindow (mW)
+    , config (cfg)
+    , cache (cch)
     , toolMoveCamera (cfg)
-    ,_state          (nullptr)
-    , axis           (nullptr)
-    ,_floorPlane     (nullptr)
-    , tabletPressed  (false)
+    , _state (nullptr)
+    , axis (nullptr)
+    , _floorPlane (nullptr)
+    , tabletPressed (false)
   {
     this->self->setAutoFillBackground (false);
   }
 
-  ~Impl () {
+  ~Impl ()
+  {
     this->self->makeCurrent ();
 
-    this->_state     .reset (nullptr);
-    this-> axis      .reset (nullptr);
+    this->_state.reset (nullptr);
+    this->axis.reset (nullptr);
     this->_floorPlane.reset (nullptr);
 
     this->self->doneCurrent ();
   }
 
-  State& state () {
+  State& state ()
+  {
     assert (this->_state);
     return *this->_state;
   }
 
-  ViewFloorPlane& floorPlane () {
+  ViewFloorPlane& floorPlane ()
+  {
     assert (this->_floorPlane);
     return *this->_floorPlane;
   }
 
-  glm::ivec2 cursorPosition () {
+  glm::ivec2 cursorPosition ()
+  {
     return ViewUtil::toIVec2 (this->self->mapFromGlobal (QCursor::pos ()));
   }
 
-  void fromConfig () {
+  void fromConfig ()
+  {
     assert (this->axis);
 
     this->state ().fromConfig ();
@@ -84,25 +90,28 @@ struct ViewGlWidget::Impl {
     this->toolMoveCamera.fromConfig (this->config);
   }
 
-  void initializeGL () {
+  void initializeGL ()
+  {
     OpenGL::initializeFunctions ();
 
-    this->_state     .reset (new State (this->mainWindow, this->config, this->cache));
-    this-> axis      .reset (new ViewAxis (this->config));
+    this->_state.reset (new State (this->mainWindow, this->config, this->cache));
+    this->axis.reset (new ViewAxis (this->config));
     this->_floorPlane.reset (new ViewFloorPlane (this->config, this->state ().camera ()));
 
     this->self->setMouseTracking (true);
   }
 
-  void paintGL () {
+  void paintGL ()
+  {
     QPainter painter (this->self);
     painter.beginNativePainting ();
 
     this->state ().camera ().renderer ().setupRendering ();
-    this->state ().scene  ().render (this->state ().camera ());
+    this->state ().scene ().render (this->state ().camera ());
     this->floorPlane ().render (this->state ().camera ());
 
-    if (this->state ().hasTool ()) {
+    if (this->state ().hasTool ())
+    {
       this->state ().tool ().render ();
     }
     this->axis->render (this->state ().camera ());
@@ -111,93 +120,114 @@ struct ViewGlWidget::Impl {
     painter.endNativePainting ();
 
     this->axis->render (this->state ().camera (), painter);
-    if (this->state ().hasTool ()) {
+    if (this->state ().hasTool ())
+    {
       this->state ().tool ().paint (painter);
     }
 
     this->mainWindow.showNumFaces (this->state ().scene ().numFaces ());
   }
 
-  void resizeGL (int w, int h) {
-    this->state ().camera ().updateResolution (glm::uvec2 (w,h));
+  void resizeGL (int w, int h)
+  {
+    this->state ().camera ().updateResolution (glm::uvec2 (w, h));
   }
 
-  void pointingEvent (const ViewPointingEvent& e) {
-    if (e.valid ()) {
-      if (e.secondaryButton () && e.moveEvent ()) {
+  void pointingEvent (const ViewPointingEvent& e)
+  {
+    if (e.valid ())
+    {
+      if (e.secondaryButton () && e.moveEvent ())
+      {
         this->toolMoveCamera.moveEvent (this->state (), e);
         this->updateCursorInTool ();
       }
-      else if (e.secondaryButton () && e.pressEvent ()) {
+      else if (e.secondaryButton () && e.pressEvent ())
+      {
         this->toolMoveCamera.pressEvent (this->state (), e);
         this->updateCursorInTool ();
       }
-      else if (this->state ().hasTool ()) {
+      else if (this->state ().hasTool ())
+      {
         this->state ().handleToolResponse (this->state ().tool ().pointingEvent (e));
       }
     }
   }
 
-  void mouseMoveEvent (QMouseEvent* e) {
-    if (this->tabletPressed == false) {
+  void mouseMoveEvent (QMouseEvent* e)
+  {
+    if (this->tabletPressed == false)
+    {
       this->pointingEvent (ViewPointingEvent (*e));
     }
   }
 
-  void mousePressEvent (QMouseEvent* e) {
-    if (this->tabletPressed == false) {
+  void mousePressEvent (QMouseEvent* e)
+  {
+    if (this->tabletPressed == false)
+    {
       this->pointingEvent (ViewPointingEvent (*e));
     }
   }
 
-  void mouseReleaseEvent (QMouseEvent* e) {
-    if (this->tabletPressed == false) {
+  void mouseReleaseEvent (QMouseEvent* e)
+  {
+    if (this->tabletPressed == false)
+    {
       this->pointingEvent (ViewPointingEvent (*e));
     }
   }
 
-  void wheelEvent (QWheelEvent* e) {
-    if (e->modifiers () == Qt::NoModifier) {
+  void wheelEvent (QWheelEvent* e)
+  {
+    if (e->modifiers () == Qt::NoModifier)
+    {
       this->toolMoveCamera.wheelEvent (this->state (), *e);
       this->updateCursorInTool ();
       this->floorPlane ().update (this->state ().camera ());
     }
-    else if (this->state ().hasTool ()) {
+    else if (this->state ().hasTool ())
+    {
       this->state ().handleToolResponse (this->state ().tool ().wheelEvent (*e));
     }
   }
 
-  void tabletEvent (QTabletEvent* e) {
+  void tabletEvent (QTabletEvent* e)
+  {
     const ViewPointingEvent pointingEvent (*e);
 
-    if (pointingEvent.pressEvent ()) {
+    if (pointingEvent.pressEvent ())
+    {
       this->tabletPressed = true;
     }
-    else if (pointingEvent.releaseEvent ()) {
+    else if (pointingEvent.releaseEvent ())
+    {
       this->tabletPressed = false;
     }
     this->pointingEvent (pointingEvent);
   }
 
-  void updateCursorInTool () {
-    if (this->state ().hasTool ()) {
-      this->state ().handleToolResponse (this->state ().tool ()
-                    .cursorUpdate (this->cursorPosition ()));
+  void updateCursorInTool ()
+  {
+    if (this->state ().hasTool ())
+    {
+      this->state ().handleToolResponse (
+        this->state ().tool ().cursorUpdate (this->cursorPosition ()));
     }
   }
 };
 
 DELEGATE3_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
-GETTER    (ToolMoveCamera&, ViewGlWidget, toolMoveCamera)
-DELEGATE  (State&         , ViewGlWidget, state)
-DELEGATE  (ViewFloorPlane&, ViewGlWidget, floorPlane)
-DELEGATE  (glm::ivec2     , ViewGlWidget, cursorPosition)
-DELEGATE  (void           , ViewGlWidget, fromConfig)
-DELEGATE  (void           , ViewGlWidget, initializeGL)
-DELEGATE2 (void           , ViewGlWidget, resizeGL, int, int)
-DELEGATE  (void           , ViewGlWidget, paintGL)
-DELEGATE1 (void           , ViewGlWidget, mouseMoveEvent   , QMouseEvent*)
-DELEGATE1 (void           , ViewGlWidget, mousePressEvent  , QMouseEvent*)
-DELEGATE1 (void           , ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
-DELEGATE1 (void           , ViewGlWidget, wheelEvent       , QWheelEvent*)
-DELEGATE1 (void           , ViewGlWidget, tabletEvent      , QTabletEvent*)
+GETTER (ToolMoveCamera&, ViewGlWidget, toolMoveCamera)
+DELEGATE (State&, ViewGlWidget, state)
+DELEGATE (ViewFloorPlane&, ViewGlWidget, floorPlane)
+DELEGATE (glm::ivec2, ViewGlWidget, cursorPosition)
+DELEGATE (void, ViewGlWidget, fromConfig)
+DELEGATE (void, ViewGlWidget, initializeGL)
+DELEGATE2 (void, ViewGlWidget, resizeGL, int, int)
+DELEGATE (void, ViewGlWidget, paintGL)
+DELEGATE1 (void, ViewGlWidget, mouseMoveEvent, QMouseEvent*)
+DELEGATE1 (void, ViewGlWidget, mousePressEvent, QMouseEvent*)
+DELEGATE1 (void, ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
+DELEGATE1 (void, ViewGlWidget, wheelEvent, QWheelEvent*)
+DELEGATE1 (void, ViewGlWidget, tabletEvent, QTabletEvent*)

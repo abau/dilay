@@ -10,19 +10,20 @@
 
 class Color;
 
-class ViewColorButton : public QPushButton {
+class ViewColorButton : public QPushButton
+{
   Q_OBJECT
-  public:
-    DECLARE_BIG2 (ViewColorButton, const Color&, QWidget* = nullptr)
+public:
+  DECLARE_BIG2 (ViewColorButton, const Color&, QWidget* = nullptr)
 
-  signals:
-    void colorChanged (const Color&);
+signals:
+  void colorChanged (const Color&);
 
-  protected:
-    void paintEvent (QPaintEvent*);
+protected:
+  void paintEvent (QPaintEvent*);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

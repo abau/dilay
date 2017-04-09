@@ -13,21 +13,22 @@ class State;
 class QWheelEvent;
 class ViewPointingEvent;
 
-class ToolMoveCamera : public Configurable {
-  public:
-    DECLARE_BIG3 (ToolMoveCamera, const Config&)
+class ToolMoveCamera : public Configurable
+{
+public:
+  DECLARE_BIG3 (ToolMoveCamera, const Config&)
 
-    void snap           (State&, bool);
-    void resetGazePoint (State&);
+  void snap (State&, bool);
+  void resetGazePoint (State&);
 
-    void moveEvent      (State&, const ViewPointingEvent&);
-    void pressEvent     (State&, const ViewPointingEvent&);
-    void wheelEvent     (State&, const QWheelEvent&);
+  void moveEvent (State&, const ViewPointingEvent&);
+  void pressEvent (State&, const ViewPointingEvent&);
+  void wheelEvent (State&, const QWheelEvent&);
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 
-    void runFromConfig (const Config&);
+  void runFromConfig (const Config&);
 };
 
 #endif

@@ -13,24 +13,25 @@ class DynamicMesh;
 class Scene;
 class State;
 
-class History : public Configurable {
-  public: 
-    DECLARE_BIG3 (History, const Config&)
+class History : public Configurable
+{
+public:
+  DECLARE_BIG3 (History, const Config&)
 
-    void        snapshotAll              (const Scene&);
-    void        snapshotDynamicMeshes    (const Scene&);
-    void        snapshotSketchMeshes     (const Scene&);
-    void        dropSnapshot             ();
-    void        undo                     (State&);
-    void        redo                     (State&);
-    bool        hasRecentDynamicMesh     () const;
-    void        forEachRecentDynamicMesh (const std::function <void (const DynamicMesh&)>&) const;
-    void        reset                    ();
+  void snapshotAll (const Scene&);
+  void snapshotDynamicMeshes (const Scene&);
+  void snapshotSketchMeshes (const Scene&);
+  void dropSnapshot ();
+  void undo (State&);
+  void redo (State&);
+  bool hasRecentDynamicMesh () const;
+  void forEachRecentDynamicMesh (const std::function<void(const DynamicMesh&)>&) const;
+  void reset ();
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 
-    void runFromConfig (const Config&);
+  void runFromConfig (const Config&);
 };
 
 #endif

@@ -9,17 +9,19 @@
 #include "sketch/fwd.hpp"
 #include "sketch/mesh-intersection.hpp"
 
-class SketchBoneIntersection : public SketchMeshIntersection {
-  public:
-    DECLARE_BIG6 (SketchBoneIntersection)
+class SketchBoneIntersection : public SketchMeshIntersection
+{
+public:
+  DECLARE_BIG6 (SketchBoneIntersection)
 
-    SketchNode&      parent            () const;
-    SketchNode&      child             () const;
-    const glm::vec3& projectedPosition () const;
-    bool             update            ( float, const glm::vec3&, const glm::vec3&
-                                       , const glm::vec3&, SketchMesh&, SketchNode& );
-  private:
-    IMPLEMENTATION
+  SketchNode&      parent () const;
+  SketchNode&      child () const;
+  const glm::vec3& projectedPosition () const;
+  bool             update (float, const glm::vec3&, const glm::vec3&, const glm::vec3&, SketchMesh&,
+               SketchNode&);
+
+private:
+  IMPLEMENTATION
 };
 
 #endif

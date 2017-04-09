@@ -11,16 +11,17 @@
 class ViewGlWidget;
 class ViewTwoColumnGrid;
 
-class ViewToolPane : public QDockWidget {
-  public:
-    DECLARE_BIG2 (ViewToolPane, ViewGlWidget&, QWidget* = nullptr)
+class ViewToolPane : public QDockWidget
+{
+public:
+  DECLARE_BIG2 (ViewToolPane, ViewGlWidget&, QWidget* = nullptr)
 
-    ViewTwoColumnGrid& makeProperties  ();
-    void               resetProperties ();
-    void               deselectTool    ();
+  ViewTwoColumnGrid& makeProperties ();
+  void               resetProperties ();
+  void               deselectTool ();
 
-  private:
-    IMPLEMENTATION
+private:
+  IMPLEMENTATION
 };
 
 #endif

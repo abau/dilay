@@ -7,18 +7,19 @@
 
 #include "macro.hpp"
 
-class OpenGLBufferId {
-  public:
-    DECLARE_BIG6 (OpenGLBufferId)
+class OpenGLBufferId
+{
+public:
+  DECLARE_BIG6 (OpenGLBufferId)
 
-    unsigned int id      () const;
-    bool         isValid () const;
+  unsigned int id () const;
+  bool         isValid () const;
 
-    void allocate ();
-    void reset    ();
+  void allocate ();
+  void reset ();
 
-  private:
-    unsigned int _id;
+private:
+  unsigned int _id;
 };
 
 #endif

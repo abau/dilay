@@ -4,8 +4,8 @@
  */
 #include <glm/glm.hpp>
 #include "cache.hpp"
-#include "dynamic/mesh.hpp"
 #include "dynamic/mesh-intersection.hpp"
+#include "dynamic/mesh.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
@@ -13,56 +13,63 @@
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
 
-struct ToolMoveMesh::Impl {
+struct ToolMoveMesh::Impl
+{
   ToolMoveMesh*    self;
   DynamicMesh*     mesh;
   ToolUtilMovement movement;
 
-  Impl (ToolMoveMesh* s) 
-    : self     (s) 
-    , mesh     (nullptr)
-    , movement ( s->state ().camera ()
-               , s->cache ().getFrom <MovementConstraint> ( "constraint"
-                                                          , MovementConstraint::CameraPlane ))
+  Impl (ToolMoveMesh* s)
+    : self (s)
+    , mesh (nullptr)
+    , movement (s->state ().camera (), s->cache ().getFrom<MovementConstraint> (
+                                         "constraint", MovementConstraint::CameraPlane))
   {
     this->setupProperties ();
-    this->setupToolTip    ();
+    this->setupToolTip ();
   }
 
-  void setupProperties () {
-    this->movement.addProperties ( this->self->makeProperties ()
-                                 , [this] ()
-    {
+  void setupProperties ()
+  {
+    this->movement.addProperties (this->self->makeProperties (), [this]() {
       this->setupToolTip ();
       this->self->cache ().set ("constraint", this->movement.constraint ());
     });
   }
 
-  void setupToolTip () {
+  void setupToolTip ()
+  {
     ViewToolTip toolTip;
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to move"));
 
-    if (this->movement.constraint () != MovementConstraint::CameraPlane) {
-      toolTip.add ( ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift
-                  , QObject::tr ("Drag to move orthogonally") );
+    if (this->movement.constraint () != MovementConstraint::CameraPlane)
+    {
+      toolTip.add (ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift,
+                   QObject::tr ("Drag to move orthogonally"));
     }
     this->self->showToolTip (toolTip);
   }
 
-  ToolResponse runMoveEvent (const ViewPointingEvent& e) {
-    if (e.primaryButton () && this->mesh && this->movement.move (e, true)) {
-      this->mesh->translate  (this->movement.delta ());
+  ToolResponse runMoveEvent (const ViewPointingEvent& e)
+  {
+    if (e.primaryButton () && this->mesh && this->movement.move (e, true))
+    {
+      this->mesh->translate (this->movement.delta ());
       return ToolResponse::Redraw;
     }
-    else {
+    else
+    {
       return ToolResponse::None;
     }
   }
 
-  ToolResponse runPressEvent (const ViewPointingEvent& e) {
-    if (e.primaryButton ()) {
+  ToolResponse runPressEvent (const ViewPointingEvent& e)
+  {
+    if (e.primaryButton ())
+    {
       DynamicMeshIntersection intersection;
-      if (this->self->intersectsScene (e, intersection)) {
+      if (this->self->intersectsScene (e, intersection))
+      {
         this->mesh = &intersection.mesh ();
         this->movement.resetPosition (intersection.position ());
 
@@ -72,9 +79,11 @@ struct ToolMoveMesh::Impl {
     return ToolResponse::None;
   }
 
-  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
-    if (e.primaryButton () && this->mesh) {
-      this->mesh->normalize  ();
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e)
+  {
+    if (e.primaryButton () && this->mesh)
+    {
+      this->mesh->normalize ();
       this->mesh->bufferData ();
       this->mesh = nullptr;
     }
@@ -82,7 +91,7 @@ struct ToolMoveMesh::Impl {
   }
 };
 
-DELEGATE_TOOL                   (ToolMoveMesh)
-DELEGATE_TOOL_RUN_MOVE_EVENT    (ToolMoveMesh)
-DELEGATE_TOOL_RUN_PRESS_EVENT   (ToolMoveMesh)
+DELEGATE_TOOL (ToolMoveMesh)
+DELEGATE_TOOL_RUN_MOVE_EVENT (ToolMoveMesh)
+DELEGATE_TOOL_RUN_PRESS_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolMoveMesh)

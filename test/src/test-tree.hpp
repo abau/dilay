@@ -5,7 +5,8 @@
 #ifndef DILAY_TEST_TREE
 #define DILAY_TEST_TREE
 
-namespace TestTree {
+namespace TestTree
+{
   void test1 ();
   void test2 ();
 }
