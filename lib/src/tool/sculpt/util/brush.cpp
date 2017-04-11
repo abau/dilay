@@ -49,15 +49,11 @@ void SBDrawParameters::sculpt (const SculptBrush& brush, const DynamicFaces& fac
   }
 }
 
-void SBDraglikeParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
+void SBGrablikeParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
 {
-  float (*stepFunction) (const glm::vec3&, const glm::vec3&, float, float) =
-    this->linearStep () ? Util::linearStep : Util::smoothStep;
-
-  brush.mesh ().forEachVertex (faces, [this, &brush, stepFunction](unsigned int i) {
+  brush.mesh ().forEachVertex (faces, [this, &brush](unsigned int i) {
     const glm::vec3& oldPos = brush.mesh ().vertex (i);
-    const float      innerRadius = (1.0f - this->smoothness ()) * brush.radius ();
-    const float factor = stepFunction (oldPos, brush.lastPosition (), innerRadius, brush.radius ());
+    const float factor = Util::linearStep (oldPos, brush.lastPosition (), 0.0f, brush.radius ());
     const glm::vec3 newPos = oldPos + (factor * brush.delta ());
 
     brush.mesh ().vertex (i, newPos);

@@ -424,7 +424,7 @@ struct ToolSculpt::Impl
     }
   }
 
-  bool draglikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement)
+  bool grablikeStroke (const ViewPointingEvent& e, ToolUtilMovement& movement)
   {
     DynamicMeshIntersection cursorIntersection;
 
@@ -527,7 +527,7 @@ DELEGATE2_CONST (void, ToolSculpt, addSecSliderWheelToolTip, ViewToolTip&, const
 DELEGATE (void, ToolSculpt, sculpt)
 DELEGATE3 (bool, ToolSculpt, drawlikeStroke, const ViewPointingEvent&, bool,
            const std::function<void()>*)
-DELEGATE2 (bool, ToolSculpt, draglikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
+DELEGATE2 (bool, ToolSculpt, grablikeStroke, const ViewPointingEvent&, ToolUtilMovement&)
 DELEGATE1 (void, ToolSculpt, registerSecondarySlider, ViewDoubleSlider&)
 DELEGATE (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST (void, ToolSculpt, runRender)

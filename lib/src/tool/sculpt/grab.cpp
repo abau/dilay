@@ -29,10 +29,8 @@ struct ToolSculptGrab::Impl
 
   void runSetupBrush (SculptBrush& brush)
   {
-    auto& params = brush.initParameters<SBDraglikeParameters> ();
+    auto& params = brush.initParameters<SBGrablikeParameters> ();
 
-    params.smoothness (1.0f);
-    params.linearStep (true);
     params.discardBack (this->self->cache ().get<bool> ("discard-back", false));
   }
 
@@ -42,7 +40,7 @@ struct ToolSculptGrab::Impl
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {
-    auto& params = this->self->brush ().parameters<SBDraglikeParameters> ();
+    auto& params = this->self->brush ().parameters<SBGrablikeParameters> ();
 
     QCheckBox& primPlaneEdit =
       ViewUtil::checkBox (QObject::tr ("Along primary plane"),
@@ -70,7 +68,7 @@ struct ToolSculptGrab::Impl
 
   bool runSculptPointingEvent (const ViewPointingEvent& e)
   {
-    return this->self->draglikeStroke (e, this->movement);
+    return this->self->grablikeStroke (e, this->movement);
   }
 };
 

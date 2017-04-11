@@ -137,19 +137,12 @@ private:
   bool _constantHeight;
 };
 
-class SBDraglikeParameters : public SBParameters
+class SBGrablikeParameters : public SBParameters
 {
 public:
-  SBDraglikeParameters ()
-    : _smoothness (1.0f)
-    , _discardBack (true)
-    , _linearStep (false)
+  SBGrablikeParameters ()
+    : _discardBack (true)
   {
-  }
-
-  float smoothness () const
-  {
-    return this->_smoothness;
   }
 
   bool discardBack () const override
@@ -157,9 +150,9 @@ public:
     return this->_discardBack;
   }
 
-  bool linearStep () const
+  void discardBack (bool v)
   {
-    return this->_linearStep;
+    this->_discardBack = v;
   }
 
   bool useLastPos () const override
@@ -167,27 +160,10 @@ public:
     return true;
   }
 
-  void smoothness (float v)
-  {
-    this->_smoothness = v;
-  }
-
-  void discardBack (bool v)
-  {
-    this->_discardBack = v;
-  }
-
-  void linearStep (bool v)
-  {
-    this->_linearStep = v;
-  }
-
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
 private:
-  float _smoothness;
-  bool  _discardBack;
-  bool  _linearStep;
+  bool _discardBack;
 };
 
 class SBSmoothParameters : public SBIntensityParameter

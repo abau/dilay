@@ -26,7 +26,7 @@ protected:
   void         addSecSliderWheelToolTip (ViewToolTip&, const QString&) const;
   void         sculpt ();
   bool drawlikeStroke (const ViewPointingEvent&, bool, const std::function<void()>* = nullptr);
-  bool draglikeStroke (const ViewPointingEvent&, ToolUtilMovement&);
+  bool grablikeStroke (const ViewPointingEvent&, ToolUtilMovement&);
   void registerSecondarySlider (ViewDoubleSlider&);
 
 private:

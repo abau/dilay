@@ -60,7 +60,6 @@ SOURCES += \
            src/tool/sculpt.cpp \
            src/tool/sculpt/draw.cpp \
            src/tool/sculpt/crease.cpp \
-           src/tool/sculpt/drag.cpp \
            src/tool/sculpt/flatten.cpp \
            src/tool/sculpt/grab.cpp \
            src/tool/sculpt/pinch.cpp \

@@ -88,7 +88,6 @@ struct ViewToolPane::Impl
     this->addToolButton<ToolSculptDraw> (toolPaneLayout, QObject::tr ("Draw"));
     this->addToolButton<ToolSculptCrease> (toolPaneLayout, QObject::tr ("Crease"));
     this->addToolButton<ToolSculptGrab> (toolPaneLayout, QObject::tr ("Grab"));
-    this->addToolButton<ToolSculptDrag> (toolPaneLayout, QObject::tr ("Drag"));
     this->addToolButton<ToolSculptFlatten> (toolPaneLayout, QObject::tr ("Flatten"));
     this->addToolButton<ToolSculptSmooth> (toolPaneLayout, QObject::tr ("Smooth"));
     this->addToolButton<ToolSculptPinch> (toolPaneLayout, QObject::tr ("Pinch"));
