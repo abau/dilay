@@ -14,6 +14,20 @@ class PrimPlane;
 class PrimSphere;
 class SculptBrush;
 
+#define BRUSH_PARAMETER(type, name) \
+public:                             \
+  type name () const                \
+  {                                 \
+    return this->_##name;           \
+  }                                 \
+  void name (type v)                \
+  {                                 \
+    this->_##name = v;              \
+  }                                 \
+                                    \
+private:                            \
+  type _##name;
+
 class SBParameters
 {
 public:
@@ -56,18 +70,7 @@ public:
   {
   }
 
-  float intensity () const override
-  {
-    return this->_intensity;
-  }
-
-  void intensity (float v) override
-  {
-    this->_intensity = v;
-  }
-
-private:
-  float _intensity;
+  BRUSH_PARAMETER (float, intensity);
 };
 
 class SBInvertParameter : virtual public SBParameters
@@ -76,16 +79,6 @@ public:
   SBInvertParameter ()
     : _invert (false)
   {
-  }
-
-  bool invert () const
-  {
-    return this->_invert;
-  }
-
-  void invert (bool v)
-  {
-    this->_invert = v;
   }
 
   void toggleInvert ()
@@ -98,8 +91,7 @@ public:
     return this->_invert ? -v : v;
   }
 
-private:
-  bool _invert;
+  BRUSH_PARAMETER (bool, invert);
 };
 
 class SBDrawParameters : public SBIntensityParameter, public SBInvertParameter
@@ -110,31 +102,10 @@ public:
   {
   }
 
-  bool flat () const
-  {
-    return this->_flat;
-  }
-
-  void flat (bool v)
-  {
-    this->_flat = v;
-  }
-
-  bool constantHeight () const
-  {
-    return this->_constantHeight;
-  }
-
-  void constantHeight (bool v)
-  {
-    this->_constantHeight = v;
-  }
-
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
-private:
-  bool _flat;
-  bool _constantHeight;
+  BRUSH_PARAMETER (bool, flat);
+  BRUSH_PARAMETER (bool, constantHeight);
 };
 
 class SBGrablikeParameters : public SBParameters
@@ -145,25 +116,14 @@ public:
   {
   }
 
-  bool discardBack () const override
-  {
-    return this->_discardBack;
-  }
-
-  void discardBack (bool v)
-  {
-    this->_discardBack = v;
-  }
+  void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
   bool useLastPos () const override
   {
     return true;
   }
 
-  void sculpt (const SculptBrush&, const DynamicFaces&) const;
-
-private:
-  bool _discardBack;
+  BRUSH_PARAMETER (bool, discardBack);
 };
 
 class SBSmoothParameters : public SBIntensityParameter
@@ -174,20 +134,9 @@ public:
   {
   }
 
-  bool relaxOnly () const
-  {
-    return this->_relaxOnly;
-  }
-
-  void relaxOnly (bool v)
-  {
-    this->_relaxOnly = v;
-  }
-
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
-private:
-  bool _relaxOnly;
+  BRUSH_PARAMETER (bool, relaxOnly);
 };
 
 class SBReduceParameters : public SBIntensityParameter
@@ -218,6 +167,8 @@ class SBPinchParameters : public SBInvertParameter
 public:
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 };
+
+#undef BRUSH_PARAMETER
 
 class SculptBrush
 {
