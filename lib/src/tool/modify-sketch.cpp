@@ -39,8 +39,8 @@ struct ToolModifySketch::Impl
     , mesh (nullptr)
     , node (nullptr)
     , parent (nullptr)
-    , movement (s->state ().camera (), s->cache ().getFrom<MovementConstraint> (
-                                         "constraint", MovementConstraint::PrimaryPlane))
+    , movement (s->state ().camera (), s->cache ().getFrom<MovementFixedConstraint> (
+                                         "constraint", MovementFixedConstraint::PrimaryPlane))
     , scaling (s->state ().camera ())
     , transformChildren (s->cache ().get<bool> ("transform-children", false))
     , snap (s->cache ().get<bool> ("snap", true))
@@ -57,8 +57,8 @@ struct ToolModifySketch::Impl
     ViewTwoColumnGrid& properties = this->self->makeProperties ();
 
     properties.add (QObject::tr ("Move along"), ViewUtil::emptyWidget ());
-    this->movement.addProperties (properties, [this]() {
-      this->self->cache ().set ("constraint", this->movement.constraint ());
+    this->movement.addFixedProperties (properties, [this]() {
+      this->self->cache ().set ("constraint", this->movement.fixedConstraint ());
     });
     properties.add (ViewUtil::horizontalLine ());
 

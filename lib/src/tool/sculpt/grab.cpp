@@ -19,11 +19,11 @@ struct ToolSculptGrab::Impl
 
   Impl (ToolSculptGrab* s)
     : self (s)
-    , movement (this->self->state ().camera (), MovementConstraint::CameraPlane)
+    , movement (this->self->state ().camera (), MovementFixedConstraint::CameraPlane)
   {
     if (this->self->cache ().get<bool> ("along-primary-plane", false))
     {
-      this->movement.constraint (MovementConstraint::PrimaryPlane);
+      this->movement.fixedConstraint (MovementFixedConstraint::PrimaryPlane);
     }
   }
 
@@ -42,12 +42,12 @@ struct ToolSculptGrab::Impl
   {
     auto& params = this->self->brush ().parameters<SBGrablikeParameters> ();
 
-    QCheckBox& primPlaneEdit =
-      ViewUtil::checkBox (QObject::tr ("Along primary plane"),
-                          this->movement.constraint () == MovementConstraint::PrimaryPlane);
+    QCheckBox& primPlaneEdit = ViewUtil::checkBox (QObject::tr ("Along primary plane"),
+                                                   this->movement.fixedConstraint () ==
+                                                     MovementFixedConstraint::PrimaryPlane);
     ViewUtil::connect (primPlaneEdit, [this](bool p) {
-      this->movement.constraint (p ? MovementConstraint::PrimaryPlane
-                                   : MovementConstraint::CameraPlane);
+      this->movement.fixedConstraint (p ? MovementFixedConstraint::PrimaryPlane
+                                        : MovementFixedConstraint::CameraPlane);
       this->self->cache ().set ("along-primary-plane", p);
     });
     properties.add (primPlaneEdit);

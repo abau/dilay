@@ -22,8 +22,8 @@ struct ToolMoveMesh::Impl
   Impl (ToolMoveMesh* s)
     : self (s)
     , mesh (nullptr)
-    , movement (s->state ().camera (), s->cache ().getFrom<MovementConstraint> (
-                                         "constraint", MovementConstraint::CameraPlane))
+    , movement (s->state ().camera (), s->cache ().getFrom<MovementFixedConstraint> (
+                                         "constraint", MovementFixedConstraint::CameraPlane))
   {
     this->setupProperties ();
     this->setupToolTip ();
@@ -31,9 +31,9 @@ struct ToolMoveMesh::Impl
 
   void setupProperties ()
   {
-    this->movement.addProperties (this->self->makeProperties (), [this]() {
+    this->movement.addFixedProperties (this->self->makeProperties (), [this]() {
       this->setupToolTip ();
-      this->self->cache ().set ("constraint", this->movement.constraint ());
+      this->self->cache ().set ("constraint", this->movement.fixedConstraint ());
     });
   }
 
@@ -42,7 +42,7 @@ struct ToolMoveMesh::Impl
     ViewToolTip toolTip;
     toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to move"));
 
-    if (this->movement.constraint () != MovementConstraint::CameraPlane)
+    if (this->movement.fixedConstraint () != MovementFixedConstraint::CameraPlane)
     {
       toolTip.add (ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift,
                    QObject::tr ("Drag to move orthogonally"));
