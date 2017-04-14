@@ -465,7 +465,7 @@ struct ToolSculpt::Impl
         if (movement.move (e, false))
         {
           this->brush.setPointOfAction (this->brush.mesh (), movement.position (),
-                                        glm::vec3 (0.0f));
+                                        this->brush.normal ());
           this->sculpt ();
           if (this->brush.hasPointOfAction ())
           {
