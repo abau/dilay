@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include "macro.hpp"
+#include "maybe.hpp"
 
 class DynamicFaces;
 class DynamicMesh;
@@ -43,6 +44,10 @@ public:
   virtual bool reduce () const
   {
     return false;
+  }
+
+  virtual void mirror (const PrimPlane&)
+  {
   }
 
   virtual void sculpt (const SculptBrush&, const DynamicFaces&) const = 0;
@@ -139,7 +144,20 @@ public:
 class SBFlattenParameters : public SBIntensityParameter
 {
 public:
+  SBFlattenParameters ();
+
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
+
+  bool             hasLockedPlane () const;
+  const PrimPlane& lockedPlane () const;
+  void lockedPlane (const PrimPlane& p);
+  void resetLockedPlane ();
+  void mirror (const PrimPlane&) override;
+
+  MEMBER_GETTER_SETTER (bool, lockPlane);
+
+private:
+  Maybe<PrimPlane> _lockedPlane;
 };
 
 class SBCreaseParameters : public SBIntensityParameter, public SBInvertParameter

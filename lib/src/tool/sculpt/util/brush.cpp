@@ -11,6 +11,40 @@
 #include "tool/sculpt/util/brush.hpp"
 #include "util.hpp"
 
+SBFlattenParameters::SBFlattenParameters ()
+  : _lockPlane (false)
+{
+}
+
+bool SBFlattenParameters::hasLockedPlane () const
+{
+  return bool(this->_lockedPlane);
+}
+
+const PrimPlane& SBFlattenParameters::lockedPlane () const
+{
+  return *this->_lockedPlane;
+}
+
+void SBFlattenParameters::lockedPlane (const PrimPlane& p)
+{
+  this->_lockedPlane = p;
+}
+
+void SBFlattenParameters::resetLockedPlane ()
+{
+  this->_lockedPlane.reset ();
+}
+
+void SBFlattenParameters::mirror (const PrimPlane& m)
+{
+  if (this->hasLockedPlane ())
+  {
+    this->_lockedPlane->point (m.mirror (this->_lockedPlane->point ()));
+    this->_lockedPlane->normal (m.mirrorDirection (this->_lockedPlane->normal ()));
+  }
+}
+
 void SBDrawParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
 {
   if (faces.isEmpty () == false)
@@ -85,18 +119,28 @@ void SBFlattenParameters::sculpt (const SculptBrush& brush, const DynamicFaces& 
 {
   if (faces.isEmpty () == false)
   {
-    glm::vec3 avgPos, avgNormal;
-    brush.mesh ().average (faces, avgPos, avgNormal);
+    PrimPlane plane (glm::vec3 (0.0f), glm::vec3 (0.0f));
 
-    const PrimPlane plane (avgPos, avgNormal);
+    if (this->hasLockedPlane ())
+    {
+      plane = this->lockedPlane ();
+    }
+    else
+    {
+      glm::vec3 avgPos, avgNormal;
+      brush.mesh ().average (faces, avgPos, avgNormal);
+      plane = PrimPlane (avgPos, avgNormal);
+    }
 
-    brush.mesh ().forEachVertex (faces, [this, &brush, &avgNormal, &plane](unsigned int i) {
+    brush.mesh ().forEachVertex (faces, [this, &brush, &plane](unsigned int i) {
       const glm::vec3& oldPos = brush.mesh ().vertex (i);
-      const float      factor =
-        this->intensity () * Util::linearStep (oldPos, brush.position (), 0.0f, brush.radius ());
-      const float     distance = glm::max (0.0f, plane.distance (oldPos));
-      const glm::vec3 newPos = oldPos - (avgNormal * factor * distance);
+      const float      distance = plane.distance (oldPos);
 
+      float factor =
+        this->intensity () * Util::linearStep (oldPos, brush.position (), 0.0f, brush.radius ());
+      factor *= this->hasLockedPlane () ? distance : glm::max (0.0f, distance);
+
+      const glm::vec3 newPos = oldPos - (plane.normal () * factor);
       brush.mesh ().vertex (i, newPos);
     });
   }
@@ -217,6 +261,8 @@ struct SculptBrush::Impl
 
   PrimSphere sphere () const
   {
+    assert (this->_parameters);
+
     const glm::vec3& pos =
       this->_parameters->useLastPos () ? this->lastPosition () : this->position ();
     return PrimSphere (pos, this->radius);
@@ -244,6 +290,11 @@ struct SculptBrush::Impl
 
   void mirror (const PrimPlane& plane)
   {
+    if (this->_parameters)
+    {
+      this->_parameters->mirror (plane);
+    }
+
     if (this->hasPointOfAction)
     {
       this->_lastPosition = plane.mirror (this->_lastPosition);

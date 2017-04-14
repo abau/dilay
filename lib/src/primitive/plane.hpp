@@ -7,20 +7,12 @@
 
 #include <glm/glm.hpp>
 #include <iosfwd>
+#include "macro.hpp"
 
 class PrimPlane
 {
 public:
   PrimPlane (const glm::vec3&, const glm::vec3&);
-
-  const glm::vec3& point () const
-  {
-    return this->_point;
-  }
-  const glm::vec3& normal () const
-  {
-    return this->_normal;
-  }
 
   float     distance (const glm::vec3&) const;
   float     absDistance (const glm::vec3&) const;
@@ -30,9 +22,8 @@ public:
   glm::vec3 mirror (const glm::vec3&) const;
   glm::vec3 mirrorDirection (const glm::vec3&) const;
 
-private:
-  const glm::vec3 _point;
-  const glm::vec3 _normal;
+  MEMBER_REF_GETTER_SETTER (glm::vec3, point)
+  MEMBER_REF_GETTER_SETTER (glm::vec3, normal)
 };
 
 std::ostream& operator<< (std::ostream&, const PrimPlane&);
