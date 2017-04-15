@@ -102,9 +102,11 @@ namespace
     {
       return bool(this->children.at (0));
     }
+
     void makeChildren ()
     {
       assert (this->hasChildren () == false);
+
       const float q = this->width * 0.25f;
       const float childWidth = this->width * 0.5f;
       const int   childDepth = this->depth + 1;
@@ -268,9 +270,12 @@ namespace
       }
       this->indices = std::move (newIndices);
 
-      for (Child& c : this->children)
+      if (this->hasChildren ())
       {
-        c->updateIndices (indexMap);
+        for (Child& c : this->children)
+        {
+          c->updateIndices (indexMap);
+        }
       }
     }
 
