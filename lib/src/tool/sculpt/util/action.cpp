@@ -609,7 +609,7 @@ namespace
     DynamicMesh& mesh = brush.mesh ();
     NewFaces     newFaces;
 
-    const auto averageEdgeLength = [&mesh](unsigned int i) -> float {
+    const auto reduceableFace = [&brush, &mesh](unsigned int i, float avgEdgeLengthSqr) -> bool {
       unsigned int i1, i2, i3;
       mesh.vertexIndices (i, i1, i2, i3);
 
@@ -617,20 +617,9 @@ namespace
       const glm::vec3& v2 = mesh.vertex (i2);
       const glm::vec3& v3 = mesh.vertex (i3);
 
-      return (glm::distance2 (v1, v2) + glm::distance2 (v1, v3) + glm::distance2 (v2, v3)) / 3.0f;
-    };
-
-    const auto reduceableFace = [&brush, &mesh](unsigned int i, float avgEdgeLength) -> bool {
-      unsigned int i1, i2, i3;
-      mesh.vertexIndices (i, i1, i2, i3);
-
-      const glm::vec3& v1 = mesh.vertex (i1);
-      const glm::vec3& v2 = mesh.vertex (i2);
-      const glm::vec3& v3 = mesh.vertex (i3);
-
-      const bool r1 = glm::distance2 (v1, v2) < avgEdgeLength * brush.parameters ().intensity ();
-      const bool r2 = glm::distance2 (v1, v3) < avgEdgeLength * brush.parameters ().intensity ();
-      const bool r3 = glm::distance2 (v2, v3) < avgEdgeLength * brush.parameters ().intensity ();
+      const bool r1 = glm::distance2 (v1, v2) < avgEdgeLengthSqr * brush.parameters ().intensity ();
+      const bool r2 = glm::distance2 (v1, v3) < avgEdgeLengthSqr * brush.parameters ().intensity ();
+      const bool r3 = glm::distance2 (v2, v3) < avgEdgeLengthSqr * brush.parameters ().intensity ();
 
       return r1 && r2 && r3;
     };
@@ -658,18 +647,12 @@ namespace
       }
     };
 
-    float avgEdgeLength = 0.0f;
-    for (unsigned int i : faces)
-    {
-      avgEdgeLength += averageEdgeLength (i);
-    }
-    avgEdgeLength /= float(faces.numElements ());
-
+    const float avgEdgeLengthSqr = mesh.averageEdgeLengthSqr (faces);
     for (unsigned int i : faces)
     {
       if (mesh.isFreeFace (i) == false)
       {
-        if (reduceableFace (i, avgEdgeLength))
+        if (reduceableFace (i, avgEdgeLengthSqr))
         {
           const PrimTriangle face = mesh.face (i);
           const unsigned int newI = mesh.addVertex (face.center (), glm::vec3 (0.0f));

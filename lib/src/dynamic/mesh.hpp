@@ -53,6 +53,8 @@ public:
   glm::vec3 averagePosition (unsigned int) const;
   glm::vec3 averageNormal (const DynamicFaces&) const;
   glm::vec3 averageNormal (unsigned int) const;
+  float     averageEdgeLengthSqr (const DynamicFaces&) const;
+  float     averageEdgeLengthSqr (unsigned int) const;
 
   const Mesh&  mesh () const;
   unsigned int addVertex (const glm::vec3&, const glm::vec3&);

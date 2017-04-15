@@ -4,6 +4,7 @@
  */
 #include <cstring>
 #include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
 #include <vector>
 #include "../mesh.hpp"
 #include "config.hpp"
@@ -385,6 +386,32 @@ struct DynamicMesh::Impl
       }
     }
     return glm::normalize (normal);
+  }
+
+  float averageEdgeLengthSqr (const DynamicFaces& faces) const
+  {
+    assert (faces.numElements () > 0);
+
+    float length = 0.0f;
+    for (unsigned int i : faces)
+    {
+      length += this->averageEdgeLengthSqr (i);
+    }
+    return length / float(faces.numElements ());
+  }
+
+  float averageEdgeLengthSqr (unsigned int i) const
+  {
+    assert (this->isFreeFace (i) == false);
+
+    unsigned int i1, i2, i3;
+    this->vertexIndices (i, i1, i2, i3);
+
+    const glm::vec3& v1 = this->mesh.vertex (i1);
+    const glm::vec3& v2 = this->mesh.vertex (i2);
+    const glm::vec3& v3 = this->mesh.vertex (i3);
+
+    return (glm::distance2 (v1, v2) + glm::distance2 (v1, v3) + glm::distance2 (v2, v3)) / 3.0f;
   }
 
   unsigned int addVertex (const glm::vec3& vertex, const glm::vec3& normal)
@@ -800,6 +827,8 @@ DELEGATE1_CONST (glm::vec3, DynamicMesh, averagePosition, const DynamicFaces&)
 DELEGATE1_CONST (glm::vec3, DynamicMesh, averagePosition, unsigned int)
 DELEGATE1_CONST (glm::vec3, DynamicMesh, averageNormal, const DynamicFaces&)
 DELEGATE1_CONST (glm::vec3, DynamicMesh, averageNormal, unsigned int)
+DELEGATE1_CONST (float, DynamicMesh, averageEdgeLengthSqr, const DynamicFaces&)
+DELEGATE1_CONST (float, DynamicMesh, averageEdgeLengthSqr, unsigned int)
 DELEGATE2 (unsigned int, DynamicMesh, addVertex, const glm::vec3&, const glm::vec3&)
 DELEGATE3 (unsigned int, DynamicMesh, addFace, unsigned int, unsigned int, unsigned int)
 DELEGATE1 (void, DynamicMesh, deleteVertex, unsigned int)
