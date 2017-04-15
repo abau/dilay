@@ -604,12 +604,11 @@ namespace
     }
   }
 
-  void reduceEdges (const SculptBrush& brush, DynamicFaces& faces)
+  void reduceEdges (DynamicMesh& mesh, float maxEdgeLengthSqr, DynamicFaces& faces)
   {
-    DynamicMesh& mesh = brush.mesh ();
-    NewFaces     newFaces;
+    NewFaces newFaces;
 
-    const auto reduceableFace = [&brush, &mesh](unsigned int i, float avgEdgeLengthSqr) -> bool {
+    const auto reduceableFace = [&mesh, maxEdgeLengthSqr](unsigned int i) -> bool {
       unsigned int i1, i2, i3;
       mesh.vertexIndices (i, i1, i2, i3);
 
@@ -617,9 +616,9 @@ namespace
       const glm::vec3& v2 = mesh.vertex (i2);
       const glm::vec3& v3 = mesh.vertex (i3);
 
-      const bool r1 = glm::distance2 (v1, v2) < avgEdgeLengthSqr * brush.parameters ().intensity ();
-      const bool r2 = glm::distance2 (v1, v3) < avgEdgeLengthSqr * brush.parameters ().intensity ();
-      const bool r3 = glm::distance2 (v2, v3) < avgEdgeLengthSqr * brush.parameters ().intensity ();
+      const bool r1 = glm::distance2 (v1, v2) < maxEdgeLengthSqr;
+      const bool r2 = glm::distance2 (v1, v3) < maxEdgeLengthSqr;
+      const bool r3 = glm::distance2 (v2, v3) < maxEdgeLengthSqr;
 
       return r1 && r2 && r3;
     };
@@ -647,12 +646,11 @@ namespace
       }
     };
 
-    const float avgEdgeLengthSqr = mesh.averageEdgeLengthSqr (faces);
     for (unsigned int i : faces)
     {
       if (mesh.isFreeFace (i) == false)
       {
-        if (reduceableFace (i, avgEdgeLengthSqr))
+        if (reduceableFace (i))
         {
           const PrimTriangle face = mesh.face (i);
           const unsigned int newI = mesh.addVertex (face.center (), glm::vec3 (0.0f));
@@ -700,7 +698,9 @@ namespace ToolSculptAction
 
       if (brush.parameters ().reduce ())
       {
-        reduceEdges (brush, faces);
+        const float maxEdgeLengthSqr =
+          mesh.averageEdgeLengthSqr (faces) * brush.parameters ().intensity ();
+        reduceEdges (mesh, maxEdgeLengthSqr, faces);
 
         if (mesh.isEmpty ())
         {
