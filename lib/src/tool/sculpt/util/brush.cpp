@@ -99,12 +99,9 @@ void SBSmoothParameters::sculpt (const SculptBrush& brush, const DynamicFaces& f
   if (this->relaxOnly () == false)
   {
     brush.mesh ().forEachVertex (faces, [this, &brush](unsigned int i) {
-      const glm::vec3 avgPos = brush.mesh ().averagePosition (i);
-
+      const glm::vec3  avgPos = brush.mesh ().averagePosition (i);
       const glm::vec3& oldPos = brush.mesh ().vertex (i);
-      const float      factor =
-        this->intensity () * Util::smoothStep (oldPos, brush.position (), 0.0f, brush.radius ());
-      const glm::vec3 newPos = oldPos + (factor * (avgPos - oldPos));
+      const glm::vec3  newPos = oldPos + (this->intensity () * (avgPos - oldPos));
 
       brush.mesh ().vertex (i, newPos);
     });
