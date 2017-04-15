@@ -14,20 +14,6 @@ class PrimPlane;
 class PrimSphere;
 class SculptBrush;
 
-#define BRUSH_PARAMETER(type, name) \
-public:                             \
-  type name () const                \
-  {                                 \
-    return this->_##name;           \
-  }                                 \
-  void name (type v)                \
-  {                                 \
-    this->_##name = v;              \
-  }                                 \
-                                    \
-private:                            \
-  type _##name;
-
 class SBParameters
 {
 public:
@@ -70,7 +56,7 @@ public:
   {
   }
 
-  BRUSH_PARAMETER (float, intensity);
+  MEMBER_GETTER_SETTER (float, intensity);
 };
 
 class SBInvertParameter : virtual public SBParameters
@@ -91,7 +77,7 @@ public:
     return this->_invert ? -v : v;
   }
 
-  BRUSH_PARAMETER (bool, invert);
+  MEMBER_GETTER_SETTER (bool, invert);
 };
 
 class SBDrawParameters : public SBIntensityParameter, public SBInvertParameter
@@ -104,8 +90,8 @@ public:
 
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
-  BRUSH_PARAMETER (bool, flat);
-  BRUSH_PARAMETER (bool, constantHeight);
+  MEMBER_GETTER_SETTER (bool, flat);
+  MEMBER_GETTER_SETTER (bool, constantHeight);
 };
 
 class SBGrablikeParameters : public SBParameters
@@ -123,7 +109,7 @@ public:
     return true;
   }
 
-  BRUSH_PARAMETER (bool, discardBack);
+  MEMBER_GETTER_SETTER (bool, discardBack);
 };
 
 class SBSmoothParameters : public SBIntensityParameter
@@ -136,7 +122,7 @@ public:
 
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
-  BRUSH_PARAMETER (bool, relaxOnly);
+  MEMBER_GETTER_SETTER (bool, relaxOnly);
 };
 
 class SBReduceParameters : public SBIntensityParameter
@@ -167,8 +153,6 @@ class SBPinchParameters : public SBInvertParameter
 public:
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 };
-
-#undef BRUSH_PARAMETER
 
 class SculptBrush
 {

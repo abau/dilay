@@ -558,6 +558,24 @@
     this->impl->member = a;     \
   }
 
+#define _MEMBER_GETTER_SETTER(type, name, pass_type) \
+public:                                              \
+  pass_type name () const                            \
+  {                                                  \
+    return this->_##name;                            \
+  }                                                  \
+  void name (pass_type v)                            \
+  {                                                  \
+    this->_##name = v;                               \
+  }                                                  \
+                                                     \
+private:                                             \
+  type _##name;
+
+#define MEMBER_GETTER_SETTER(type, name) _MEMBER_GETTER_SETTER (type, name, type)
+
+#define MEMBER_REF_GETTER_SETTER(type, name) _MEMBER_GETTER_SETTER (type, name, const type&)
+
 // safe references
 
 #define SAFE_REF(r, method)   \
