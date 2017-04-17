@@ -73,6 +73,7 @@ public:
   void realignAllFaces ();
   void sanitize ();
   void prune ();
+  bool checkConsistency ();
   void mirror (const PrimPlane&);
   void bufferData ();
 

@@ -12,6 +12,7 @@ namespace ToolSculptAction
 {
   void sculpt (const SculptBrush&);
   void smoothMesh (DynamicMesh&);
+  void deleteDegeneratedFaces (DynamicMesh&);
 };
 
 #endif

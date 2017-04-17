@@ -16,6 +16,7 @@
 #include "mesh-util.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
+#include "tool/sculpt/util/action.hpp"
 #include "util.hpp"
 
 namespace
@@ -625,6 +626,9 @@ struct DynamicMesh::Impl
       Util::prune<FaceData> (this->faceData, [](const FaceData& d) { return d.isFree; },
                              &faceIndexMap);
 
+      const unsigned int newNumVertices = this->vertexData.size ();
+      const unsigned int newNumFaces = this->faceData.size ();
+
       for (VertexData& d : this->vertexData)
       {
         for (unsigned int& f : d.adjacentFaces)
@@ -637,36 +641,89 @@ struct DynamicMesh::Impl
 
       for (unsigned int i = 0; i < vertexIndexMap.size (); i++)
       {
-        if (vertexIndexMap[i] != Util::invalidIndex ())
+        const unsigned int newV = vertexIndexMap[i];
+        if (newV != Util::invalidIndex ())
         {
-          this->mesh.vertex (vertexIndexMap[i], this->mesh.vertex (i));
+          this->mesh.vertex (newV, this->mesh.vertex (i));
+        }
+        else
+        {
+          assert (std::find (this->freeVertexIndices.begin (), this->freeVertexIndices.end (), i) !=
+                  this->freeVertexIndices.end ());
         }
       }
-      this->mesh.shrinkVertices (this->numVertices ());
       this->freeVertexIndices.clear ();
+      this->mesh.shrinkVertices (newNumVertices);
+      this->vertexVisited.resize (newNumVertices);
+      assert (this->numVertices () == newNumVertices);
 
       for (unsigned int i = 0; i < faceIndexMap.size (); i++)
       {
         const unsigned int newF = faceIndexMap[i];
-
         if (newF != Util::invalidIndex ())
         {
-          this->mesh.index ((3 * newF) + 0, this->mesh.index ((3 * i) + 0));
-          this->mesh.index ((3 * newF) + 1, this->mesh.index ((3 * i) + 1));
-          this->mesh.index ((3 * newF) + 2, this->mesh.index ((3 * i) + 2));
+          const unsigned int oldI1 = this->mesh.index ((3 * i) + 0);
+          const unsigned int oldI2 = this->mesh.index ((3 * i) + 1);
+          const unsigned int oldI3 = this->mesh.index ((3 * i) + 2);
+
+          assert (vertexIndexMap[oldI1] != Util::invalidIndex ());
+          assert (vertexIndexMap[oldI2] != Util::invalidIndex ());
+          assert (vertexIndexMap[oldI3] != Util::invalidIndex ());
+
+          this->mesh.index ((3 * newF) + 0, vertexIndexMap[oldI1]);
+          this->mesh.index ((3 * newF) + 1, vertexIndexMap[oldI2]);
+          this->mesh.index ((3 * newF) + 2, vertexIndexMap[oldI3]);
+        }
+        else
+        {
+          assert (std::find (this->freeFaceIndices.begin (), this->freeFaceIndices.end (), i) !=
+                  this->freeFaceIndices.end ());
         }
       }
-      this->mesh.shrinkIndices (3 * this->numFaces ());
       this->freeFaceIndices.clear ();
+      this->mesh.shrinkIndices (3 * newNumFaces);
+      this->faceVisited.resize (newNumFaces);
+      assert (this->numFaces () == newNumFaces);
 
       this->octree.updateIndices (faceIndexMap);
     }
   }
 
-  void mirror (const PrimPlane& plane)
+  bool checkConsistency ()
   {
     this->prune ();
+    this->bufferData ();
+
+    if (MeshUtil::checkConsistency (this->mesh))
+    {
+      for (unsigned int i = 0; i < this->vertexData.size (); i++)
+      {
+        if (this->vertexData[i].isFree == false)
+        {
+          if (this->vertexData[i].adjacentFaces.empty ())
+          {
+            DILAY_WARN ("vertex %u is not free but has no adjacent faces", i);
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  void mirror (const PrimPlane& plane)
+  {
+    assert (this->checkConsistency ());
+
+    ToolSculptAction::deleteDegeneratedFaces (*this->self);
+    this->prune ();
     this->fromMesh (MeshUtil::mirror (this->mesh, plane));
+
+    assert (this->checkConsistency ());
   }
 
   void bufferData ()
@@ -793,6 +850,7 @@ struct DynamicMesh::Impl
   {
     this->octree.printStatistics ();
   }
+
   void runFromConfig (const Config& config)
   {
     this->mesh.color (config.get<Color> ("editor/mesh/color/normal"));
@@ -843,6 +901,7 @@ DELEGATE1 (void, DynamicMesh, realignFace, unsigned int)
 DELEGATE (void, DynamicMesh, realignAllFaces)
 DELEGATE (void, DynamicMesh, sanitize)
 DELEGATE (void, DynamicMesh, prune)
+DELEGATE (bool, DynamicMesh, checkConsistency)
 DELEGATE1 (void, DynamicMesh, mirror, const PrimPlane&)
 DELEGATE (void, DynamicMesh, bufferData)
 DELEGATE1 (void, DynamicMesh, render, Camera&)

@@ -538,6 +538,22 @@ struct DynamicOctree::Impl
 
   void updateIndices (const std::vector<unsigned int>& newIndices)
   {
+    for (unsigned int i = 0; i < newIndices.size (); i++)
+    {
+      const unsigned int newI = newIndices[i];
+      if (newI != Util::invalidIndex () && newI != i)
+      {
+        assert (i < this->elementNodeMap.size ());
+        assert (newI < this->elementNodeMap.size ());
+        assert (this->elementNodeMap[i]);
+        assert (this->elementNodeMap[newI] == nullptr);
+
+        this->elementNodeMap[newI] = this->elementNodeMap[i];
+        this->elementNodeMap[i] = nullptr;
+      }
+    }
+    this->elementNodeMap.resize (newIndices.size ());
+
     if (this->hasRoot ())
     {
       this->root->updateIndices (newIndices);

@@ -103,9 +103,9 @@ namespace
     {
       this->facesToDelete.insert (i);
     }
+
     bool applyToMesh (DynamicMesh& mesh, DynamicFaces& faces) const
     {
-      assert (faces.hasUncomitted () == false);
       assert (this->vertexIndices.size () % 3 == 0);
 
       for (unsigned int i : this->facesToDelete)
@@ -604,68 +604,123 @@ namespace
     }
   }
 
-  void collapseFace (DynamicMesh& mesh, unsigned int i, DynamicFaces faces)
+  bool deleteValence3Vertex (DynamicMesh& mesh, unsigned int i, DynamicFaces& faces)
   {
-    assert (mesh.isFreeFace (i) == false);
+    assert (mesh.isFreeVertex (i) == false);
+    assert (mesh.valence (i) == 3);
 
-    const auto deleteValence3Vertex = [&mesh](unsigned int i) {
-      assert (mesh.valence (i) == 3);
+    const unsigned int adj1 = mesh.adjacentFaces (i)[0];
+    const unsigned int adj2 = mesh.adjacentFaces (i)[1];
+    const unsigned int adj3 = mesh.adjacentFaces (i)[2];
 
-      const auto getSuccessor = [&mesh, i](unsigned int face) -> unsigned int {
-        unsigned int i1, i2, i3;
-        mesh.vertexIndices (face, i1, i2, i3);
+    unsigned int adj11, adj12, adj13;
+    mesh.vertexIndices (adj1, adj11, adj12, adj13);
 
-        if (i == i1)
-        {
-          return i2;
-        }
-        else if (i == i2)
-        {
-          return i3;
-        }
-        else
-        {
-          assert (i == i3);
-          return i1;
-        }
-      };
+    unsigned int adj21, adj22, adj23;
+    mesh.vertexIndices (adj2, adj21, adj22, adj23);
 
-      const unsigned int newI1 = getSuccessor (mesh.adjacentFaces (i)[0]);
-      const unsigned int newI2 = getSuccessor (mesh.adjacentFaces (i)[1]);
-      const unsigned int newI3 = getSuccessor (mesh.adjacentFaces (i)[2]);
+    unsigned int newI1, newI2, newI3;
 
-      mesh.deleteFace (mesh.adjacentFaces (i)[0]);
-      mesh.deleteFace (mesh.adjacentFaces (i)[1]);
-      mesh.deleteFace (mesh.adjacentFaces (i)[2]);
+    if (i == adj11)
+    {
+      newI1 = adj12;
+      newI2 = adj13;
+    }
+    else if (i == adj12)
+    {
+      newI1 = adj13;
+      newI2 = adj11;
+    }
+    else if (i == adj13)
+    {
+      newI1 = adj11;
+      newI2 = adj12;
+    }
+    else
+    {
+      DILAY_IMPOSSIBLE
+    }
+
+    if (adj21 != newI1 && adj21 != newI2)
+    {
+      newI3 = adj21;
+    }
+    else if (adj22 != newI1 && adj22 != newI2)
+    {
+      newI3 = adj22;
+    }
+    else if (adj23 != newI1 && adj23 != newI2)
+    {
+      newI3 = adj23;
+    }
+    else
+    {
+      DILAY_IMPOSSIBLE
+    }
+    assert (newI1 != newI2);
+    assert (newI1 != newI3);
+    assert (newI2 != newI3);
+
+    if (mesh.valence (newI1) > 3 && mesh.valence (newI2) > 3 && mesh.valence (newI3) > 3)
+    {
+      mesh.deleteFace (adj1);
+      mesh.deleteFace (adj2);
+      mesh.deleteFace (adj3);
       mesh.deleteVertex (i);
-      mesh.addFace (newI1, newI2, newI3);
-    };
 
-    NewFaces newFaces;
+      faces.insert (mesh.addFace (newI1, newI2, newI3));
 
-    const auto addFaces = [&mesh, &newFaces](unsigned int newI, unsigned int i1, unsigned int i2,
-                                             unsigned int i3) -> unsigned int {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  };
+
+  void collapseEdge (DynamicMesh& mesh, unsigned int i1, unsigned int i2, DynamicFaces faces)
+  {
+    const unsigned int v1 = mesh.valence (i1);
+    const unsigned int v2 = mesh.valence (i2);
+
+    assert (v1 >= 3);
+    assert (v2 >= 3);
+
+#ifndef NDEBUG
+    const auto isValidEdge = [&mesh](unsigned int i1, unsigned int i2) {
+      assert (i1 != i2);
+      assert (mesh.isFreeVertex (i1) == false);
+      assert (mesh.isFreeVertex (i2) == false);
+
       for (unsigned int a : mesh.adjacentFaces (i1))
       {
         unsigned int a1, a2, a3;
         mesh.vertexIndices (a, a1, a2, a3);
 
-        const bool a1IsAdjacent = (a1 != i1) && (a1 != i2) && (a1 != i3);
-        const bool a2IsAdjacent = (a2 != i1) && (a2 != i2) && (a2 != i3);
-        const bool a3IsAdjacent = (a3 != i1) && (a3 != i2) && (a3 != i3);
+        if (i2 == a1 || i2 == a2 || i2 == a3)
+        {
+          return true;
+        }
+      }
+      return false;
+    };
+    assert (isValidEdge (i1, i2));
+#endif
 
-        if (a1IsAdjacent && mesh.valence (a1) == 3)
-        {
-          return a1;
-        }
-        if (a2IsAdjacent && mesh.valence (a2) == 3)
-        {
-          return a2;
-        }
-        if (a3IsAdjacent && mesh.valence (a3) == 3)
-        {
-          return a3;
-        }
+    NewFaces newFaces;
+
+    const auto addFaces = [&mesh, &newFaces](unsigned int newI, unsigned int i1, unsigned int i2) {
+      for (unsigned int a : mesh.adjacentFaces (i1))
+      {
+        unsigned int a1, a2, a3;
+        mesh.vertexIndices (a, a1, a2, a3);
+
+        const bool a1IsAdjacent = (a1 != i1) && (a1 != i2);
+        const bool a2IsAdjacent = (a2 != i1) && (a2 != i2);
+        const bool a3IsAdjacent = (a3 != i1) && (a3 != i2);
+
+        assert (a1IsAdjacent || a2IsAdjacent || a3IsAdjacent);
+        assert (a1IsAdjacent == false || a2IsAdjacent == false || a3IsAdjacent == false);
 
         if (a1IsAdjacent && a2IsAdjacent)
         {
@@ -681,73 +736,149 @@ namespace
         }
         newFaces.deleteFace (a);
       }
-      return Util::invalidIndex ();
     };
 
-    const PrimTriangle face = mesh.face (i);
-    const unsigned int newI = mesh.addVertex (face.center (), glm::vec3 (0.0f));
+    const auto numCommonAdjacentVertices = [&mesh, &i1, &i2]() -> unsigned int {
+      const auto getSuccessor = [&mesh](unsigned int i, unsigned int a) {
+        unsigned int a1, a2, a3;
+        mesh.vertexIndices (a, a1, a2, a3);
 
-    unsigned int i1, i2, i3;
-    mesh.vertexIndices (i, i1, i2, i3);
+        if (i == a1)
+        {
+          return a2;
+        }
+        else if (i == a2)
+        {
+          return a3;
+        }
+        else if (i == a3)
+        {
+          return a1;
+        }
+        else
+        {
+          DILAY_IMPOSSIBLE
+        }
+      };
 
-    const unsigned int valence3Vertex1 = addFaces (newI, i1, i2, i3);
-    const unsigned int valence3Vertex2 = addFaces (newI, i2, i3, i1);
-    const unsigned int valence3Vertex3 = addFaces (newI, i3, i1, i2);
+      unsigned int n = 0;
+      for (unsigned int a1 : mesh.adjacentFaces (i1))
+      {
+        const unsigned int succI1 = getSuccessor (i1, a1);
 
-    if (valence3Vertex1 != Util::invalidIndex ())
+        if (succI1 != i2)
+        {
+          for (unsigned int a2 : mesh.adjacentFaces (i2))
+          {
+            if (succI1 == getSuccessor (i2, a2))
+            {
+              n++;
+            }
+          }
+        }
+      }
+      return n;
+    };
+
+    const glm::vec3 newPos = Util::between (mesh.vertex (i1), mesh.vertex (i2));
+
+    if (v1 == 3)
     {
-      deleteValence3Vertex (valence3Vertex1);
-      collapseFace (mesh, i, faces);
+      if (deleteValence3Vertex (mesh, i1, faces))
+      {
+        mesh.vertex (i2, newPos);
+      }
+      return;
     }
-    else if (valence3Vertex2 != Util::invalidIndex ())
+    if (v2 == 3)
     {
-      deleteValence3Vertex (valence3Vertex2);
-      collapseFace (mesh, i, faces);
+      if (deleteValence3Vertex (mesh, i2, faces))
+      {
+        mesh.vertex (i1, newPos);
+      }
+      return;
     }
-    else if (valence3Vertex3 != Util::invalidIndex ())
+
+    unsigned int leftFace, leftVertex, rightFace, rightVertex;
+    findAdjacent (mesh, i1, i2, leftFace, leftVertex, rightFace, rightVertex);
+
+    const unsigned int vLeftVertex = mesh.valence (leftVertex);
+    const unsigned int vRightVertex = mesh.valence (rightVertex);
+
+    assert (vLeftVertex >= 3);
+    assert (vRightVertex >= 3);
+
+    if (leftVertex == rightVertex)
     {
-      deleteValence3Vertex (valence3Vertex3);
-      collapseFace (mesh, i, faces);
+      return;
     }
-    else
+    else if (vLeftVertex == 3 || vRightVertex == 3)
     {
+      return;
+    }
+    else if (numCommonAdjacentVertices () == 2)
+    {
+      const unsigned int newI = mesh.addVertex (newPos, glm::vec3 (0.0f));
+
+      addFaces (newI, i1, i2);
+      addFaces (newI, i2, i1);
+
       newFaces.applyToMesh (mesh, faces);
+
+      assert (mesh.adjacentFaces (i1).empty ());
+      assert (mesh.adjacentFaces (i2).empty ());
 
       mesh.deleteVertex (i1);
       mesh.deleteVertex (i2);
-      mesh.deleteVertex (i3);
+
+      assert (mesh.isFreeVertex (i1));
+      assert (mesh.isFreeVertex (i2));
+      assert (mesh.valence (newI) == v1 + v2 - 4);
     }
-  };
+  }
 
-  void collapseFaces (DynamicMesh& mesh, float maxEdgeLengthSqr, DynamicFaces& faces)
+  void collapseEdges (DynamicMesh& mesh, float maxEdgeLengthSqr, DynamicFaces& faces)
   {
-    const auto isCollapsable = [&mesh, maxEdgeLengthSqr](unsigned int i) -> bool {
-      unsigned int i1, i2, i3;
-      mesh.vertexIndices (i, i1, i2, i3);
+    const auto isCollapsable = [&mesh, maxEdgeLengthSqr](unsigned int i1, unsigned i2) -> bool {
+      assert (mesh.isFreeVertex (i1) == false);
+      assert (mesh.isFreeVertex (i2) == false);
 
-      const glm::vec3& v1 = mesh.vertex (i1);
-      const glm::vec3& v2 = mesh.vertex (i2);
-      const glm::vec3& v3 = mesh.vertex (i3);
-
-      const bool r1 = glm::distance2 (v1, v2) < maxEdgeLengthSqr;
-      const bool r2 = glm::distance2 (v1, v3) < maxEdgeLengthSqr;
-      const bool r3 = glm::distance2 (v2, v3) < maxEdgeLengthSqr;
-
-      return r1 && r2 && r3;
+      return glm::distance2 (mesh.vertex (i1), mesh.vertex (i2)) < maxEdgeLengthSqr;
     };
 
-    for (unsigned int i : faces)
+    DynamicFaces current;
+    current.insert (faces.indices ());
+
+    do
     {
-      if (mesh.isFreeFace (i) == false)
+      faces.insert (current.uncommitted ());
+      current.commit ();
+
+      for (unsigned int i : current)
       {
-        if (isCollapsable (i))
+        if (mesh.isFreeFace (i) == false)
         {
-          collapseFace (mesh, i, faces);
+          unsigned int i1, i2, i3;
+          mesh.vertexIndices (i, i1, i2, i3);
+
+          if (isCollapsable (i1, i2))
+          {
+            collapseEdge (mesh, i1, i2, current);
+          }
+          else if (isCollapsable (i1, i3))
+          {
+            collapseEdge (mesh, i1, i3, current);
+          }
+          else if (isCollapsable (i2, i3))
+          {
+            collapseEdge (mesh, i2, i3, current);
+          }
         }
       }
-    }
-    faces.commit ();
+    } while (current.uncommitted ().empty () == false);
+
     faces.filter ([&mesh](unsigned int f) { return mesh.isFreeFace (f) == false; });
+    faces.commit ();
   }
 
   void finalize (DynamicMesh& mesh, const DynamicFaces& faces)
@@ -775,7 +906,7 @@ namespace ToolSculptAction
       {
         const float maxEdgeLengthSqr =
           mesh.averageEdgeLengthSqr (faces) * brush.parameters ().intensity ();
-        collapseFaces (mesh, maxEdgeLengthSqr, faces);
+        collapseEdges (mesh, maxEdgeLengthSqr, faces);
 
         if (mesh.isEmpty ())
         {
@@ -788,6 +919,7 @@ namespace ToolSculptAction
           smooth (mesh, faces);
           finalize (mesh, faces);
         }
+        assert (mesh.checkConsistency ());
       }
       else
       {
@@ -826,6 +958,19 @@ namespace ToolSculptAction
     faces.commit ();
     relaxEdges (mesh, faces);
     smooth (mesh, faces);
+    finalize (mesh, faces);
+    mesh.bufferData ();
+  }
+
+  void deleteDegeneratedFaces (DynamicMesh& mesh)
+  {
+    DynamicFaces faces;
+
+    mesh.forEachFace ([&faces](unsigned int i) { faces.insert (i); });
+    faces.commit ();
+
+    collapseEdges (mesh, Util::epsilon (), faces);
+
     finalize (mesh, faces);
     mesh.bufferData ();
   }
