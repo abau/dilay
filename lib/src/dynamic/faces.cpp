@@ -63,7 +63,7 @@ void DynamicFaces::filter (const std::function<bool(unsigned int)>& f)
   }
   for (auto it = this->_uncommitted.begin (); it != this->_uncommitted.end ();)
   {
-    if (f (*it))
+    if (f (*it) == false)
     {
       it = this->_uncommitted.erase (it);
     }
