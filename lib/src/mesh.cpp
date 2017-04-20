@@ -49,14 +49,17 @@ namespace
     {
       return this->data.size ();
     }
+
     void reserve (unsigned int size)
     {
       this->data.reserve (size);
     }
+
     void shrink (unsigned int size)
     {
       assert (size <= this->data.size ());
       this->data.resize (size);
+      this->resetBounds ();
     }
 
     void updateBounds (unsigned int index)
