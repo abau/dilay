@@ -31,6 +31,7 @@ namespace
     {
       this->reset ();
     }
+
     void reset ()
     {
       this->id.reset ();
@@ -55,11 +56,12 @@ namespace
       this->data.reserve (size);
     }
 
-    void shrink (unsigned int size)
+    void shrink (unsigned int n)
     {
-      assert (size <= this->data.size ());
-      this->data.resize (size);
-      this->resetBounds ();
+      assert (n <= this->numElements ());
+      this->data.resize (n);
+      this->dataLowerBound = 0;
+      this->dataUpperBound = n > 0 ? n - 1 : 0;
     }
 
     void updateBounds (unsigned int index)
@@ -71,20 +73,20 @@ namespace
     unsigned int add (const T& value)
     {
       this->data.push_back (value);
-      this->updateBounds (this->data.size () - 1);
-      return this->data.size () - 1;
+      this->updateBounds (this->numElements () - 1);
+      return this->numElements () - 1;
     }
 
     void set (unsigned int index, const T& value)
     {
-      assert (index < this->data.size ());
+      assert (index < this->numElements ());
       this->data[index] = value;
       this->updateBounds (index);
     }
 
     const T& get (unsigned int index) const
     {
-      assert (index < this->data.size ());
+      assert (index < this->numElements ());
       return this->data[index];
     }
 
@@ -97,7 +99,7 @@ namespace
       }
       OpenGL::glBindBuffer (target, this->id.id ());
 
-      const unsigned int dataSize = this->data.size () * sizeof (T);
+      const unsigned int dataSize = this->numElements () * sizeof (T);
 
       if (this->bufferSize == 0)
       {
