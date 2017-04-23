@@ -26,7 +26,7 @@ struct ToolSculptDraw::Impl
     params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
     params.invert (this->self->cache ().get<bool> ("invert", false));
     params.flat (this->self->cache ().get<bool> ("flat", false));
-    params.constantHeight (this->self->cache ().get<bool> ("constant-height", true));
+    params.constantHeight (this->self->cache ().get<bool> ("constant-height", false));
   }
 
   void runSetupCursor (ViewCursor&)
@@ -52,19 +52,21 @@ struct ToolSculptDraw::Impl
     });
     properties.add (invertEdit);
 
-    QCheckBox& flatEdit = ViewUtil::checkBox (QObject::tr ("Flat"), params.flat ());
-    ViewUtil::connect (flatEdit, [this, &params](bool f) {
-      params.flat (f);
-      this->self->cache ().set ("flat", f);
-    });
-    properties.add (flatEdit);
-
     QCheckBox& constantHeightEdit =
       ViewUtil::checkBox (QObject::tr ("Constant height"), params.constantHeight ());
     ViewUtil::connect (constantHeightEdit, [this, &params](bool v) {
       params.constantHeight (v);
       this->self->cache ().set ("constant-height", v);
     });
+    constantHeightEdit.setEnabled (params.flat ());
+
+    QCheckBox& flatEdit = ViewUtil::checkBox (QObject::tr ("Flat"), params.flat ());
+    ViewUtil::connect (flatEdit, [this, &params, &constantHeightEdit](bool f) {
+      params.flat (f);
+      this->self->cache ().set ("flat", f);
+      constantHeightEdit.setEnabled (f);
+    });
+    properties.add (flatEdit);
     properties.add (constantHeightEdit);
   }
 

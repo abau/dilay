@@ -347,8 +347,9 @@ struct ToolSculpt::Impl
         }
         else
         {
-          this->brush.setPointOfAction (intersection.mesh (), intersection.position (),
-                                        intersection.normal ());
+          this->brush.mesh ().bufferData ();
+          this->brush.resetPointOfAction ();
+          return false;
         }
       }
       else
