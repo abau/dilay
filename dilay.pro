@@ -6,10 +6,12 @@ app.depends  = lib
 test.depends = lib
 
 unix {
-  gdb.commands      = gdb -ex run ./dilay_debug
+  gdb.commands = gdb -ex run ./dilay_debug
   valgrind.commands = valgrind ./dilay_debug &> valgrind.log
-  leak.commands     = valgrind --leak-check=yes ./dilay_debug &> valgrind.log
-  format.CONFIG     = recursive
+  leak.commands = valgrind --leak-check=yes ./dilay_debug &> valgrind.log
+  format.CONFIG = recursive
+  copyright.commands = find $$SUBDIRS \\( -name "*.cpp" -o -name "*.hpp" -o -name "*.hs" \\) -print0 | \
+                       xargs -0 sed -i 's/Copyright\ ©\ 2015,2016/Copyright\ ©\ 2015-2017/'
 
-  QMAKE_EXTRA_TARGETS += gdb valgrind leak format
+  QMAKE_EXTRA_TARGETS += gdb valgrind leak format copyright
 }
