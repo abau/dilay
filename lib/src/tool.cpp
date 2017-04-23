@@ -17,6 +17,7 @@
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
+#include "view/info-pane.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-pane.hpp"
@@ -36,7 +37,7 @@ struct Tool::Impl
     , _cache (this->cache (key))
     , renderMirror (true)
   {
-    this->state.mainWindow ().showToolTip (ViewToolTip ());
+    this->state.mainWindow ().infoPane ().showToolTip (ViewToolTip ());
     this->mirror (this->hasMirror ());
   }
 
@@ -107,7 +108,7 @@ struct Tool::Impl
 
   void showToolTip (const ViewToolTip& toolTip)
   {
-    this->state.mainWindow ().showToolTip (toolTip);
+    this->state.mainWindow ().infoPane ().showToolTip (toolTip);
   }
 
   Config& config () const

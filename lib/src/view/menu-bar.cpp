@@ -13,12 +13,10 @@
 #include "view/configuration.hpp"
 #include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
+#include "view/info-pane.hpp"
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/util.hpp"
-
-#define DLY_FILE_FILTER "Dilay (*.dly)"
-#define OBJ_FILE_FILTER "Wavefront (*.obj)"
 
 namespace
 {
@@ -179,6 +177,20 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
              [&glWidget]() { glWidget.state ().redo (); });
   addAction (editMenu, QObject::tr ("&Configuration"), QKeySequence (),
              [&mainWindow, &glWidget]() { ViewConfiguration::show (mainWindow, glWidget); });
+
+  addAction (viewMenu, QObject::tr ("Toggle &info pane"), Qt::Key_I, [&mainWindow]() {
+    if (mainWindow.infoPane ().isVisible ())
+    {
+      mainWindow.infoPane ().close ();
+    }
+    else
+    {
+      mainWindow.infoPane ().show ();
+    }
+  });
+
+  viewMenu.addSeparator ();
+
   addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::Key_C,
              [&glWidget]() { glWidget.toolMoveCamera ().snap (glWidget.state (), false); });
   addAction (viewMenu, QObject::tr ("Reset &gaze point"), Qt::CTRL + Qt::Key_C,

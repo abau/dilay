@@ -78,6 +78,7 @@ SOURCES += \
            src/view/double-slider.cpp \
            src/view/floor-plane.cpp \
            src/view/gl-widget.cpp \
+           src/view/info-pane.cpp \
            src/view/light.cpp \
            src/view/main-window.cpp \
            src/view/menu-bar.cpp \
@@ -154,6 +155,7 @@ HEADERS += \
            src/view/double-slider.hpp \
            src/view/floor-plane.cpp \
            src/view/gl-widget.hpp \
+           src/view/info-pane.hpp \
            src/view/light.hpp \
            src/view/main-window.hpp \
            src/view/menu-bar.hpp \

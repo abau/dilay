@@ -18,14 +18,14 @@ struct ViewToolPane::Impl
   ViewToolPane*             self;
   ViewGlWidget&             glWidget;
   QVBoxLayout&              layout;
-  ViewTwoColumnGrid*        properties;
+  ViewTwoColumnGrid&        properties;
   std::vector<QPushButton*> toolButtons;
 
   Impl (ViewToolPane* s, ViewGlWidget& g)
     : self (s)
     , glWidget (g)
     , layout (*new QVBoxLayout)
-    , properties (nullptr)
+    , properties (*new ViewTwoColumnGrid)
   {
     QScrollArea* scrollArea = new QScrollArea;
     QWidget*     pane = new QWidget;
@@ -34,10 +34,13 @@ struct ViewToolPane::Impl
     scrollArea->setWidget (pane);
     pane->setLayout (&this->layout);
 
+    this->layout.setContentsMargins (0, 0, 0, 0);
     this->layout.setSpacing (0);
     this->layout.addWidget (this->initializeToolSelection ());
+    this->layout.addWidget (&this->properties);
     this->layout.addStretch (1);
 
+    this->self->setWindowTitle (QObject::tr ("Tools"));
     this->self->setWidget (scrollArea);
     this->self->setFeatures (DockWidgetMovable);
     this->self->setAllowedAreas (Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -46,22 +49,12 @@ struct ViewToolPane::Impl
   ViewTwoColumnGrid& makeProperties ()
   {
     this->resetProperties ();
-
-    assert (this->layout.count () == 2);
-
-    this->properties = new ViewTwoColumnGrid;
-    this->layout.insertWidget (1, this->properties);
-    return *this->properties;
+    return this->properties;
   }
 
   void resetProperties ()
   {
-    if (this->properties)
-    {
-      this->layout.removeWidget (this->properties);
-      delete this->properties;
-      this->properties = nullptr;
-    }
+    this->properties.reset ();
   }
 
   QWidget* initializeToolSelection ()

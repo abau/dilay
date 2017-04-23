@@ -15,6 +15,7 @@
 #include "view/axis.hpp"
 #include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
+#include "view/info-pane.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/util.hpp"
@@ -125,7 +126,7 @@ struct ViewGlWidget::Impl
       this->state ().tool ().paint (painter);
     }
 
-    this->mainWindow.showNumFaces (this->state ().scene ().numFaces ());
+    this->mainWindow.infoPane ().showNumFaces (this->state ().scene ().numFaces ());
   }
 
   void resizeGL (int w, int h)

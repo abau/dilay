@@ -12,8 +12,8 @@ class Cache;
 class Config;
 class QCloseEvent;
 class ViewGlWidget;
+class ViewInfoPane;
 class ViewToolPane;
-class ViewToolTip;
 
 class ViewMainWindow : public QMainWindow
 {
@@ -23,10 +23,7 @@ public:
 
   ViewGlWidget& glWidget ();
   ViewToolPane& toolPane ();
-  void          showMessage (const QString&);
-  void          showToolTip (const ViewToolTip&);
-  void          showDefaultToolTip ();
-  void          showNumFaces (unsigned int);
+  ViewInfoPane& infoPane ();
   void          update ();
 
 protected:

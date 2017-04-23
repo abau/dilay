@@ -13,6 +13,7 @@
 #include "state.hpp"
 #include "tool.hpp"
 #include "view/gl-widget.hpp"
+#include "view/info-pane.hpp"
 #include "view/main-window.hpp"
 #include "view/tool-pane.hpp"
 #include "view/two-column-grid.hpp"
@@ -81,7 +82,7 @@ struct State::Impl
       this->toolPtr->close ();
 
       this->toolPtr.reset ();
-      this->mainWindow.showDefaultToolTip ();
+      this->mainWindow.infoPane ().showDefaultToolTip ();
       this->mainWindow.toolPane ().resetProperties ();
 
       if (deselect)

@@ -19,9 +19,9 @@ namespace
     return strictButtonOrder (std::get<0> (a), std::get<0> (b));
   }
 
-  QString tipToString (const Tip& tip)
+  QString tipActionToString (const Tip& tip)
   {
-    QString string ("[");
+    QString string;
 
     switch (std::get<1> (tip))
     {
@@ -61,33 +61,29 @@ namespace
         string.append (QObject::tr ("Right"));
         break;
     }
-
-    string.append ("] ");
-    string.append (std::get<2> (tip));
     return string;
+  }
+
+  const QString& tipToString (const Tip& tip)
+  {
+    return std::get<2> (tip);
   }
 }
 
 struct ViewToolTip::Impl
 {
   typedef std::vector<Tip> Tips;
+  Tips                     tips;
 
-  Tips tips;
-
-  QString toString () const
+  void render (const std::function<void(const QString&, const QString&)>& f) const
   {
-    QString            result;
-    const unsigned int numSpaces = 5;
-    Tips               sorted (this->tips);
-
+    Tips sorted (this->tips);
     std::stable_sort (sorted.begin (), sorted.end (), strictTipOrder);
+
     for (auto& t : sorted)
     {
-      result.append (tipToString (t)).append (QString (" ").repeated (numSpaces));
-      ;
+      f (tipActionToString (t), tipToString (t));
     }
-    result.remove (result.size () - numSpaces, numSpaces);
-    return result;
   }
 
   void add (MouseEvent event, Modifier modifier, const QString& tip)
@@ -107,7 +103,8 @@ struct ViewToolTip::Impl
 };
 
 DELEGATE_BIG2 (ViewToolTip)
-DELEGATE_CONST (QString, ViewToolTip, toString)
+DELEGATE1_CONST (void, ViewToolTip, render,
+                 const std::function<void(const QString&, const QString&)>&)
 DELEGATE3 (void, ViewToolTip, add, ViewToolTip::MouseEvent, ViewToolTip::Modifier, const QString&)
 DELEGATE2 (void, ViewToolTip, add, ViewToolTip::MouseEvent, const QString&)
 DELEGATE (void, ViewToolTip, reset)

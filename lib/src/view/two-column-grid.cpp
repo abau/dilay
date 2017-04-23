@@ -13,26 +13,34 @@
 struct ViewTwoColumnGrid::Impl
 {
   ViewTwoColumnGrid* self;
-  QGridLayout*       layout;
+  QGridLayout&       layout;
   unsigned int       numProperties;
 
   Impl (ViewTwoColumnGrid* s)
     : self (s)
-    , layout (nullptr)
+    , layout (*new QGridLayout (this->self))
     , numProperties (0)
   {
-    this->layout = new QGridLayout;
-    this->layout->setColumnStretch (0, 0);
-    this->layout->setColumnStretch (1, 1);
-    this->self->setLayout (this->layout);
-    this->numProperties = 0;
+    this->layout.setColumnStretch (0, 0);
+    this->layout.setColumnStretch (1, 1);
+  }
+
+  void setEqualColumnStretch ()
+  {
+    this->layout.setColumnStretch (0, 1);
+    this->layout.setColumnStretch (1, 1);
   }
 
   void add (QWidget& w)
   {
-    this->layout->addWidget (&w, this->numProperties, 0, 1, 2);
-    this->layout->setRowStretch (this->numProperties, 0);
+    this->layout.addWidget (&w, this->numProperties, 0, 1, 2);
+    this->layout.setRowStretch (this->numProperties, 0);
     this->numProperties++;
+  }
+
+  void add (const QString& labelLeft, const QString& labelRight)
+  {
+    this->add (*new QLabel (labelLeft), *new QLabel (labelRight));
   }
 
   void add (const QString& label, QWidget& w)
@@ -42,9 +50,9 @@ struct ViewTwoColumnGrid::Impl
 
   void add (QWidget& w1, QWidget& w2)
   {
-    this->layout->addWidget (&w1, this->numProperties, 0);
-    this->layout->addWidget (&w2, this->numProperties, 1);
-    this->layout->setRowStretch (this->numProperties, 0);
+    this->layout.addWidget (&w1, this->numProperties, 0);
+    this->layout.addWidget (&w2, this->numProperties, 1);
+    this->layout.setRowStretch (this->numProperties, 0);
     this->numProperties++;
   }
 
@@ -57,8 +65,8 @@ struct ViewTwoColumnGrid::Impl
     stack.addWidget (&label);
     stack.addWidget (&w);
 
-    this->layout->addLayout (&stack, this->numProperties, 0, 1, 2);
-    this->layout->setRowStretch (this->numProperties, 0);
+    this->layout.addLayout (&stack, this->numProperties, 0, 1, 2);
+    this->layout.setRowStretch (this->numProperties, 0);
     this->numProperties++;
   }
 
@@ -88,12 +96,29 @@ struct ViewTwoColumnGrid::Impl
   void addStretcher ()
   {
     this->add (*new QWidget, *new QWidget);
-    this->layout->setRowStretch (this->numProperties, 1);
+    this->layout.setRowStretch (this->numProperties, 1);
+  }
+
+  void addSeparator ()
+  {
+    this->add (ViewUtil::horizontalLine ());
+  }
+
+  void reset ()
+  {
+    QWidget* widget = nullptr;
+    while ((widget = this->self->findChild<QWidget*> ()))
+    {
+      delete widget;
+    }
+    this->numProperties = 0;
   }
 };
 
 DELEGATE_BIG2_BASE (ViewTwoColumnGrid, (QWidget * p), (this), QWidget, (p))
+DELEGATE (void, ViewTwoColumnGrid, setEqualColumnStretch)
 DELEGATE1 (void, ViewTwoColumnGrid, add, QWidget&)
+DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, const QString&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, QWidget&, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, addStacked, const QString&, QWidget&)
@@ -101,3 +126,5 @@ DELEGATE2 (void, ViewTwoColumnGrid, add, QButtonGroup&, const std::vector<QStrin
 DELEGATE1 (void, ViewTwoColumnGrid, addLeft, const QString&)
 DELEGATE1 (void, ViewTwoColumnGrid, addCenter, const QString&)
 DELEGATE (void, ViewTwoColumnGrid, addStretcher)
+DELEGATE (void, ViewTwoColumnGrid, addSeparator)
+DELEGATE (void, ViewTwoColumnGrid, reset)

@@ -5,6 +5,7 @@
 #ifndef DILAY_VIEW_TOOL_TIP
 #define DILAY_VIEW_TOOL_TIP
 
+#include <functional>
 #include "macro.hpp"
 
 class QString;
@@ -30,7 +31,7 @@ public:
     Alt
   };
 
-  QString toString () const;
+  void render (const std::function<void(const QString&, const QString&)>&) const;
 
   void add (MouseEvent, Modifier, const QString&);
   void add (MouseEvent, const QString&);

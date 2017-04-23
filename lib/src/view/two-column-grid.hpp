@@ -17,7 +17,10 @@ class ViewTwoColumnGrid : public QWidget
 public:
   DECLARE_BIG2 (ViewTwoColumnGrid, QWidget* = nullptr)
 
+  void setEqualColumnStretch ();
+
   void add (QWidget&);
+  void add (const QString&, const QString&);
   void add (const QString&, QWidget&);
   void add (QWidget&, QWidget&);
   void addStacked (const QString&, QWidget&);
@@ -25,6 +28,8 @@ public:
   void addLeft (const QString&);
   void addCenter (const QString&);
   void addStretcher ();
+  void addSeparator ();
+  void reset ();
 
 private:
   IMPLEMENTATION
