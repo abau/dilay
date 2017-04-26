@@ -25,7 +25,7 @@ namespace
   QAction& addAction (QMenu& menu, const QString& label, const QKeySequence& keySequence,
                       const std::function<void()>& f)
   {
-    QAction* a = new QAction (label, nullptr);
+    QAction* a = new QAction (label, &menu);
     a->setShortcut (keySequence);
     menu.addAction (a);
     QObject::connect (a, &QAction::triggered, f);
@@ -35,7 +35,7 @@ namespace
   QAction& addCheckableAction (QMenu& menu, const QString& label, const QKeySequence& keySequence,
                                bool state, const std::function<void(bool)>& f)
   {
-    QAction* a = new QAction (label, nullptr);
+    QAction* a = new QAction (label, &menu);
     a->setShortcut (keySequence);
     a->setCheckable (true);
     a->setChecked (state);
