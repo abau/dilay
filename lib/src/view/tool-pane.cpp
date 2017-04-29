@@ -19,7 +19,6 @@ struct ViewToolPane::Impl
   ViewGlWidget&             glWidget;
   QVBoxLayout&              layout;
   ViewTwoColumnGrid&        properties;
-  std::vector<QPushButton*> toolButtons;
 
   Impl (ViewToolPane* s, ViewGlWidget& g)
     : self (s)
@@ -30,15 +29,15 @@ struct ViewToolPane::Impl
     QScrollArea* scrollArea = new QScrollArea;
     QWidget*     pane = new QWidget;
 
-    scrollArea->setWidgetResizable (true);
-    scrollArea->setWidget (pane);
-    pane->setLayout (&this->layout);
-
     this->layout.setContentsMargins (0, 0, 0, 0);
     this->layout.setSpacing (0);
     this->layout.addWidget (this->initializeToolSelection ());
     this->layout.addWidget (&this->properties);
     this->layout.addStretch (1);
+
+    scrollArea->setWidgetResizable (true);
+    scrollArea->setWidget (pane);
+    pane->setLayout (&this->layout);
 
     this->self->setWindowTitle (QObject::tr ("Tools"));
     this->self->setWidget (scrollArea);
@@ -64,7 +63,7 @@ struct ViewToolPane::Impl
     toolPane->addTab (this->initalizeSketchSelection (), QObject::tr ("Sketch"));
 
     QObject::connect (toolPane, &QTabWidget::currentChanged,
-                      [this](int) { this->glWidget.state ().resetTool (true); });
+                      [this](int) { this->glWidget.state ().resetTool (); });
     return toolPane;
   }
 
@@ -117,31 +116,13 @@ struct ViewToolPane::Impl
     button.setCheckable (true);
 
     ViewUtil::connect (button, [this, &button]() {
-      for (QPushButton* b : this->toolButtons)
-      {
-        b->setChecked (b == &button);
-      }
-
       State& s = this->glWidget.state ();
-      s.resetTool (false);
-      s.setTool (std::move (*new T (s)));
+      s.setTool (std::move (*new T (s, button)));
     });
     layout->addWidget (&button);
-    this->toolButtons.push_back (&button);
-  }
-
-  void deselectTool ()
-  {
-    assert (this->glWidget.state ().hasTool () == false);
-
-    for (QPushButton* b : this->toolButtons)
-    {
-      b->setChecked (false);
-    }
   }
 };
 
 DELEGATE_BIG2_BASE (ViewToolPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
 DELEGATE (ViewTwoColumnGrid&, ViewToolPane, makeProperties)
 DELEGATE (void, ViewToolPane, resetProperties)
-DELEGATE (void, ViewToolPane, deselectTool)

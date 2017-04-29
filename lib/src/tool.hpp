@@ -16,6 +16,7 @@ class Intersection;
 class Mirror;
 class PrimRay;
 class QPainter;
+class QPushButton;
 class QWheelEvent;
 class State;
 class ViewPointingEvent;
@@ -32,8 +33,9 @@ enum class ToolResponse
 class Tool
 {
 public:
-  DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
+  DECLARE_BIG3_VIRTUAL (Tool, State&, QPushButton&, const char*)
 
+  QPushButton& button () const;
   ToolResponse initialize ();
   void         render () const;
   void         paint (QPainter&) const;
@@ -127,7 +129,7 @@ private:
   class name : public Tool                       \
   {                                              \
   public:                                        \
-    DECLARE_BIG2 (name, State&)                  \
+    DECLARE_BIG2 (name, State&, QPushButton&)    \
   private:                                       \
     IMPLEMENTATION                               \
     const char* key () const                     \
@@ -149,7 +151,8 @@ private:
 #define DECLARE_TOOL_RUN_CLOSE void                     runClose ();
 #define DECLARE_TOOL_RUN_FROM_CONFIG void               runFromConfig ();
 
-#define DELEGATE_TOOL(name) DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, this->key ()))
+#define DELEGATE_TOOL(name) \
+  DELEGATE_BIG2_BASE (name, (State & s, QPushButton & b), (this), Tool, (s, b, this->key ()))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n) DELEGATE (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n) DELEGATE_CONST (void, n, runRender)

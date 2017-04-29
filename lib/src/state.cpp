@@ -2,6 +2,7 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QPushButton>
 #include <memory>
 #include "cache.hpp"
 #include "camera.hpp"
@@ -59,9 +60,12 @@ struct State::Impl
 
   void setTool (Tool&& tool)
   {
-    assert (this->hasTool () == false);
-
+    if (this->hasTool ())
+    {
+      this->resetTool ();
+    }
     this->toolPtr.reset (&tool);
+    this->toolPtr->button ().setEnabled (true);
 
     ToolResponse initResponse = tool.initialize ();
     switch (initResponse)
@@ -75,20 +79,15 @@ struct State::Impl
     }
   }
 
-  void resetTool (bool deselect)
+  void resetTool ()
   {
     if (this->hasTool ())
     {
+      this->toolPtr->button ().setChecked (false);
       this->toolPtr->close ();
-
       this->toolPtr.reset ();
       this->mainWindow.infoPane ().showDefaultToolTip ();
       this->mainWindow.toolPane ().resetProperties ();
-
-      if (deselect)
-      {
-        this->mainWindow.toolPane ().deselectTool ();
-      }
       this->mainWindow.update ();
     }
   }
@@ -128,7 +127,7 @@ struct State::Impl
         this->mainWindow.update ();
         break;
       case ToolResponse::Terminate:
-        this->resetTool (true);
+        this->resetTool ();
         break;
     }
   }
@@ -145,7 +144,7 @@ GETTER (Scene&, State, scene)
 DELEGATE (bool, State, hasTool)
 DELEGATE (Tool&, State, tool)
 DELEGATE1 (void, State, setTool, Tool&&)
-DELEGATE1 (void, State, resetTool, bool)
+DELEGATE (void, State, resetTool)
 DELEGATE (void, State, fromConfig)
 DELEGATE (void, State, undo)
 DELEGATE (void, State, redo)

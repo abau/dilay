@@ -33,7 +33,7 @@ public:
   bool            hasTool ();
   Tool&           tool ();
   void            setTool (Tool&&);
-  void            resetTool (bool);
+  void            resetTool ();
   void            fromConfig ();
   void            undo ();
   void            redo ();

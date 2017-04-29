@@ -49,7 +49,7 @@ struct ViewMainWindow::Impl
     addShortcut (Qt::Key_Escape, [this]() {
       if (this->glWidget.state ().hasTool ())
       {
-        this->glWidget.state ().resetTool (true);
+        this->glWidget.state ().resetTool ();
       }
 #ifndef NDEBUG
       else

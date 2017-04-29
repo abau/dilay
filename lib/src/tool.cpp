@@ -27,13 +27,15 @@ struct Tool::Impl
 {
   Tool*         self;
   State&        state;
+  QPushButton&  button;
   CacheProxy    _cache;
   Maybe<Mirror> _mirror;
   bool          renderMirror;
 
-  Impl (Tool* s, State& st, const char* key)
+  Impl (Tool* s, State& st, QPushButton& b, const char* key)
     : self (s)
     , state (st)
+    , button (b)
     , _cache (this->cache (key))
     , renderMirror (true)
   {
@@ -250,7 +252,8 @@ struct Tool::Impl
   }
 };
 
-DELEGATE2_BIG3_SELF (Tool, State&, const char*)
+DELEGATE3_BIG3_SELF (Tool, State&, QPushButton&, const char*)
+GETTER_CONST (QPushButton&, Tool, button);
 DELEGATE (ToolResponse, Tool, initialize)
 DELEGATE_CONST (void, Tool, render)
 DELEGATE1_CONST (void, Tool, paint, QPainter&)

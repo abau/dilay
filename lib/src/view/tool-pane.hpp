@@ -18,7 +18,6 @@ public:
 
   ViewTwoColumnGrid& makeProperties ();
   void               resetProperties ();
-  void               deselectTool ();
 
 private:
   IMPLEMENTATION
