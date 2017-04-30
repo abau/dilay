@@ -3,13 +3,14 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QObject>
+#include "../util.hpp"
 #include "view/tool-tip.hpp"
 
 namespace
 {
-  typedef std::tuple<ViewToolTip::MouseEvent, ViewToolTip::Modifier, QString> Tip;
+  typedef std::tuple<ViewToolTip::Event, ViewToolTip::Modifier, QString> Tip;
 
-  bool strictButtonOrder (ViewToolTip::MouseEvent a, ViewToolTip::MouseEvent b)
+  bool strictButtonOrder (ViewToolTip::Event a, ViewToolTip::Event b)
   {
     return static_cast<int> (a) < static_cast<int> (b);
   }
@@ -19,49 +20,105 @@ namespace
     return strictButtonOrder (std::get<0> (a), std::get<0> (b));
   }
 
-  QString tipActionToString (const Tip& tip)
+  QString eventToString (const ViewToolTip::Event e)
   {
-    QString string;
+    switch (e)
+    {
+      case ViewToolTip::Event::A:
+        return "A";
+      case ViewToolTip::Event::B:
+        return "B";
+      case ViewToolTip::Event::C:
+        return "C";
+      case ViewToolTip::Event::D:
+        return "D";
+      case ViewToolTip::Event::E:
+        return "E";
+      case ViewToolTip::Event::F:
+        return "F";
+      case ViewToolTip::Event::G:
+        return "G";
+      case ViewToolTip::Event::H:
+        return "H";
+      case ViewToolTip::Event::I:
+        return "I";
+      case ViewToolTip::Event::J:
+        return "J";
+      case ViewToolTip::Event::K:
+        return "K";
+      case ViewToolTip::Event::L:
+        return "L";
+      case ViewToolTip::Event::M:
+        return "M";
+      case ViewToolTip::Event::N:
+        return "N";
+      case ViewToolTip::Event::O:
+        return "O";
+      case ViewToolTip::Event::P:
+        return "P";
+      case ViewToolTip::Event::Q:
+        return "Q";
+      case ViewToolTip::Event::R:
+        return "R";
+      case ViewToolTip::Event::S:
+        return "S";
+      case ViewToolTip::Event::T:
+        return "T";
+      case ViewToolTip::Event::U:
+        return "U";
+      case ViewToolTip::Event::V:
+        return "V";
+      case ViewToolTip::Event::W:
+        return "W";
+      case ViewToolTip::Event::X:
+        return "X";
+      case ViewToolTip::Event::Y:
+        return "Y";
+      case ViewToolTip::Event::Z:
+        return "Z";
+      case ViewToolTip::Event::MouseLeft:
+        return "Left";
+      case ViewToolTip::Event::MouseMiddle:
+        return "Middle";
+      case ViewToolTip::Event::MouseWheel:
+        return "Wheel";
+      case ViewToolTip::Event::MouseRight:
+        return "Right";
+      default:
+        DILAY_IMPOSSIBLE;
+    }
+  }
 
-    switch (std::get<1> (tip))
+  QString modifierToString (const ViewToolTip::Modifier m)
+  {
+    switch (m)
     {
       case ViewToolTip::Modifier::None:
-        break;
-
+        return "";
       case ViewToolTip::Modifier::Ctrl:
-        string.append (QObject::tr ("Ctrl"));
-        string.append ("+");
-        break;
-
+        return QObject::tr ("Ctrl");
       case ViewToolTip::Modifier::Shift:
-        string.append (QObject::tr ("Shift"));
-        string.append ("+");
-        break;
-
+        return QObject::tr ("Shift");
       case ViewToolTip::Modifier::Alt:
-        string.append (QObject::tr ("Alt"));
-        string.append ("+");
-        break;
+        return QObject::tr ("Alt");
+      default:
+        DILAY_IMPOSSIBLE;
     }
-    switch (std::get<0> (tip))
+  }
+
+  QString tipEventToString (const Tip& tip)
+  {
+    const QString modifier (modifierToString (std::get<1> (tip)));
+    const QString event (eventToString (std::get<0> (tip)));
+
+    if (modifier.isEmpty ())
     {
-      case ViewToolTip::MouseEvent::Left:
-        string.append (QObject::tr ("Left"));
-        break;
-
-      case ViewToolTip::MouseEvent::Middle:
-        string.append (QObject::tr ("Middle"));
-        break;
-
-      case ViewToolTip::MouseEvent::Wheel:
-        string.append (QObject::tr ("Wheel"));
-        break;
-
-      case ViewToolTip::MouseEvent::Right:
-        string.append (QObject::tr ("Right"));
-        break;
+      return event;
     }
-    return string;
+    else
+    {
+      return modifier + QString ("+") + event;
+    }
   }
 
   const QString& tipToString (const Tip& tip)
@@ -82,16 +139,16 @@ struct ViewToolTip::Impl
 
     for (auto& t : sorted)
     {
-      f (tipActionToString (t), tipToString (t));
+      f (tipEventToString (t), tipToString (t));
     }
   }
 
-  void add (MouseEvent event, Modifier modifier, const QString& tip)
+  void add (Event event, Modifier modifier, const QString& tip)
   {
     this->tips.push_back (std::make_tuple (event, modifier, tip));
   }
 
-  void add (MouseEvent event, const QString& tip)
+  void add (Event event, const QString& tip)
   {
     this->add (event, ViewToolTip::Modifier::None, tip);
   }
@@ -105,6 +162,6 @@ struct ViewToolTip::Impl
 DELEGATE_BIG2 (ViewToolTip)
 DELEGATE1_CONST (void, ViewToolTip, render,
                  const std::function<void(const QString&, const QString&)>&)
-DELEGATE3 (void, ViewToolTip, add, ViewToolTip::MouseEvent, ViewToolTip::Modifier, const QString&)
-DELEGATE2 (void, ViewToolTip, add, ViewToolTip::MouseEvent, const QString&)
+DELEGATE3 (void, ViewToolTip, add, ViewToolTip::Event, ViewToolTip::Modifier, const QString&)
+DELEGATE2 (void, ViewToolTip, add, ViewToolTip::Event, const QString&)
 DELEGATE (void, ViewToolTip, reset)

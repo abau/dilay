@@ -83,10 +83,10 @@ struct ViewInfoPane::Impl
 
     ViewToolTip tip;
 
-    tip.add (ViewToolTip::MouseEvent::Middle, QObject::tr ("Drag to rotate"));
-    tip.add (ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Shift,
+    tip.add (ViewToolTip::Event::MouseMiddle, QObject::tr ("Drag to rotate"));
+    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Shift,
              QObject::tr ("Drag to move"));
-    tip.add (ViewToolTip::MouseEvent::Middle, ViewToolTip::Modifier::Ctrl, QObject::tr ("Gaze"));
+    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Ctrl, QObject::tr ("Gaze"));
 
     this->addToolTip (tip);
   }

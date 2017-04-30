@@ -160,7 +160,7 @@ struct ToolSculpt::Impl
     ViewToolTip toolTip;
 
     this->self->runSetupToolTip (toolTip);
-    toolTip.add (ViewToolTip::MouseEvent::Wheel, ViewToolTip::Modifier::Shift,
+    toolTip.add (ViewToolTip::Event::MouseWheel, ViewToolTip::Modifier::Shift,
                  QObject::tr ("Change radius"));
 
     this->self->showToolTip (toolTip);
@@ -254,18 +254,18 @@ struct ToolSculpt::Impl
 
   void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode)
   {
-    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to sculpt"));
+    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to sculpt"));
 
     if (hasInvertedMode)
     {
-      toolTip.add (ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift,
+      toolTip.add (ViewToolTip::Event::MouseLeft, ViewToolTip::Modifier::Shift,
                    QObject::tr ("Drag to sculpt inverted"));
     }
   }
 
   void addSecSliderWheelToolTip (ViewToolTip& toolTip, const QString& label)
   {
-    toolTip.add (ViewToolTip::MouseEvent::Wheel, ViewToolTip::Modifier::Ctrl, label);
+    toolTip.add (ViewToolTip::Event::MouseWheel, ViewToolTip::Modifier::Ctrl, label);
   }
 
   void sculpt ()

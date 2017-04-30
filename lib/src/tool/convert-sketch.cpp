@@ -90,7 +90,7 @@ struct ToolConvertSketch::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Convert selection"));
+    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Convert selection"));
     this->self->showToolTip (toolTip);
   }
 

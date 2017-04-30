@@ -40,11 +40,11 @@ struct ToolMoveMesh::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewToolTip::MouseEvent::Left, QObject::tr ("Drag to move"));
+    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to move"));
 
     if (this->movement.fixedConstraint () != MovementFixedConstraint::CameraPlane)
     {
-      toolTip.add (ViewToolTip::MouseEvent::Left, ViewToolTip::Modifier::Shift,
+      toolTip.add (ViewToolTip::Event::MouseLeft, ViewToolTip::Modifier::Shift,
                    QObject::tr ("Drag to move orthogonally"));
     }
     this->self->showToolTip (toolTip);

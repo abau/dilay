@@ -15,12 +15,38 @@ class ViewToolTip
 public:
   DECLARE_BIG2 (ViewToolTip)
 
-  enum class MouseEvent
+  enum class Event
   {
-    Left,
-    Middle,
-    Wheel,
-    Right
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z,
+    MouseLeft,
+    MouseMiddle,
+    MouseWheel,
+    MouseRight
   };
 
   enum class Modifier
@@ -33,8 +59,8 @@ public:
 
   void render (const std::function<void(const QString&, const QString&)>&) const;
 
-  void add (MouseEvent, Modifier, const QString&);
-  void add (MouseEvent, const QString&);
+  void add (Event, Modifier, const QString&);
+  void add (Event, const QString&);
   void reset ();
 
 private:
