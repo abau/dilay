@@ -18,7 +18,7 @@ public:
 
   void showToolTip (const ViewToolTip&);
   void addToolTip (const ViewToolTip&);
-  void showDefaultToolTip ();
+  void showPermanentToolTip ();
   void showNumFaces (unsigned int);
   void reset ();
 

@@ -86,7 +86,7 @@ struct State::Impl
       this->toolPtr->button ().setChecked (false);
       this->toolPtr->close ();
       this->toolPtr.reset ();
-      this->mainWindow.infoPane ().showDefaultToolTip ();
+      this->mainWindow.infoPane ().showPermanentToolTip ();
       this->mainWindow.toolPane ().resetProperties ();
       this->mainWindow.update ();
     }

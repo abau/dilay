@@ -41,7 +41,7 @@ struct ViewInfoPane::Impl
   QWidget* initializeKeysTab ()
   {
     this->keys.setEqualColumnStretch ();
-    this->showDefaultToolTip ();
+    this->showPermanentToolTip ();
 
     QWidget*     pane = new QWidget;
     QVBoxLayout* layout = new QVBoxLayout (pane);
@@ -58,7 +58,7 @@ struct ViewInfoPane::Impl
   {
     this->reset ();
     this->addToolTip (tip);
-    this->addDefaultToolTip (true);
+    this->addPermanentToolTip (true);
   }
 
   void addToolTip (const ViewToolTip& tip)
@@ -68,13 +68,13 @@ struct ViewInfoPane::Impl
     this->self->layout ()->update ();
   }
 
-  void showDefaultToolTip ()
+  void showPermanentToolTip ()
   {
     this->reset ();
-    this->addDefaultToolTip (false);
+    this->addPermanentToolTip (false);
   }
 
-  void addDefaultToolTip (bool addSeparator)
+  void addPermanentToolTip (bool addSeparator)
   {
     if (addSeparator)
     {
@@ -104,6 +104,6 @@ struct ViewInfoPane::Impl
 DELEGATE_BIG2_BASE (ViewInfoPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
 DELEGATE1 (void, ViewInfoPane, showToolTip, const ViewToolTip&)
 DELEGATE1 (void, ViewInfoPane, addToolTip, const ViewToolTip&)
-DELEGATE (void, ViewInfoPane, showDefaultToolTip)
+DELEGATE (void, ViewInfoPane, showPermanentToolTip)
 DELEGATE1 (void, ViewInfoPane, showNumFaces, unsigned int)
 DELEGATE (void, ViewInfoPane, reset)
