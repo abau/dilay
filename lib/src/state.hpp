@@ -17,7 +17,6 @@ class Scene;
 class Tool;
 enum class ToolResponse;
 class ViewMainWindow;
-class WingedMesh;
 
 class State
 {

@@ -14,12 +14,12 @@ struct ViewTwoColumnGrid::Impl
 {
   ViewTwoColumnGrid* self;
   QGridLayout&       layout;
-  unsigned int       numProperties;
+  unsigned int       numRows;
 
   Impl (ViewTwoColumnGrid* s)
     : self (s)
     , layout (*new QGridLayout (this->self))
-    , numProperties (0)
+    , numRows (0)
   {
     this->layout.setColumnStretch (0, 0);
     this->layout.setColumnStretch (1, 1);
@@ -33,9 +33,9 @@ struct ViewTwoColumnGrid::Impl
 
   void add (QWidget& w)
   {
-    this->layout.addWidget (&w, this->numProperties, 0, 1, 2);
-    this->layout.setRowStretch (this->numProperties, 0);
-    this->numProperties++;
+    this->layout.addWidget (&w, this->numRows, 0, 1, 2);
+    this->layout.setRowStretch (this->numRows, 0);
+    this->numRows++;
   }
 
   void add (const QString& labelLeft, const QString& labelRight)
@@ -50,10 +50,10 @@ struct ViewTwoColumnGrid::Impl
 
   void add (QWidget& w1, QWidget& w2)
   {
-    this->layout.addWidget (&w1, this->numProperties, 0);
-    this->layout.addWidget (&w2, this->numProperties, 1);
-    this->layout.setRowStretch (this->numProperties, 0);
-    this->numProperties++;
+    this->layout.addWidget (&w1, this->numRows, 0);
+    this->layout.addWidget (&w2, this->numRows, 1);
+    this->layout.setRowStretch (this->numRows, 0);
+    this->numRows++;
   }
 
   void addStacked (const QString& l, QWidget& w)
@@ -65,9 +65,9 @@ struct ViewTwoColumnGrid::Impl
     stack.addWidget (&label);
     stack.addWidget (&w);
 
-    this->layout.addLayout (&stack, this->numProperties, 0, 1, 2);
-    this->layout.setRowStretch (this->numProperties, 0);
-    this->numProperties++;
+    this->layout.addLayout (&stack, this->numRows, 0, 1, 2);
+    this->layout.setRowStretch (this->numRows, 0);
+    this->numRows++;
   }
 
   void add (QButtonGroup& group, const std::vector<QString>& labels)
@@ -96,7 +96,7 @@ struct ViewTwoColumnGrid::Impl
   void addStretcher ()
   {
     this->add (*new QWidget, *new QWidget);
-    this->layout.setRowStretch (this->numProperties, 1);
+    this->layout.setRowStretch (this->numRows, 1);
   }
 
   void addSeparator ()
@@ -111,11 +111,12 @@ struct ViewTwoColumnGrid::Impl
     {
       delete widget;
     }
-    this->numProperties = 0;
+    this->numRows = 0;
   }
 };
 
 DELEGATE_BIG2_BASE (ViewTwoColumnGrid, (QWidget * p), (this), QWidget, (p))
+GETTER_CONST (unsigned int, ViewTwoColumnGrid, numRows)
 DELEGATE (void, ViewTwoColumnGrid, setEqualColumnStretch)
 DELEGATE1 (void, ViewTwoColumnGrid, add, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, const QString&)

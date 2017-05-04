@@ -3,18 +3,11 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCloseEvent>
-#include <QLabel>
-#include <QShortcut>
-#include <QStatusBar>
-#include "state.hpp"
-#include "tool/move-camera.hpp"
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/tool-pane.hpp"
-#include "view/tool-tip.hpp"
-#include "view/util.hpp"
 
 struct ViewMainWindow::Impl
 {
@@ -34,33 +27,6 @@ struct ViewMainWindow::Impl
     this->self->addDockWidget (Qt::RightDockWidgetArea, &this->infoPane);
 
     ViewMenuBar::setup (*this->self, this->glWidget);
-
-    this->setupShortcuts ();
-  }
-
-  void setupShortcuts ()
-  {
-    auto addShortcut = [this](const QKeySequence& keySequence, const std::function<void()>& f) {
-      QShortcut* s = new QShortcut (keySequence, this->self);
-
-      QObject::connect (s, &QShortcut::activated, f);
-    };
-
-    addShortcut (Qt::Key_Escape, [this]() {
-      if (this->glWidget.state ().hasTool ())
-      {
-        this->glWidget.state ().resetTool ();
-      }
-#ifndef NDEBUG
-      else
-      {
-        this->self->close ();
-      }
-#endif
-    });
-    addShortcut (Qt::SHIFT + Qt::Key_C, [this]() {
-      this->glWidget.toolMoveCamera ().snap (this->glWidget.state (), true);
-    });
   }
 
   void update ()

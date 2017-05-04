@@ -8,16 +8,25 @@
 #include <QDockWidget>
 #include "macro.hpp"
 
+class QPushButton;
 class ViewGlWidget;
 class ViewTwoColumnGrid;
+
+enum class ViewToolPaneSelection
+{
+  Sculpt,
+  Sketch
+};
 
 class ViewToolPane : public QDockWidget
 {
 public:
   DECLARE_BIG2 (ViewToolPane, ViewGlWidget&, QWidget* = nullptr)
 
-  ViewTwoColumnGrid& makeProperties ();
-  void               resetProperties ();
+  ViewTwoColumnGrid&    makeProperties ();
+  void                  resetProperties ();
+  ViewToolPaneSelection selection () const;
+  QPushButton&          button (const char*);
 
 private:
   IMPLEMENTATION

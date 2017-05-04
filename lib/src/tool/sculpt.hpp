@@ -7,7 +7,6 @@
 
 #include "tool.hpp"
 
-class QPushButton;
 class QString;
 class SculptBrush;
 class ToolUtilMovement;
@@ -18,7 +17,7 @@ class ViewTwoColumnGrid;
 class ToolSculpt : public Tool
 {
 public:
-  DECLARE_BIG2 (ToolSculpt, State&, QPushButton&, const char*)
+  DECLARE_BIG2 (ToolSculpt, State&, const char*)
 
 protected:
   SculptBrush& brush ();
@@ -40,7 +39,7 @@ private:
   ToolResponse runCursorUpdate (const glm::ivec2&);
   void         runFromConfig ();
 
-  virtual const char* key () const = 0;
+  virtual const char* runKey () const = 0;
   virtual void        runSetupBrush (SculptBrush&) = 0;
   virtual void        runSetupCursor (ViewCursor&) = 0;
   virtual void        runSetupProperties (ViewTwoColumnGrid&) = 0;
@@ -52,13 +51,19 @@ private:
   class name : public ToolSculpt                            \
   {                                                         \
   public:                                                   \
-    DECLARE_BIG2 (name, State&, QPushButton&)               \
-  private:                                                  \
-    IMPLEMENTATION                                          \
-    const char* key () const                                \
+    DECLARE_BIG2 (name, State&)                             \
+                                                            \
+    const char* runKey () const override                    \
+    {                                                       \
+      return name::classKey ();                             \
+    }                                                       \
+    static const char* classKey ()                          \
     {                                                       \
       return theKey;                                        \
     }                                                       \
+                                                            \
+  private:                                                  \
+    IMPLEMENTATION                                          \
     void runSetupBrush (SculptBrush&);                      \
     void runSetupCursor (ViewCursor&);                      \
     void runSetupProperties (ViewTwoColumnGrid&);           \
@@ -66,13 +71,12 @@ private:
     bool runSculptPointingEvent (const ViewPointingEvent&); \
   };
 
-#define DELEGATE_TOOL_SCULPT(name)                                            \
-  DELEGATE_BIG2_BASE (name, (State & s, QPushButton & b), (this), ToolSculpt, \
-                      (s, b, this->key ()))                                   \
-  DELEGATE1 (void, name, runSetupBrush, SculptBrush&);                        \
-  DELEGATE1 (void, name, runSetupCursor, ViewCursor&);                        \
-  DELEGATE1 (void, name, runSetupProperties, ViewTwoColumnGrid&);             \
-  DELEGATE1 (void, name, runSetupToolTip, ViewToolTip&);                      \
+#define DELEGATE_TOOL_SCULPT(name)                                                   \
+  DELEGATE_BIG2_BASE (name, (State & s), (this), ToolSculpt, (s, name::classKey ())) \
+  DELEGATE1 (void, name, runSetupBrush, SculptBrush&);                               \
+  DELEGATE1 (void, name, runSetupCursor, ViewCursor&);                               \
+  DELEGATE1 (void, name, runSetupProperties, ViewTwoColumnGrid&);                    \
+  DELEGATE1 (void, name, runSetupToolTip, ViewToolTip&);                             \
   DELEGATE1 (bool, name, runSculptPointingEvent, const ViewPointingEvent&)
 
 #endif

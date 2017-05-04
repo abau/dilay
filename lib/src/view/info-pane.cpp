@@ -5,29 +5,25 @@
 #include <QScrollArea>
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <vector>
-#include "state.hpp"
-#include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
-#include "view/util.hpp"
 
 struct ViewInfoPane::Impl
 {
   ViewInfoPane*      self;
   ViewGlWidget&      glWidget;
-  ViewTwoColumnGrid& keys;
+  ViewTwoColumnGrid& toolTip;
 
   Impl (ViewInfoPane* s, ViewGlWidget& g)
     : self (s)
     , glWidget (g)
-    , keys (*new ViewTwoColumnGrid)
+    , toolTip (*new ViewTwoColumnGrid)
   {
     QScrollArea* scrollArea = new QScrollArea;
     QTabWidget*  tabWidget = new QTabWidget;
 
-    tabWidget->addTab (this->initializeKeysTab (), QObject::tr ("Keys"));
+    tabWidget->addTab (this->initializeToolTipTab (), QObject::tr ("Keys"));
 
     scrollArea->setWidgetResizable (true);
     scrollArea->setWidget (tabWidget);
@@ -36,74 +32,54 @@ struct ViewInfoPane::Impl
     this->self->setWidget (scrollArea);
     this->self->setFeatures (DockWidgetMovable | DockWidgetClosable);
     this->self->setAllowedAreas (Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+    this->resetToolTip ();
   }
 
-  QWidget* initializeKeysTab ()
+  QWidget* initializeToolTipTab ()
   {
-    this->keys.setEqualColumnStretch ();
-    this->showPermanentToolTip ();
+    ViewToolTip dummyTip;
+    dummyTip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Shift,
+                  "01234567890123456789");
+    this->addToolTip (dummyTip);
+    this->toolTip.setEqualColumnStretch ();
 
     QWidget*     pane = new QWidget;
     QVBoxLayout* layout = new QVBoxLayout (pane);
 
     layout->setContentsMargins (0, 0, 0, 0);
     layout->setSpacing (0);
-    layout->addWidget (&this->keys);
+    layout->addWidget (&this->toolTip);
     layout->addStretch (1);
 
     return pane;
   }
 
-  void showToolTip (const ViewToolTip& tip)
-  {
-    this->reset ();
-    this->addToolTip (tip);
-    this->addPermanentToolTip (true);
-  }
-
   void addToolTip (const ViewToolTip& tip)
   {
-    tip.render (
-      [this](const QString& action, const QString& tip) { this->keys.add (action, tip); });
-    this->self->layout ()->update ();
-  }
-
-  void showPermanentToolTip ()
-  {
-    this->reset ();
-    this->addPermanentToolTip (false);
-  }
-
-  void addPermanentToolTip (bool addSeparator)
-  {
-    if (addSeparator)
+    if (tip.isEmpty ())
     {
-      this->keys.addSeparator ();
+      return;
     }
+    else if (this->toolTip.numRows () > 0)
+    {
+      this->toolTip.addSeparator ();
+    }
+    tip.render (
+      [this](const QString& action, const QString& tip) { this->toolTip.add (action, tip); });
+  }
 
-    ViewToolTip tip;
-
-    tip.add (ViewToolTip::Event::MouseMiddle, QObject::tr ("Drag to rotate"));
-    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Shift,
-             QObject::tr ("Drag to move"));
-    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Ctrl, QObject::tr ("Gaze"));
-
-    this->addToolTip (tip);
+  void resetToolTip ()
+  {
+    this->toolTip.reset ();
   }
 
   void showNumFaces (unsigned int)
   {
   }
-
-  void reset ()
-  {
-    this->keys.reset ();
-  }
 };
 
 DELEGATE_BIG2_BASE (ViewInfoPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
-DELEGATE1 (void, ViewInfoPane, showToolTip, const ViewToolTip&)
 DELEGATE1 (void, ViewInfoPane, addToolTip, const ViewToolTip&)
-DELEGATE (void, ViewInfoPane, showPermanentToolTip)
+DELEGATE (void, ViewInfoPane, resetToolTip)
 DELEGATE1 (void, ViewInfoPane, showNumFaces, unsigned int)
-DELEGATE (void, ViewInfoPane, reset)

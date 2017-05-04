@@ -8,12 +8,13 @@
 #include <functional>
 #include "macro.hpp"
 
+class QKeySequence;
 class QString;
 
 class ViewToolTip
 {
 public:
-  DECLARE_BIG2 (ViewToolTip)
+  DECLARE_BIG6 (ViewToolTip)
 
   enum class Event
   {
@@ -43,6 +44,7 @@ public:
     X,
     Y,
     Z,
+    Esc,
     MouseLeft,
     MouseMiddle,
     MouseWheel,
@@ -57,11 +59,14 @@ public:
     Alt
   };
 
+  static QKeySequence toQKeySequence (Event, Modifier);
+
   void render (const std::function<void(const QString&, const QString&)>&) const;
 
   void add (Event, Modifier, const QString&);
   void add (Event, const QString&);
   void reset ();
+  bool isEmpty () const;
 
 private:
   IMPLEMENTATION

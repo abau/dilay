@@ -17,7 +17,8 @@ class ViewTwoColumnGrid : public QWidget
 public:
   DECLARE_BIG2 (ViewTwoColumnGrid, QWidget* = nullptr)
 
-  void setEqualColumnStretch ();
+  unsigned int numRows () const;
+  void         setEqualColumnStretch ();
 
   void add (QWidget&);
   void add (const QString&, const QString&);

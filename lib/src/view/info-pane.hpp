@@ -16,9 +16,8 @@ class ViewInfoPane : public QDockWidget
 public:
   DECLARE_BIG2 (ViewInfoPane, ViewGlWidget&, QWidget* = nullptr)
 
-  void showToolTip (const ViewToolTip&);
   void addToolTip (const ViewToolTip&);
-  void showPermanentToolTip ();
+  void resetToolTip ();
   void showNumFaces (unsigned int);
   void reset ();
 

@@ -16,7 +16,6 @@ class Intersection;
 class Mirror;
 class PrimRay;
 class QPainter;
-class QPushButton;
 class QWheelEvent;
 class State;
 class ViewPointingEvent;
@@ -33,9 +32,9 @@ enum class ToolResponse
 class Tool
 {
 public:
-  DECLARE_BIG3_VIRTUAL (Tool, State&, QPushButton&, const char*)
+  DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
 
-  QPushButton& button () const;
+  const char*  key () const;
   ToolResponse initialize ();
   void         render () const;
   void         paint (QPainter&) const;
@@ -74,7 +73,7 @@ protected:
 private:
   IMPLEMENTATION
 
-  virtual const char* key () const = 0;
+  virtual const char* runKey () const = 0;
 
   virtual ToolResponse runInitialize ()
   {
@@ -129,13 +128,19 @@ private:
   class name : public Tool                       \
   {                                              \
   public:                                        \
-    DECLARE_BIG2 (name, State&, QPushButton&)    \
-  private:                                       \
-    IMPLEMENTATION                               \
-    const char* key () const                     \
+    DECLARE_BIG2 (name, State&)                  \
+                                                 \
+    const char* runKey () const override         \
+    {                                            \
+      return name::classKey ();                  \
+    }                                            \
+    static const char* classKey ()               \
     {                                            \
       return theKey;                             \
     }                                            \
+                                                 \
+  private:                                       \
+    IMPLEMENTATION                               \
     otherMethods                                 \
   };
 
@@ -152,7 +157,7 @@ private:
 #define DECLARE_TOOL_RUN_FROM_CONFIG void               runFromConfig ();
 
 #define DELEGATE_TOOL(name) \
-  DELEGATE_BIG2_BASE (name, (State & s, QPushButton & b), (this), Tool, (s, b, this->key ()))
+  DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, name::classKey ()))
 
 #define DELEGATE_TOOL_RUN_INITIALIZE(n) DELEGATE (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n) DELEGATE_CONST (void, n, runRender)

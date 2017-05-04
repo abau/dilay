@@ -28,6 +28,7 @@ struct ToolMoveCamera::Impl
   {
     this->runFromConfig (config);
   }
+
   void snap (State& state, bool cycleBackwards)
   {
     Camera& cam = state.camera ();

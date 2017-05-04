@@ -191,7 +191,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
 
   viewMenu.addSeparator ();
 
-  addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::Key_C,
+  addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::SHIFT + Qt::Key_C,
              [&glWidget]() { glWidget.toolMoveCamera ().snap (glWidget.state (), false); });
   addAction (viewMenu, QObject::tr ("Reset &gaze point"), Qt::CTRL + Qt::Key_C,
              [&glWidget]() { glWidget.toolMoveCamera ().resetGazePoint (glWidget.state ()); });
@@ -209,7 +209,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
                mainWindow.update ();
              });
 
-  addCheckableAction (viewMenu, QObject::tr ("Show &floor plane"), Qt::Key_F, false,
+  addCheckableAction (viewMenu, QObject::tr ("Show &floor plane"), QKeySequence (), false,
                       [&mainWindow, &glWidget](bool a) {
                         glWidget.floorPlane ().isActive (a);
                         mainWindow.update ();

@@ -6,6 +6,7 @@
 #include <QScrollArea>
 #include <QTabWidget>
 #include <QVBoxLayout>
+#include <unordered_map>
 #include "state.hpp"
 #include "tools.hpp"
 #include "view/gl-widget.hpp"
@@ -15,23 +16,30 @@
 
 struct ViewToolPane::Impl
 {
-  ViewToolPane*             self;
-  ViewGlWidget&             glWidget;
-  QVBoxLayout&              layout;
-  ViewTwoColumnGrid&        properties;
+  typedef std::unordered_map<const char*, QPushButton*> Buttons;
+
+  ViewToolPane*      self;
+  ViewGlWidget&      glWidget;
+  QVBoxLayout&       layout;
+  QTabWidget&        toolSelection;
+  ViewTwoColumnGrid& properties;
+  Buttons            buttons;
 
   Impl (ViewToolPane* s, ViewGlWidget& g)
     : self (s)
     , glWidget (g)
     , layout (*new QVBoxLayout)
+    , toolSelection (*new QTabWidget)
     , properties (*new ViewTwoColumnGrid)
   {
     QScrollArea* scrollArea = new QScrollArea;
     QWidget*     pane = new QWidget;
 
+    this->initializeToolSelection ();
+
     this->layout.setContentsMargins (0, 0, 0, 0);
     this->layout.setSpacing (0);
-    this->layout.addWidget (this->initializeToolSelection ());
+    this->layout.addWidget (&this->toolSelection);
     this->layout.addWidget (&this->properties);
     this->layout.addStretch (1);
 
@@ -56,15 +64,26 @@ struct ViewToolPane::Impl
     this->properties.reset ();
   }
 
-  QWidget* initializeToolSelection ()
+  void initializeToolSelection ()
   {
-    QTabWidget* toolPane = new QTabWidget;
-    toolPane->addTab (this->initalizeSculptSelection (), QObject::tr ("Sculpt"));
-    toolPane->addTab (this->initalizeSketchSelection (), QObject::tr ("Sketch"));
+    this->toolSelection.addTab (this->initalizeSculptSelection (), QObject::tr ("Sculpt"));
+    this->toolSelection.addTab (this->initalizeSketchSelection (), QObject::tr ("Sketch"));
 
-    QObject::connect (toolPane, &QTabWidget::currentChanged,
+    QObject::connect (&this->toolSelection, &QTabWidget::currentChanged,
                       [this](int) { this->glWidget.state ().resetTool (); });
-    return toolPane;
+  }
+
+  template <typename T> void addToolButton (QLayout* layout, const QString& name)
+  {
+    QPushButton& button = ViewUtil::pushButton (name);
+    this->buttons.emplace (T::classKey (), &button);
+    button.setCheckable (true);
+
+    ViewUtil::connect (button, [this, &button]() {
+      State& s = this->glWidget.state ();
+      s.setTool (std::move (*new T (s)));
+    });
+    layout->addWidget (&button);
   }
 
   QWidget* initalizeSculptSelection ()
@@ -110,19 +129,29 @@ struct ViewToolPane::Impl
     return toolPane;
   }
 
-  template <typename T> void addToolButton (QLayout* layout, const QString& name)
+  ViewToolPaneSelection selection () const
   {
-    QPushButton& button = ViewUtil::pushButton (name);
-    button.setCheckable (true);
+    switch (this->toolSelection.currentIndex ())
+    {
+      case 0:
+        return ViewToolPaneSelection::Sculpt;
+      case 1:
+        return ViewToolPaneSelection::Sketch;
+      default:
+        DILAY_IMPOSSIBLE
+    }
+  }
 
-    ViewUtil::connect (button, [this, &button]() {
-      State& s = this->glWidget.state ();
-      s.setTool (std::move (*new T (s, button)));
-    });
-    layout->addWidget (&button);
+  QPushButton& button (const char* key)
+  {
+    auto it = this->buttons.find (key);
+    assert (it != this->buttons.end ());
+    return *it->second;
   }
 };
 
 DELEGATE_BIG2_BASE (ViewToolPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
 DELEGATE (ViewTwoColumnGrid&, ViewToolPane, makeProperties)
 DELEGATE (void, ViewToolPane, resetProperties)
+DELEGATE_CONST (ViewToolPaneSelection, ViewToolPane, selection)
+DELEGATE1 (QPushButton&, ViewToolPane, button, const char*)
