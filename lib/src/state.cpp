@@ -48,11 +48,6 @@ struct State::Impl
     this->resetTool ();
   }
 
-  ~Impl ()
-  {
-    this->toolPtr.reset (nullptr);
-  }
-
   bool hasTool () const
   {
     return bool(this->toolPtr);
