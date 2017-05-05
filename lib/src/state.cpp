@@ -147,18 +147,30 @@ struct State::Impl
           this->addExitToolShortcut (tip, ViewToolTip::Event::Esc);
 #endif
         }
-        else if (this->toolPtr->key () != ToolSculptSmooth::classKey ())
+        else
         {
-          this->addToolShortcut<ToolSculptSmooth> (tip, ViewToolTip::Event::S);
-          this->addExitToolShortcut (tip, ViewToolTip::Event::Esc);
-        }
-        else if (this->previousToolKey)
-        {
-          this->addToggleToolShortcut (tip, ViewToolTip::Event::S);
+          if (this->toolPtr->key () != ToolSculptSmooth::classKey ())
+          {
+            this->addToolShortcut<ToolSculptSmooth> (tip, ViewToolTip::Event::S);
+          }
+          else if (this->previousToolKey)
+          {
+            this->addToggleToolShortcut (tip, ViewToolTip::Event::S);
+          }
           this->addExitToolShortcut (tip, ViewToolTip::Event::Esc);
         }
         break;
       case ViewToolPaneSelection::Sketch:
+        if (this->hasTool () == false)
+        {
+#ifndef NDEBUG
+          this->addExitToolShortcut (tip, ViewToolTip::Event::Esc);
+#endif
+        }
+        else
+        {
+          this->addExitToolShortcut (tip, ViewToolTip::Event::Esc);
+        }
         break;
     }
     this->mainWindow.infoPane ().addToolTip (tip);
