@@ -6,6 +6,7 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include "view/info-pane.hpp"
+#include "view/info-pane/scene.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
 
@@ -14,16 +15,19 @@ struct ViewInfoPane::Impl
   ViewInfoPane*      self;
   ViewGlWidget&      glWidget;
   ViewTwoColumnGrid& toolTip;
+  ViewInfoPaneScene& scene;
 
   Impl (ViewInfoPane* s, ViewGlWidget& g)
     : self (s)
     , glWidget (g)
     , toolTip (*new ViewTwoColumnGrid)
+    , scene (*new ViewInfoPaneScene (g))
   {
     QScrollArea* scrollArea = new QScrollArea;
     QTabWidget*  tabWidget = new QTabWidget;
 
     tabWidget->addTab (this->initializeToolTipTab (), QObject::tr ("Keys"));
+    tabWidget->addTab (&this->scene, QObject::tr ("Scene"));
 
     scrollArea->setWidgetResizable (true);
     scrollArea->setWidget (tabWidget);
@@ -73,13 +77,9 @@ struct ViewInfoPane::Impl
   {
     this->toolTip.reset ();
   }
-
-  void showNumFaces (unsigned int)
-  {
-  }
 };
 
 DELEGATE_BIG2_BASE (ViewInfoPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
+GETTER (ViewInfoPaneScene&, ViewInfoPane, scene)
 DELEGATE1 (void, ViewInfoPane, addToolTip, const ViewToolTip&)
 DELEGATE (void, ViewInfoPane, resetToolTip)
-DELEGATE1 (void, ViewInfoPane, showNumFaces, unsigned int)

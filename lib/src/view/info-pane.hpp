@@ -9,6 +9,7 @@
 #include "macro.hpp"
 
 class ViewGlWidget;
+class ViewInfoPaneScene;
 class ViewToolTip;
 
 class ViewInfoPane : public QDockWidget
@@ -16,10 +17,10 @@ class ViewInfoPane : public QDockWidget
 public:
   DECLARE_BIG2 (ViewInfoPane, ViewGlWidget&, QWidget* = nullptr)
 
-  void addToolTip (const ViewToolTip&);
-  void resetToolTip ();
-  void showNumFaces (unsigned int);
-  void reset ();
+  ViewInfoPaneScene& scene ();
+  void               addToolTip (const ViewToolTip&);
+  void               resetToolTip ();
+  void               reset ();
 
 private:
   IMPLEMENTATION

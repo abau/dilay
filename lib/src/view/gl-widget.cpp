@@ -16,6 +16,7 @@
 #include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
+#include "view/info-pane/scene.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/util.hpp"
@@ -100,6 +101,8 @@ struct ViewGlWidget::Impl
     this->_floorPlane.reset (new ViewFloorPlane (this->config, this->state ().camera ()));
 
     this->self->setMouseTracking (true);
+
+    this->mainWindow.infoPane ().scene ().updateInfo ();
   }
 
   void paintGL ()
@@ -125,8 +128,6 @@ struct ViewGlWidget::Impl
     {
       this->state ().tool ().paint (painter);
     }
-
-    this->mainWindow.infoPane ().showNumFaces (this->state ().scene ().numFaces ());
   }
 
   void resizeGL (int w, int h)

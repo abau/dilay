@@ -79,6 +79,7 @@ SOURCES += \
            src/view/floor-plane.cpp \
            src/view/gl-widget.cpp \
            src/view/info-pane.cpp \
+           src/view/info-pane/scene.cpp \
            src/view/light.cpp \
            src/view/main-window.cpp \
            src/view/menu-bar.cpp \
@@ -156,6 +157,7 @@ HEADERS += \
            src/view/floor-plane.cpp \
            src/view/gl-widget.hpp \
            src/view/info-pane.hpp \
+           src/view/info-pane/scene.hpp \
            src/view/light.hpp \
            src/view/main-window.hpp \
            src/view/menu-bar.hpp \

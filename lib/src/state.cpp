@@ -17,6 +17,7 @@
 #include "tools.hpp"
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
+#include "view/info-pane/scene.hpp"
 #include "view/main-window.hpp"
 #include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
@@ -211,6 +212,7 @@ struct State::Impl
       this->toolPtr.reset ();
 
       this->mainWindow.toolPane ().resetProperties ();
+      this->mainWindow.infoPane ().scene ().updateInfo ();
       this->mainWindow.update ();
     }
     this->resetToolTip ();
@@ -233,18 +235,23 @@ struct State::Impl
   void undo ()
   {
     this->history.undo (*this->self);
+    this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();
   }
 
   void redo ()
   {
     this->history.redo (*this->self);
+    this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();
   }
 
   void handleToolResponse (ToolResponse response)
   {
     assert (this->hasTool ());
+
+    this->mainWindow.infoPane ().scene ().updateInfo ();
+
     switch (response)
     {
       case ToolResponse::None:

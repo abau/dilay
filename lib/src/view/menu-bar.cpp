@@ -14,6 +14,7 @@
 #include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
+#include "view/info-pane/scene.hpp"
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/util.hpp"
@@ -121,6 +122,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
       {
         ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
       }
+      mainWindow.infoPane ().scene ().updateInfo ();
       mainWindow.update ();
     }
   });
