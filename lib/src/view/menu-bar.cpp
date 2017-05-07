@@ -100,7 +100,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
     QString           filter = filterAllFiles ();
     const std::string fileName =
       QFileDialog::getOpenFileName (&mainWindow, QObject::tr ("Open"), getFileDialogPath (scene),
-                                    fileDialogFilters (), &filter)
+                                    fileDialogFilters (), &filter, QFileDialog::DontUseNativeDialog)
         .toStdString ();
     if (fileName.empty () == false)
     {
@@ -133,7 +133,8 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
       QString           filter = selectedFilter (scene);
       const std::string fileName =
         QFileDialog::getSaveFileName (&mainWindow, QObject::tr ("Save as"),
-                                      getFileDialogPath (scene), fileDialogFilters (), &filter)
+                                      getFileDialogPath (scene), fileDialogFilters (), &filter,
+                                      QFileDialog::DontUseNativeDialog)
           .toStdString ();
       if (fileName.empty () == false)
       {
