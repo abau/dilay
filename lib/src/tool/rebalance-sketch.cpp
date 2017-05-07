@@ -21,12 +21,18 @@ struct ToolRebalanceSketch::Impl
     : self (s)
     , renderWireframe (s->state ().scene ().renderWireframe ())
   {
+  }
+
+  ToolResponse runInitialize ()
+  {
     this->self->renderMirror (false);
     this->self->state ().scene ().renderWireframe (true);
 
     ViewToolTip toolTip;
     toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Set new root"));
     this->self->showToolTip (toolTip);
+
+    return ToolResponse::None;
   }
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)

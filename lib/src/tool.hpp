@@ -73,10 +73,7 @@ protected:
 private:
   IMPLEMENTATION
 
-  virtual ToolResponse runInitialize ()
-  {
-    return ToolResponse::None;
-  }
+  virtual ToolResponse runInitialize () = 0;
 
   virtual void runRender () const
   {
@@ -135,10 +132,10 @@ private:
                                                  \
   private:                                       \
     IMPLEMENTATION                               \
+    ToolResponse runInitialize ();               \
     otherMethods                                 \
   };
 
-#define DECLARE_TOOL_RUN_INITIALIZE ToolResponse        runInitialize ();
 #define DECLARE_TOOL_RUN_RENDER void                    runRender () const;
 #define DECLARE_TOOL_RUN_PAINT void                     runPaint (QPainter&) const;
 #define DECLARE_TOOL_RUN_POINTING_EVENT ToolResponse    runPointingEvent (const ViewPointingEvent&);
@@ -150,10 +147,10 @@ private:
 #define DECLARE_TOOL_RUN_CLOSE void                     runClose ();
 #define DECLARE_TOOL_RUN_FROM_CONFIG void               runFromConfig ();
 
-#define DELEGATE_TOOL(name) \
-  DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, name::classKey ()))
+#define DELEGATE_TOOL(name)                                                    \
+  DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, name::classKey ())) \
+  DELEGATE (ToolResponse, name, runInitialize)
 
-#define DELEGATE_TOOL_RUN_INITIALIZE(n) DELEGATE (ToolResponse, n, runInitialize)
 #define DELEGATE_TOOL_RUN_RENDER(n) DELEGATE_CONST (void, n, runRender)
 #define DELEGATE_TOOL_RUN_PAINT(n) DELEGATE1_CONST (void, n, runPaint, QPainter&)
 #define DELEGATE_TOOL_RUN_POINTING_EVENT(n) \

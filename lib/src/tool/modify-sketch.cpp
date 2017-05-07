@@ -46,10 +46,16 @@ struct ToolModifySketch::Impl
     , snap (s->cache ().get<bool> ("snap", true))
     , snapWidthEdit (ViewUtil::slider (1, s->cache ().get<int> ("snap-width", 5), 10))
   {
+  }
+
+  ToolResponse runInitialize ()
+  {
     this->self->renderMirror (false);
 
     this->setupProperties ();
     this->setupToolTip ();
+
+    return ToolResponse::None;
   }
 
   void setupProperties ()

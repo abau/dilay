@@ -27,4 +27,3 @@ struct ToolNewMesh::Impl
 };
 
 DELEGATE_TOOL (ToolNewMesh)
-DELEGATE_TOOL_RUN_INITIALIZE (ToolNewMesh)

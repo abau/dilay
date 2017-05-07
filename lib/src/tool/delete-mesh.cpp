@@ -17,9 +17,15 @@ struct ToolDeleteMesh::Impl
   Impl (ToolDeleteMesh* s)
     : self (s)
   {
+  }
+
+  ToolResponse runInitialize ()
+  {
     ViewToolTip toolTip;
     toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Delete selection"));
     this->self->showToolTip (toolTip);
+
+    return ToolResponse::None;
   }
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)

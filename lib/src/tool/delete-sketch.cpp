@@ -70,10 +70,16 @@ struct ToolDeleteSketch::Impl
     , mode (toMode (s->cache ().get<int> ("mode", fromMode (Mode::DeleteNode))))
     , deleteChildren (s->cache ().get<bool> ("delete-children", false))
   {
+  }
+
+  ToolResponse runInitialize ()
+  {
     this->self->renderMirror (false);
 
     this->setupProperties ();
     this->setupToolTip ();
+
+    return ToolResponse::None;
   }
 
   void setupProperties ()

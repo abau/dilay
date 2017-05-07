@@ -53,10 +53,16 @@ struct ToolConvertSketch::Impl
     , moveToCenter (s->cache ().get<bool> ("move-to-center", true))
     , smoothMesh (s->cache ().get<bool> ("smooth-mesh", true))
   {
+  }
+
+  ToolResponse runInitialize ()
+  {
     this->self->renderMirror (false);
 
     this->setupProperties ();
     this->setupToolTip ();
+
+    return ToolResponse::Redraw;
   }
 
   void setupProperties ()

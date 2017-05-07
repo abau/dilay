@@ -39,11 +39,11 @@ struct Tool::Impl
     , _cache (this->cache (this->key))
     , renderMirror (true)
   {
-    this->mirror (this->hasMirror ());
   }
 
   ToolResponse initialize ()
   {
+    this->mirror (this->hasMirror ());
     this->fromConfig ();
     return this->self->runInitialize ();
   }

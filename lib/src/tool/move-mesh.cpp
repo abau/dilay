@@ -25,8 +25,14 @@ struct ToolMoveMesh::Impl
     , movement (s->state ().camera (), s->cache ().getFrom<MovementFixedConstraint> (
                                          "constraint", MovementFixedConstraint::CameraPlane))
   {
+  }
+
+  ToolResponse runInitialize ()
+  {
     this->setupProperties ();
     this->setupToolTip ();
+
+    return ToolResponse::None;
   }
 
   void setupProperties ()

@@ -70,6 +70,7 @@ struct ViewToolPane::Impl
 
     ViewUtil::connect (button, [this, &button]() {
       State& s = this->glWidget.state ();
+      s.resetTool ();
       s.setTool (std::move (*new T (s)));
     });
     layout->addWidget (&button);

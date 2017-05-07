@@ -151,7 +151,7 @@ struct ToolSketchSpheres::Impl
     this->setupToolTip ();
     this->setupCursor ();
 
-    return ToolResponse::Redraw;
+    return ToolResponse::None;
   }
 
   void runRender () const
@@ -345,7 +345,6 @@ struct ToolSketchSpheres::Impl
 };
 
 DELEGATE_TOOL (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_INITIALIZE (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_RENDER (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolSketchSpheres)
