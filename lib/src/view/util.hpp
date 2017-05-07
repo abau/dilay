@@ -22,6 +22,7 @@ class QRadioButton;
 class QSlider;
 class QSpinBox;
 class QString;
+class QTabWidget;
 class QToolButton;
 
 namespace ViewUtil
@@ -57,6 +58,7 @@ namespace ViewUtil
   void              connectInt (const QLineEdit&, const std::function<void(int)>&);
   QWidget&          stretcher (bool, bool);
   void              deselect (QAbstractSpinBox&);
+  void              adjustSize (QTabWidget&);
   bool              question (QWidget&, const QString&);
   void              error (QWidget&, const QString&);
   void              about (QWidget&, const QString&);

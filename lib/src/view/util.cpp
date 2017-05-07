@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSlider>
+#include <QTabWidget>
 #include <QToolButton>
 #include <glm/glm.hpp>
 #include "../util.hpp"
@@ -258,6 +259,23 @@ QWidget& ViewUtil::stretcher (bool horizontal, bool vertical)
 void ViewUtil::deselect (QAbstractSpinBox& spinBox)
 {
   spinBox.findChild<QLineEdit*> ()->deselect ();
+}
+
+void ViewUtil::adjustSize (QTabWidget& tab)
+{
+  const int current = tab.currentIndex ();
+
+  for (int i = 0; i < tab.count (); i++)
+  {
+    if (i == current)
+    {
+      tab.widget (i)->setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Preferred);
+    }
+    else
+    {
+      tab.widget (i)->setSizePolicy (QSizePolicy::Ignored, QSizePolicy::Ignored);
+    }
+  }
 }
 
 bool ViewUtil::question (QWidget& parent, const QString& label)

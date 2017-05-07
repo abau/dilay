@@ -58,8 +58,10 @@ struct ViewToolPane::Impl
     this->toolSelection.addTab (this->initalizeSculptSelection (), QObject::tr ("Sculpt"));
     this->toolSelection.addTab (this->initalizeSketchSelection (), QObject::tr ("Sketch"));
 
-    QObject::connect (&this->toolSelection, &QTabWidget::currentChanged,
-                      [this](int) { this->glWidget.state ().resetTool (); });
+    QObject::connect (&this->toolSelection, &QTabWidget::currentChanged, [this](int) {
+      this->glWidget.state ().resetTool ();
+      ViewUtil::adjustSize (this->toolSelection);
+    });
   }
 
   template <typename T> void addToolButton (QLayout* layout, const QString& name)
