@@ -23,8 +23,7 @@ class ViewToolPane : public QDockWidget
 public:
   DECLARE_BIG2 (ViewToolPane, ViewGlWidget&, QWidget* = nullptr)
 
-  ViewTwoColumnGrid&    makeProperties ();
-  void                  resetProperties ();
+  ViewTwoColumnGrid&    properties ();
   ViewToolPaneSelection selection () const;
   QPushButton&          button (const char*);
 

@@ -47,7 +47,7 @@ public:
 protected:
   State&             state () const;
   void               updateGlWidget ();
-  ViewTwoColumnGrid& makeProperties () const;
+  ViewTwoColumnGrid& properties () const;
   void               showToolTip (const ViewToolTip&);
   Config&            config () const;
   CacheProxy&        cache ();

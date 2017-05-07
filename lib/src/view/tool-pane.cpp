@@ -53,17 +53,6 @@ struct ViewToolPane::Impl
     this->self->setAllowedAreas (Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   }
 
-  ViewTwoColumnGrid& makeProperties ()
-  {
-    this->resetProperties ();
-    return this->properties;
-  }
-
-  void resetProperties ()
-  {
-    this->properties.reset ();
-  }
-
   void initializeToolSelection ()
   {
     this->toolSelection.addTab (this->initalizeSculptSelection (), QObject::tr ("Sculpt"));
@@ -151,7 +140,6 @@ struct ViewToolPane::Impl
 };
 
 DELEGATE_BIG2_BASE (ViewToolPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
-DELEGATE (ViewTwoColumnGrid&, ViewToolPane, makeProperties)
-DELEGATE (void, ViewToolPane, resetProperties)
+GETTER (ViewTwoColumnGrid&, ViewToolPane, properties)
 DELEGATE_CONST (ViewToolPaneSelection, ViewToolPane, selection)
 DELEGATE1 (QPushButton&, ViewToolPane, button, const char*)

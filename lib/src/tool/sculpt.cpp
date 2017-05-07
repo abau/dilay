@@ -96,7 +96,7 @@ struct ToolSculpt::Impl
 
   void setupProperties ()
   {
-    ViewTwoColumnGrid& properties = this->self->makeProperties ();
+    ViewTwoColumnGrid& properties = this->self->properties ();
 
     ViewUtil::connect (this->radiusEdit, [this](float r) {
       if (this->absoluteRadius)

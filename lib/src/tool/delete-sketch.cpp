@@ -78,7 +78,7 @@ struct ToolDeleteSketch::Impl
 
   void setupProperties ()
   {
-    ViewTwoColumnGrid& properties = this->self->makeProperties ();
+    ViewTwoColumnGrid& properties = this->self->properties ();
 
     QCheckBox& deleteChildrenEdit =
       ViewUtil::checkBox (QObject::tr ("Delete children"), this->deleteChildren);

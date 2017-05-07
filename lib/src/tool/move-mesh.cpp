@@ -31,7 +31,7 @@ struct ToolMoveMesh::Impl
 
   void setupProperties ()
   {
-    this->movement.addFixedProperties (this->self->makeProperties (), [this]() {
+    this->movement.addFixedProperties (this->self->properties (), [this]() {
       this->setupToolTip ();
       this->self->cache ().set ("constraint", this->movement.fixedConstraint ());
     });

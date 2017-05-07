@@ -105,9 +105,9 @@ struct Tool::Impl
     this->state.mainWindow ().glWidget ().update ();
   }
 
-  ViewTwoColumnGrid& makeProperties () const
+  ViewTwoColumnGrid& properties () const
   {
-    return this->state.mainWindow ().toolPane ().makeProperties ();
+    return this->state.mainWindow ().toolPane ().properties ();
   }
 
   void showToolTip (const ViewToolTip& toolTip)
@@ -267,7 +267,7 @@ DELEGATE (void, Tool, close)
 DELEGATE (void, Tool, fromConfig)
 GETTER_CONST (State&, Tool, state)
 DELEGATE (void, Tool, updateGlWidget)
-DELEGATE_CONST (ViewTwoColumnGrid&, Tool, makeProperties)
+DELEGATE_CONST (ViewTwoColumnGrid&, Tool, properties)
 DELEGATE1 (void, Tool, showToolTip, const ViewToolTip&)
 DELEGATE_CONST (Config&, Tool, config)
 DELEGATE (CacheProxy&, Tool, cache)

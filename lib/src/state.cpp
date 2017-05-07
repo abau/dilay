@@ -21,6 +21,7 @@
 #include "view/main-window.hpp"
 #include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 
 struct State::Impl
 {
@@ -211,7 +212,7 @@ struct State::Impl
       this->toolPtr->close ();
       this->toolPtr.reset ();
 
-      this->mainWindow.toolPane ().resetProperties ();
+      this->mainWindow.toolPane ().properties ().reset ();
       this->mainWindow.infoPane ().scene ().updateInfo ();
       this->mainWindow.update ();
     }

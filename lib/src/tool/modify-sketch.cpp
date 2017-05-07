@@ -54,7 +54,7 @@ struct ToolModifySketch::Impl
 
   void setupProperties ()
   {
-    ViewTwoColumnGrid& properties = this->self->makeProperties ();
+    ViewTwoColumnGrid& properties = this->self->properties ();
 
     properties.add (QObject::tr ("Move along"), ViewUtil::emptyWidget ());
     this->movement.addFixedProperties (properties, [this]() {

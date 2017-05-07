@@ -90,7 +90,7 @@ struct ToolSketchSpheres::Impl
 
   void setupProperties ()
   {
-    ViewTwoColumnGrid& properties = this->self->makeProperties ();
+    ViewTwoColumnGrid& properties = this->self->properties ();
 
     QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
     ViewUtil::connect (syncButton, [this]() {
