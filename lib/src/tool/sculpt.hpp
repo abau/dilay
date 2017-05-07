@@ -39,12 +39,11 @@ private:
   ToolResponse runCursorUpdate (const glm::ivec2&);
   void         runFromConfig ();
 
-  virtual const char* runKey () const = 0;
-  virtual void        runSetupBrush (SculptBrush&) = 0;
-  virtual void        runSetupCursor (ViewCursor&) = 0;
-  virtual void        runSetupProperties (ViewTwoColumnGrid&) = 0;
-  virtual void        runSetupToolTip (ViewToolTip&) = 0;
-  virtual bool        runSculptPointingEvent (const ViewPointingEvent&) = 0;
+  virtual void runSetupBrush (SculptBrush&) = 0;
+  virtual void runSetupCursor (ViewCursor&) = 0;
+  virtual void runSetupProperties (ViewTwoColumnGrid&) = 0;
+  virtual void runSetupToolTip (ViewToolTip&) = 0;
+  virtual bool runSculptPointingEvent (const ViewPointingEvent&) = 0;
 };
 
 #define DECLARE_TOOL_SCULPT(name, theKey)                   \
@@ -53,10 +52,6 @@ private:
   public:                                                   \
     DECLARE_BIG2 (name, State&)                             \
                                                             \
-    const char* runKey () const override                    \
-    {                                                       \
-      return name::classKey ();                             \
-    }                                                       \
     static const char* classKey ()                          \
     {                                                       \
       return theKey;                                        \

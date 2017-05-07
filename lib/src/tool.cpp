@@ -25,24 +25,21 @@
 
 struct Tool::Impl
 {
-  Tool*         self;
-  State&        state;
-  CacheProxy    _cache;
-  Maybe<Mirror> _mirror;
-  bool          renderMirror;
+  Tool*             self;
+  const char* const key;
+  State&            state;
+  CacheProxy        _cache;
+  Maybe<Mirror>     _mirror;
+  bool              renderMirror;
 
-  Impl (Tool* s, State& st, const char* key)
+  Impl (Tool* s, State& st, const char* k)
     : self (s)
+    , key (k)
     , state (st)
-    , _cache (this->cache (key))
+    , _cache (this->cache (this->key))
     , renderMirror (true)
   {
     this->mirror (this->hasMirror ());
-  }
-
-  const char* key () const
-  {
-    return this->self->runKey ();
   }
 
   ToolResponse initialize ()
@@ -256,7 +253,7 @@ struct Tool::Impl
 };
 
 DELEGATE2_BIG3_SELF (Tool, State&, const char*)
-DELEGATE_CONST (const char*, Tool, key)
+GETTER_CONST (const char*, Tool, key)
 DELEGATE (ToolResponse, Tool, initialize)
 DELEGATE_CONST (void, Tool, render)
 DELEGATE1_CONST (void, Tool, paint, QPainter&)

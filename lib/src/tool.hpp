@@ -73,8 +73,6 @@ protected:
 private:
   IMPLEMENTATION
 
-  virtual const char* runKey () const = 0;
-
   virtual ToolResponse runInitialize ()
   {
     return ToolResponse::None;
@@ -130,10 +128,6 @@ private:
   public:                                        \
     DECLARE_BIG2 (name, State&)                  \
                                                  \
-    const char* runKey () const override         \
-    {                                            \
-      return name::classKey ();                  \
-    }                                            \
     static const char* classKey ()               \
     {                                            \
       return theKey;                             \
