@@ -365,11 +365,11 @@ bool IntersectionUtil::intersects (const PrimPlane& plane, const PrimTriangle& t
   const float d2 = plane.distance (tri.vertex2 ());
   const float d3 = plane.distance (tri.vertex3 ());
 
-  const bool less = d1 < Util::epsilon () || d2 < Util::epsilon () || d3 < Util::epsilon ();
+  const bool oneLess = d1 < Util::epsilon () || d2 < Util::epsilon () || d3 < Util::epsilon ();
+  const bool oneGreater =
+    d1 > -Util::epsilon () || d2 > -Util::epsilon () || d3 > -Util::epsilon ();
 
-  const bool greater = d1 > -Util::epsilon () || d2 > -Util::epsilon () || d3 > -Util::epsilon ();
-
-  return less && greater;
+  return oneLess && oneGreater;
 }
 
 bool IntersectionUtil::intersects (const PrimCylinder& cylinder, const glm::vec3& point)
