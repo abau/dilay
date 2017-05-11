@@ -792,7 +792,7 @@ struct DynamicMesh::Impl
   }
 
   template <typename T, typename... Ts>
-  bool intersectsT (const T& t, DynamicFaces& faces, const Ts&... args)
+  bool intersectsT (const T& t, DynamicFaces& faces, const Ts&... args) const
   {
     this->octree.intersects (t, [this, &t, &faces, &args...](unsigned int i) {
       if (IntersectionUtil::intersects (t, this->face (i), args...))
@@ -805,7 +805,7 @@ struct DynamicMesh::Impl
   }
 
   template <typename T, typename... Ts>
-  bool containsOrIntersectsT (const T& t, DynamicFaces& faces, const Ts&... args)
+  bool containsOrIntersectsT (const T& t, DynamicFaces& faces, const Ts&... args) const
   {
     this->octree.intersects (t, [this, &t, &faces, &args...](bool contains, unsigned int i) {
       if (contains || IntersectionUtil::intersects (t, this->face (i), args...))
@@ -817,22 +817,22 @@ struct DynamicMesh::Impl
     return faces.isEmpty () == false;
   }
 
-  bool intersects (const PrimRay& ray, DynamicFaces& faces)
+  bool intersects (const PrimRay& ray, DynamicFaces& faces) const
   {
     return this->intersectsT<PrimRay> (ray, faces, nullptr);
   }
 
-  bool intersects (const PrimPlane& plane, DynamicFaces& faces)
+  bool intersects (const PrimPlane& plane, DynamicFaces& faces) const
   {
     return this->intersectsT<PrimPlane> (plane, faces);
   }
 
-  bool intersects (const PrimSphere& sphere, DynamicFaces& faces)
+  bool intersects (const PrimSphere& sphere, DynamicFaces& faces) const
   {
     return this->containsOrIntersectsT<PrimSphere> (sphere, faces);
   }
 
-  bool intersects (const PrimAABox& box, DynamicFaces& faces)
+  bool intersects (const PrimAABox& box, DynamicFaces& faces) const
   {
     return this->containsOrIntersectsT<PrimAABox> (box, faces);
   }
@@ -910,10 +910,10 @@ DELEGATE_MEMBER (RenderMode&, DynamicMesh, renderMode, mesh)
 
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimRay&, Intersection&)
 DELEGATE2 (bool, DynamicMesh, intersects, const PrimRay&, DynamicMeshIntersection&)
-DELEGATE2 (bool, DynamicMesh, intersects, const PrimRay&, DynamicFaces&)
-DELEGATE2 (bool, DynamicMesh, intersects, const PrimPlane&, DynamicFaces&)
-DELEGATE2 (bool, DynamicMesh, intersects, const PrimSphere&, DynamicFaces&)
-DELEGATE2 (bool, DynamicMesh, intersects, const PrimAABox&, DynamicFaces&)
+DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimRay&, DynamicFaces&)
+DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimPlane&, DynamicFaces&)
+DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimSphere&, DynamicFaces&)
+DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimAABox&, DynamicFaces&)
 
 DELEGATE (void, DynamicMesh, normalize)
 DELEGATE1_MEMBER (void, DynamicMesh, scale, mesh, const glm::vec3&)

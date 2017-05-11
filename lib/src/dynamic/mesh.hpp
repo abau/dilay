@@ -84,10 +84,10 @@ public:
 
   bool intersects (const PrimRay&, Intersection&) const;
   bool intersects (const PrimRay&, DynamicMeshIntersection&);
-  bool intersects (const PrimRay&, DynamicFaces&);
-  bool intersects (const PrimPlane&, DynamicFaces&);
-  bool intersects (const PrimSphere&, DynamicFaces&);
-  bool intersects (const PrimAABox&, DynamicFaces&);
+  bool intersects (const PrimRay&, DynamicFaces&) const;
+  bool intersects (const PrimPlane&, DynamicFaces&) const;
+  bool intersects (const PrimSphere&, DynamicFaces&) const;
+  bool intersects (const PrimAABox&, DynamicFaces&) const;
 
   void               normalize ();
   void               scale (const glm::vec3&);
