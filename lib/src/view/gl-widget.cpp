@@ -2,10 +2,13 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QCoreApplication>
 #include <QMouseEvent>
 #include <QPainter>
 #include <glm/glm.hpp>
 #include "camera.hpp"
+#include "mesh-util.hpp"
+#include "mesh.hpp"
 #include "opengl.hpp"
 #include "renderer.hpp"
 #include "scene.hpp"
@@ -101,7 +104,24 @@ struct ViewGlWidget::Impl
     this->_floorPlane.reset (new ViewFloorPlane (this->config, this->state ().camera ()));
 
     this->self->setMouseTracking (true);
+    this->initializeScene ();
+  }
 
+  void initializeScene ()
+  {
+    const QStringList arguments = QCoreApplication::arguments ();
+    if (arguments.size () > 1)
+    {
+      const std::string fileName = arguments.at (1).toStdString ();
+      if (this->state ().scene ().fromDlyFile (this->state ().config (), fileName) == false)
+      {
+        ViewUtil::error (this->mainWindow, QObject::tr ("Could not open file."));
+      }
+    }
+    else
+    {
+      this->state ().scene ().newDynamicMesh (this->config, MeshUtil::icosphere (4));
+    }
     this->mainWindow.infoPane ().scene ().updateInfo ();
   }
 

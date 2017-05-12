@@ -9,8 +9,6 @@
 #include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
-#include "mesh-util.hpp"
-#include "mesh.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -46,7 +44,6 @@ struct State::Impl
     , scene (this->config)
     , previousToolKey (nullptr)
   {
-    this->scene.newDynamicMesh (this->config, MeshUtil::icosphere (4));
     this->resetTool ();
   }
 
