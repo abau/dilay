@@ -512,6 +512,7 @@ Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
         const unsigned int index2 = m.addVertex (plane.mirror (v));
 
         newIndices[i] = std::make_pair (index1, index2);
+        break;
       }
     }
   }
