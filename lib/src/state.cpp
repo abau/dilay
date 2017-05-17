@@ -150,11 +150,23 @@ struct State::Impl
         }
         else
         {
-          if (this->toolPtr->key () != ToolSculptSmooth::classKey ())
+          const bool nonSmoothSculptTool =
+            (this->toolPtr->key () == ToolSculptDraw::classKey ()) ||
+            (this->toolPtr->key () == ToolSculptCrease::classKey ()) ||
+            (this->toolPtr->key () == ToolSculptGrab::classKey ()) ||
+            (this->toolPtr->key () == ToolSculptFlatten::classKey ()) ||
+            (this->toolPtr->key () == ToolSculptPinch::classKey ()) ||
+            (this->toolPtr->key () == ToolSculptReduce::classKey ());
+
+          const bool toggleBack = this->previousToolKey &&
+                                  (this->previousToolKey != ToolSculptSmooth::classKey ()) &&
+                                  (this->toolPtr->key () == ToolSculptSmooth::classKey ());
+
+          if (nonSmoothSculptTool)
           {
             this->addToolShortcut<ToolSculptSmooth> (tip, ViewToolTip::Event::S);
           }
-          else if (this->previousToolKey)
+          else if (toggleBack)
           {
             this->addToggleToolShortcut (tip, ViewToolTip::Event::S);
           }
