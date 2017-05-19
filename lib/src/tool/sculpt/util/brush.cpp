@@ -145,25 +145,21 @@ void SBFlattenParameters::sculpt (const SculptBrush& brush, const DynamicFaces& 
 
 void SBCreaseParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
 {
-  if (faces.isEmpty () == false)
+  if (faces.isEmpty () == false && brush.position () != brush.lastPosition ())
   {
-    const glm::vec3 avgDir = this->invert (brush.mesh ().averageNormal (faces));
-    const glm::vec3 refPos = brush.position () + (avgDir * this->intensity () * brush.radius ());
+    const glm::vec3 normal = this->invert (brush.normal ());
 
-    const PrimPlane plane (refPos, avgDir);
-
-    brush.mesh ().forEachVertex (faces, [this, &brush, &avgDir, &refPos, &plane](unsigned int i) {
+    brush.mesh ().forEachVertex (faces, [this, &brush, &normal](unsigned int i) {
       const glm::vec3& oldPos = brush.mesh ().vertex (i);
-      const glm::vec3  projPos = plane.project (oldPos);
-      const float      distance = glm::distance (projPos, refPos);
+      const glm::vec3  delta = brush.position () - oldPos;
+      const float      distance = glm::length (delta) / brush.radius ();
 
-      if (glm::distance (projPos, refPos) > 0.001f)
+      if (distance <= 1.0f)
       {
-        const float     relDistance = glm::clamp (distance / brush.radius (), 0.0f, 1.0f);
-        const float     factor = 0.1f * brush.radius () * glm::min (0.5f, 1.0f - relDistance);
-        const glm::vec3 direction =
-          glm::normalize ((projPos - oldPos) + (2.0f * (refPos - projPos)));
-        const glm::vec3 newPos = oldPos + (factor * direction);
+        const float invDistance2 = (distance - 1.0f) * (distance - 1.0f);
+        const float hFactor = invDistance2 * this->intensity ();
+        float vFactor = invDistance2 * invDistance2 * brush.radius () * this->intensity () * 0.5f;
+        const glm::vec3 newPos = (oldPos + (hFactor * delta)) + (normal * vFactor);
 
         brush.mesh ().vertex (i, newPos);
       }
@@ -175,14 +171,14 @@ void SBPinchParameters::sculpt (const SculptBrush& brush, const DynamicFaces& fa
 {
   brush.mesh ().forEachVertex (faces, [this, &brush](unsigned int i) {
     const glm::vec3& oldPos = brush.mesh ().vertex (i);
-    const float      distance = glm::distance (oldPos, brush.position ());
+    const glm::vec3  delta = brush.position () - oldPos;
+    const float      distance = glm::length (delta) / brush.radius ();
 
-    if (distance > 0.001f)
+    if (distance <= 1.0f)
     {
-      const float     relDistance = glm::clamp (distance / brush.radius (), 0.0f, 1.0f);
-      const float     factor = 0.1f * brush.radius () * glm::min (0.5f, 1.0f - relDistance);
-      const glm::vec3 direction = this->invert (glm::normalize (brush.position () - oldPos));
-      const glm::vec3 newPos = oldPos + (factor * direction);
+      const float     invDistance2 = (distance - 1.0f) * (distance - 1.0f);
+      const float     hFactor = invDistance2 * 0.5f;
+      const glm::vec3 newPos = oldPos + (hFactor * delta);
 
       brush.mesh ().vertex (i, newPos);
     }
@@ -229,6 +225,9 @@ struct SculptBrush::Impl
 
   float subdivThreshold () const
   {
+    assert (this->detailFactor > 0.0f);
+    assert (this->detailFactor < 1.0f);
+
     return (1.0f - this->detailFactor) * this->radius;
   }
 

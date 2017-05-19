@@ -23,7 +23,6 @@ struct ToolSculptCrease::Impl
   {
     auto& params = brush.initParameters<SBCreaseParameters> ();
 
-    brush.detailFactor (brush.detailFactor () + 0.5f);
     params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
     params.invert (this->self->cache ().get<bool> ("invert", false));
   }
