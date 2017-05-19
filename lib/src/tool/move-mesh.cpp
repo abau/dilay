@@ -22,8 +22,9 @@ struct ToolMoveMesh::Impl
   Impl (ToolMoveMesh* s)
     : self (s)
     , mesh (nullptr)
-    , movement (s->state ().camera (), s->cache ().getFrom<MovementFixedConstraint> (
-                                         "constraint", MovementFixedConstraint::CameraPlane))
+    , movement (s->state ().camera (),
+                s->cache ().getFrom<MovementFixedConstraint> ("constraint",
+                                                              MovementFixedConstraint::CameraPlane))
   {
   }
 

@@ -39,8 +39,9 @@ struct ToolModifySketch::Impl
     , mesh (nullptr)
     , node (nullptr)
     , parent (nullptr)
-    , movement (s->state ().camera (), s->cache ().getFrom<MovementFixedConstraint> (
-                                         "constraint", MovementFixedConstraint::PrimaryPlane))
+    , movement (s->state ().camera (),
+                s->cache ().getFrom<MovementFixedConstraint> (
+                  "constraint", MovementFixedConstraint::PrimaryPlane))
     , scaling (s->state ().camera ())
     , transformChildren (s->cache ().get<bool> ("transform-children", false))
     , snap (s->cache ().get<bool> ("snap", true))

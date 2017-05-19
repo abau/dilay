@@ -117,8 +117,9 @@ struct ToolSketchSpheres::Impl
     properties.addStacked (QObject::tr ("Height"), this->heightEdit);
 
     QButtonGroup& smoothEffectEdit = *new QButtonGroup;
-    properties.add (smoothEffectEdit, {QObject::tr ("None"), QObject::tr ("Embed"),
-                                       QObject::tr ("Embed and adjust"), QObject::tr ("Pinch")});
+    properties.add (smoothEffectEdit,
+                    {QObject::tr ("None"), QObject::tr ("Embed"), QObject::tr ("Embed and adjust"),
+                     QObject::tr ("Pinch")});
     ViewUtil::connect (smoothEffectEdit, [this](int id) {
       this->smoothEffect = toSmoothEffect (id);
       this->self->cache ().set ("smooth-effect", id);

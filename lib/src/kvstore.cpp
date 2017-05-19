@@ -95,9 +95,9 @@ struct KVStore::Impl
       if (doc.setContent (&file, &errorMsg, &errorLine, &errorColumn) == false)
       {
         file.close ();
-        throw (std::runtime_error ("Error while loading kv-store file '" + fileName + "': " +
-                                   errorMsg.toStdString () + " (" + std::to_string (errorLine) +
-                                   "," + std::to_string (errorColumn) + ")"));
+        throw (std::runtime_error (
+          "Error while loading kv-store file '" + fileName + "': " + errorMsg.toStdString () +
+          " (" + std::to_string (errorLine) + "," + std::to_string (errorColumn) + ")"));
       }
       file.close ();
       try
@@ -106,8 +106,8 @@ struct KVStore::Impl
       }
       catch (std::runtime_error& e)
       {
-        throw (std::runtime_error ("Error while parsing kv-store file '" + fileName + "': " +
-                                   e.what ()));
+        throw (std::runtime_error ("Error while parsing kv-store file '" + fileName +
+                                   "': " + e.what ()));
       }
     });
   }
