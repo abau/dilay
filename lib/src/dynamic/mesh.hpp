@@ -74,7 +74,7 @@ public:
   void sanitize ();
   void prune ();
   bool checkConsistency ();
-  void mirror (const PrimPlane&);
+  bool mirror (const PrimPlane&);
   void bufferData ();
 
   void render (Camera&);

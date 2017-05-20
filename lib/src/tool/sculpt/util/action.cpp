@@ -2,6 +2,7 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include <unordered_map>
@@ -18,6 +19,8 @@
 
 namespace
 {
+  constexpr float minEdgeLength = 0.001f;
+
   ui_pair makeUiKey (unsigned int i1, unsigned int i2)
   {
     assert (i1 != i2);
@@ -678,7 +681,7 @@ namespace
     }
   };
 
-  void collapseEdge (DynamicMesh& mesh, unsigned int i1, unsigned int i2, DynamicFaces faces)
+  bool collapseEdge (DynamicMesh& mesh, unsigned int i1, unsigned int i2, DynamicFaces faces)
   {
     const unsigned int v1 = mesh.valence (i1);
     const unsigned int v2 = mesh.valence (i2);
@@ -787,16 +790,24 @@ namespace
       if (deleteValence3Vertex (mesh, i1, faces))
       {
         mesh.vertex (i2, newPos);
+        return true;
       }
-      return;
+      else
+      {
+        return false;
+      }
     }
     if (v2 == 3)
     {
       if (deleteValence3Vertex (mesh, i2, faces))
       {
         mesh.vertex (i1, newPos);
+        return true;
       }
-      return;
+      else
+      {
+        return false;
+      }
     }
 
     unsigned int leftFace, leftVertex, rightFace, rightVertex;
@@ -810,11 +821,11 @@ namespace
 
     if (leftVertex == rightVertex)
     {
-      return;
+      return false;
     }
     else if (vLeftVertex == 3 || vRightVertex == 3)
     {
-      return;
+      return false;
     }
     else if (numCommonAdjacentVertices () == 2)
     {
@@ -834,18 +845,19 @@ namespace
       assert (mesh.isFreeVertex (i1));
       assert (mesh.isFreeVertex (i2));
       assert (mesh.valence (newI) == v1 + v2 - 4);
+
+      return true;
+    }
+    else
+    {
+      return false;
     }
   }
 
-  void collapseEdges (DynamicMesh& mesh, float maxEdgeLengthSqr, DynamicFaces& faces)
+  typedef std::function<bool(unsigned int, unsigned int)> CollapsePredicate;
+  bool collapseEdges (DynamicMesh& mesh, const CollapsePredicate& doCollapse, DynamicFaces& faces)
   {
-    const auto isCollapsable = [&mesh, maxEdgeLengthSqr](unsigned int i1, unsigned i2) -> bool {
-      assert (mesh.isFreeVertex (i1) == false);
-      assert (mesh.isFreeVertex (i2) == false);
-
-      return glm::distance2 (mesh.vertex (i1), mesh.vertex (i2)) < maxEdgeLengthSqr;
-    };
-
+    bool         collapsed = false;
     DynamicFaces current;
     current.insert (faces.indices ());
 
@@ -861,17 +873,17 @@ namespace
           unsigned int i1, i2, i3;
           mesh.vertexIndices (i, i1, i2, i3);
 
-          if (isCollapsable (i1, i2))
+          if (doCollapse (i1, i2))
           {
-            collapseEdge (mesh, i1, i2, current);
+            collapsed = collapseEdge (mesh, i1, i2, current) || collapsed;
           }
-          else if (isCollapsable (i1, i3))
+          else if (doCollapse (i1, i3))
           {
-            collapseEdge (mesh, i1, i3, current);
+            collapsed = collapseEdge (mesh, i1, i3, current) || collapsed;
           }
-          else if (isCollapsable (i2, i3))
+          else if (doCollapse (i2, i3))
           {
-            collapseEdge (mesh, i2, i3, current);
+            collapsed = collapseEdge (mesh, i2, i3, current) || collapsed;
           }
         }
       }
@@ -879,6 +891,23 @@ namespace
 
     faces.filter ([&mesh](unsigned int f) { return mesh.isFreeFace (f) == false; });
     faces.commit ();
+    return collapsed;
+  }
+
+  bool collapseEdgesByLength (DynamicMesh& mesh, float maxEdgeLengthSqr, DynamicFaces& faces)
+  {
+    const auto isCollapsable = [&mesh, maxEdgeLengthSqr](unsigned int i1, unsigned i2) -> bool {
+      assert (mesh.isFreeVertex (i1) == false);
+      assert (mesh.isFreeVertex (i2) == false);
+
+      return glm::distance2 (mesh.vertex (i1), mesh.vertex (i2)) < maxEdgeLengthSqr;
+    };
+    return collapseEdges (mesh, isCollapsable, faces);
+  }
+
+  bool collapseAllEdges (DynamicMesh& mesh, DynamicFaces& faces)
+  {
+    return collapseEdges (mesh, [](unsigned int, unsigned int) { return true; }, faces);
   }
 
   void finalize (DynamicMesh& mesh, const DynamicFaces& faces)
@@ -906,7 +935,7 @@ namespace ToolSculptAction
       {
         const float maxEdgeLengthSqr =
           mesh.averageEdgeLengthSqr (faces) * brush.parameters ().intensity ();
-        collapseEdges (mesh, maxEdgeLengthSqr, faces);
+        collapseEdgesByLength (mesh, maxEdgeLengthSqr, faces);
 
         if (mesh.isEmpty ())
         {
@@ -931,7 +960,8 @@ namespace ToolSculptAction
           extendAndFilterDomain (brush, faces, 1);
           extendDomainByPoles (mesh, faces);
 
-          splitEdges (mesh, newVertices, brush.subdivThreshold (), faces);
+          const float maxLength = glm::max (brush.subdivThreshold (), 2.0f * minEdgeLength);
+          splitEdges (mesh, newVertices, maxLength, faces);
 
           if (newVertices.edgeMap.empty () == false)
           {
@@ -945,6 +975,7 @@ namespace ToolSculptAction
 
         faces = brush.getAffectedFaces ();
         brush.sculpt (faces);
+        collapseEdgesByLength (mesh, minEdgeLength * minEdgeLength, faces);
         finalize (mesh, faces);
       }
     }
@@ -962,16 +993,24 @@ namespace ToolSculptAction
     mesh.bufferData ();
   }
 
-  void deleteDegeneratedFaces (DynamicMesh& mesh)
+  bool deleteFaces (DynamicMesh& mesh, DynamicFaces& faces)
+  {
+    bool collapsed = collapseAllEdges (mesh, faces);
+    collapsed = collapseEdgesByLength (mesh, minEdgeLength * minEdgeLength, faces) || collapsed;
+    finalize (mesh, faces);
+    mesh.bufferData ();
+    return collapsed;
+  }
+
+  bool collapseDegeneratedEdges (DynamicMesh& mesh)
   {
     DynamicFaces faces;
-
     mesh.forEachFace ([&faces](unsigned int i) { faces.insert (i); });
     faces.commit ();
 
-    collapseEdges (mesh, Util::epsilon (), faces);
-
+    const bool collapsed = collapseEdgesByLength (mesh, minEdgeLength * minEdgeLength, faces);
     finalize (mesh, faces);
     mesh.bufferData ();
+    return collapsed;
   }
 }

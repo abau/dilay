@@ -22,6 +22,7 @@
 #include "view/pointing-event.hpp"
 #include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
+#include "view/util.hpp"
 
 struct Tool::Impl
 {
@@ -201,7 +202,10 @@ struct Tool::Impl
 
     this->snapshotDynamicMeshes ();
     this->state.scene ().forEachMesh ([this](DynamicMesh& mesh) {
-      mesh.mirror (this->mirror ().plane ());
+      if (mesh.mirror (this->mirror ().plane ()) == false)
+      {
+        ViewUtil::error (this->state.mainWindow (), QObject::tr ("Could not mirror mesh"));
+      }
       mesh.bufferData ();
     });
   }

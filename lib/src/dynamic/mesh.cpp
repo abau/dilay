@@ -14,6 +14,7 @@
 #include "dynamic/octree.hpp"
 #include "intersection.hpp"
 #include "mesh-util.hpp"
+#include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
 #include "tool/sculpt/util/action.hpp"
@@ -715,15 +716,51 @@ struct DynamicMesh::Impl
     }
   }
 
-  void mirror (const PrimPlane& plane)
+  bool mirror (const PrimPlane& plane)
   {
     assert (this->checkConsistency ());
 
-    ToolSculptAction::deleteDegeneratedFaces (*this->self);
-    this->prune ();
-    this->fromMesh (MeshUtil::mirror (this->mesh, plane));
+    const auto inBorder = [this, &plane](unsigned int f) {
+      unsigned int i1, i2, i3;
+      this->vertexIndices (f, i1, i2, i3);
 
+      const float d1 = glm::abs (plane.distance (this->mesh.vertex (i1)));
+      const float d2 = glm::abs (plane.distance (this->mesh.vertex (i2)));
+      const float d3 = glm::abs (plane.distance (this->mesh.vertex (i3)));
+
+      return d1 <= Util::epsilon () && d2 <= Util::epsilon () && d3 <= Util::epsilon ();
+    };
+
+    DynamicFaces faces;
+    do
+    {
+      faces.reset ();
+      if (this->intersects (plane, faces) == false)
+      {
+        break;
+      }
+      faces.filter (inBorder);
+      if (faces.isEmpty ())
+      {
+        break;
+      }
+    } while (ToolSculptAction::deleteFaces (*this->self, faces));
     assert (this->checkConsistency ());
+
+    this->prune ();
+
+    Mesh mirrored = MeshUtil::mirror (this->mesh, plane);
+    if (mirrored.numVertices () == 0)
+    {
+      this->setAllNormals ();
+      return false;
+    }
+    else
+    {
+      this->fromMesh (mirrored);
+      assert (this->checkConsistency ());
+      return true;
+    }
   }
 
   void bufferData ()
@@ -902,7 +939,7 @@ DELEGATE (void, DynamicMesh, realignAllFaces)
 DELEGATE (void, DynamicMesh, sanitize)
 DELEGATE (void, DynamicMesh, prune)
 DELEGATE (bool, DynamicMesh, checkConsistency)
-DELEGATE1 (void, DynamicMesh, mirror, const PrimPlane&)
+DELEGATE1 (bool, DynamicMesh, mirror, const PrimPlane&)
 DELEGATE (void, DynamicMesh, bufferData)
 DELEGATE1 (void, DynamicMesh, render, Camera&)
 DELEGATE_MEMBER_CONST (const RenderMode&, DynamicMesh, renderMode, mesh)

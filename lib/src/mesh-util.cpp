@@ -17,21 +17,15 @@
 
 namespace
 {
-  template <typename T> class EdgeMap
+  class EdgeMap
   {
   public:
-    EdgeMap ()
-    {
-    }
     EdgeMap (unsigned int numVertices)
-    {
-      this->resize (numVertices);
-    }
-    void resize (unsigned int numVertices)
     {
       this->elements.resize (numVertices - 1);
     }
-    T* find (unsigned int i1, unsigned int i2)
+
+    unsigned int* find (unsigned int i1, unsigned int i2)
     {
       const unsigned int minI = glm::min (i1, i2);
       const unsigned int maxI = glm::max (i1, i2);
@@ -46,7 +40,7 @@ namespace
       }
     }
 
-    void add (unsigned int i1, unsigned i2, const T& element)
+    void add (unsigned int i1, unsigned int i2, const unsigned int& element)
     {
       const unsigned int minI = glm::min (i1, i2);
       const unsigned int maxI = glm::max (i1, i2);
@@ -54,19 +48,39 @@ namespace
       assert (minI < this->elements.size ());
       assert (this->findInSequence (this->elements[minI], maxI) == nullptr);
 
-      std::vector<std::pair<unsigned int, T>>& seq = this->elements[minI];
-
-      if (seq.empty ())
+      if (this->elements[minI].empty ())
       {
-        seq.reserve (6);
+        this->elements[minI].reserve (6);
       }
-      seq.push_back (std::make_pair (maxI, element));
+      this->elements[minI].push_back (std::make_pair (maxI, element));
     }
 
-  private:
-    T* findInSequence (std::vector<std::pair<unsigned int, T>>& sequence, unsigned int i)
+    void increase (unsigned int i1, unsigned int i2)
     {
-      for (std::pair<unsigned int, T>& p : sequence)
+      const unsigned int minI = glm::min (i1, i2);
+      const unsigned int maxI = glm::max (i1, i2);
+
+      assert (minI < this->elements.size ());
+
+      unsigned int* value = this->findInSequence (this->elements[minI], maxI);
+      if (value)
+      {
+        (*value)++;
+      }
+      else
+      {
+        if (this->elements[minI].empty ())
+        {
+          this->elements[minI].reserve (6);
+        }
+        this->elements[minI].push_back (std::make_pair (maxI, 1));
+      }
+    }
+
+    unsigned int* findInSequence (std::vector<std::pair<unsigned int, unsigned int>>& sequence,
+                                  unsigned int i)
+    {
+      for (std::pair<unsigned int, unsigned int>& p : sequence)
       {
         if (p.first == i)
         {
@@ -76,7 +90,7 @@ namespace
       return nullptr;
     }
 
-    std::vector<std::vector<std::pair<unsigned int, T>>> elements;
+    std::vector<std::vector<std::pair<unsigned int, unsigned int>>> elements;
   };
 
   Mesh& finalized (Mesh& mesh)
@@ -366,11 +380,10 @@ Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
   };
 
   Mesh                    m;
-  std::vector<glm::vec3>  positions;
   std::vector<Side>       sides;
   std::vector<BorderFlag> borderFlags;
   std::vector<ui_pair>    newIndices;
-  EdgeMap<unsigned int>   newBorderVertices;
+  EdgeMap                 newBorderVertices (mesh.numVertices ());
 
   auto updateBorderFlag = [&borderFlags](unsigned int i, Side side) {
     BorderFlag& current = borderFlags[i];
@@ -436,19 +449,16 @@ Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
 
   m.copyNonGeometry (mesh);
 
-  positions.reserve (mesh.numVertices ());
   sides.reserve (mesh.numVertices ());
   borderFlags.reserve (mesh.numVertices ());
 
-  newBorderVertices.resize (mesh.numVertices ());
   newIndices.resize (mesh.numVertices (),
                      std::make_pair (Util::invalidIndex (), Util::invalidIndex ()));
 
   // cache data
   for (unsigned int i = 0; i < mesh.numVertices (); i++)
   {
-    positions.push_back (mesh.vertex (i));
-    sides.push_back (side (positions.back ()));
+    sides.push_back (side (mesh.vertex (i)));
     borderFlags.push_back (BorderFlag::NoBorder);
   }
 
@@ -472,8 +482,6 @@ Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
   // mirror vertices
   for (unsigned int i = 0; i < mesh.numVertices (); i++)
   {
-    const glm::vec3& v = positions[i];
-
     switch (sides[i])
     {
       case Side::Negative:
@@ -490,15 +498,15 @@ Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
             break;
           case BorderFlag::ConnectsPositive:
           {
-            const unsigned int index1 = m.addVertex (v);
-            const unsigned int index2 = m.addVertex (v);
+            const unsigned int index1 = m.addVertex (mesh.vertex (i));
+            const unsigned int index2 = m.addVertex (mesh.vertex (i));
 
             newIndices[i] = std::make_pair (index1, index2);
             break;
           }
           case BorderFlag::ConnectsBoth:
           {
-            const unsigned int index = m.addVertex (v);
+            const unsigned int index = m.addVertex (mesh.vertex (i));
 
             newIndices[i] = std::make_pair (index, index);
             break;
@@ -508,8 +516,8 @@ Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
       }
       case Side::Positive:
       {
-        const unsigned int index1 = m.addVertex (v);
-        const unsigned int index2 = m.addVertex (plane.mirror (v));
+        const unsigned int index1 = m.addVertex (mesh.vertex (i));
+        const unsigned int index2 = m.addVertex (plane.mirror (mesh.vertex (i)));
 
         newIndices[i] = std::make_pair (index1, index2);
         break;
@@ -660,7 +668,11 @@ Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
       }
     }
   }
-  assert (MeshUtil::checkConsistency (m));
+
+  if (MeshUtil::checkConsistency (m) == false)
+  {
+    m.reset ();
+  }
   return m;
 }
 
@@ -671,28 +683,9 @@ bool MeshUtil::checkConsistency (const Mesh& mesh)
     DILAY_WARN ("empty mesh");
     return false;
   }
-  std::unordered_map<ui_pair, unsigned int> numEdgeAdjacentFaces;
+  EdgeMap                   numEdgeAdjacentFaces (mesh.numVertices ());
   std::vector<unsigned int> numVertexAdjacentFaces;
-
   numVertexAdjacentFaces.resize (mesh.numVertices (), 0);
-
-  auto addEdgeAdjFace = [&numEdgeAdjacentFaces](unsigned int i, unsigned int j) {
-    ui_pair key (glm::min (i, j), glm::max (i, j));
-
-    auto it = numEdgeAdjacentFaces.find (key);
-    if (it == numEdgeAdjacentFaces.end ())
-    {
-      numEdgeAdjacentFaces.emplace (key, 1);
-    }
-    else
-    {
-      it->second += 1;
-    }
-  };
-
-  auto addVertexAdjFace = [&numVertexAdjacentFaces](unsigned int i) {
-    numVertexAdjacentFaces[i] += 1;
-  };
 
   for (unsigned int i = 0; i < mesh.numIndices (); i += 3)
   {
@@ -700,13 +693,13 @@ bool MeshUtil::checkConsistency (const Mesh& mesh)
     const unsigned int i2 = mesh.index (i + 1);
     const unsigned int i3 = mesh.index (i + 2);
 
-    addVertexAdjFace (i1);
-    addVertexAdjFace (i2);
-    addVertexAdjFace (i3);
+    numVertexAdjacentFaces[i1]++;
+    numVertexAdjacentFaces[i2]++;
+    numVertexAdjacentFaces[i3]++;
 
-    addEdgeAdjFace (i1, i2);
-    addEdgeAdjFace (i2, i3);
-    addEdgeAdjFace (i1, i3);
+    numEdgeAdjacentFaces.increase (i1, i2);
+    numEdgeAdjacentFaces.increase (i1, i3);
+    numEdgeAdjacentFaces.increase (i2, i3);
   }
 
   for (unsigned int v = 0; v < numVertexAdjacentFaces.size (); v++)
@@ -717,15 +710,19 @@ bool MeshUtil::checkConsistency (const Mesh& mesh)
       return false;
     }
   }
-  for (auto it : numEdgeAdjacentFaces)
-  {
-    if (it.second != 2)
-    {
-      const unsigned int first = it.first.first;
-      const unsigned int second = it.first.second;
 
-      DILAY_WARN ("inconsistent edge (%u,%u) with %u adjacent faces", first, second, it.second);
-      return false;
+  for (unsigned int i = 0; i < numEdgeAdjacentFaces.elements.size (); i++)
+  {
+    for (const auto& pair : numEdgeAdjacentFaces.elements[i])
+    {
+      const unsigned int j = pair.first;
+      const unsigned int value = pair.second;
+
+      if (value != 2)
+      {
+        DILAY_WARN ("inconsistent edge (%u,%u) with %u adjacent faces", i, j, value);
+        return false;
+      }
     }
   }
   return true;
