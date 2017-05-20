@@ -21,9 +21,12 @@ struct ViewInfoPaneScene::Impl
   Impl (ViewInfoPaneScene* s, ViewGlWidget& g)
     : self (s)
     , glWidget (g)
-    , tree (nullptr)
+    , tree (new QTreeWidget (this->self))
   {
     this->self->setLayout (new QVBoxLayout);
+
+    this->tree->setHeaderLabels ({QObject::tr ("Object"), QObject::tr ("Value")});
+    this->tree->setRootIsDecorated (false);
   }
 
   void updateInfo ()
@@ -47,11 +50,7 @@ struct ViewInfoPaneScene::Impl
       }
     };
 
-    delete (this->tree);
-    this->tree = new QTreeWidget (this->self);
-    this->tree->setHeaderLabels ({QObject::tr ("Object"), QObject::tr ("Value")});
-    this->tree->setRootIsDecorated (false);
-
+    this->tree->clear ();
     this->glWidget.state ().scene ().forEachConstMesh (showMesh);
     this->glWidget.state ().scene ().forEachConstMesh (showSketch);
     this->tree->expandAll ();
