@@ -43,10 +43,7 @@ struct ViewTwoColumnGrid::Impl
     this->add (*new QLabel (labelLeft), *new QLabel (labelRight));
   }
 
-  void add (const QString& label, QWidget& w)
-  {
-    this->add (*new QLabel (label), w);
-  }
+  void add (const QString& label, QWidget& w) { this->add (*new QLabel (label), w); }
 
   void add (QWidget& w1, QWidget& w2)
   {
@@ -83,15 +80,9 @@ struct ViewTwoColumnGrid::Impl
     }
   }
 
-  void addLeft (const QString& label)
-  {
-    this->add (label, *new QWidget);
-  }
+  void addLeft (const QString& label) { this->add (label, *new QWidget); }
 
-  void addCenter (const QString& label)
-  {
-    this->add (*new QLabel (label));
-  }
+  void addCenter (const QString& label) { this->add (*new QLabel (label)); }
 
   void addStretcher ()
   {
@@ -99,10 +90,7 @@ struct ViewTwoColumnGrid::Impl
     this->layout.setRowStretch (this->numRows, 1);
   }
 
-  void addSeparator ()
-  {
-    this->add (ViewUtil::horizontalLine ());
-  }
+  void addSeparator () { this->add (ViewUtil::horizontalLine ()); }
 
   void reset ()
   {

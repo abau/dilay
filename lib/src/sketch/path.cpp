@@ -45,10 +45,7 @@ struct SketchPath::Impl
     }
   }
 
-  bool isEmpty () const
-  {
-    return this->spheres.empty ();
-  }
+  bool isEmpty () const { return this->spheres.empty (); }
 
   PrimAABox aabox () const
   {

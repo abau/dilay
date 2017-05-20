@@ -77,9 +77,7 @@
   }
 
 #define DELEGATE_DESTRUCTOR(from) \
-  from::~from ()                  \
-  {                               \
-  }
+  from::~from () {}
 
 #define DELEGATE_BIG3_WITHOUT_CONSTRUCTOR(from) \
   DELEGATE_DESTRUCTOR (from)                    \
@@ -184,15 +182,10 @@
   }
 
 #define DELEGATE_CONSTRUCTOR_BASE(from, params, fromArgs, base, baseArgs) \
-  from::from params : base baseArgs, impl (new Impl fromArgs)             \
-  {                                                                       \
-  }
+  from::from params : base baseArgs, impl (new Impl fromArgs) {}
 
 #define DELEGATE_IMPL(r, from, method, ifaceParams, implArgs) \
-  r from::method ifaceParams                                  \
-  {                                                           \
-    return this->impl->method implArgs;                       \
-  }
+  r from::method ifaceParams { return this->impl->method implArgs; }
 
 #define DELEGATE(r, from, method) DELEGATE_IMPL (r, from, method, (), ())
 
@@ -240,10 +233,7 @@
                   std::forward<t4> (a4), std::forward<t5> (a5)))
 
 #define DELEGATE_BASE_STATIC(r, from, method, ifaceParams, implArgs) \
-  r from::method ifaceParams                                         \
-  {                                                                  \
-    return Impl::method implArgs;                                    \
-  }
+  r from::method ifaceParams { return Impl::method implArgs; }
 
 #define DELEGATE_STATIC(r, from, method) DELEGATE_BASE_STATIC (r, from, method, (), ())
 
@@ -262,10 +252,7 @@
   DELEGATE_BASE_STATIC (r, from, method, (t1 a1, t2 a2, t3 a3, t4 a4, t5 a5), (a1, a2, a3, a4, a5))
 
 #define DELEGATE_IMPL_MEMBER(r, from, method, member, ifaceParams, implArgs) \
-  r from::method ifaceParams                                                 \
-  {                                                                          \
-    return this->impl->member.method implArgs;                               \
-  }
+  r from::method ifaceParams { return this->impl->member.method implArgs; }
 
 #define DELEGATE_MEMBER(r, from, method, member) \
   DELEGATE_IMPL_MEMBER (r, from, method, member, (), ())
@@ -541,33 +528,18 @@
 // getters/setters
 
 #define GETTER_CONST(r, from, member) \
-  r from::member () const             \
-  {                                   \
-    return this->impl->member;        \
-  }
+  r from::member () const { return this->impl->member; }
 
 #define GETTER(r, from, member) \
-  r from::member ()             \
-  {                             \
-    return this->impl->member;  \
-  }
+  r from::member () { return this->impl->member; }
 
 #define SETTER(t, from, member) \
-  void from::member (t a)       \
-  {                             \
-    this->impl->member = a;     \
-  }
+  void from::member (t a) { this->impl->member = a; }
 
 #define _MEMBER_GETTER_SETTER(type, name, pass_type) \
 public:                                              \
-  pass_type name () const                            \
-  {                                                  \
-    return this->_##name;                            \
-  }                                                  \
-  void name (pass_type v)                            \
-  {                                                  \
-    this->_##name = v;                               \
-  }                                                  \
+  pass_type name () const { return this->_##name; }  \
+  void name (pass_type v) { this->_##name = v; }     \
                                                      \
 private:                                             \
   type _##name;

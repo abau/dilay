@@ -52,10 +52,7 @@ private:
   public:                                                   \
     DECLARE_BIG2 (name, State&)                             \
                                                             \
-    static const char* classKey ()                          \
-    {                                                       \
-      return theKey;                                        \
-    }                                                       \
+    static const char* classKey () { return theKey; }       \
                                                             \
   private:                                                  \
     IMPLEMENTATION                                          \

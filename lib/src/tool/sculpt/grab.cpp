@@ -34,9 +34,7 @@ struct ToolSculptGrab::Impl
     params.discardBack (this->self->cache ().get<bool> ("discard-back", false));
   }
 
-  void runSetupCursor (ViewCursor&)
-  {
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {
@@ -61,10 +59,7 @@ struct ToolSculptGrab::Impl
     properties.add (discardEdit);
   }
 
-  void runSetupToolTip (ViewToolTip& toolTip)
-  {
-    this->self->addDefaultToolTip (toolTip, false);
-  }
+  void runSetupToolTip (ViewToolTip& toolTip) { this->self->addDefaultToolTip (toolTip, false); }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e)
   {

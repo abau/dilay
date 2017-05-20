@@ -150,10 +150,7 @@ struct ViewGlWidget::Impl
     }
   }
 
-  void resizeGL (int w, int h)
-  {
-    this->state ().camera ().updateResolution (glm::uvec2 (w, h));
-  }
+  void resizeGL (int w, int h) { this->state ().camera ().updateResolution (glm::uvec2 (w, h)); }
 
   void pointingEvent (const ViewPointingEvent& e)
   {

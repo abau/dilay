@@ -16,40 +16,19 @@ class PrimConeSphere
 public:
   PrimConeSphere (const PrimSphere&, const PrimSphere&);
 
-  const PrimSphere& sphere1 () const
-  {
-    return this->_sphere1;
-  }
+  const PrimSphere& sphere1 () const { return this->_sphere1; }
 
-  const PrimSphere& sphere2 () const
-  {
-    return this->_sphere2;
-  }
+  const PrimSphere& sphere2 () const { return this->_sphere2; }
 
-  float length () const
-  {
-    return this->_length;
-  }
+  float length () const { return this->_length; }
 
-  const glm::vec3& direction () const
-  {
-    return this->_direction;
-  }
+  const glm::vec3& direction () const { return this->_direction; }
 
-  float alpha () const
-  {
-    return this->_alpha;
-  }
+  float alpha () const { return this->_alpha; }
 
-  float sinAlpha () const
-  {
-    return this->_sinAlpha;
-  }
+  float sinAlpha () const { return this->_sinAlpha; }
 
-  float cosAlpha () const
-  {
-    return this->_cosAlpha;
-  }
+  float cosAlpha () const { return this->_cosAlpha; }
 
   float    delta () const;
   bool     sameRadii () const;

@@ -201,20 +201,14 @@ unsigned int Util::solveCubicEq (float a, float b, float c, float& s1, float& s2
   }
 }
 
-bool Util::isNaN (const glm::vec3& v)
-{
-  return glm::any (glm::isnan (v));
-}
+bool Util::isNaN (const glm::vec3& v) { return glm::any (glm::isnan (v)); }
 
 bool Util::isNotNull (const glm::vec3& v)
 {
   return glm::any (glm::greaterThan (v, glm::vec3 (Util::epsilon ())));
 }
 
-bool Util::almostEqual (float a, float b)
-{
-  return glm::epsilonEqual (a, b, Util::epsilon ());
-}
+bool Util::almostEqual (float a, float b) { return glm::epsilonEqual (a, b, Util::epsilon ()); }
 
 void Util::warn (const char* file, unsigned int line, const char* format, ...)
 {
@@ -306,15 +300,9 @@ bool Util::hasSuffix (const std::string& string, const std::string& suffix)
   }
 }
 
-void Util::setCLocale ()
-{
-  std::locale::global (std::locale::classic ());
-}
+void Util::setCLocale () { std::locale::global (std::locale::classic ()); }
 
-void Util::setSystemLocale ()
-{
-  std::locale::global (std::locale (""));
-}
+void Util::setSystemLocale () { std::locale::global (std::locale ("")); }
 
 namespace Util
 {

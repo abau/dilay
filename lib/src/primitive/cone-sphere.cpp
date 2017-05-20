@@ -19,20 +19,11 @@ PrimConeSphere::PrimConeSphere (const PrimSphere& s1, const PrimSphere& s2)
 {
 }
 
-float PrimConeSphere::delta () const
-{
-  return this->_sphere1.radius () - this->_sphere2.radius ();
-}
+float PrimConeSphere::delta () const { return this->_sphere1.radius () - this->_sphere2.radius (); }
 
-bool PrimConeSphere::sameRadii () const
-{
-  return Util::almostEqual (this->delta (), 0.0f);
-}
+bool PrimConeSphere::sameRadii () const { return Util::almostEqual (this->delta (), 0.0f); }
 
-bool PrimConeSphere::hasCone () const
-{
-  return this->_length > this->delta ();
-}
+bool PrimConeSphere::hasCone () const { return this->_length > this->delta (); }
 
 float PrimConeSphere::coneSideLength () const
 {

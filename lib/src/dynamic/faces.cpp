@@ -4,10 +4,7 @@
  */
 #include "dynamic/faces.hpp"
 
-void DynamicFaces::insert (unsigned int i)
-{
-  this->_uncommitted.insert (i);
-}
+void DynamicFaces::insert (unsigned int i) { this->_uncommitted.insert (i); }
 
 void DynamicFaces::insert (const DynamicFaces::Container& v)
 {
@@ -43,10 +40,7 @@ bool DynamicFaces::isEmpty () const
   return this->_indices.empty () && this->_uncommitted.empty ();
 }
 
-bool DynamicFaces::hasUncomitted () const
-{
-  return this->_uncommitted.empty () == false;
-}
+bool DynamicFaces::hasUncomitted () const { return this->_uncommitted.empty () == false; }
 
 void DynamicFaces::filter (const std::function<bool(unsigned int)>& f)
 {

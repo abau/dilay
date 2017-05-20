@@ -16,25 +16,11 @@ class PrimSphere
 public:
   PrimSphere (const glm::vec3&, float);
 
-  const glm::vec3& center () const
-  {
-    return this->_center;
-  }
+  const glm::vec3& center () const { return this->_center; }
+  float            radius () const { return this->_radius; }
 
-  float radius () const
-  {
-    return this->_radius;
-  }
-
-  void center (const glm::vec3& c)
-  {
-    this->_center = c;
-  }
-
-  void radius (float r)
-  {
-    this->_radius = r;
-  }
+  void center (const glm::vec3& c) { this->_center = c; }
+  void radius (float r) { this->_radius = r; }
 
   bool contains (const glm::vec3&) const;
   bool contains (const PrimAABox&) const;

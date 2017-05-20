@@ -97,10 +97,7 @@ struct ToolUtilMovement::Impl
     return this->constraint.get<MovementFixedConstraint> ();
   }
 
-  void fixedConstraint (MovementFixedConstraint c)
-  {
-    this->constraint.set (c);
-  }
+  void fixedConstraint (MovementFixedConstraint c) { this->constraint.set (c); }
 
   void addFixedProperties (ViewTwoColumnGrid& properties, const std::function<void()>& onClick)
   {
@@ -124,20 +121,11 @@ struct ToolUtilMovement::Impl
     this->constraint.set (c);
   }
 
-  const glm::vec3& freePlaneConstraint () const
-  {
-    return this->constraint.get<glm::vec3> ();
-  }
+  const glm::vec3& freePlaneConstraint () const { return this->constraint.get<glm::vec3> (); }
 
-  void freePlaneConstraint (const glm::vec3& c)
-  {
-    this->constraint.set (c);
-  }
+  void freePlaneConstraint (const glm::vec3& c) { this->constraint.set (c); }
 
-  glm::vec3 delta () const
-  {
-    return this->position - this->previousPosition;
-  }
+  glm::vec3 delta () const { return this->position - this->previousPosition; }
 
   bool intersects (const glm::vec3& normal, const glm::ivec2& p, glm::vec3& i) const
   {

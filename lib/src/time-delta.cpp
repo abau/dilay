@@ -59,10 +59,7 @@ namespace TimeDelta
     std::atexit (TimeDelta::printResults);
   }
 
-  void resetTimer ()
-  {
-    startTime = std::clock ();
-  }
+  void resetTimer () { startTime = std::clock (); }
   void addBreakpoint (const char* name)
   {
     const std::clock_t diff = std::clock () - startTime;

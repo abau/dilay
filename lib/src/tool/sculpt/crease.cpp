@@ -27,9 +27,7 @@ struct ToolSculptCrease::Impl
     params.invert (this->self->cache ().get<bool> ("invert", false));
   }
 
-  void runSetupCursor (ViewCursor&)
-  {
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {

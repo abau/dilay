@@ -18,37 +18,19 @@ class SculptBrush;
 class SBParameters
 {
 public:
-  virtual ~SBParameters ()
-  {
-  }
+  virtual ~SBParameters () {}
 
-  virtual float intensity () const
-  {
-    return 0.0f;
-  }
+  virtual float intensity () const { return 0.0f; }
 
-  virtual void intensity (float)
-  {
-  }
+  virtual void intensity (float) {}
 
-  virtual bool useLastPos () const
-  {
-    return false;
-  }
+  virtual bool useLastPos () const { return false; }
 
-  virtual bool discardBack () const
-  {
-    return true;
-  }
+  virtual bool discardBack () const { return true; }
 
-  virtual bool reduce () const
-  {
-    return false;
-  }
+  virtual bool reduce () const { return false; }
 
-  virtual void mirror (const PrimPlane&)
-  {
-  }
+  virtual void mirror (const PrimPlane&) {}
 
   virtual void sculpt (const SculptBrush&, const DynamicFaces&) const = 0;
 };
@@ -72,15 +54,9 @@ public:
   {
   }
 
-  void toggleInvert ()
-  {
-    this->_invert = !this->_invert;
-  }
+  void toggleInvert () { this->_invert = !this->_invert; }
 
-  glm::vec3 invert (const glm::vec3& v) const
-  {
-    return this->_invert ? -v : v;
-  }
+  glm::vec3 invert (const glm::vec3& v) const { return this->_invert ? -v : v; }
 
   MEMBER_GETTER_SETTER (bool, invert);
 };
@@ -109,10 +85,7 @@ public:
 
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
-  bool useLastPos () const override
-  {
-    return true;
-  }
+  bool useLastPos () const override { return true; }
 
   MEMBER_GETTER_SETTER (bool, discardBack);
 };
@@ -133,10 +106,7 @@ public:
 class SBReduceParameters : public SBIntensityParameter
 {
 public:
-  bool reduce () const override
-  {
-    return true;
-  }
+  bool reduce () const override { return true; }
 
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 };
@@ -210,15 +180,9 @@ public:
     return this->parameters<T> ();
   }
 
-  template <typename T> T& parameters ()
-  {
-    return dynamic_cast<T&> (*this->parametersPointer ());
-  }
+  template <typename T> T& parameters () { return dynamic_cast<T&> (*this->parametersPointer ()); }
 
-  const SBParameters& parameters () const
-  {
-    return *this->parametersPointer ();
-  }
+  const SBParameters& parameters () const { return *this->parametersPointer (); }
 
 private:
   SBParameters* parametersPointer () const;

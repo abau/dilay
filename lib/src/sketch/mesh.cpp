@@ -110,20 +110,11 @@ struct SketchMesh::Impl
     this->boneMesh.bufferData ();
   }
 
-  bool isEmpty () const
-  {
-    return this->tree.hasRoot () == false && this->paths.empty ();
-  }
+  bool isEmpty () const { return this->tree.hasRoot () == false && this->paths.empty (); }
 
-  void fromTree (const SketchTree& newTree)
-  {
-    this->tree = newTree;
-  }
+  void fromTree (const SketchTree& newTree) { this->tree = newTree; }
 
-  void reset ()
-  {
-    this->tree.reset ();
-  }
+  void reset () { this->tree.reset (); }
 
   bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection)
   {
@@ -386,10 +377,7 @@ struct SketchMesh::Impl
     }
   }
 
-  void renderWireframe (bool v)
-  {
-    this->renderConfig.renderWireframe = v;
-  }
+  void renderWireframe (bool v) { this->renderConfig.renderWireframe = v; }
 
   PrimPlane mirrorPlane (Dimension dim) const
   {

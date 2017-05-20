@@ -20,10 +20,7 @@ namespace
   class EdgeMap
   {
   public:
-    EdgeMap (unsigned int numVertices)
-    {
-      this->elements.resize (numVertices - 1);
-    }
+    EdgeMap (unsigned int numVertices) { this->elements.resize (numVertices - 1); }
 
     unsigned int* find (unsigned int i1, unsigned int i2)
     {

@@ -50,10 +50,7 @@ struct ToolRebalanceSketch::Impl
     return ToolResponse::None;
   }
 
-  void runClose ()
-  {
-    this->self->state ().scene ().renderWireframe (this->renderWireframe);
-  }
+  void runClose () { this->self->state ().scene ().renderWireframe (this->renderWireframe); }
 };
 
 DELEGATE_TOOL (ToolRebalanceSketch)

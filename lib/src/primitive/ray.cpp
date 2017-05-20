@@ -32,10 +32,7 @@ float PrimRay::distance (const glm::vec3& p) const
                                     : glm::distance (p, this->_origin);
 }
 
-bool PrimRay::onRay (const glm::vec3& p) const
-{
-  return this->distance (p) < Util::epsilon ();
-}
+bool PrimRay::onRay (const glm::vec3& p) const { return this->distance (p) < Util::epsilon (); }
 
 std::ostream& operator<< (std::ostream& os, const PrimRay& ray)
 {

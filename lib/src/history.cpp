@@ -93,15 +93,9 @@ struct History::Impl
   Timeline     past;
   Timeline     future;
 
-  Impl (const Config& config)
-  {
-    this->runFromConfig (config);
-  }
+  Impl (const Config& config) { this->runFromConfig (config); }
 
-  void snapshotAll (const Scene& scene)
-  {
-    this->snapshot (scene, SnapshotConfig (true, true));
-  }
+  void snapshotAll (const Scene& scene) { this->snapshot (scene, SnapshotConfig (true, true)); }
 
   void snapshotDynamicMeshes (const Scene& scene)
   {

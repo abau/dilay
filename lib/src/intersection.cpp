@@ -26,10 +26,7 @@ struct Intersection::Impl
   {
   }
 
-  void reset ()
-  {
-    this->isIntersection = false;
-  }
+  void reset () { this->isIntersection = false; }
 
   bool update (float d, const glm::vec3& p, const glm::vec3& n)
   {

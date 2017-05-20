@@ -487,10 +487,7 @@ struct ToolSculpt::Impl
     }
   }
 
-  void registerSecondarySlider (ViewDoubleSlider& slider)
-  {
-    this->secondarySlider = &slider;
-  }
+  void registerSecondarySlider (ViewDoubleSlider& slider) { this->secondarySlider = &slider; }
 
   void setRelativeRadius (float distance)
   {

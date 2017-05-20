@@ -40,25 +40,13 @@ public:
     }
   }
 
-  template <unsigned short N> void toggle ()
-  {
-    this->set<N> (!this->get<N> ());
-  }
+  template <unsigned short N> void toggle () { this->set<N> (!this->get<N> ()); }
 
-  template <unsigned short N> void reset ()
-  {
-    this->set<N> (false);
-  }
+  template <unsigned short N> void reset () { this->set<N> (false); }
 
-  void reset ()
-  {
-    this->_data = 0;
-  }
+  void reset () { this->_data = 0; }
 
-  bool none () const
-  {
-    return this->_data == 0;
-  }
+  bool none () const { return this->_data == 0; }
 
   template <unsigned short N> bool all () const
   {
@@ -68,10 +56,7 @@ public:
     return (this->_data & allBits) == allBits;
   }
 
-  T value () const
-  {
-    return this->_data;
-  }
+  T value () const { return this->_data; }
 
 private:
   T _data;

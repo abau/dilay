@@ -50,20 +50,11 @@ namespace
              : QStandardPaths::standardLocations (QStandardPaths::HomeLocation).front ();
   }
 
-  QString filterAllFiles ()
-  {
-    return QObject::tr ("All files (*.*)");
-  }
+  QString filterAllFiles () { return QObject::tr ("All files (*.*)"); }
 
-  QString filterDlyFiles ()
-  {
-    return QObject::tr ("Dilay files (*.dly)");
-  }
+  QString filterDlyFiles () { return QObject::tr ("Dilay files (*.dly)"); }
 
-  QString filterObjFiles ()
-  {
-    return QObject::tr ("Wavefront files (*.obj)");
-  }
+  QString filterObjFiles () { return QObject::tr ("Wavefront files (*.obj)"); }
 
   QString fileDialogFilters ()
   {

@@ -98,10 +98,7 @@ namespace
       return index;
     }
 
-    bool hasChildren () const
-    {
-      return bool(this->children.at (0));
-    }
+    bool hasChildren () const { return bool(this->children.at (0)); }
 
     void makeChildren ()
     {
@@ -159,10 +156,7 @@ namespace
       }
     }
 
-    bool isEmpty () const
-    {
-      return this->indices.empty () && this->hasChildren () == false;
-    }
+    bool isEmpty () const { return this->indices.empty () && this->hasChildren () == false; }
 
     void deleteElement (unsigned int index)
     {
@@ -253,10 +247,7 @@ namespace
       }
     }
 
-    unsigned int numElements () const
-    {
-      return this->indices.size ();
-    }
+    unsigned int numElements () const { return this->indices.size (); }
 
     void updateIndices (const std::vector<unsigned int>& indexMap)
     {
@@ -391,10 +382,7 @@ struct DynamicOctree::Impl
 #endif
   }
 
-  bool hasRoot () const
-  {
-    return bool(this->root);
-  }
+  bool hasRoot () const { return bool(this->root); }
 
   void setupRoot (const glm::vec3& position, float width)
   {
@@ -602,10 +590,7 @@ struct DynamicOctree::Impl
     }
   }
 #else
-  void render (Camera&) const
-  {
-    DILAY_IMPOSSIBLE
-  }
+  void render (Camera&) const { DILAY_IMPOSSIBLE }
 #endif
 
   void intersects (const PrimRay& ray, const DynamicOctree::IntersectionCallback& f) const

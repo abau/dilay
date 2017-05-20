@@ -27,10 +27,7 @@ namespace
     unsigned int   dataUpperBound;
     unsigned int   bufferSize;
 
-    BufferedData ()
-    {
-      this->reset ();
-    }
+    BufferedData () { this->reset (); }
 
     void reset ()
     {
@@ -46,15 +43,9 @@ namespace
       this->dataUpperBound = 0;
     }
 
-    unsigned int numElements () const
-    {
-      return this->data.size ();
-    }
+    unsigned int numElements () const { return this->data.size (); }
 
-    void reserve (unsigned int size)
-    {
-      this->data.reserve (size);
-    }
+    void reserve (unsigned int size) { this->data.reserve (size); }
 
     void shrink (unsigned int n)
     {
@@ -150,30 +141,15 @@ struct Mesh::Impl
     this->renderMode.smoothShading (true);
   }
 
-  unsigned int numVertices () const
-  {
-    return this->vertices.numElements ();
-  }
+  unsigned int numVertices () const { return this->vertices.numElements (); }
 
-  unsigned int numIndices () const
-  {
-    return this->indices.numElements ();
-  }
+  unsigned int numIndices () const { return this->indices.numElements (); }
 
-  const glm::vec3& vertex (unsigned int i) const
-  {
-    return this->vertices.get (i);
-  }
+  const glm::vec3& vertex (unsigned int i) const { return this->vertices.get (i); }
 
-  unsigned int index (unsigned int i) const
-  {
-    return this->indices.get (i);
-  }
+  unsigned int index (unsigned int i) const { return this->indices.get (i); }
 
-  const glm::vec3& normal (unsigned int i) const
-  {
-    return this->normals.get (i);
-  }
+  const glm::vec3& normal (unsigned int i) const { return this->normals.get (i); }
 
   void copyNonGeometry (const Mesh& source)
   {
@@ -185,25 +161,13 @@ struct Mesh::Impl
     this->renderMode = source.impl->renderMode;
   }
 
-  unsigned int addIndex (unsigned int i)
-  {
-    return this->indices.add (i);
-  }
+  unsigned int addIndex (unsigned int i) { return this->indices.add (i); }
 
-  void reserveIndices (unsigned int n)
-  {
-    this->indices.reserve (n);
-  }
+  void reserveIndices (unsigned int n) { this->indices.reserve (n); }
 
-  void shrinkIndices (unsigned int n)
-  {
-    this->indices.shrink (n);
-  }
+  void shrinkIndices (unsigned int n) { this->indices.shrink (n); }
 
-  unsigned int addVertex (const glm::vec3& v)
-  {
-    return this->addVertex (v, glm::vec3 (0.0f));
-  }
+  unsigned int addVertex (const glm::vec3& v) { return this->addVertex (v, glm::vec3 (0.0f)); }
 
   unsigned int addVertex (const glm::vec3& v, const glm::vec3& n)
   {
@@ -227,10 +191,7 @@ struct Mesh::Impl
     this->normals.shrink (n);
   }
 
-  void index (unsigned int i, unsigned int index)
-  {
-    this->indices.set (i, index);
-  }
+  void index (unsigned int i, unsigned int index) { this->indices.set (i, index); }
 
   void vertex (unsigned int i, const glm::vec3& v)
   {
@@ -348,15 +309,9 @@ struct Mesh::Impl
     this->normals.reset ();
   }
 
-  void scale (const glm::vec3& v)
-  {
-    this->scalingMatrix = glm::scale (this->scalingMatrix, v);
-  }
+  void scale (const glm::vec3& v) { this->scalingMatrix = glm::scale (this->scalingMatrix, v); }
 
-  void scaling (const glm::vec3& v)
-  {
-    this->scalingMatrix = glm::scale (glm::mat4x4 (1.0f), v);
-  }
+  void scaling (const glm::vec3& v) { this->scalingMatrix = glm::scale (glm::mat4x4 (1.0f), v); }
 
   glm::vec3 scaling () const
   {

@@ -40,10 +40,7 @@ struct Camera::Impl
     this->runFromConfig (config);
   }
 
-  glm::vec3 position () const
-  {
-    return this->gazePoint + this->toEyePoint;
-  }
+  glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
 
   glm::mat4x4 world () const
   {
@@ -124,10 +121,7 @@ struct Camera::Impl
     this->updateView ();
   }
 
-  glm::vec4 viewport () const
-  {
-    return glm::vec4 (0, 0, this->resolution.x, this->resolution.y);
-  }
+  glm::vec4 viewport () const { return glm::vec4 (0, 0, this->resolution.x, this->resolution.y); }
 
   glm::vec2 fromWorld (const glm::vec3& p, const glm::mat4x4& model, bool onlyRotation) const
   {

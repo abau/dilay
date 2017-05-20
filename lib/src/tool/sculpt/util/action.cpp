@@ -78,10 +78,7 @@ namespace
       this->edgeMap.emplace (makeUiKey (i1, i2), i3);
     }
 
-    void reset ()
-    {
-      this->edgeMap.clear ();
-    }
+    void reset () { this->edgeMap.clear (); }
   };
 
   struct NewFaces
@@ -102,10 +99,7 @@ namespace
       this->vertexIndices.push_back (i3);
     }
 
-    void deleteFace (unsigned int i)
-    {
-      this->facesToDelete.insert (i);
-    }
+    void deleteFace (unsigned int i) { this->facesToDelete.insert (i); }
 
     bool applyToMesh (DynamicMesh& mesh, DynamicFaces& faces) const
     {

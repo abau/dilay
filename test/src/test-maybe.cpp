@@ -60,10 +60,7 @@ namespace
     {
     }
 
-    int data () const
-    {
-      return this->_data;
-    }
+    int data () const { return this->_data; }
 
   private:
     int _data;

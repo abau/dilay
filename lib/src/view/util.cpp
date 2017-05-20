@@ -100,10 +100,7 @@ QFrame& ViewUtil::horizontalLine ()
   return frame;
 }
 
-QWidget& ViewUtil::emptyWidget ()
-{
-  return *new QWidget;
-}
+QWidget& ViewUtil::emptyWidget () { return *new QWidget; }
 
 QLineEdit& ViewUtil::lineEdit (float value, unsigned short numDecimals)
 {
@@ -149,20 +146,11 @@ glm::uvec2 ViewUtil::toUVec2 (const QPoint& p)
   return glm::uvec2 (p.x (), p.y ());
 }
 
-glm::ivec2 ViewUtil::toIVec2 (const QPoint& p)
-{
-  return glm::ivec2 (p.x (), p.y ());
-}
+glm::ivec2 ViewUtil::toIVec2 (const QPoint& p) { return glm::ivec2 (p.x (), p.y ()); }
 
-QPoint ViewUtil::toQPoint (const glm::uvec2& p)
-{
-  return QPoint (int(p.x), int(p.y));
-}
+QPoint ViewUtil::toQPoint (const glm::uvec2& p) { return QPoint (int(p.x), int(p.y)); }
 
-QPoint ViewUtil::toQPoint (const glm::ivec2& p)
-{
-  return QPoint (p.x, p.y);
-}
+QPoint ViewUtil::toQPoint (const glm::ivec2& p) { return QPoint (p.x, p.y); }
 
 void ViewUtil::connect (const QSpinBox& s, const std::function<void(int)>& f)
 {

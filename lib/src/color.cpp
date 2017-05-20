@@ -51,70 +51,31 @@ Color::Color (const Color& c, float f)
   this->scale (f);
 }
 
-Color Color::Black ()
-{
-  return Color (0.0f, 0.0f, 0.0f);
-}
+Color Color::Black () { return Color (0.0f, 0.0f, 0.0f); }
 
-Color Color::White ()
-{
-  return Color (1.0f, 1.0f, 1.0f);
-}
+Color Color::White () { return Color (1.0f, 1.0f, 1.0f); }
 
-Color Color::Red ()
-{
-  return Color (1.0f, 0.0f, 0.0f);
-}
+Color Color::Red () { return Color (1.0f, 0.0f, 0.0f); }
 
-Color Color::Green ()
-{
-  return Color (0.0f, 1.0f, 0.0f);
-}
+Color Color::Green () { return Color (0.0f, 1.0f, 0.0f); }
 
-Color Color::Blue ()
-{
-  return Color (0.0f, 0.0f, 1.0f);
-}
+Color Color::Blue () { return Color (0.0f, 0.0f, 1.0f); }
 
-float Color::r () const
-{
-  return this->_r;
-}
+float Color::r () const { return this->_r; }
 
-float Color::g () const
-{
-  return this->_g;
-}
+float Color::g () const { return this->_g; }
 
-float Color::b () const
-{
-  return this->_b;
-}
+float Color::b () const { return this->_b; }
 
-float Color::opacity () const
-{
-  return this->_opacity;
-}
+float Color::opacity () const { return this->_opacity; }
 
-void Color::r (float v)
-{
-  this->_r = v;
-}
+void Color::r (float v) { this->_r = v; }
 
-void Color::g (float v)
-{
-  this->_g = v;
-}
+void Color::g (float v) { this->_g = v; }
 
-void Color::b (float v)
-{
-  this->_b = v;
-}
+void Color::b (float v) { this->_b = v; }
 
-void Color::opacity (float v)
-{
-  this->_opacity = v;
-}
+void Color::opacity (float v) { this->_opacity = v; }
 
 void Color::scale (float f)
 {
@@ -123,15 +84,9 @@ void Color::scale (float f)
   this->_b = f * this->_b;
 }
 
-glm::vec3 Color::vec3 () const
-{
-  return glm::vec3 (this->_r, this->_g, this->_b);
-}
+glm::vec3 Color::vec3 () const { return glm::vec3 (this->_r, this->_g, this->_b); }
 
-glm::vec4 Color::vec4 () const
-{
-  return glm::vec4 (this->_r, this->_g, this->_b, this->_opacity);
-}
+glm::vec4 Color::vec4 () const { return glm::vec4 (this->_r, this->_g, this->_b, this->_opacity); }
 
 QColor Color::qColor () const
 {

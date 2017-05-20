@@ -101,15 +101,9 @@ struct Scene::Impl
     DILAY_IMPOSSIBLE
   }
 
-  void deleteDynamicMeshes ()
-  {
-    this->dynamicMeshes.clear ();
-  }
+  void deleteDynamicMeshes () { this->dynamicMeshes.clear (); }
 
-  void deleteSketchMeshes ()
-  {
-    this->sketchMeshes.clear ();
-  }
+  void deleteSketchMeshes () { this->sketchMeshes.clear (); }
 
   void deleteEmptyMeshes ()
   {
@@ -267,10 +261,7 @@ struct Scene::Impl
       [&mode](SketchMesh& mesh) { mesh.renderWireframe (mode.renderWireframe ()); });
   }
 
-  bool renderWireframe () const
-  {
-    return this->commonRenderMode.renderWireframe ();
-  }
+  bool renderWireframe () const { return this->commonRenderMode.renderWireframe (); }
 
   void renderWireframe (bool value)
   {
@@ -278,10 +269,7 @@ struct Scene::Impl
     this->setCommonRenderMode (this->commonRenderMode);
   }
 
-  void toggleWireframe ()
-  {
-    this->renderWireframe (!this->commonRenderMode.renderWireframe ());
-  }
+  void toggleWireframe () { this->renderWireframe (!this->commonRenderMode.renderWireframe ()); }
 
   void toggleShading ()
   {
@@ -296,20 +284,11 @@ struct Scene::Impl
     this->setCommonRenderMode (this->commonRenderMode);
   }
 
-  bool isEmpty () const
-  {
-    return this->numDynamicMeshes () == 0 && this->numSketchMeshes () == 0;
-  }
+  bool isEmpty () const { return this->numDynamicMeshes () == 0 && this->numSketchMeshes () == 0; }
 
-  unsigned int numDynamicMeshes () const
-  {
-    return this->dynamicMeshes.size ();
-  }
+  unsigned int numDynamicMeshes () const { return this->dynamicMeshes.size (); }
 
-  unsigned int numSketchMeshes () const
-  {
-    return this->sketchMeshes.size ();
-  }
+  unsigned int numSketchMeshes () const { return this->sketchMeshes.size (); }
 
   unsigned int numFaces () const
   {
@@ -318,10 +297,7 @@ struct Scene::Impl
     return n;
   }
 
-  bool hasFileName () const
-  {
-    return !this->fileName.empty ();
-  }
+  bool hasFileName () const { return !this->fileName.empty (); }
 
   bool toDlyFile (bool isObjFile)
   {

@@ -20,10 +20,7 @@ OpenGLBufferId::OpenGLBufferId (OpenGLBufferId&& other)
 {
 }
 
-const OpenGLBufferId& OpenGLBufferId::operator= (const OpenGLBufferId&)
-{
-  return *this;
-}
+const OpenGLBufferId& OpenGLBufferId::operator= (const OpenGLBufferId&) { return *this; }
 
 const OpenGLBufferId& OpenGLBufferId::operator= (OpenGLBufferId&& other)
 {
@@ -31,20 +28,11 @@ const OpenGLBufferId& OpenGLBufferId::operator= (OpenGLBufferId&& other)
   return *this;
 }
 
-OpenGLBufferId::~OpenGLBufferId ()
-{
-  this->reset ();
-}
+OpenGLBufferId::~OpenGLBufferId () { this->reset (); }
 
-unsigned int OpenGLBufferId::id () const
-{
-  return this->_id;
-}
+unsigned int OpenGLBufferId::id () const { return this->_id; }
 
-bool OpenGLBufferId::isValid () const
-{
-  return this->_id > 0;
-}
+bool OpenGLBufferId::isValid () const { return this->_id > 0; }
 
 void OpenGLBufferId::allocate ()
 {

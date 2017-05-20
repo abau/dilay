@@ -16,25 +16,13 @@ SBFlattenParameters::SBFlattenParameters ()
 {
 }
 
-bool SBFlattenParameters::hasLockedPlane () const
-{
-  return bool(this->_lockedPlane);
-}
+bool SBFlattenParameters::hasLockedPlane () const { return bool(this->_lockedPlane); }
 
-const PrimPlane& SBFlattenParameters::lockedPlane () const
-{
-  return *this->_lockedPlane;
-}
+const PrimPlane& SBFlattenParameters::lockedPlane () const { return *this->_lockedPlane; }
 
-void SBFlattenParameters::lockedPlane (const PrimPlane& p)
-{
-  this->_lockedPlane = p;
-}
+void SBFlattenParameters::lockedPlane (const PrimPlane& p) { this->_lockedPlane = p; }
 
-void SBFlattenParameters::resetLockedPlane ()
-{
-  this->_lockedPlane.reset ();
-}
+void SBFlattenParameters::resetLockedPlane () { this->_lockedPlane.reset (); }
 
 void SBFlattenParameters::mirror (const PrimPlane& m)
 {
@@ -108,9 +96,7 @@ void SBSmoothParameters::sculpt (const SculptBrush& brush, const DynamicFaces& f
   }
 }
 
-void SBReduceParameters::sculpt (const SculptBrush&, const DynamicFaces&) const
-{
-}
+void SBReduceParameters::sculpt (const SculptBrush&, const DynamicFaces&) const {}
 
 void SBFlattenParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
 {
@@ -218,10 +204,7 @@ struct SculptBrush::Impl
     return *this->_mesh;
   }
 
-  void mesh (DynamicMesh& m)
-  {
-    this->_mesh = &m;
-  }
+  void mesh (DynamicMesh& m) { this->_mesh = &m; }
 
   float subdivThreshold () const
   {
@@ -264,10 +247,7 @@ struct SculptBrush::Impl
     return PrimSphere (pos, this->radius);
   }
 
-  float stepWidth () const
-  {
-    return this->stepWidthFactor * glm::log (this->self->radius () + 1);
-  }
+  float stepWidth () const { return this->stepWidthFactor * glm::log (this->self->radius () + 1); }
 
   void setPointOfAction (DynamicMesh& mesh, const glm::vec3& p, const glm::vec3& n)
   {
@@ -322,15 +302,9 @@ struct SculptBrush::Impl
     this->_parameters->sculpt (*this->self, faces);
   }
 
-  SBParameters* parametersPointer () const
-  {
-    return this->_parameters.get ();
-  }
+  SBParameters* parametersPointer () const { return this->_parameters.get (); }
 
-  void parametersPointer (SBParameters* p)
-  {
-    this->_parameters.reset (p);
-  }
+  void parametersPointer (SBParameters* p) { this->_parameters.reset (p); }
 };
 
 DELEGATE_BIG3_SELF (SculptBrush)

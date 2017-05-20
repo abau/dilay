@@ -37,25 +37,13 @@ public:
     return TreeNode (T (std::forward<Args> (args)...));
   }
 
-  T& data ()
-  {
-    return this->_data;
-  }
+  T& data () { return this->_data; }
 
-  const T& data () const
-  {
-    return this->_data;
-  }
+  const T& data () const { return this->_data; }
 
-  void data (const T& d)
-  {
-    this->_data = d;
-  }
+  void data (const T& d) { this->_data = d; }
 
-  TreeNode* parent () const
-  {
-    return this->_parent;
-  }
+  TreeNode* parent () const { return this->_parent; }
 
   template <typename... Args> TreeNode& emplaceChild (Args&&... args)
   {
@@ -128,10 +116,7 @@ public:
     return this->_children.back ();
   }
 
-  unsigned int numChildren () const
-  {
-    return this->_children.size ();
-  }
+  unsigned int numChildren () const { return this->_children.size (); }
 
   unsigned int numNodes () const
   {
@@ -164,10 +149,7 @@ private:
 template <typename T> class Tree
 {
 public:
-  bool hasRoot () const
-  {
-    return bool(this->_root);
-  }
+  bool hasRoot () const { return bool(this->_root); }
 
   TreeNode<T>& root ()
   {
@@ -187,10 +169,7 @@ public:
     return this->root ();
   }
 
-  void reset ()
-  {
-    this->_root.reset ();
-  }
+  void reset () { this->_root.reset (); }
 
   void rebalance (TreeNode<T>& node)
   {

@@ -27,20 +27,14 @@ namespace
     bool                      isFree;
     std::vector<unsigned int> adjacentFaces;
 
-    VertexData ()
-    {
-      this->reset ();
-    }
+    VertexData () { this->reset (); }
     void reset ()
     {
       this->isFree = true;
       this->adjacentFaces.clear ();
     }
 
-    void addAdjacentFace (unsigned int face)
-    {
-      this->adjacentFaces.push_back (face);
-    }
+    void addAdjacentFace (unsigned int face) { this->adjacentFaces.push_back (face); }
     void deleteAdjacentFace (unsigned int face)
     {
       for (auto it = this->adjacentFaces.begin (); it != this->adjacentFaces.end (); ++it)
@@ -59,14 +53,8 @@ namespace
   {
     bool isFree;
 
-    FaceData ()
-    {
-      this->reset ();
-    }
-    void reset ()
-    {
-      this->isFree = true;
-    }
+    FaceData () { this->reset (); }
+    void reset () { this->isFree = true; }
   };
 }
 
@@ -100,10 +88,7 @@ struct DynamicMesh::Impl
     return this->faceData.size () - this->freeFaceIndices.size ();
   }
 
-  bool isEmpty () const
-  {
-    return this->numFaces () == 0;
-  }
+  bool isEmpty () const { return this->numFaces () == 0; }
 
   bool isFreeVertex (unsigned int i) const
   {
@@ -146,10 +131,7 @@ struct DynamicMesh::Impl
                          this->mesh.vertex (this->mesh.index ((3 * i) + 2)));
   }
 
-  const glm::vec3& vertexNormal (unsigned int i) const
-  {
-    return this->mesh.normal (i);
-  }
+  const glm::vec3& vertexNormal (unsigned int i) const { return this->mesh.normal (i); }
 
   const std::vector<unsigned int>& adjacentFaces (unsigned int i) const
   {
@@ -198,10 +180,7 @@ struct DynamicMesh::Impl
     std::memset (this->vertexVisited.data (), 0, this->vertexVisited.size ());
   }
 
-  void unvisitFaces ()
-  {
-    std::memset (this->faceVisited.data (), 0, this->faceVisited.size ());
-  }
+  void unvisitFaces () { std::memset (this->faceVisited.data (), 0, this->faceVisited.size ()); }
 
   void forEachVertex (const DynamicFaces& faces, const std::function<void(unsigned int)>& f)
   {
@@ -883,10 +862,7 @@ struct DynamicMesh::Impl
     this->forEachFace ([this](unsigned int i) { this->addFaceToOctree (i); });
   }
 
-  void printStatistics () const
-  {
-    this->octree.printStatistics ();
-  }
+  void printStatistics () const { this->octree.printStatistics (); }
 
   void runFromConfig (const Config& config)
   {

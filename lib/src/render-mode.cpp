@@ -20,35 +20,17 @@ RenderMode::RenderMode (const RenderMode& other)
 {
 }
 
-bool RenderMode::smoothShading () const
-{
-  return this->flags.get<0> ();
-}
+bool RenderMode::smoothShading () const { return this->flags.get<0> (); }
 
-bool RenderMode::flatShading () const
-{
-  return this->flags.get<1> ();
-}
+bool RenderMode::flatShading () const { return this->flags.get<1> (); }
 
-bool RenderMode::constantShading () const
-{
-  return this->flags.get<2> ();
-}
+bool RenderMode::constantShading () const { return this->flags.get<2> (); }
 
-bool RenderMode::renderWireframe () const
-{
-  return this->flags.get<3> ();
-}
+bool RenderMode::renderWireframe () const { return this->flags.get<3> (); }
 
-bool RenderMode::cameraRotationOnly () const
-{
-  return this->flags.get<4> ();
-}
+bool RenderMode::cameraRotationOnly () const { return this->flags.get<4> (); }
 
-bool RenderMode::noDepthTest () const
-{
-  return this->flags.get<5> ();
-}
+bool RenderMode::noDepthTest () const { return this->flags.get<5> (); }
 
 const char* RenderMode::vertexShader () const
 {
@@ -123,17 +105,8 @@ void RenderMode::constantShading (bool v)
   }
 }
 
-void RenderMode::renderWireframe (bool v)
-{
-  this->flags.set<3> (v);
-}
+void RenderMode::renderWireframe (bool v) { this->flags.set<3> (v); }
 
-void RenderMode::cameraRotationOnly (bool v)
-{
-  this->flags.set<4> (v);
-}
+void RenderMode::cameraRotationOnly (bool v) { this->flags.set<4> (v); }
 
-void RenderMode::noDepthTest (bool v)
-{
-  this->flags.set<5> (v);
-}
+void RenderMode::noDepthTest (bool v) { this->flags.set<5> (v); }

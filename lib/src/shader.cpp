@@ -149,52 +149,31 @@
   "    EndPrimitive();                                                                     \n" \
   "}                                                                                       \n"
 
-const char* Shader::smoothVertexShader ()
-{
-  return SMOOTH_VERTEX_SHADER;
-}
+const char* Shader::smoothVertexShader () { return SMOOTH_VERTEX_SHADER; }
 
-const char* Shader::smoothFragmentShader ()
-{
-  return SMOOTH_FRAGMENT_SHADER ("vsColor", "");
-}
+const char* Shader::smoothFragmentShader () { return SMOOTH_FRAGMENT_SHADER ("vsColor", ""); }
 
 const char* Shader::smoothWireframeFragmentShader ()
 {
   return SMOOTH_FRAGMENT_SHADER ("gsColor", ADD_WIREFRAME);
 }
 
-const char* Shader::flatVertexShader ()
-{
-  return FLAT_VERTEX_SHADER;
-}
+const char* Shader::flatVertexShader () { return FLAT_VERTEX_SHADER; }
 
-const char* Shader::flatFragmentShader ()
-{
-  return FLAT_FRAGMENT_SHADER ("vsColor", "");
-}
+const char* Shader::flatFragmentShader () { return FLAT_FRAGMENT_SHADER ("vsColor", ""); }
 
 const char* Shader::flatWireframeFragmentShader ()
 {
   return FLAT_FRAGMENT_SHADER ("gsColor", ADD_WIREFRAME);
 }
 
-const char* Shader::constantVertexShader ()
-{
-  return CONSTANT_VERTEX_SHADER;
-}
+const char* Shader::constantVertexShader () { return CONSTANT_VERTEX_SHADER; }
 
-const char* Shader::constantFragmentShader ()
-{
-  return CONSTANT_FRAGMENT_SHADER ("");
-}
+const char* Shader::constantFragmentShader () { return CONSTANT_FRAGMENT_SHADER (""); }
 
 const char* Shader::constantWireframeFragmentShader ()
 {
   return CONSTANT_FRAGMENT_SHADER (ADD_WIREFRAME);
 }
 
-const char* Shader::geometryShader ()
-{
-  return GEOMETRY_SHADER;
-}
+const char* Shader::geometryShader () { return GEOMETRY_SHADER; }

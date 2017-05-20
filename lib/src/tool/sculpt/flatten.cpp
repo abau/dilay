@@ -35,9 +35,7 @@ struct ToolSculptFlatten::Impl
     params.lockPlane (this->self->cache ().get<bool> ("lock-plane", false));
   }
 
-  void runSetupCursor (ViewCursor&)
-  {
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {

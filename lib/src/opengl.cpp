@@ -13,40 +13,19 @@
 #include "util.hpp"
 
 #define DELEGATE_GL_CONSTANT(method, constant) \
-  unsigned int method ()                       \
-  {                                            \
-    return constant;                           \
-  }
+  unsigned int method () { return constant; }
 #define DELEGATE_GL(r, method) \
-  r method ()                  \
-  {                            \
-    return fun->method ();     \
-  }
+  r method () { return fun->method (); }
 #define DELEGATE1_GL(r, method, t1) \
-  r method (t1 a1)                  \
-  {                                 \
-    return fun->method (a1);        \
-  }
+  r method (t1 a1) { return fun->method (a1); }
 #define DELEGATE2_GL(r, method, t1, t2) \
-  r method (t1 a1, t2 a2)               \
-  {                                     \
-    return fun->method (a1, a2);        \
-  }
+  r method (t1 a1, t2 a2) { return fun->method (a1, a2); }
 #define DELEGATE3_GL(r, method, t1, t2, t3) \
-  r method (t1 a1, t2 a2, t3 a3)            \
-  {                                         \
-    return fun->method (a1, a2, a3);        \
-  }
+  r method (t1 a1, t2 a2, t3 a3) { return fun->method (a1, a2, a3); }
 #define DELEGATE4_GL(r, method, t1, t2, t3, t4) \
-  r method (t1 a1, t2 a2, t3 a3, t4 a4)         \
-  {                                             \
-    return fun->method (a1, a2, a3, a4);        \
-  }
+  r method (t1 a1, t2 a2, t3 a3, t4 a4) { return fun->method (a1, a2, a3, a4); }
 #define DELEGATE5_GL(r, method, t1, t2, t3, t4, t5) \
-  r method (t1 a1, t2 a2, t3 a3, t4 a4, t5 a5)      \
-  {                                                 \
-    return fun->method (a1, a2, a3, a4, a5);        \
-  }
+  r method (t1 a1, t2 a2, t3 a3, t4 a4, t5 a5) { return fun->method (a1, a2, a3, a4, a5); }
 #define DELEGATE6_GL(r, method, t1, t2, t3, t4, t5, t6) \
   r method (t1 a1, t2 a2, t3 a3, t4 a4, t5 a5, t6 a6)   \
   {                                                     \
@@ -174,10 +153,7 @@ namespace OpenGL
     return QOpenGLContext::currentContext ()->hasExtension (QByteArray ("GL_EXT_geometry_shader4"));
   }
 
-  void glUniformVec3 (unsigned int id, const glm::vec3& v)
-  {
-    fun->glUniform3f (id, v.x, v.y, v.z);
-  }
+  void glUniformVec3 (unsigned int id, const glm::vec3& v) { fun->glUniform3f (id, v.x, v.y, v.z); }
   void glUniformVec4 (unsigned int id, const glm::vec4& v)
   {
     fun->glUniform4f (id, v.x, v.y, v.z, v.w);
@@ -288,10 +264,7 @@ namespace OpenGL
     return programId;
   }
 
-  void clearError ()
-  {
-    fun->glGetError ();
-  }
+  void clearError () { fun->glGetError (); }
 
   void printError ()
   {

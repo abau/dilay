@@ -74,15 +74,9 @@ public:
 
   Maybe<T>& operator= (Maybe<T>&&) = default;
 
-  explicit operator bool () const
-  {
-    return this->hasValue ();
-  }
+  explicit operator bool () const { return this->hasValue (); }
 
-  bool operator== (bool v) const
-  {
-    return this->operator bool () == v;
-  }
+  bool operator== (bool v) const { return this->operator bool () == v; }
 
   T& operator* ()
   {
@@ -96,45 +90,21 @@ public:
     return *this->value;
   }
 
-  T* operator-> ()
-  {
-    return this->get ();
-  }
+  T* operator-> () { return this->get (); }
 
-  const T* operator-> () const
-  {
-    return this->get ();
-  }
+  const T* operator-> () const { return this->get (); }
 
-  T* get ()
-  {
-    return this->value.get ();
-  }
+  T* get () { return this->value.get (); }
 
-  const T* get () const
-  {
-    return this->value.get ();
-  }
+  const T* get () const { return this->value.get (); }
 
-  T* release ()
-  {
-    return this->value.release ();
-  }
+  T* release () { return this->value.release (); }
 
-  bool hasValue () const
-  {
-    return bool(this->value);
-  }
+  bool hasValue () const { return bool(this->value); }
 
-  void reset (T* newValue = nullptr)
-  {
-    this->value.reset (newValue);
-  }
+  void reset (T* newValue = nullptr) { this->value.reset (newValue); }
 
-  void swap (Maybe<T>& o)
-  {
-    this->value.swap (o.value);
-  }
+  void swap (Maybe<T>& o) { this->value.swap (o.value); }
 
 private:
   std::unique_ptr<T> value;

@@ -44,20 +44,11 @@ struct ViewVectorEdit::Impl
     this->z (v.z);
   }
 
-  void x (float v)
-  {
-    this->changeComponent (0, v);
-  }
+  void x (float v) { this->changeComponent (0, v); }
 
-  void y (float v)
-  {
-    this->changeComponent (1, v);
-  }
+  void y (float v) { this->changeComponent (1, v); }
 
-  void z (float v)
-  {
-    this->changeComponent (2, v);
-  }
+  void z (float v) { this->changeComponent (2, v); }
 
   void changeComponent (int i, float v)
   {

@@ -27,9 +27,7 @@ struct ToolSculptSmooth::Impl
     params.relaxOnly (this->self->cache ().get<bool> ("relax-only", false));
   }
 
-  void runSetupCursor (ViewCursor&)
-  {
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {

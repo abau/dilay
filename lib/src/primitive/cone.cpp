@@ -29,10 +29,7 @@ PrimCone::PrimCone (const glm::vec3& c1, float r1, const glm::vec3& c2, float r2
 {
 }
 
-glm::vec3 PrimCone::projPointAt (float t) const
-{
-  return this->_center1 + (t * this->_direction);
-}
+glm::vec3 PrimCone::projPointAt (float t) const { return this->_center1 + (t * this->_direction); }
 
 glm::vec3 PrimCone::normalAt (const glm::vec3& pointAt, float tCone) const
 {

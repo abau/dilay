@@ -73,10 +73,7 @@ struct ViewInfoPane::Impl
       [this](const QString& action, const QString& tip) { this->toolTip.add (action, tip); });
   }
 
-  void resetToolTip ()
-  {
-    this->toolTip.reset ();
-  }
+  void resetToolTip () { this->toolTip.reset (); }
 };
 
 DELEGATE_BIG2_BASE (ViewInfoPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))

@@ -58,10 +58,7 @@ struct Tool::Impl
     }
   }
 
-  void paint (QPainter& painter) const
-  {
-    this->self->runPaint (painter);
-  }
+  void paint (QPainter& painter) const { this->self->runPaint (painter); }
 
   ToolResponse pointingEvent (const ViewPointingEvent& e)
   {
@@ -74,20 +71,11 @@ struct Tool::Impl
     return response;
   }
 
-  ToolResponse wheelEvent (const QWheelEvent& e)
-  {
-    return this->self->runWheelEvent (e);
-  }
+  ToolResponse wheelEvent (const QWheelEvent& e) { return this->self->runWheelEvent (e); }
 
-  ToolResponse cursorUpdate (const glm::ivec2& pos)
-  {
-    return this->self->runCursorUpdate (pos);
-  }
+  ToolResponse cursorUpdate (const glm::ivec2& pos) { return this->self->runCursorUpdate (pos); }
 
-  void close ()
-  {
-    return this->self->runClose ();
-  }
+  void close () { return this->self->runClose (); }
 
   void fromConfig ()
   {
@@ -98,10 +86,7 @@ struct Tool::Impl
     this->self->runFromConfig ();
   }
 
-  void updateGlWidget ()
-  {
-    this->state.mainWindow ().glWidget ().update ();
-  }
+  void updateGlWidget () { this->state.mainWindow ().glWidget ().update (); }
 
   ViewTwoColumnGrid& properties () const
   {
@@ -114,30 +99,18 @@ struct Tool::Impl
     this->state.mainWindow ().infoPane ().addToolTip (toolTip);
   }
 
-  Config& config () const
-  {
-    return this->state.config ();
-  }
+  Config& config () const { return this->state.config (); }
 
-  CacheProxy& cache ()
-  {
-    return this->_cache;
-  }
+  CacheProxy& cache () { return this->_cache; }
 
   CacheProxy cache (const char* key) const
   {
     return CacheProxy (this->state.cache (), "editor/tool/" + std::string (key) + "/");
   }
 
-  glm::ivec2 cursorPosition ()
-  {
-    return this->state.mainWindow ().glWidget ().cursorPosition ();
-  }
+  glm::ivec2 cursorPosition () { return this->state.mainWindow ().glWidget ().cursorPosition (); }
 
-  void snapshotAll ()
-  {
-    this->state.history ().snapshotAll (this->state.scene ());
-  }
+  void snapshotAll () { this->state.history ().snapshotAll (this->state.scene ()); }
 
   void snapshotDynamicMeshes ()
   {
@@ -163,10 +136,7 @@ struct Tool::Impl
     return this->intersectsRecentDynamicMesh (this->state.camera ().ray (pos), intersection);
   }
 
-  bool hasMirror () const
-  {
-    return this->state.cache ().get ("editor/tool/mirror", true);
-  }
+  bool hasMirror () const { return this->state.cache ().get ("editor/tool/mirror", true); }
 
   const Mirror& mirror () const
   {

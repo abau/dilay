@@ -63,95 +63,44 @@ struct ViewDoubleSlider::Impl
     }
   }
 
-  double doubleValue () const
-  {
-    return this->toDouble (this->self->value (), false);
-  }
+  double doubleValue () const { return this->toDouble (this->self->value (), false); }
 
-  double doubleSingleStep () const
-  {
-    return this->toDouble (this->self->singleStep (), true);
-  }
+  double doubleSingleStep () const { return this->toDouble (this->self->singleStep (), true); }
 
-  void setDoubleValue (double v)
-  {
-    this->self->setValue (this->toInt (v, false));
-  }
+  void setDoubleValue (double v) { this->self->setValue (this->toInt (v, false)); }
 
   void setDoubleRange (double min, double max)
   {
     this->self->setRange (this->toInt (min, true), this->toInt (max, true));
   }
 
-  void setDoubleSingleStep (double v)
-  {
-    this->self->setSingleStep (this->toInt (v, true));
-  }
+  void setDoubleSingleStep (double v) { this->self->setSingleStep (this->toInt (v, true)); }
 
-  void setDoublePageStep (double v)
-  {
-    this->self->setPageStep (this->toInt (v, true));
-  }
+  void setDoublePageStep (double v) { this->self->setPageStep (this->toInt (v, true)); }
 
-  int intValue () const
-  {
-    return this->self->QSlider::value ();
-  }
+  int intValue () const { return this->self->QSlider::value (); }
 
-  int intSingleStep () const
-  {
-    return this->self->QSlider::singleStep ();
-  }
+  int intSingleStep () const { return this->self->QSlider::singleStep (); }
 
-  void setIntValue (int v)
-  {
-    this->self->QSlider::setValue (v);
-  }
+  void setIntValue (int v) { this->self->QSlider::setValue (v); }
 
-  void setIntRange (int min, int max)
-  {
-    this->self->QSlider::setRange (min, max);
-  }
+  void setIntRange (int min, int max) { this->self->QSlider::setRange (min, max); }
 
-  void setIntSingleStep (int v)
-  {
-    this->self->QSlider::setSingleStep (v);
-  }
+  void setIntSingleStep (int v) { this->self->QSlider::setSingleStep (v); }
 
-  void setIntPageStep (int v)
-  {
-    this->self->QSlider::setPageStep (v);
-  }
+  void setIntPageStep (int v) { this->self->QSlider::setPageStep (v); }
 
-  int value () const
-  {
-    return this->intValue ();
-  }
+  int value () const { return this->intValue (); }
 
-  int singleStep () const
-  {
-    return this->intSingleStep ();
-  }
+  int singleStep () const { return this->intSingleStep (); }
 
-  void setValue (int v)
-  {
-    this->setIntValue (v);
-  }
+  void setValue (int v) { this->setIntValue (v); }
 
-  void setRange (int min, int max)
-  {
-    this->setIntRange (min, max);
-  }
+  void setRange (int min, int max) { this->setIntRange (min, max); }
 
-  void setSingleStep (int v)
-  {
-    this->setIntSingleStep (v);
-  }
+  void setSingleStep (int v) { this->setIntSingleStep (v); }
 
-  void setPageStep (int v)
-  {
-    this->setIntPageStep (v);
-  }
+  void setPageStep (int v) { this->setIntPageStep (v); }
 };
 
 DELEGATE2_BIG2_SELF (ViewDoubleSlider, unsigned short, unsigned short)

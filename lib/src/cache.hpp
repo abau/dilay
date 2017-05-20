@@ -49,15 +49,9 @@ public:
   {
   }
 
-  Cache& cache () const
-  {
-    return this->_cache;
-  }
+  Cache& cache () const { return this->_cache; }
 
-  std::string key (const std::string& path) const
-  {
-    return this->prefix + path;
-  }
+  std::string key (const std::string& path) const { return this->prefix + path; }
 
   template <class T> const T& get (const std::string& path, const T& v) const
   {

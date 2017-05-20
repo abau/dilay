@@ -26,20 +26,11 @@ struct ViewCursor::Impl
     this->radiusMesh.bufferData ();
   }
 
-  float radius () const
-  {
-    return this->_radius;
-  }
+  float radius () const { return this->_radius; }
 
-  glm::vec3 position () const
-  {
-    return this->radiusMesh.position ();
-  }
+  glm::vec3 position () const { return this->radiusMesh.position (); }
 
-  const Color& color () const
-  {
-    return this->radiusMesh.color ();
-  }
+  const Color& color () const { return this->radiusMesh.color (); }
 
   void radius (float r)
   {
@@ -47,25 +38,13 @@ struct ViewCursor::Impl
     this->update ();
   }
 
-  void position (const glm::vec3& p)
-  {
-    this->radiusMesh.position (p);
-  }
+  void position (const glm::vec3& p) { this->radiusMesh.position (p); }
 
-  void color (const Color& color)
-  {
-    this->radiusMesh.color (color);
-  }
+  void color (const Color& color) { this->radiusMesh.color (color); }
 
-  void enable ()
-  {
-    this->isEnabled = true;
-  }
+  void enable () { this->isEnabled = true; }
 
-  void disable ()
-  {
-    this->isEnabled = false;
-  }
+  void disable () { this->isEnabled = false; }
 
   void render (Camera& camera) const
   {
@@ -103,10 +82,7 @@ struct ViewCursor::Impl
     }
   }
 
-  void update ()
-  {
-    this->radiusMesh.scaling (glm::vec3 (this->radius ()));
-  }
+  void update () { this->radiusMesh.scaling (glm::vec3 (this->radius ())); }
 };
 
 DELEGATE_BIG6 (ViewCursor)

@@ -25,9 +25,7 @@ struct ToolSculptReduce::Impl
     params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
   }
 
-  void runSetupCursor (ViewCursor&)
-  {
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {

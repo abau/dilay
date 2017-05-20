@@ -233,10 +233,7 @@ struct Renderer::Impl
     }
   }
 
-  void setEyePoint (const glm::vec3& e)
-  {
-    this->globalUniforms.eyePoint = e;
-  }
+  void setEyePoint (const glm::vec3& e) { this->globalUniforms.eyePoint = e; }
 
   void setLightDirection (unsigned int i, const glm::vec3& d)
   {

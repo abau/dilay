@@ -33,15 +33,9 @@ public:
     this->update ();
   }
 
-  void toFile (const std::string& fileName) const
-  {
-    this->store.toFile (fileName);
-  }
+  void toFile (const std::string& fileName) const { this->store.toFile (fileName); }
 
-  void remove (const std::string& path)
-  {
-    this->store.remove (path);
-  }
+  void remove (const std::string& path) { this->store.remove (path); }
 
   void restoreDefaults ();
 
@@ -66,15 +60,9 @@ public:
   {
   }
 
-  const Config& config () const
-  {
-    return this->_config;
-  }
+  const Config& config () const { return this->_config; }
 
-  std::string key (const std::string& path) const
-  {
-    return this->prefix + path;
-  }
+  std::string key (const std::string& path) const { return this->prefix + path; }
 
   template <class T> const T& get (const std::string& path) const
   {

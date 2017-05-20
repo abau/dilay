@@ -24,10 +24,7 @@ struct ToolMoveCamera::Impl
   float      movementFactor;
   float      zoomInFactor;
 
-  Impl (const Config& config)
-  {
-    this->runFromConfig (config);
-  }
+  Impl (const Config& config) { this->runFromConfig (config); }
 
   void snap (State& state, bool cycleBackwards)
   {

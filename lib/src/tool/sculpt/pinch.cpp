@@ -25,9 +25,7 @@ struct ToolSculptPinch::Impl
     params.invert (this->self->cache ().get<bool> ("invert", false));
   }
 
-  void runSetupCursor (ViewCursor&)
-  {
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {
@@ -41,10 +39,7 @@ struct ToolSculptPinch::Impl
     properties.add (invertEdit);
   }
 
-  void runSetupToolTip (ViewToolTip& toolTip)
-  {
-    this->self->addDefaultToolTip (toolTip, true);
-  }
+  void runSetupToolTip (ViewToolTip& toolTip) { this->self->addDefaultToolTip (toolTip, true); }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e)
   {

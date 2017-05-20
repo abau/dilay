@@ -124,10 +124,7 @@ namespace VariantDetails
       delete this->t;
     }
 
-    template <unsigned int i, typename U> void init ()
-    {
-      InitValue<i, U, T>::run (*this);
-    }
+    template <unsigned int i, typename U> void init () { InitValue<i, U, T>::run (*this); }
 
     template <unsigned int i, typename U> void set (const U& u)
     {
@@ -211,10 +208,7 @@ namespace VariantDetails
       }
     }
 
-    template <unsigned int i, typename U> void init ()
-    {
-      InitValue<i, U, T, Ts...>::run (*this);
-    }
+    template <unsigned int i, typename U> void init () { InitValue<i, U, T, Ts...>::run (*this); }
 
     template <unsigned int i, typename U> void set (const U& u)
     {
@@ -334,10 +328,7 @@ public:
     return *this;
   }
 
-  ~Variant ()
-  {
-    this->release ();
-  }
+  ~Variant () { this->release (); }
 
   void release ()
   {
@@ -409,10 +400,7 @@ public:
     return this->_varUnion.template caseOf<U> (this->_setTo, branches...);
   }
 
-  bool isSet () const
-  {
-    return this->_isSet;
-  }
+  bool isSet () const { return this->_isSet; }
 
 private:
   VariantDetails::VariantUnion<Ts...> _varUnion;

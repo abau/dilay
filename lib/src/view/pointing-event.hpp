@@ -19,45 +19,21 @@ public:
 
   bool valid () const;
 
-  Qt::KeyboardModifiers modifiers () const
-  {
-    return this->_modifiers;
-  }
+  Qt::KeyboardModifiers modifiers () const { return this->_modifiers; }
 
-  bool pressEvent () const
-  {
-    return this->_pressEvent;
-  }
+  bool pressEvent () const { return this->_pressEvent; }
 
-  bool moveEvent () const
-  {
-    return this->_moveEvent;
-  }
+  bool moveEvent () const { return this->_moveEvent; }
 
-  bool releaseEvent () const
-  {
-    return this->_releaseEvent;
-  }
+  bool releaseEvent () const { return this->_releaseEvent; }
 
-  bool primaryButton () const
-  {
-    return this->_primaryButton;
-  }
+  bool primaryButton () const { return this->_primaryButton; }
 
-  bool secondaryButton () const
-  {
-    return this->_secondaryButton;
-  }
+  bool secondaryButton () const { return this->_secondaryButton; }
 
-  const glm::ivec2& ivec2 () const
-  {
-    return this->_ivec2;
-  }
+  const glm::ivec2& ivec2 () const { return this->_ivec2; }
 
-  float intensity () const
-  {
-    return this->_intensity;
-  }
+  float intensity () const { return this->_intensity; }
 
 private:
   Qt::KeyboardModifiers _modifiers;

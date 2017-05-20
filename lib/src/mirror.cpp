@@ -32,20 +32,14 @@ struct Mirror::Impl
     this->dimension (d);
   }
 
-  Dimension dimension () const
-  {
-    return this->_dimension;
-  }
+  Dimension dimension () const { return this->_dimension; }
   void dimension (Dimension d)
   {
     this->_dimension = d;
     this->_plane = std::make_unique<PrimPlane> (glm::vec3 (0.0f), DimensionUtil::vector (d));
   }
 
-  const PrimPlane& plane () const
-  {
-    return *this->_plane;
-  }
+  const PrimPlane& plane () const { return *this->_plane; }
   void render (Camera& camera) const
   {
     const glm::vec3 pos = camera.position ();

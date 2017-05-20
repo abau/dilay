@@ -47,10 +47,7 @@ struct State::Impl
     this->resetTool ();
   }
 
-  bool hasTool () const
-  {
-    return bool(this->toolPtr);
-  }
+  bool hasTool () const { return bool(this->toolPtr); }
 
   Tool& tool ()
   {

@@ -29,9 +29,7 @@ struct ToolSculptDraw::Impl
     params.constantHeight (this->self->cache ().get<bool> ("constant-height", false));
   }
 
-  void runSetupCursor (ViewCursor&)
-  {
-  }
+  void runSetupCursor (ViewCursor&) {}
 
   void runSetupProperties (ViewTwoColumnGrid& properties)
   {

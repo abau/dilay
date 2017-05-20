@@ -75,65 +75,39 @@ private:
 
   virtual ToolResponse runInitialize () = 0;
 
-  virtual void runRender () const
-  {
-  }
+  virtual void runRender () const {}
 
-  virtual void runPaint (QPainter&) const
-  {
-  }
+  virtual void runPaint (QPainter&) const {}
 
   virtual ToolResponse runPointingEvent (const ViewPointingEvent&);
 
-  virtual ToolResponse runPressEvent (const ViewPointingEvent&)
-  {
-    return ToolResponse::None;
-  }
+  virtual ToolResponse runPressEvent (const ViewPointingEvent&) { return ToolResponse::None; }
 
-  virtual ToolResponse runMoveEvent (const ViewPointingEvent&)
-  {
-    return ToolResponse::None;
-  }
+  virtual ToolResponse runMoveEvent (const ViewPointingEvent&) { return ToolResponse::None; }
 
-  virtual ToolResponse runReleaseEvent (const ViewPointingEvent&)
-  {
-    return ToolResponse::None;
-  }
+  virtual ToolResponse runReleaseEvent (const ViewPointingEvent&) { return ToolResponse::None; }
 
-  virtual ToolResponse runWheelEvent (const QWheelEvent&)
-  {
-    return ToolResponse::None;
-  }
+  virtual ToolResponse runWheelEvent (const QWheelEvent&) { return ToolResponse::None; }
 
-  virtual ToolResponse runCursorUpdate (const glm::ivec2&)
-  {
-    return ToolResponse::None;
-  }
+  virtual ToolResponse runCursorUpdate (const glm::ivec2&) { return ToolResponse::None; }
 
-  virtual void runClose ()
-  {
-  }
+  virtual void runClose () {}
 
-  virtual void runFromConfig ()
-  {
-  }
+  virtual void runFromConfig () {}
 };
 
-#define DECLARE_TOOL(name, theKey, otherMethods) \
-  class name : public Tool                       \
-  {                                              \
-  public:                                        \
-    DECLARE_BIG2 (name, State&)                  \
-                                                 \
-    static const char* classKey ()               \
-    {                                            \
-      return theKey;                             \
-    }                                            \
-                                                 \
-  private:                                       \
-    IMPLEMENTATION                               \
-    ToolResponse runInitialize ();               \
-    otherMethods                                 \
+#define DECLARE_TOOL(name, theKey, otherMethods)      \
+  class name : public Tool                            \
+  {                                                   \
+  public:                                             \
+    DECLARE_BIG2 (name, State&)                       \
+                                                      \
+    static const char* classKey () { return theKey; } \
+                                                      \
+  private:                                            \
+    IMPLEMENTATION                                    \
+    ToolResponse runInitialize ();                    \
+    otherMethods                                      \
   };
 
 #define DECLARE_TOOL_RUN_RENDER void                    runRender () const;

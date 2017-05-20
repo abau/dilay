@@ -222,10 +222,7 @@ namespace
     }
   }
 
-  const QString& tipToString (const Tip& tip)
-  {
-    return std::get<2> (tip);
-  }
+  const QString& tipToString (const Tip& tip) { return std::get<2> (tip); }
 }
 
 struct ViewToolTip::Impl
@@ -255,15 +252,9 @@ struct ViewToolTip::Impl
     this->add (event, ViewToolTip::Modifier::None, tip);
   }
 
-  void reset ()
-  {
-    this->tips.clear ();
-  }
+  void reset () { this->tips.clear (); }
 
-  bool isEmpty () const
-  {
-    return this->tips.empty ();
-  }
+  bool isEmpty () const { return this->tips.empty (); }
 };
 
 DELEGATE_BIG6 (ViewToolTip)

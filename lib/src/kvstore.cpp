@@ -275,14 +275,9 @@ struct KVStore::Impl
     }
   }
 
-  void remove (const std::string& p)
-  {
-    this->map.erase (this->path (p));
-  }
-  void reset ()
-  {
-    this->map.clear ();
-  }
+  void remove (const std::string& p) { this->map.erase (this->path (p)); }
+
+  void reset () { this->map.clear (); }
 };
 
 DELEGATE1_BIG2 (KVStore, const std::string&)
