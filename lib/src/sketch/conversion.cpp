@@ -710,8 +710,11 @@ namespace
       unsigned int vertex1, vertex2;
       vertexIndices (edge, vertex1, vertex2);
 
-      cube.configuration |= (int(samples[vertex1] < 0.0f)) << vertex1;
-      cube.configuration |= (int(samples[vertex2] < 0.0f)) << vertex2;
+      const int set1 = samples[vertex1] < 0.0f ? 1 : 0;
+      const int set2 = samples[vertex2] < 0.0f ? 1 : 0;
+
+      cube.configuration |= set1 << vertex1;
+      cube.configuration |= set2 << vertex2;
 
       checkEdge (vertex1, vertex2);
     }
@@ -732,7 +735,7 @@ namespace
 
     if (numCrossedEdges > 0)
     {
-      cube.vertex = vertex / glm::vec3 (float(numCrossedEdges));
+      cube.vertex = vertex / float(numCrossedEdges);
       cube.initializeVertexInstanceIndices ();
     }
   }
