@@ -201,6 +201,8 @@ unsigned int Util::solveCubicEq (float a, float b, float c, float& s1, float& s2
   }
 }
 
+bool Util::isNaN (float v) { return glm::isnan (v); }
+
 bool Util::isNaN (const glm::vec3& v) { return glm::any (glm::isnan (v)); }
 
 bool Util::isNotNull (const glm::vec3& v)

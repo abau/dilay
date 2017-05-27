@@ -52,6 +52,7 @@ namespace Util
   unsigned int solveQuadraticEq (float, float, float, float&, float&);
   unsigned int solveCubicEq (float, float, float, float&, float&, float&);
   unsigned int solveCubicEq (float, float, float, float, float&, float&, float&);
+  bool         isNaN (float);
   bool         isNaN (const glm::vec3&);
   bool         isNotNull (const glm::vec3&);
   bool         almostEqual (float, float);
