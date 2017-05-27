@@ -8,6 +8,7 @@
 #include "primitive/cone.hpp"
 #include "primitive/cylinder.hpp"
 #include "primitive/sphere.hpp"
+#include "util.hpp"
 
 namespace
 {
@@ -16,7 +17,8 @@ namespace
   {
     const glm::vec3 toP = point - center1;
     const float     x = glm::dot (toP, direction);
-    const float     y = glm::sqrt (glm::dot (toP, toP) - (x * x));
+    const float     ySqr = glm::dot (toP, toP) - (x * x);
+    const float     y = Util::almostEqual (0.0f, ySqr) ? 0.0f : glm::sqrt (ySqr);
     const float     yr = y - radius;
     const float     xl = x - length;
     const bool      insideR = yr <= 0.0f;
@@ -58,7 +60,8 @@ float Distance::distance (const PrimCone& cone, const glm::vec3& point)
   {
     const glm::vec3 toP = point - cone.center1 ();
     const float     x = glm::dot (toP, cone.direction ());
-    const float     y = glm::sqrt (glm::dot (toP, toP) - (x * x));
+    const float     ySqr = glm::dot (toP, toP) - (x * x);
+    const float     y = Util::almostEqual (0.0f, ySqr) ? 0.0f : glm::sqrt (ySqr);
     const float     r1 = cone.radius1 ();
     const float     r2 = cone.radius2 ();
     const float     l = cone.length ();
@@ -110,7 +113,8 @@ float Distance::distance (const PrimConeSphere& coneSphere, const glm::vec3& poi
 {
   const glm::vec3 toP = point - coneSphere.sphere1 ().center ();
   const float     x = glm::dot (toP, coneSphere.direction ());
-  const float     y = glm::sqrt (glm::dot (toP, toP) - (x * x));
+  const float     ySqr = glm::dot (toP, toP) - (x * x);
+  const float     y = Util::almostEqual (0.0f, ySqr) ? 0.0f : glm::sqrt (ySqr);
   const float     r1 = coneSphere.sphere1 ().radius ();
   const float     r2 = coneSphere.sphere2 ().radius ();
   const float     l = coneSphere.length ();
