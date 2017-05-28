@@ -14,8 +14,8 @@ struct ToolUtilStep::Impl
   {
   }
 
-  void step (const glm::vec3& from, const glm::vec3& to,
-             const std::function<bool(const glm::vec3&)>& f)
+  glm::vec3 step (const glm::vec3& from, const glm::vec3& to,
+                  const std::function<bool(const glm::vec3&)>& f)
   {
     assert (this->stepWidth >= 0.0f);
 
@@ -32,10 +32,12 @@ struct ToolUtilStep::Impl
       }
       position += direction * (this->stepWidth / distance);
     } while (f (position));
+
+    return position;
   }
 };
 
 DELEGATE_BIG3 (ToolUtilStep)
 SETTER (float, ToolUtilStep, stepWidth)
-DELEGATE3 (void, ToolUtilStep, step, const glm::vec3&, const glm::vec3&,
+DELEGATE3 (glm::vec3, ToolUtilStep, step, const glm::vec3&, const glm::vec3&,
            const std::function<bool(const glm::vec3&)>&)

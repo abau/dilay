@@ -85,7 +85,7 @@ void Config::restoreDefaults ()
   this->set ("editor/tool/sculpt/mirror/color", Color (0.8f, 0.8f, 0.8f));
 
   this->set ("editor/tool/sketch-spheres/cursor-color", Color (1.0f, 0.9f, 0.9f));
-  this->set ("editor/tool/sketch-spheres/step-width-factor", 0.1f);
+  this->set ("editor/tool/sketch-spheres/step-width-factor", 0.3f);
 
   this->set ("editor/undo-depth", 15);
 
@@ -124,6 +124,7 @@ void Config::update ()
 
     case 6:
       forceUpdateValue<float> (*this, "editor/tool/sculpt/step-width-factor", 0.3f);
+      forceUpdateValue<float> (*this, "editor/tool/sketch-spheres/step-width-factor", 0.3f);
       break;
 
     case latestVersion:
