@@ -2,8 +2,8 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#ifndef DILAY_TOOL_MOVEMENT
-#define DILAY_TOOL_MOVEMENT
+#ifndef DILAY_TOOL_UTIL_MOVEMENT
+#define DILAY_TOOL_UTIL_MOVEMENT
 
 #include <functional>
 #include <glm/fwd.hpp>

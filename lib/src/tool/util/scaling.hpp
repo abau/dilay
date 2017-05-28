@@ -2,8 +2,8 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#ifndef DILAY_TOOL_SCALING
-#define DILAY_TOOL_SCALING
+#ifndef DILAY_TOOL_UTIL_SCALING
+#define DILAY_TOOL_UTIL_SCALING
 
 #include <glm/fwd.hpp>
 #include "macro.hpp"
