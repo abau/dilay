@@ -70,6 +70,7 @@ SOURCES += \
            src/tool/sketch-spheres.cpp \
            src/tool/util/movement.cpp \
            src/tool/util/scaling.cpp \
+           src/tool/util/step.cpp \
            src/util.cpp \
            src/view/axis.cpp \
            src/view/color-button.cpp \
@@ -145,6 +146,7 @@ HEADERS += \
            src/tool/sculpt/util/brush.hpp \
            src/tool/util/movement.hpp \
            src/tool/util/scaling.hpp \
+           src/tool/util/step.hpp \
            src/tools.hpp \
            src/tree.hpp \
            src/util.hpp \

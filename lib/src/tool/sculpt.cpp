@@ -21,6 +21,7 @@
 #include "tool/sculpt/util/action.hpp"
 #include "tool/sculpt/util/brush.hpp"
 #include "tool/util/movement.hpp"
+#include "tool/util/step.hpp"
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
@@ -38,6 +39,7 @@ struct ToolSculpt::Impl
   ViewDoubleSlider* secondarySlider;
   bool              absoluteRadius;
   bool              sculpted;
+  ToolUtilStep      step;
 
   Impl (ToolSculpt* s)
     : self (s)
@@ -306,23 +308,6 @@ struct ToolSculpt::Impl
     }
   }
 
-  bool updateBrushStep (glm::vec3& brushStep, const glm::vec3& cursorPosition) const
-  {
-    const glm::vec3 strokeDir = cursorPosition - brushStep;
-    const float     distance = glm::length (strokeDir);
-    const float     stepWidth = this->brush.stepWidth ();
-
-    if (distance < stepWidth)
-    {
-      return false;
-    }
-    else
-    {
-      brushStep += strokeDir * (stepWidth / distance);
-      return true;
-    }
-  }
-
   bool updateBrushByIntersection (bool useRecentMesh, const glm::vec3& cursorStep)
   {
     const glm::vec3 from = this->self->state ().camera ().position ();
@@ -387,16 +372,22 @@ struct ToolSculpt::Impl
 
       if (this->brush.hasPointOfAction ())
       {
-        glm::vec3 brushStep = this->brush.position ();
-
-        while (this->brush.hasPointOfAction () &&
-               this->updateBrushStep (brushStep, cursorIntersection.position ()))
-        {
-          if (this->updateBrushByIntersection (useRecentMesh, brushStep))
-          {
-            this->sculpt ();
-          }
-        }
+        this->step.stepWidth (this->brush.stepWidth ());
+        this->step.step (this->brush.position (), cursorIntersection.position (),
+                         [this, useRecentMesh](const glm::vec3& brushStep) {
+                           if (this->brush.hasPointOfAction ())
+                           {
+                             if (this->updateBrushByIntersection (useRecentMesh, brushStep))
+                             {
+                               this->sculpt ();
+                             }
+                             return true;
+                           }
+                           else
+                           {
+                             return false;
+                           }
+                         });
       }
       else
       {
