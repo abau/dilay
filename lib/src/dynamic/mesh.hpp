@@ -45,6 +45,8 @@ public:
   void forEachVertex (const std::function<void(unsigned int)>&);
   void forEachVertex (const DynamicFaces&, const std::function<void(unsigned int)>&);
   void forEachVertexExt (const DynamicFaces&, const std::function<void(unsigned int)>&);
+  void forEachVertexAdjacentToVertex (unsigned int, const std::function<void(unsigned int)>&) const;
+  void forEachVertexAdjacentToFace (unsigned int, const std::function<void(unsigned int)>&) const;
   void forEachFace (const std::function<void(unsigned int)>&);
   void forEachFaceExt (const DynamicFaces&, const std::function<void(unsigned int)>&);
 

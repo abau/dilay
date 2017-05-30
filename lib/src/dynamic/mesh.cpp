@@ -213,6 +213,44 @@ struct DynamicMesh::Impl
     }
   }
 
+  void forEachVertexAdjacentToVertex (unsigned int                             i,
+                                      const std::function<void(unsigned int)>& f) const
+  {
+    assert (this->isFreeVertex (i) == false);
+
+    for (unsigned int a : this->vertexData[i].adjacentFaces)
+    {
+      unsigned int a1, a2, a3;
+      this->vertexIndices (a, a1, a2, a3);
+
+      if (i != a1)
+      {
+        f (a1);
+      }
+      if (i != a2)
+      {
+        f (a2);
+      }
+      if (i != a3)
+      {
+        f (a3);
+      }
+    }
+  }
+
+  void forEachVertexAdjacentToFace (unsigned int                             i,
+                                    const std::function<void(unsigned int)>& f) const
+  {
+    assert (this->isFreeFace (i) == false);
+
+    unsigned int i1, i2, i3;
+    this->vertexIndices (i, i1, i2, i3);
+
+    f (i1);
+    f (i2);
+    f (i3);
+  }
+
   void forEachFace (const std::function<void(unsigned int)>& f)
   {
     for (unsigned int i = 0; i < this->faceData.size (); i++)
@@ -279,12 +317,8 @@ struct DynamicMesh::Impl
 
     for (unsigned int f : faces)
     {
-      unsigned int i1, i2, i3;
-      this->vertexIndices (f, i1, i2, i3);
-
-      position += this->mesh.vertex (i1);
-      position += this->mesh.vertex (i2);
-      position += this->mesh.vertex (i3);
+      this->forEachVertexAdjacentToFace (
+        f, [this, &position](unsigned int v) { position += this->mesh.vertex (v); });
     }
     return position / float(faces.numElements () * 3);
   }
@@ -296,24 +330,8 @@ struct DynamicMesh::Impl
 
     glm::vec3 position = glm::vec3 (0.0f);
 
-    for (unsigned int a : this->vertexData[i].adjacentFaces)
-    {
-      unsigned int i1, i2, i3;
-      this->vertexIndices (a, i1, i2, i3);
-
-      if (i != i1)
-      {
-        position += this->mesh.vertex (i1);
-      }
-      if (i != i2)
-      {
-        position += this->mesh.vertex (i2);
-      }
-      if (i != i3)
-      {
-        position += this->mesh.vertex (i3);
-      }
-    }
+    this->forEachVertexAdjacentToVertex (
+      i, [this, &position](unsigned int v) { position += this->mesh.vertex (v); });
     return position / float(this->vertexData[i].adjacentFaces.size () * 2);
   }
 
@@ -890,6 +908,10 @@ DELEGATE2 (void, DynamicMesh, forEachVertex, const DynamicFaces&,
            const std::function<void(unsigned int)>&)
 DELEGATE2 (void, DynamicMesh, forEachVertexExt, const DynamicFaces&,
            const std::function<void(unsigned int)>&)
+DELEGATE2_CONST (void, DynamicMesh, forEachVertexAdjacentToVertex, unsigned int,
+                 const std::function<void(unsigned int)>&)
+DELEGATE2_CONST (void, DynamicMesh, forEachVertexAdjacentToFace, unsigned int,
+                 const std::function<void(unsigned int)>&)
 DELEGATE1 (void, DynamicMesh, forEachFace, const std::function<void(unsigned int)>&)
 DELEGATE2 (void, DynamicMesh, forEachFaceExt, const DynamicFaces&,
            const std::function<void(unsigned int)>&)

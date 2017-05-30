@@ -210,33 +210,17 @@ namespace
 
       for (unsigned int i : frontier)
       {
-        unsigned int i1, i2, i3;
-        mesh.vertexIndices (i, i1, i2, i3);
-
-        for (unsigned int a : mesh.adjacentFaces (i1))
-        {
-          if (faces.contains (a) == false && frontier.find (a) == frontier.end ())
-          {
-            faces.insert (a);
-            extendedFrontier.insert (a);
-          }
-        }
-        for (unsigned int a : mesh.adjacentFaces (i2))
-        {
-          if (faces.contains (a) == false && frontier.find (a) == frontier.end ())
-          {
-            faces.insert (a);
-            extendedFrontier.insert (a);
-          }
-        }
-        for (unsigned int a : mesh.adjacentFaces (i3))
-        {
-          if (faces.contains (a) == false && frontier.find (a) == frontier.end ())
-          {
-            faces.insert (a);
-            extendedFrontier.insert (a);
-          }
-        }
+        mesh.forEachVertexAdjacentToFace (
+          i, [&mesh, &faces, &frontier, &extendedFrontier](unsigned int v) {
+            for (unsigned int a : mesh.adjacentFaces (v))
+            {
+              if (faces.contains (a) == false && frontier.find (a) == frontier.end ())
+              {
+                faces.insert (a);
+                extendedFrontier.insert (a);
+              }
+            }
+          });
       }
       faces.commit ();
       frontier = std::move (extendedFrontier);
@@ -251,30 +235,15 @@ namespace
     {
       for (unsigned int i : faces)
       {
-        unsigned int i1, i2, i3;
-        mesh.vertexIndices (i, i1, i2, i3);
-
-        for (unsigned int a : mesh.adjacentFaces (i1))
-        {
-          if (faces.contains (a) == false)
+        mesh.forEachVertexAdjacentToFace (i, [&mesh, &faces](unsigned int v) {
+          for (unsigned int a : mesh.adjacentFaces (v))
           {
-            faces.insert (a);
+            if (faces.contains (a) == false)
+            {
+              faces.insert (a);
+            }
           }
-        }
-        for (unsigned int a : mesh.adjacentFaces (i2))
-        {
-          if (faces.contains (a) == false)
-          {
-            faces.insert (a);
-          }
-        }
-        for (unsigned int a : mesh.adjacentFaces (i3))
-        {
-          if (faces.contains (a) == false)
-          {
-            faces.insert (a);
-          }
-        }
+        });
       }
       faces.commit ();
     }
@@ -499,24 +468,8 @@ namespace
     mesh.forEachVertex (faces, [&mesh, &edgeSet](unsigned int i) {
       if (mesh.valence (i) > 6)
       {
-        for (unsigned int a : mesh.adjacentFaces (i))
-        {
-          unsigned int i1, i2, i3;
-          mesh.vertexIndices (a, i1, i2, i3);
-
-          if (i != i1)
-          {
-            edgeSet.insertEdge (i, i1);
-          }
-          if (i != i2)
-          {
-            edgeSet.insertEdge (i, i2);
-          }
-          if (i != i3)
-          {
-            edgeSet.insertEdge (i, i3);
-          }
-        }
+        mesh.forEachVertexAdjacentToVertex (
+          i, [i, &edgeSet](unsigned int j) { edgeSet.insertEdge (i, j); });
       }
     });
 
