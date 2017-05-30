@@ -352,7 +352,7 @@ struct DynamicMesh::Impl
     return glm::normalize (normal);
   }
 
-  glm::vec3 averageNormal (unsigned int i)
+  glm::vec3 averageNormal (unsigned int i) const
   {
     assert (this->isFreeVertex (i) == false);
     assert (this->vertexData[i].adjacentFaces.size () > 0);
@@ -364,25 +364,8 @@ struct DynamicMesh::Impl
       unsigned int i1, i2, i3;
       this->vertexIndices (f, i1, i2, i3);
 
-      if (i != i1)
-      {
-        normal += glm::cross (this->mesh.vertex (i2) - this->mesh.vertex (i1),
-                              this->mesh.vertex (i3) - this->mesh.vertex (i1));
-      }
-      else if (i != i2)
-      {
-        normal += glm::cross (this->mesh.vertex (i3) - this->mesh.vertex (i2),
-                              this->mesh.vertex (i1) - this->mesh.vertex (i2));
-      }
-      else if (i != i3)
-      {
-        normal += glm::cross (this->mesh.vertex (i1) - this->mesh.vertex (i3),
-                              this->mesh.vertex (i2) - this->mesh.vertex (i3));
-      }
-      else
-      {
-        DILAY_IMPOSSIBLE
-      }
+      normal += glm::cross (this->mesh.vertex (i2) - this->mesh.vertex (i1),
+                            this->mesh.vertex (i3) - this->mesh.vertex (i1));
     }
     return glm::normalize (normal);
   }
@@ -535,7 +518,7 @@ struct DynamicMesh::Impl
     }
     else
     {
-      this->mesh.normal (i, this->averageNormal (i));
+      this->mesh.normal (i, avg);
     }
   }
 
