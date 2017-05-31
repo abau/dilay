@@ -79,6 +79,7 @@ struct DynamicMesh::Impl
   unsigned int numVertices () const
   {
     assert (this->mesh.numVertices () >= this->freeVertexIndices.size ());
+    assert (this->mesh.numVertices () == this->vertexData.size ());
     return this->mesh.numVertices () - this->freeVertexIndices.size ();
   }
 
@@ -626,6 +627,7 @@ struct DynamicMesh::Impl
         if (newV != Util::invalidIndex ())
         {
           this->mesh.vertex (newV, this->mesh.vertex (i));
+          this->mesh.normal (newV, this->mesh.normal (i));
         }
         else
         {
