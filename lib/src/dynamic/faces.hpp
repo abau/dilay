@@ -14,17 +14,12 @@ public:
   typedef std::unordered_set<unsigned int> Container;
 
   const Container& indices () const { return this->_indices; }
-
   const Container& uncommitted () const { return this->_uncommitted; }
+  unsigned int     numElements () const { return this->_indices.size (); }
 
-  unsigned int numElements () const { return this->_indices.size (); }
-
-  Container::iterator begin () { return this->_indices.begin (); }
-
-  Container::iterator end () { return this->_indices.end (); }
-
+  Container::iterator       begin () { return this->_indices.begin (); }
+  Container::iterator       end () { return this->_indices.end (); }
   Container::const_iterator begin () const { return this->_indices.begin (); }
-
   Container::const_iterator end () const { return this->_indices.end (); }
 
   void insert (unsigned int);
