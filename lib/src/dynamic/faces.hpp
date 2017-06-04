@@ -25,6 +25,7 @@ public:
   void insert (unsigned int);
   void insert (const Container&);
   void reset ();
+  void resetCommitted ();
   void commit ();
   bool contains (unsigned int) const;
   bool isEmpty () const;

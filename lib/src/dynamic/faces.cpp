@@ -13,9 +13,11 @@ void DynamicFaces::insert (const DynamicFaces::Container& v)
 
 void DynamicFaces::reset ()
 {
-  this->_indices.clear ();
+  this->resetCommitted ();
   this->_uncommitted.clear ();
 }
+
+void DynamicFaces::resetCommitted () { this->_indices.clear (); }
 
 void DynamicFaces::commit ()
 {
