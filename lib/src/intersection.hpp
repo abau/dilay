@@ -41,7 +41,7 @@ namespace IntersectionUtil
   bool intersects (const PrimSphere&, const PrimSphere&);
   bool intersects (const PrimRay&, const PrimSphere&, float*);
   bool intersects (const PrimRay&, const PrimPlane&, float*);
-  bool intersects (const PrimRay&, const PrimTriangle&, float*);
+  bool intersects (const PrimRay&, const PrimTriangle&, bool, float*);
   bool intersects (const PrimRay&, const PrimAABox&);
   bool intersects (const PrimRay&, const PrimCylinder&, float*, float*);
   bool intersects (const PrimRay&, const PrimCone&, float*, float*);

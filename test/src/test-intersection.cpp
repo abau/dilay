@@ -28,11 +28,11 @@ void TestIntersection::test ()
   float t = 0.0f;
 
   assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
-                      nullptr));
+                      false, nullptr));
   assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
-                      nullptr) == false);
+                      false, nullptr) == false);
   assert (intersects (PrimRay (true, glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
-                      tri, nullptr));
+                      tri, false, nullptr));
 
   assert (
     intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), sph, &t));

@@ -792,7 +792,7 @@ struct DynamicMesh::Impl
       const PrimTriangle tri = this->face (i);
       float              t;
 
-      if (IntersectionUtil::intersects (ray, tri, &t))
+      if (IntersectionUtil::intersects (ray, tri, false, &t))
       {
         intersection.update (t, ray.pointAt (t), tri.normal ());
       }
@@ -806,7 +806,7 @@ struct DynamicMesh::Impl
       const PrimTriangle tri = this->face (i);
       float              t;
 
-      if (IntersectionUtil::intersects (ray, tri, &t))
+      if (IntersectionUtil::intersects (ray, tri, false, &t))
       {
         intersection.update (t, ray.pointAt (t), tri.normal (), i, *this->self);
       }
@@ -840,9 +840,9 @@ struct DynamicMesh::Impl
     return faces.isEmpty () == false;
   }
 
-  bool intersects (const PrimRay& ray, DynamicFaces& faces) const
+  bool intersects (const PrimRay& ray, bool both, DynamicFaces& faces) const
   {
-    return this->intersectsT<PrimRay> (ray, faces, nullptr);
+    return this->intersectsT<PrimRay> (ray, faces, both, nullptr);
   }
 
   bool intersects (const PrimPlane& plane, DynamicFaces& faces) const
@@ -934,7 +934,7 @@ DELEGATE_MEMBER (RenderMode&, DynamicMesh, renderMode, mesh)
 
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimRay&, Intersection&)
 DELEGATE2 (bool, DynamicMesh, intersects, const PrimRay&, DynamicMeshIntersection&)
-DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimRay&, DynamicFaces&)
+DELEGATE3_CONST (bool, DynamicMesh, intersects, const PrimRay&, bool, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimPlane&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimSphere&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimAABox&, DynamicFaces&)

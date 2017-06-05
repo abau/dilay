@@ -219,14 +219,19 @@ bool IntersectionUtil::intersects (const PrimRay& ray, const PrimPlane& plane, f
 
 // see
 // http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
-bool IntersectionUtil::intersects (const PrimRay& ray, const PrimTriangle& tri, float* t)
+bool IntersectionUtil::intersects (const PrimRay& ray, const PrimTriangle& tri, bool both, float* t)
 {
   const float dot = glm::dot (ray.direction (), tri.normal ());
 
-  if (dot > -Util::epsilon ())
+  if (both == false && dot > -Util::epsilon ())
   {
     return false;
   }
+  else if (both && dot < Util::epsilon () && dot > -Util::epsilon ())
+  {
+    return false;
+  }
+
   const glm::vec3 e1 = tri.vertex2 () - tri.vertex1 ();
   const glm::vec3 e2 = tri.vertex3 () - tri.vertex1 ();
   const glm::vec3 s1 = glm::cross (ray.direction (), e2);
