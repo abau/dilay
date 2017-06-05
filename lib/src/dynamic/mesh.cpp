@@ -224,17 +224,21 @@ struct DynamicMesh::Impl
       unsigned int a1, a2, a3;
       this->vertexIndices (a, a1, a2, a3);
 
-      if (i != a1)
-      {
-        f (a1);
-      }
-      if (i != a2)
+      if (i == a1)
       {
         f (a2);
       }
-      if (i != a3)
+      else if (i == a2)
       {
         f (a3);
+      }
+      else if (i == a3)
+      {
+        f (a1);
+      }
+      else
+      {
+        DILAY_IMPOSSIBLE
       }
     }
   }
@@ -333,7 +337,7 @@ struct DynamicMesh::Impl
 
     this->forEachVertexAdjacentToVertex (
       i, [this, &position](unsigned int v) { position += this->mesh.vertex (v); });
-    return position / float(this->vertexData[i].adjacentFaces.size () * 2);
+    return position / float(this->vertexData[i].adjacentFaces.size ());
   }
 
   glm::vec3 averageNormal (const DynamicFaces& faces) const
