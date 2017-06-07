@@ -74,7 +74,7 @@ public:
   void realignFace (unsigned int);
   void realignAllFaces ();
   void sanitize ();
-  void prune ();
+  void prune (std::vector<unsigned int>* = nullptr, std::vector<unsigned int>* = nullptr);
   bool checkConsistency ();
   bool mirror (const PrimPlane&);
   void bufferData ();

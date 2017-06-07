@@ -600,17 +600,26 @@ struct DynamicMesh::Impl
     this->octree.shrinkRoot ();
   }
 
-  void prune ()
+  void prune (std::vector<unsigned int>* pVertexIndexMap, std::vector<unsigned int>* pFaceIndexMap)
   {
     if (this->isPruned () == false)
     {
-      std::vector<unsigned int> vertexIndexMap;
-      std::vector<unsigned int> faceIndexMap;
+      std::vector<unsigned int> defaultVertexIndexMap;
+      std::vector<unsigned int> defaultFaceIndexMap;
+
+      if (pVertexIndexMap == nullptr)
+      {
+        pVertexIndexMap = &defaultVertexIndexMap;
+      }
+      if (pFaceIndexMap == nullptr)
+      {
+        pFaceIndexMap = &defaultFaceIndexMap;
+      }
 
       Util::prune<VertexData> (this->vertexData, [](const VertexData& d) { return d.isFree; },
-                               &vertexIndexMap);
+                               pVertexIndexMap);
       Util::prune<FaceData> (this->faceData, [](const FaceData& d) { return d.isFree; },
-                             &faceIndexMap);
+                             pFaceIndexMap);
 
       const unsigned int newNumVertices = this->vertexData.size ();
       const unsigned int newNumFaces = this->faceData.size ();
@@ -619,15 +628,15 @@ struct DynamicMesh::Impl
       {
         for (unsigned int& f : d.adjacentFaces)
         {
-          assert (faceIndexMap[f] != Util::invalidIndex ());
+          assert (pFaceIndexMap->at (f) != Util::invalidIndex ());
 
-          f = faceIndexMap[f];
+          f = pFaceIndexMap->at (f);
         }
       }
 
-      for (unsigned int i = 0; i < vertexIndexMap.size (); i++)
+      for (unsigned int i = 0; i < pVertexIndexMap->size (); i++)
       {
-        const unsigned int newV = vertexIndexMap[i];
+        const unsigned int newV = pVertexIndexMap->at (i);
         if (newV != Util::invalidIndex ())
         {
           this->mesh.vertex (newV, this->mesh.vertex (i));
@@ -644,22 +653,22 @@ struct DynamicMesh::Impl
       this->vertexVisited.resize (newNumVertices);
       assert (this->numVertices () == newNumVertices);
 
-      for (unsigned int i = 0; i < faceIndexMap.size (); i++)
+      for (unsigned int i = 0; i < pFaceIndexMap->size (); i++)
       {
-        const unsigned int newF = faceIndexMap[i];
+        const unsigned int newF = pFaceIndexMap->at (i);
         if (newF != Util::invalidIndex ())
         {
           const unsigned int oldI1 = this->mesh.index ((3 * i) + 0);
           const unsigned int oldI2 = this->mesh.index ((3 * i) + 1);
           const unsigned int oldI3 = this->mesh.index ((3 * i) + 2);
 
-          assert (vertexIndexMap[oldI1] != Util::invalidIndex ());
-          assert (vertexIndexMap[oldI2] != Util::invalidIndex ());
-          assert (vertexIndexMap[oldI3] != Util::invalidIndex ());
+          assert (pVertexIndexMap->at (oldI1) != Util::invalidIndex ());
+          assert (pVertexIndexMap->at (oldI2) != Util::invalidIndex ());
+          assert (pVertexIndexMap->at (oldI3) != Util::invalidIndex ());
 
-          this->mesh.index ((3 * newF) + 0, vertexIndexMap[oldI1]);
-          this->mesh.index ((3 * newF) + 1, vertexIndexMap[oldI2]);
-          this->mesh.index ((3 * newF) + 2, vertexIndexMap[oldI3]);
+          this->mesh.index ((3 * newF) + 0, pVertexIndexMap->at (oldI1));
+          this->mesh.index ((3 * newF) + 1, pVertexIndexMap->at (oldI2));
+          this->mesh.index ((3 * newF) + 2, pVertexIndexMap->at (oldI3));
         }
         else
         {
@@ -672,13 +681,13 @@ struct DynamicMesh::Impl
       this->faceVisited.resize (newNumFaces);
       assert (this->numFaces () == newNumFaces);
 
-      this->octree.updateIndices (faceIndexMap);
+      this->octree.updateIndices (*pFaceIndexMap);
     }
   }
 
   bool checkConsistency ()
   {
-    this->prune ();
+    this->prune (nullptr, nullptr);
     this->bufferData ();
 
     if (MeshUtil::checkConsistency (this->mesh))
@@ -733,7 +742,7 @@ struct DynamicMesh::Impl
     } while (ToolSculptAction::deleteFaces (*this->self, faces));
     assert (this->checkConsistency ());
 
-    this->prune ();
+    this->prune (nullptr, nullptr);
 
     Mesh mirrored = MeshUtil::mirror (this->mesh, plane);
     if (mirrored.numVertices () == 0)
@@ -924,7 +933,7 @@ DELEGATE1 (void, DynamicMesh, fromMesh, const Mesh&)
 DELEGATE1 (void, DynamicMesh, realignFace, unsigned int)
 DELEGATE (void, DynamicMesh, realignAllFaces)
 DELEGATE (void, DynamicMesh, sanitize)
-DELEGATE (void, DynamicMesh, prune)
+DELEGATE2 (void, DynamicMesh, prune, std::vector<unsigned int>*, std::vector<unsigned int>*)
 DELEGATE (bool, DynamicMesh, checkConsistency)
 DELEGATE1 (bool, DynamicMesh, mirror, const PrimPlane&)
 DELEGATE (void, DynamicMesh, bufferData)
