@@ -120,7 +120,7 @@ struct History::Impl
     this->past.push_front (std::move (sceneSnapshot (scene, config)));
   }
 
-  void dropSnapshot ()
+  void dropPastSnapshot ()
   {
     if (this->past.empty () == false)
     {
@@ -183,7 +183,7 @@ DELEGATE1_BIG3 (History, const Config&)
 DELEGATE1 (void, History, snapshotAll, const Scene&)
 DELEGATE1 (void, History, snapshotDynamicMeshes, const Scene&)
 DELEGATE1 (void, History, snapshotSketchMeshes, const Scene&)
-DELEGATE (void, History, dropSnapshot)
+DELEGATE (void, History, dropPastSnapshot)
 DELEGATE1 (void, History, undo, State&)
 DELEGATE1 (void, History, redo, State&)
 DELEGATE_CONST (bool, History, hasRecentDynamicMesh)

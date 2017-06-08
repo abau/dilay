@@ -188,7 +188,7 @@ struct ToolSculpt::Impl
 
         if (this->sculpted == false)
         {
-          this->self->state ().history ().dropSnapshot ();
+          this->self->state ().history ().dropPastSnapshot ();
         }
       }
       this->cursor.enable ();

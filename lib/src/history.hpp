@@ -21,7 +21,7 @@ public:
   void snapshotAll (const Scene&);
   void snapshotDynamicMeshes (const Scene&);
   void snapshotSketchMeshes (const Scene&);
-  void dropSnapshot ();
+  void dropPastSnapshot ();
   void undo (State&);
   void redo (State&);
   bool hasRecentDynamicMesh () const;
