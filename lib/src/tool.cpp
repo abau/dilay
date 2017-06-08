@@ -174,7 +174,7 @@ struct Tool::Impl
     this->state.scene ().forEachMesh ([this](DynamicMesh& mesh) {
       if (mesh.mirror (this->mirror ().plane ()) == false)
       {
-        ViewUtil::error (this->state.mainWindow (), QObject::tr ("Could not mirror mesh"));
+        ViewUtil::error (this->state.mainWindow (), QObject::tr ("Could not mirror mesh."));
       }
       mesh.bufferData ();
     });
