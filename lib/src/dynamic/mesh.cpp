@@ -35,6 +35,7 @@ namespace
     }
 
     void addAdjacentFace (unsigned int face) { this->adjacentFaces.push_back (face); }
+
     void deleteAdjacentFace (unsigned int face)
     {
       for (auto it = this->adjacentFaces.begin (); it != this->adjacentFaces.end (); ++it)
@@ -133,6 +134,71 @@ struct DynamicMesh::Impl
   }
 
   const glm::vec3& vertexNormal (unsigned int i) const { return this->mesh.normal (i); }
+
+  glm::vec3 faceNormal (unsigned int i) const
+  {
+    assert (this->isFreeFace (i) == false);
+
+    unsigned int i1, i2, i3;
+    this->vertexIndices (i, i1, i2, i3);
+
+    return glm::normalize (glm::cross (this->mesh.vertex (i2) - this->mesh.vertex (i1),
+                                       this->mesh.vertex (i3) - this->mesh.vertex (i1)));
+  }
+
+  void findAdjacent (unsigned int e1, unsigned int e2, unsigned int& leftFace,
+                     unsigned int& leftVertex, unsigned int& rightFace,
+                     unsigned int& rightVertex) const
+  {
+    assert (this->isFreeVertex (e1) == false);
+    assert (this->isFreeVertex (e2) == false);
+
+    leftFace = Util::invalidIndex ();
+    leftVertex = Util::invalidIndex ();
+    rightFace = Util::invalidIndex ();
+    rightVertex = Util::invalidIndex ();
+
+    for (unsigned int a : this->vertexData[e1].adjacentFaces)
+    {
+      unsigned int i1, i2, i3;
+      this->vertexIndices (a, i1, i2, i3);
+
+      if (e1 == i1 && e2 == i2)
+      {
+        leftFace = a;
+        leftVertex = i3;
+      }
+      else if (e1 == i2 && e2 == i1)
+      {
+        rightFace = a;
+        rightVertex = i3;
+      }
+      else if (e1 == i2 && e2 == i3)
+      {
+        leftFace = a;
+        leftVertex = i1;
+      }
+      else if (e1 == i3 && e2 == i2)
+      {
+        rightFace = a;
+        rightVertex = i1;
+      }
+      else if (e1 == i3 && e2 == i1)
+      {
+        leftFace = a;
+        leftVertex = i2;
+      }
+      else if (e1 == i1 && e2 == i3)
+      {
+        rightFace = a;
+        rightVertex = i2;
+      }
+    }
+    assert (leftFace != Util::invalidIndex ());
+    assert (leftVertex != Util::invalidIndex ());
+    assert (rightFace != Util::invalidIndex ());
+    assert (rightVertex != Util::invalidIndex ());
+  }
 
   const std::vector<unsigned int>& adjacentFaces (unsigned int i) const
   {
@@ -589,6 +655,14 @@ struct DynamicMesh::Impl
     this->octree.realignElement (i, tri.center (), tri.maxDimExtent ());
   }
 
+  void realignFaces (const DynamicFaces& faces)
+  {
+    for (unsigned int i : faces)
+    {
+      this->realignFace (i);
+    }
+  }
+
   void realignAllFaces ()
   {
     this->forEachFace ([this](unsigned int i) { this->realignFace (i); });
@@ -899,6 +973,7 @@ DELEGATE4_CONST (void, DynamicMesh, vertexIndices, unsigned int, unsigned int&, 
                  unsigned int&)
 DELEGATE1_CONST (PrimTriangle, DynamicMesh, face, unsigned int)
 DELEGATE1_CONST (const glm::vec3&, DynamicMesh, vertexNormal, unsigned int)
+DELEGATE1_CONST (glm::vec3, DynamicMesh, faceNormal, unsigned int)
 DELEGATE1_CONST (const std::vector<unsigned int>&, DynamicMesh, adjacentFaces, unsigned int)
 GETTER_CONST (const Mesh&, DynamicMesh, mesh)
 DELEGATE1 (void, DynamicMesh, forEachVertex, const std::function<void(unsigned int)>&)
@@ -931,6 +1006,7 @@ DELEGATE (void, DynamicMesh, setAllNormals)
 DELEGATE (void, DynamicMesh, reset)
 DELEGATE1 (void, DynamicMesh, fromMesh, const Mesh&)
 DELEGATE1 (void, DynamicMesh, realignFace, unsigned int)
+DELEGATE1 (void, DynamicMesh, realignFaces, const DynamicFaces&)
 DELEGATE (void, DynamicMesh, realignAllFaces)
 DELEGATE (void, DynamicMesh, sanitize)
 DELEGATE2 (void, DynamicMesh, prune, std::vector<unsigned int>*, std::vector<unsigned int>*)
@@ -968,3 +1044,10 @@ DELEGATE1_MEMBER (void, DynamicMesh, wireframeColor, mesh, const Color&)
 
 DELEGATE_CONST (void, DynamicMesh, printStatistics)
 DELEGATE1 (void, DynamicMesh, runFromConfig, const Config&)
+
+void DynamicMesh::findAdjacent (unsigned int e1, unsigned int e2, unsigned int& leftFace,
+                                unsigned int& leftVertex, unsigned int& rightFace,
+                                unsigned int& rightVertex) const
+{
+  return this->impl->findAdjacent (e1, e2, leftFace, leftVertex, rightFace, rightVertex);
+}

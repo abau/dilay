@@ -131,57 +131,6 @@ namespace
     }
   };
 
-  void findAdjacent (const DynamicMesh& mesh, unsigned int e1, unsigned int e2,
-                     unsigned int& leftFace, unsigned int& leftVertex, unsigned int& rightFace,
-                     unsigned int& rightVertex)
-  {
-    leftFace = Util::invalidIndex ();
-    leftVertex = Util::invalidIndex ();
-    rightFace = Util::invalidIndex ();
-    rightVertex = Util::invalidIndex ();
-
-    for (unsigned int a : mesh.adjacentFaces (e1))
-    {
-      unsigned int i1, i2, i3;
-      mesh.vertexIndices (a, i1, i2, i3);
-
-      if (e1 == i1 && e2 == i2)
-      {
-        leftFace = a;
-        leftVertex = i3;
-      }
-      else if (e1 == i2 && e2 == i1)
-      {
-        rightFace = a;
-        rightVertex = i3;
-      }
-      else if (e1 == i2 && e2 == i3)
-      {
-        leftFace = a;
-        leftVertex = i1;
-      }
-      else if (e1 == i3 && e2 == i2)
-      {
-        rightFace = a;
-        rightVertex = i1;
-      }
-      else if (e1 == i3 && e2 == i1)
-      {
-        leftFace = a;
-        leftVertex = i2;
-      }
-      else if (e1 == i1 && e2 == i3)
-      {
-        rightFace = a;
-        rightVertex = i2;
-      }
-    }
-    assert (leftFace != Util::invalidIndex ());
-    assert (leftVertex != Util::invalidIndex ());
-    assert (rightFace != Util::invalidIndex ());
-    assert (rightVertex != Util::invalidIndex ());
-  };
-
   void extendAndFilterDomain (const SculptBrush& brush, DynamicFaces& faces, unsigned int numRings)
   {
     assert (faces.hasUncomitted () == false);
@@ -476,7 +425,7 @@ namespace
     for (const ui_pair& edge : edgeSet.edgeSet)
     {
       unsigned int leftFace, leftVertex, rightFace, rightVertex;
-      findAdjacent (mesh, edge.first, edge.second, leftFace, leftVertex, rightFace, rightVertex);
+      mesh.findAdjacent (edge.first, edge.second, leftFace, leftVertex, rightFace, rightVertex);
 
       if (isRelaxable (edge, leftVertex, rightVertex))
       {
@@ -758,7 +707,7 @@ namespace
     }
 
     unsigned int leftFace, leftVertex, rightFace, rightVertex;
-    findAdjacent (mesh, i1, i2, leftFace, leftVertex, rightFace, rightVertex);
+    mesh.findAdjacent (i1, i2, leftFace, leftVertex, rightFace, rightVertex);
 
     const unsigned int vLeftVertex = mesh.valence (leftVertex);
     const unsigned int vRightVertex = mesh.valence (rightVertex);

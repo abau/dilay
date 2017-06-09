@@ -95,6 +95,7 @@ struct ViewToolPane::Impl
     this->addToolButton<ToolSculptSmooth> (toolPaneLayout, QObject::tr ("Smooth"));
     this->addToolButton<ToolSculptPinch> (toolPaneLayout, QObject::tr ("Pinch"));
     this->addToolButton<ToolSculptReduce> (toolPaneLayout, QObject::tr ("Reduce"));
+    this->addToolButton<ToolTrimMesh> (toolPaneLayout, QObject::tr ("Trim"));
 
     toolPaneLayout->addStretch (1);
 

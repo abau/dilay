@@ -128,6 +128,14 @@ struct History::Impl
     }
   }
 
+  void dropFutureSnapshot ()
+  {
+    if (this->future.empty () == false)
+    {
+      this->future.pop_front ();
+    }
+  }
+
   void undo (State& state)
   {
     if (this->past.empty () == false)
@@ -184,6 +192,7 @@ DELEGATE1 (void, History, snapshotAll, const Scene&)
 DELEGATE1 (void, History, snapshotDynamicMeshes, const Scene&)
 DELEGATE1 (void, History, snapshotSketchMeshes, const Scene&)
 DELEGATE (void, History, dropPastSnapshot)
+DELEGATE (void, History, dropFutureSnapshot)
 DELEGATE1 (void, History, undo, State&)
 DELEGATE1 (void, History, redo, State&)
 DELEGATE_CONST (bool, History, hasRecentDynamicMesh)

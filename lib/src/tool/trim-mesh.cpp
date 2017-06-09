@@ -6,71 +6,86 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "config.hpp"
+#include "dynamic/mesh-intersection.hpp"
+#include "dynamic/mesh.hpp"
 #include "history.hpp"
 #include "scene.hpp"
 #include "state.hpp"
-#include "view/pointing-event.hpp"
 #include "tool/trim-mesh/action.hpp"
 #include "tool/trim-mesh/border.hpp"
 #include "tool/trim-mesh/split-mesh.hpp"
 #include "tools.hpp"
+#include "view/main-window.hpp"
+#include "view/pointing-event.hpp"
 #include "view/util.hpp"
-#include "winged/face-intersection.hpp"
-#include "winged/mesh.hpp"
 
-struct ToolTrimMesh::Impl {
-  ToolTrimMesh*            self;
-  std::vector <glm::ivec2> points;
+struct ToolTrimMesh::Impl
+{
+  ToolTrimMesh*           self;
+  std::vector<glm::ivec2> points;
 
   Impl (ToolTrimMesh* s)
     : self (s)
-  {}
-
-  ToolResponse runMoveEvent (const ViewPointingEvent&) {
-    if (this->points.empty ()) {
-      return ToolResponse::None;
-    }
-    else {
-      return ToolResponse::Redraw;
-    }
+  {
   }
 
-  ToolResponse runPressEvent (const ViewPointingEvent&) {
-    return ToolResponse::None;
+  ToolResponse runInitialize () { return ToolResponse::None; }
+
+  ToolResponse runMoveEvent (const ViewPointingEvent&)
+  {
+    return this->points.empty () ? ToolResponse::None : ToolResponse::Redraw;
   }
 
-  ToolResponse runReleaseEvent (const ViewPointingEvent& e) {
-    if (e.primaryButton () == false) {
+  ToolResponse runPressEvent (const ViewPointingEvent&) { return ToolResponse::None; }
+
+  ToolResponse runReleaseEvent (const ViewPointingEvent& e)
+  {
+    if (e.primaryButton () == false)
+    {
       return ToolResponse::None;
     }
-    else {
-      WingedFaceIntersection faceIntersection;
+    else
+    {
+      DynamicMeshIntersection intersection;
 
       this->points.push_back (e.ivec2 ());
 
-      if ( this->points.size () >= 2 
-        && this->self->intersectsScene (e.ivec2 (), faceIntersection) == false )
+      if (this->points.size () >= 2 &&
+          this->self->intersectsScene (e.ivec2 (), intersection) == false)
       {
-        this->self->snapshotWingedMeshes ();
+        this->self->snapshotDynamicMeshes ();
 
-        ToolTrimMeshBorder border       (this->self->state ().camera (), this->points);
-        bool               intersection (false);
+        ToolTrimMeshBorder border (this->self->state ().camera (), this->points);
+        bool               intersection = false;
+        bool               failed = false;
 
-        this->self->state ().scene ().forEachMesh ( [&intersection, &border, this]
-                                                    (WingedMesh& mesh)
+        this->self->state ().scene ().forEachMesh (
+          [&intersection, &failed, &border, this](DynamicMesh& mesh) {
+            if (failed)
+            {
+              return;
+            }
+            else if (ToolTrimMeshSplitMesh::splitMesh (mesh, border) &&
+                     ToolTrimMeshAction::trimMesh (mesh, border))
+            {
+              intersection = true;
+            }
+            else
+            {
+              failed = true;
+            }
+          });
+
+        if (failed)
         {
-          if ( ToolTrimMeshSplitMesh::splitMesh (mesh, border)
-            && ToolTrimMeshAction :: trimMesh (mesh, border) )
-          {
-            intersection = true;
-          }
-          else {
-            mesh.fromMesh   (this->self->state ().history ().meshSnapshot (mesh.index ()));
-            mesh.bufferData ();
-          }
-        });
-        if (intersection == false) {
-          this->self->state ().history ().dropSnapshot ();
+          this->self->state ().undo ();
+          this->self->state ().history ().dropFutureSnapshot ();
+          ViewUtil::error (this->self->state ().mainWindow (),
+                           QObject::tr ("Could not trim mesh."));
+        }
+        else if (intersection == false)
+        {
+          this->self->state ().history ().dropPastSnapshot ();
         }
         this->points.clear ();
       }
@@ -78,25 +93,28 @@ struct ToolTrimMesh::Impl {
     }
   }
 
-  void runPaint (QPainter& painter) const {
+  void runPaint (QPainter& painter) const
+  {
     const QPoint cursorPos (ViewUtil::toQPoint (this->self->cursorPosition ()));
-    QPen pen (this->self->config ().get <Color> ("editor/on-screen-color").qColor ());
+    QPen         pen (this->self->config ().get<Color> ("editor/on-screen-color").qColor ());
 
-    pen    .setWidth (2);
-    painter.setPen   (pen);
+    pen.setWidth (2);
+    painter.setPen (pen);
 
-    if (this->points.empty () == false) {
-      for (unsigned int i = 0; i < this->points.size () - 1; i++) {
-        painter.drawLine ( ViewUtil::toQPoint (this->points[i + 0])
-                         , ViewUtil::toQPoint (this->points[i + 1]) );
+    if (this->points.empty () == false)
+    {
+      for (unsigned int i = 0; i < this->points.size () - 1; i++)
+      {
+        painter.drawLine (ViewUtil::toQPoint (this->points[i + 0]),
+                          ViewUtil::toQPoint (this->points[i + 1]));
       }
       painter.drawLine (ViewUtil::toQPoint (this->points[this->points.size () - 1]), cursorPos);
     }
   }
 };
 
-DELEGATE_TOOL                   (ToolTrimMesh)
-DELEGATE_TOOL_RUN_MOVE_EVENT    (ToolTrimMesh)
-DELEGATE_TOOL_RUN_PRESS_EVENT   (ToolTrimMesh)
+DELEGATE_TOOL (ToolTrimMesh)
+DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
+DELEGATE_TOOL_RUN_PRESS_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
-DELEGATE_TOOL_RUN_PAINT         (ToolTrimMesh)
+DELEGATE_TOOL_RUN_PAINT (ToolTrimMesh)

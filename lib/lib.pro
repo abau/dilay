@@ -68,6 +68,10 @@ SOURCES += \
            src/tool/sculpt/util/action.cpp \
            src/tool/sculpt/util/brush.cpp \
            src/tool/sketch-spheres.cpp \
+           src/tool/trim-mesh.cpp \
+           src/tool/trim-mesh/action.cpp \
+           src/tool/trim-mesh/border.cpp \
+           src/tool/trim-mesh/split-mesh.cpp \
            src/tool/util/movement.cpp \
            src/tool/util/scaling.cpp \
            src/tool/util/step.cpp \
@@ -144,6 +148,9 @@ HEADERS += \
            src/tool/sculpt.hpp \
            src/tool/sculpt/util/action.hpp \
            src/tool/sculpt/util/brush.hpp \
+           src/tool/trim-mesh/action.hpp \
+           src/tool/trim-mesh/border.hpp \
+           src/tool/trim-mesh/split-mesh.hpp \
            src/tool/util/movement.hpp \
            src/tool/util/scaling.hpp \
            src/tool/util/step.hpp \

@@ -5,12 +5,12 @@
 #ifndef DILAY_TOOL_TRIM_MESH_SPLIT_MESH
 #define DILAY_TOOL_TRIM_MESH_SPLIT_MESH
 
+class DynamicMesh;
 class ToolTrimMeshBorder;
-class WingedMesh;
 
-namespace ToolTrimMeshSplitMesh {
-
-  bool splitMesh (WingedMesh&, ToolTrimMeshBorder&);
+namespace ToolTrimMeshSplitMesh
+{
+  bool splitMesh (DynamicMesh&, ToolTrimMeshBorder&);
 }
 
 #endif

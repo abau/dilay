@@ -39,6 +39,9 @@ public:
   void             vertexIndices (unsigned int, unsigned int&, unsigned int&, unsigned int&) const;
   PrimTriangle     face (unsigned int) const;
   const glm::vec3& vertexNormal (unsigned int) const;
+  glm::vec3        faceNormal (unsigned int) const;
+  void findAdjacent (unsigned int, unsigned int, unsigned int&, unsigned int&, unsigned int&,
+                     unsigned int&) const;
 
   const std::vector<unsigned int>& adjacentFaces (unsigned int) const;
 
@@ -72,6 +75,7 @@ public:
   void reset ();
   void fromMesh (const Mesh&);
   void realignFace (unsigned int);
+  void realignFaces (const DynamicFaces&);
   void realignAllFaces ();
   void sanitize ();
   void prune (std::vector<unsigned int>* = nullptr, std::vector<unsigned int>* = nullptr);
