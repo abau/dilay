@@ -29,6 +29,15 @@ glm::vec3 PrimPlane::project (const glm::vec3& p) const
   return p - (this->_normal * this->distance (p));
 }
 
+glm::vec2 PrimPlane::project2d (const glm::vec3& p) const
+{
+  const glm::vec3 proj = this->project (p) - this->_point;
+  const glm::vec3 u = Util::orthogonal (this->_normal);
+  const glm::vec3 v = glm::cross (this->_normal, u);
+
+  return glm::vec2 (glm::dot (u, proj), glm::dot (v, proj));
+}
+
 glm::vec3 PrimPlane::projectDirection (const glm::vec3& d) const
 {
   return this->project (d + this->_point) - this->_point;

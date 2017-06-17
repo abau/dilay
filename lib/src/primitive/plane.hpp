@@ -18,6 +18,7 @@ public:
   float     absDistance (const glm::vec3&) const;
   bool      onPlane (const glm::vec3&) const;
   glm::vec3 project (const glm::vec3&) const;
+  glm::vec2 project2d (const glm::vec3&) const;
   glm::vec3 projectDirection (const glm::vec3&) const;
   glm::vec3 mirror (const glm::vec3&) const;
   glm::vec3 mirrorDirection (const glm::vec3&) const;
