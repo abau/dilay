@@ -47,6 +47,12 @@ namespace
       {
       }
 
+      bool operator== (const TwoDVertex& o) const
+      {
+        return this->index == o.index && this->position == o.position &&
+               this->curvature == o.curvature;
+      }
+
       void setCurvature (const glm::vec2& prev, const glm::vec2& next)
       {
         switch (this->location (prev, next))
@@ -93,14 +99,14 @@ namespace
 
     struct TwoDTriangle
     {
-      TwoDVertex v1;
-      TwoDVertex v2;
-      TwoDVertex v3;
+      unsigned int i1;
+      unsigned int i2;
+      unsigned int i3;
 
       TwoDTriangle (const TwoDVertex& a, const TwoDVertex& b, const TwoDVertex& c)
-        : v1 (a)
-        , v2 (b)
-        , v3 (c)
+        : i1 (a.index)
+        , i2 (b.index)
+        , i3 (c.index)
       {
       }
     };
@@ -183,11 +189,10 @@ namespace
       }
     }
 
-    TwoDTriangles triangelize (TwoDVertices vs)
+    TwoDTriangles triangelize (const TwoDVertices& vs)
     {
+      assert (vs.front () == vs.back ());
       assert (vs.size () >= 3);
-
-      vs.push_back (vs.front ());
 
       const size_t   n = vs.size () - 1;
       Matrix<float>  weights (n, n, 0.0f);
@@ -593,6 +598,8 @@ namespace
         current.inner.clear ();
 
         Simple::combine (current.outer, simpleInner);
+
+        current.outer.vertices.push_back (current.outer.vertices.front ());
         Simple::TwoDTriangles ts = Simple::triangelize (current.outer.vertices);
         triangles.insert (triangles.end (), ts.begin (), ts.end ());
       }
@@ -695,9 +702,9 @@ namespace
 
         for (const Simple::TwoDTriangle& t : triangles)
         {
-          mesh.addIndex (t.v1.index);
-          mesh.addIndex (t.v2.index);
-          mesh.addIndex (t.v3.index);
+          mesh.addIndex (t.i1);
+          mesh.addIndex (t.i2);
+          mesh.addIndex (t.i3);
         }
       }
       else
