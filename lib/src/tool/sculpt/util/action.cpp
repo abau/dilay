@@ -5,61 +5,19 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include <unordered_map>
-#include <unordered_set>
 #include "dynamic/faces.hpp"
 #include "dynamic/mesh.hpp"
-#include "hash.hpp"
 #include "intersection.hpp"
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
 #include "tool/sculpt/util/action.hpp"
 #include "tool/sculpt/util/brush.hpp"
+#include "tool/sculpt/util/edge-collection.hpp"
 #include "util.hpp"
 
 namespace
 {
   constexpr float minEdgeLength = 0.001f;
-
-  ui_pair makeUiKey (unsigned int i1, unsigned int i2)
-  {
-    assert (i1 != i2);
-    return ui_pair (glm::min (i1, i2), glm::max (i1, i2));
-  }
-
-  struct EdgeSet
-  {
-    std::unordered_set<ui_pair> edgeSet;
-
-    void insertEdge (unsigned int i1, unsigned int i2)
-    {
-      this->edgeSet.emplace (makeUiKey (i1, i2));
-    }
-  };
-
-  struct NewVertices
-  {
-    typedef std::unordered_map<ui_pair, unsigned int> EdgeMap;
-    EdgeMap edgeMap;
-
-    EdgeMap::const_iterator findVertex (unsigned int i1, unsigned int i2) const
-    {
-      return this->edgeMap.find (makeUiKey (i1, i2));
-    }
-
-    bool hasVertex (unsigned int i1, unsigned int i2) const
-    {
-      return this->findVertex (i1, i2) != this->edgeMap.end ();
-    }
-
-    void insertInEdge (unsigned int i1, unsigned int i2, unsigned int i3)
-    {
-      assert (this->hasVertex (i1, i2) == false);
-      this->edgeMap.emplace (makeUiKey (i1, i2), i3);
-    }
-
-    void reset () { this->edgeMap.clear (); }
-  };
 
   struct NewFaces
   {
@@ -222,16 +180,16 @@ namespace
     }
   }
 
-  void splitEdges (DynamicMesh& mesh, NewVertices& newV, float maxLength, DynamicFaces& faces)
+  void splitEdges (DynamicMesh& mesh, ToolSculptEdgeMap& newE, float maxLength, DynamicFaces& faces)
   {
     assert (faces.hasUncomitted () == false);
 
-    const auto split = [&mesh, &newV, maxLength](unsigned int i1, unsigned int i2) {
+    const auto split = [&mesh, &newE, maxLength](unsigned int i1, unsigned int i2) {
       if (glm::distance2 (mesh.vertex (i1), mesh.vertex (i2)) > maxLength * maxLength)
       {
         const glm::vec3 normal = glm::normalize (mesh.vertexNormal (i1) + mesh.vertexNormal (i2));
         const unsigned int i3 = mesh.addVertex (getSplitPosition (mesh, i1, i2), normal);
-        newV.insertInEdge (i1, i2, i3);
+        newE.insertEdge (i1, i2, i3);
         return true;
       }
       else
@@ -240,23 +198,23 @@ namespace
       }
     };
 
-    faces.filter ([&mesh, &newV, &split](unsigned int f) {
+    faces.filter ([&mesh, &newE, &split](unsigned int f) {
       bool wasSplit = false;
 
       unsigned int i1, i2, i3;
       mesh.vertexIndices (f, i1, i2, i3);
 
-      if (newV.hasVertex (i1, i2) == false)
+      if (newE.hasEdge (i1, i2) == false)
       {
         wasSplit = split (i1, i2) || wasSplit;
       }
 
-      if (newV.hasVertex (i1, i3) == false)
+      if (newE.hasEdge (i1, i3) == false)
       {
         wasSplit = split (i1, i3) || wasSplit;
       }
 
-      if (newV.hasVertex (i2, i3) == false)
+      if (newE.hasEdge (i2, i3) == false)
       {
         wasSplit = split (i2, i3) || wasSplit;
       }
@@ -264,104 +222,104 @@ namespace
     });
   }
 
-  void triangulate (DynamicMesh& mesh, const NewVertices& newV, DynamicFaces& faces)
+  void triangulate (DynamicMesh& mesh, const ToolSculptEdgeMap& newE, DynamicFaces& faces)
   {
     assert (faces.hasUncomitted () == false);
 
     NewFaces newF;
 
-    mesh.forEachFaceExt (faces, [&mesh, &newV, &faces, &newF](unsigned int f) {
+    mesh.forEachFaceExt (faces, [&mesh, &newE, &faces, &newF](unsigned int f) {
       unsigned int i1, i2, i3;
       mesh.vertexIndices (f, i1, i2, i3);
 
-      const NewVertices::EdgeMap::const_iterator it12 = newV.findVertex (i1, i2);
-      const NewVertices::EdgeMap::const_iterator it13 = newV.findVertex (i1, i3);
-      const NewVertices::EdgeMap::const_iterator it23 = newV.findVertex (i2, i3);
-      const NewVertices::EdgeMap::const_iterator end = newV.edgeMap.end ();
+      const unsigned int e12 = newE.findEdge (i1, i2);
+      const unsigned int e13 = newE.findEdge (i1, i3);
+      const unsigned int e23 = newE.findEdge (i2, i3);
+      const unsigned int invalid = Util::invalidIndex ();
 
       const unsigned int v1 = mesh.valence (i1);
       const unsigned int v2 = mesh.valence (i2);
       const unsigned int v3 = mesh.valence (i3);
 
-      if (it12 == end && it13 == end && it23 == end)
+      if (e12 == invalid && e13 == invalid && e23 == invalid)
       {
       }
       // One new vertex
-      else if (it12 != end && it13 == end && it23 == end)
+      else if (e12 != invalid && e13 == invalid && e23 == invalid)
       {
         newF.deleteFace (f);
-        newF.addFace (i1, it12->second, i3);
-        newF.addFace (i3, it12->second, i2);
+        newF.addFace (i1, e12, i3);
+        newF.addFace (i3, e12, i2);
       }
-      else if (it12 == end && it13 != end && it23 == end)
+      else if (e12 == invalid && e13 != invalid && e23 == invalid)
       {
         newF.deleteFace (f);
-        newF.addFace (i3, it13->second, i2);
-        newF.addFace (i2, it13->second, i1);
+        newF.addFace (i3, e13, i2);
+        newF.addFace (i2, e13, i1);
       }
-      else if (it12 == end && it13 == end && it23 != end)
+      else if (e12 == invalid && e13 == invalid && e23 != invalid)
       {
         newF.deleteFace (f);
-        newF.addFace (i2, it23->second, i1);
-        newF.addFace (i1, it23->second, i3);
+        newF.addFace (i2, e23, i1);
+        newF.addFace (i1, e23, i3);
       }
       // Two new vertices
-      else if (it12 != end && it13 != end && it23 == end)
+      else if (e12 != invalid && e13 != invalid && e23 == invalid)
       {
         newF.deleteFace (f);
-        newF.addFace (it12->second, it13->second, i1);
+        newF.addFace (e12, e13, i1);
 
         if (v2 < v3)
         {
-          newF.addFace (i2, i3, it13->second);
-          newF.addFace (i2, it13->second, it12->second);
+          newF.addFace (i2, i3, e13);
+          newF.addFace (i2, e13, e12);
         }
         else
         {
-          newF.addFace (i3, it12->second, i2);
-          newF.addFace (i3, it13->second, it12->second);
+          newF.addFace (i3, e12, i2);
+          newF.addFace (i3, e13, e12);
         }
       }
-      else if (it12 != end && it13 == end && it23 != end)
+      else if (e12 != invalid && e13 == invalid && e23 != invalid)
       {
         newF.deleteFace (f);
-        newF.addFace (it23->second, it12->second, i2);
+        newF.addFace (e23, e12, i2);
 
         if (v1 < v3)
         {
-          newF.addFace (i1, it23->second, i3);
-          newF.addFace (i1, it12->second, it23->second);
+          newF.addFace (i1, e23, i3);
+          newF.addFace (i1, e12, e23);
         }
         else
         {
-          newF.addFace (i3, i1, it12->second);
-          newF.addFace (i3, it12->second, it23->second);
+          newF.addFace (i3, i1, e12);
+          newF.addFace (i3, e12, e23);
         }
       }
-      else if (it12 == end && it13 != end && it23 != end)
+      else if (e12 == invalid && e13 != invalid && e23 != invalid)
       {
         newF.deleteFace (f);
-        newF.addFace (it13->second, it23->second, i3);
+        newF.addFace (e13, e23, i3);
 
         if (v1 < v2)
         {
-          newF.addFace (i1, i2, it23->second);
-          newF.addFace (i1, it23->second, it13->second);
+          newF.addFace (i1, i2, e23);
+          newF.addFace (i1, e23, e13);
         }
         else
         {
-          newF.addFace (i2, it13->second, i1);
-          newF.addFace (i2, it23->second, it13->second);
+          newF.addFace (i2, e13, i1);
+          newF.addFace (i2, e23, e13);
         }
       }
       // Three new vertices
-      else if (it12 != end && it13 != end && it23 != end)
+      else if (e12 != invalid && e13 != invalid && e23 != invalid)
       {
         newF.deleteFace (f);
-        newF.addFace (it12->second, it23->second, it13->second);
-        newF.addFace (i1, it12->second, it13->second);
-        newF.addFace (i2, it23->second, it12->second);
-        newF.addFace (i3, it13->second, it23->second);
+        newF.addFace (e12, e23, e13);
+        newF.addFace (i1, e12, e13);
+        newF.addFace (i2, e23, e12);
+        newF.addFace (i3, e13, e23);
       }
       else
       {
@@ -393,7 +351,7 @@ namespace
       return (vE1 > 3) && (vE2 > 3) && (post < pre);
     };
 
-    EdgeSet edgeSet;
+    ToolSculptEdgeSet edgeSet;
     mesh.forEachVertex (faces, [&mesh, &edgeSet](unsigned int i) {
       if (mesh.valence (i) > 6)
       {
@@ -402,7 +360,7 @@ namespace
       }
     });
 
-    for (const ui_pair& edge : edgeSet.edgeSet)
+    for (const ui_pair& edge : edgeSet)
     {
       unsigned int leftFace, leftVertex, rightFace, rightVertex;
       mesh.findAdjacent (edge.first, edge.second, leftFace, leftVertex, rightFace, rightVertex);
@@ -828,26 +786,26 @@ namespace ToolSculptAction
       }
       else
       {
-        NewVertices newVertices;
+        ToolSculptEdgeMap newEdges;
         do
         {
-          newVertices.reset ();
+          newEdges.reset ();
 
           extendAndFilterDomain (brush, faces, 1);
           extendDomainByPoles (mesh, faces);
 
           const float maxLength = glm::max (brush.subdivThreshold (), 2.0f * minEdgeLength);
-          splitEdges (mesh, newVertices, maxLength, faces);
+          splitEdges (mesh, newEdges, maxLength, faces);
 
-          if (newVertices.edgeMap.empty () == false)
+          if (newEdges.isEmpty () == false)
           {
-            triangulate (mesh, newVertices, faces);
+            triangulate (mesh, newEdges, faces);
           }
           extendDomain (mesh, faces, 1);
           relaxEdges (mesh, faces);
           smooth (mesh, faces);
           finalize (mesh, faces);
-        } while (faces.numElements () > 0 && newVertices.edgeMap.empty () == false);
+        } while (faces.numElements () > 0 && newEdges.isEmpty () == false);
 
         faces = brush.getAffectedFaces ();
         brush.sculpt (faces);
