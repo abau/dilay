@@ -37,26 +37,6 @@ namespace
     }
   };
 
-  struct EdgeMap
-  {
-    std::unordered_map<ui_pair, std::vector<unsigned int>> edgeMap;
-
-    void insertEdge (unsigned int i1, unsigned int i2, unsigned face)
-    {
-      const ui_pair key = makeUiKey (i1, i2);
-      auto          it = this->edgeMap.find (key);
-
-      if (it == this->edgeMap.end ())
-      {
-        this->edgeMap.emplace (key, std::vector<unsigned int> ({face}));
-      }
-      else
-      {
-        it->second.push_back (face);
-      }
-    }
-  };
-
   struct NewVertices
   {
     typedef std::unordered_map<ui_pair, unsigned int> EdgeMap;
