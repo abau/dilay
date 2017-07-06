@@ -835,16 +835,4 @@ namespace ToolSculptAction
     mesh.bufferData ();
     return collapsed;
   }
-
-  bool collapseDegeneratedEdges (DynamicMesh& mesh)
-  {
-    DynamicFaces faces;
-    mesh.forEachFace ([&faces](unsigned int i) { faces.insert (i); });
-    faces.commit ();
-
-    const bool collapsed = collapseEdgesByLength (mesh, minEdgeLength * minEdgeLength, faces);
-    finalize (mesh, faces);
-    mesh.bufferData ();
-    return collapsed;
-  }
 }
