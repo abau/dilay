@@ -5,6 +5,7 @@
 #ifndef DILAY_DYNAMIC_OCTREE
 #define DILAY_DYNAMIC_OCTREE
 
+#include <functional>
 #include <glm/fwd.hpp>
 #include <vector>
 #include "macro.hpp"
