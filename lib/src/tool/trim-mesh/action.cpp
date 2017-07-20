@@ -5,7 +5,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include <vector>
+#include <list>
 #include "dynamic/mesh.hpp"
 #include "mesh-util.hpp"
 #include "mesh.hpp"
@@ -34,36 +34,18 @@ namespace
       unsigned int index;
       glm::vec2    position;
       Curvature    curvature;
+      bool         isEar;
+      float        distanceToPrev;
+      float        distanceToNext;
 
       TwoDVertex (unsigned int i, const glm::vec2& p)
         : index (i)
         , position (p)
-        , curvature (Curvature::Concave)
+        , curvature (Curvature::Convex)
+        , isEar (false)
+        , distanceToPrev (0.0f)
+        , distanceToNext (0.0f)
       {
-      }
-
-      TwoDVertex ()
-        : TwoDVertex (Util::invalidIndex (), glm::vec3 (Util::maxFloat ()))
-      {
-      }
-
-      bool operator== (const TwoDVertex& o) const
-      {
-        return this->index == o.index && this->position == o.position &&
-               this->curvature == o.curvature;
-      }
-
-      void setCurvature (const glm::vec2& prev, const glm::vec2& next)
-      {
-        switch (this->location (prev, next))
-        {
-          case Location::Right:
-            this->curvature = Curvature::Convex;
-            break;
-          case Location::Left:
-            this->curvature = Curvature::Concave;
-            break;
-        }
       }
 
       Location location (const glm::vec2& from, const glm::vec2& to) const
@@ -97,231 +79,242 @@ namespace
       }
     };
 
-    struct TwoDTriangle
-    {
-      unsigned int i1;
-      unsigned int i2;
-      unsigned int i3;
+    typedef std::list<TwoDVertex>        TwoDVertices;
+    typedef TwoDVertices::iterator       TwoDVertexRef;
+    typedef TwoDVertices::const_iterator TwoDVertexCRef;
 
-      TwoDTriangle (const TwoDVertex& a, const TwoDVertex& b, const TwoDVertex& c)
-        : i1 (a.index)
-        , i2 (b.index)
-        , i3 (c.index)
-      {
-      }
-    };
-
-    template <typename T> struct Matrix
-    {
-      std::vector<std::vector<T>> rows;
-
-      Matrix (size_t numRows, size_t numColumns, const T& init)
-      {
-        this->rows.resize (numRows);
-
-        for (std::vector<T>& row : this->rows)
-        {
-          row.resize (numColumns, init);
-        }
-      }
-
-      T& at (size_t i, size_t j) { return this->rows[i][j]; }
-
-      const T& at (size_t i, size_t j) const { return this->rows[i][j]; }
-    };
-
-    float weight (const TwoDVertex& v1, const TwoDVertex& v2, const TwoDVertex& v3)
-    {
-      const glm::vec2& p1 = v1.position;
-      const glm::vec2& p2 = v2.position;
-      const glm::vec2& p3 = v3.position;
-
-      if (v3.isLeft (p1, p2) == false)
-      {
-        return Util::maxFloat ();
-      }
-
-      const float d12 = glm::distance (p1, p2);
-      const float d23 = glm::distance (p2, p3);
-      const float d13 = glm::distance (p1, p3);
-
-      if (d12 <= Util::epsilon () || d23 <= Util::epsilon () || d13 <= Util::epsilon ())
-      {
-        return 0.0f;
-      }
-
-      const float bestAngle = glm::cos (glm::radians (60.0f));
-      const float a1 = glm::dot (p2 - p1, p3 - p1) / (d12 * d13);
-      const float a2 = glm::dot (p1 - p2, p3 - p2) / (d12 * d23);
-      const float a3 = glm::dot (p1 - p3, p2 - p3) / (d13 * d23);
-
-      const float weight =
-        glm::abs (bestAngle - a1) + glm::abs (bestAngle - a2) + glm::abs (bestAngle - a3);
-
-      return weight;
-    }
-
-    typedef std::vector<TwoDTriangle> TwoDTriangles;
-    typedef std::vector<TwoDVertex>   TwoDVertices;
-
-    void trace (const TwoDVertices& vs, const Matrix<size_t>& minIndices, size_t i, size_t k,
-                TwoDTriangles& tris)
-    {
-      if (i + 2 == k)
-      {
-        tris.emplace_back (vs.at (i), vs.at (i + 1), vs.at (k));
-      }
-      else
-      {
-        const size_t o = minIndices.at (i, k);
-        if (o != Util::invalidIndex ())
-        {
-          if (o != i + 1)
-          {
-            trace (vs, minIndices, i, o, tris);
-          }
-          tris.emplace_back (vs.at (i), vs.at (o), vs.at (k));
-          if (o != k - 1)
-          {
-            trace (vs, minIndices, o, k, tris);
-          }
-        }
-      }
-    }
-
-    TwoDTriangles triangelize (const TwoDVertices& vs)
-    {
-      assert (vs.front () == vs.back ());
-      assert (vs.size () >= 3);
-
-      const size_t   n = vs.size () - 1;
-      Matrix<float>  weights (n, n, 0.0f);
-      Matrix<size_t> minIndices (n - 2, (2 * n) - 4, Util::invalidIndex ());
-
-      for (size_t i = 0; i <= n - 3; i++)
-      {
-        weights.at (i, i + 2) = weight (vs.at (i), vs.at (i + 1), vs.at (i + 2));
-      }
-
-      size_t j = 2;
-      do
-      {
-        j++;
-        for (size_t i = 0; i <= n - j - 1; i++)
-        {
-          const size_t k = i + j;
-          float        minW = Util::maxFloat ();
-          size_t       minIndex = Util::invalidIndex ();
-
-          for (size_t m = i + 1; m < k; m++)
-          {
-            const float im = weights.at (i, m);
-            const float mk = weights.at (m, k);
-            const float imk = weight (vs.at (i), vs.at (m), vs.at (k));
-
-            if (im == Util::maxFloat () || mk == Util::maxFloat () || imk == Util::maxFloat ())
-            {
-              continue;
-            }
-            else if (im + mk + imk < minW)
-            {
-              minW = im + mk + imk;
-              minIndex = m;
-            }
-          }
-          weights.at (i, k) = minW;
-          minIndices.at (i, k) = minIndex;
-        }
-      } while (j < n - 1);
-
-      std::vector<TwoDTriangle> tris;
-      trace (vs, minIndices, 0, n - 1, tris);
-      return tris;
-    }
+    struct TwoDPolyline;
+    typedef std::vector<TwoDPolyline> TwoDPolylines;
+    typedef std::vector<unsigned int> NewIndices;
 
     struct TwoDPolyline
     {
-      TwoDVertices vertices;
-      unsigned int maxXIndex;
-      bool         isCCW;
+      TwoDVertices  vertices;
+      TwoDVertexRef maxX;
 
       TwoDPolyline (const TwoDVertices& vs)
         : vertices (vs)
+        , maxX (this->vertices.end ())
       {
-        const unsigned int n = this->vertices.size ();
+      }
 
-        this->maxXIndex = 0;
-        for (unsigned int i = 0; i < n; i++)
+      TwoDVertexRef  begin () { return this->vertices.begin (); }
+      TwoDVertexCRef begin () const { return this->vertices.begin (); }
+      TwoDVertexRef  end () { return this->vertices.end (); }
+      TwoDVertexCRef end () const { return this->vertices.end (); }
+      unsigned int   size () const { return this->vertices.size (); }
+      TwoDVertexRef erase (TwoDVertexRef v) { return this->vertices.erase (v); }
+
+      TwoDVertexRef prev (TwoDVertexRef v)
+      {
+        return std::prev (v == this->begin () ? this->end () : v);
+      }
+
+      TwoDVertexCRef prev (TwoDVertexCRef v) const
+      {
+        return std::prev (v == this->begin () ? this->end () : v);
+      }
+
+      TwoDVertexRef next (TwoDVertexRef v)
+      {
+        return v == std::prev (this->end ()) ? this->begin () : std::next (v);
+      }
+
+      TwoDVertexCRef next (TwoDVertexCRef v) const
+      {
+        return v == std::prev (this->end ()) ? this->begin () : std::next (v);
+      }
+
+      void setCurvature (TwoDVertexRef v) const
+      {
+        switch (v->location (this->prev (v)->position, this->next (v)->position))
         {
-          if (this->vertices[i].position.x > this->vertices[this->maxXIndex].position.x)
+          case Location::Right:
+            v->curvature = Curvature::Convex;
+            break;
+          case Location::Left:
+            v->curvature = Curvature::Concave;
+            break;
+        }
+      }
+
+      void setIsEar (TwoDVertexRef v) const
+      {
+        if (v->curvature == Curvature::Convex)
+        {
+          const TwoDVertexCRef p = this->prev (v);
+          const TwoDVertexCRef n = this->next (v);
+
+          for (TwoDVertexCRef it = this->begin (); it != this->end (); ++it)
           {
-            this->maxXIndex = i;
+            if (it != p && it != v && it != n && it->curvature == Curvature::Concave)
+            {
+              if (it->isInsideTriangle (p->position, v->position, n->position))
+              {
+                v->isEar = false;
+                return;
+              }
+            }
+          }
+          v->isEar = true;
+        }
+        else
+        {
+          v->isEar = false;
+        }
+      }
+
+      void setDistanceToPrevNext (TwoDVertexRef v) const
+      {
+        const glm::vec2& p = this->prev (v)->position;
+        const glm::vec2& n = this->next (v)->position;
+
+        v->distanceToPrev = glm::distance (v->position, p);
+        v->distanceToNext = glm::distance (v->position, n);
+      }
+
+      void setProperties ()
+      {
+        this->maxX = this->vertices.end ();
+
+        for (TwoDVertexRef v = this->begin (); v != this->end (); ++v)
+        {
+          this->setCurvature (v);
+
+          if (this->maxX == this->vertices.end () || v->position.x > this->maxX->position.x)
+          {
+            this->maxX = v;
           }
         }
+        assert (this->maxX != this->vertices.end ());
 
-        for (unsigned int i = 0; i < n; i++)
+        for (TwoDVertexRef v = this->begin (); v != this->end (); ++v)
         {
-          if (i == 0)
+          this->setIsEar (v);
+          this->setDistanceToPrevNext (v);
+        }
+      }
+
+      bool isCCW () const
+      {
+        int n = 0;
+
+        for (TwoDVertexCRef v = this->begin (); v != this->end (); ++v)
+        {
+          if (v->curvature == Curvature::Convex)
           {
-            this->vertices[i].setCurvature (vs[n - 1].position, vs[1].position);
+            n++;
           }
-          else if (i == n - 1)
+          else if (v->curvature == Curvature::Concave)
           {
-            this->vertices[i].setCurvature (vs[n - 2].position, vs[0].position);
+            n--;
+          }
+        }
+        return n > 0;
+      }
+
+      void removeEar (TwoDVertexRef v)
+      {
+        assert (v->isEar);
+        assert (this->size () > 3);
+
+        TwoDVertexRef p = this->prev (v);
+        TwoDVertexRef n = this->next (v);
+
+        this->erase (v);
+        this->setCurvature (p);
+        this->setCurvature (n);
+        this->setIsEar (p);
+        this->setIsEar (n);
+        this->setDistanceToPrevNext (p);
+        this->setDistanceToPrevNext (n);
+      }
+
+      bool updateCandidate (TwoDVertexCRef v, float& weight) const
+      {
+        const glm::vec2& p = this->prev (v)->position;
+        const glm::vec2& n = this->next (v)->position;
+
+        const float vp = v->distanceToPrev;
+        const float vn = v->distanceToNext;
+
+        if (Util::almostEqual (0.0f, vp) || Util::almostEqual (0.0f, vn))
+        {
+          weight = Util::minFloat ();
+          return true;
+        }
+        else
+        {
+          const float a = glm::dot ((p - v->position) / vp, (n - v->position) / vn);
+          if (a < weight)
+          {
+            weight = a;
+            return true;
           }
           else
           {
-            this->vertices[i].setCurvature (vs[i - 1].position, vs[i + 1].position);
+            return false;
           }
         }
+      }
 
-        int i = 0;
-        for (const TwoDVertex& v : this->vertices)
+      bool fillHole (NewIndices& newIndices)
+      {
+        assert (this->isCCW ());
+
+        while (this->size () > 3)
         {
-          if (v.curvature == Curvature::Convex)
+          TwoDVertexRef earCandidate = this->end ();
+          float         weight = Util::maxFloat ();
+
+          for (TwoDVertexRef v = this->begin (); v != this->end (); ++v)
           {
-            i++;
+            if (v->isEar && updateCandidate (v, weight))
+            {
+              earCandidate = v;
+            }
           }
-          else if (v.curvature == Curvature::Concave)
+
+          if (earCandidate != this->end ())
           {
-            i--;
+            newIndices.push_back (this->prev (earCandidate)->index);
+            newIndices.push_back (earCandidate->index);
+            newIndices.push_back (this->next (earCandidate)->index);
+
+            this->removeEar (earCandidate);
+          }
+          else
+          {
+            DILAY_WARN_DEBUG ("Could not find ear candidate");
+            return false;
           }
         }
-        this->isCCW = i > 0;
+        assert (this->size () == 3);
+
+        newIndices.push_back (this->vertices.begin ()->index);
+        newIndices.push_back (std::next (this->vertices.begin (), 1)->index);
+        newIndices.push_back (std::next (this->vertices.begin (), 2)->index);
+
+        return true;
       }
 
-      unsigned int nextIndex (unsigned int i) const
+      bool contains (TwoDVertexCRef v) const
       {
-        return i == this->vertices.size () - 1 ? 0 : i + 1;
-      }
-
-      unsigned int prevIndex (unsigned int i) const
-      {
-        return i == 0 ? this->vertices.size () - 1 : i - 1;
-      }
-
-      const TwoDVertex& maxX () const { return this->vertices[this->maxXIndex]; }
-
-      bool contains (const TwoDVertex& v) const
-      {
-        assert (this->vertices.size () >= 3);
-
-        const float vY = v.position.y;
+        assert (this->size () >= 3);
+        const float vY = v->position.y;
         int         windingNumber = 0;
 
-        for (unsigned int i = 0; i < this->vertices.size (); i++)
+        for (TwoDVertexCRef v0 = this->begin (); v0 != this->end (); ++v0)
         {
-          const TwoDVertex& v0 = this->vertices[i];
-          const TwoDVertex& v1 = this->vertices[this->nextIndex (i)];
+          TwoDVertexCRef v1 = this->next (v0);
+          const float    v0Y = v0->position.y;
+          const float    v1Y = v1->position.y;
 
-          const float v0Y = v0.position.y;
-          const float v1Y = v1.position.y;
-
-          if (v0Y <= vY && vY < v1Y && v.isLeft (v0.position, v1.position))
+          if (v0Y <= vY && vY < v1Y && v->isLeft (v0->position, v1->position))
           {
             windingNumber++;
           }
-          else if (v1Y <= vY && vY < v0Y && v.isRight (v0.position, v1.position))
+          else if (v1Y <= vY && vY < v0Y && v->isRight (v0->position, v1->position))
           {
             windingNumber--;
           }
@@ -331,7 +324,7 @@ namespace
 
       bool contains (const TwoDPolyline& poly) const
       {
-        for (const TwoDVertex& v : poly.vertices)
+        for (TwoDVertexCRef v = poly.begin (); v != poly.end (); ++v)
         {
           if (this->contains (v) == false)
           {
@@ -342,55 +335,54 @@ namespace
       }
     };
 
-    unsigned int findMutuallyVisibleVertex (const TwoDPolyline& outer, const TwoDPolyline& inner)
+    TwoDVertexCRef findMutuallyVisibleVertex (const TwoDPolyline& outer, const TwoDPolyline& inner)
     {
-      auto getIntersection = [&outer, &inner](unsigned int i0,
-                                              glm::vec2& intersection) -> unsigned int {
-        assert (i0 < outer.vertices.size ());
-
-        unsigned int      i1 = outer.nextIndex (i0);
-        const glm::vec2&  p0 = outer.vertices[i0].position;
-        const glm::vec2&  p1 = outer.vertices[i1].position;
-        const TwoDVertex& m = inner.maxX ();
-        const glm::vec2&  pm = m.position;
+      auto getIntersection = [&outer, &inner](TwoDVertexCRef v0,
+                                              glm::vec2& intersection) -> TwoDVertexCRef {
+        TwoDVertexCRef   noCandidate = outer.end ();
+        TwoDVertexCRef   v1 = outer.next (v0);
+        TwoDVertexCRef   m = inner.maxX;
+        const glm::vec2& p0 = v0->position;
+        const glm::vec2& p1 = v1->position;
+        const glm::vec2& pm = m->position;
 
         if (Util::almostEqual (pm.y, p0.y) && Util::almostEqual (pm.y, p1.y))
         {
           if (p0.x <= pm.x && p1.x <= pm.x)
           {
-            return Util::invalidIndex ();
+            return noCandidate;
           }
           else if (p0.x <= pm.x && pm.x < p1.x)
           {
             intersection = p1;
-            return i1;
+            return v1;
           }
           else if (p1.x <= pm.x && pm.x < p0.x)
           {
             intersection = p0;
-            return i0;
+            return v0;
           }
           else if (p0.x <= p1.x)
           {
             intersection = p0;
-            return i0;
+            return v0;
           }
           else if (p1.x <= p0.x)
           {
             intersection = p1;
-            return i1;
+            return v1;
           }
           else
           {
             DILAY_IMPOSSIBLE;
           }
         }
-        else if (m.isLeft (p0, p1) && p0.y <= pm.y && pm.y <= p1.y)
+        else if (m->isLeft (p0, p1) && p0.y <= pm.y && pm.y <= p1.y)
         {
           if (Util::almostEqual (p0.x, p1.x))
           {
             intersection = p0;
-            return i0;
+            return v0;
           }
           else
           {
@@ -398,68 +390,60 @@ namespace
             const float x = ((pm.y - p0.y) / slope) + p0.x;
 
             intersection = glm::vec2 (x, pm.y);
-            return p0.x >= p1.x ? i0 : i1;
+
+            return p0.x >= p1.x ? v0 : v1;
           }
         }
         else
         {
-          return Util::invalidIndex ();
+          return noCandidate;
         }
       };
 
       auto findInitialCandidate = [&getIntersection, &outer,
-                                   &inner](glm::vec2& minIntersection) -> unsigned int {
-        unsigned int minCandidate = Util::invalidIndex ();
-        float        minDistance = Util::maxFloat ();
+                                   &inner](glm::vec2& minIntersection) -> TwoDVertexCRef {
+        TwoDVertexCRef candidate = outer.end ();
+        float          minDistance = Util::maxFloat ();
 
-        for (unsigned int i = 0; i < outer.vertices.size (); i++)
+        for (TwoDVertexCRef v = outer.begin (); v != outer.end (); ++v)
         {
-          glm::vec2          intersection;
-          const unsigned int candidate = getIntersection (i, intersection);
+          glm::vec2 intersection;
 
-          if (candidate != Util::invalidIndex ())
+          if (getIntersection (v, intersection) != outer.end ())
           {
-            const float distance = glm::distance2 (inner.maxX ().position, intersection);
+            const float distance = glm::distance2 (inner.maxX->position, intersection);
+
             if (distance < minDistance)
             {
-              minCandidate = candidate;
+              candidate = v;
               minDistance = distance;
               minIntersection = intersection;
             }
           }
         }
-        assert (minCandidate != Util::invalidIndex ());
-        return minCandidate;
+        assert (candidate != outer.end ());
+        return candidate;
       };
 
       auto findClosestContainedConcaveVertex = [&outer, &inner](
-        const glm::vec2& intersection, unsigned int candidateIndex) -> unsigned int {
-        const TwoDVertex& candidate = outer.vertices[candidateIndex];
+        const glm::vec2& intersection, TwoDVertexCRef candidate) -> TwoDVertexCRef {
+        TwoDVertexCRef closest = outer.end ();
+        float          minDistance = Util::maxFloat ();
+        float          minAngle = Util::maxFloat ();
 
-        unsigned int     closest = Util::invalidIndex ();
-        float            minDistance = Util::maxFloat ();
-        float            minAngle = Util::maxFloat ();
-        const glm::vec2& innerMaxPos = inner.maxX ().position;
-
-        for (unsigned int i = 0; i < outer.vertices.size (); i++)
+        for (TwoDVertexCRef v = outer.begin (); v != outer.end (); ++v)
         {
-          const TwoDVertex& v = outer.vertices[i];
-
-          if (i != candidateIndex && v.curvature == Curvature::Concave)
+          if (v != candidate && v->curvature == Curvature::Concave)
           {
-            if (closest == Util::invalidIndex ())
+            if (v->isInsideTriangle (candidate->position, intersection, inner.maxX->position))
             {
-              closest = i;
-            }
-            else if (v.isInsideTriangle (candidate.position, intersection, innerMaxPos))
-            {
-              const float d = glm::distance (v.position, innerMaxPos);
-              const float a =
-                glm::dot (candidate.position - innerMaxPos, (v.position - innerMaxPos) / d);
+              const float d = glm::distance (v->position, inner.maxX->position);
+              const float a = glm::dot (candidate->position - inner.maxX->position,
+                                        (v->position - inner.maxX->position) / d);
 
               if (a < minAngle || (Util::almostEqual (a, minAngle) && d < minDistance))
               {
-                closest = i;
+                closest = v;
                 minAngle = a;
                 minDistance = d;
               }
@@ -469,66 +453,61 @@ namespace
         return closest;
       };
 
-      glm::vec2          intersection;
-      const unsigned int candidate = findInitialCandidate (intersection);
+      glm::vec2      intersection;
+      TwoDVertexCRef candidate = findInitialCandidate (intersection);
 
-      if (intersection == outer.vertices[candidate].position)
+      if (intersection == candidate->position)
       {
         return candidate;
       }
       else
       {
-        const unsigned int closest = findClosestContainedConcaveVertex (intersection, candidate);
-        if (closest == Util::invalidIndex ())
-        {
-          return candidate;
-        }
-        else
-        {
-          return closest;
-        }
+        TwoDVertexCRef r = findClosestContainedConcaveVertex (intersection, candidate);
+        return r == outer.end () ? candidate : r;
       }
     }
 
     TwoDPolyline combine (const TwoDPolyline& outer, const TwoDPolyline& inner)
     {
-      assert (outer.isCCW);
-      assert (inner.isCCW == false);
+      assert (outer.isCCW ());
+      assert (inner.isCCW () == false);
 
-      const unsigned int visible = findMutuallyVisibleVertex (outer, inner);
+      TwoDVertices   vertices;
+      TwoDVertexCRef visible = findMutuallyVisibleVertex (outer, inner);
+      TwoDVertexCRef v = inner.maxX;
 
-      TwoDVertices vertices;
-      vertices.reserve (outer.vertices.size () + inner.vertices.size () + 2);
-
-      vertices.push_back (outer.vertices[visible]);
-
-      unsigned int index = inner.maxXIndex;
-      for (unsigned int i = 0; i < inner.vertices.size (); i++)
+      vertices.push_back (*visible);
+      do
       {
-        vertices.push_back (inner.vertices[index]);
-        index = inner.nextIndex (index);
-      }
-      vertices.push_back (inner.vertices[inner.maxXIndex]);
+        vertices.push_back (*v);
+        v = inner.next (v);
+      } while (v != inner.maxX);
 
-      index = visible;
-      for (unsigned int i = 0; i < outer.vertices.size (); i++)
+      vertices.push_back (*inner.maxX);
+
+      v = visible;
+      do
       {
-        vertices.push_back (outer.vertices[index]);
-        index = outer.nextIndex (index);
-      }
+        vertices.push_back (*v);
+        v = outer.next (v);
+      } while (v != visible);
+
       return TwoDPolyline (vertices);
     }
 
-    typedef std::vector<TwoDPolyline> TwoDPolylines;
-
     void combine (TwoDPolyline& outer, TwoDPolylines& inner)
     {
+      for (TwoDPolyline& i : inner)
+      {
+        i.setProperties ();
+      }
       std::sort (inner.begin (), inner.end (), [](const TwoDPolyline& a, const TwoDPolyline& b) {
-        return a.maxX ().position.x > b.maxX ().position.x;
+        return a.maxX->position.x > b.maxX->position.x;
       });
 
       for (TwoDPolyline& i : inner)
       {
+        outer.setProperties ();
         outer = combine (outer, i);
       }
       inner.clear ();
@@ -555,59 +534,43 @@ namespace
         , inner (i)
       {
       }
-
-      bool checkOrder (bool isCCW = true) const
-      {
-        if (this->outer.isCCW != isCCW)
-        {
-          return false;
-        }
-        else
-        {
-          for (const TwoDPolyline& i : this->inner)
-          {
-            if (i.checkOrder (isCCW == false) == false)
-            {
-              return false;
-            }
-          }
-        }
-        return true;
-      }
     };
 
-    Simple::TwoDTriangles triangelize (TwoDPolylines& remaining)
+    bool fillHole (TwoDPolylines& polys, Simple::NewIndices& newIndices)
     {
-      Simple::TwoDTriangles triangles;
-
-      while (remaining.empty () == false)
+      while (polys.empty () == false)
       {
-        TwoDPolyline current (std::move (remaining.back ()));
-        remaining.pop_back ();
+        TwoDPolyline poly (std::move (polys.back ()));
+        polys.pop_back ();
 
         Simple::TwoDPolylines simpleInner;
-        for (TwoDPolyline& i : current.inner)
+
+        for (TwoDPolyline& i : poly.inner)
         {
           for (TwoDPolyline& oi : i.inner)
           {
-            remaining.push_back (std::move (oi));
+            polys.push_back (std::move (oi));
           }
           i.inner.clear ();
           simpleInner.push_back (std::move (i.outer));
         }
-        current.inner.clear ();
+        poly.inner.clear ();
 
-        Simple::combine (current.outer, simpleInner);
+        Simple::combine (poly.outer, simpleInner);
 
-        current.outer.vertices.push_back (current.outer.vertices.front ());
-        Simple::TwoDTriangles ts = Simple::triangelize (current.outer.vertices);
-        triangles.insert (triangles.end (), ts.begin (), ts.end ());
+        poly.outer.setProperties ();
+        if (poly.outer.fillHole (newIndices) == false)
+        {
+          return false;
+        }
       }
-      return triangles;
+      return true;
     }
 
     TwoDPolylines nest (const Simple::TwoDPolylines& ss)
     {
+      TwoDPolylines ns;
+
       std::function<bool(TwoDPolyline&, const Simple::TwoDPolyline&)> insert =
         [&insert](TwoDPolyline& n, const Simple::TwoDPolyline& s) {
           if (n.outer.contains (s))
@@ -636,7 +599,6 @@ namespace
           }
         };
 
-      TwoDPolylines ns;
       for (const Simple::TwoDPolyline& s : ss)
       {
         bool wasInserted = false;
@@ -656,61 +618,40 @@ namespace
       }
       return ns;
     }
-
-    bool checkOrder (const TwoDPolylines& ns)
-    {
-      for (const TwoDPolyline& n : ns)
-      {
-        if (n.checkOrder () == false)
-        {
-          return false;
-        }
-      }
-      return true;
-    }
   }
 
   bool fillHole (Mesh& mesh, ToolTrimMeshBorder& border)
   {
     border.deleteEmptyPolylines ();
+    Simple::NewIndices newIndices;
 
     for (unsigned int s = 0; s < border.numSegments (); s++)
     {
       Simple::TwoDPolylines            polylines;
       const ToolTrimMeshBorderSegment& segment = border.segment (s);
-      int                              j = 1;
 
       for (const ToolTrimMeshBorderSegment::Polyline& p : segment.polylines ())
       {
         assert (p.size () >= 3);
-
         Simple::TwoDVertices vertices;
-        vertices.reserve (p.size ());
 
         for (unsigned int i : p)
         {
           vertices.emplace_back (i, segment.plane ().project2d (mesh.vertex (i)));
         }
         polylines.emplace_back (vertices);
-        j++;
       }
       Nested::TwoDPolylines nested = Nested::nest (polylines);
 
-      if (Nested::checkOrder (nested))
-      {
-        std::vector<Simple::TwoDTriangle> triangles = Nested::triangelize (nested);
-
-        for (const Simple::TwoDTriangle& t : triangles)
-        {
-          mesh.addIndex (t.i1);
-          mesh.addIndex (t.i2);
-          mesh.addIndex (t.i3);
-        }
-      }
-      else
+      if (Nested::fillHole (nested, newIndices) == false)
       {
         return false;
       }
+    }
+
+    for (unsigned int i : newIndices)
+    {
+      mesh.addIndex (i);
     }
     return true;
   }
