@@ -48,24 +48,22 @@ namespace
         mesh.deleteFace (i);
       }
 
-      if (mesh.isEmpty () == false)
+      if (mesh.isEmpty ())
       {
-        for (unsigned int i = 0; i < this->vertexIndices.size (); i += 3)
-        {
-          const unsigned int f = mesh.addFace (
-            this->vertexIndices[i + 0], this->vertexIndices[i + 1], this->vertexIndices[i + 2]);
+        mesh.setupOctreeRoot ();
+      }
 
-          if (i >= this->facesToDelete.size () * 3)
-          {
-            faces.insert (f);
-          }
-        }
-        return this->facesToDelete.size () <= (this->vertexIndices.size () / 3);
-      }
-      else
+      for (unsigned int i = 0; i < this->vertexIndices.size (); i += 3)
       {
-        return false;
+        const unsigned int f = mesh.addFace (this->vertexIndices[i + 0], this->vertexIndices[i + 1],
+                                             this->vertexIndices[i + 2]);
+
+        if (i >= this->facesToDelete.size () * 3)
+        {
+          faces.insert (f);
+        }
       }
+      return this->facesToDelete.size () <= (this->vertexIndices.size () / 3);
     }
   };
 

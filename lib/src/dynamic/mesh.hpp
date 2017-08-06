@@ -62,6 +62,7 @@ public:
   float     averageEdgeLengthSqr (unsigned int) const;
 
   const Mesh&  mesh () const;
+  void         setupOctreeRoot ();
   unsigned int addVertex (const glm::vec3&, const glm::vec3&);
   unsigned int addFace (unsigned int, unsigned int, unsigned int);
   void         deleteVertex (unsigned int);

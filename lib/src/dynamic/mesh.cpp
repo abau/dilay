@@ -467,6 +467,22 @@ struct DynamicMesh::Impl
     return (glm::distance2 (v1, v2) + glm::distance2 (v1, v3) + glm::distance2 (v2, v3)) / 3.0f;
   }
 
+  void setupOctreeRoot () { this->setupOctreeRoot (this->mesh); }
+
+  void setupOctreeRoot (const Mesh& mesh)
+  {
+    assert (this->octree.hasRoot () == false);
+
+    glm::vec3 minVertex, maxVertex;
+    mesh.minMax (minVertex, maxVertex);
+
+    const glm::vec3 center = (maxVertex + minVertex) * glm::vec3 (0.5f);
+    const glm::vec3 delta = maxVertex - minVertex;
+    const float     width = glm::max (glm::max (delta.x, delta.y), delta.z);
+
+    this->octree.setupRoot (center, width);
+  }
+
   unsigned int addVertex (const glm::vec3& vertex, const glm::vec3& normal)
   {
     assert (this->vertexData.size () == this->mesh.numVertices ());
@@ -596,20 +612,6 @@ struct DynamicMesh::Impl
   void setAllNormals ()
   {
     this->forEachVertex ([this](unsigned int i) { this->setVertexNormal (i); });
-  }
-
-  void setupOctreeRoot (const Mesh& mesh)
-  {
-    assert (this->octree.hasRoot () == false);
-
-    glm::vec3 minVertex, maxVertex;
-    mesh.minMax (minVertex, maxVertex);
-
-    const glm::vec3 center = (maxVertex + minVertex) * glm::vec3 (0.5f);
-    const glm::vec3 delta = maxVertex - minVertex;
-    const float     width = glm::max (glm::max (delta.x, delta.y), delta.z);
-
-    this->octree.setupRoot (center, width);
   }
 
   void reset ()
@@ -995,6 +997,7 @@ DELEGATE1_CONST (glm::vec3, DynamicMesh, averageNormal, const DynamicFaces&)
 DELEGATE1_CONST (glm::vec3, DynamicMesh, averageNormal, unsigned int)
 DELEGATE1_CONST (float, DynamicMesh, averageEdgeLengthSqr, const DynamicFaces&)
 DELEGATE1_CONST (float, DynamicMesh, averageEdgeLengthSqr, unsigned int)
+DELEGATE (void, DynamicMesh, setupOctreeRoot)
 DELEGATE2 (unsigned int, DynamicMesh, addVertex, const glm::vec3&, const glm::vec3&)
 DELEGATE3 (unsigned int, DynamicMesh, addFace, unsigned int, unsigned int, unsigned int)
 DELEGATE1 (void, DynamicMesh, deleteVertex, unsigned int)
