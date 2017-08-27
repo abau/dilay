@@ -720,6 +720,7 @@ struct DynamicMesh::Impl
         }
         else
         {
+          // Expensive (!) in debug builds
           assert (std::find (this->freeVertexIndices.begin (), this->freeVertexIndices.end (), i) !=
                   this->freeVertexIndices.end ());
         }
@@ -748,6 +749,7 @@ struct DynamicMesh::Impl
         }
         else
         {
+          // Expensive (!) in debug builds
           assert (std::find (this->freeFaceIndices.begin (), this->freeFaceIndices.end (), i) !=
                   this->freeFaceIndices.end ());
         }
