@@ -8,8 +8,15 @@
 
 PrimPlane::PrimPlane (const glm::vec3& p, const glm::vec3& n)
   : _point (p)
-  , _normal (glm::normalize (n))
 {
+  this->normal (n);
+}
+
+void PrimPlane::normal (const glm::vec3& n)
+{
+  this->_normal = glm::normalize (n);
+  this->_u = glm::normalize (Util::orthogonal (this->_normal));
+  this->_v = glm::normalize (glm::cross (this->_normal, this->_u));
 }
 
 float PrimPlane::distance (const glm::vec3& p) const
@@ -31,19 +38,14 @@ glm::vec3 PrimPlane::project (const glm::vec3& p) const
 
 glm::vec3 PrimPlane::project (const glm::vec2& p) const
 {
-  const glm::vec3 u = Util::orthogonal (this->_normal);
-  const glm::vec3 v = glm::cross (this->_normal, u);
-
-  return this->_point + (u * p.x) + (v * p.y);
+  return this->_point + (this->_u * p.x) + (this->_v * p.y);
 }
 
 glm::vec2 PrimPlane::project2d (const glm::vec3& p) const
 {
-  const glm::vec3 u = Util::orthogonal (this->_normal);
-  const glm::vec3 v = glm::cross (this->_normal, u);
   const glm::vec3 proj = this->project (p) - this->_point;
 
-  return glm::vec2 (glm::dot (u, proj), glm::dot (v, proj));
+  return glm::vec2 (glm::dot (this->_u, proj), glm::dot (this->_v, proj));
 }
 
 glm::vec3 PrimPlane::projectDirection (const glm::vec3& d) const

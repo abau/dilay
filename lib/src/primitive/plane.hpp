@@ -25,7 +25,9 @@ public:
   glm::vec3 mirrorDirection (const glm::vec3&) const;
 
   MEMBER_REF_GETTER_SETTER (glm::vec3, point)
-  MEMBER_REF_GETTER_SETTER (glm::vec3, normal)
+  MEMBER_REF_GETTER_EXPLICIT_SETTER (glm::vec3, normal)
+  MEMBER_REF_GETTER (glm::vec3, u)
+  MEMBER_REF_GETTER (glm::vec3, v)
 };
 
 std::ostream& operator<< (std::ostream&, const PrimPlane&);

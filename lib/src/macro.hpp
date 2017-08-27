@@ -548,6 +548,30 @@ private:                                             \
 
 #define MEMBER_REF_GETTER_SETTER(type, name) _MEMBER_GETTER_SETTER (type, name, const type&)
 
+#define _MEMBER_GETTER_EXPLICIT_SETTER(type, name, pass_type) \
+public:                                                       \
+  pass_type name () const { return this->_##name; }           \
+  void name (pass_type v);                                    \
+                                                              \
+private:                                                      \
+  type _##name;
+
+#define MEMBER_GETTER_EXPLICIT_SETTER(type, name) _MEMBER_GETTER_EXPLICIT_SETTER (type, name, type)
+
+#define MEMBER_REF_GETTER_EXPLICIT_SETTER(type, name) \
+  _MEMBER_GETTER_EXPLICIT_SETTER (type, name, const type&)
+
+#define _MEMBER_GETTER(type, name, pass_type)       \
+public:                                             \
+  pass_type name () const { return this->_##name; } \
+                                                    \
+private:                                            \
+  type _##name;
+
+#define MEMBER_GETTER(type, name) _MEMBER_GETTER (type, name, type)
+
+#define MEMBER_REF_GETTER(type, name) _MEMBER_GETTER (type, name, const type&)
+
 // safe references
 
 #define SAFE_REF(r, method)   \
