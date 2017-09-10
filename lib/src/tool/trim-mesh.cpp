@@ -55,12 +55,12 @@ struct ToolTrimMesh::Impl
       {
         this->self->snapshotDynamicMeshes ();
 
-        ToolTrimMeshBorder border (this->self->state ().camera (), this->points);
-        bool               intersection = false;
-        bool               failed = false;
+        bool intersection = false;
+        bool failed = false;
 
         this->self->state ().scene ().forEachMesh (
-          [&intersection, &failed, &border, this](DynamicMesh& mesh) {
+          [&intersection, &failed, this](DynamicMesh& mesh) {
+            ToolTrimMeshBorder border (this->self->state ().camera (), this->points);
             if (failed)
             {
               return;
