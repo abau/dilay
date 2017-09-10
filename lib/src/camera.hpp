@@ -32,7 +32,7 @@ public:
   void updateResolution (const glm::uvec2&);
   void setModelViewProjection (const glm::mat4x4&, const glm::mat3x3&, bool);
 
-  void      set (const glm::vec3&, const glm::vec3&, const glm::vec3&);
+  void      set (const glm::vec3&, const glm::vec3&);
   void      setGaze (const glm::vec3&);
   void      stepAlongGaze (float);
   void      verticalRotation (float);

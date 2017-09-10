@@ -19,7 +19,6 @@ struct Camera::Impl
   Renderer    renderer;
   glm::vec3   gazePoint;
   glm::vec3   toEyePoint;
-  glm::vec3   up;
   glm::vec3   right;
   glm::mat4x4 projection;
   glm::mat4x4 view;
@@ -35,9 +34,14 @@ struct Camera::Impl
     , resolution (config.get<int> ("window/initial-width"),
                   config.get<int> ("window/initial-height"))
   {
-    this->set (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 6.0f),
-               glm::vec3 (0.0f, 1.0f, 0.0f));
+    this->set (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 6.0f));
     this->runFromConfig (config);
+  }
+
+  const glm::vec3& up () const
+  {
+    static constexpr glm::vec3 up (0.0f, 1.0f, 0.0f);
+    return up;
   }
 
   glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
@@ -75,13 +79,19 @@ struct Camera::Impl
     }
   }
 
-  void set (const glm::vec3& g, const glm::vec3& e, const glm::vec3& u)
+  void set (const glm::vec3& g, const glm::vec3& e)
   {
     this->gazePoint = g;
     this->toEyePoint = e;
-    this->up = glm::normalize (u);
-    this->right = Util::colinear (e, u) ? glm::vec3 (1.0f, 0.0f, 0.0f)
-                                        : glm::normalize (glm::cross (this->up, this->toEyePoint));
+
+    if (Util::colinear (e, this->up ()))
+    {
+      this->right = glm::vec3 (1.0f, 0.0f, 0.0f);
+    }
+    else
+    {
+      this->right = glm::normalize (glm::cross (this->up (), this->toEyePoint));
+    }
     this->updateView ();
   }
 
@@ -108,7 +118,7 @@ struct Camera::Impl
 
   void verticalRotation (float angle)
   {
-    const glm::quat q = glm::angleAxis (angle, this->up);
+    const glm::quat q = glm::angleAxis (angle, this->up ());
     this->right = glm::rotate (q, this->right);
     this->toEyePoint = glm::rotate (q, this->toEyePoint);
     this->updateView ();
@@ -202,7 +212,7 @@ GETTER_CONST (Renderer&, Camera, renderer)
 GETTER_CONST (const glm::uvec2&, Camera, resolution)
 GETTER_CONST (const glm::vec3&, Camera, gazePoint)
 GETTER_CONST (const glm::vec3&, Camera, toEyePoint)
-GETTER_CONST (const glm::vec3&, Camera, up)
+DELEGATE_CONST (const glm::vec3&, Camera, up)
 GETTER_CONST (const glm::vec3&, Camera, right)
 GETTER_CONST (const glm::mat4x4&, Camera, view)
 GETTER_CONST (const glm::mat4x4&, Camera, viewRotation)
@@ -210,7 +220,7 @@ DELEGATE_CONST (glm::vec3, Camera, position)
 DELEGATE_CONST (glm::mat4x4, Camera, world)
 DELEGATE1 (void, Camera, updateResolution, const glm::uvec2&)
 DELEGATE3 (void, Camera, setModelViewProjection, const glm::mat4x4&, const glm::mat3x3&, bool)
-DELEGATE3 (void, Camera, set, const glm::vec3&, const glm::vec3&, const glm::vec3&)
+DELEGATE2 (void, Camera, set, const glm::vec3&, const glm::vec3&)
 DELEGATE1 (void, Camera, setGaze, const glm::vec3&)
 DELEGATE1 (void, Camera, stepAlongGaze, float)
 DELEGATE1 (void, Camera, verticalRotation, float)

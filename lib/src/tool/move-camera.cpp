@@ -37,7 +37,7 @@ struct ToolMoveCamera::Impl
 
       const glm::vec3 toEyePoint = side * gazeLength * DimensionUtil::vector (d);
 
-      cam.set (cam.gazePoint (), toEyePoint, glm::vec3 (0.0f, 1.0f, 0.0f));
+      cam.set (cam.gazePoint (), toEyePoint);
     };
 
     auto isSnapped = [&cam](Dimension d) -> bool {
@@ -91,7 +91,7 @@ struct ToolMoveCamera::Impl
   {
     Camera& cam = state.camera ();
 
-    cam.set (glm::vec3 (0.0f), cam.position (), glm::vec3 (0.0f, 1.0f, 0.0f));
+    cam.set (glm::vec3 (0.0f), cam.position ());
     state.mainWindow ().glWidget ().update ();
   }
 
@@ -139,7 +139,7 @@ struct ToolMoveCamera::Impl
         Intersection intersection;
         if (state.scene ().intersects (cam.ray (event.ivec2 ()), intersection))
         {
-          cam.set (intersection.position (), cam.position () - intersection.position (), cam.up ());
+          cam.set (intersection.position (), cam.position () - intersection.position ());
           state.mainWindow ().glWidget ().update ();
         }
       }
