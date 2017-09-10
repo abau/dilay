@@ -65,16 +65,20 @@ namespace
         Border,
       };
 
-      unsigned int index;
-      glm::vec2    position;
+      unsigned int vertexIndex;
+      glm::uvec2   position;
+      glm::vec2    center;
       float        halfWidth;
       State        state;
+      bool         visited;
 
-      TwoDSquare (const glm::vec2& p, float width)
-        : index (Util::invalidIndex ())
+      TwoDSquare (const glm::uvec2& p, const glm::vec2& c, float width)
+        : vertexIndex (Util::invalidIndex ())
         , position (p)
+        , center (c)
         , halfWidth (width * 0.5f)
-        , state (State::Inside)
+        , state (State::Outside)
+        , visited (false)
       {
       }
 
@@ -83,7 +87,7 @@ namespace
       {
         const glm::vec2 square = square2 - square1;
         const glm::vec2 segment = segment2 - segment1;
-        const float     denom = (square.x * segment.y) - (square.y * segment.x);
+        const float     denom = cross (square, segment);
 
         if (Util::almostEqual (0.0f, denom))
         {
@@ -100,18 +104,18 @@ namespace
 
       bool inside (const glm::vec2& v) const
       {
-        const bool less = glm::all (glm::lessThanEqual (this->position - halfWidth, v));
-        const bool greater = glm::all (glm::greaterThanEqual (this->position + halfWidth, v));
+        const bool less = glm::all (glm::lessThanEqual (this->center - halfWidth, v));
+        const bool greater = glm::all (glm::greaterThanEqual (this->center + halfWidth, v));
 
         return less && greater;
       }
 
       bool intersects (const glm::vec2& segment1, const glm::vec2& segment2) const
       {
-        const glm::vec2 v1 (this->position.x - this->halfWidth, this->position.y - this->halfWidth);
-        const glm::vec2 v2 (this->position.x - this->halfWidth, this->position.y + this->halfWidth);
-        const glm::vec2 v3 (this->position.x + this->halfWidth, this->position.y - this->halfWidth);
-        const glm::vec2 v4 (this->position.x + this->halfWidth, this->position.y + this->halfWidth);
+        const glm::vec2 v1 (this->center.x - this->halfWidth, this->center.y - this->halfWidth);
+        const glm::vec2 v2 (this->center.x - this->halfWidth, this->center.y + this->halfWidth);
+        const glm::vec2 v3 (this->center.x + this->halfWidth, this->center.y - this->halfWidth);
+        const glm::vec2 v4 (this->center.x + this->halfWidth, this->center.y + this->halfWidth);
 
         const bool inside = this->inside (segment1) && this->inside (segment2);
         const bool inter1 = this->intersects (v1, v2, segment1, segment2);
@@ -216,12 +220,6 @@ namespace
       TwoDVertexCRef next (TwoDVertexCRef v) const
       {
         return v == std::prev (this->end ()) ? this->begin () : std::next (v);
-      }
-
-      void reverse ()
-      {
-        std::reverse (this->begin (), this->end ());
-        this->setProperties ();
       }
 
       void setCurvature (TwoDVertexRef v) const
@@ -397,10 +395,6 @@ namespace
           }
           else
           {
-            for (TwoDVertexRef v = this->begin (); v != this->end (); ++v)
-            {
-              assert (v->curvature == Curvature::Straight);
-            }
             DILAY_WARN_DEBUG ("Could not find ear candidate");
             return false;
           }
@@ -446,24 +440,84 @@ namespace
         }
         return true;
       }
+
+      bool intersects (const TwoDSquare& square) const
+      {
+        for (TwoDVertexCRef v = this->begin (); v != this->end (); ++v)
+        {
+          if (square.intersects (v->position, this->next (v)->position))
+          {
+            return true;
+          }
+        }
+        return false;
+      }
     };
 
     struct TwoDGrid
     {
-      unsigned int            numX;
-      unsigned int            numY;
+      glm::uvec2              dimension;
       std::vector<TwoDSquare> squares;
 
       unsigned int index (unsigned int x, unsigned int y) const
       {
-        assert (x < this->numX);
-        assert (y < this->numY);
-        assert ((y * this->numX) + x < this->squares.size ());
-        return (y * this->numX) + x;
+        assert (x < this->dimension.x);
+        assert (y < this->dimension.y);
+        assert ((y * this->dimension.x) + x < this->squares.size ());
+        return (y * this->dimension.x) + x;
+      }
+
+      unsigned int index (glm::uvec2 pos) const { return this->index (pos.x, pos.y); }
+
+      TwoDSquare& advanceNeighbor (const TwoDSquare& p, const TwoDSquare& n)
+      {
+        const int x = int(n.position.x) - int(p.position.x);
+        const int y = int(n.position.y) - int(p.position.y);
+
+        if (x == 0 && y == 1)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x + 1, n.position.y))];
+        }
+        else if (x == 1 && y == 1)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x, n.position.y - 1))];
+        }
+        else if (x == 1 && y == 0)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x, n.position.y - 1))];
+        }
+        else if (x == 1 && y == -1)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x - 1, n.position.y))];
+        }
+        else if (x == 0 && y == -1)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x - 1, n.position.y))];
+        }
+        else if (x == -1 && y == -1)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x, n.position.y + 1))];
+        }
+        else if (x == -1 && y == 0)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x, n.position.y + 1))];
+        }
+        else if (x == -1 && y == 1)
+        {
+          return this->squares[this->index (glm::uvec2 (n.position.x + 1, n.position.y))];
+        }
+        else
+        {
+          DILAY_IMPOSSIBLE
+        }
       }
 
       TwoDGrid (DynamicMesh& mesh, const ToolTrimMeshBorderSegment& segment, TwoDPolylines& ps)
       {
+        constexpr TwoDSquare::State border = TwoDSquare::State::Border;
+        constexpr TwoDSquare::State inside = TwoDSquare::State::Inside;
+        constexpr TwoDSquare::State outside = TwoDSquare::State::Outside;
+
         glm::vec2    min = glm::vec2 (Util::maxFloat ());
         glm::vec2    max = glm::vec2 (Util::minFloat ());
         float        avgLength = 0.0f;
@@ -471,8 +525,6 @@ namespace
 
         for (TwoDPolyline& p : ps)
         {
-          p.setProperties ();
-
           for (TwoDVertexCRef v = p.begin (); v != p.end (); ++v)
           {
             min = glm::min (min, v->position);
@@ -487,220 +539,214 @@ namespace
         min -= avgLength;
         max += avgLength;
 
-        this->numX = (unsigned int) (glm::ceil ((max.x - min.x) / avgLength));
-        this->numY = (unsigned int) (glm::ceil ((max.y - min.y) / avgLength));
+        this->dimension.x = (unsigned int) (glm::ceil ((max.x - min.x) / avgLength));
+        this->dimension.y = (unsigned int) (glm::ceil ((max.y - min.y) / avgLength));
 
-        if (this->numX == 0 || this->numY == 0)
+        if (this->dimension.x == 0 || this->dimension.y == 0)
         {
           return;
         }
-        this->squares.reserve (this->numX * this->numY);
+        this->squares.reserve (this->dimension.x * this->dimension.y);
 
-        for (unsigned int y = 0; y < this->numY; y++)
+        for (unsigned int y = 0; y < this->dimension.y; y++)
         {
-          for (unsigned int x = 0; x < this->numX; x++)
+          for (unsigned int x = 0; x < this->dimension.x; x++)
           {
             const glm::vec2 pos = min + (glm::vec2 (float(x), float(y)) * avgLength);
-            this->squares.emplace_back (pos, avgLength);
+            this->squares.emplace_back (glm::uvec2 (x, y), pos, avgLength);
             TwoDSquare& square = this->squares.back ();
-            square.state = TwoDSquare::State::Inside;
 
+            unsigned int numContains = 0;
             for (const TwoDPolyline& p : ps)
             {
-              if (p.contains (pos) == p.isCCW)
+              if (p.contains (pos))
               {
-                for (TwoDVertexCRef v = p.begin (); v != p.end (); ++v)
-                {
-                  if (square.intersects (v->position, p.next (v)->position))
-                  {
-                    square.state = TwoDSquare::State::Outside;
-                    break;
-                  }
-                }
-              }
-              else
-              {
-                square.state = TwoDSquare::State::Outside;
-                break;
-              }
-
-              if (square.state == TwoDSquare::State::Outside)
-              {
-                break;
+                numContains++;
               }
             }
-            assert (y > 0 || square.state == TwoDSquare::State::Outside);
-            assert (y < this->numY - 1 || square.state == TwoDSquare::State::Outside);
-            assert (x > 0 || square.state == TwoDSquare::State::Outside);
-            assert (x < this->numX - 1 || square.state == TwoDSquare::State::Outside);
+
+            if (numContains % 2 == 1)
+            {
+              square.state = inside;
+            }
+            assert (y > 0 || square.state == outside);
+            assert (y < this->dimension.y - 1 || square.state == outside);
+            assert (x > 0 || square.state == outside);
+            assert (x < this->dimension.x - 1 || square.state == outside);
           }
         }
-        for (unsigned int y = 1; y < this->numY - 1; y++)
+        for (unsigned int y = 1; y < this->dimension.y - 1; y++)
         {
-          for (unsigned int x = 1; x < this->numX - 1; x++)
+          for (unsigned int x = 1; x < this->dimension.x - 1; x++)
           {
-            if (this->squares[this->index (x, y)].state == TwoDSquare::State::Inside)
+            TwoDSquare& square = this->squares[this->index (x, y)];
+            if (square.state == inside)
             {
-              constexpr TwoDSquare::State inside = TwoDSquare::State::Inside;
+              for (const TwoDPolyline& p : ps)
+              {
+                if (p.intersects (square))
+                {
+                  square.state = outside;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        for (unsigned int y = 1; y < this->dimension.y - 1; y++)
+        {
+          for (unsigned int x = 1; x < this->dimension.x - 1; x++)
+          {
+            if (this->squares[this->index (x, y)].state == inside)
+            {
+              const bool o1 = this->squares[this->index (x - 1, y)].state == outside;
+              const bool o2 = this->squares[this->index (x + 1, y)].state == outside;
+              const bool o3 = this->squares[this->index (x, y - 1)].state == outside;
+              const bool o4 = this->squares[this->index (x, y + 1)].state == outside;
 
+              const bool isBorder = o1 || o2 || o3 || o4;
+              if (isBorder)
+              {
+                this->squares[this->index (x, y)].state = border;
+              }
+            }
+          }
+        }
+        for (unsigned int y = 1; y < this->dimension.y - 1; y++)
+        {
+          for (unsigned int x = 1; x < this->dimension.x - 1; x++)
+          {
+            if (this->squares[this->index (x, y)].state == border)
+            {
               const bool i1 = this->squares[this->index (x - 1, y)].state == inside;
               const bool i2 = this->squares[this->index (x + 1, y)].state == inside;
               const bool i3 = this->squares[this->index (x, y - 1)].state == inside;
               const bool i4 = this->squares[this->index (x, y + 1)].state == inside;
 
-              const TwoDSquare::State s5 = this->squares[this->index (x - 1, y - 1)].state;
-              const TwoDSquare::State s6 = this->squares[this->index (x - 1, y + 1)].state;
-              const TwoDSquare::State s7 = this->squares[this->index (x + 1, y - 1)].state;
-              const TwoDSquare::State s8 = this->squares[this->index (x + 1, y + 1)].state;
-
-              const bool isInside = i1 && i2 && i3 && i4;
-              const bool isContactPoint = s5 == s8 && s6 == s7 && s5 != s6;
-
-              if (isInside && isContactPoint)
+              const bool hasInsideNeighbor4 = i1 || i2 || i3 || i4;
+              if (hasInsideNeighbor4 == false)
               {
-                this->squares[this->index (x, y)].state = TwoDSquare::State::Outside;
+                this->squares[this->index (x, y)].state = outside;
               }
             }
           }
         }
-        for (unsigned int y = 1; y < this->numY - 1; y++)
+        for (unsigned int y = 1; y < this->dimension.y - 1; y++)
         {
-          for (unsigned int x = 1; x < this->numX - 1; x++)
-          {
-            if (this->squares[this->index (x, y)].state == TwoDSquare::State::Inside)
-            {
-              constexpr TwoDSquare::State outside = TwoDSquare::State::Outside;
-
-              const bool o1 = this->squares[this->index (x - 1, y - 1)].state == outside;
-              const bool o2 = this->squares[this->index (x - 1, y)].state == outside;
-              const bool o3 = this->squares[this->index (x - 1, y + 1)].state == outside;
-              const bool o4 = this->squares[this->index (x, y - 1)].state == outside;
-              const bool o5 = this->squares[this->index (x, y + 1)].state == outside;
-              const bool o6 = this->squares[this->index (x + 1, y - 1)].state == outside;
-              const bool o7 = this->squares[this->index (x + 1, y)].state == outside;
-              const bool o8 = this->squares[this->index (x + 1, y + 1)].state == outside;
-
-              if (o1 || o2 || o3 || o4 || o5 || o6 || o7 || o8)
-              {
-                this->squares[this->index (x, y)].state = TwoDSquare::State::Border;
-              }
-            }
-          }
-        }
-        for (unsigned int y = 1; y < this->numY - 1; y++)
-        {
-          for (unsigned int x = 1; x < this->numX - 1; x++)
-          {
-            if (this->squares[this->index (x, y)].state == TwoDSquare::State::Border)
-            {
-              constexpr TwoDSquare::State inside = TwoDSquare::State::Inside;
-
-              const bool i1 = this->squares[this->index (x - 1, y - 1)].state == inside;
-              const bool i2 = this->squares[this->index (x - 1, y)].state == inside;
-              const bool i3 = this->squares[this->index (x - 1, y + 1)].state == inside;
-              const bool i4 = this->squares[this->index (x, y - 1)].state == inside;
-              const bool i5 = this->squares[this->index (x, y + 1)].state == inside;
-              const bool i6 = this->squares[this->index (x + 1, y - 1)].state == inside;
-              const bool i7 = this->squares[this->index (x + 1, y)].state == inside;
-              const bool i8 = this->squares[this->index (x + 1, y + 1)].state == inside;
-
-              if ((i1 || i2 || i3 || i4 || i5 || i6 || i7 || i8) == false)
-              {
-                this->squares[this->index (x, y)].state = TwoDSquare::State::Outside;
-              }
-            }
-          }
-        }
-        for (unsigned int y = 1; y < this->numY - 1; y++)
-        {
-          for (unsigned int x = 1; x < this->numX - 1; x++)
+          for (unsigned int x = 1; x < this->dimension.x - 1; x++)
           {
             TwoDSquare& square = this->squares[this->index (x, y)];
 
-            if (square.state != TwoDSquare::State::Outside)
+            if (square.state != outside)
             {
-              const glm::vec2 position2d = square.position / scalingFactor;
+              const glm::vec2 position2d = square.center / scalingFactor;
               const glm::vec3 position = segment.plane ().project (position2d);
               const glm::vec3 normal = segment.plane ().normal ();
-              square.index = mesh.addVertex (position, normal);
+              square.vertexIndex = mesh.addVertex (position, normal);
             }
           }
         }
-        for (unsigned int y = 1; y < this->numY - 1; y++)
+        for (unsigned int y = 1; y < this->dimension.y - 1; y++)
         {
-          for (unsigned int x = 1; x < this->numX - 1; x++)
+          TwoDSquare* prev = &this->squares[this->index (0, y)];
+          assert (prev->state == outside);
+
+          for (unsigned int x = 1; x < this->dimension.x - 1; x++)
           {
-            if (this->squares[this->index (x, y)].state == TwoDSquare::State::Border)
+            TwoDSquare& start = this->squares[this->index (x, y)];
+
+            if (prev->state == outside && start.state == border && start.visited == false)
             {
-              TwoDVertices       vertices;
-              const unsigned int startU = x;
-              const unsigned int startV = y;
-              unsigned int       u = startU;
-              unsigned int       v = startV;
-              do
+              assert (start.vertexIndex != Util::invalidIndex ());
+
+              TwoDVertices vertices;
+              TwoDSquare*  current = &start;
+              TwoDSquare*  candidate = &this->advanceNeighbor (*current, *prev);
+
+              vertices.emplace_back (current->vertexIndex, current->center);
+              current->visited = true;
+
+              while (candidate != &start)
               {
-                TwoDSquare& square = this->squares[this->index (u, v)];
-                square.state = TwoDSquare::State::Inside;
-
-                assert (square.index != Util::invalidIndex ());
-                vertices.emplace_back (square.index, square.position);
-
-                if (this->squares[this->index (u - 1, v)].state == TwoDSquare::State::Border)
+                if (candidate->state == border)
                 {
-                  u--;
-                }
-                else if (this->squares[this->index (u + 1, v)].state == TwoDSquare::State::Border)
-                {
-                  u++;
-                }
-                else if (this->squares[this->index (u, v - 1)].state == TwoDSquare::State::Border)
-                {
-                  v--;
-                }
-                else if (this->squares[this->index (u, v + 1)].state == TwoDSquare::State::Border)
-                {
-                  v++;
-                }
-              } while (this->squares[this->index (u, v)].state == TwoDSquare::State::Border);
+                  assert (candidate->vertexIndex != Util::invalidIndex ());
+                  assert (candidate->visited == false);
+                  vertices.emplace_back (candidate->vertexIndex, candidate->center);
+                  candidate->visited = true;
 
-              const bool nextToStartU = u == startU - 1 || u == startU || u == startU + 1;
-              const bool nextToStartV = v == startV - 1 || v == startV || v == startV + 1;
-
-              if (nextToStartU && nextToStartV)
-              {
-                assert (vertices.size () >= 3);
-                ps.emplace_back (std::move (vertices));
+                  prev = current;
+                  current = candidate;
+                  candidate = &this->advanceNeighbor (*current, *prev);
+                }
+                else
+                {
+                  prev = candidate;
+                  candidate = &this->advanceNeighbor (*current, *prev);
+                }
               }
-              else
-              {
-                DILAY_WARN_DEBUG ("Could not setup polygon from grid");
-              }
+              assert (vertices.size () >= 3);
+              ps.emplace_back (std::move (vertices));
             }
+            prev = &start;
           }
         }
       }
 
       void fill (DynamicMesh& mesh) const
       {
-        for (unsigned int y = 1; y < this->numY - 2; y++)
+        constexpr TwoDSquare::State out = TwoDSquare::State::Outside;
+
+        for (unsigned int y = 1; y < this->dimension.y - 2; y++)
         {
-          for (unsigned int x = 1; x < this->numX - 2; x++)
+          for (unsigned int x = 1; x < this->dimension.x - 2; x++)
           {
-            constexpr TwoDSquare::State in = TwoDSquare::State::Inside;
-            const TwoDSquare&           s = this->squares[this->index (x, y)];
-            const TwoDSquare&           sX = this->squares[this->index (x + 1, y)];
-            const TwoDSquare&           sY = this->squares[this->index (x, y + 1)];
-            const TwoDSquare&           sXY = this->squares[this->index (x + 1, y + 1)];
+            const TwoDSquare& s = this->squares[this->index (x, y)];
+            const TwoDSquare& sX = this->squares[this->index (x + 1, y)];
+            const TwoDSquare& sY = this->squares[this->index (x, y + 1)];
+            const TwoDSquare& sXY = this->squares[this->index (x + 1, y + 1)];
 
-            if (s.state == in && sX.state == in && sY.state == in && sXY.state == in)
+            if (s.state != out && sX.state != out && sY.state != out && sXY.state != out)
             {
-              assert (s.index != Util::invalidIndex ());
-              assert (sX.index != Util::invalidIndex ());
-              assert (sY.index != Util::invalidIndex ());
-              assert (sXY.index != Util::invalidIndex ());
+              assert (s.vertexIndex != Util::invalidIndex ());
+              assert (sX.vertexIndex != Util::invalidIndex ());
+              assert (sY.vertexIndex != Util::invalidIndex ());
+              assert (sXY.vertexIndex != Util::invalidIndex ());
 
-              mesh.addFace (s.index, sX.index, sY.index);
-              mesh.addFace (sXY.index, sY.index, sX.index);
+              mesh.addFace (s.vertexIndex, sX.vertexIndex, sY.vertexIndex);
+              mesh.addFace (sXY.vertexIndex, sY.vertexIndex, sX.vertexIndex);
+            }
+            else if (s.state != out && sX.state == out && sY.state != out && sXY.state != out)
+            {
+              assert (s.vertexIndex != Util::invalidIndex ());
+              assert (sY.vertexIndex != Util::invalidIndex ());
+              assert (sXY.vertexIndex != Util::invalidIndex ());
+
+              mesh.addFace (s.vertexIndex, sXY.vertexIndex, sY.vertexIndex);
+            }
+            else if (s.state != out && sX.state != out && sY.state == out && sXY.state != out)
+            {
+              assert (s.vertexIndex != Util::invalidIndex ());
+              assert (sX.vertexIndex != Util::invalidIndex ());
+              assert (sXY.vertexIndex != Util::invalidIndex ());
+
+              mesh.addFace (s.vertexIndex, sX.vertexIndex, sXY.vertexIndex);
+            }
+            else if (s.state != out && sX.state != out && sY.state != out && sXY.state == out)
+            {
+              assert (s.vertexIndex != Util::invalidIndex ());
+              assert (sX.vertexIndex != Util::invalidIndex ());
+              assert (sY.vertexIndex != Util::invalidIndex ());
+
+              mesh.addFace (s.vertexIndex, sX.vertexIndex, sY.vertexIndex);
+            }
+            else if (s.state == out && sX.state != out && sY.state != out && sXY.state != out)
+            {
+              assert (sX.vertexIndex != Util::invalidIndex ());
+              assert (sY.vertexIndex != Util::invalidIndex ());
+              assert (sXY.vertexIndex != Util::invalidIndex ());
+
+              mesh.addFace (sXY.vertexIndex, sY.vertexIndex, sX.vertexIndex);
             }
           }
         }
@@ -710,14 +756,14 @@ namespace
       {
         for (unsigned int i = 0; i < 3; i++)
         {
-          for (unsigned int y = 1; y < this->numY - 1; y++)
+          for (unsigned int y = 1; y < this->dimension.y - 1; y++)
           {
-            for (unsigned int x = 1; x < this->numX - 1; x++)
+            for (unsigned int x = 1; x < this->dimension.x - 1; x++)
             {
               const TwoDSquare& square = this->squares[this->index (x, y)];
               if (square.state == TwoDSquare::State::Inside)
               {
-                mesh.vertex (square.index, mesh.averagePosition (square.index));
+                mesh.vertex (square.vertexIndex, mesh.averagePosition (square.vertexIndex));
               }
             }
           }
@@ -859,7 +905,6 @@ namespace
 
     TwoDPolyline combine (const TwoDPolyline& outer, const TwoDPolyline& inner)
     {
-      assert (outer.isCCW);
       assert (inner.isCCW == false);
 
       TwoDVertices   vertices;
@@ -887,13 +932,13 @@ namespace
 
     void combine (TwoDPolyline& outer, TwoDPolylines& inner)
     {
+#ifndef NDEBUG
+      outer.setProperties ();
+      assert (outer.isCCW);
+#endif
       for (TwoDPolyline& i : inner)
       {
         i.setProperties ();
-        if (i.isCCW)
-        {
-          i.reverse ();
-        }
       }
       std::sort (inner.begin (), inner.end (), [](const TwoDPolyline& a, const TwoDPolyline& b) {
         return a.maxX->position.x > b.maxX->position.x;
@@ -902,10 +947,6 @@ namespace
       for (TwoDPolyline& i : inner)
       {
         outer.setProperties ();
-        if (outer.isCCW == false)
-        {
-          outer.reverse ();
-        }
         outer = combine (outer, i);
       }
       inner.clear ();
