@@ -21,7 +21,7 @@ struct ToolNewMesh::Impl
   {
     this->self->snapshotDynamicMeshes ();
     this->self->state ().scene ().newDynamicMesh (this->self->state ().config (),
-                                                  MeshUtil::icosphere (3));
+                                                  MeshUtil::icosphere (4));
     return ToolResponse::Terminate;
   }
 };
