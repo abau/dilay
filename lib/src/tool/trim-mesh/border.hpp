@@ -47,15 +47,14 @@ public:
   const ToolTrimMeshBorderSegment& segment (unsigned int) const;
   const ToolTrimMeshBorderSegment& getSegment (const glm::vec3&, const glm::vec3&) const;
 
-  const glm::vec3& cameraPosition () const;
-  unsigned int     numSegments () const;
-  void             addVertex (unsigned int, const glm::vec3&);
-  void             addPolyline ();
-  void             setNewIndices (const std::vector<unsigned int>&);
-  bool             onBorder (const glm::vec3&) const;
-  bool             trimVertex (const glm::vec3&) const;
-  bool             trimFace (const glm::vec3&, const glm::vec3&, const glm::vec3&) const;
-  void             deleteEmptyPolylines ();
+  unsigned int numSegments () const;
+  void         addVertex (unsigned int, const glm::vec3&);
+  void         addPolyline ();
+  void         setNewIndices (const std::vector<unsigned int>&);
+  bool         onBorder (const glm::vec3&) const;
+  bool         trimVertex (const glm::vec3&) const;
+  bool         trimFace (const glm::vec3&, const glm::vec3&, const glm::vec3&) const;
+  void         deleteEmptyPolylines ();
 
 private:
   IMPLEMENTATION

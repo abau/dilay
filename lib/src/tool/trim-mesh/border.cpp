@@ -154,20 +154,19 @@ DELEGATE (void, ToolTrimMeshBorderSegment, deleteEmptyPolylines)
 
 struct ToolTrimMeshBorder::Impl
 {
-  const glm::vec3                        cameraPosition;
-  const PrimPlane                        borderPlane;
   std::vector<ToolTrimMeshBorderSegment> segments;
 
   Impl (const Camera& cam, const std::vector<glm::ivec2>& points)
-    : cameraPosition (cam.position ())
-    , borderPlane (cam.position (),
-                   glm::cross (cam.ray (points[1]).direction (), cam.ray (points[0]).direction ()))
   {
     assert (points.size () >= 2);
 
     if (points.size () == 2)
     {
-      segments.emplace_back (this->borderPlane);
+      const PrimRay   r1 = cam.ray (points[0]);
+      const PrimRay   r2 = cam.ray (points[1]);
+      const PrimPlane p =
+        PrimPlane (cam.position (), glm::cross (r2.direction (), r1.direction ()));
+      this->segments.emplace_back (p);
     }
     else
     {
@@ -283,9 +282,14 @@ struct ToolTrimMeshBorder::Impl
     }
     else
     {
-      const PrimRay ray (p, -this->borderPlane.normal ());
-      unsigned int  n = 0;
+      glm::vec3 direction (0.0f);
+      for (const ToolTrimMeshBorderSegment& s : this->segments)
+      {
+        direction -= s.plane ().normal ();
+      }
+      const PrimRay ray (p, direction);
 
+      unsigned int n = 0;
       for (const ToolTrimMeshBorderSegment& s : this->segments)
       {
         float t;
@@ -331,7 +335,6 @@ DELEGATE2_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>
 DELEGATE1_CONST (const ToolTrimMeshBorderSegment&, ToolTrimMeshBorder, segment, unsigned int)
 DELEGATE2_CONST (const ToolTrimMeshBorderSegment&, ToolTrimMeshBorder, getSegment, const glm::vec3&,
                  const glm::vec3&)
-GETTER_CONST (const glm::vec3&, ToolTrimMeshBorder, cameraPosition)
 DELEGATE_CONST (unsigned int, ToolTrimMeshBorder, numSegments)
 DELEGATE2 (void, ToolTrimMeshBorder, addVertex, unsigned int, const glm::vec3&)
 DELEGATE (void, ToolTrimMeshBorder, addPolyline)
