@@ -18,12 +18,10 @@ namespace
 
 struct ToolTrimMeshBorderSegment::Impl
 {
-  Polylines              polylines;
-  const PrimPlane        plane;
-  const Maybe<PrimRay>   edge1;
-  const Maybe<PrimRay>   edge2;
-  const Maybe<glm::vec3> u;
-  const Maybe<glm::vec3> v;
+  Polylines            polylines;
+  const PrimPlane      plane;
+  const Maybe<PrimRay> edge1;
+  const Maybe<PrimRay> edge2;
 
   Impl (const PrimRay& e1, const PrimRay& e2)
     : plane (e1.origin (), glm::cross (e2.direction (), e1.direction ()))
@@ -46,8 +44,6 @@ struct ToolTrimMeshBorderSegment::Impl
 
   Impl (const PrimPlane& p)
     : plane (p)
-    , u (Util::orthogonal (plane.normal ()))
-    , v (glm::cross (plane.normal (), *u))
   {
   }
 
