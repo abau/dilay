@@ -136,6 +136,18 @@ struct ToolTrimMeshBorderSegment::Impl
                                            [](Polyline& p) { return p.empty (); }),
                            this->polylines.end ());
   }
+
+  bool hasVertices () const
+  {
+    for (const Polyline& p : this->polylines)
+    {
+      if (p.empty () == false)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 };
 
 DELEGATE2_BIG3 (ToolTrimMeshBorderSegment, const PrimRay&, const PrimRay&)
@@ -151,6 +163,7 @@ DELEGATE1 (void, ToolTrimMeshBorderSegment, setNewIndices, const std::vector<uns
 DELEGATE2_CONST (bool, ToolTrimMeshBorderSegment, onBorder, const glm::vec3&, bool*)
 DELEGATE2_CONST (bool, ToolTrimMeshBorderSegment, intersects, const PrimRay&, float&)
 DELEGATE (void, ToolTrimMeshBorderSegment, deleteEmptyPolylines)
+DELEGATE_CONST (bool, ToolTrimMeshBorderSegment, hasVertices)
 
 struct ToolTrimMeshBorder::Impl
 {
@@ -329,6 +342,18 @@ struct ToolTrimMeshBorder::Impl
       s.deleteEmptyPolylines ();
     }
   }
+
+  bool hasVertices () const
+  {
+    for (const ToolTrimMeshBorderSegment& s : this->segments)
+    {
+      if (s.hasVertices ())
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 };
 
 DELEGATE2_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&)
@@ -344,3 +369,4 @@ DELEGATE1_CONST (bool, ToolTrimMeshBorder, trimVertex, const glm::vec3&)
 DELEGATE3_CONST (bool, ToolTrimMeshBorder, trimFace, const glm::vec3&, const glm::vec3&,
                  const glm::vec3&)
 DELEGATE (void, ToolTrimMeshBorder, deleteEmptyPolylines)
+DELEGATE_CONST (bool, ToolTrimMeshBorder, hasVertices)

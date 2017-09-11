@@ -320,13 +320,17 @@ bool ToolTrimMeshSplitMesh::splitMesh (DynamicMesh& mesh, ToolTrimMeshBorder& bo
   splitAtBorderEdges (mesh, border);
   splitMesh (mesh, border, borderVertices);
 
-  if (borderVertices.empty () == false)
+  if (borderVertices.empty ())
   {
-    if (checkBorderVertices (mesh, borderVertices))
-    {
-      addPolylinesToBorder (mesh, border, borderVertices);
-      return true;
-    }
+    return true;
   }
-  return false;
+  else if (checkBorderVertices (mesh, borderVertices))
+  {
+    addPolylinesToBorder (mesh, border, borderVertices);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }

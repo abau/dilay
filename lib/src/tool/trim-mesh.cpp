@@ -6,7 +6,6 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "config.hpp"
-#include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
 #include "history.hpp"
 #include "scene.hpp"
@@ -18,6 +17,16 @@
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/util.hpp"
+
+namespace
+{
+  enum class TrimStatus
+  {
+    Trimmed,
+    NotTrimmed,
+    Failed
+  };
+}
 
 struct ToolTrimMesh::Impl
 {
@@ -46,46 +55,52 @@ struct ToolTrimMesh::Impl
     }
     else
     {
-      DynamicMeshIntersection intersection;
-
       this->points.push_back (e.ivec2 ());
 
-      if (this->points.size () >= 2 &&
-          this->self->intersectsScene (e.ivec2 (), intersection) == false)
+      if (this->points.size () >= 2)
       {
         this->self->snapshotDynamicMeshes ();
 
-        bool intersection = false;
-        bool failed = false;
+        TrimStatus status = TrimStatus::NotTrimmed;
 
-        this->self->state ().scene ().forEachMesh (
-          [&intersection, &failed, this](DynamicMesh& mesh) {
-            ToolTrimMeshBorder border (this->self->state ().camera (), this->points);
-            if (failed)
+        this->self->state ().scene ().forEachMesh ([&status, this](DynamicMesh& mesh) {
+          ToolTrimMeshBorder border (this->self->state ().camera (), this->points);
+          if (status == TrimStatus::Failed)
+          {
+            return;
+          }
+          else if (ToolTrimMeshSplitMesh::splitMesh (mesh, border))
+          {
+            if (border.hasVertices ())
             {
-              return;
+              status = TrimStatus::Trimmed;
+              if (ToolTrimMeshAction::trimMesh (mesh, border) == false)
+              {
+                status = TrimStatus::Failed;
+              }
             }
-            else if (ToolTrimMeshSplitMesh::splitMesh (mesh, border) &&
-                     ToolTrimMeshAction::trimMesh (mesh, border))
-            {
-              intersection = true;
-            }
-            else
-            {
-              failed = true;
-            }
-          });
+          }
+          else
+          {
+            status = TrimStatus::Failed;
+          }
+        });
 
-        if (failed)
+        switch (status)
         {
-          this->self->state ().undo ();
-          this->self->state ().history ().dropFutureSnapshot ();
-          ViewUtil::error (this->self->state ().mainWindow (),
-                           QObject::tr ("Could not trim mesh."));
-        }
-        else if (intersection == false)
-        {
-          this->self->state ().history ().dropPastSnapshot ();
+          case TrimStatus::Trimmed:
+            break;
+
+          case TrimStatus::NotTrimmed:
+            this->self->state ().history ().dropPastSnapshot ();
+            break;
+
+          case TrimStatus::Failed:
+            this->self->state ().undo ();
+            this->self->state ().history ().dropFutureSnapshot ();
+            ViewUtil::error (this->self->state ().mainWindow (),
+                             QObject::tr ("Could not trim mesh."));
+            break;
         }
         this->points.clear ();
       }

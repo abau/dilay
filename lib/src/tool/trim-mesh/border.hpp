@@ -34,6 +34,7 @@ public:
   bool             onBorder (const glm::vec3&, bool* = nullptr) const;
   bool             intersects (const PrimRay&, float&) const;
   void             deleteEmptyPolylines ();
+  bool             hasVertices () const;
 
 private:
   IMPLEMENTATION
@@ -55,6 +56,7 @@ public:
   bool         trimVertex (const glm::vec3&) const;
   bool         trimFace (const glm::vec3&, const glm::vec3&, const glm::vec3&) const;
   void         deleteEmptyPolylines ();
+  bool         hasVertices () const;
 
 private:
   IMPLEMENTATION
