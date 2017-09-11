@@ -30,43 +30,6 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-namespace
-{
-  int toInt (SketchPathSmoothEffect effect)
-  {
-    switch (effect)
-    {
-      case SketchPathSmoothEffect::None:
-        return 0;
-      case SketchPathSmoothEffect::Embed:
-        return 1;
-      case SketchPathSmoothEffect::EmbedAndAdjust:
-        return 2;
-      case SketchPathSmoothEffect::Pinch:
-        return 3;
-      default:
-        DILAY_IMPOSSIBLE
-    }
-  }
-
-  SketchPathSmoothEffect toSmoothEffect (int i)
-  {
-    switch (i)
-    {
-      case 0:
-        return SketchPathSmoothEffect::None;
-      case 1:
-        return SketchPathSmoothEffect::Embed;
-      case 2:
-        return SketchPathSmoothEffect::EmbedAndAdjust;
-      case 3:
-        return SketchPathSmoothEffect::Pinch;
-      default:
-        DILAY_IMPOSSIBLE
-    }
-  }
-}
-
 struct ToolSketchSpheres::Impl
 {
   ToolSketchSpheres*     self;
@@ -83,8 +46,8 @@ struct ToolSketchSpheres::Impl
     : self (s)
     , radiusEdit (ViewUtil::slider (2, 0.01f, s->cache ().get<float> ("radius", 0.1f), 0.3f))
     , heightEdit (ViewUtil::slider (2, 0.01f, s->cache ().get<float> ("height", 0.2f), 0.45f))
-    , smoothEffect (toSmoothEffect (
-        s->cache ().get<int> ("smooth-effect", toInt (SketchPathSmoothEffect::Embed))))
+    , smoothEffect (SketchPathSmoothEffect (
+        s->cache ().get<int> ("smooth-effect", int(SketchPathSmoothEffect::Embed))))
     , stepWidthFactor (0.0f)
     , mesh (nullptr)
   {
@@ -123,10 +86,10 @@ struct ToolSketchSpheres::Impl
                     {QObject::tr ("None"), QObject::tr ("Embed"), QObject::tr ("Embed and adjust"),
                      QObject::tr ("Pinch")});
     ViewUtil::connect (smoothEffectEdit, [this](int id) {
-      this->smoothEffect = toSmoothEffect (id);
+      this->smoothEffect = SketchPathSmoothEffect (id);
       this->self->cache ().set ("smooth-effect", id);
     });
-    smoothEffectEdit.button (toInt (this->smoothEffect))->click ();
+    smoothEffectEdit.button (int(this->smoothEffect))->click ();
   }
 
   void setupToolTip ()
