@@ -203,33 +203,77 @@ struct Scene::Impl
 
   void forEachMesh (const std::function<void(DynamicMesh&)>& f)
   {
+    const unsigned int n = this->dynamicMeshes.size ();
+    unsigned int       i = 0;
+
     for (DynamicMesh& m : this->dynamicMeshes)
     {
-      f (m);
+      if (i >= n)
+      {
+        break;
+      }
+      else
+      {
+        f (m);
+        i++;
+      }
     }
   }
 
   void forEachMesh (const std::function<void(SketchMesh&)>& f)
   {
+    const unsigned int n = this->sketchMeshes.size ();
+    unsigned int       i = 0;
+
     for (SketchMesh& m : this->sketchMeshes)
     {
-      f (m);
+      if (i >= n)
+      {
+        break;
+      }
+      else
+      {
+        f (m);
+        i++;
+      }
     }
   }
 
   void forEachConstMesh (const std::function<void(const DynamicMesh&)>& f) const
   {
+    const unsigned int n = this->dynamicMeshes.size ();
+    unsigned int       i = 0;
+
     for (const DynamicMesh& m : this->dynamicMeshes)
     {
-      f (m);
+      if (i >= n)
+      {
+        break;
+      }
+      else
+      {
+        f (m);
+        i++;
+      }
     }
   }
 
   void forEachConstMesh (const std::function<void(const SketchMesh&)>& f) const
   {
+    const unsigned int n = this->sketchMeshes.size ();
+    unsigned int       i = 0;
+
     for (const SketchMesh& m : this->sketchMeshes)
     {
-      f (m);
+      if (i >= n)
+      {
+        break;
+      }
+      else
+      {
+        f (m);
+        i++;
+      }
     }
   }
 
