@@ -169,20 +169,21 @@ struct ToolTrimMeshBorder::Impl
 {
   std::vector<ToolTrimMeshBorderSegment> segments;
 
-  Impl (const Camera& cam, const std::vector<glm::ivec2>& points)
+  Impl (const Camera& cam, const std::vector<glm::ivec2>& points, float offset, bool reverse)
   {
     assert (points.size () >= 2);
 
     if (points.size () == 2)
     {
-      const PrimRay   r1 = cam.ray (points[0]);
-      const PrimRay   r2 = cam.ray (points[1]);
-      const PrimPlane p =
-        PrimPlane (cam.position (), glm::cross (r2.direction (), r1.direction ()));
-      this->segments.emplace_back (p);
+      const PrimRay   r1 = cam.ray (points[reverse ? 1 : 0]);
+      const PrimRay   r2 = cam.ray (points[reverse ? 0 : 1]);
+      const glm::vec3 normal = glm::normalize (glm::cross (r2.direction (), r1.direction ()));
+      const glm::vec3 point = cam.position () + (offset * normal);
+      this->segments.emplace_back (PrimPlane (point, normal));
     }
     else
     {
+      // TODO: obey offset & reverse flag
       auto addFirstSegment = [this, &cam, &points]() {
         const PrimRay   r1 = cam.ray (points[0]);
         const PrimRay   r2 = cam.ray (points[1]);
@@ -356,7 +357,7 @@ struct ToolTrimMeshBorder::Impl
   }
 };
 
-DELEGATE2_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&)
+DELEGATE4_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&, float, bool)
 DELEGATE1_CONST (const ToolTrimMeshBorderSegment&, ToolTrimMeshBorder, segment, unsigned int)
 DELEGATE2_CONST (const ToolTrimMeshBorderSegment&, ToolTrimMeshBorder, getSegment, const glm::vec3&,
                  const glm::vec3&)

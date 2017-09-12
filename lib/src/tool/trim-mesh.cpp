@@ -2,7 +2,10 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QAbstractButton>
+#include <QButtonGroup>
 #include <QPainter>
+#include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
 #include "config.hpp"
@@ -14,8 +17,11 @@
 #include "tool/trim-mesh/border.hpp"
 #include "tool/trim-mesh/split-mesh.hpp"
 #include "tools.hpp"
+#include "view/double-slider.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
+#include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 namespace
@@ -26,19 +32,68 @@ namespace
     NotTrimmed,
     Failed
   };
+
+  enum class TrimMode
+  {
+    Normal,
+    Slice,
+    Cut
+  };
 }
 
 struct ToolTrimMesh::Impl
 {
   ToolTrimMesh*           self;
   std::vector<glm::ivec2> points;
+  TrimMode                trimMode;
+  float                   width;
 
   Impl (ToolTrimMesh* s)
     : self (s)
+    , trimMode (TrimMode (s->cache ().get<int> ("trim-mode", int(TrimMode::Normal))))
+    , width (s->cache ().get<float> ("trim-width", 0.1f))
   {
   }
 
-  ToolResponse runInitialize () { return ToolResponse::None; }
+  void setupProperties ()
+  {
+    ViewTwoColumnGrid& properties = this->self->properties ();
+
+    ViewDoubleSlider& widthEdit = ViewUtil::slider (2, 0.01f, this->width, 1.0f);
+    ViewUtil::connect (widthEdit, [this](float w) {
+      this->width = w;
+      this->self->cache ().set ("trim-width", w);
+    });
+
+    QButtonGroup& trimModeEdit = *new QButtonGroup;
+    properties.add (trimModeEdit,
+                    {QObject::tr ("Normal"), QObject::tr ("Slice"), QObject::tr ("Cut")});
+    ViewUtil::connect (trimModeEdit, [this, &widthEdit](int id) {
+      this->trimMode = TrimMode (id);
+      this->self->cache ().set ("trim-mode", id);
+      widthEdit.setEnabled (this->trimMode != TrimMode::Normal);
+    });
+    trimModeEdit.button (int(this->trimMode))->click ();
+
+    properties.addStacked (QObject::tr ("Width"), widthEdit);
+  }
+
+  void setupToolTip ()
+  {
+    ViewToolTip toolTip;
+    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to trim"));
+    this->self->showToolTip (toolTip);
+  }
+
+  ToolResponse runInitialize ()
+  {
+    this->self->renderMirror (false);
+
+    this->setupProperties ();
+    this->setupToolTip ();
+
+    return ToolResponse::None;
+  }
 
   ToolResponse runMoveEvent (const ViewPointingEvent&)
   {
@@ -46,6 +101,73 @@ struct ToolTrimMesh::Impl
   }
 
   ToolResponse runPressEvent (const ViewPointingEvent&) { return ToolResponse::None; }
+
+  TrimStatus trimMesh (DynamicMesh& mesh, float offset, bool reverse)
+  {
+    ToolTrimMeshBorder border (this->self->state ().camera (), this->points, offset, reverse);
+    if (ToolTrimMeshSplitMesh::splitMesh (mesh, border))
+    {
+      if (border.hasVertices ())
+      {
+        if (ToolTrimMeshAction::trimMesh (mesh, border))
+        {
+          return TrimStatus::Trimmed;
+        }
+        else
+        {
+          return TrimStatus::Failed;
+        }
+      }
+      else
+      {
+        return TrimStatus::NotTrimmed;
+      }
+    }
+    else
+    {
+      return TrimStatus::Failed;
+    }
+  }
+
+  TrimStatus trimMesh (DynamicMesh& mesh)
+  {
+    if (this->trimMode == TrimMode::Normal)
+    {
+      return this->trimMesh (mesh, 0.0f, false);
+    }
+    else if (this->trimMode == TrimMode::Slice)
+    {
+      TrimStatus status = this->trimMesh (mesh, this->width, false);
+      if (status == TrimStatus::Failed)
+      {
+        return status;
+      }
+      else
+      {
+        return this->trimMesh (mesh, this->width, true);
+      }
+    }
+    else if (this->trimMode == TrimMode::Cut)
+    {
+      DynamicMesh& mesh2 =
+        this->self->state ().scene ().newDynamicMesh (this->self->config (), mesh);
+      TrimStatus status = this->trimMesh (mesh, -this->width, false);
+
+      if (status == TrimStatus::Trimmed)
+      {
+        return this->trimMesh (mesh2, -this->width, true);
+      }
+      else
+      {
+        this->self->state ().scene ().deleteMesh (mesh2);
+        return status;
+      }
+    }
+    else
+    {
+      DILAY_IMPOSSIBLE
+    }
+  }
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
@@ -64,31 +186,20 @@ struct ToolTrimMesh::Impl
         TrimStatus status = TrimStatus::NotTrimmed;
 
         this->self->state ().scene ().forEachMesh ([&status, this](DynamicMesh& mesh) {
-          ToolTrimMeshBorder border (this->self->state ().camera (), this->points);
-          if (status == TrimStatus::Failed)
+          if (status != TrimStatus::Failed)
           {
-            return;
-          }
-          else if (ToolTrimMeshSplitMesh::splitMesh (mesh, border))
-          {
-            if (border.hasVertices ())
+            const TrimStatus s = this->trimMesh (mesh);
+            if (s != TrimStatus::NotTrimmed)
             {
-              status = TrimStatus::Trimmed;
-              if (ToolTrimMeshAction::trimMesh (mesh, border) == false)
-              {
-                status = TrimStatus::Failed;
-              }
+              status = s;
             }
-          }
-          else
-          {
-            status = TrimStatus::Failed;
           }
         });
 
         switch (status)
         {
           case TrimStatus::Trimmed:
+            this->self->state ().scene ().deleteEmptyMeshes ();
             break;
 
           case TrimStatus::NotTrimmed:

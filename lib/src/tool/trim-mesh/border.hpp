@@ -43,7 +43,7 @@ private:
 class ToolTrimMeshBorder
 {
 public:
-  DECLARE_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&)
+  DECLARE_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&, float, bool)
 
   const ToolTrimMeshBorderSegment& segment (unsigned int) const;
   const ToolTrimMeshBorderSegment& getSegment (const glm::vec3&, const glm::vec3&) const;
