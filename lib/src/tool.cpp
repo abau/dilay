@@ -38,7 +38,7 @@ struct Tool::Impl
     , key (k)
     , state (st)
     , _cache (this->cache (this->key))
-    , renderMirror (true)
+    , renderMirror (false)
   {
   }
 

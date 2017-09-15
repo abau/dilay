@@ -111,7 +111,7 @@ struct ToolSketchSpheres::Impl
 
   ToolResponse runInitialize ()
   {
-    this->self->renderMirror (false);
+    this->self->renderMirror (true);
 
     this->setupProperties ();
     this->setupToolTip ();

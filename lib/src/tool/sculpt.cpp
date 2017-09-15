@@ -54,6 +54,8 @@ struct ToolSculpt::Impl
 
   ToolResponse runInitialize ()
   {
+    this->self->renderMirror (true);
+
     this->setupBrush ();
     this->setupCursor ();
     this->setupProperties ();

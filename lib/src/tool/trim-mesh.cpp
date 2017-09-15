@@ -87,8 +87,6 @@ struct ToolTrimMesh::Impl
 
   ToolResponse runInitialize ()
   {
-    this->self->renderMirror (false);
-
     this->setupProperties ();
     this->setupToolTip ();
 

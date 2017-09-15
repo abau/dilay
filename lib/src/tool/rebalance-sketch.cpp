@@ -25,7 +25,6 @@ struct ToolRebalanceSketch::Impl
 
   ToolResponse runInitialize ()
   {
-    this->self->renderMirror (false);
     this->self->state ().scene ().renderWireframe (true);
 
     ViewToolTip toolTip;
