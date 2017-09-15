@@ -77,7 +77,7 @@ namespace
     unsigned int* findInSequence (std::vector<std::pair<unsigned int, unsigned int>>& sequence,
                                   unsigned int i)
     {
-      for (std::pair<unsigned int, unsigned int>& p : sequence)
+      for (auto& p : sequence)
       {
         if (p.first == i)
         {
