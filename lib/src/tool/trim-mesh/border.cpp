@@ -324,9 +324,9 @@ struct ToolTrimMeshBorder::Impl
     }
     else if (this->onBorder (p1) && this->onBorder (p2) && this->onBorder (p3))
     {
-      const glm::vec3 p4 = Util::between (p1, p2);
-      const glm::vec3 p5 = Util::between (p1, p3);
-      const glm::vec3 p6 = Util::between (p2, p3);
+      const glm::vec3 p4 = Util::midpoint (p1, p2);
+      const glm::vec3 p5 = Util::midpoint (p1, p3);
+      const glm::vec3 p6 = Util::midpoint (p2, p3);
 
       return this->trimVertex (p4) || this->trimVertex (p5) || this->trimVertex (p6);
     }

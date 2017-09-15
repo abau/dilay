@@ -6,9 +6,9 @@
 #include "config.hpp"
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
+#include "import-export.hpp"
 #include "intersection.hpp"
 #include "render-mode.hpp"
-#include "scene-util.hpp"
 #include "scene.hpp"
 #include "sketch/bone-intersection.hpp"
 #include "sketch/mesh-intersection.hpp"
@@ -348,7 +348,7 @@ struct Scene::Impl
     assert (this->hasFileName ());
 
     return Util::withCLocale<bool> ([this, isObjFile]() {
-      if (SceneUtil::toDlyFile (this->fileName, *this->self, isObjFile))
+      if (ImportExport::toDlyFile (this->fileName, *this->self, isObjFile))
       {
         return true;
       }
@@ -370,7 +370,7 @@ struct Scene::Impl
   {
     this->fileName = newFileName;
 
-    if (SceneUtil::fromDlyFile (this->fileName, config, *this->self))
+    if (ImportExport::fromDlyFile (this->fileName, config, *this->self))
     {
       return true;
     }

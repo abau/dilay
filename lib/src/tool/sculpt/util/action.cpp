@@ -187,7 +187,7 @@ namespace
       {
         const glm::vec3 normal = glm::normalize (mesh.vertexNormal (i1) + mesh.vertexNormal (i2));
         const unsigned int i3 = mesh.addVertex (getSplitPosition (mesh, i1, i2), normal);
-        newE.insertEdge (i1, i2, i3);
+        newE.insert (i1, i2, i3);
         return true;
       }
       else
@@ -202,17 +202,17 @@ namespace
       unsigned int i1, i2, i3;
       mesh.vertexIndices (f, i1, i2, i3);
 
-      if (newE.hasEdge (i1, i2) == false)
+      if (newE.contains (i1, i2) == false)
       {
         wasSplit = split (i1, i2) || wasSplit;
       }
 
-      if (newE.hasEdge (i1, i3) == false)
+      if (newE.contains (i1, i3) == false)
       {
         wasSplit = split (i1, i3) || wasSplit;
       }
 
-      if (newE.hasEdge (i2, i3) == false)
+      if (newE.contains (i2, i3) == false)
       {
         wasSplit = split (i2, i3) || wasSplit;
       }
@@ -230,9 +230,9 @@ namespace
       unsigned int i1, i2, i3;
       mesh.vertexIndices (f, i1, i2, i3);
 
-      const unsigned int e12 = newE.findEdge (i1, i2);
-      const unsigned int e13 = newE.findEdge (i1, i3);
-      const unsigned int e23 = newE.findEdge (i2, i3);
+      const unsigned int e12 = newE.find (i1, i2);
+      const unsigned int e13 = newE.find (i1, i3);
+      const unsigned int e23 = newE.find (i2, i3);
       const unsigned int invalid = Util::invalidIndex ();
 
       const unsigned int v1 = mesh.valence (i1);
@@ -354,7 +354,7 @@ namespace
       if (mesh.valence (i) > 6)
       {
         mesh.forEachVertexAdjacentToVertex (
-          i, [i, &edgeSet](unsigned int j) { edgeSet.insertEdge (i, j); });
+          i, [i, &edgeSet](unsigned int j) { edgeSet.insert (i, j); });
       }
     });
 
@@ -615,7 +615,7 @@ namespace
       return n;
     };
 
-    const glm::vec3 newPos = Util::between (mesh.vertex (i1), mesh.vertex (i2));
+    const glm::vec3 newPos = Util::midpoint (mesh.vertex (i1), mesh.vertex (i2));
 
     if (v1 == 3)
     {
@@ -780,7 +780,7 @@ namespace ToolSculptAction
           smooth (mesh, faces);
           finalize (mesh, faces);
         }
-        assert (mesh.checkConsistency ());
+        assert (mesh.pruneAndCheckConsistency ());
       }
       else
       {

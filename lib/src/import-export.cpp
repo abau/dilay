@@ -6,9 +6,9 @@
 #include <fstream>
 #include <sstream>
 #include "dynamic/mesh.hpp"
+#include "import-export.hpp"
 #include "mesh-util.hpp"
 #include "mesh.hpp"
-#include "scene-util.hpp"
 #include "scene.hpp"
 #include "sketch/fwd.hpp"
 #include "sketch/mesh.hpp"
@@ -80,7 +80,7 @@ namespace
   }
 };
 
-namespace SceneUtil
+namespace ImportExport
 {
   void toDlyFile (std::ostream& stream, Scene& scene, bool isObjFile)
   {
@@ -101,7 +101,7 @@ namespace SceneUtil
 
     if (file.is_open ())
     {
-      SceneUtil::toDlyFile (file, scene, isObjFile);
+      ImportExport::toDlyFile (file, scene, isObjFile);
       file.close ();
       return true;
     }
@@ -342,7 +342,7 @@ namespace SceneUtil
 
     if (file.is_open ())
     {
-      const bool success = SceneUtil::fromDlyFile (file, config, scene);
+      const bool success = ImportExport::fromDlyFile (file, config, scene);
       file.close ();
       return success;
     }

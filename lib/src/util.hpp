@@ -38,7 +38,7 @@ typedef std::pair<unsigned int, unsigned int> ui_pair;
 
 namespace Util
 {
-  glm::vec3    between (const glm::vec3&, const glm::vec3&);
+  glm::vec3    midpoint (const glm::vec3&, const glm::vec3&);
   glm::vec3    transformPosition (const glm::mat4x4&, const glm::vec3&);
   glm::vec3    transformDirection (const glm::mat4x4&, const glm::vec3&);
   glm::vec3    orthogonal (const glm::vec3&);

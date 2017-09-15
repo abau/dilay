@@ -50,7 +50,7 @@ std::istream& operator>> (std::istream& is, glm::vec3& v)
   return is;
 }
 
-glm::vec3 Util::between (const glm::vec3& a, const glm::vec3& b)
+glm::vec3 Util::midpoint (const glm::vec3& a, const glm::vec3& b)
 {
   return (a + b) * (glm::vec3 (0.5f));
 }

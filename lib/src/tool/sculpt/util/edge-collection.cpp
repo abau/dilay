@@ -15,34 +15,34 @@ namespace
   }
 }
 
-void ToolSculptEdgeMap::insertEdge (unsigned int i1, unsigned int i2, unsigned int value)
+void ToolSculptEdgeMap::insert (unsigned int i1, unsigned int i2, unsigned int value)
 {
-  assert (this->hasEdge (i1, i2) == false);
+  assert (this->contains (i1, i2) == false);
   this->map.emplace (makeUiKey (i1, i2), value);
 }
 
-unsigned int ToolSculptEdgeMap::findEdge (unsigned int i1, unsigned int i2) const
+unsigned int ToolSculptEdgeMap::find (unsigned int i1, unsigned int i2) const
 {
   const auto it = this->map.find (makeUiKey (i1, i2));
 
   return it == this->map.end () ? Util::invalidIndex () : it->second;
 }
 
-bool ToolSculptEdgeMap::hasEdge (unsigned int i1, unsigned int i2) const
+bool ToolSculptEdgeMap::contains (unsigned int i1, unsigned int i2) const
 {
-  return this->findEdge (i1, i2) != Util::invalidIndex ();
+  return this->find (i1, i2) != Util::invalidIndex ();
 }
 
 bool ToolSculptEdgeMap::isEmpty () const { return this->map.empty (); }
 
 void ToolSculptEdgeMap::reset () { this->map.clear (); }
 
-void ToolSculptEdgeSet::insertEdge (unsigned int i1, unsigned int i2)
+void ToolSculptEdgeSet::insert (unsigned int i1, unsigned int i2)
 {
   this->set.emplace (makeUiKey (i1, i2));
 }
 
-bool ToolSculptEdgeSet::hasEdge (unsigned int i1, unsigned int i2) const
+bool ToolSculptEdgeSet::contains (unsigned int i1, unsigned int i2) const
 {
   return this->set.find (makeUiKey (i1, i2)) != this->set.end ();
 }

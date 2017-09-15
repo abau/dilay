@@ -1115,7 +1115,7 @@ namespace ToolTrimMeshAction
       border.setNewIndices (newIndices);
     }
 
-    if (::fillHole (mesh, border) && mesh.checkConsistency ())
+    if (::fillHole (mesh, border) && mesh.pruneAndCheckConsistency ())
     {
       return true;
     }

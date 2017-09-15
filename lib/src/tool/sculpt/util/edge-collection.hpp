@@ -14,9 +14,9 @@ class ToolSculptEdgeMap
 public:
   typedef std::unordered_map<std::pair<unsigned int, unsigned int>, unsigned int> Map;
 
-  void         insertEdge (unsigned int, unsigned int, unsigned int);
-  unsigned int findEdge (unsigned int, unsigned int) const;
-  bool         hasEdge (unsigned int, unsigned int) const;
+  void         insert (unsigned int, unsigned int, unsigned int);
+  unsigned int find (unsigned int, unsigned int) const;
+  bool         contains (unsigned int, unsigned int) const;
   bool         isEmpty () const;
   void         reset ();
 
@@ -29,8 +29,8 @@ class ToolSculptEdgeSet
 public:
   typedef std::unordered_set<std::pair<unsigned int, unsigned int>> Set;
 
-  void insertEdge (unsigned int, unsigned int);
-  bool hasEdge (unsigned int, unsigned int) const;
+  void insert (unsigned int, unsigned int);
+  bool contains (unsigned int, unsigned int) const;
   bool isEmpty () const;
   void reset ();
 

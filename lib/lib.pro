@@ -18,6 +18,7 @@ SOURCES += \
            src/dynamic/mesh-intersection.cpp \
            src/dynamic/octree.cpp \
            src/history.cpp \
+           src/import-export.cpp \
            src/intersection.cpp \
            src/kvstore.cpp \
            src/mesh.cpp \
@@ -36,7 +37,6 @@ SOURCES += \
            src/render-mode.cpp \
            src/renderer.cpp \
            src/scene.cpp \
-           src/scene-util.cpp \
            src/shader.cpp \
            src/sketch/bone-intersection.cpp \
            src/sketch/conversion.cpp \
@@ -112,6 +112,7 @@ HEADERS += \
            src/dynamic/octree.hpp \
            src/hash.hpp \
            src/history.hpp \
+           src/import-export.hpp \
            src/intersection.hpp \
            src/kvstore.hpp \
            src/macro.hpp \
@@ -132,7 +133,6 @@ HEADERS += \
            src/render-mode.hpp \
            src/renderer.hpp \
            src/scene.hpp \
-           src/scene-util.hpp \
            src/shader.hpp \
            src/sketch/bone-intersection.hpp \
            src/sketch/conversion.hpp \

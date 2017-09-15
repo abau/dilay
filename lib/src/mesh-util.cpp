@@ -218,7 +218,7 @@ Mesh MeshUtil::icosphere (unsigned int numSubdivisions)
     if (it == vertexCache.end ())
     {
       const unsigned int n =
-        addIcoVertex (Util::between (mesh.vertex (lowerI), mesh.vertex (upperI)));
+        addIcoVertex (Util::midpoint (mesh.vertex (lowerI), mesh.vertex (upperI)));
       vertexCache.emplace (key, n);
       return n;
     }

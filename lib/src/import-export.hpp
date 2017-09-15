@@ -2,8 +2,8 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#ifndef DILAY_SCENE_UTIL
-#define DILAY_SCENE_UTIL
+#ifndef DILAY_IMPORT_EXPORT
+#define DILAY_IMPORT_EXPORT
 
 #include <iosfwd>
 #include <string>
@@ -11,7 +11,7 @@
 class Config;
 class Scene;
 
-namespace SceneUtil
+namespace ImportExport
 {
   void toDlyFile (std::ostream&, Scene&, bool);
   bool toDlyFile (const std::string&, Scene&, bool);
