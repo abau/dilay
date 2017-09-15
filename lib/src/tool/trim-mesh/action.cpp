@@ -278,7 +278,7 @@ namespace
         const glm::vec2 toP = (p->position - v->position) / v->distanceToPrev;
         const glm::vec2 toN = (n->position - v->position) / v->distanceToNext;
 
-        v->angle = glm::dot (toP, toN);
+        v->angle = glm::acos (glm::clamp (glm::dot (toP, toN), -1.0f, 1.0f));
       }
 
       void setProperties ()
@@ -336,9 +336,6 @@ namespace
       {
         assert (v->isEar);
 
-        const TwoDVertexCRef p = this->prev (v);
-        const TwoDVertexCRef n = this->next (v);
-
         const bool nearPrev = Util::almostEqual (0.0f, v->distanceToPrev);
         const bool nearNext = Util::almostEqual (0.0f, v->distanceToNext);
 
@@ -350,12 +347,7 @@ namespace
         else
         {
           constexpr float bestAngle = glm::cos (glm::radians (60.0f));
-          const glm::vec2 nToV = (v->position - n->position) / n->distanceToPrev;
-          const float     distNtoP = glm::distance (p->position, n->position);
-          const glm::vec2 nToP = (p->position - n->position) / distNtoP;
-          const float     angleN = glm::dot (nToV, nToP);
-
-          const float w = glm::abs (v->angle - bestAngle) + glm::abs (angleN - bestAngle);
+          const float     w = glm::abs (v->angle - bestAngle);
 
           if (w < weight)
           {
@@ -863,6 +855,9 @@ namespace
 
       auto findClosestContainedConcaveVertex = [&outer, &inner](
         const glm::vec2& intersection, TwoDVertexCRef candidate) -> TwoDVertexCRef {
+
+        const glm::vec2 toCandidate = glm::normalize (candidate->position - inner.maxX->position);
+
         TwoDVertexCRef closest = outer.end ();
         float          minDistance = Util::maxFloat ();
         float          minAngle = Util::maxFloat ();
@@ -873,9 +868,9 @@ namespace
           {
             if (v->isInsideTriangle (candidate->position, intersection, inner.maxX->position))
             {
-              const float d = glm::distance (v->position, inner.maxX->position);
-              const float a = glm::dot (candidate->position - inner.maxX->position,
-                                        (v->position - inner.maxX->position) / d);
+              const float     d = glm::distance (v->position, inner.maxX->position);
+              const glm::vec2 toV = (v->position - inner.maxX->position) / d;
+              const float     a = glm::acos (glm::clamp (glm::dot (toCandidate, toV), -1.0f, 1.0f));
 
               if (a < minAngle || (Util::almostEqual (a, minAngle) && d < minDistance))
               {
@@ -905,8 +900,6 @@ namespace
 
     TwoDPolyline combine (const TwoDPolyline& outer, const TwoDPolyline& inner)
     {
-      assert (inner.isCCW == false);
-
       TwoDVertices   vertices;
       TwoDVertexCRef visible = findMutuallyVisibleVertex (outer, inner);
       TwoDVertexCRef v = inner.maxX;
@@ -932,10 +925,6 @@ namespace
 
     void combine (TwoDPolyline& outer, TwoDPolylines& inner)
     {
-#ifndef NDEBUG
-      outer.setProperties ();
-      assert (outer.isCCW);
-#endif
       for (TwoDPolyline& i : inner)
       {
         i.setProperties ();
