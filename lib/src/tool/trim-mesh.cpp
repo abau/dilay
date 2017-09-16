@@ -9,6 +9,7 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "config.hpp"
+#include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
 #include "history.hpp"
 #include "scene.hpp"
@@ -177,12 +178,14 @@ struct ToolTrimMesh::Impl
     {
       this->points.push_back (e.ivec2 ());
 
-      if (this->points.size () >= 2)
+      DynamicMeshIntersection intersection;
+      const bool terminate = this->self->intersectsScene (e.ivec2 (), intersection) == false;
+
+      if (this->points.size () >= 2 && terminate)
       {
         this->self->snapshotDynamicMeshes ();
 
         TrimStatus status = TrimStatus::NotTrimmed;
-
         this->self->state ().scene ().forEachMesh ([&status, this](DynamicMesh& mesh) {
           if (status != TrimStatus::Failed)
           {
