@@ -167,9 +167,12 @@ DELEGATE_CONST (bool, ToolTrimMeshBorderSegment, hasVertices)
 
 struct ToolTrimMeshBorder::Impl
 {
+  DynamicMesh&                           mesh;
   std::vector<ToolTrimMeshBorderSegment> segments;
 
-  Impl (const Camera& cam, const std::vector<glm::ivec2>& points, float offset, bool reverse)
+  Impl (DynamicMesh& m, const Camera& cam, const std::vector<glm::ivec2>& points, float offset,
+        bool reverse)
+    : mesh (m)
   {
     const unsigned int n = points.size ();
     assert (n >= 2);
@@ -385,7 +388,9 @@ struct ToolTrimMeshBorder::Impl
   }
 };
 
-DELEGATE4_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&, float, bool)
+DELEGATE5_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const Camera&, const std::vector<glm::ivec2>&,
+                float, bool)
+GETTER_CONST (DynamicMesh&, ToolTrimMeshBorder, mesh)
 DELEGATE1_CONST (const ToolTrimMeshBorderSegment&, ToolTrimMeshBorder, segment, unsigned int)
 DELEGATE2_CONST (const ToolTrimMeshBorderSegment&, ToolTrimMeshBorder, getSegment, const glm::vec3&,
                  const glm::vec3&)

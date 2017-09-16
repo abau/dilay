@@ -5,12 +5,11 @@
 #ifndef DILAY_TOOL_TRIM_MESH_ACTION
 #define DILAY_TOOL_TRIM_MESH_ACTION
 
-class DynamicMesh;
 class ToolTrimMeshBorder;
 
 namespace ToolTrimMeshAction
 {
-  bool trimMesh (DynamicMesh&, ToolTrimMeshBorder&);
+  bool trimMesh (ToolTrimMeshBorder&);
 }
 
 #endif

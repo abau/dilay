@@ -104,17 +104,17 @@ struct ToolTrimMesh::Impl
 
   TrimStatus trimMesh (DynamicMesh& mesh, float offset, bool reverse)
   {
-    ToolTrimMeshBorder border (this->self->state ().camera (), this->points, offset, reverse);
+    ToolTrimMeshBorder border (mesh, this->self->state ().camera (), this->points, offset, reverse);
     if (border.onlyObtuseAngles () == false)
     {
       return TrimStatus::InvalidBorder;
     }
 
-    if (ToolTrimMeshSplitMesh::splitMesh (mesh, border))
+    if (ToolTrimMeshSplitMesh::splitMesh (border))
     {
       if (border.hasVertices ())
       {
-        if (ToolTrimMeshAction::trimMesh (mesh, border))
+        if (ToolTrimMeshAction::trimMesh (border))
         {
           return TrimStatus::Trimmed;
         }

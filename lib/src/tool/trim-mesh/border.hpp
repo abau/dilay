@@ -10,6 +10,7 @@
 #include "macro.hpp"
 
 class Camera;
+class DynamicMesh;
 class PrimPlane;
 class PrimRay;
 
@@ -43,11 +44,13 @@ private:
 class ToolTrimMeshBorder
 {
 public:
-  DECLARE_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&, float, bool)
+  DECLARE_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const Camera&, const std::vector<glm::ivec2>&,
+                float, bool)
 
   const ToolTrimMeshBorderSegment& segment (unsigned int) const;
   const ToolTrimMeshBorderSegment& getSegment (const glm::vec3&, const glm::vec3&) const;
 
+  DynamicMesh& mesh () const;
   unsigned int numSegments () const;
   void         addVertex (unsigned int, const glm::vec3&);
   void         addPolyline ();

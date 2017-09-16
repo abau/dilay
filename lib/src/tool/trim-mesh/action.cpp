@@ -1048,7 +1048,7 @@ namespace
     }
   }
 
-  bool fillHole (DynamicMesh& mesh, ToolTrimMeshBorder& border)
+  bool fillHole (ToolTrimMeshBorder& border)
   {
     border.deleteEmptyPolylines ();
 
@@ -1064,32 +1064,33 @@ namespace
 
         for (unsigned int i : p)
         {
-          const glm::vec2 position = segment.plane ().project2d (mesh.vertex (i));
+          const glm::vec2 position = segment.plane ().project2d (border.mesh ().vertex (i));
           vertices.emplace_back (i, scalingFactor * position);
         }
         polylines.emplace_back (vertices);
       }
-      Simple::TwoDGrid      grid (mesh, segment, polylines);
+      Simple::TwoDGrid      grid (border.mesh (), segment, polylines);
       Nested::TwoDPolylines nested = Nested::nest (polylines);
-      if (Nested::fillHole (nested, mesh) == false)
+      if (Nested::fillHole (nested, border.mesh ()) == false)
       {
         return false;
       }
       else
       {
-        grid.fill (mesh);
-        grid.smooth (mesh);
+        grid.fill (border.mesh ());
+        grid.smooth (border.mesh ());
       }
     }
     return true;
   }
 
-  void trimMesh (DynamicMesh& mesh, const ToolTrimMeshBorder& border)
+  void trimMesh (const ToolTrimMeshBorder& border)
   {
+    DynamicMesh&              mesh = border.mesh ();
     std::vector<unsigned int> indicesToTrim;
 
-    mesh.forEachVertex ([&mesh, &border, &indicesToTrim](unsigned int i) {
-      if (border.trimVertex (mesh.vertex (i)))
+    mesh.forEachVertex ([&border, &indicesToTrim](unsigned int i) {
+      if (border.trimVertex (border.mesh ().vertex (i)))
       {
         indicesToTrim.push_back (i);
       }
@@ -1133,18 +1134,18 @@ namespace
 
 namespace ToolTrimMeshAction
 {
-  bool trimMesh (DynamicMesh& mesh, ToolTrimMeshBorder& border)
+  bool trimMesh (ToolTrimMeshBorder& border)
   {
-    ::trimMesh (mesh, border);
+    ::trimMesh (border);
 
     std::vector<unsigned int> newIndices;
-    mesh.prune (&newIndices);
+    border.mesh ().prune (&newIndices);
     if (newIndices.empty () == false)
     {
       border.setNewIndices (newIndices);
     }
 
-    if (::fillHole (mesh, border) && mesh.pruneAndCheckConsistency ())
+    if (::fillHole (border) && border.mesh ().pruneAndCheckConsistency ())
     {
       return true;
     }
