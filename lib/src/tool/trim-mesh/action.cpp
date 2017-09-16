@@ -1086,18 +1086,47 @@ namespace
 
   void trimMesh (DynamicMesh& mesh, const ToolTrimMeshBorder& border)
   {
-    std::vector<unsigned int> verticesToTrim;
+    std::vector<unsigned int> indicesToTrim;
 
-    mesh.forEachVertex ([&mesh, &border, &verticesToTrim](unsigned int i) {
+    mesh.forEachVertex ([&mesh, &border, &indicesToTrim](unsigned int i) {
       if (border.trimVertex (mesh.vertex (i)))
       {
-        verticesToTrim.push_back (i);
+        indicesToTrim.push_back (i);
       }
     });
-
-    for (unsigned int i : verticesToTrim)
+    for (unsigned int i : indicesToTrim)
     {
       mesh.deleteVertex (i);
+    }
+
+    indicesToTrim.clear ();
+    for (unsigned int s = 0; s < border.numSegments () - 1; s++)
+    {
+      const ToolTrimMeshBorderSegment& segment = border.segment (s);
+      for (const ToolTrimMeshBorderSegment::Polyline& p : segment.polylines ())
+      {
+        for (unsigned int i : p)
+        {
+          for (unsigned int a : mesh.adjacentFaces (i))
+          {
+            unsigned int a1, a2, a3;
+            mesh.vertexIndices (a, a1, a2, a3);
+            assert (i == a1 || i == a2 || i == a3);
+
+            if (border.trimFace (mesh.vertex (a1), mesh.vertex (a2), mesh.vertex (a3)))
+            {
+              indicesToTrim.push_back (a);
+            }
+          }
+        }
+      }
+    }
+    for (unsigned int i : indicesToTrim)
+    {
+      if (mesh.isFreeFace (i) == false)
+      {
+        mesh.deleteFace (i);
+      }
     }
   }
 }
