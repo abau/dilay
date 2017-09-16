@@ -2,35 +2,19 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <unordered_map>
 #include <unordered_set>
 #include "dynamic/faces.hpp"
 #include "dynamic/mesh.hpp"
 #include "hash.hpp"
-#include "intersection.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
-#include "primitive/triangle.hpp"
 #include "tool/trim-mesh/border.hpp"
 #include "tool/trim-mesh/split-mesh.hpp"
 #include "util.hpp"
 
 namespace
 {
-  unsigned int splitFace (DynamicMesh& mesh, unsigned int i, const glm::vec3& point)
-  {
-    unsigned int i1, i2, i3;
-    mesh.vertexIndices (i, i1, i2, i3);
-
-    const unsigned int newI = mesh.addVertex (point, mesh.faceNormal (i));
-
-    mesh.deleteFace (i);
-    mesh.addFace (i1, i2, newI);
-    mesh.addFace (i2, i3, newI);
-    mesh.addFace (i3, i1, newI);
-
-    return newI;
-  }
+  typedef std::unordered_set<unsigned int> BorderVertices;
 
   unsigned int splitEdge (DynamicMesh& mesh, unsigned int e1, unsigned e2, const glm::vec3& point)
   {
@@ -51,130 +35,36 @@ namespace
     return newI;
   }
 
-  void splitAtBorderEdges (const ToolTrimMeshBorder& border)
-  {
-    DynamicMesh& mesh = border.mesh ();
+  unsigned int splitEdge (const ToolTrimMeshBorder& border, unsigned int e1, unsigned int e2,
 
-    for (unsigned int s = 0; s < border.numSegments () - 1; s++)
-    {
-      const PrimRay& edge = border.segment (s).edge ();
-      DynamicFaces   intersected;
-
-      if (mesh.intersects (edge, true, intersected))
-      {
-        for (unsigned int i : intersected)
-        {
-          float t;
-          if (IntersectionUtil::intersects (edge, mesh.face (i), true, &t))
-          {
-            unsigned int i1, i2, i3;
-            mesh.vertexIndices (i, i1, i2, i3);
-
-            const glm::vec3& v1 = mesh.vertex (i1);
-            const glm::vec3& v2 = mesh.vertex (i2);
-            const glm::vec3& v3 = mesh.vertex (i3);
-
-            if (edge.onRay (v1) == false && edge.onRay (v2) == false && edge.onRay (v3) == false)
-            {
-              const glm::vec3 point = edge.pointAt (t);
-
-              if (PrimRay (v1, v2 - v1).onRay (point))
-              {
-                splitEdge (mesh, i1, i2, point);
-              }
-              else if (PrimRay (v2, v3 - v2).onRay (point))
-              {
-                splitEdge (mesh, i2, i3, point);
-              }
-              else if (PrimRay (v3, v1 - v3).onRay (point))
-              {
-                splitEdge (mesh, i3, i1, point);
-              }
-              else
-              {
-                splitFace (mesh, i, point);
-              }
-            }
-          }
-          else
-          {
-            DILAY_IMPOSSIBLE
-          }
-        }
-      }
-    }
-  }
-
-  struct BorderVertexStats
-  {
-    const unsigned int segment;
-    const bool         onEdge;
-
-    BorderVertexStats (unsigned int s, bool e)
-      : segment (s)
-      , onEdge (e)
-    {
-    }
-
-    static bool compatible (const BorderVertexStats& s1, const BorderVertexStats& s2)
-    {
-      if (s1.onEdge == false && s2.onEdge == false)
-      {
-        return s1.segment == s2.segment;
-      }
-      else if (s1.onEdge && s2.onEdge)
-      {
-        return s1.segment + 1 == s2.segment || s1.segment == s2.segment + 1;
-      }
-      else if (s1.onEdge)
-      {
-        return s1.segment == s2.segment || s1.segment + 1 == s2.segment;
-      }
-      else if (s2.onEdge)
-      {
-        return s1.segment == s2.segment || s1.segment == s2.segment + 1;
-      }
-      DILAY_IMPOSSIBLE
-    }
-  };
-  typedef std::unordered_map<unsigned int, BorderVertexStats> BorderVertices;
-
-  unsigned int splitEdgeAtBorderSegment (const ToolTrimMeshBorder& border, unsigned int e1,
-                                         unsigned int e2,
-
-                                         BorderVertices& borderVertices)
+                          BorderVertices& borderVertices)
   {
     const glm::vec3 v1 (border.mesh ().vertex (e1));
     const glm::vec3 v2 (border.mesh ().vertex (e2));
     const PrimRay   line (v1, v2 - v1);
 
-    for (unsigned int s = 0; s < border.numSegments (); s++)
+    bool checkIntersection = true;
+
+    if (border.onBorder (v1))
     {
-      const ToolTrimMeshBorderSegment& segment = border.segment (s);
-      bool                             onEdge = false;
-      bool                             checkIntersection = true;
+      borderVertices.insert (e1);
+      checkIntersection = false;
+    }
 
-      if (segment.onBorder (v1, &onEdge))
-      {
-        borderVertices.emplace (e1, BorderVertexStats (s, onEdge));
-        checkIntersection = false;
-      }
+    if (border.onBorder (v2))
+    {
+      borderVertices.insert (e2);
+      checkIntersection = false;
+    }
 
-      if (segment.onBorder (v2, &onEdge))
+    if (checkIntersection)
+    {
+      float t;
+      if (border.intersects (line, t) && t > 0.0f && t < glm::distance (v1, v2))
       {
-        borderVertices.emplace (e2, BorderVertexStats (s, onEdge));
-        checkIntersection = false;
-      }
-
-      if (checkIntersection)
-      {
-        float t;
-        if (segment.intersects (line, t) && t > 0.0f && t < glm::distance (v1, v2))
-        {
-          const unsigned int i = splitEdge (border.mesh (), e1, e2, line.pointAt (t));
-          borderVertices.emplace (i, BorderVertexStats (s, false));
-          return i;
-        }
+        const unsigned int i = splitEdge (border.mesh (), e1, e2, line.pointAt (t));
+        borderVertices.insert (i);
+        return i;
       }
     }
     return Util::invalidIndex ();
@@ -183,10 +73,7 @@ namespace
   void splitMesh (const ToolTrimMeshBorder& border, BorderVertices& borderVertices)
   {
     DynamicFaces faces;
-    for (unsigned int s = 0; s < border.numSegments (); s++)
-    {
-      border.mesh ().intersects (border.segment (s).plane (), faces);
-    }
+    border.mesh ().intersects (border.plane (), faces);
 
     std::unordered_set<ui_pair> edges;
     while (faces.isEmpty () == false)
@@ -204,8 +91,7 @@ namespace
 
       for (const auto e : edges)
       {
-        const unsigned int newI =
-          splitEdgeAtBorderSegment (border, e.first, e.second, borderVertices);
+        const unsigned int newI = splitEdge (border, e.first, e.second, borderVertices);
         if (newI != Util::invalidIndex ())
         {
           for (unsigned int a : border.mesh ().adjacentFaces (newI))
@@ -221,18 +107,15 @@ namespace
 
   bool checkBorderVertices (const DynamicMesh& mesh, const BorderVertices& borderVertices)
   {
-    for (const BorderVertices::value_type& vIt : borderVertices)
+    for (unsigned int v : borderVertices)
     {
       unsigned int n = 0;
-      mesh.forEachVertexAdjacentToVertex (vIt.first, [&borderVertices, vIt, &n](unsigned int a) {
+      mesh.forEachVertexAdjacentToVertex (v, [&borderVertices, &n](unsigned int a) {
         BorderVertices::const_iterator bIt = borderVertices.find (a);
 
         if (bIt != borderVertices.cend ())
         {
-          if (BorderVertexStats::compatible (vIt.second, bIt->second))
-          {
-            n++;
-          }
+          n++;
         }
       });
       if (n != 2)
@@ -248,16 +131,8 @@ namespace
     unsigned int leftFace, leftVertex, rightFace, rightVertex;
     border.mesh ().findAdjacent (e1, e2, leftFace, leftVertex, rightFace, rightVertex);
 
-    const glm::vec3& v1 = border.mesh ().vertex (e1);
-    const glm::vec3& v2 = border.mesh ().vertex (e2);
     const glm::vec3& vL = border.mesh ().vertex (leftVertex);
-
-    assert (border.onBorder (v1));
-    assert (border.onBorder (v2));
-
-    const ToolTrimMeshBorderSegment& segment = border.getSegment (v1, v2);
-
-    return segment.onBorder (vL) ? false : segment.plane ().distance (vL) > 0.0f;
+    return border.onBorder (vL) ? false : border.plane ().distance (vL) > 0.0f;
   }
 
   void addPolylinesToBorder (ToolTrimMeshBorder& border, BorderVertices& borderVertices)
@@ -273,38 +148,29 @@ namespace
       }
 
       bool foundNext = false;
-      bool foundCompatible = false;
 
       border.mesh ().forEachVertexAdjacentToVertex (
-        vIt->first, [&border, &borderVertices, &vIt, &foundNext, &foundCompatible](unsigned int a) {
+        *vIt, [&border, &borderVertices, &vIt, &foundNext](unsigned int a) {
           if (foundNext == false)
           {
             BorderVertices::iterator bIt = borderVertices.find (a);
 
             if (bIt != borderVertices.end ())
             {
-              if (BorderVertexStats::compatible (vIt->second, bIt->second))
+              if (traverseAlongEdge (border, *vIt, *bIt))
               {
-                if (traverseAlongEdge (border, vIt->first, bIt->first))
-                {
-                  border.addVertex (vIt->first, border.mesh ().vertex (vIt->first));
-                  borderVertices.erase (vIt);
-                  vIt = bIt;
-                  foundNext = true;
-                  return;
-                }
-                else
-                {
-                  assert (foundCompatible == false);
-                }
-                foundCompatible = true;
+                border.addVertex (*vIt, border.mesh ().vertex (*vIt));
+                borderVertices.erase (vIt);
+                vIt = bIt;
+                foundNext = true;
+                return;
               }
             }
           }
         });
       if (foundNext == false)
       {
-        border.addVertex (vIt->first, border.mesh ().vertex (vIt->first));
+        border.addVertex (*vIt, border.mesh ().vertex (*vIt));
         borderVertices.erase (vIt);
         vIt = borderVertices.end ();
       }
@@ -315,9 +181,7 @@ namespace
 bool ToolTrimMeshSplitMesh::splitMesh (ToolTrimMeshBorder& border)
 {
   BorderVertices borderVertices;
-
-  splitAtBorderEdges (border);
-  splitMesh (border, borderVertices);
+  ::splitMesh (border, borderVertices);
 
   if (borderVertices.empty ())
   {

@@ -9,58 +9,29 @@
 #include <vector>
 #include "macro.hpp"
 
-class Camera;
 class DynamicMesh;
 class PrimPlane;
 class PrimRay;
 
-class ToolTrimMeshBorderSegment
+class ToolTrimMeshBorder
 {
 public:
   typedef std::vector<unsigned int> Polyline;
   typedef std::vector<Polyline>     Polylines;
 
-  DECLARE_BIG3 (ToolTrimMeshBorderSegment, const PrimRay&, const PrimRay&)
+  DECLARE_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const PrimRay&, const PrimRay&, float, bool)
 
-  ToolTrimMeshBorderSegment (const PrimPlane&, const PrimRay&);
-  ToolTrimMeshBorderSegment (const PrimRay&, const PrimPlane&);
-  ToolTrimMeshBorderSegment (const PrimPlane&);
-
+  DynamicMesh&     mesh () const;
   const Polylines& polylines () const;
   const PrimPlane& plane () const;
-  const PrimRay&   edge () const;
   void             addVertex (unsigned int, const glm::vec3&);
   void             addPolyline ();
   void             setNewIndices (const std::vector<unsigned int>&);
-  bool             onBorder (const glm::vec3&, bool* = nullptr) const;
+  bool             onBorder (const glm::vec3&) const;
   bool             intersects (const PrimRay&, float&) const;
+  bool             trimVertex (const glm::vec3&) const;
   void             deleteEmptyPolylines ();
   bool             hasVertices () const;
-
-private:
-  IMPLEMENTATION
-};
-
-class ToolTrimMeshBorder
-{
-public:
-  DECLARE_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const Camera&, const std::vector<glm::ivec2>&,
-                float, bool)
-
-  const ToolTrimMeshBorderSegment& segment (unsigned int) const;
-  const ToolTrimMeshBorderSegment& getSegment (const glm::vec3&, const glm::vec3&) const;
-
-  DynamicMesh& mesh () const;
-  unsigned int numSegments () const;
-  void         addVertex (unsigned int, const glm::vec3&);
-  void         addPolyline ();
-  void         setNewIndices (const std::vector<unsigned int>&);
-  bool         onBorder (const glm::vec3&) const;
-  bool         trimVertex (const glm::vec3&) const;
-  bool         trimFace (const glm::vec3&, const glm::vec3&, const glm::vec3&) const;
-  void         deleteEmptyPolylines ();
-  bool         hasVertices () const;
-  bool         onlyObtuseAngles () const;
 
 private:
   IMPLEMENTATION

@@ -504,7 +504,7 @@ namespace
         }
       }
 
-      TwoDGrid (DynamicMesh& mesh, const ToolTrimMeshBorderSegment& segment, TwoDPolylines& ps)
+      TwoDGrid (const ToolTrimMeshBorder& trimBorder, TwoDPolylines& ps)
       {
         constexpr TwoDSquare::State border = TwoDSquare::State::Border;
         constexpr TwoDSquare::State inside = TwoDSquare::State::Inside;
@@ -632,9 +632,9 @@ namespace
             if (square.state != outside)
             {
               const glm::vec2 position2d = square.center / scalingFactor;
-              const glm::vec3 position = segment.plane ().project (position2d);
-              const glm::vec3 normal = segment.plane ().normal ();
-              square.vertexIndex = mesh.addVertex (position, normal);
+              const glm::vec3 position = trimBorder.plane ().project (position2d);
+              const glm::vec3 normal = trimBorder.plane ().normal ();
+              square.vertexIndex = trimBorder.mesh ().addVertex (position, normal);
             }
           }
         }
@@ -1051,35 +1051,30 @@ namespace
   bool fillHole (ToolTrimMeshBorder& border)
   {
     border.deleteEmptyPolylines ();
+    Simple::TwoDPolylines polylines;
 
-    for (unsigned int s = 0; s < border.numSegments (); s++)
+    for (const ToolTrimMeshBorder::Polyline& p : border.polylines ())
     {
-      const ToolTrimMeshBorderSegment& segment = border.segment (s);
-      Simple::TwoDPolylines            polylines;
+      assert (p.size () >= 3);
+      Simple::TwoDVertices vertices;
 
-      for (const ToolTrimMeshBorderSegment::Polyline& p : segment.polylines ())
+      for (unsigned int i : p)
       {
-        assert (p.size () >= 3);
-        Simple::TwoDVertices vertices;
-
-        for (unsigned int i : p)
-        {
-          const glm::vec2 position = segment.plane ().project2d (border.mesh ().vertex (i));
-          vertices.emplace_back (i, scalingFactor * position);
-        }
-        polylines.emplace_back (vertices);
+        const glm::vec2 position = border.plane ().project2d (border.mesh ().vertex (i));
+        vertices.emplace_back (i, scalingFactor * position);
       }
-      Simple::TwoDGrid      grid (border.mesh (), segment, polylines);
-      Nested::TwoDPolylines nested = Nested::nest (polylines);
-      if (Nested::fillHole (nested, border.mesh ()) == false)
-      {
-        return false;
-      }
-      else
-      {
-        grid.fill (border.mesh ());
-        grid.smooth (border.mesh ());
-      }
+      polylines.emplace_back (vertices);
+    }
+    Simple::TwoDGrid      grid (border, polylines);
+    Nested::TwoDPolylines nested = Nested::nest (polylines);
+    if (Nested::fillHole (nested, border.mesh ()) == false)
+    {
+      return false;
+    }
+    else
+    {
+      grid.fill (border.mesh ());
+      grid.smooth (border.mesh ());
     }
     return true;
   }
@@ -1087,47 +1082,17 @@ namespace
   void trimMesh (const ToolTrimMeshBorder& border)
   {
     DynamicMesh&              mesh = border.mesh ();
-    std::vector<unsigned int> indicesToTrim;
+    std::vector<unsigned int> verticesToTrim;
 
-    mesh.forEachVertex ([&border, &indicesToTrim](unsigned int i) {
+    mesh.forEachVertex ([&border, &verticesToTrim](unsigned int i) {
       if (border.trimVertex (border.mesh ().vertex (i)))
       {
-        indicesToTrim.push_back (i);
+        verticesToTrim.push_back (i);
       }
     });
-    for (unsigned int i : indicesToTrim)
+    for (unsigned int i : verticesToTrim)
     {
       mesh.deleteVertex (i);
-    }
-
-    indicesToTrim.clear ();
-    for (unsigned int s = 0; s < border.numSegments () - 1; s++)
-    {
-      const ToolTrimMeshBorderSegment& segment = border.segment (s);
-      for (const ToolTrimMeshBorderSegment::Polyline& p : segment.polylines ())
-      {
-        for (unsigned int i : p)
-        {
-          for (unsigned int a : mesh.adjacentFaces (i))
-          {
-            unsigned int a1, a2, a3;
-            mesh.vertexIndices (a, a1, a2, a3);
-            assert (i == a1 || i == a2 || i == a3);
-
-            if (border.trimFace (mesh.vertex (a1), mesh.vertex (a2), mesh.vertex (a3)))
-            {
-              indicesToTrim.push_back (a);
-            }
-          }
-        }
-      }
-    }
-    for (unsigned int i : indicesToTrim)
-    {
-      if (mesh.isFreeFace (i) == false)
-      {
-        mesh.deleteFace (i);
-      }
     }
   }
 }

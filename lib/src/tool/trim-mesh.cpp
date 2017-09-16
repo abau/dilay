@@ -12,6 +12,7 @@
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
 #include "history.hpp"
+#include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool/trim-mesh/action.hpp"
@@ -31,8 +32,7 @@ namespace
   {
     Trimmed,
     NotTrimmed,
-    Failed,
-    InvalidBorder
+    Failed
   };
 
   enum class TrimMode
@@ -104,11 +104,11 @@ struct ToolTrimMesh::Impl
 
   TrimStatus trimMesh (DynamicMesh& mesh, float offset, bool reverse)
   {
-    ToolTrimMeshBorder border (mesh, this->self->state ().camera (), this->points, offset, reverse);
-    if (border.onlyObtuseAngles () == false)
-    {
-      return TrimStatus::InvalidBorder;
-    }
+    assert (this->points.size () == 2);
+    const PrimRay ray1 = this->self->state ().camera ().ray (this->points[0]);
+    const PrimRay ray2 = this->self->state ().camera ().ray (this->points[1]);
+
+    ToolTrimMeshBorder border (mesh, ray1, ray2, offset, reverse);
 
     if (ToolTrimMeshSplitMesh::splitMesh (border))
     {
@@ -182,12 +182,13 @@ struct ToolTrimMesh::Impl
     }
     else
     {
-      this->points.push_back (e.ivec2 ());
-
       DynamicMeshIntersection intersection;
-      const bool terminate = this->self->intersectsScene (e.ivec2 (), intersection) == false;
+      if (this->self->intersectsScene (e.ivec2 (), intersection) == false)
+      {
+        this->points.push_back (e.ivec2 ());
+      }
 
-      if (this->points.size () >= 2 && terminate)
+      if (this->points.size () == 2)
       {
         this->self->snapshotDynamicMeshes ();
 
@@ -218,13 +219,6 @@ struct ToolTrimMesh::Impl
             this->self->state ().history ().dropFutureSnapshot ();
             ViewUtil::error (this->self->state ().mainWindow (),
                              QObject::tr ("Could not trim mesh."));
-            break;
-
-          case TrimStatus::InvalidBorder:
-            this->self->state ().undo ();
-            this->self->state ().history ().dropFutureSnapshot ();
-            ViewUtil::error (this->self->state ().mainWindow (),
-                             QObject::tr ("Invalid trim border."));
             break;
         }
         this->points.clear ();
