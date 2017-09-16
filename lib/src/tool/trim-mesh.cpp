@@ -31,7 +31,8 @@ namespace
   {
     Trimmed,
     NotTrimmed,
-    Failed
+    Failed,
+    InvalidBorder
   };
 
   enum class TrimMode
@@ -104,6 +105,11 @@ struct ToolTrimMesh::Impl
   TrimStatus trimMesh (DynamicMesh& mesh, float offset, bool reverse)
   {
     ToolTrimMeshBorder border (this->self->state ().camera (), this->points, offset, reverse);
+    if (border.onlyObtuseAngles () == false)
+    {
+      return TrimStatus::InvalidBorder;
+    }
+
     if (ToolTrimMeshSplitMesh::splitMesh (mesh, border))
     {
       if (border.hasVertices ())
@@ -137,21 +143,21 @@ struct ToolTrimMesh::Impl
     else if (this->trimMode == TrimMode::Slice)
     {
       TrimStatus status = this->trimMesh (mesh, this->width, false);
-      if (status == TrimStatus::Failed)
+      if (status == TrimStatus::Trimmed)
       {
-        return status;
+        return this->trimMesh (mesh, this->width, true);
       }
       else
       {
-        return this->trimMesh (mesh, this->width, true);
+        return status;
       }
     }
     else if (this->trimMode == TrimMode::Cut)
     {
       DynamicMesh& mesh2 =
         this->self->state ().scene ().newDynamicMesh (this->self->config (), mesh);
-      TrimStatus status = this->trimMesh (mesh, -this->width, false);
 
+      TrimStatus status = this->trimMesh (mesh, -this->width, false);
       if (status == TrimStatus::Trimmed)
       {
         return this->trimMesh (mesh2, -this->width, true);
@@ -212,6 +218,13 @@ struct ToolTrimMesh::Impl
             this->self->state ().history ().dropFutureSnapshot ();
             ViewUtil::error (this->self->state ().mainWindow (),
                              QObject::tr ("Could not trim mesh."));
+            break;
+
+          case TrimStatus::InvalidBorder:
+            this->self->state ().undo ();
+            this->self->state ().history ().dropFutureSnapshot ();
+            ViewUtil::error (this->self->state ().mainWindow (),
+                             QObject::tr ("Invalid trim border."));
             break;
         }
         this->points.clear ();

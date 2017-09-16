@@ -57,6 +57,7 @@ public:
   bool         trimFace (const glm::vec3&, const glm::vec3&, const glm::vec3&) const;
   void         deleteEmptyPolylines ();
   bool         hasVertices () const;
+  bool         onlyObtuseAngles () const;
 
 private:
   IMPLEMENTATION

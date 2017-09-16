@@ -331,6 +331,7 @@ bool ToolTrimMeshSplitMesh::splitMesh (DynamicMesh& mesh, ToolTrimMeshBorder& bo
   }
   else
   {
+    DILAY_WARN_DEBUG ("Could not split mesh");
     return false;
   }
 }

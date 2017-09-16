@@ -171,48 +171,58 @@ struct ToolTrimMeshBorder::Impl
 
   Impl (const Camera& cam, const std::vector<glm::ivec2>& points, float offset, bool reverse)
   {
-    assert (points.size () >= 2);
+    const unsigned int n = points.size ();
+    assert (n >= 2);
 
-    if (points.size () == 2)
-    {
-      const PrimRay   r1 = cam.ray (points[reverse ? 1 : 0]);
-      const PrimRay   r2 = cam.ray (points[reverse ? 0 : 1]);
+    const PrimRay   rFirst = cam.ray (points[reverse ? (n - 1) : 0]);
+    const PrimRay   rLast = cam.ray (points[reverse ? 0 : (n - 1)]);
+    const glm::vec3 baseNormal =
+      glm::normalize (glm::cross (rLast.direction (), rFirst.direction ()));
+
+    const auto makePlane = [&cam, &points, offset, &baseNormal](unsigned int i1, unsigned int i2) {
+      const PrimRay   r1 = cam.ray (points[i1]);
+      const PrimRay   r2 = cam.ray (points[i2]);
       const glm::vec3 normal = glm::normalize (glm::cross (r2.direction (), r1.direction ()));
-      const glm::vec3 point = cam.position () + (offset * normal);
-      this->segments.emplace_back (PrimPlane (point, normal));
+      const glm::vec3 point = cam.position () + (offset * baseNormal);
+      return PrimPlane (point, normal);
+    };
+
+    const auto makeRay = [&cam, &points, offset, &baseNormal](unsigned int i) {
+      const PrimRay r = cam.ray (points[i]);
+      return PrimRay (r.origin () + (offset * baseNormal), r.direction ());
+    };
+
+    if (n == 2)
+    {
+      if (reverse == false)
+      {
+        this->segments.emplace_back (makePlane (0, 1));
+      }
+      else
+      {
+        this->segments.emplace_back (makePlane (1, 0));
+      }
     }
     else
     {
-      // TODO: obey offset & reverse flag
-      auto addFirstSegment = [this, &cam, &points]() {
-        const PrimRay   r1 = cam.ray (points[0]);
-        const PrimRay   r2 = cam.ray (points[1]);
-        const PrimPlane p =
-          PrimPlane (cam.position (), glm::cross (r2.direction (), r1.direction ()));
-        this->segments.emplace_back (p, r2);
-      };
-
-      auto addMiddleSegment = [this, &cam, &points](auto it) {
-        const PrimRay r1 = cam.ray (*it);
-        const PrimRay r2 = cam.ray (*std::next (it));
-
-        this->segments.emplace_back (r1, r2);
-      };
-
-      auto addLastSegment = [this, &cam, &points]() {
-        const PrimRay   r1 = cam.ray (*std::prev (std::prev (points.end ())));
-        const PrimRay   r2 = cam.ray (*std::prev (points.end ()));
-        const PrimPlane p =
-          PrimPlane (cam.position (), glm::cross (r2.direction (), r1.direction ()));
-        this->segments.emplace_back (r1, p);
-      };
-
-      addFirstSegment ();
-      for (auto it = std::next (points.begin ()); std::next (it) != std::prev (points.end ()); ++it)
+      if (reverse == false)
       {
-        addMiddleSegment (it);
+        this->segments.emplace_back (makePlane (0, 1), makeRay (1));
+        for (unsigned int i = 1; i < n - 2; i++)
+        {
+          this->segments.emplace_back (makeRay (i), makeRay (i + 1));
+        }
+        this->segments.emplace_back (makeRay (n - 2), makePlane (n - 2, n - 1));
       }
-      addLastSegment ();
+      else
+      {
+        this->segments.emplace_back (makePlane (n - 1, n - 2), makeRay (n - 2));
+        for (unsigned int i = n - 2; i > 1; i--)
+        {
+          this->segments.emplace_back (makeRay (i), makeRay (i - 1));
+        }
+        this->segments.emplace_back (makeRay (1), makePlane (1, 0));
+      }
     }
   }
 
@@ -355,6 +365,24 @@ struct ToolTrimMeshBorder::Impl
     }
     return false;
   }
+
+  bool onlyObtuseAngles () const
+  {
+    if (this->segments.size () > 2)
+    {
+      for (unsigned int i = 0; i < this->segments.size () - 1; i++)
+      {
+        const ToolTrimMeshBorderSegment& s = this->segments[i].plane ();
+        const ToolTrimMeshBorderSegment& nextS = this->segments[i + 1].plane ();
+
+        if (glm::dot (s.plane ().normal (), nextS.plane ().normal ()) < 0.0f)
+        {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 };
 
 DELEGATE4_BIG2 (ToolTrimMeshBorder, const Camera&, const std::vector<glm::ivec2>&, float, bool)
@@ -371,3 +399,4 @@ DELEGATE3_CONST (bool, ToolTrimMeshBorder, trimFace, const glm::vec3&, const glm
                  const glm::vec3&)
 DELEGATE (void, ToolTrimMeshBorder, deleteEmptyPolylines)
 DELEGATE_CONST (bool, ToolTrimMeshBorder, hasVertices)
+DELEGATE_CONST (bool, ToolTrimMeshBorder, onlyObtuseAngles)
