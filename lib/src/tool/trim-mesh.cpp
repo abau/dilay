@@ -6,6 +6,7 @@
 #include <QButtonGroup>
 #include <QPainter>
 #include <QSlider>
+#include <QWheelEvent>
 #include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
@@ -48,12 +49,12 @@ struct ToolTrimMesh::Impl
   ToolTrimMesh*           self;
   std::vector<glm::ivec2> points;
   TrimMode                trimMode;
-  unsigned int            width;
+  QSlider&                widthEdit;
 
   Impl (ToolTrimMesh* s)
     : self (s)
     , trimMode (TrimMode (s->cache ().get<int> ("trim-mode", int(TrimMode::Normal))))
-    , width (s->cache ().get<int> ("trim-width", 10))
+    , widthEdit (ViewUtil::slider (1, s->cache ().get<int> ("trim-width", 10), 200))
   {
   }
 
@@ -61,29 +62,29 @@ struct ToolTrimMesh::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    QSlider& widthEdit = ViewUtil::slider (1, this->width, 200);
-    ViewUtil::connect (widthEdit, [this](int w) {
-      this->width = (unsigned int) w;
-      this->self->cache ().set ("trim-width", w);
-    });
+    this->widthEdit.setSingleStep (10);
+    ViewUtil::connect (this->widthEdit,
+                       [this](int w) { this->self->cache ().set ("trim-width", w); });
 
     QButtonGroup& trimModeEdit = *new QButtonGroup;
     properties.add (trimModeEdit,
                     {QObject::tr ("Normal"), QObject::tr ("Slice"), QObject::tr ("Cut")});
-    ViewUtil::connect (trimModeEdit, [this, &widthEdit](int id) {
+    ViewUtil::connect (trimModeEdit, [this](int id) {
       this->trimMode = TrimMode (id);
       this->self->cache ().set ("trim-mode", id);
       widthEdit.setEnabled (this->trimMode != TrimMode::Normal);
     });
     trimModeEdit.button (int(this->trimMode))->click ();
 
-    properties.addStacked (QObject::tr ("Width"), widthEdit);
+    properties.addStacked (QObject::tr ("Width"), this->widthEdit);
   }
 
   void setupToolTip ()
   {
     ViewToolTip toolTip;
     toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to trim"));
+    toolTip.add (ViewToolTip::Event::MouseWheel, ViewToolTip::Modifier::Shift,
+                 QObject::tr ("Change slice/cut width"));
     this->self->showToolTip (toolTip);
   }
 
@@ -101,6 +102,25 @@ struct ToolTrimMesh::Impl
   }
 
   ToolResponse runPressEvent (const ViewPointingEvent&) { return ToolResponse::None; }
+
+  ToolResponse runWheelEvent (const QWheelEvent& e)
+  {
+    if (e.orientation () == Qt::Vertical)
+    {
+      if (e.modifiers () == Qt::ShiftModifier)
+      {
+        if (e.delta () > 0)
+        {
+          this->widthEdit.setValue (this->widthEdit.value () + this->widthEdit.singleStep ());
+        }
+        else if (e.delta () < 0)
+        {
+          this->widthEdit.setValue (this->widthEdit.value () - this->widthEdit.singleStep ());
+        }
+      }
+    }
+    return ToolResponse::Redraw;
+  }
 
   TrimStatus trimMesh (DynamicMesh& mesh, int offset, bool reverse)
   {
@@ -148,10 +168,10 @@ struct ToolTrimMesh::Impl
     }
     else if (this->trimMode == TrimMode::Slice)
     {
-      const TrimStatus status = this->trimMesh (mesh, this->width, false);
+      const TrimStatus status = this->trimMesh (mesh, this->widthEdit.value (), false);
       if (status != TrimStatus::Failed)
       {
-        switch (this->trimMesh (mesh, this->width, true))
+        switch (this->trimMesh (mesh, this->widthEdit.value (), true))
         {
           case TrimStatus::Trimmed:
             return TrimStatus::Trimmed;
@@ -176,7 +196,7 @@ struct ToolTrimMesh::Impl
       DynamicMesh& mesh2 =
         this->self->state ().scene ().newDynamicMesh (this->self->config (), mesh);
 
-      switch (this->trimMesh (mesh, -this->width, false))
+      switch (this->trimMesh (mesh, -this->widthEdit.value (), false))
       {
         case TrimStatus::Failed:
           this->self->state ().scene ().deleteMesh (mesh2);
@@ -184,10 +204,10 @@ struct ToolTrimMesh::Impl
 
         case TrimStatus::NotTrimmed:
           this->self->state ().scene ().deleteMesh (mesh2);
-          return this->trimMesh (mesh, -this->width, true);
+          return this->trimMesh (mesh, -this->widthEdit.value (), true);
 
         case TrimStatus::Trimmed:
-          switch (this->trimMesh (mesh2, -this->width, true))
+          switch (this->trimMesh (mesh2, -this->widthEdit.value (), true))
           {
             case TrimStatus::Trimmed:
               return TrimStatus::Trimmed;
@@ -272,7 +292,7 @@ struct ToolTrimMesh::Impl
 
     QPen pen (this->self->config ().get<Color> ("editor/on-screen-color").qColor ());
     pen.setCapStyle (Qt::FlatCap);
-    pen.setWidth (this->trimMode == TrimMode::Normal ? 2 : this->width);
+    pen.setWidth (this->trimMode == TrimMode::Normal ? 2 : this->widthEdit.value ());
 
     painter.setPen (pen);
 
@@ -292,4 +312,5 @@ DELEGATE_TOOL (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
+DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_PAINT (ToolTrimMesh)
