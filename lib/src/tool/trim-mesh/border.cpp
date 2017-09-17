@@ -98,27 +98,6 @@ struct ToolTrimMeshBorder::Impl
     }
   }
 
-  bool trimVertex (const glm::vec3& p) const
-  {
-    if (this->onBorder (p))
-    {
-      return false;
-    }
-    else
-    {
-      float         t;
-      const PrimRay ray (p, -this->plane.normal ());
-      if (IntersectionUtil::intersects (ray, this->plane, &t))
-      {
-        return this->isValidProjection (ray.pointAt (t));
-      }
-      else
-      {
-        return false;
-      }
-    }
-  }
-
   void deleteEmptyPolylines ()
   {
     this->polylines.erase (std::remove_if (this->polylines.begin (), this->polylines.end (),
@@ -148,6 +127,5 @@ DELEGATE (void, ToolTrimMeshBorder, addPolyline)
 DELEGATE1 (void, ToolTrimMeshBorder, setNewIndices, const std::vector<unsigned int>&)
 DELEGATE1_CONST (bool, ToolTrimMeshBorder, onBorder, const glm::vec3&)
 DELEGATE2_CONST (bool, ToolTrimMeshBorder, intersects, const PrimRay&, float&)
-DELEGATE1_CONST (bool, ToolTrimMeshBorder, trimVertex, const glm::vec3&)
 DELEGATE (void, ToolTrimMeshBorder, deleteEmptyPolylines)
 DELEGATE_CONST (bool, ToolTrimMeshBorder, hasVertices)

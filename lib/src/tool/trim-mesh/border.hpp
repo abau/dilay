@@ -29,7 +29,6 @@ public:
   void             setNewIndices (const std::vector<unsigned int>&);
   bool             onBorder (const glm::vec3&) const;
   bool             intersects (const PrimRay&, float&) const;
-  bool             trimVertex (const glm::vec3&) const;
   void             deleteEmptyPolylines ();
   bool             hasVertices () const;
 

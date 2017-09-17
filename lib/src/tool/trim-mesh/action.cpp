@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include <list>
+#include <unordered_set>
 #include "dynamic/mesh.hpp"
 #include "primitive/plane.hpp"
 #include "tool/trim-mesh/action.hpp"
@@ -1079,19 +1080,38 @@ namespace
     return true;
   }
 
-  void trimMesh (const ToolTrimMeshBorder& border)
+  void trimVertices (const ToolTrimMeshBorder& border)
   {
-    DynamicMesh&              mesh = border.mesh ();
-    std::vector<unsigned int> verticesToTrim;
+    const auto isAboveBorder = [&border](unsigned int i) {
+      const glm::vec3& p = border.mesh ().vertex (i);
+      return border.onBorder (p) == false && border.plane ().distance (p) > 0.0f;
+    };
 
-    mesh.forEachVertex ([&border, &verticesToTrim](unsigned int i) {
-      if (border.trimVertex (border.mesh ().vertex (i)))
-      {
-        verticesToTrim.push_back (i);
-      }
-    });
-    for (unsigned int i : verticesToTrim)
+    std::unordered_set<unsigned int> set;
+    const auto addAdjacentAboveBorder = [&border, &isAboveBorder, &set](unsigned int i) {
+      border.mesh ().forEachVertexAdjacentToVertex (i, [&isAboveBorder, &set](unsigned int a) {
+        if (isAboveBorder (a))
+        {
+          set.insert (a);
+        }
+      });
+    };
+
+    DynamicMesh& mesh = border.mesh ();
+    for (const ToolTrimMeshBorder::Polyline& p : border.polylines ())
     {
+      for (unsigned int i : p)
+      {
+        addAdjacentAboveBorder (i);
+      }
+    }
+
+    while (set.empty () == false)
+    {
+      const unsigned int i = *set.begin ();
+      set.erase (set.begin ());
+
+      addAdjacentAboveBorder (i);
       mesh.deleteVertex (i);
     }
   }
@@ -1101,7 +1121,7 @@ namespace ToolTrimMeshAction
 {
   bool trimMesh (ToolTrimMeshBorder& border)
   {
-    ::trimMesh (border);
+    trimVertices (border);
 
     std::vector<unsigned int> newIndices;
     border.mesh ().prune (&newIndices);
@@ -1110,7 +1130,7 @@ namespace ToolTrimMeshAction
       border.setNewIndices (newIndices);
     }
 
-    if (::fillHole (border) && border.mesh ().pruneAndCheckConsistency ())
+    if (fillHole (border) && border.mesh ().pruneAndCheckConsistency ())
     {
       return true;
     }
