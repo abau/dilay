@@ -13,15 +13,24 @@ struct ViewColorButton::Impl
   ViewColorButton* self;
   Color            color;
 
-  Impl (ViewColorButton* s, const Color& c)
+  Impl (ViewColorButton* s, const Color& c, bool alpha)
     : self (s)
     , color (c)
   {
-    ViewUtil::connect (*this->self, [this]() {
-      QColorDialog dialog (this->color.qColor (), this->self->parentWidget ());
-      if (dialog.exec () == QDialog::Accepted)
+    ViewUtil::connect (*this->self, [this, alpha]() {
+      QColorDialog::ColorDialogOptions options;
+      options.setFlag (QColorDialog::DontUseNativeDialog);
+
+      if (alpha)
       {
-        this->color = Color (dialog.selectedColor ());
+        options.setFlag (QColorDialog::ShowAlphaChannel);
+      }
+
+      QColor selected = QColorDialog::getColor (this->color.qColor (), this->self->parentWidget (),
+                                                QObject::tr ("Select color"), options);
+      if (selected.isValid ())
+      {
+        this->color = Color (selected);
         this->self->update ();
         emit this->self->colorChanged (this->color);
       }
@@ -47,5 +56,6 @@ struct ViewColorButton::Impl
   }
 };
 
-DELEGATE_BIG2_BASE (ViewColorButton, (const Color& c, QWidget* p), (this, c), QPushButton, (p))
+DELEGATE_BIG2_BASE (ViewColorButton, (const Color& c, bool a, QWidget* p), (this, c, a),
+                    QPushButton, (p))
 DELEGATE1 (void, ViewColorButton, paintEvent, QPaintEvent*)
