@@ -35,9 +35,9 @@ bool XmlConversion::fromDomElement (QDomElement e, glm::vec3& v)
 {
   assert (e.attributeNode ("type").value () == "vector3f");
 
-  bool okX = XmlConversion::fromDomElement (e.firstChildElement ("x"), v.x);
-  bool okY = XmlConversion::fromDomElement (e.firstChildElement ("y"), v.y);
-  bool okZ = XmlConversion::fromDomElement (e.firstChildElement ("z"), v.z);
+  const bool okX = XmlConversion::fromDomElement (e.firstChildElement ("x"), v.x);
+  const bool okY = XmlConversion::fromDomElement (e.firstChildElement ("y"), v.y);
+  const bool okZ = XmlConversion::fromDomElement (e.firstChildElement ("z"), v.z);
 
   return okX && okY && okZ;
 }
@@ -46,8 +46,8 @@ bool XmlConversion::fromDomElement (QDomElement e, glm::ivec2& v)
 {
   assert (e.attributeNode ("type").value () == "vector2i");
 
-  bool okX = XmlConversion::fromDomElement (e.firstChildElement ("x"), v.x);
-  bool okY = XmlConversion::fromDomElement (e.firstChildElement ("y"), v.y);
+  const bool okX = XmlConversion::fromDomElement (e.firstChildElement ("x"), v.x);
+  const bool okY = XmlConversion::fromDomElement (e.firstChildElement ("y"), v.y);
 
   return okX && okY;
 }
