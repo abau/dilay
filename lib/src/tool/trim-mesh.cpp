@@ -142,10 +142,23 @@ struct ToolTrimMesh::Impl
     }
     else if (this->trimMode == TrimMode::Slice)
     {
-      TrimStatus status = this->trimMesh (mesh, this->width, false);
-      if (status == TrimStatus::Trimmed)
+      const TrimStatus status = this->trimMesh (mesh, this->width, false);
+      if (status != TrimStatus::Failed)
       {
-        return this->trimMesh (mesh, this->width, true);
+        switch (this->trimMesh (mesh, this->width, true))
+        {
+          case TrimStatus::Trimmed:
+            return TrimStatus::Trimmed;
+
+          case TrimStatus::NotTrimmed:
+            return status;
+
+          case TrimStatus::Failed:
+            return TrimStatus::Failed;
+
+          default:
+            DILAY_IMPOSSIBLE
+        }
       }
       else
       {
@@ -157,15 +170,35 @@ struct ToolTrimMesh::Impl
       DynamicMesh& mesh2 =
         this->self->state ().scene ().newDynamicMesh (this->self->config (), mesh);
 
-      TrimStatus status = this->trimMesh (mesh, -this->width, false);
-      if (status == TrimStatus::Trimmed)
+      switch (this->trimMesh (mesh, -this->width, false))
       {
-        return this->trimMesh (mesh2, -this->width, true);
-      }
-      else
-      {
-        this->self->state ().scene ().deleteMesh (mesh2);
-        return status;
+        case TrimStatus::Failed:
+          this->self->state ().scene ().deleteMesh (mesh2);
+          return TrimStatus::Failed;
+
+        case TrimStatus::NotTrimmed:
+          this->self->state ().scene ().deleteMesh (mesh2);
+          return this->trimMesh (mesh, -this->width, true);
+
+        case TrimStatus::Trimmed:
+          switch (this->trimMesh (mesh2, -this->width, true))
+          {
+            case TrimStatus::Trimmed:
+              return TrimStatus::Trimmed;
+
+            case TrimStatus::NotTrimmed:
+              this->self->state ().scene ().deleteMesh (mesh2);
+              return TrimStatus::Trimmed;
+
+            case TrimStatus::Failed:
+              this->self->state ().scene ().deleteMesh (mesh2);
+              return TrimStatus::Failed;
+
+            default:
+              DILAY_IMPOSSIBLE
+          }
+        default:
+          DILAY_IMPOSSIBLE
       }
     }
     else
