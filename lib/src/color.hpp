@@ -46,6 +46,7 @@ public:
   glm::vec3 vec3 () const;
   glm::vec4 vec4 () const;
   QColor    qColor () const;
+  bool      isOpaque () const;
 
 private:
   float _r;

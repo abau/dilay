@@ -57,13 +57,21 @@ bool XmlConversion::fromDomElement (QDomElement e, Color& v)
   assert (e.attributeNode ("type").value () == "color");
 
   float tmp;
-  bool  okR = XmlConversion::fromDomElement (e.firstChildElement ("r"), tmp);
+
+  bool okR = XmlConversion::fromDomElement (e.firstChildElement ("r"), tmp);
   v.r (tmp);
   bool okG = XmlConversion::fromDomElement (e.firstChildElement ("g"), tmp);
   v.g (tmp);
   bool okB = XmlConversion::fromDomElement (e.firstChildElement ("b"), tmp);
   v.b (tmp);
-  return okR && okG && okB;
+
+  bool okOpacity = true;
+  if (e.firstChildElement ("opacity").isNull () == false)
+  {
+    okOpacity = XmlConversion::fromDomElement (e.firstChildElement ("opacity"), tmp);
+    v.opacity (tmp);
+  }
+  return okR && okG && okB && okOpacity;
 }
 
 QDomElement& XmlConversion::toDomElement (QDomDocument& doc, QDomElement& elem, const float& v)
@@ -118,5 +126,11 @@ QDomElement& XmlConversion::toDomElement (QDomDocument& doc, QDomElement& elem, 
   elem.appendChild (XmlConversion::toDomElement (doc, r, v.r ()));
   elem.appendChild (XmlConversion::toDomElement (doc, g, v.g ()));
   elem.appendChild (XmlConversion::toDomElement (doc, b, v.b ()));
+
+  if (v.isOpaque () == false)
+  {
+    QDomElement opacity = doc.createElement ("opacity");
+    elem.appendChild (XmlConversion::toDomElement (doc, opacity, v.opacity ()));
+  }
   return elem;
 }

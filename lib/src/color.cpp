@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include "color.hpp"
+#include "util.hpp"
 
 Color::Color (float r, float g, float b, float o)
   : _r (r)
@@ -94,6 +95,8 @@ QColor Color::qColor () const
                  glm::min (255, int(255.0f * this->_b)),
                  glm::min (255, int(255.0f * this->_opacity)));
 }
+
+bool Color::isOpaque () const { return Util::almostEqual (this->_opacity, 1.0f); }
 
 std::ostream& operator<< (std::ostream& os, const Color& c)
 {
