@@ -42,7 +42,7 @@ Color::Color (const glm::vec4& v)
 }
 
 Color::Color (const QColor& c)
-  : Color (c.redF (), c.greenF (), c.blueF ())
+  : Color (c.redF (), c.greenF (), c.blueF (), c.alphaF ())
 {
 }
 
