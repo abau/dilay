@@ -29,10 +29,10 @@ namespace
   }
 
   void addColorButton (ViewGlWidget& glWidget, ViewTwoColumnGrid& grid, const std::string& path,
-                       const QString& label)
+                       const QString& label, bool alpha = false)
   {
     const Color&     color = glWidget.state ().config ().get<Color> (path);
-    ViewColorButton& button = *new ViewColorButton (color, &glWidget);
+    ViewColorButton& button = *new ViewColorButton (color, alpha, &glWidget);
 
     QObject::connect (&button, &ViewColorButton::colorChanged,
                       [&glWidget, path](const Color& c) { setAndUpdate (glWidget, path, c); });
@@ -69,7 +69,7 @@ namespace
     ViewTwoColumnGrid* grid = new ViewTwoColumnGrid;
 
     addColorButton (glWidget, *grid, "editor/background", QObject::tr ("Background"));
-    addColorButton (glWidget, *grid, "editor/on-screen-color", QObject::tr ("On-Screen"));
+    addColorButton (glWidget, *grid, "editor/on-screen-color", QObject::tr ("On-Screen"), true);
     addColorButton (glWidget, *grid, "editor/axis/color/normal", QObject::tr ("Axis"));
     addColorButton (glWidget, *grid, "editor/axis/color/label", QObject::tr ("Axis label"));
     addColorButton (glWidget, *grid, "editor/floor-plane/color", QObject::tr ("Floor-plane"));

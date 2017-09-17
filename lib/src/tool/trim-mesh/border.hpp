@@ -19,7 +19,7 @@ public:
   typedef std::vector<unsigned int> Polyline;
   typedef std::vector<Polyline>     Polylines;
 
-  DECLARE_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const PrimRay&, const PrimRay&, float, bool)
+  DECLARE_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const PrimRay&, const PrimRay&)
 
   DynamicMesh&     mesh () const;
   const Polylines& polylines () const;

@@ -5,6 +5,7 @@
 #include <QAbstractButton>
 #include <QButtonGroup>
 #include <QPainter>
+#include <QSlider>
 #include "cache.hpp"
 #include "camera.hpp"
 #include "color.hpp"
@@ -19,7 +20,6 @@
 #include "tool/trim-mesh/border.hpp"
 #include "tool/trim-mesh/split-mesh.hpp"
 #include "tools.hpp"
-#include "view/double-slider.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
@@ -48,12 +48,12 @@ struct ToolTrimMesh::Impl
   ToolTrimMesh*           self;
   std::vector<glm::ivec2> points;
   TrimMode                trimMode;
-  float                   width;
+  unsigned int            width;
 
   Impl (ToolTrimMesh* s)
     : self (s)
     , trimMode (TrimMode (s->cache ().get<int> ("trim-mode", int(TrimMode::Normal))))
-    , width (s->cache ().get<float> ("trim-width", 0.1f))
+    , width (s->cache ().get<int> ("trim-width", 10))
   {
   }
 
@@ -61,9 +61,9 @@ struct ToolTrimMesh::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    ViewDoubleSlider& widthEdit = ViewUtil::slider (2, 0.01f, this->width, 1.0f);
-    ViewUtil::connect (widthEdit, [this](float w) {
-      this->width = w;
+    QSlider& widthEdit = ViewUtil::slider (1, this->width, 200);
+    ViewUtil::connect (widthEdit, [this](int w) {
+      this->width = (unsigned int) w;
       this->self->cache ().set ("trim-width", w);
     });
 
@@ -102,13 +102,19 @@ struct ToolTrimMesh::Impl
 
   ToolResponse runPressEvent (const ViewPointingEvent&) { return ToolResponse::None; }
 
-  TrimStatus trimMesh (DynamicMesh& mesh, float offset, bool reverse)
+  TrimStatus trimMesh (DynamicMesh& mesh, int offset, bool reverse)
   {
     assert (this->points.size () == 2);
-    const PrimRay ray1 = this->self->state ().camera ().ray (this->points[0]);
-    const PrimRay ray2 = this->self->state ().camera ().ray (this->points[1]);
 
-    ToolTrimMeshBorder border (mesh, ray1, ray2, offset, reverse);
+    const glm::ivec2& p1 = reverse ? this->points[1] : this->points[0];
+    const glm::ivec2& p2 = reverse ? this->points[0] : this->points[1];
+    const float       fOffset = 0.5f * float(offset);
+    const glm::ivec2  orth =
+      glm::ceil (glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1))) * fOffset);
+    const PrimRay ray1 = this->self->state ().camera ().ray (p1 + orth);
+    const PrimRay ray2 = this->self->state ().camera ().ray (p2 + orth);
+
+    ToolTrimMeshBorder border (mesh, ray1, ray2);
 
     if (ToolTrimMeshSplitMesh::splitMesh (border))
     {
@@ -263,9 +269,11 @@ struct ToolTrimMesh::Impl
   void runPaint (QPainter& painter) const
   {
     const QPoint cursorPos (ViewUtil::toQPoint (this->self->cursorPosition ()));
-    QPen         pen (this->self->config ().get<Color> ("editor/on-screen-color").qColor ());
 
-    pen.setWidth (2);
+    QPen pen (this->self->config ().get<Color> ("editor/on-screen-color").qColor ());
+    pen.setCapStyle (Qt::FlatCap);
+    pen.setWidth (this->trimMode == TrimMode::Normal ? 2 : this->width);
+
     painter.setPen (pen);
 
     if (this->points.empty () == false)

@@ -71,6 +71,8 @@ glm::vec3 Util::orthogonal (const glm::vec3& v)
                                          : glm::vec3 (0.0f, -v.z, v.y);
 }
 
+glm::ivec2 Util::orthogonalRight (const glm::ivec2& v) { return glm::ivec2 (v.y, -v.x); }
+
 bool Util::colinear (const glm::vec2& v1, const glm::vec2& v2)
 {
   return colinearT<glm::vec2> (v1, v2);

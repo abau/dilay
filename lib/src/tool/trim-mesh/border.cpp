@@ -16,19 +16,18 @@ namespace
 
 struct ToolTrimMeshBorder::Impl
 {
-  DynamicMesh& mesh;
-  Polylines    polylines;
-  PrimRay      edge1;
-  PrimRay      edge2;
-  PrimPlane    plane;
+  DynamicMesh&    mesh;
+  Polylines       polylines;
+  const PrimRay   edge1;
+  const PrimRay   edge2;
+  const PrimPlane plane;
 
-  Impl (DynamicMesh& m, const PrimRay& r1, const PrimRay& r2, float offset, bool reverse)
+  Impl (DynamicMesh& m, const PrimRay& r1, const PrimRay& r2)
     : mesh (m)
-    , edge1 (reverse ? r2 : r1)
-    , edge2 (reverse ? r1 : r2)
-    , plane (edge1.origin (), glm::cross (edge2.direction (), edge1.direction ()))
+    , edge1 (r1)
+    , edge2 (r2)
+    , plane (r1.origin (), glm::cross (r2.direction (), r1.direction ()))
   {
-    this->plane.point (this->edge1.origin () + (this->plane.normal () * offset));
   }
 
   void addVertex (unsigned int index, const glm::vec3& p)
@@ -118,7 +117,7 @@ struct ToolTrimMeshBorder::Impl
   }
 };
 
-DELEGATE5_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const PrimRay&, const PrimRay&, float, bool)
+DELEGATE3_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const PrimRay&, const PrimRay&)
 GETTER_CONST (DynamicMesh&, ToolTrimMeshBorder, mesh)
 GETTER_CONST (const Polylines&, ToolTrimMeshBorder, polylines)
 GETTER_CONST (const PrimPlane&, ToolTrimMeshBorder, plane)

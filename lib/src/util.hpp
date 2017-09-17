@@ -42,6 +42,7 @@ namespace Util
   glm::vec3    transformPosition (const glm::mat4x4&, const glm::vec3&);
   glm::vec3    transformDirection (const glm::mat4x4&, const glm::vec3&);
   glm::vec3    orthogonal (const glm::vec3&);
+  glm::ivec2   orthogonalRight (const glm::ivec2&);
   bool         colinear (const glm::vec2&, const glm::vec2&);
   bool         colinear (const glm::vec3&, const glm::vec3&);
   bool         colinearUnit (const glm::vec2&, const glm::vec2&);
