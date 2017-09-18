@@ -104,6 +104,7 @@ struct ViewGlWidget::Impl
     this->_floorPlane.reset (new ViewFloorPlane (this->config, this->state ().camera ()));
 
     this->self->setMouseTracking (true);
+    this->self->setTabletTracking (true);
     this->initializeScene ();
   }
 
