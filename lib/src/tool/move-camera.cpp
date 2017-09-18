@@ -119,8 +119,8 @@ struct ToolMoveCamera::Impl
       }
       else if (event.modifiers () == Qt::ShiftModifier)
       {
-        cam.setGaze (cam.gazePoint () + (this->movementFactor * float(delta.x) * cam.right ()) +
-                     (this->movementFactor * float(-delta.y) * cam.up ()));
+        cam.setGaze (cam.gazePoint () + (this->movementFactor * float(-delta.x) * cam.right ()) +
+                     (this->movementFactor * float(delta.y) * cam.up ()));
       }
       this->oldPos = newPos;
       state.mainWindow ().glWidget ().update ();
