@@ -9,7 +9,7 @@
 
 namespace
 {
-  static constexpr int latestVersion = 7;
+  static constexpr int latestVersion = 8;
 
   template <typename T>
   void updateValue (Config& config, const std::string& path, const T& oldValue, const T& newValue)
@@ -60,7 +60,8 @@ void Config::restoreDefaults ()
   this->set ("editor/camera/far-clipping", 1000.0f);
   this->set ("editor/camera/rotation-factor", 1.0f);
   this->set ("editor/camera/movement-factor", 0.01f);
-  this->set ("editor/camera/zoom-in-factor", 0.9f);
+  this->set ("editor/camera/zoom-in-factor", 0.96f);
+  this->set ("editor/camera/zoom-in-mouse-wheel-factor", 0.9f);
   this->set ("editor/camera/field-of-view", 45.0f);
 
   this->set ("editor/light/light1/direction", glm::vec3 (0.2f, -1.0f, -0.2f));
@@ -127,6 +128,9 @@ void Config::update ()
       forceUpdateValue<float> (*this, "editor/tool/sculpt/step-width-factor", 0.3f);
       forceUpdateValue<float> (*this, "editor/tool/sketch-spheres/step-width-factor", 0.3f);
       break;
+
+    case 7:
+      forceUpdateValue<float> (*this, "editor/camera/zoom-in-factor", 0.95f);
 
     case latestVersion:
       return;

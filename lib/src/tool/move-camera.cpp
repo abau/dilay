@@ -23,6 +23,7 @@ struct ToolMoveCamera::Impl
   float      rotationFactor;
   float      movementFactor;
   float      zoomInFactor;
+  float      zoomInMouseWheelFactor;
 
   Impl (const Config& config) { this->runFromConfig (config); }
 
@@ -99,28 +100,39 @@ struct ToolMoveCamera::Impl
   {
     if (event.secondaryButton ())
     {
-      Camera&           cam = state.camera ();
-      const glm::uvec2& resolution = cam.resolution ();
-      glm::ivec2        newPos = event.ivec2 ();
-      glm::ivec2        delta = newPos - oldPos;
+      Camera&          cam = state.camera ();
+      const glm::vec2& resolution = glm::vec2 (cam.resolution ());
+      const glm::ivec2 newPos = event.ivec2 ();
+      const glm::vec2  delta = glm::vec2 (newPos) - glm::vec2 (this->oldPos);
 
       if (event.modifiers () == Qt::NoModifier)
       {
-        if (delta.x != 0)
+        if (delta.x != 0.0f)
         {
-          cam.verticalRotation (2.0f * glm::pi<float> () * this->rotationFactor * float(-delta.x) /
-                                float(resolution.x));
+          cam.verticalRotation (2.0f * glm::pi<float> () * this->rotationFactor * -delta.x /
+                                resolution.x);
         }
-        if (delta.y != 0)
+        if (delta.y != 0.0f)
         {
-          cam.horizontalRotation (2.0f * glm::pi<float> () * this->rotationFactor *
-                                  float(-delta.y) / float(resolution.y));
+          cam.horizontalRotation (2.0f * glm::pi<float> () * this->rotationFactor * -delta.y /
+                                  resolution.y);
         }
       }
       else if (event.modifiers () == Qt::ShiftModifier)
       {
-        cam.setGaze (cam.gazePoint () + (this->movementFactor * float(-delta.x) * cam.right ()) +
-                     (this->movementFactor * float(delta.y) * cam.up ()));
+        cam.setGaze (cam.gazePoint () + (this->movementFactor * -delta.x * cam.right ()) +
+                     (this->movementFactor * delta.y * cam.up ()));
+      }
+      else if (event.modifiers () == Qt::AltModifier)
+      {
+        if (delta.y < 0.0f)
+        {
+          state.camera ().stepAlongGaze (this->zoomInFactor);
+        }
+        else if (delta.y > 0.0f)
+        {
+          state.camera ().stepAlongGaze (1.0f / this->zoomInFactor);
+        }
       }
       this->oldPos = newPos;
       state.mainWindow ().glWidget ().update ();
@@ -152,11 +164,11 @@ struct ToolMoveCamera::Impl
     {
       if (event.delta () > 0)
       {
-        state.camera ().stepAlongGaze (this->zoomInFactor);
+        state.camera ().stepAlongGaze (this->zoomInMouseWheelFactor);
       }
       else if (event.delta () < 0)
       {
-        state.camera ().stepAlongGaze (1.0f / this->zoomInFactor);
+        state.camera ().stepAlongGaze (1.0f / this->zoomInMouseWheelFactor);
       }
       state.mainWindow ().glWidget ().update ();
     }
@@ -167,6 +179,7 @@ struct ToolMoveCamera::Impl
     this->rotationFactor = config.get<float> ("editor/camera/rotation-factor");
     this->movementFactor = config.get<float> ("editor/camera/movement-factor");
     this->zoomInFactor = config.get<float> ("editor/camera/zoom-in-factor");
+    this->zoomInMouseWheelFactor = config.get<float> ("editor/camera/zoom-in-mouse-wheel-factor");
   }
 };
 

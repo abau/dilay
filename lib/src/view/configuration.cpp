@@ -118,13 +118,15 @@ namespace
     addFloatEdit (glWidget, *grid, "editor/camera/far-clipping", QObject::tr ("Far clipping plane"),
                   100.0f, Util::maxFloat ());
     addFloatEdit (glWidget, *grid, "editor/camera/rotation-factor", QObject::tr ("Rotation factor"),
-                  Util::epsilon (), 100.f);
+                  Util::epsilon (), 100.0f);
     addFloatEdit (glWidget, *grid, "editor/camera/movement-factor", QObject::tr ("Movement factor"),
-                  Util::epsilon (), 100.f);
+                  Util::epsilon (), 100.0f);
     addFloatEdit (glWidget, *grid, "editor/camera/zoom-in-factor", QObject::tr ("Zoom factor"),
-                  Util::epsilon (), 100.f);
+                  Util::epsilon (), 1.0f);
+    addFloatEdit (glWidget, *grid, "editor/camera/zoom-in-mouse-wheel-factor",
+                  QObject::tr ("Zoom factor (mouse wheel)"), Util::epsilon (), 1.0f);
     addFloatEdit (glWidget, *grid, "editor/camera/field-of-view", QObject::tr ("Field of view"),
-                  Util::epsilon (), 120.f);
+                  Util::epsilon (), 120.0f);
 
     grid->addStretcher ();
 

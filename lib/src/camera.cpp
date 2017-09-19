@@ -103,13 +103,13 @@ struct Camera::Impl
 
   void stepAlongGaze (float factor)
   {
-    const float d = glm::length (this->toEyePoint);
+    constexpr float minD = 0.01f;
+    constexpr float maxD = 1000.0f;
 
-    if (factor < 1.0f && d > 0.01f)
-    {
-      this->toEyePoint *= glm::vec3 (factor);
-    }
-    else if (factor > 1.0f)
+    const float d = glm::length (this->toEyePoint);
+    const float newD = d * factor;
+
+    if (minD <= newD && newD <= maxD)
     {
       this->toEyePoint *= glm::vec3 (factor);
     }
