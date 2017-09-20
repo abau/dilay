@@ -2,9 +2,11 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QAbstractButton>
 #include <QButtonGroup>
+#include <QCheckBox>
+#include <QFrame>
 #include <QPainter>
+#include <QPushButton>
 #include <QSlider>
 #include <QWheelEvent>
 #include "cache.hpp"
@@ -14,6 +16,7 @@
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
 #include "history.hpp"
+#include "mirror.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -62,6 +65,21 @@ struct ToolTrimMesh::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
+    QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
+    ViewUtil::connect (syncButton, [this]() {
+      this->self->mirrorDynamicMeshes ();
+      this->self->updateGlWidget ();
+    });
+    syncButton.setEnabled (this->self->hasMirror ());
+
+    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->self->hasMirror ());
+    ViewUtil::connect (mirrorEdit, [this, &syncButton](bool m) {
+      this->self->mirror (m);
+      syncButton.setEnabled (m);
+    });
+    properties.add (mirrorEdit, syncButton);
+    properties.add (ViewUtil::horizontalLine ());
+
     this->widthEdit.setSingleStep (10);
     ViewUtil::connect (this->widthEdit,
                        [this](int w) { this->self->cache ().set ("trim-width", w); });
@@ -90,6 +108,8 @@ struct ToolTrimMesh::Impl
 
   ToolResponse runInitialize ()
   {
+    this->self->renderMirror (true);
+
     this->setupProperties ();
     this->setupToolTip ();
 
@@ -122,20 +142,8 @@ struct ToolTrimMesh::Impl
     return ToolResponse::Redraw;
   }
 
-  TrimStatus trimMesh (DynamicMesh& mesh, int offset, bool reverse)
+  TrimStatus trimMesh (ToolTrimMeshBorder& border)
   {
-    assert (this->points.size () == 2);
-
-    const glm::ivec2& p1 = reverse ? this->points[1] : this->points[0];
-    const glm::ivec2& p2 = reverse ? this->points[0] : this->points[1];
-    const float       fOffset = 0.5f * float(offset);
-    const glm::ivec2  orth =
-      glm::ceil (glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1))) * fOffset);
-    const PrimRay ray1 = this->self->state ().camera ().ray (p1 + orth);
-    const PrimRay ray2 = this->self->state ().camera ().ray (p2 + orth);
-
-    ToolTrimMeshBorder border (mesh, ray1, ray2);
-
     if (ToolTrimMeshSplitMesh::splitMesh (border))
     {
       if (border.hasVertices ())
@@ -157,6 +165,47 @@ struct ToolTrimMesh::Impl
     else
     {
       return TrimStatus::Failed;
+    }
+  }
+
+  TrimStatus trimMesh (DynamicMesh& mesh, int offset, bool reverse)
+  {
+    assert (this->points.size () == 2);
+
+    const glm::ivec2& p1 = reverse ? this->points[1] : this->points[0];
+    const glm::ivec2& p2 = reverse ? this->points[0] : this->points[1];
+    const float       fOffset = 0.5f * float(offset);
+    const glm::ivec2  orth =
+      glm::ceil (glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1))) * fOffset);
+    const PrimRay ray1 = this->self->state ().camera ().ray (p1 + orth);
+    const PrimRay ray2 = this->self->state ().camera ().ray (p2 + orth);
+
+    ToolTrimMeshBorder border (mesh, ray1, ray2);
+
+    if (this->self->hasMirror () == false)
+    {
+      return this->trimMesh (border);
+    }
+    else
+    {
+      ToolTrimMeshBorder mBorder = border.mirror (this->self->mirror ().plane ());
+      const TrimStatus   status = this->trimMesh (border);
+
+      if (status == TrimStatus::Trimmed)
+      {
+        if (this->trimMesh (mBorder) == TrimStatus::Failed)
+        {
+          return TrimStatus::Failed;
+        }
+        else
+        {
+          return status;
+        }
+      }
+      else
+      {
+        return status;
+      }
     }
   }
 

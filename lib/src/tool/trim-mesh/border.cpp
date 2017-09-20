@@ -115,9 +115,19 @@ struct ToolTrimMeshBorder::Impl
     }
     return false;
   }
+
+  ToolTrimMeshBorder mirror (const PrimPlane& m) const
+  {
+    const PrimRay e1 (m.mirror (this->edge1.origin ()),
+                      m.mirrorDirection (this->edge1.direction ()));
+    const PrimRay e2 (m.mirror (this->edge2.origin ()),
+                      m.mirrorDirection (this->edge2.direction ()));
+
+    return ToolTrimMeshBorder (this->mesh, e2, e1);
+  }
 };
 
-DELEGATE3_BIG2 (ToolTrimMeshBorder, DynamicMesh&, const PrimRay&, const PrimRay&)
+DELEGATE3_BIG3 (ToolTrimMeshBorder, DynamicMesh&, const PrimRay&, const PrimRay&)
 GETTER_CONST (DynamicMesh&, ToolTrimMeshBorder, mesh)
 GETTER_CONST (const Polylines&, ToolTrimMeshBorder, polylines)
 GETTER_CONST (const PrimPlane&, ToolTrimMeshBorder, plane)
@@ -128,3 +138,4 @@ DELEGATE1_CONST (bool, ToolTrimMeshBorder, onBorder, const glm::vec3&)
 DELEGATE2_CONST (bool, ToolTrimMeshBorder, intersects, const PrimRay&, float&)
 DELEGATE (void, ToolTrimMeshBorder, deleteEmptyPolylines)
 DELEGATE_CONST (bool, ToolTrimMeshBorder, hasVertices)
+DELEGATE1_CONST (ToolTrimMeshBorder, ToolTrimMeshBorder, mirror, const PrimPlane&)
