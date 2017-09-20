@@ -4,7 +4,6 @@
  */
 #include <QCheckBox>
 #include <QFrame>
-#include <QPushButton>
 #include <QSlider>
 #include "cache.hpp"
 #include "mirror.hpp"
@@ -69,19 +68,7 @@ struct ToolModifySketch::Impl
     });
     properties.add (ViewUtil::horizontalLine ());
 
-    QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
-    ViewUtil::connect (syncButton, [this]() {
-      this->self->mirrorSketchMeshes ();
-      this->self->updateGlWidget ();
-    });
-    syncButton.setEnabled (this->self->hasMirror ());
-
-    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->self->hasMirror ());
-    ViewUtil::connect (mirrorEdit, [this, &syncButton](bool m) {
-      this->self->mirror (m);
-      syncButton.setEnabled (m);
-    });
-    properties.add (mirrorEdit, syncButton);
+    this->self->addMirrorProperties (false);
 
     QCheckBox& transformCEdit =
       ViewUtil::checkBox (QObject::tr ("Transform children"), this->transformChildren);

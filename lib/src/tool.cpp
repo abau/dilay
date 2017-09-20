@@ -2,6 +2,8 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QCheckBox>
+#include <QPushButton>
 #include "cache.hpp"
 #include "camera.hpp"
 #include "dimension.hpp"
@@ -22,6 +24,7 @@
 #include "view/pointing-event.hpp"
 #include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
+#include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
 struct Tool::Impl
@@ -189,6 +192,30 @@ struct Tool::Impl
       [this](SketchMesh& mesh) { mesh.mirror (*this->mirrorDimension ()); });
   }
 
+  void addMirrorProperties (bool dynamicMesh)
+  {
+    QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
+    ViewUtil::connect (syncButton, [this, dynamicMesh]() {
+      if (dynamicMesh)
+      {
+        this->mirrorDynamicMeshes ();
+      }
+      else
+      {
+        this->mirrorSketchMeshes ();
+      }
+      this->updateGlWidget ();
+    });
+    syncButton.setEnabled (this->hasMirror ());
+
+    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->hasMirror ());
+    ViewUtil::connect (mirrorEdit, [this, &syncButton](bool m) {
+      this->mirror (m);
+      syncButton.setEnabled (m);
+    });
+    this->properties ().add (mirrorEdit, syncButton);
+  }
+
   template <typename T, typename... Ts>
   bool intersectsScene (const PrimRay& ray, T& intersection, Ts... args)
   {
@@ -254,8 +281,7 @@ DELEGATE_CONST (const Mirror&, Tool, mirror)
 DELEGATE1 (void, Tool, mirror, bool)
 SETTER (bool, Tool, renderMirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
-DELEGATE (void, Tool, mirrorDynamicMeshes)
-DELEGATE (void, Tool, mirrorSketchMeshes)
+DELEGATE1 (void, Tool, addMirrorProperties, bool)
 DELEGATE1 (ToolResponse, Tool, runPointingEvent, const ViewPointingEvent&)
 
 template <typename T, typename... Ts>

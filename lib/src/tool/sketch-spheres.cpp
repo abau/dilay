@@ -2,10 +2,9 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <QAbstractButton>
 #include <QButtonGroup>
-#include <QCheckBox>
 #include <QFrame>
-#include <QPushButton>
 #include <QWheelEvent>
 #include "cache.hpp"
 #include "camera.hpp"
@@ -57,19 +56,7 @@ struct ToolSketchSpheres::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
-    ViewUtil::connect (syncButton, [this]() {
-      this->self->mirrorSketchMeshes ();
-      this->self->updateGlWidget ();
-    });
-    syncButton.setEnabled (this->self->hasMirror ());
-
-    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->self->hasMirror ());
-    ViewUtil::connect (mirrorEdit, [this, &syncButton](bool m) {
-      this->self->mirror (m);
-      syncButton.setEnabled (m);
-    });
-    properties.add (mirrorEdit, syncButton);
+    this->self->addMirrorProperties (false);
 
     ViewUtil::connect (this->radiusEdit, [this](float r) {
       this->cursor.radius (r);

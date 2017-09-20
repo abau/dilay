@@ -4,7 +4,6 @@
  */
 #include <QCheckBox>
 #include <QFrame>
-#include <QPushButton>
 #include <QWheelEvent>
 #include "cache.hpp"
 #include "camera.hpp"
@@ -140,20 +139,7 @@ struct ToolSculpt::Impl
     });
     properties.add (subdivEdit);
 
-    QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
-    ViewUtil::connect (syncButton, [this]() {
-      this->self->mirrorDynamicMeshes ();
-      this->self->updateGlWidget ();
-    });
-    syncButton.setEnabled (this->self->hasMirror ());
-
-    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->self->hasMirror ());
-    ViewUtil::connect (mirrorEdit, [this, &syncButton](bool m) {
-      this->self->mirror (m);
-      syncButton.setEnabled (m);
-    });
-
-    properties.add (mirrorEdit, syncButton);
+    this->self->addMirrorProperties (true);
     properties.add (ViewUtil::horizontalLine ());
 
     this->self->runSetupProperties (properties);

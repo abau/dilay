@@ -63,8 +63,7 @@ protected:
   void               mirror (bool);
   void               renderMirror (bool);
   const Dimension*   mirrorDimension () const;
-  void               mirrorDynamicMeshes ();
-  void               mirrorSketchMeshes ();
+  void               addMirrorProperties (bool);
 
   template <typename T, typename... Ts> bool intersectsScene (const PrimRay&, T&, Ts...);
   template <typename T, typename... Ts> bool intersectsScene (const glm::ivec2&, T&, Ts...);
