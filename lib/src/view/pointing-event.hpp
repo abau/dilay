@@ -19,6 +19,9 @@ public:
   explicit ViewPointingEvent (const Config&, const QTabletEvent&);
 
   bool valid () const;
+  bool leftButton () const;
+  bool middleButton () const;
+  bool rightButton () const;
 
   Qt::KeyboardModifiers modifiers () const { return this->_modifiers; }
 
@@ -27,10 +30,6 @@ public:
   bool moveEvent () const { return this->_moveEvent; }
 
   bool releaseEvent () const { return this->_releaseEvent; }
-
-  bool leftButton () const { return this->_leftButton; }
-
-  bool middleButton () const { return this->_middleButton; }
 
   const glm::ivec2& ivec2 () const { return this->_ivec2; }
 
@@ -41,8 +40,7 @@ private:
   bool                  _pressEvent;
   bool                  _moveEvent;
   bool                  _releaseEvent;
-  bool                  _leftButton;
-  bool                  _middleButton;
+  Qt::MouseButton       _button;
   glm::ivec2            _ivec2;
   float                 _intensity;
 };
