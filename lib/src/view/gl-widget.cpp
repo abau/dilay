@@ -157,12 +157,12 @@ struct ViewGlWidget::Impl
   {
     if (e.valid ())
     {
-      if (e.secondaryButton () && e.moveEvent ())
+      if (e.middleButton () && e.moveEvent ())
       {
         this->toolMoveCamera.moveEvent (this->state (), e);
         this->updateCursorInTool ();
       }
-      else if (e.secondaryButton () && e.pressEvent ())
+      else if (e.middleButton () && e.pressEvent ())
       {
         this->toolMoveCamera.pressEvent (this->state (), e);
         this->updateCursorInTool ();

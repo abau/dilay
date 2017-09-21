@@ -27,9 +27,9 @@ public:
 
   bool releaseEvent () const { return this->_releaseEvent; }
 
-  bool primaryButton () const { return this->_primaryButton; }
+  bool leftButton () const { return this->_leftButton; }
 
-  bool secondaryButton () const { return this->_secondaryButton; }
+  bool middleButton () const { return this->_middleButton; }
 
   const glm::ivec2& ivec2 () const { return this->_ivec2; }
 
@@ -40,8 +40,8 @@ private:
   bool                  _pressEvent;
   bool                  _moveEvent;
   bool                  _releaseEvent;
-  bool                  _primaryButton;
-  bool                  _secondaryButton;
+  bool                  _leftButton;
+  bool                  _middleButton;
   glm::ivec2            _ivec2;
   float                 _intensity;
 };

@@ -36,7 +36,7 @@ struct ToolRebalanceSketch::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       SketchNodeIntersection intersection;
       if (this->self->intersectsScene (e, intersection))

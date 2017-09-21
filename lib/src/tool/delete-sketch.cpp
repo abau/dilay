@@ -143,7 +143,7 @@ struct ToolDeleteSketch::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       switch (this->mode)
       {

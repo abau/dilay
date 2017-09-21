@@ -98,7 +98,7 @@ struct ToolMoveCamera::Impl
 
   void moveEvent (State& state, const ViewPointingEvent& event)
   {
-    if (event.secondaryButton ())
+    if (event.middleButton ())
     {
       Camera&          cam = state.camera ();
       const glm::vec2& resolution = glm::vec2 (cam.resolution ());
@@ -141,7 +141,7 @@ struct ToolMoveCamera::Impl
 
   void pressEvent (State& state, const ViewPointingEvent& event)
   {
-    if (event.secondaryButton ())
+    if (event.middleButton ())
     {
       this->oldPos = event.ivec2 ();
 

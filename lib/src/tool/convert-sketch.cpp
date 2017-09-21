@@ -100,7 +100,7 @@ struct ToolConvertSketch::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       SketchMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection))

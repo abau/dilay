@@ -59,7 +59,7 @@ struct ToolMoveMesh::Impl
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton () && this->mesh && this->movement.move (e, true))
+    if (e.leftButton () && this->mesh && this->movement.move (e, true))
     {
       this->mesh->translate (this->movement.delta ());
       return ToolResponse::Redraw;
@@ -72,7 +72,7 @@ struct ToolMoveMesh::Impl
 
   ToolResponse runPressEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       DynamicMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection))
@@ -88,7 +88,7 @@ struct ToolMoveMesh::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton () && this->mesh)
+    if (e.leftButton () && this->mesh)
     {
       this->mesh->normalize ();
       this->mesh->bufferData ();

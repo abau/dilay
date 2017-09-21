@@ -30,7 +30,7 @@ struct ToolDeleteMesh::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       DynamicMeshIntersection intersection;
       if (this->self->intersectsScene (e, intersection))

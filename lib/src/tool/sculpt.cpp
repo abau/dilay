@@ -170,7 +170,7 @@ struct ToolSculpt::Impl
   {
     if (e.releaseEvent ())
     {
-      if (e.primaryButton ())
+      if (e.leftButton ())
       {
         this->brush.resetPointOfAction ();
 
@@ -184,7 +184,7 @@ struct ToolSculpt::Impl
     }
     else
     {
-      if (e.pressEvent () && e.primaryButton ())
+      if (e.pressEvent () && e.leftButton ())
       {
         this->self->snapshotDynamicMeshes ();
         this->sculpted = false;
@@ -345,7 +345,7 @@ struct ToolSculpt::Impl
   {
     DynamicMeshIntersection cursorIntersection;
 
-    if (this->setCursorByIntersection (e.ivec2 (), cursorIntersection) && e.primaryButton ())
+    if (this->setCursorByIntersection (e.ivec2 (), cursorIntersection) && e.leftButton ())
     {
       SBParameters& parameters = this->brush.parameters<SBParameters> ();
       const float   defaultIntesity = parameters.intensity ();
@@ -410,7 +410,7 @@ struct ToolSculpt::Impl
 
     if (e.pressEvent ())
     {
-      if (e.primaryButton ())
+      if (e.leftButton ())
       {
         if (this->setCursorByIntersection (e.ivec2 (), cursorIntersection))
         {
@@ -435,7 +435,7 @@ struct ToolSculpt::Impl
     }
     else
     {
-      if (e.primaryButton () == false)
+      if (e.leftButton () == false)
       {
         this->setCursorByIntersection (e.ivec2 (), cursorIntersection);
         return false;

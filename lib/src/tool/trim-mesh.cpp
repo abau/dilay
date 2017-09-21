@@ -271,7 +271,7 @@ struct ToolTrimMesh::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton () == false)
+    if (e.leftButton () == false)
     {
       return ToolResponse::None;
     }

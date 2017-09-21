@@ -136,7 +136,7 @@ struct ToolSketchSpheres::Impl
   {
     this->step.stepWidth (this->radiusEdit.doubleValue () * this->stepWidthFactor);
 
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       if (e.modifiers () == Qt::ShiftModifier)
       {
@@ -214,7 +214,7 @@ struct ToolSketchSpheres::Impl
       this->previousPosition = intersection.position ();
     };
 
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       if (e.modifiers () == Qt::ShiftModifier)
       {

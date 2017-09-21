@@ -105,7 +105,7 @@ struct ToolModifySketch::Impl
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)
   {
-    if (e.primaryButton () && this->node)
+    if (e.leftButton () && this->node)
     {
       if (e.modifiers () == Qt::ShiftModifier)
       {
@@ -191,7 +191,7 @@ struct ToolModifySketch::Impl
       }
     };
 
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       SketchNodeIntersection nodeIntersection;
       SketchBoneIntersection boneIntersection;
@@ -212,7 +212,7 @@ struct ToolModifySketch::Impl
   {
     bool redraw = false;
 
-    if (e.primaryButton ())
+    if (e.leftButton ())
     {
       if (this->snap && this->mesh && this->self->hasMirror ())
       {
