@@ -108,8 +108,6 @@ struct ToolTrimMesh::Impl
     return this->points.empty () ? ToolResponse::None : ToolResponse::Redraw;
   }
 
-  ToolResponse runPressEvent (const ViewPointingEvent&) { return ToolResponse::None; }
-
   ToolResponse runWheelEvent (const QWheelEvent& e)
   {
     if (e.orientation () == Qt::Vertical)
@@ -346,7 +344,6 @@ struct ToolTrimMesh::Impl
 
 DELEGATE_TOOL (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
-DELEGATE_TOOL_RUN_PRESS_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_PAINT (ToolTrimMesh)
