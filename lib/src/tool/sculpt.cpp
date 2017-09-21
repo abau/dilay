@@ -153,6 +153,8 @@ struct ToolSculpt::Impl
     this->self->runSetupToolTip (toolTip);
     toolTip.add (ViewToolTip::Event::MouseWheel, ViewToolTip::Modifier::Shift,
                  QObject::tr ("Change radius"));
+    toolTip.add (ViewToolTip::Event::MouseRight, ViewToolTip::Modifier::Shift,
+                 QObject::tr ("Drag to change radius"));
 
     this->self->showToolTip (toolTip);
   }
@@ -278,9 +280,11 @@ struct ToolSculpt::Impl
     }
   }
 
-  void addSecSliderWheelToolTip (ViewToolTip& toolTip, const QString& label)
+  void addSecSliderWheelToolTip (ViewToolTip& toolTip, const QString& label,
+                                 const QString& dragLabel)
   {
     toolTip.add (ViewToolTip::Event::MouseWheel, ViewToolTip::Modifier::Ctrl, label);
+    toolTip.add (ViewToolTip::Event::MouseRight, ViewToolTip::Modifier::Ctrl, dragLabel);
   }
 
   void sculpt ()
@@ -525,7 +529,8 @@ DELEGATE_BIG2_BASE (ToolSculpt, (State & s, const char* k), (this), Tool, (s, k)
 GETTER (SculptBrush&, ToolSculpt, brush)
 GETTER (ViewCursor&, ToolSculpt, cursor)
 DELEGATE2_CONST (void, ToolSculpt, addDefaultToolTip, ViewToolTip&, bool)
-DELEGATE2_CONST (void, ToolSculpt, addSecSliderWheelToolTip, ViewToolTip&, const QString&)
+DELEGATE3_CONST (void, ToolSculpt, addSecSliderWheelToolTip, ViewToolTip&, const QString&,
+                 const QString&)
 DELEGATE (void, ToolSculpt, sculpt)
 DELEGATE3 (bool, ToolSculpt, drawlikeStroke, const ViewPointingEvent&, bool,
            const std::function<void()>*)

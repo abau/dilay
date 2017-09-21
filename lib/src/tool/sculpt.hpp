@@ -23,7 +23,7 @@ protected:
   SculptBrush& brush ();
   ViewCursor&  cursor ();
   void         addDefaultToolTip (ViewToolTip&, bool) const;
-  void         addSecSliderWheelToolTip (ViewToolTip&, const QString&) const;
+  void         addSecSliderWheelToolTip (ViewToolTip&, const QString&, const QString&) const;
   void         sculpt ();
   bool drawlikeStroke (const ViewPointingEvent&, bool, const std::function<void()>* = nullptr);
   bool grablikeStroke (const ViewPointingEvent&, ToolUtilMovement&);
