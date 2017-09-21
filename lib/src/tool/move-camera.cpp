@@ -123,7 +123,7 @@ struct ToolMoveCamera::Impl
         cam.setGaze (cam.gazePoint () + (this->movementFactor * -delta.x * cam.right ()) +
                      (this->movementFactor * delta.y * cam.up ()));
       }
-      else if (event.modifiers () == Qt::AltModifier)
+      else if (event.modifiers () == Qt::ControlModifier)
       {
         if (delta.y < 0.0f)
         {
@@ -145,7 +145,7 @@ struct ToolMoveCamera::Impl
     {
       this->oldPos = event.position ();
 
-      if (event.modifiers () == Qt::ControlModifier)
+      if (event.modifiers () == Qt::AltModifier)
       {
         Camera&      cam = state.camera ();
         Intersection intersection;

@@ -121,8 +121,8 @@ struct State::Impl
     tip.add (ViewToolTip::Event::MouseMiddle, QObject::tr ("Drag to rotate"));
     tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Shift,
              QObject::tr ("Drag to move"));
-    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Ctrl, QObject::tr ("Gaze"));
-    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Alt, QObject::tr ("Zoom"));
+    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Alt, QObject::tr ("Gaze"));
+    tip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Ctrl, QObject::tr ("Zoom"));
     tip.add (ViewToolTip::Event::MouseWheel, QObject::tr ("Zoom"));
 
     this->mainWindow.infoPane ().addToolTip (tip);
