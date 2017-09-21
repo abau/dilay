@@ -91,6 +91,8 @@ void Config::restoreDefaults ()
 
   this->set ("editor/undo-depth", 15);
 
+  this->set ("editor/tablet-pressure-intensity", 1.0f);
+
   this->set ("window/initial-width", 1024);
   this->set ("window/initial-height", 768);
 }

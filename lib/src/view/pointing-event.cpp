@@ -5,6 +5,7 @@
 #include <QGuiApplication>
 #include <QMouseEvent>
 #include <QTabletEvent>
+#include "config.hpp"
 #include "view/pointing-event.hpp"
 
 ViewPointingEvent::ViewPointingEvent (const QMouseEvent& event)
@@ -21,7 +22,7 @@ ViewPointingEvent::ViewPointingEvent (const QMouseEvent& event)
 {
 }
 
-ViewPointingEvent::ViewPointingEvent (const QTabletEvent& event)
+ViewPointingEvent::ViewPointingEvent (const Config& config, const QTabletEvent& event)
   : _modifiers (QGuiApplication::queryKeyboardModifiers ())
   , _pressEvent (event.type () == QEvent::TabletPress)
   , _moveEvent (event.type () == QEvent::TabletMove)
@@ -31,7 +32,7 @@ ViewPointingEvent::ViewPointingEvent (const QTabletEvent& event)
   , _middleButton (this->_moveEvent ? event.buttons () == Qt::MiddleButton
                                     : event.button () == Qt::MiddleButton)
   , _ivec2 (glm::ivec2 (event.x (), event.y ()))
-  , _intensity (2.0f * event.pressure ())
+  , _intensity (config.get<float> ("editor/tablet-pressure-intensity") * event.pressure ())
 {
 }
 

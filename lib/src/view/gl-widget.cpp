@@ -214,7 +214,7 @@ struct ViewGlWidget::Impl
 
   void tabletEvent (QTabletEvent* e)
   {
-    const ViewPointingEvent pointingEvent (*e);
+    const ViewPointingEvent pointingEvent (this->state ().config (), *e);
 
     if (pointingEvent.pressEvent ())
     {

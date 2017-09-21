@@ -188,6 +188,9 @@ namespace
     addFloatEdit (glWidget, *grid, "editor/floor-plane/tile-width",
                   QObject::tr ("Floor-plane tile-width"), Util::epsilon (), 10.0f);
 
+    addFloatEdit (glWidget, *grid, "editor/tablet-pressure-intensity",
+                  QObject::tr ("Table pressure intensity"), Util::epsilon (), 10.0f);
+
     grid->addStretcher ();
 
     return grid;

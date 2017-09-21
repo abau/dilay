@@ -8,6 +8,7 @@
 #include <Qt>
 #include <glm/glm.hpp>
 
+class Config;
 class QMouseEvent;
 class QTabletEvent;
 
@@ -15,7 +16,7 @@ class ViewPointingEvent
 {
 public:
   explicit ViewPointingEvent (const QMouseEvent&);
-  explicit ViewPointingEvent (const QTabletEvent&);
+  explicit ViewPointingEvent (const Config&, const QTabletEvent&);
 
   bool valid () const;
 
