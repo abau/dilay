@@ -17,6 +17,7 @@ class ViewPointingEvent
 public:
   explicit ViewPointingEvent (const QMouseEvent&);
   explicit ViewPointingEvent (const Config&, const QTabletEvent&);
+  explicit ViewPointingEvent (const ViewPointingEvent&, const glm::ivec2&);
 
   bool valid () const;
   bool leftButton () const;
@@ -33,6 +34,8 @@ public:
 
   const glm::ivec2& position () const { return this->_position; }
 
+  glm::ivec2 delta () const { return this->_position - this->_prevPosition; }
+
   float intensity () const { return this->_intensity; }
 
 private:
@@ -42,6 +45,7 @@ private:
   bool                  _releaseEvent;
   Qt::MouseButton       _button;
   glm::ivec2            _position;
+  glm::ivec2            _prevPosition;
   float                 _intensity;
 };
 #endif

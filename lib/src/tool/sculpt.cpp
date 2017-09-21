@@ -39,7 +39,6 @@ struct ToolSculpt::Impl
   bool              absoluteRadius;
   bool              sculpted;
   ToolUtilStep      step;
-  glm::ivec2        oldPointingEventPos;
 
   Impl (ToolSculpt* s)
     : self (s)
@@ -186,24 +185,17 @@ struct ToolSculpt::Impl
     }
     else
     {
-      if (e.pressEvent ())
-      {
-        this->oldPointingEventPos = e.position ();
-      }
-
       if (e.rightButton ())
       {
         if (e.pressEvent () == false)
         {
-          const glm::ivec2 delta = e.position () - this->oldPointingEventPos;
-
           if (e.modifiers () == Qt::ShiftModifier)
           {
-            this->radiusEdit.setIntValue (this->radiusEdit.intValue () + delta.x);
+            this->radiusEdit.setIntValue (this->radiusEdit.intValue () + e.delta ().x);
           }
           else if (this->secondarySlider && e.modifiers () == Qt::ControlModifier)
           {
-            this->secondarySlider->setIntValue (this->secondarySlider->intValue () + delta.x);
+            this->secondarySlider->setIntValue (this->secondarySlider->intValue () + e.delta ().x);
           }
         }
       }
@@ -220,7 +212,6 @@ struct ToolSculpt::Impl
           this->sculpted = true;
         }
       }
-      this->oldPointingEventPos = e.position ();
     }
     return ToolResponse::Redraw;
   }

@@ -35,6 +35,7 @@ struct Tool::Impl
   CacheProxy        _cache;
   Maybe<Mirror>     _mirror;
   bool              renderMirror;
+  glm::ivec2        prevPointingEventPosition;
 
   Impl (Tool* s, State& st, const char* k)
     : self (s)
@@ -65,12 +66,19 @@ struct Tool::Impl
 
   ToolResponse pointingEvent (const ViewPointingEvent& e)
   {
-    ToolResponse response = this->self->runPointingEvent (e);
+    if (e.pressEvent ())
+    {
+      this->prevPointingEventPosition = e.position ();
+    }
+
+    const ViewPointingEvent eWithDelta (e, this->prevPointingEventPosition);
+    ToolResponse            response = this->self->runPointingEvent (eWithDelta);
 
     if (e.releaseEvent ())
     {
       this->state.scene ().sanitizeMeshes ();
     }
+    this->prevPointingEventPosition = e.position ();
     return response;
   }
 
