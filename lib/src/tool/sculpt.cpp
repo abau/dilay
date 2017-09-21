@@ -39,6 +39,7 @@ struct ToolSculpt::Impl
   bool              absoluteRadius;
   bool              sculpted;
   ToolUtilStep      step;
+  glm::ivec2        oldPointingEventPos;
 
   Impl (ToolSculpt* s)
     : self (s)
@@ -180,22 +181,46 @@ struct ToolSculpt::Impl
         }
       }
       this->cursor.enable ();
-      return ToolResponse::Redraw;
     }
     else
     {
-      if (e.pressEvent () && e.leftButton ())
+      if (e.pressEvent ())
       {
-        this->self->snapshotDynamicMeshes ();
-        this->sculpted = false;
+        this->oldPointingEventPos = e.position ();
       }
 
-      if (this->self->runSculptPointingEvent (e))
+      if (e.rightButton ())
       {
-        this->sculpted = true;
+        if (e.pressEvent () == false)
+        {
+          const glm::ivec2 delta = e.position () - this->oldPointingEventPos;
+
+          if (e.modifiers () == Qt::ShiftModifier)
+          {
+            this->radiusEdit.setIntValue (this->radiusEdit.intValue () + delta.x);
+          }
+          else if (this->secondarySlider && e.modifiers () == Qt::ControlModifier)
+          {
+            this->secondarySlider->setIntValue (this->secondarySlider->intValue () + delta.x);
+          }
+        }
       }
-      return ToolResponse::Redraw;
+      else
+      {
+        if (e.leftButton () && e.pressEvent ())
+        {
+          this->self->snapshotDynamicMeshes ();
+          this->sculpted = false;
+        }
+
+        if (this->self->runSculptPointingEvent (e))
+        {
+          this->sculpted = true;
+        }
+      }
+      this->oldPointingEventPos = e.position ();
     }
+    return ToolResponse::Redraw;
   }
 
   ToolResponse runWheelEvent (const QWheelEvent& e)
