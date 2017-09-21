@@ -31,7 +31,7 @@ public:
 
   bool releaseEvent () const { return this->_releaseEvent; }
 
-  const glm::ivec2& ivec2 () const { return this->_ivec2; }
+  const glm::ivec2& position () const { return this->_position; }
 
   float intensity () const { return this->_intensity; }
 
@@ -41,7 +41,7 @@ private:
   bool                  _moveEvent;
   bool                  _releaseEvent;
   Qt::MouseButton       _button;
-  glm::ivec2            _ivec2;
+  glm::ivec2            _position;
   float                 _intensity;
 };
 #endif

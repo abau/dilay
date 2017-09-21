@@ -232,7 +232,7 @@ struct Tool::Impl
   template <typename T, typename... Ts>
   bool intersectsScene (const ViewPointingEvent& e, T& intersection, Ts... args)
   {
-    return this->intersectsScene (e.ivec2 (), intersection, std::forward<Ts> (args)...);
+    return this->intersectsScene (e.position (), intersection, std::forward<Ts> (args)...);
   }
 
   ToolResponse runPointingEvent (const ViewPointingEvent& e)

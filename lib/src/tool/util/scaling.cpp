@@ -50,7 +50,7 @@ struct ToolUtilScaling::Impl
   bool move (const ViewPointingEvent& e)
   {
     glm::vec3 p;
-    if (this->plane && this->intersects (e.ivec2 (), p))
+    if (this->plane && this->intersects (e.position (), p))
     {
       this->previousPosition = this->position;
       this->position = p;

@@ -227,7 +227,7 @@ struct ToolUtilMovement::Impl
 
   bool move (const ViewPointingEvent& e, bool considerShift)
   {
-    return this->move (e.ivec2 (), considerShift && e.modifiers () == Qt::ShiftModifier);
+    return this->move (e.position (), considerShift && e.modifiers () == Qt::ShiftModifier);
   }
 
   void resetPosition (const glm::vec3& p)

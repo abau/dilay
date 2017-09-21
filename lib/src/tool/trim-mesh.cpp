@@ -278,9 +278,9 @@ struct ToolTrimMesh::Impl
     else
     {
       DynamicMeshIntersection intersection;
-      if (this->self->intersectsScene (e.ivec2 (), intersection) == false)
+      if (this->self->intersectsScene (e.position (), intersection) == false)
       {
-        this->points.push_back (e.ivec2 ());
+        this->points.push_back (e.position ());
       }
 
       if (this->points.size () == 2)

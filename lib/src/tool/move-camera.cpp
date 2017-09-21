@@ -102,7 +102,7 @@ struct ToolMoveCamera::Impl
     {
       Camera&          cam = state.camera ();
       const glm::vec2& resolution = glm::vec2 (cam.resolution ());
-      const glm::ivec2 newPos = event.ivec2 ();
+      const glm::ivec2 newPos = event.position ();
       const glm::vec2  delta = glm::vec2 (newPos) - glm::vec2 (this->oldPos);
 
       if (event.modifiers () == Qt::NoModifier)
@@ -143,13 +143,13 @@ struct ToolMoveCamera::Impl
   {
     if (event.middleButton ())
     {
-      this->oldPos = event.ivec2 ();
+      this->oldPos = event.position ();
 
       if (event.modifiers () == Qt::ControlModifier)
       {
         Camera&      cam = state.camera ();
         Intersection intersection;
-        if (state.scene ().intersects (cam.ray (event.ivec2 ()), intersection))
+        if (state.scene ().intersects (cam.ray (event.position ()), intersection))
         {
           cam.set (intersection.position (), cam.position () - intersection.position ());
           state.mainWindow ().glWidget ().update ();

@@ -169,7 +169,7 @@ struct ToolSketchSpheres::Impl
         if (this->self->intersectsScene (e, intersection, numExcludedLastPaths) == false)
         {
           const Camera&   camera = this->self->state ().camera ();
-          const PrimRay   ray = camera.ray (e.ivec2 ());
+          const PrimRay   ray = camera.ray (e.position ());
           const PrimPlane plane =
             PrimPlane (this->previousPosition, DimensionUtil::vector (camera.primaryDimension ()));
           float t;
@@ -198,7 +198,7 @@ struct ToolSketchSpheres::Impl
     }
     else
     {
-      return this->runCursorUpdate (e.ivec2 ());
+      return this->runCursorUpdate (e.position ());
     }
   }
 

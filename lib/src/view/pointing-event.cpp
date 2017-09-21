@@ -37,7 +37,7 @@ ViewPointingEvent::ViewPointingEvent (const QMouseEvent& event)
   , _moveEvent (event.type () == QEvent::MouseMove)
   , _releaseEvent (event.type () == QEvent::MouseButtonRelease)
   , _button (fromButtons (this->_moveEvent ? event.buttons () : event.button ()))
-  , _ivec2 (glm::ivec2 (event.x (), event.y ()))
+  , _position (glm::ivec2 (event.x (), event.y ()))
   , _intensity (1.0f)
 {
 }
@@ -48,7 +48,7 @@ ViewPointingEvent::ViewPointingEvent (const Config& config, const QTabletEvent& 
   , _moveEvent (event.type () == QEvent::TabletMove)
   , _releaseEvent (event.type () == QEvent::TabletRelease)
   , _button (fromButtons (this->_moveEvent ? event.buttons () : event.button ()))
-  , _ivec2 (glm::ivec2 (event.x (), event.y ()))
+  , _position (glm::ivec2 (event.x (), event.y ()))
   , _intensity (config.get<float> ("editor/tablet-pressure-intensity") * event.pressure ())
 {
 }
