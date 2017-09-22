@@ -4,7 +4,6 @@
  */
 #include <QAbstractButton>
 #include <QButtonGroup>
-#include <QFrame>
 #include <QPainter>
 #include <QSlider>
 #include <QWheelEvent>
@@ -15,7 +14,6 @@
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
 #include "history.hpp"
-#include "mirror.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "state.hpp"
@@ -64,9 +62,6 @@ struct ToolTrimMesh::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    this->self->addMirrorProperties (true);
-    properties.add (ViewUtil::horizontalLine ());
-
     this->widthEdit.setSingleStep (10);
     ViewUtil::connect (this->widthEdit,
                        [this](int w) { this->self->cache ().set ("trim-width", w); });
@@ -95,8 +90,6 @@ struct ToolTrimMesh::Impl
 
   ToolResponse runInitialize ()
   {
-    this->self->renderMirror (true);
-
     this->setupProperties ();
     this->setupToolTip ();
 
@@ -131,8 +124,20 @@ struct ToolTrimMesh::Impl
     return ToolResponse::Redraw;
   }
 
-  TrimStatus trimMesh (ToolTrimMeshBorder& border)
+  TrimStatus trimMesh (DynamicMesh& mesh, int offset, bool reverse)
   {
+    assert (this->points.size () == 2);
+
+    const glm::ivec2& p1 = reverse ? this->points[1] : this->points[0];
+    const glm::ivec2& p2 = reverse ? this->points[0] : this->points[1];
+    const float       fOffset = 0.5f * float(offset);
+    const glm::ivec2  orth =
+      glm::ceil (glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1))) * fOffset);
+    const PrimRay ray1 = this->self->state ().camera ().ray (p1 + orth);
+    const PrimRay ray2 = this->self->state ().camera ().ray (p2 + orth);
+
+    ToolTrimMeshBorder border (mesh, ray1, ray2);
+
     if (ToolTrimMeshSplitMesh::splitMesh (border))
     {
       if (border.hasVertices ())
@@ -154,47 +159,6 @@ struct ToolTrimMesh::Impl
     else
     {
       return TrimStatus::Failed;
-    }
-  }
-
-  TrimStatus trimMesh (DynamicMesh& mesh, int offset, bool reverse)
-  {
-    assert (this->points.size () == 2);
-
-    const glm::ivec2& p1 = reverse ? this->points[1] : this->points[0];
-    const glm::ivec2& p2 = reverse ? this->points[0] : this->points[1];
-    const float       fOffset = 0.5f * float(offset);
-    const glm::ivec2  orth =
-      glm::ceil (glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1))) * fOffset);
-    const PrimRay ray1 = this->self->state ().camera ().ray (p1 + orth);
-    const PrimRay ray2 = this->self->state ().camera ().ray (p2 + orth);
-
-    ToolTrimMeshBorder border (mesh, ray1, ray2);
-
-    if (this->self->hasMirror () == false)
-    {
-      return this->trimMesh (border);
-    }
-    else
-    {
-      ToolTrimMeshBorder mBorder = border.mirror (this->self->mirror ().plane ());
-      const TrimStatus   status = this->trimMesh (border);
-
-      if (status == TrimStatus::Trimmed)
-      {
-        if (this->trimMesh (mBorder) == TrimStatus::Failed)
-        {
-          return TrimStatus::Failed;
-        }
-        else
-        {
-          return status;
-        }
-      }
-      else
-      {
-        return status;
-      }
     }
   }
 
