@@ -103,8 +103,12 @@ struct ToolTrimMesh::Impl
     return ToolResponse::None;
   }
 
-  ToolResponse runMoveEvent (const ViewPointingEvent&)
+  ToolResponse runMoveEvent (const ViewPointingEvent& e)
   {
+    if (e.rightButton () && e.modifiers () == Qt::ShiftModifier)
+    {
+      this->widthEdit.setValue (this->widthEdit.value () + e.delta ().x);
+    }
     return this->points.empty () ? ToolResponse::None : ToolResponse::Redraw;
   }
 
