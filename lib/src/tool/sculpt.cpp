@@ -170,47 +170,35 @@ struct ToolSculpt::Impl
 
   ToolResponse runPointingEvent (const ViewPointingEvent& e)
   {
-    if (e.releaseEvent ())
+    if (e.moveEvent () && e.rightButton ())
     {
-      if (e.leftButton ())
+      if (e.modifiers () == Qt::ShiftModifier)
       {
-        this->brush.resetPointOfAction ();
-
-        if (this->sculpted == false)
-        {
-          this->self->state ().history ().dropPastSnapshot ();
-        }
+        this->radiusEdit.setIntValue (this->radiusEdit.intValue () + e.delta ().x);
       }
-      this->cursor.enable ();
+      else if (this->secondarySlider && e.modifiers () == Qt::ControlModifier)
+      {
+        this->secondarySlider->setIntValue (this->secondarySlider->intValue () + e.delta ().x);
+      }
     }
-    else
+    else if (e.pressEvent () && e.leftButton ())
     {
-      if (e.rightButton ())
-      {
-        if (e.pressEvent () == false)
-        {
-          if (e.modifiers () == Qt::ShiftModifier)
-          {
-            this->radiusEdit.setIntValue (this->radiusEdit.intValue () + e.delta ().x);
-          }
-          else if (this->secondarySlider && e.modifiers () == Qt::ControlModifier)
-          {
-            this->secondarySlider->setIntValue (this->secondarySlider->intValue () + e.delta ().x);
-          }
-        }
-      }
-      else
-      {
-        if (e.leftButton () && e.pressEvent ())
-        {
-          this->self->snapshotDynamicMeshes ();
-          this->sculpted = false;
-        }
+      this->self->snapshotDynamicMeshes ();
+      this->sculpted = false;
+    }
 
-        if (this->self->runSculptPointingEvent (e))
-        {
-          this->sculpted = true;
-        }
+    if (this->self->runSculptPointingEvent (e))
+    {
+      this->sculpted = true;
+    }
+
+    if (e.releaseEvent () && e.leftButton ())
+    {
+      this->brush.resetPointOfAction ();
+
+      if (this->sculpted == false)
+      {
+        this->self->state ().history ().dropPastSnapshot ();
       }
     }
     return ToolResponse::Redraw;
