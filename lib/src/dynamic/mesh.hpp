@@ -84,7 +84,7 @@ public:
   bool mirror (const PrimPlane&);
   void bufferData ();
 
-  void render (Camera&);
+  void render (Camera&) const;
 
   const RenderMode& renderMode () const;
   RenderMode&       renderMode ();

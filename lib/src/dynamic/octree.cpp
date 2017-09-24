@@ -311,75 +311,13 @@ struct DynamicOctree::Impl
 {
   Child                         root;
   std::vector<IndexOctreeNode*> elementNodeMap;
-#ifdef DILAY_RENDER_OCTREE
-  Mesh nodeMesh;
-#endif
 
-  Impl ()
-  {
-#ifdef DILAY_RENDER_OCTREE
-    this->nodeMesh.addVertex (glm::vec3 (-1.0f, -1.0f, -1.0f));
-    this->nodeMesh.addVertex (glm::vec3 (-1.0f, -1.0f, 1.0f));
-    this->nodeMesh.addVertex (glm::vec3 (-1.0f, 1.0f, -1.0f));
-    this->nodeMesh.addVertex (glm::vec3 (-1.0f, 1.0f, 1.0f));
-    this->nodeMesh.addVertex (glm::vec3 (1.0f, -1.0f, -1.0f));
-    this->nodeMesh.addVertex (glm::vec3 (1.0f, -1.0f, 1.0f));
-    this->nodeMesh.addVertex (glm::vec3 (1.0f, 1.0f, -1.0f));
-    this->nodeMesh.addVertex (glm::vec3 (1.0f, 1.0f, 1.0f));
-
-    this->nodeMesh.addIndex (0);
-    this->nodeMesh.addIndex (1);
-    this->nodeMesh.addIndex (1);
-    this->nodeMesh.addIndex (3);
-    this->nodeMesh.addIndex (3);
-    this->nodeMesh.addIndex (2);
-    this->nodeMesh.addIndex (2);
-    this->nodeMesh.addIndex (0);
-
-    this->nodeMesh.addIndex (4);
-    this->nodeMesh.addIndex (5);
-    this->nodeMesh.addIndex (5);
-    this->nodeMesh.addIndex (7);
-    this->nodeMesh.addIndex (7);
-    this->nodeMesh.addIndex (6);
-    this->nodeMesh.addIndex (6);
-    this->nodeMesh.addIndex (4);
-
-    this->nodeMesh.addIndex (1);
-    this->nodeMesh.addIndex (5);
-    this->nodeMesh.addIndex (5);
-    this->nodeMesh.addIndex (7);
-    this->nodeMesh.addIndex (7);
-    this->nodeMesh.addIndex (3);
-    this->nodeMesh.addIndex (3);
-    this->nodeMesh.addIndex (1);
-
-    this->nodeMesh.addIndex (4);
-    this->nodeMesh.addIndex (6);
-    this->nodeMesh.addIndex (6);
-    this->nodeMesh.addIndex (2);
-    this->nodeMesh.addIndex (2);
-    this->nodeMesh.addIndex (0);
-    this->nodeMesh.addIndex (0);
-    this->nodeMesh.addIndex (4);
-
-    this->nodeMesh.renderMode ().constantShading (true);
-    this->nodeMesh.renderMode ().noDepthTest (true);
-    this->nodeMesh.color (Color (1.0f, 1.0f, 0.0f));
-    this->nodeMesh.bufferData ();
-#endif
-  }
+  Impl () {}
 
   Impl (const Impl& other)
     : root (other.root)
-#ifdef DILAY_RENDER_OCTREE
-    , nodeMesh (other.nodeMesh)
-#endif
   {
     this->makeElementNodeMap ();
-#ifdef DILAY_RENDER_OCTREE
-    this->nodeMesh.bufferData ();
-#endif
   }
 
   bool hasRoot () const { return bool(this->root); }
@@ -582,11 +520,62 @@ struct DynamicOctree::Impl
   }
 
 #ifdef DILAY_RENDER_OCTREE
-  void render (Camera& camera)
+  void render (Camera& camera) const
   {
+    Mesh nodeMesh;
+    nodeMesh.addVertex (glm::vec3 (-1.0f, -1.0f, -1.0f));
+    nodeMesh.addVertex (glm::vec3 (-1.0f, -1.0f, 1.0f));
+    nodeMesh.addVertex (glm::vec3 (-1.0f, 1.0f, -1.0f));
+    nodeMesh.addVertex (glm::vec3 (-1.0f, 1.0f, 1.0f));
+    nodeMesh.addVertex (glm::vec3 (1.0f, -1.0f, -1.0f));
+    nodeMesh.addVertex (glm::vec3 (1.0f, -1.0f, 1.0f));
+    nodeMesh.addVertex (glm::vec3 (1.0f, 1.0f, -1.0f));
+    nodeMesh.addVertex (glm::vec3 (1.0f, 1.0f, 1.0f));
+
+    nodeMesh.addIndex (0);
+    nodeMesh.addIndex (1);
+    nodeMesh.addIndex (1);
+    nodeMesh.addIndex (3);
+    nodeMesh.addIndex (3);
+    nodeMesh.addIndex (2);
+    nodeMesh.addIndex (2);
+    nodeMesh.addIndex (0);
+
+    nodeMesh.addIndex (4);
+    nodeMesh.addIndex (5);
+    nodeMesh.addIndex (5);
+    nodeMesh.addIndex (7);
+    nodeMesh.addIndex (7);
+    nodeMesh.addIndex (6);
+    nodeMesh.addIndex (6);
+    nodeMesh.addIndex (4);
+
+    nodeMesh.addIndex (1);
+    nodeMesh.addIndex (5);
+    nodeMesh.addIndex (5);
+    nodeMesh.addIndex (7);
+    nodeMesh.addIndex (7);
+    nodeMesh.addIndex (3);
+    nodeMesh.addIndex (3);
+    nodeMesh.addIndex (1);
+
+    nodeMesh.addIndex (4);
+    nodeMesh.addIndex (6);
+    nodeMesh.addIndex (6);
+    nodeMesh.addIndex (2);
+    nodeMesh.addIndex (2);
+    nodeMesh.addIndex (0);
+    nodeMesh.addIndex (0);
+    nodeMesh.addIndex (4);
+
+    nodeMesh.renderMode ().constantShading (true);
+    nodeMesh.renderMode ().noDepthTest (true);
+    nodeMesh.color (Color (1.0f, 1.0f, 0.0f));
+    nodeMesh.bufferData ();
+
     if (this->hasRoot ())
     {
-      this->root->render (camera, this->nodeMesh);
+      this->root->render (camera, nodeMesh);
     }
   }
 #else
@@ -659,7 +648,7 @@ DELEGATE (void, DynamicOctree, deleteEmptyChildren)
 DELEGATE1 (void, DynamicOctree, updateIndices, const std::vector<unsigned int>&)
 DELEGATE (void, DynamicOctree, shrinkRoot)
 DELEGATE (void, DynamicOctree, reset)
-DELEGATE1 (void, DynamicOctree, render, Camera&)
+DELEGATE1_CONST (void, DynamicOctree, render, Camera&)
 DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimRay&,
                  const DynamicOctree::IntersectionCallback&)
 DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimPlane&,

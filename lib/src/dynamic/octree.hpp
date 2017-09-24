@@ -33,7 +33,7 @@ public:
   void updateIndices (const std::vector<unsigned int>&);
   void shrinkRoot ();
   void reset ();
-  void render (Camera&);
+  void render (Camera&) const;
   void intersects (const PrimRay&, const IntersectionCallback&) const;
   void intersects (const PrimPlane&, const IntersectionCallback&) const;
   void intersects (const PrimSphere&, const ContainsIntersectionCallback&) const;

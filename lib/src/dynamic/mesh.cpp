@@ -865,7 +865,7 @@ struct DynamicMesh::Impl
     this->mesh.bufferData ();
   }
 
-  void render (Camera& camera)
+  void render (Camera& camera) const
   {
     this->mesh.render (camera);
 #ifdef DILAY_RENDER_OCTREE
@@ -1018,7 +1018,7 @@ DELEGATE2 (void, DynamicMesh, prune, std::vector<unsigned int>*, std::vector<uns
 DELEGATE (bool, DynamicMesh, pruneAndCheckConsistency)
 DELEGATE1 (bool, DynamicMesh, mirror, const PrimPlane&)
 DELEGATE (void, DynamicMesh, bufferData)
-DELEGATE1 (void, DynamicMesh, render, Camera&)
+DELEGATE1_CONST (void, DynamicMesh, render, Camera&)
 DELEGATE_MEMBER_CONST (const RenderMode&, DynamicMesh, renderMode, mesh)
 DELEGATE_MEMBER (RenderMode&, DynamicMesh, renderMode, mesh)
 
