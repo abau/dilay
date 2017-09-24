@@ -13,7 +13,7 @@ namespace MeshUtil
   void addFace (Mesh&, unsigned int, unsigned int, unsigned int);
   void addFace (Mesh&, unsigned int, unsigned int, unsigned int, unsigned int);
 
-  Mesh cube ();
+  Mesh cube (unsigned int);
   Mesh sphere (unsigned int, unsigned int);
   Mesh icosphere (unsigned int);
   Mesh cone (unsigned int);

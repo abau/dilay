@@ -24,7 +24,7 @@ struct Mirror::Impl
     : _dimension (d)
     , width (1.0f)
   {
-    this->mirrorMesh = MeshUtil::cube ();
+    this->mirrorMesh = MeshUtil::cube (0);
     this->mirrorMesh.renderMode ().constantShading (true);
     this->mirrorMesh.bufferData ();
 

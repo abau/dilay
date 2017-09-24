@@ -36,41 +36,43 @@ struct Scene::Impl
   DynamicMesh& newDynamicMesh (const Config& config, const DynamicMesh& other)
   {
     this->dynamicMeshes.emplace_back (other);
-    return this->setupNewMesh (config, this->dynamicMeshes.back ());
+    this->setupMesh (config, this->dynamicMeshes.back ());
+    return this->dynamicMeshes.back ();
   }
 
   DynamicMesh& newDynamicMesh (const Config& config, const Mesh& mesh)
   {
     this->dynamicMeshes.emplace_back (mesh);
-    return this->setupNewMesh (config, this->dynamicMeshes.back ());
-  }
-
-  DynamicMesh& setupNewMesh (const Config& config, DynamicMesh& mesh)
-  {
-    mesh.bufferData ();
-    mesh.renderMode () = this->commonRenderMode;
-    mesh.fromConfig (config);
-    return mesh;
+    this->setupMesh (config, this->dynamicMeshes.back ());
+    return this->dynamicMeshes.back ();
   }
 
   SketchMesh& newSketchMesh (const Config& config, const SketchMesh& other)
   {
     this->sketchMeshes.emplace_back (other);
-    return this->setupNewMesh (config, this->sketchMeshes.back ());
+    this->setupMesh (config, this->sketchMeshes.back ());
+    return this->sketchMeshes.back ();
   }
 
   SketchMesh& newSketchMesh (const Config& config, const SketchTree& tree)
   {
     this->sketchMeshes.emplace_back ();
     this->sketchMeshes.back ().fromTree (tree);
-    return this->setupNewMesh (config, this->sketchMeshes.back ());
+    this->setupMesh (config, this->sketchMeshes.back ());
+    return this->sketchMeshes.back ();
   }
 
-  SketchMesh& setupNewMesh (const Config& config, SketchMesh& mesh)
+  void setupMesh (const Config& config, DynamicMesh& mesh)
+  {
+    mesh.bufferData ();
+    mesh.renderMode () = this->commonRenderMode;
+    mesh.fromConfig (config);
+  }
+
+  void setupMesh (const Config& config, SketchMesh& mesh)
   {
     mesh.renderWireframe (this->commonRenderMode.renderWireframe ());
     mesh.fromConfig (config);
-    return mesh;
   }
 
   void deleteMesh (DynamicMesh& mesh)
@@ -394,6 +396,8 @@ DELEGATE2 (DynamicMesh&, Scene, newDynamicMesh, const Config&, const DynamicMesh
 DELEGATE2 (DynamicMesh&, Scene, newDynamicMesh, const Config&, const Mesh&)
 DELEGATE2 (SketchMesh&, Scene, newSketchMesh, const Config&, const SketchMesh&)
 DELEGATE2 (SketchMesh&, Scene, newSketchMesh, const Config&, const SketchTree&)
+DELEGATE2 (void, Scene, setupMesh, const Config&, DynamicMesh&)
+DELEGATE2 (void, Scene, setupMesh, const Config&, SketchMesh&)
 DELEGATE1 (void, Scene, deleteMesh, DynamicMesh&)
 DELEGATE1 (void, Scene, deleteMesh, SketchMesh&)
 DELEGATE (void, Scene, deleteDynamicMeshes)
@@ -414,6 +418,7 @@ DELEGATE1_CONST (void, Scene, forEachConstMesh, const std::function<void(const D
 DELEGATE1_CONST (void, Scene, forEachConstMesh, const std::function<void(const SketchMesh&)>&)
 DELEGATE (void, Scene, sanitizeMeshes)
 DELEGATE (void, Scene, reset)
+GETTER_CONST (const RenderMode&, Scene, commonRenderMode)
 DELEGATE_CONST (bool, Scene, renderWireframe)
 DELEGATE1 (void, Scene, renderWireframe, bool)
 DELEGATE (void, Scene, toggleWireframe)

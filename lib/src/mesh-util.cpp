@@ -3,6 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <algorithm>
+#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <unordered_map>
@@ -17,9 +18,32 @@
 
 namespace
 {
-  class EdgeMap
+  struct VertexCache
   {
-  public:
+    typedef std::function<unsigned int(unsigned int, unsigned int)> MakeNewVertex;
+
+    std::unordered_map<ui_pair, unsigned int> cache;
+
+    unsigned int lookup (unsigned int i1, unsigned int i2, const MakeNewVertex& f)
+    {
+      const ui_pair key = std::make_pair (glm::min (i1, i2), glm::max (i1, i2));
+
+      const auto it = this->cache.find (key);
+      if (it == this->cache.end ())
+      {
+        const unsigned int n = f (i1, i2);
+        this->cache.emplace (key, n);
+        return n;
+      }
+      else
+      {
+        return it->second;
+      }
+    }
+  };
+
+  struct EdgeMap
+  {
     EdgeMap (unsigned int numVertices) { this->elements.resize (numVertices - 1); }
 
     unsigned int* find (unsigned int i1, unsigned int i2)
@@ -90,7 +114,7 @@ namespace
     std::vector<std::vector<std::pair<unsigned int, unsigned int>>> elements;
   };
 
-  Mesh& finalized (Mesh& mesh)
+  Mesh& withDefaultNormals (Mesh& mesh)
   {
     for (unsigned int i = 0; i < mesh.numVertices (); i++)
     {
@@ -118,28 +142,96 @@ void MeshUtil::addFace (Mesh& mesh, unsigned int i1, unsigned int i2, unsigned i
   mesh.addIndex (i3);
 }
 
-Mesh MeshUtil::cube ()
+Mesh MeshUtil::cube (unsigned int numSubdivisions)
 {
   Mesh        mesh;
-  const float d = 0.5f;
+  VertexCache vertexCache;
 
-  mesh.addVertex (glm::vec3 (-d, -d, -d));
-  mesh.addVertex (glm::vec3 (-d, -d, +d));
-  mesh.addVertex (glm::vec3 (-d, +d, -d));
-  mesh.addVertex (glm::vec3 (-d, +d, +d));
-  mesh.addVertex (glm::vec3 (+d, -d, -d));
-  mesh.addVertex (glm::vec3 (+d, -d, +d));
-  mesh.addVertex (glm::vec3 (+d, +d, -d));
-  mesh.addVertex (glm::vec3 (+d, +d, +d));
+  const auto addStartVertex = [&mesh](const glm::vec3& v) -> unsigned int {
+    return mesh.addVertex (v, glm::normalize (v));
+  };
 
-  MeshUtil::addFace (mesh, 0, 1, 3, 2);
-  MeshUtil::addFace (mesh, 1, 5, 7, 3);
-  MeshUtil::addFace (mesh, 5, 4, 6, 7);
-  MeshUtil::addFace (mesh, 4, 0, 2, 6);
-  MeshUtil::addFace (mesh, 3, 7, 6, 2);
-  MeshUtil::addFace (mesh, 0, 4, 5, 1);
+  const auto addRefinedVertex = [&mesh](unsigned int i1, unsigned int i2) -> unsigned int {
+    return mesh.addVertex (Util::midpoint (mesh.vertex (i1), mesh.vertex (i2)));
+  };
 
-  return finalized (mesh);
+  std::function<void(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int)>
+    subdivide = [&mesh, &subdivide, &addRefinedVertex, &vertexCache](
+      unsigned int s, unsigned int i1, unsigned int i2, unsigned int i3, unsigned int i4) -> void {
+    if (s == 0)
+    {
+      MeshUtil::addFace (mesh, i1, i2, i3);
+      MeshUtil::addFace (mesh, i1, i3, i4);
+    }
+    else
+    {
+      const glm::vec3    v1 = mesh.vertex (i1);
+      const glm::vec3    v2 = mesh.vertex (i2);
+      const glm::vec3    v3 = mesh.vertex (i3);
+      const glm::vec3    v4 = mesh.vertex (i4);
+      const unsigned int iC = mesh.addVertex ((v1 + v2 + v3 + v4) / 4.0f);
+      const unsigned int i12 = vertexCache.lookup (i1, i2, addRefinedVertex);
+      const unsigned int i23 = vertexCache.lookup (i2, i3, addRefinedVertex);
+      const unsigned int i34 = vertexCache.lookup (i3, i4, addRefinedVertex);
+      const unsigned int i41 = vertexCache.lookup (i4, i1, addRefinedVertex);
+
+      subdivide (s - 1, i1, i12, iC, i41);
+      subdivide (s - 1, i2, i23, iC, i12);
+      subdivide (s - 1, i3, i34, iC, i23);
+      subdivide (s - 1, i4, i41, iC, i34);
+    }
+  };
+
+  addStartVertex (glm::vec3 (-0.5f, -0.5f, -0.5f));
+  addStartVertex (glm::vec3 (-0.5f, -0.5f, +0.5f));
+  addStartVertex (glm::vec3 (-0.5f, +0.5f, -0.5f));
+  addStartVertex (glm::vec3 (-0.5f, +0.5f, +0.5f));
+  addStartVertex (glm::vec3 (+0.5f, -0.5f, -0.5f));
+  addStartVertex (glm::vec3 (+0.5f, -0.5f, +0.5f));
+  addStartVertex (glm::vec3 (+0.5f, +0.5f, -0.5f));
+  addStartVertex (glm::vec3 (+0.5f, +0.5f, +0.5f));
+
+  subdivide (numSubdivisions, 0, 1, 3, 2);
+  subdivide (numSubdivisions, 1, 5, 7, 3);
+  subdivide (numSubdivisions, 5, 4, 6, 7);
+  subdivide (numSubdivisions, 4, 0, 2, 6);
+  subdivide (numSubdivisions, 3, 7, 6, 2);
+  subdivide (numSubdivisions, 0, 4, 5, 1);
+
+  for (unsigned int i = 0; i < mesh.numVertices (); i++)
+  {
+    const glm::vec3& vertex = mesh.vertex (i);
+    glm::vec3        normal = glm::vec3 (0.0f);
+
+    if (Util::almostEqual (vertex.x, 0.5f))
+    {
+      normal.x = 1.0f;
+    }
+    else if (Util::almostEqual (vertex.x, -0.5f))
+    {
+      normal.x = -1.0f;
+    }
+
+    if (Util::almostEqual (vertex.y, 0.5f))
+    {
+      normal.y = 1.0f;
+    }
+    else if (Util::almostEqual (vertex.y, -0.5f))
+    {
+      normal.y = -1.0f;
+    }
+
+    if (Util::almostEqual (vertex.z, 0.5f))
+    {
+      normal.z = 1.0f;
+    }
+    else if (Util::almostEqual (vertex.z, -0.5f))
+    {
+      normal.z = -1.0f;
+    }
+    mesh.normal (i, glm::normalize (normal));
+  }
+  return mesh;
 }
 
 Mesh MeshUtil::sphere (unsigned int rings, unsigned int sectors)
@@ -192,55 +284,36 @@ Mesh MeshUtil::sphere (unsigned int rings, unsigned int sectors)
     MeshUtil::addFace (mesh, botCapIndex, (sectors * (rings - 2)) + ((s + 1) % sectors),
                        (sectors * (rings - 2)) + s);
   }
-  return finalized (mesh);
+  return withDefaultNormals (mesh);
 }
 
 Mesh MeshUtil::icosphere (unsigned int numSubdivisions)
 {
-  typedef std::unordered_map<ui_pair, unsigned int> VertexCache;
-
   Mesh        mesh;
   VertexCache vertexCache;
 
-  // adds new vertex to ico-sphere
-  auto addIcoVertex = [&mesh](const glm::vec3& v) -> unsigned int {
-    return mesh.addVertex (glm::normalize (v));
+  const auto addStartVertex = [&mesh](const glm::vec3& v) -> unsigned int {
+    return mesh.addVertex (glm::normalize (v), glm::normalize (v));
   };
 
-  // looks up vertex in cache or computes a new one
-  auto lookupVertex = [&vertexCache, &addIcoVertex, &mesh](unsigned int i1,
-                                                           unsigned int i2) -> unsigned int {
-    const unsigned int lowerI = i1 < i2 ? i1 : i2;
-    const unsigned int upperI = i1 < i2 ? i2 : i1;
-    const ui_pair      key = std::make_pair (lowerI, upperI);
-
-    VertexCache::iterator it = vertexCache.find (key);
-    if (it == vertexCache.end ())
-    {
-      const unsigned int n =
-        addIcoVertex (Util::midpoint (mesh.vertex (lowerI), mesh.vertex (upperI)));
-      vertexCache.emplace (key, n);
-      return n;
-    }
-    else
-    {
-      return it->second;
-    }
+  const auto addRefinedVertex = [&mesh](unsigned int i1, unsigned int i2) -> unsigned int {
+    const glm::vec3 pos = glm::normalize (Util::midpoint (mesh.vertex (i1), mesh.vertex (i2)));
+    const glm::vec3 normal = glm::normalize (pos);
+    return mesh.addVertex (pos, normal);
   };
 
-  // subdivides a face of the ico-sphere
   std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> subdivide =
-    [&mesh, &subdivide, &lookupVertex](unsigned int s, unsigned int i1, unsigned int i2,
-                                       unsigned int i3) -> void {
+    [&mesh, &subdivide, &addRefinedVertex, &vertexCache](unsigned int s, unsigned int i1,
+                                                         unsigned int i2, unsigned int i3) -> void {
     if (s == 0)
     {
       MeshUtil::addFace (mesh, i1, i2, i3);
     }
     else
     {
-      const unsigned int i12 = lookupVertex (i1, i2);
-      const unsigned int i23 = lookupVertex (i2, i3);
-      const unsigned int i31 = lookupVertex (i3, i1);
+      const unsigned int i12 = vertexCache.lookup (i1, i2, addRefinedVertex);
+      const unsigned int i23 = vertexCache.lookup (i2, i3, addRefinedVertex);
+      const unsigned int i31 = vertexCache.lookup (i3, i1, addRefinedVertex);
 
       subdivide (s - 1, i1, i12, i31);
       subdivide (s - 1, i2, i23, i12);
@@ -251,20 +324,20 @@ Mesh MeshUtil::icosphere (unsigned int numSubdivisions)
 
   const float t = (1.0f + glm::sqrt (5.0f)) * 0.5f;
 
-  addIcoVertex (glm::vec3 (-1.0f, +t, 0.0f));
-  addIcoVertex (glm::vec3 (+1.0f, +t, 0.0f));
-  addIcoVertex (glm::vec3 (-1.0f, -t, 0.0f));
-  addIcoVertex (glm::vec3 (+1.0f, -t, 0.0f));
+  addStartVertex (glm::vec3 (-1.0f, +t, 0.0f));
+  addStartVertex (glm::vec3 (+1.0f, +t, 0.0f));
+  addStartVertex (glm::vec3 (-1.0f, -t, 0.0f));
+  addStartVertex (glm::vec3 (+1.0f, -t, 0.0f));
 
-  addIcoVertex (glm::vec3 (0.0f, -1.0f, +t));
-  addIcoVertex (glm::vec3 (0.0f, +1.0f, +t));
-  addIcoVertex (glm::vec3 (0.0f, -1.0f, -t));
-  addIcoVertex (glm::vec3 (0.0f, +1.0f, -t));
+  addStartVertex (glm::vec3 (0.0f, -1.0f, +t));
+  addStartVertex (glm::vec3 (0.0f, +1.0f, +t));
+  addStartVertex (glm::vec3 (0.0f, -1.0f, -t));
+  addStartVertex (glm::vec3 (0.0f, +1.0f, -t));
 
-  addIcoVertex (glm::vec3 (+t, 0.0f, -1.0f));
-  addIcoVertex (glm::vec3 (+t, 0.0f, +1.0f));
-  addIcoVertex (glm::vec3 (-t, 0.0f, -1.0f));
-  addIcoVertex (glm::vec3 (-t, 0.0f, +1.0f));
+  addStartVertex (glm::vec3 (+t, 0.0f, -1.0f));
+  addStartVertex (glm::vec3 (+t, 0.0f, +1.0f));
+  addStartVertex (glm::vec3 (-t, 0.0f, -1.0f));
+  addStartVertex (glm::vec3 (-t, 0.0f, +1.0f));
 
   subdivide (numSubdivisions, 0, 11, 5);
   subdivide (numSubdivisions, 0, 5, 1);
@@ -290,7 +363,7 @@ Mesh MeshUtil::icosphere (unsigned int numSubdivisions)
   subdivide (numSubdivisions, 8, 6, 7);
   subdivide (numSubdivisions, 9, 8, 1);
 
-  return finalized (mesh);
+  return mesh;
 }
 
 Mesh MeshUtil::cone (unsigned int numBaseVertices)
@@ -315,7 +388,7 @@ Mesh MeshUtil::cone (unsigned int numBaseVertices)
   MeshUtil::addFace (mesh, numBaseVertices - 1, 0, numBaseVertices + 1);
   MeshUtil::addFace (mesh, 0, numBaseVertices - 1, numBaseVertices);
 
-  return finalized (mesh);
+  return withDefaultNormals (mesh);
 }
 
 Mesh MeshUtil::cylinder (unsigned int numVertices)
@@ -348,7 +421,7 @@ Mesh MeshUtil::cylinder (unsigned int numVertices)
   MeshUtil::addFace (mesh, 0, numVertices - 1, 2 * numVertices);
   MeshUtil::addFace (mesh, (2 * numVertices) - 1, numVertices, (2 * numVertices) + 1);
 
-  return finalized (mesh);
+  return withDefaultNormals (mesh);
 }
 
 Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)

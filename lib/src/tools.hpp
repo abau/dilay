@@ -13,7 +13,7 @@ DECLARE_TOOL (ToolMoveMesh, "move", DECLARE_TOOL_RUN_MOVE_EVENT DECLARE_TOOL_RUN
 
 DECLARE_TOOL (ToolDeleteMesh, "delete-mesh", DECLARE_TOOL_RUN_RELEASE_EVENT)
 
-DECLARE_TOOL (ToolNewMesh, "new-mesh", )
+DECLARE_TOOL (ToolNewMesh, "new-mesh", DECLARE_TOOL_RUN_RENDER DECLARE_TOOL_RUN_CLOSE)
 
 DECLARE_TOOL_SCULPT (ToolSculptDraw, "sculpt/draw")
 DECLARE_TOOL_SCULPT (ToolSculptDrag, "sculpt/drag")

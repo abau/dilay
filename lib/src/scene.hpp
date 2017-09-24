@@ -27,6 +27,8 @@ public:
   DynamicMesh&       newDynamicMesh (const Config&, const Mesh&);
   SketchMesh&        newSketchMesh (const Config&, const SketchMesh&);
   SketchMesh&        newSketchMesh (const Config&, const SketchTree&);
+  void               setupMesh (const Config&, DynamicMesh&);
+  void               setupMesh (const Config&, SketchMesh&);
   void               deleteMesh (DynamicMesh&);
   void               deleteMesh (SketchMesh&);
   void               deleteDynamicMeshes ();
@@ -47,6 +49,7 @@ public:
   void               forEachConstMesh (const std::function<void(const SketchMesh&)>&) const;
   void               sanitizeMeshes ();
   void               reset ();
+  const RenderMode&  commonRenderMode () const;
   bool               renderWireframe () const;
   void               renderWireframe (bool);
   void               toggleWireframe ();
