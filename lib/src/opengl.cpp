@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <memory>
+#include "log.hpp"
 #include "opengl.hpp"
 #include "shader.hpp"
 #include "util.hpp"
@@ -72,6 +73,12 @@ namespace OpenGL
       }
       gsFun->initializeOpenGLFunctions ();
     }
+
+    DILAY_INFO ("OpenGL version: %s", fun->glGetString (GL_VERSION));
+    DILAY_INFO ("OpenGL vendor: %s", fun->glGetString (GL_VENDOR));
+    DILAY_INFO ("OpenGL renderer: %s", fun->glGetString (GL_RENDERER));
+    DILAY_INFO ("OpenGL GLSL version: %s", fun->glGetString (GL_SHADING_LANGUAGE_VERSION));
+    DILAY_INFO ("OpenGL supports GL_EXT_geometry_shader4: %i", gsFun != nullptr);
   }
 
   DELEGATE_GL_CONSTANT (Always, GL_ALWAYS);

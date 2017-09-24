@@ -21,6 +21,7 @@ SOURCES += \
            src/import-export.cpp \
            src/intersection.cpp \
            src/kvstore.cpp \
+           src/log.cpp \
            src/mesh.cpp \
            src/mesh-util.cpp \
            src/mirror.cpp \
@@ -115,6 +116,7 @@ HEADERS += \
            src/import-export.hpp \
            src/intersection.hpp \
            src/kvstore.hpp \
+           src/log.hpp \
            src/macro.hpp \
            src/maybe.hpp \
            src/mesh.hpp \

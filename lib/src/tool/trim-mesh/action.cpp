@@ -388,7 +388,7 @@ namespace
           }
           else
           {
-            DILAY_WARN_DEBUG ("Could not find ear candidate");
+            DILAY_WARN ("Could not find ear candidate");
             return false;
           }
         }

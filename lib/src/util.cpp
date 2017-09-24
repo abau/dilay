@@ -2,7 +2,6 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <cstdarg>
 #include <fstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
@@ -213,23 +212,6 @@ bool Util::isNotNull (const glm::vec3& v)
 }
 
 bool Util::almostEqual (float a, float b) { return glm::epsilonEqual (a, b, Util::epsilon ()); }
-
-void Util::warn (const char* file, unsigned int line, const char* format, ...)
-{
-  va_list args1;
-  va_list args2;
-
-  va_start (args1, format);
-  va_copy (args2, args1);
-
-  std::vector<char> buffer (1 + std::vsnprintf (nullptr, 0, format, args1));
-  va_end (args1);
-
-  std::vsnprintf (buffer.data (), buffer.size (), format, args2);
-  va_end (args2);
-
-  std::fprintf (stderr, "[WARNING] %s (%u): %s\n", file, line, buffer.data ());
-}
 
 bool Util::fromString (const std::string& string, int& value)
 {

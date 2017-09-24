@@ -4,28 +4,43 @@
  */
 #include <QApplication>
 #include <QDir>
+#include <QLibraryInfo>
 #include <QStandardPaths>
 #include "cache.hpp"
 #include "config.hpp"
 #include "opengl.hpp"
 #include "time-delta.hpp"
+#include "util.hpp"
 #include "view/main-window.hpp"
+
+namespace
+{
+  std::string configFilePath ()
+  {
+    return QStandardPaths::locate (QStandardPaths::ConfigLocation, "dilay.config").toStdString ();
+  }
+
+  std::string logFilePath () { return QDir::temp ().filePath ("dilay.log").toStdString (); }
+}
 
 int main (int argv, char** args)
 {
+  Log::initialize (logFilePath ());
+  DILAY_INFO ("Version: %s", DILAY_VERSION);
+  DILAY_INFO ("Architecture: %s", QSysInfo::buildCpuArchitecture ().toStdString ().c_str ());
+  DILAY_INFO ("OS: %s", QSysInfo::prettyProductName ().toStdString ().c_str ());
+  DILAY_INFO ("Qt: %s", QLibraryInfo::version ().toString ().toStdString ().c_str ());
+
   QCoreApplication::setAttribute (Qt::AA_UseDesktopOpenGL);
   OpenGL::setDefaultFormat ();
 
   QApplication app (argv, args);
+  Config       config;
+  Cache        cache;
 
-  const std::string configFileName =
-    QStandardPaths::locate (QStandardPaths::ConfigLocation, "dilay.config").toStdString ();
-  Config config;
-  Cache  cache;
-
-  if (configFileName.empty () == false)
+  if (configFilePath ().empty () == false)
   {
-    config.fromFile (configFileName);
+    config.fromFile (configFilePath ());
   }
 
   ViewMainWindow mainWindow (config, cache);

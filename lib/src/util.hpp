@@ -6,28 +6,22 @@
 #define DILAY_UTIL
 
 #include <algorithm>
-#include <cstdlib>
 #include <functional>
 #include <glm/fwd.hpp>
 #include <iosfwd>
 #include <limits>
-#include <utility>
 #include <vector>
+#include "log.hpp"
 
-#define DILAY_WARN(fmt, ...) Util::warn (__FILE__, __LINE__, fmt, ##__VA_ARGS__);
-#define DILAY_PANIC(fmt, ...)                                             \
-  {                                                                       \
-    Util::warn (__FILE__, __LINE__, fmt, ##__VA_ARGS__);                  \
-    Util::warn (__FILE__, __LINE__, "aborting due to previous error..."); \
-    std::abort ();                                                        \
+#define DILAY_INFO(fmt, ...) Log::log (Log::Level::Info, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+#define DILAY_WARN(fmt, ...) Log::log (Log::Level::Warning, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+#define DILAY_PANIC(fmt, ...)                                                              \
+  {                                                                                        \
+    Log::log (Log::Level::Panic, __FILE__, __LINE__, fmt, ##__VA_ARGS__);                  \
+    Log::log (Log::Level::Panic, __FILE__, __LINE__, "aborting due to previous error..."); \
+    std::abort ();                                                                         \
   }
 #define DILAY_IMPOSSIBLE DILAY_PANIC ("the impossible happend")
-
-#ifndef NDEBUG
-#define DILAY_WARN_DEBUG(fmt, ...) DILAY_WARN (fmt, ##__VA_ARGS__);
-#else
-#define DILAY_WARN_DEBUG(fmt, ...) (void) 0;
-#endif
 
 std::ostream& operator<< (std::ostream&, const glm::vec2&);
 std::ostream& operator<< (std::ostream&, const glm::vec3&);

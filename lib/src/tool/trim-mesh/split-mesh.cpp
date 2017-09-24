@@ -194,7 +194,7 @@ bool ToolTrimMeshSplitMesh::splitMesh (ToolTrimMeshBorder& border)
   }
   else
   {
-    DILAY_WARN_DEBUG ("Could not split mesh");
+    DILAY_WARN ("Could not split mesh");
     return false;
   }
 }
