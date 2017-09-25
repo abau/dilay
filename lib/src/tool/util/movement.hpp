@@ -13,27 +13,27 @@ class Camera;
 class ViewPointingEvent;
 class ViewTwoColumnGrid;
 
-enum class MovementFixedConstraint
-{
-  XAxis,
-  YAxis,
-  ZAxis,
-  XYPlane,
-  XZPlane,
-  YZPlane,
-  CameraPlane,
-  PrimaryPlane
-};
-
 class ToolUtilMovement
 {
 public:
-  // Constrained to fixed plane or axis
-  DECLARE_BIG3 (ToolUtilMovement, const Camera&, MovementFixedConstraint)
+  enum class FixedConstraint
+  {
+    XAxis,
+    YAxis,
+    ZAxis,
+    XYPlane,
+    XZPlane,
+    YZPlane,
+    CameraPlane,
+    PrimaryPlane
+  };
 
-  MovementFixedConstraint fixedConstraint () const;
-  void                    fixedConstraint (MovementFixedConstraint);
-  void                    addFixedProperties (ViewTwoColumnGrid&, const std::function<void()>&);
+  // Constrained to fixed plane or axis
+  DECLARE_BIG3 (ToolUtilMovement, const Camera&, FixedConstraint)
+
+  FixedConstraint fixedConstraint () const;
+  void            fixedConstraint (FixedConstraint);
+  void            addFixedProperties (ViewTwoColumnGrid&, const std::function<void()>&);
 
   // Constrained to free plane
   ToolUtilMovement (const Camera&, const glm::vec3&);
@@ -43,7 +43,6 @@ public:
 
   glm::vec3        delta () const;
   const glm::vec3& position () const;
-  void             position (const glm::vec3&);
   bool             move (const ViewPointingEvent&, bool);
   void             resetPosition (const glm::vec3&);
 

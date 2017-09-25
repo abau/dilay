@@ -15,6 +15,8 @@
 
 struct ToolMoveMesh::Impl
 {
+  typedef ToolUtilMovement::FixedConstraint FixedConstraint;
+
   ToolMoveMesh*    self;
   DynamicMesh*     mesh;
   ToolUtilMovement movement;
@@ -23,8 +25,7 @@ struct ToolMoveMesh::Impl
     : self (s)
     , mesh (nullptr)
     , movement (s->state ().camera (),
-                s->cache ().getFrom<MovementFixedConstraint> ("constraint",
-                                                              MovementFixedConstraint::CameraPlane))
+                s->cache ().getFrom<FixedConstraint> ("constraint", FixedConstraint::CameraPlane))
   {
   }
 
@@ -49,7 +50,7 @@ struct ToolMoveMesh::Impl
     ViewToolTip toolTip;
     toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to move"));
 
-    if (this->movement.fixedConstraint () != MovementFixedConstraint::CameraPlane)
+    if (this->movement.fixedConstraint () != FixedConstraint::CameraPlane)
     {
       toolTip.add (ViewToolTip::Event::MouseLeft, ViewToolTip::Modifier::Shift,
                    QObject::tr ("Drag to move orthogonally"));

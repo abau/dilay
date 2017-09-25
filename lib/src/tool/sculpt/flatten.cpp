@@ -77,7 +77,6 @@ struct ToolSculptFlatten::Impl
         if (this->self->intersectsScene (e, intersection))
         {
           params.lockedPlane (PrimPlane (intersection.position (), intersection.normal ()));
-          this->movement.position (intersection.position ());
           this->movement.freePlaneConstraint (intersection.normal ());
         }
         else

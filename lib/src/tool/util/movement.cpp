@@ -19,55 +19,7 @@
 
 namespace
 {
-  int constraintToInt (MovementFixedConstraint c)
-  {
-    switch (c)
-    {
-      case MovementFixedConstraint::XAxis:
-        return 0;
-      case MovementFixedConstraint::YAxis:
-        return 1;
-      case MovementFixedConstraint::ZAxis:
-        return 2;
-      case MovementFixedConstraint::XYPlane:
-        return 3;
-      case MovementFixedConstraint::XZPlane:
-        return 4;
-      case MovementFixedConstraint::YZPlane:
-        return 5;
-      case MovementFixedConstraint::CameraPlane:
-        return 6;
-      case MovementFixedConstraint::PrimaryPlane:
-        return 7;
-      default:
-        DILAY_IMPOSSIBLE
-    }
-  }
-
-  MovementFixedConstraint constraintFromInt (int i)
-  {
-    switch (i)
-    {
-      case 0:
-        return MovementFixedConstraint::XAxis;
-      case 1:
-        return MovementFixedConstraint::YAxis;
-      case 2:
-        return MovementFixedConstraint::ZAxis;
-      case 3:
-        return MovementFixedConstraint::XYPlane;
-      case 4:
-        return MovementFixedConstraint::XZPlane;
-      case 5:
-        return MovementFixedConstraint::YZPlane;
-      case 6:
-        return MovementFixedConstraint::CameraPlane;
-      case 7:
-        return MovementFixedConstraint::PrimaryPlane;
-      default:
-        DILAY_IMPOSSIBLE
-    }
-  }
+  typedef ToolUtilMovement::FixedConstraint FixedConstraint;
 }
 
 struct ToolUtilMovement::Impl
@@ -76,7 +28,7 @@ struct ToolUtilMovement::Impl
   glm::vec3     previousPosition;
   glm::vec3     position;
 
-  Variant<MovementFixedConstraint, glm::vec3> constraint;
+  Variant<FixedConstraint, glm::vec3> constraint;
 
   Impl (const Camera& cam)
     : camera (cam)
@@ -86,18 +38,15 @@ struct ToolUtilMovement::Impl
   }
 
   // Constrained to fixed plane or axis
-  Impl (const Camera& cam, MovementFixedConstraint c)
+  Impl (const Camera& cam, FixedConstraint c)
     : Impl (cam)
   {
     this->constraint.set (c);
   }
 
-  MovementFixedConstraint fixedConstraint () const
-  {
-    return this->constraint.get<MovementFixedConstraint> ();
-  }
+  FixedConstraint fixedConstraint () const { return this->constraint.get<FixedConstraint> (); }
 
-  void fixedConstraint (MovementFixedConstraint c) { this->constraint.set (c); }
+  void fixedConstraint (FixedConstraint c) { this->constraint.set (c); }
 
   void addFixedProperties (ViewTwoColumnGrid& properties, const std::function<void()>& onClick)
   {
@@ -107,11 +56,10 @@ struct ToolUtilMovement::Impl
                      QObject::tr ("XY-plane"), QObject::tr ("XZ-plane"), QObject::tr ("YZ-plane"),
                      QObject::tr ("Camera-plane"), QObject::tr ("Primary plane")});
     ViewUtil::connect (constraintEdit, [this, onClick](int id) {
-      this->constraint.set (constraintFromInt (id));
+      this->constraint.set (FixedConstraint (id));
       onClick ();
     });
-    constraintEdit.button (constraintToInt (this->constraint.get<MovementFixedConstraint> ()))
-      ->click ();
+    constraintEdit.button (int(this->constraint.get<FixedConstraint> ()))->click ();
   }
 
   // Constrained to free plane
@@ -186,32 +134,32 @@ struct ToolUtilMovement::Impl
 
   bool move (const glm::ivec2& p, bool modify)
   {
-    if (this->constraint.is<MovementFixedConstraint> ())
+    if (this->constraint.is<FixedConstraint> ())
     {
-      switch (this->constraint.get<MovementFixedConstraint> ())
+      switch (this->constraint.get<FixedConstraint> ())
       {
-        case MovementFixedConstraint::XAxis:
+        case FixedConstraint::XAxis:
           return modify ? this->moveOnPlane (Dimension::X, p) : this->moveAlong (Dimension::X, p);
 
-        case MovementFixedConstraint::YAxis:
+        case FixedConstraint::YAxis:
           return modify ? this->moveOnPlane (Dimension::Y, p) : this->moveAlong (Dimension::Y, p);
 
-        case MovementFixedConstraint::ZAxis:
+        case FixedConstraint::ZAxis:
           return modify ? this->moveOnPlane (Dimension::Z, p) : this->moveAlong (Dimension::Z, p);
 
-        case MovementFixedConstraint::XYPlane:
+        case FixedConstraint::XYPlane:
           return modify ? this->moveAlong (Dimension::Z, p) : this->moveOnPlane (Dimension::Z, p);
 
-        case MovementFixedConstraint::XZPlane:
+        case FixedConstraint::XZPlane:
           return modify ? this->moveAlong (Dimension::Y, p) : this->moveOnPlane (Dimension::Y, p);
 
-        case MovementFixedConstraint::YZPlane:
+        case FixedConstraint::YZPlane:
           return modify ? this->moveAlong (Dimension::X, p) : this->moveOnPlane (Dimension::X, p);
 
-        case MovementFixedConstraint::CameraPlane:
+        case FixedConstraint::CameraPlane:
           return this->moveOnPlane (this->camera.toEyePoint (), p);
 
-        case MovementFixedConstraint::PrimaryPlane:
+        case FixedConstraint::PrimaryPlane:
           return modify ? this->moveAlong (this->camera.primaryDimension (), p)
                         : this->moveOnPlane (this->camera.primaryDimension (), p);
 
@@ -237,21 +185,20 @@ struct ToolUtilMovement::Impl
   }
 };
 
-template <> void KVStore::set (const std::string& path, const MovementFixedConstraint& c)
+template <> void KVStore::set (const std::string& path, const FixedConstraint& c)
 {
-  this->set (path, constraintToInt (c));
+  this->set (path, int(c));
 }
 
 template <>
-MovementFixedConstraint KVStore::getFrom (const std::string&             path,
-                                          const MovementFixedConstraint& c) const
+FixedConstraint KVStore::getFrom (const std::string& path, const FixedConstraint& c) const
 {
-  return constraintFromInt (this->get (path, constraintToInt (c)));
+  return FixedConstraint (this->get (path, int(c)));
 }
 
-DELEGATE2_BIG3 (ToolUtilMovement, const Camera&, MovementFixedConstraint)
-DELEGATE_CONST (MovementFixedConstraint, ToolUtilMovement, fixedConstraint)
-DELEGATE1 (void, ToolUtilMovement, fixedConstraint, MovementFixedConstraint)
+DELEGATE2_BIG3 (ToolUtilMovement, const Camera&, FixedConstraint)
+DELEGATE_CONST (FixedConstraint, ToolUtilMovement, fixedConstraint)
+DELEGATE1 (void, ToolUtilMovement, fixedConstraint, FixedConstraint)
 DELEGATE2 (void, ToolUtilMovement, addFixedProperties, ViewTwoColumnGrid&,
            const std::function<void()>&)
 
@@ -261,6 +208,5 @@ DELEGATE1 (void, ToolUtilMovement, freePlaneConstraint, const glm::vec3&)
 
 DELEGATE_CONST (glm::vec3, ToolUtilMovement, delta)
 GETTER_CONST (const glm::vec3&, ToolUtilMovement, position)
-SETTER (const glm::vec3&, ToolUtilMovement, position)
 DELEGATE2 (bool, ToolUtilMovement, move, const ViewPointingEvent&, bool)
 DELEGATE1 (void, ToolUtilMovement, resetPosition, const glm::vec3&)
