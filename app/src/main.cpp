@@ -15,17 +15,35 @@
 
 namespace
 {
-  std::string configFilePath ()
+  QString configPath ()
   {
-    return QStandardPaths::locate (QStandardPaths::ConfigLocation, "dilay.config").toStdString ();
+    return QStandardPaths::locate (QStandardPaths::ConfigLocation, "dilay.config");
   }
 
-  std::string logFilePath () { return QDir::temp ().filePath ("dilay.log").toStdString (); }
+  QString logPath () { return QDir::temp ().filePath ("dilay.log"); }
+
+  QString crashLogPath () { return QDir::temp ().filePath ("dilay-crash.log"); }
+
+  void backupCrashLog ()
+  {
+    QFile log (logPath ());
+    QFile crashLog (crashLogPath ());
+
+    if (log.exists ())
+    {
+      if (crashLog.exists ())
+      {
+        crashLog.remove ();
+      }
+      log.rename (crashLogPath ());
+    }
+  }
 }
 
 int main (int argv, char** args)
 {
-  Log::initialize (logFilePath ());
+  backupCrashLog ();
+  Log::initialize (logPath ().toStdString ());
   DILAY_INFO ("Version: %s", DILAY_VERSION);
   DILAY_INFO ("Architecture: %s", QSysInfo::buildCpuArchitecture ().toStdString ().c_str ());
   DILAY_INFO ("OS: %s", QSysInfo::prettyProductName ().toStdString ().c_str ());
@@ -38,9 +56,9 @@ int main (int argv, char** args)
   Config       config;
   Cache        cache;
 
-  if (configFilePath ().empty () == false)
+  if (configPath ().isEmpty () == false)
   {
-    config.fromFile (configFilePath ());
+    config.fromFile (configPath ().toStdString ());
   }
 
   ViewMainWindow mainWindow (config, cache);
