@@ -7,9 +7,9 @@
 
 namespace
 {
-  static std::FILE*   fileHandle = nullptr;
-  static std::string  filePath;
-  static std::clock_t startTime;
+  static std::FILE*  fileHandle = nullptr;
+  static std::string filePath;
+  static std::time_t startTime;
 
   const char* levelToString (Log::Level level)
   {
@@ -46,7 +46,7 @@ namespace Log
     if (fileHandle)
     {
       filePath = path;
-      startTime = std::clock ();
+      startTime = std::time (nullptr);
       std::atexit (shutdown);
     }
     else
@@ -57,9 +57,10 @@ namespace Log
 
   void log (Log::Level level, const char* file, unsigned int line, const char* format, ...)
   {
-    const float secDiff = float(std::clock () - startTime) / CLOCKS_PER_SEC;
-    va_list     args1;
-    va_list     args2;
+    const unsigned int secDiff = (unsigned int) std::difftime (std::time (nullptr), startTime);
+
+    va_list args1;
+    va_list args2;
 
     va_start (args1, format);
     va_copy (args2, args1);
@@ -72,16 +73,14 @@ namespace Log
 
     if (fileHandle)
     {
-      std::fprintf (fileHandle, "%09.2f: ", secDiff);
-      std::fprintf (fileHandle, "[%s] %s (%u): %s\n", levelToString (level), file, line,
-                    buffer.data ());
+      std::fprintf (fileHandle, "%09u [%s] %s (%u): %s\n", secDiff, levelToString (level), file,
+                    line, buffer.data ());
       std::fflush (fileHandle);
     }
 
     if (level != Log::Level::Info)
     {
-      std::fprintf (stderr, "%09.2f: ", secDiff);
-      std::fprintf (stderr, "[%s] %s (%u): %s\n", levelToString (level), file, line,
+      std::fprintf (stderr, "%09u [%s] %s (%u): %s\n", secDiff, levelToString (level), file, line,
                     buffer.data ());
     }
   }
