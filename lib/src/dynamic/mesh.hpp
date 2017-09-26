@@ -105,9 +105,14 @@ public:
   glm::vec3          position () const;
   void               rotationMatrix (const glm::mat4x4&);
   const glm::mat4x4& rotationMatrix () const;
+  void               rotation (const glm::vec3&, float);
   void               rotationX (float);
   void               rotationY (float);
   void               rotationZ (float);
+  void               rotate (const glm::vec3&, float);
+  void               rotateX (float);
+  void               rotateY (float);
+  void               rotateZ (float);
   glm::vec3          center () const;
   const Color&       color () const;
   void               color (const Color&);

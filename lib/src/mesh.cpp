@@ -335,35 +335,27 @@ struct Mesh::Impl
                       this->translationMatrix[3][2]);
   }
 
-  void rotationX (float angle)
+  void rotation (const glm::vec3& axis, float angle)
   {
-    this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (1.0f, 0.0f, 0.0f));
+    this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, axis);
   }
 
-  void rotationY (float angle)
+  void rotationX (float angle) { this->rotation (glm::vec3 (1.0f, 0.0f, 0.0f), angle); }
+
+  void rotationY (float angle) { this->rotation (glm::vec3 (0.0f, 1.0f, 0.0f), angle); }
+
+  void rotationZ (float angle) { this->rotation (glm::vec3 (0.0f, 0.0f, 1.0f), angle); }
+
+  void rotate (const glm::vec3& axis, float angle)
   {
-    this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (0.0f, 1.0f, 0.0f));
+    this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, axis);
   }
 
-  void rotationZ (float angle)
-  {
-    this->rotationMatrix = glm::rotate (glm::mat4x4 (1.0f), angle, glm::vec3 (0.0f, 0.0f, 1.0f));
-  }
+  void rotateX (float angle) { this->rotate (glm::vec3 (1.0f, 0.0f, 0.0f), angle); }
 
-  void rotateX (float angle)
-  {
-    this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, glm::vec3 (1.0f, 0.0f, 0.0f));
-  }
+  void rotateY (float angle) { this->rotate (glm::vec3 (0.0f, 1.0f, 0.0f), angle); }
 
-  void rotateY (float angle)
-  {
-    this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, glm::vec3 (0.0f, 1.0f, 0.0f));
-  }
-
-  void rotateZ (float angle)
-  {
-    this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, glm::vec3 (0.0f, 0.0f, 1.0f));
-  }
+  void rotateZ (float angle) { this->rotate (glm::vec3 (0.0f, 0.0f, 1.0f), angle); }
 
   void normalize ()
   {
@@ -444,9 +436,11 @@ DELEGATE1 (void, Mesh, position, const glm::vec3&)
 DELEGATE_CONST (glm::vec3, Mesh, position)
 SETTER (const glm::mat4x4&, Mesh, rotationMatrix)
 GETTER_CONST (const glm::mat4x4&, Mesh, rotationMatrix)
+DELEGATE2 (void, Mesh, rotation, const glm::vec3&, float)
 DELEGATE1 (void, Mesh, rotationX, float)
 DELEGATE1 (void, Mesh, rotationY, float)
 DELEGATE1 (void, Mesh, rotationZ, float)
+DELEGATE2 (void, Mesh, rotate, const glm::vec3&, float)
 DELEGATE1 (void, Mesh, rotateX, float)
 DELEGATE1 (void, Mesh, rotateY, float)
 DELEGATE1 (void, Mesh, rotateZ, float)
