@@ -20,8 +20,6 @@ namespace
 
   namespace Simple
   {
-    float cross (const glm::vec2& u, const glm::vec2& v) { return (u.x * v.y) - (u.y * v.x); }
-
     enum class Location
     {
       On,
@@ -31,7 +29,7 @@ namespace
 
     Location location (const glm::vec2& pos, const glm::vec2& from, const glm::vec2& to)
     {
-      const float c = cross (from - pos, to - pos);
+      const float c = Util::cross (from - pos, to - pos);
 
       if (c < 0.0f)
       {
@@ -88,15 +86,15 @@ namespace
       {
         const glm::vec2 square = square2 - square1;
         const glm::vec2 segment = segment2 - segment1;
-        const float     denom = cross (square, segment);
+        const float     denom = Util::cross (square, segment);
 
         if (Util::almostEqual (0.0f, denom))
         {
           return false;
         }
 
-        const float t1 = cross (segment1 - square1, segment) / denom;
-        const float t2 = cross (segment1 - square1, square) / denom;
+        const float t1 = Util::cross (segment1 - square1, segment) / denom;
+        const float t2 = Util::cross (segment1 - square1, square) / denom;
         const bool  validT1 = 0.0f <= t1 && t1 <= 1.0f;
         const bool  validT2 = 0.0f <= t2 && t2 <= 1.0f;
 

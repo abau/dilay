@@ -43,6 +43,7 @@ namespace Util
   bool         colinearUnit (const glm::vec3&, const glm::vec3&);
   float        smoothStep (const glm::vec3&, const glm::vec3&, float, float);
   float        linearStep (const glm::vec3&, const glm::vec3&, float, float);
+  float        cross (const glm::vec2&, const glm::vec2&);
   std::string  readFile (const std::string&);
   unsigned int solveQuadraticEq (float, float, float, float&, float&);
   unsigned int solveCubicEq (float, float, float, float&, float&, float&);

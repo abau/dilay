@@ -127,6 +127,11 @@ float Util::linearStep (const glm::vec3& v, const glm::vec3& center, float inner
   }
 }
 
+float Util::cross (const glm::vec2& v1, const glm::vec2& v2)
+{
+  return (v1.x * v2.y) - (v1.y * v2.x);
+}
+
 std::string Util::readFile (const std::string& filePath)
 {
   std::string   content;
