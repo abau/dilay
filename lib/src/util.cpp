@@ -213,7 +213,11 @@ bool Util::isNaN (const glm::vec3& v) { return glm::any (glm::isnan (v)); }
 
 bool Util::isNotNull (const glm::vec3& v)
 {
-  return glm::any (glm::greaterThan (v, glm::vec3 (Util::epsilon ())));
+  const bool bx = Util::almostEqual (v.x, 0.0f) == false;
+  const bool by = Util::almostEqual (v.y, 0.0f) == false;
+  const bool bz = Util::almostEqual (v.z, 0.0f) == false;
+
+  return bx || by || bz;
 }
 
 bool Util::almostEqual (float a, float b) { return glm::epsilonEqual (a, b, Util::epsilon ()); }
