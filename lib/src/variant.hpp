@@ -394,7 +394,7 @@ public:
     }
   }
 
-  template <typename U> U caseOf (std::function<U (Ts&)>... branches) const
+  template <typename U> U caseOf (const std::function<U (Ts&)>&... branches) const
   {
     assert (this->isSet ());
     return this->_varUnion.template caseOf<U> (this->_setTo, branches...);
