@@ -346,6 +346,8 @@ struct Mesh::Impl
 
   void rotationZ (float angle) { this->rotation (glm::vec3 (0.0f, 0.0f, 1.0f), angle); }
 
+  void rotate (const glm::mat4x4& matrix) { this->rotationMatrix = matrix * this->rotationMatrix; }
+
   void rotate (const glm::vec3& axis, float angle)
   {
     this->rotationMatrix = glm::rotate (this->rotationMatrix, angle, axis);
@@ -440,6 +442,7 @@ DELEGATE2 (void, Mesh, rotation, const glm::vec3&, float)
 DELEGATE1 (void, Mesh, rotationX, float)
 DELEGATE1 (void, Mesh, rotationY, float)
 DELEGATE1 (void, Mesh, rotationZ, float)
+DELEGATE1 (void, Mesh, rotate, const glm::mat4x4&)
 DELEGATE2 (void, Mesh, rotate, const glm::vec3&, float)
 DELEGATE1 (void, Mesh, rotateX, float)
 DELEGATE1 (void, Mesh, rotateY, float)

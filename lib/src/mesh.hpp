@@ -59,6 +59,7 @@ public:
   void               rotationX (float);
   void               rotationY (float);
   void               rotationZ (float);
+  void               rotate (const glm::mat4x4&);
   void               rotate (const glm::vec3&, float);
   void               rotateX (float);
   void               rotateY (float);

@@ -58,6 +58,7 @@ SOURCES += \
            src/tool/new-mesh.cpp \
            src/tool/new-sketch.cpp \
            src/tool/rebalance-sketch.cpp \
+           src/tool/rotate-mesh.cpp \
            src/tool/sculpt.cpp \
            src/tool/sculpt/draw.cpp \
            src/tool/sculpt/crease.cpp \
@@ -75,6 +76,7 @@ SOURCES += \
            src/tool/trim-mesh/border.cpp \
            src/tool/trim-mesh/split-mesh.cpp \
            src/tool/util/movement.cpp \
+           src/tool/util/rotation.cpp \
            src/tool/util/scaling.cpp \
            src/tool/util/step.cpp \
            src/util.cpp \
@@ -156,6 +158,7 @@ HEADERS += \
            src/tool/trim-mesh/border.hpp \
            src/tool/trim-mesh/split-mesh.hpp \
            src/tool/util/movement.hpp \
+           src/tool/util/rotation.hpp \
            src/tool/util/scaling.hpp \
            src/tool/util/step.hpp \
            src/tools.hpp \

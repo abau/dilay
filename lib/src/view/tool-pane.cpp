@@ -87,6 +87,7 @@ struct ViewToolPane::Impl
     this->addToolButton<ToolNewMesh> (toolPaneLayout, QObject::tr ("New mesh"));
     this->addToolButton<ToolDeleteMesh> (toolPaneLayout, QObject::tr ("Delete mesh"));
     this->addToolButton<ToolMoveMesh> (toolPaneLayout, QObject::tr ("Move mesh"));
+    this->addToolButton<ToolRotateMesh> (toolPaneLayout, QObject::tr ("Rotate mesh"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
     this->addToolButton<ToolSculptDraw> (toolPaneLayout, QObject::tr ("Draw"));
     this->addToolButton<ToolSculptCrease> (toolPaneLayout, QObject::tr ("Crease"));
