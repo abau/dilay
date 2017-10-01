@@ -89,13 +89,21 @@ struct ToolMoveMesh::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    if (e.leftButton () && this->mesh)
+    if (e.leftButton ())
+    {
+      this->runClose ();
+    }
+    return ToolResponse::None;
+  }
+
+  void runClose ()
+  {
+    if (this->mesh)
     {
       this->mesh->normalize ();
       this->mesh->bufferData ();
       this->mesh = nullptr;
     }
-    return ToolResponse::None;
   }
 };
 
@@ -103,3 +111,4 @@ DELEGATE_TOOL (ToolMoveMesh)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolMoveMesh)
+DELEGATE_TOOL_RUN_CLOSE (ToolMoveMesh)

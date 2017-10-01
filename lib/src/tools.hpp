@@ -8,8 +8,8 @@
 #include "tool.hpp"
 #include "tool/sculpt.hpp"
 
-DECLARE_TOOL (ToolMoveMesh, "move", DECLARE_TOOL_RUN_MOVE_EVENT DECLARE_TOOL_RUN_PRESS_EVENT
-                                      DECLARE_TOOL_RUN_RELEASE_EVENT)
+DECLARE_TOOL (ToolMoveMesh, "move-mesh", DECLARE_TOOL_RUN_MOVE_EVENT DECLARE_TOOL_RUN_PRESS_EVENT
+                                           DECLARE_TOOL_RUN_RELEASE_EVENT DECLARE_TOOL_RUN_CLOSE)
 
 DECLARE_TOOL (ToolDeleteMesh, "delete-mesh", DECLARE_TOOL_RUN_RELEASE_EVENT)
 
