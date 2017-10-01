@@ -79,7 +79,7 @@ struct ToolMoveMesh::Impl
       if (this->self->intersectsScene (e, intersection))
       {
         this->mesh = &intersection.mesh ();
-        this->movement.resetPosition (intersection.position ());
+        this->movement.reset (intersection.position ());
 
         this->self->snapshotDynamicMeshes ();
       }

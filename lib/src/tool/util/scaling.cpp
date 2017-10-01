@@ -62,7 +62,7 @@ struct ToolUtilScaling::Impl
     }
   }
 
-  void resetPosition (const glm::vec3& origin, const glm::vec3& reference)
+  void reset (const glm::vec3& origin, const glm::vec3& reference)
   {
     this->plane = std::make_unique<PrimPlane> (origin, this->camera.toEyePoint ());
 
@@ -85,4 +85,4 @@ struct ToolUtilScaling::Impl
 DELEGATE1_BIG3 (ToolUtilScaling, const Camera&)
 DELEGATE_CONST (float, ToolUtilScaling, factor)
 DELEGATE1 (bool, ToolUtilScaling, move, const ViewPointingEvent&)
-DELEGATE2 (void, ToolUtilScaling, resetPosition, const glm::vec3&, const glm::vec3&)
+DELEGATE2 (void, ToolUtilScaling, reset, const glm::vec3&, const glm::vec3&)

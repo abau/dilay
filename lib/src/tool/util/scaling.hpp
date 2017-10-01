@@ -18,7 +18,7 @@ public:
 
   float factor () const;
   bool  move (const ViewPointingEvent&);
-  void  resetPosition (const glm::vec3&, const glm::vec3&);
+  void  reset (const glm::vec3&, const glm::vec3&);
 
 private:
   IMPLEMENTATION

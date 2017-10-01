@@ -44,7 +44,7 @@ public:
   glm::vec3        delta () const;
   const glm::vec3& position () const;
   bool             move (const ViewPointingEvent&, bool);
-  void             resetPosition (const glm::vec3&);
+  void             reset (const glm::vec3&);
 
 private:
   IMPLEMENTATION

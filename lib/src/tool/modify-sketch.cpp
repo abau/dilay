@@ -143,9 +143,8 @@ struct ToolModifySketch::Impl
     auto handleNodeIntersection = [this, &e](SketchNodeIntersection& intersection) {
       this->self->snapshotSketchMeshes ();
 
-      this->movement.resetPosition (intersection.position ());
-      this->scaling.resetPosition (intersection.node ().data ().center (),
-                                   intersection.position ());
+      this->movement.reset (intersection.position ());
+      this->scaling.reset (intersection.node ().data ().center (), intersection.position ());
 
       this->mesh = &intersection.mesh ();
       this->parent = nullptr;
@@ -169,8 +168,8 @@ struct ToolModifySketch::Impl
     auto handleBoneIntersection = [this, &e](SketchBoneIntersection& intersection) {
       this->self->snapshotSketchMeshes ();
 
-      this->movement.resetPosition (intersection.position ());
-      this->scaling.resetPosition (intersection.projectedPosition (), intersection.position ());
+      this->movement.reset (intersection.position ());
+      this->scaling.reset (intersection.projectedPosition (), intersection.position ());
 
       this->mesh = &intersection.mesh ();
 

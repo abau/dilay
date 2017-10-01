@@ -425,7 +425,7 @@ struct ToolSculpt::Impl
           this->brush.setPointOfAction (cursorIntersection.mesh (), cursorIntersection.position (),
                                         cursorIntersection.normal ());
           this->cursor.disable ();
-          movement.resetPosition (cursorIntersection.position ());
+          movement.reset (cursorIntersection.position ());
           return true;
         }
         else

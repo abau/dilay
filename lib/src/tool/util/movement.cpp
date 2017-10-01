@@ -178,7 +178,7 @@ struct ToolUtilMovement::Impl
     return this->move (e.position (), considerShift && e.modifiers () == Qt::ShiftModifier);
   }
 
-  void resetPosition (const glm::vec3& p)
+  void reset (const glm::vec3& p)
   {
     this->previousPosition = p;
     this->position = p;
@@ -209,4 +209,4 @@ DELEGATE1 (void, ToolUtilMovement, freePlaneConstraint, const glm::vec3&)
 DELEGATE_CONST (glm::vec3, ToolUtilMovement, delta)
 GETTER_CONST (const glm::vec3&, ToolUtilMovement, position)
 DELEGATE2 (bool, ToolUtilMovement, move, const ViewPointingEvent&, bool)
-DELEGATE1 (void, ToolUtilMovement, resetPosition, const glm::vec3&)
+DELEGATE1 (void, ToolUtilMovement, reset, const glm::vec3&)
