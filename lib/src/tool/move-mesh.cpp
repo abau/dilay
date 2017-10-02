@@ -15,8 +15,6 @@
 
 struct ToolMoveMesh::Impl
 {
-  typedef ToolUtilMovement::FixedConstraint FixedConstraint;
-
   ToolMoveMesh*    self;
   DynamicMesh*     mesh;
   ToolUtilMovement movement;
@@ -24,8 +22,7 @@ struct ToolMoveMesh::Impl
   Impl (ToolMoveMesh* s)
     : self (s)
     , mesh (nullptr)
-    , movement (s->state ().camera (),
-                s->cache ().getFrom<FixedConstraint> ("constraint", FixedConstraint::CameraPlane))
+    , movement (s->state ().camera (), false)
   {
   }
 
@@ -37,30 +34,18 @@ struct ToolMoveMesh::Impl
     return ToolResponse::None;
   }
 
-  void setupProperties ()
-  {
-    this->movement.addFixedProperties (this->self->properties (), [this]() {
-      this->setupToolTip ();
-      this->self->cache ().set ("constraint", this->movement.fixedConstraint ());
-    });
-  }
+  void setupProperties () { this->self->addAlongPrimaryPlaneProperties (this->movement); }
 
   void setupToolTip ()
   {
     ViewToolTip toolTip;
     toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to move"));
-
-    if (this->movement.fixedConstraint () != FixedConstraint::CameraPlane)
-    {
-      toolTip.add (ViewToolTip::Event::MouseLeft, ViewToolTip::Modifier::Shift,
-                   QObject::tr ("Drag to move orthogonally"));
-    }
     this->self->showToolTip (toolTip);
   }
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)
   {
-    if (e.leftButton () && this->mesh && this->movement.move (e, true))
+    if (e.leftButton () && this->mesh && this->movement.move (e))
     {
       this->mesh->translate (this->movement.delta ());
       return ToolResponse::Redraw;

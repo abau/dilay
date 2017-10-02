@@ -450,7 +450,7 @@ struct ToolSculpt::Impl
       }
       else if (this->brush.hasPointOfAction ())
       {
-        if (e.moveEvent () && movement.move (e, false))
+        if (e.moveEvent () && movement.move (e))
         {
           this->brush.setPointOfAction (this->brush.mesh (), movement.position (),
                                         this->brush.normal ());

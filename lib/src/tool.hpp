@@ -18,6 +18,7 @@ class PrimRay;
 class QPainter;
 class QWheelEvent;
 class State;
+class ToolUtilMovement;
 class ViewPointingEvent;
 class ViewToolTip;
 class ViewTwoColumnGrid;
@@ -64,6 +65,7 @@ protected:
   void               renderMirror (bool);
   const Dimension*   mirrorDimension () const;
   void               addMirrorProperties (bool);
+  void               addAlongPrimaryPlaneProperties (ToolUtilMovement&);
 
   template <typename T, typename... Ts> bool intersectsScene (const PrimRay&, T&, Ts...);
   template <typename T, typename... Ts> bool intersectsScene (const glm::ivec2&, T&, Ts...);

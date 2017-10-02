@@ -18,6 +18,7 @@
 #include "sketch/mesh.hpp"
 #include "state.hpp"
 #include "tool.hpp"
+#include "tool/util/movement.hpp"
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
 #include "view/main-window.hpp"
@@ -224,6 +225,20 @@ struct Tool::Impl
     this->properties ().add (mirrorEdit, syncButton);
   }
 
+  void addAlongPrimaryPlaneProperties (ToolUtilMovement& movement)
+  {
+    const bool init =
+      this->cache ().get<bool> ("along-primary-plane", movement.alongPrimaryPlane ());
+    movement.alongPrimaryPlane (init);
+
+    QCheckBox& edit = ViewUtil::checkBox (QObject::tr ("Along primary plane"), init);
+    ViewUtil::connect (edit, [this, &movement](bool p) {
+      movement.alongPrimaryPlane (p);
+      this->cache ().set ("along-primary-plane", p);
+    });
+    this->properties ().add (edit);
+  }
+
   template <typename T, typename... Ts>
   bool intersectsScene (const PrimRay& ray, T& intersection, Ts... args)
   {
@@ -290,6 +305,7 @@ DELEGATE1 (void, Tool, mirror, bool)
 SETTER (bool, Tool, renderMirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
 DELEGATE1 (void, Tool, addMirrorProperties, bool)
+DELEGATE1 (void, Tool, addAlongPrimaryPlaneProperties, ToolUtilMovement&)
 DELEGATE1 (ToolResponse, Tool, runPointingEvent, const ViewPointingEvent&)
 
 template <typename T, typename... Ts>

@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
-#include <QFrame>
 #include <QSlider>
 #include "cache.hpp"
 #include "mirror.hpp"
@@ -38,9 +37,7 @@ struct ToolModifySketch::Impl
     , mesh (nullptr)
     , node (nullptr)
     , parent (nullptr)
-    , movement (s->state ().camera (),
-                s->cache ().getFrom<ToolUtilMovement::FixedConstraint> (
-                  "constraint", ToolUtilMovement::FixedConstraint::PrimaryPlane))
+    , movement (s->state ().camera (), false)
     , scaling (s->state ().camera ())
     , transformChildren (s->cache ().get<bool> ("transform-children", false))
     , snap (s->cache ().get<bool> ("snap", true))
@@ -62,13 +59,8 @@ struct ToolModifySketch::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    properties.add (QObject::tr ("Move along"), ViewUtil::emptyWidget ());
-    this->movement.addFixedProperties (properties, [this]() {
-      this->self->cache ().set ("constraint", this->movement.fixedConstraint ());
-    });
-    properties.add (ViewUtil::horizontalLine ());
-
     this->self->addMirrorProperties (false);
+    this->self->addAlongPrimaryPlaneProperties (this->movement);
 
     QCheckBox& transformCEdit =
       ViewUtil::checkBox (QObject::tr ("Transform children"), this->transformChildren);
@@ -120,7 +112,7 @@ struct ToolModifySketch::Impl
                              this->self->mirrorDimension ());
         }
       }
-      else if (this->movement.move (e, false))
+      else if (this->movement.move (e))
       {
         if (this->parent)
         {

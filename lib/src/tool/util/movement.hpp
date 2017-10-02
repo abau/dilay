@@ -5,45 +5,25 @@
 #ifndef DILAY_TOOL_UTIL_MOVEMENT
 #define DILAY_TOOL_UTIL_MOVEMENT
 
-#include <functional>
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 
 class Camera;
 class ViewPointingEvent;
-class ViewTwoColumnGrid;
 
 class ToolUtilMovement
 {
 public:
-  enum class FixedConstraint
-  {
-    XAxis,
-    YAxis,
-    ZAxis,
-    XYPlane,
-    XZPlane,
-    YZPlane,
-    CameraPlane,
-    PrimaryPlane
-  };
-
-  // Constrained to fixed plane or axis
-  DECLARE_BIG3 (ToolUtilMovement, const Camera&, FixedConstraint)
-
-  FixedConstraint fixedConstraint () const;
-  void            fixedConstraint (FixedConstraint);
-  void            addFixedProperties (ViewTwoColumnGrid&, const std::function<void()>&);
-
-  // Constrained to free plane
+  DECLARE_BIG3 (ToolUtilMovement, const Camera&, bool)
   ToolUtilMovement (const Camera&, const glm::vec3&);
 
-  const glm::vec3& freePlaneConstraint () const;
-  void             freePlaneConstraint (const glm::vec3&);
+  bool alongPrimaryPlane () const;
+  void alongPrimaryPlane (bool);
+  void alongFreePlane (const glm::vec3&);
 
   glm::vec3        delta () const;
   const glm::vec3& position () const;
-  bool             move (const ViewPointingEvent&, bool);
+  bool             move (const ViewPointingEvent&);
   void             reset (const glm::vec3&);
 
 private:
