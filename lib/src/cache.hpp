@@ -20,11 +20,6 @@ public:
     return this->store.get<T> (path, value);
   }
 
-  template <class T> T getFrom (const std::string& path, const T& value) const
-  {
-    return this->store.getFrom<T> (path, value);
-  }
-
   template <class T> void set (const std::string& path, const T& value)
   {
     this->store.set<T> (path, value);
@@ -56,11 +51,6 @@ public:
   template <class T> const T& get (const std::string& path, const T& v) const
   {
     return this->_cache.get<T> (this->key (path), v);
-  }
-
-  template <class T> T getFrom (const std::string& path, const T& v) const
-  {
-    return this->_cache.getFrom<T> (this->key (path), v);
   }
 
   template <class T> void set (const std::string& path, const T& v) const
