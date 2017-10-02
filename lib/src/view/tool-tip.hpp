@@ -7,64 +7,17 @@
 
 #include <functional>
 #include "macro.hpp"
-
-class QKeySequence;
-class QString;
+#include "view/input.hpp"
 
 class ViewToolTip
 {
 public:
   DECLARE_BIG6 (ViewToolTip)
 
-  enum class Event
-  {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P,
-    Q,
-    R,
-    S,
-    T,
-    U,
-    V,
-    W,
-    X,
-    Y,
-    Z,
-    Esc,
-    MouseLeft,
-    MouseMiddle,
-    MouseWheel,
-    MouseRight
-  };
-
-  enum class Modifier
-  {
-    None,
-    Ctrl,
-    Shift,
-    Alt
-  };
-
-  static QKeySequence toQKeySequence (Event, Modifier);
-
   void render (const std::function<void(const QString&, const QString&)>&) const;
 
-  void add (Event, Modifier, const QString&);
-  void add (Event, const QString&);
+  void add (ViewInput::Event, ViewInput::Modifier, const QString&);
+  void add (ViewInput::Event, const QString&);
   void reset ();
   bool isEmpty () const;
 

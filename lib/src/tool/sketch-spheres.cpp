@@ -82,10 +82,10 @@ struct ToolSketchSpheres::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to sketch"));
-    toolTip.add (ViewToolTip::Event::MouseLeft, ViewToolTip::Modifier::Shift,
+    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Drag to sketch"));
+    toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Shift,
                  QObject::tr ("Drag to smooth"));
-    toolTip.add (ViewToolTip::Event::MouseWheel, ViewToolTip::Modifier::Shift,
+    toolTip.add (ViewInput::Event::MouseWheel, ViewInput::Modifier::Shift,
                  QObject::tr ("Change radius"));
     this->self->showToolTip (toolTip);
   }

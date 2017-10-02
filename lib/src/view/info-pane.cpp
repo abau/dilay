@@ -43,7 +43,7 @@ struct ViewInfoPane::Impl
   QWidget* initializeToolTipTab ()
   {
     ViewToolTip dummyTip;
-    dummyTip.add (ViewToolTip::Event::MouseMiddle, ViewToolTip::Modifier::Shift,
+    dummyTip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Shift,
                   "01234567890123456789");
     this->addToolTip (dummyTip);
     this->toolTip.setEqualColumnStretch ();

@@ -28,7 +28,7 @@ struct ToolRebalanceSketch::Impl
     this->self->state ().scene ().renderWireframe (true);
 
     ViewToolTip toolTip;
-    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Set new root"));
+    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Set new root"));
     this->self->showToolTip (toolTip);
 
     return ToolResponse::None;

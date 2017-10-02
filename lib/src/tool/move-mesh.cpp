@@ -39,7 +39,7 @@ struct ToolMoveMesh::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to move"));
+    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Drag to move"));
     this->self->showToolTip (toolTip);
   }
 

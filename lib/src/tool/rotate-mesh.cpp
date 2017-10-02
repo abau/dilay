@@ -66,7 +66,7 @@ struct ToolRotateMesh::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag to rotate"));
+    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Drag to rotate"));
     this->self->showToolTip (toolTip);
   }
 

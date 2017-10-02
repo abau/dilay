@@ -87,10 +87,10 @@ struct ToolModifySketch::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewToolTip::Event::MouseLeft, QObject::tr ("Drag node to move"));
-    toolTip.add (ViewToolTip::Event::MouseLeft, ViewToolTip::Modifier::Shift,
+    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Drag node to move"));
+    toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Shift,
                  QObject::tr ("Drag node to scale"));
-    toolTip.add (ViewToolTip::Event::MouseLeft, ViewToolTip::Modifier::Ctrl,
+    toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Ctrl,
                  QObject::tr ("Drag node to add child"));
     this->self->showToolTip (toolTip);
   }
