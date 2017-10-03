@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtc/constants.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "camera.hpp"
 #include "tool/util/rotation.hpp"
 #include "util.hpp"
@@ -23,12 +22,7 @@ struct ToolUtilRotation::Impl
   {
   }
 
-  glm::mat4x4 matrix () const
-  {
-    const glm::mat4x4 translate = glm::translate (glm::mat4x4 (1.0f), this->origin);
-    const glm::mat4x4 rotate = glm::rotate (translate, this->angle, this->axis);
-    return glm::translate (rotate, -this->origin);
-  }
+  glm::mat4x4 matrix () const { return Util::rotation (this->origin, this->axis, this->angle); }
 
   bool rotate (const ViewPointingEvent& e)
   {
@@ -83,13 +77,15 @@ struct ToolUtilRotation::Impl
   void reset (const glm::vec3& o, const glm::vec3& a)
   {
     this->origin = o;
-    this->axis = a;
+    this->axis = glm::normalize (a);
     this->position = this->camera.fromWorld (o, glm::mat4x4 (1.0f), false);
     this->direction = glm::vec2 (0.0f);
   }
 };
 
 DELEGATE1_BIG3 (ToolUtilRotation, const Camera&)
+GETTER_CONST (const glm::vec3&, ToolUtilRotation, axis)
+GETTER_CONST (float, ToolUtilRotation, angle)
 DELEGATE_CONST (glm::mat4x4, ToolUtilRotation, matrix)
 DELEGATE1 (bool, ToolUtilRotation, rotate, const ViewPointingEvent&)
 DELEGATE1 (void, ToolUtilRotation, reset, const glm::vec3&)

@@ -13,6 +13,7 @@
 #include "sketch/node-intersection.hpp"
 #include "state.hpp"
 #include "tool/util/movement.hpp"
+#include "tool/util/rotation.hpp"
 #include "tool/util/scaling.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
@@ -28,6 +29,7 @@ struct ToolModifySketch::Impl
   SketchNode*       parent;
   ToolUtilMovement  movement;
   ToolUtilScaling   scaling;
+  ToolUtilRotation  rotation;
   bool              transformChildren;
   bool              snap;
   QSlider&          snapWidthEdit;
@@ -39,6 +41,7 @@ struct ToolModifySketch::Impl
     , parent (nullptr)
     , movement (s->state ().camera (), false)
     , scaling (s->state ().camera ())
+    , rotation (s->state ().camera ())
     , transformChildren (s->cache ().get<bool> ("transform-children", false))
     , snap (s->cache ().get<bool> ("snap", true))
     , snapWidthEdit (ViewUtil::slider (1, s->cache ().get<int> ("snap-width", 5), 10))
@@ -91,6 +94,8 @@ struct ToolModifySketch::Impl
     toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Shift,
                  QObject::tr ("Drag node to scale"));
     toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Ctrl,
+                 QObject::tr ("Drag node to rotate"));
+    toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Alt,
                  QObject::tr ("Drag node to add child"));
     this->self->showToolTip (toolTip);
   }
@@ -110,6 +115,14 @@ struct ToolModifySketch::Impl
           }
           this->mesh->scale (*this->node, this->scaling.factor (), this->transformChildren,
                              this->self->mirrorDimension ());
+        }
+      }
+      else if (e.modifiers () == Qt::ControlModifier)
+      {
+        if (this->rotation.rotate (e))
+        {
+          this->mesh->rotate (*this->node, this->rotation.axis (), this->rotation.angle (),
+                              this->self->mirrorDimension ());
         }
       }
       else if (this->movement.move (e))
@@ -137,11 +150,12 @@ struct ToolModifySketch::Impl
 
       this->movement.reset (intersection.position ());
       this->scaling.reset (intersection.node ().data ().center (), intersection.position ());
+      this->rotation.reset (intersection.node ().data ().center ());
 
       this->mesh = &intersection.mesh ();
       this->parent = nullptr;
 
-      if (e.modifiers () == Qt::ControlModifier)
+      if (e.modifiers () == Qt::AltModifier)
       {
         SketchNode& iNode = intersection.node ();
 
@@ -163,9 +177,13 @@ struct ToolModifySketch::Impl
       this->movement.reset (intersection.position ());
       this->scaling.reset (intersection.projectedPosition (), intersection.position ());
 
+      const glm::vec3 axis =
+        intersection.parent ().data ().center () - intersection.child ().data ().center ();
+      this->rotation.reset (intersection.projectedPosition (), axis);
+
       this->mesh = &intersection.mesh ();
 
-      if (e.modifiers () == Qt::ControlModifier)
+      if (e.modifiers () == Qt::AltModifier)
       {
         const float radius =
           glm::distance (intersection.projectedPosition (), intersection.position ());

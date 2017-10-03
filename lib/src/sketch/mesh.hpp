@@ -42,6 +42,7 @@ public:
   void               addSphere (bool, const glm::vec3&, const glm::vec3&, float, const Dimension*);
   void               move (SketchNode&, const glm::vec3&, bool, const Dimension*);
   void               scale (SketchNode&, float, bool, const Dimension*);
+  void               rotate (SketchNode&, const glm::vec3&, float, const Dimension*);
   void               deleteNode (SketchNode&, bool, const Dimension*);
   void               deletePath (SketchPath&, const Dimension*);
   void               mirror (Dimension);

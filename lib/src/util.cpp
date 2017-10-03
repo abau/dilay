@@ -5,6 +5,7 @@
 #include <fstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <locale>
 #include <sstream>
@@ -71,6 +72,13 @@ glm::vec3 Util::orthogonal (const glm::vec3& v)
 }
 
 glm::ivec2 Util::orthogonalRight (const glm::ivec2& v) { return glm::ivec2 (v.y, -v.x); }
+
+glm::mat4x4 Util::rotation (const glm::vec3& origin, const glm::vec3& axis, float angle)
+{
+  const glm::mat4x4 translate = glm::translate (glm::mat4x4 (1.0f), origin);
+  const glm::mat4x4 rotate = glm::rotate (translate, angle, axis);
+  return glm::translate (rotate, -origin);
+}
 
 bool Util::colinear (const glm::vec2& v1, const glm::vec2& v2)
 {

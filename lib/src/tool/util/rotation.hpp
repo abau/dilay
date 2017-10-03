@@ -17,10 +17,12 @@ class ToolUtilRotation
 public:
   DECLARE_BIG3 (ToolUtilRotation, const Camera&)
 
-  glm::mat4x4 matrix () const;
-  bool        rotate (const ViewPointingEvent&);
-  void        reset (const glm::vec3&);
-  void        reset (const glm::vec3&, const glm::vec3&);
+  const glm::vec3& axis () const;
+  float            angle () const;
+  glm::mat4x4      matrix () const;
+  bool             rotate (const ViewPointingEvent&);
+  void             reset (const glm::vec3&);
+  void             reset (const glm::vec3&, const glm::vec3&);
 
 private:
   IMPLEMENTATION

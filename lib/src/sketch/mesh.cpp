@@ -582,6 +582,34 @@ struct SketchMesh::Impl
     }
   }
 
+  void rotate (SketchNode& node, const glm::vec3& axis, float angle, const Dimension* dim)
+  {
+    const auto rotateNodes = [](SketchNode& node, const glm::vec3& axis, float angle) {
+      const glm::mat4x4 matrix = Util::rotation (node.data ().center (), axis, angle);
+
+      node.forEachNode ([&matrix](SketchNode& n) {
+        n.data ().center (matrix * glm::vec4 (n.data ().center (), 1.0f));
+      });
+    };
+
+    if (dim)
+    {
+      const PrimPlane mirrorPlane = this->mirrorPlane (*dim);
+      SketchNode*     nodeM = this->mirrored (node, mirrorPlane, node);
+
+      rotateNodes (node, axis, angle);
+
+      if (nodeM)
+      {
+        rotateNodes (*nodeM, mirrorPlane.mirrorDirection (axis), -angle);
+      }
+    }
+    else
+    {
+      rotateNodes (node, axis, angle);
+    }
+  }
+
   void deleteNode (SketchNode& node, bool deleteChildren, const Dimension* dim)
   {
     assert (this->tree.hasRoot ());
@@ -921,6 +949,7 @@ DELEGATE5 (void, SketchMesh, addSphere, bool, const glm::vec3&, const glm::vec3&
            const Dimension*)
 DELEGATE4 (void, SketchMesh, move, SketchNode&, const glm::vec3&, bool, const Dimension*)
 DELEGATE4 (void, SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
+DELEGATE4 (void, SketchMesh, rotate, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE3 (void, SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
 DELEGATE2 (void, SketchMesh, deletePath, SketchPath&, const Dimension*)
 DELEGATE1 (void, SketchMesh, mirror, Dimension)
