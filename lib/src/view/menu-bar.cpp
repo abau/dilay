@@ -169,7 +169,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
              [&glWidget]() { glWidget.state ().undo (); });
   addAction (editMenu, QObject::tr ("&Redo"), QKeySequence::Redo,
              [&glWidget]() { glWidget.state ().redo (); });
-  addAction (editMenu, QObject::tr ("&Configuration"), QKeySequence (),
+  addAction (editMenu, QObject::tr ("&Configuration..."), QKeySequence (),
              [&mainWindow, &glWidget]() { ViewConfiguration::show (mainWindow, glWidget); });
 
   addAction (viewMenu, QObject::tr ("Toggle &info pane"), Qt::Key_I, [&mainWindow]() {
