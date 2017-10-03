@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <glm/fwd.hpp>
+#include <vector>
 
 class ViewDoubleSlider;
 class QAbstractSpinBox;
@@ -35,6 +36,7 @@ namespace ViewUtil
   QCheckBox&        checkBox (const QString&, bool = false);
   QSlider&          slider (int, int, int);
   ViewDoubleSlider& slider (unsigned short, float, float, float, unsigned short = 1);
+  QButtonGroup&     buttonGroup (const std::vector<QString>&);
   QFrame&           horizontalLine ();
   QWidget&          emptyWidget ();
   QLineEdit&        lineEdit (float, unsigned short = 2);
@@ -48,7 +50,7 @@ namespace ViewUtil
   void              connect (const QSpinBox&, const std::function<void(int)>&);
   void              connect (const QDoubleSpinBox&, const std::function<void(double)>&);
   void              connect (const QPushButton&, const std::function<void()>&);
-  void              connect (const QButtonGroup&, const std::function<void(int)>&);
+  void              connect (const QButtonGroup&, int, const std::function<void(int)>&);
   void              connect (const QCheckBox&, const std::function<void(bool)>&);
   void              connect (const QRadioButton&, const std::function<void(bool)>&);
   void              connect (const QSlider&, const std::function<void(int)>&);
@@ -57,6 +59,7 @@ namespace ViewUtil
   void              connectFloat (const QLineEdit&, const std::function<void(float)>&);
   void              connectInt (const QLineEdit&, const std::function<void(int)>&);
   QWidget&          stretcher (bool, bool);
+  void              select (QButtonGroup&, int);
   void              deselect (QAbstractSpinBox&);
   void              adjustSize (QTabWidget&);
   bool              question (QWidget&, const QString&);

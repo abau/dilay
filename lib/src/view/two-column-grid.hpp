@@ -25,7 +25,7 @@ public:
   void add (const QString&, QWidget&);
   void add (QWidget&, QWidget&);
   void addStacked (const QString&, QWidget&);
-  void add (QButtonGroup&, const std::vector<QString>&);
+  void add (QButtonGroup&);
   void addLeft (const QString&);
   void addCenter (const QString&);
   void addStretcher ();

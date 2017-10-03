@@ -2,8 +2,6 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QAbstractButton>
-#include <QButtonGroup>
 #include <QSlider>
 #include "cache.hpp"
 #include "dynamic/mesh.hpp"
@@ -76,14 +74,14 @@ struct ToolNewMesh::Impl
     });
     properties.addStacked (QObject::tr ("Subdivisions"), subdivisionEdit);
 
-    QButtonGroup& meshTypeEdit = *new QButtonGroup;
-    properties.add (meshTypeEdit, {QObject::tr ("Icosphere"), QObject::tr ("Cube")});
-    ViewUtil::connect (meshTypeEdit, [this](int id) {
+    QButtonGroup& meshTypeEdit =
+      ViewUtil::buttonGroup ({QObject::tr ("Icosphere"), QObject::tr ("Cube")});
+    ViewUtil::connect (meshTypeEdit, int(this->meshType), [this](int id) {
       this->meshType = MeshType (id);
       this->self->cache ().set ("mesh-type", id);
       this->makeCurrentMesh ();
     });
-    meshTypeEdit.button (int(this->meshType))->click ();
+    properties.add (meshTypeEdit);
   }
 
   void makeCurrentMesh ()

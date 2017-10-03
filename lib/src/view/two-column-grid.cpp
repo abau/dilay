@@ -67,16 +67,11 @@ struct ViewTwoColumnGrid::Impl
     this->numRows++;
   }
 
-  void add (QButtonGroup& group, const std::vector<QString>& labels)
+  void add (QButtonGroup& group)
   {
-    int id = 0;
-    for (const QString& label : labels)
+    for (QAbstractButton* button : group.buttons ())
     {
-      QRadioButton& button = ViewUtil::radioButton (label);
-
-      group.addButton (&button, id);
-      this->add (button);
-      id++;
+      this->add (*button);
     }
   }
 
@@ -111,7 +106,7 @@ DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, const QString&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, QWidget&, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, addStacked, const QString&, QWidget&)
-DELEGATE2 (void, ViewTwoColumnGrid, add, QButtonGroup&, const std::vector<QString>&)
+DELEGATE1 (void, ViewTwoColumnGrid, add, QButtonGroup&)
 DELEGATE1 (void, ViewTwoColumnGrid, addLeft, const QString&)
 DELEGATE1 (void, ViewTwoColumnGrid, addCenter, const QString&)
 DELEGATE (void, ViewTwoColumnGrid, addStretcher)

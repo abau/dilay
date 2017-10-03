@@ -2,8 +2,6 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QAbstractButton>
-#include <QButtonGroup>
 #include <QPainter>
 #include <QSlider>
 #include <QWheelEvent>
@@ -66,15 +64,14 @@ struct ToolTrimMesh::Impl
     ViewUtil::connect (this->widthEdit,
                        [this](int w) { this->self->cache ().set ("trim-width", w); });
 
-    QButtonGroup& trimModeEdit = *new QButtonGroup;
-    properties.add (trimModeEdit,
-                    {QObject::tr ("Normal"), QObject::tr ("Slice"), QObject::tr ("Cut")});
-    ViewUtil::connect (trimModeEdit, [this](int id) {
+    QButtonGroup& trimModeEdit =
+      ViewUtil::buttonGroup ({QObject::tr ("Normal"), QObject::tr ("Slice"), QObject::tr ("Cut")});
+    ViewUtil::connect (trimModeEdit, int(this->trimMode), [this](int id) {
       this->trimMode = TrimMode (id);
       this->self->cache ().set ("trim-mode", id);
       widthEdit.setEnabled (this->trimMode != TrimMode::Normal);
     });
-    trimModeEdit.button (int(this->trimMode))->click ();
+    properties.add (trimModeEdit);
 
     properties.addStacked (QObject::tr ("Width"), this->widthEdit);
   }

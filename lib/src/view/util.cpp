@@ -92,6 +92,20 @@ ViewDoubleSlider& ViewUtil::slider (unsigned short numDecimals, float min, float
   return slider;
 }
 
+QButtonGroup& ViewUtil::buttonGroup (const std::vector<QString>& labels)
+{
+  QButtonGroup& group = *new QButtonGroup;
+  int           id = 0;
+  for (const QString& label : labels)
+  {
+    QRadioButton& button = ViewUtil::radioButton (label);
+
+    group.addButton (&button, id);
+    id++;
+  }
+  return group;
+}
+
 QFrame& ViewUtil::horizontalLine ()
 {
   QFrame& frame = *new QFrame;
@@ -169,10 +183,11 @@ void ViewUtil::connect (const QPushButton& b, const std::function<void()>& f)
   QObject::connect (&b, &QPushButton::released, f);
 }
 
-void ViewUtil::connect (const QButtonGroup& g, const std::function<void(int)>& f)
+void ViewUtil::connect (const QButtonGroup& g, int initial, const std::function<void(int)>& f)
 {
   void (QButtonGroup::*ptr) (int) = &QButtonGroup::buttonReleased;
   QObject::connect (&g, ptr, f);
+  g.button (initial)->click ();
 }
 
 void ViewUtil::connect (const QCheckBox& c, const std::function<void(bool)>& f)

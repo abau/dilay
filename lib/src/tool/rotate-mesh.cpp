@@ -2,8 +2,6 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QAbstractButton>
-#include <QButtonGroup>
 #include <glm/glm.hpp>
 #include "cache.hpp"
 #include "dynamic/mesh-intersection.hpp"
@@ -53,14 +51,13 @@ struct ToolRotateMesh::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    QButtonGroup& originEdit = *new QButtonGroup;
-    properties.add (originEdit,
-                    {QObject::tr ("Intersection"), QObject::tr ("Center"), QObject::tr ("Origin")});
-    ViewUtil::connect (originEdit, [this](int id) {
+    QButtonGroup& originEdit = ViewUtil::buttonGroup (
+      {QObject::tr ("Intersection"), QObject::tr ("Center"), QObject::tr ("Origin")});
+    ViewUtil::connect (originEdit, int(this->origin), [this](int id) {
       this->origin = RotationOrigin (id);
       this->self->cache ().set ("origin", id);
     });
-    originEdit.button (int(this->origin))->click ();
+    properties.add (originEdit);
   }
 
   void setupToolTip ()
