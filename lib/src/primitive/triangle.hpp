@@ -6,7 +6,6 @@
 #define DILAY_PRIMITIVE_TRIANGLE
 
 #include <glm/glm.hpp>
-#include <iosfwd>
 
 class PrimTriangle
 {
@@ -32,7 +31,5 @@ private:
   const glm::vec3& _vertex2;
   const glm::vec3& _vertex3;
 };
-
-std::ostream& operator<< (std::ostream&, const PrimTriangle&);
 
 #endif

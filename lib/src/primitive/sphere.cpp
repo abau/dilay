@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtx/norm.hpp>
-#include <sstream>
 #include "primitive/aabox.hpp"
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
@@ -29,11 +28,4 @@ bool PrimSphere::contains (const PrimTriangle& tri) const
 {
   return this->contains (tri.vertex1 ()) && this->contains (tri.vertex2 ()) &&
          this->contains (tri.vertex3 ());
-}
-
-std::ostream& operator<< (std::ostream& os, const PrimSphere& sphere)
-{
-  os << "PrimSphere { center = " << (sphere.center ()) << ", radius = " << (sphere.radius ())
-     << " }";
-  return os;
 }

@@ -17,6 +17,18 @@
 
 namespace
 {
+  std::ostream& operator<< (std::ostream& os, const glm::vec3& v)
+  {
+    os << v.x << " " << v.y << " " << v.z;
+    return os;
+  }
+
+  std::istream& operator>> (std::istream& is, glm::vec3& v)
+  {
+    is >> v.x >> v.y >> v.z;
+    return is;
+  }
+
   void toDlyFile (std::ostream& stream, const Mesh& mesh)
   {
     stream << "o\n";

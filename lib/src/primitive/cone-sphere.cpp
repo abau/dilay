@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtc/constants.hpp>
-#include <sstream>
 #include "primitive/cone-sphere.hpp"
 #include "primitive/cone.hpp"
 #include "util.hpp"
@@ -44,11 +43,4 @@ PrimCone PrimConeSphere::toCone () const
 
   return PrimCone (this->_sphere2.center () + (this->_direction * h2), r2c,
                    this->_sphere1.center () + (this->_direction * h1), r1c);
-}
-
-std::ostream& operator<< (std::ostream& os, const PrimConeSphere& coneSphere)
-{
-  os << "PrimConeSphere { sphere1 = " << (coneSphere.sphere1 ())
-     << ", sphere2 = " << (coneSphere.sphere2 ()) << " }";
-  return os;
 }

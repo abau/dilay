@@ -6,7 +6,6 @@
 #define DILAY_PRIMITIVE_CONE
 
 #include <glm/glm.hpp>
-#include <iosfwd>
 
 class PrimCone
 {
@@ -42,7 +41,5 @@ private:
   const float     _sinAlpha;
   const float     _cosAlpha;
 };
-
-std::ostream& operator<< (std::ostream&, const PrimCone&);
 
 #endif

@@ -6,10 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 #include <locale>
-#include <sstream>
-#include <stdexcept>
 #include <vector>
 #include "util.hpp"
 
@@ -24,30 +21,6 @@ namespace
   {
     return colinearUnitT<T> (glm::normalize (v1), glm::normalize (v2));
   }
-}
-
-std::ostream& operator<< (std::ostream& os, const glm::vec2& v)
-{
-  os << v.x << " " << v.y;
-  return os;
-}
-
-std::ostream& operator<< (std::ostream& os, const glm::vec3& v)
-{
-  os << v.x << " " << v.y << " " << v.z;
-  return os;
-}
-
-std::ostream& operator<< (std::ostream& os, const glm::vec4& v)
-{
-  os << v.x << " " << v.y << " " << v.z << " " << v.w;
-  return os;
-}
-
-std::istream& operator>> (std::istream& is, glm::vec3& v)
-{
-  is >> v.x >> v.y >> v.z;
-  return is;
 }
 
 glm::vec3 Util::midpoint (const glm::vec3& a, const glm::vec3& b)

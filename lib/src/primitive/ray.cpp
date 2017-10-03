@@ -2,7 +2,6 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <sstream>
 #include "primitive/ray.hpp"
 #include "util.hpp"
 
@@ -33,9 +32,3 @@ float PrimRay::distance (const glm::vec3& p) const
 }
 
 bool PrimRay::onRay (const glm::vec3& p) const { return this->distance (p) < Util::epsilon (); }
-
-std::ostream& operator<< (std::ostream& os, const PrimRay& ray)
-{
-  os << "PrimRay { origin = " << (ray.origin ()) << ", direction = " << (ray.direction ()) << " }";
-  return os;
-}

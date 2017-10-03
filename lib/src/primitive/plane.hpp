@@ -6,7 +6,6 @@
 #define DILAY_PRIMITIVE_PLANE
 
 #include <glm/glm.hpp>
-#include <iosfwd>
 #include "macro.hpp"
 
 class PrimPlane
@@ -29,7 +28,5 @@ public:
   MEMBER_REF_GETTER (glm::vec3, u)
   MEMBER_REF_GETTER (glm::vec3, v)
 };
-
-std::ostream& operator<< (std::ostream&, const PrimPlane&);
 
 #endif

@@ -6,7 +6,6 @@
 #define DILAY_PRIMITIVE_RAY
 
 #include <glm/glm.hpp>
-#include <iosfwd>
 
 class PrimRay
 {
@@ -27,7 +26,5 @@ private:
   const glm::vec3 _origin;
   const glm::vec3 _direction;
 };
-
-std::ostream& operator<< (std::ostream&, const PrimRay&);
 
 #endif

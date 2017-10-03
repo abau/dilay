@@ -2,7 +2,6 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <sstream>
 #include "primitive/plane.hpp"
 #include "util.hpp"
 
@@ -61,10 +60,4 @@ glm::vec3 PrimPlane::mirror (const glm::vec3& p) const
 glm::vec3 PrimPlane::mirrorDirection (const glm::vec3& d) const
 {
   return this->mirror (d + this->_point) - this->_point;
-}
-
-std::ostream& operator<< (std::ostream& os, const PrimPlane& plane)
-{
-  os << "PrimPlane { point = " << (plane.point ()) << ", normal = " << (plane.normal ()) << " }";
-  return os;
 }

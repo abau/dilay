@@ -6,7 +6,6 @@
 #define DILAY_PRIMITIVE_CYLINDER
 
 #include <glm/glm.hpp>
-#include <iosfwd>
 
 class PrimCone;
 
@@ -30,7 +29,5 @@ private:
   const float     _length;
   const glm::vec3 _direction;
 };
-
-std::ostream& operator<< (std::ostream&, const PrimCylinder&);
 
 #endif

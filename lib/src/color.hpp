@@ -6,7 +6,6 @@
 #define DILAY_COLOR
 
 #include <glm/fwd.hpp>
-#include <iosfwd>
 
 class QColor;
 
@@ -54,7 +53,5 @@ private:
   float _b;
   float _opacity;
 };
-
-std::ostream& operator<< (std::ostream&, const Color&);
 
 #endif

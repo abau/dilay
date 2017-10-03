@@ -2,7 +2,6 @@
  * Copyright © 2015-2017 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <sstream>
 #include "primitive/cone.hpp"
 #include "util.hpp"
 
@@ -40,11 +39,4 @@ glm::vec3 PrimCone::normalAt (const glm::vec3& pointAt, float tCone) const
   const glm::vec3 tang = glm::cross (diff, this->_direction);
 
   return glm::normalize (glm::cross (slope, tang));
-}
-
-std::ostream& operator<< (std::ostream& os, const PrimCone& cone)
-{
-  os << "PrimCone { center1 = " << (cone.center1 ()) << ", radius1 = " << (cone.radius1 ())
-     << ", center2 = " << (cone.center2 ()) << ", radius2 = " << (cone.radius2 ()) << " }";
-  return os;
 }

@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <functional>
 #include <glm/fwd.hpp>
-#include <iosfwd>
 #include <limits>
 #include <vector>
 #include "log.hpp"
@@ -22,11 +21,6 @@
     std::abort ();                                                                         \
   }
 #define DILAY_IMPOSSIBLE DILAY_PANIC ("the impossible happend")
-
-std::ostream& operator<< (std::ostream&, const glm::vec2&);
-std::ostream& operator<< (std::ostream&, const glm::vec3&);
-std::ostream& operator<< (std::ostream&, const glm::vec4&);
-std::istream& operator>> (std::istream&, glm::vec3&);
 
 typedef std::pair<unsigned int, unsigned int> ui_pair;
 

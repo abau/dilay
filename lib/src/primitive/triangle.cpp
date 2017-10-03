@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtx/norm.hpp>
-#include <sstream>
 #include "primitive/triangle.hpp"
 #include "util.hpp"
 
@@ -63,11 +62,4 @@ float PrimTriangle::longestEdgeSqr () const
   return glm::max (glm::max (glm::distance2 (this->_vertex1, this->_vertex2),
                              glm::distance2 (this->_vertex2, this->_vertex3)),
                    glm::distance2 (this->_vertex1, this->_vertex3));
-}
-
-std::ostream& operator<< (std::ostream& os, const PrimTriangle& triangle)
-{
-  os << "PrimTriangle { " << triangle.vertex1 () << ", " << triangle.vertex2 () << ", "
-     << triangle.vertex3 () << " }";
-  return os;
 }

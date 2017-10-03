@@ -4,7 +4,6 @@
  */
 #include <QColor>
 #include <glm/glm.hpp>
-#include <iostream>
 #include "color.hpp"
 #include "util.hpp"
 
@@ -97,10 +96,3 @@ QColor Color::qColor () const
 }
 
 bool Color::isOpaque () const { return Util::almostEqual (this->_opacity, 1.0f); }
-
-std::ostream& operator<< (std::ostream& os, const Color& c)
-{
-  os << "Color { red = " << c.r () << ", green = " << c.g () << ", blue = " << c.b ()
-     << ", opacity = " << c.opacity () << "}";
-  return os;
-}

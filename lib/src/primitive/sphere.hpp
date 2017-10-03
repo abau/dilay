@@ -6,7 +6,6 @@
 #define DILAY_PRIMITIVE_SPHERE
 
 #include <glm/glm.hpp>
-#include <iosfwd>
 
 class PrimAABox;
 class PrimTriangle;
@@ -30,7 +29,5 @@ private:
   glm::vec3 _center;
   float     _radius;
 };
-
-std::ostream& operator<< (std::ostream&, const PrimSphere&);
 
 #endif
