@@ -22,6 +22,7 @@
 #include "view/info-pane/scene.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
+#include "view/tool-pane.hpp"
 #include "view/util.hpp"
 
 struct ViewGlWidget::Impl
@@ -106,6 +107,7 @@ struct ViewGlWidget::Impl
     this->self->setMouseTracking (true);
     this->self->setTabletTracking (true);
     this->initializeScene ();
+    this->mainWindow.toolPane ().forceWidth ();
   }
 
   void initializeScene ()

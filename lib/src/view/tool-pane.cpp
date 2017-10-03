@@ -84,7 +84,7 @@ struct ViewToolPane::Impl
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
     toolPane->setLayout (toolPaneLayout);
-    this->addToolButton<ToolNewMesh> (toolPaneLayout, QObject::tr ("New mesh"));
+    this->addToolButton<ToolNewMesh> (toolPaneLayout, QObject::tr ("01234567890123456789"));
     this->addToolButton<ToolDeleteMesh> (toolPaneLayout, QObject::tr ("Delete mesh"));
     this->addToolButton<ToolMoveMesh> (toolPaneLayout, QObject::tr ("Move mesh"));
     this->addToolButton<ToolRotateMesh> (toolPaneLayout, QObject::tr ("Rotate mesh"));
@@ -124,6 +124,14 @@ struct ViewToolPane::Impl
     return toolPane;
   }
 
+  void forceWidth ()
+  {
+    const auto it = this->buttons.find (ToolNewMesh::classKey ());
+    assert (it != this->buttons.end ());
+
+    it->second->setText (QObject::tr ("New mesh"));
+  }
+
   ViewToolPaneSelection selection () const
   {
     switch (this->toolSelection.currentIndex ())
@@ -147,5 +155,6 @@ struct ViewToolPane::Impl
 
 DELEGATE_BIG2_BASE (ViewToolPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
 GETTER (ViewTwoColumnGrid&, ViewToolPane, properties)
+DELEGATE (void, ViewToolPane, forceWidth)
 DELEGATE_CONST (ViewToolPaneSelection, ViewToolPane, selection)
 DELEGATE1 (QPushButton&, ViewToolPane, button, const char*)

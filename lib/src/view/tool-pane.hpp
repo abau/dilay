@@ -24,6 +24,7 @@ public:
   DECLARE_BIG2 (ViewToolPane, ViewGlWidget&, QWidget* = nullptr)
 
   ViewTwoColumnGrid&    properties ();
+  void                  forceWidth ();
   ViewToolPaneSelection selection () const;
   QPushButton&          button (const char*);
 
