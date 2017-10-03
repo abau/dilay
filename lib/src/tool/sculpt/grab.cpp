@@ -36,7 +36,7 @@ struct ToolSculptGrab::Impl
   {
     auto& params = this->self->brush ().parameters<SBGrablikeParameters> ();
 
-    this->self->addAlongPrimaryPlaneProperties (this->movement);
+    this->self->addMoveOnPrimaryPlaneProperties (this->movement);
 
     QCheckBox& discardEdit =
       ViewUtil::checkBox (QObject::tr ("Discard backfaces"), params.discardBack ());

@@ -17,9 +17,9 @@ public:
   DECLARE_BIG3 (ToolUtilMovement, const Camera&, bool)
   ToolUtilMovement (const Camera&, const glm::vec3&);
 
-  bool alongPrimaryPlane () const;
-  void alongPrimaryPlane (bool);
-  void alongFreePlane (const glm::vec3&);
+  bool onPrimaryPlane () const;
+  void onPrimaryPlane (bool);
+  void onFreePlane (const glm::vec3&);
 
   glm::vec3        delta () const;
   const glm::vec3& position () const;

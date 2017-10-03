@@ -65,7 +65,7 @@ protected:
   void               renderMirror (bool);
   const Dimension*   mirrorDimension () const;
   void               addMirrorProperties (bool);
-  void               addAlongPrimaryPlaneProperties (ToolUtilMovement&);
+  void               addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
 
   template <typename T, typename... Ts> bool intersectsScene (const PrimRay&, T&, Ts...);
   template <typename T, typename... Ts> bool intersectsScene (const glm::ivec2&, T&, Ts...);

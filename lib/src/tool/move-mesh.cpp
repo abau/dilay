@@ -34,7 +34,7 @@ struct ToolMoveMesh::Impl
     return ToolResponse::None;
   }
 
-  void setupProperties () { this->self->addAlongPrimaryPlaneProperties (this->movement); }
+  void setupProperties () { this->self->addMoveOnPrimaryPlaneProperties (this->movement); }
 
   void setupToolTip ()
   {

@@ -225,16 +225,16 @@ struct Tool::Impl
     this->properties ().add (mirrorEdit, syncButton);
   }
 
-  void addAlongPrimaryPlaneProperties (ToolUtilMovement& movement)
+  void addMoveOnPrimaryPlaneProperties (ToolUtilMovement& movement)
   {
     const bool init =
-      this->cache ().get<bool> ("along-primary-plane", movement.alongPrimaryPlane ());
-    movement.alongPrimaryPlane (init);
+      this->cache ().get<bool> ("move-on-primary-plane", movement.onPrimaryPlane ());
+    movement.onPrimaryPlane (init);
 
-    QCheckBox& edit = ViewUtil::checkBox (QObject::tr ("Along primary plane"), init);
+    QCheckBox& edit = ViewUtil::checkBox (QObject::tr ("Move on primary plane"), init);
     ViewUtil::connect (edit, [this, &movement](bool p) {
-      movement.alongPrimaryPlane (p);
-      this->cache ().set ("along-primary-plane", p);
+      movement.onPrimaryPlane (p);
+      this->cache ().set ("move-on-primary-plane", p);
     });
     this->properties ().add (edit);
   }
@@ -305,7 +305,7 @@ DELEGATE1 (void, Tool, mirror, bool)
 SETTER (bool, Tool, renderMirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
 DELEGATE1 (void, Tool, addMirrorProperties, bool)
-DELEGATE1 (void, Tool, addAlongPrimaryPlaneProperties, ToolUtilMovement&)
+DELEGATE1 (void, Tool, addMoveOnPrimaryPlaneProperties, ToolUtilMovement&)
 DELEGATE1 (ToolResponse, Tool, runPointingEvent, const ViewPointingEvent&)
 
 template <typename T, typename... Ts>

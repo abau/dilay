@@ -33,7 +33,7 @@ struct ToolUtilMovement::Impl
     , previousPosition (glm::vec3 (0.0f))
     , position (glm::vec3 (0.0f))
   {
-    this->alongPrimaryPlane (p);
+    this->onPrimaryPlane (p);
   }
 
   Impl (const Camera& cam, const glm::vec3& n)
@@ -41,7 +41,7 @@ struct ToolUtilMovement::Impl
     , previousPosition (glm::vec3 (0.0f))
     , position (glm::vec3 (0.0f))
   {
-    this->alongFreePlane (n);
+    this->onFreePlane (n);
   }
 
   void setPlaneNormal ()
@@ -56,15 +56,15 @@ struct ToolUtilMovement::Impl
     }
   }
 
-  bool alongPrimaryPlane () const { return this->plane == MovementPlane::Primary; }
+  bool onPrimaryPlane () const { return this->plane == MovementPlane::Primary; }
 
-  void alongPrimaryPlane (bool yes)
+  void onPrimaryPlane (bool yes)
   {
     this->plane = yes ? MovementPlane::Primary : MovementPlane::Camera;
     this->setPlaneNormal ();
   }
 
-  void alongFreePlane (const glm::vec3& n)
+  void onFreePlane (const glm::vec3& n)
   {
     this->plane = MovementPlane::Free;
     this->planeNormal = n;
@@ -112,9 +112,9 @@ struct ToolUtilMovement::Impl
 
 DELEGATE2_BIG3 (ToolUtilMovement, const Camera&, bool)
 DELEGATE2_CONSTRUCTOR (ToolUtilMovement, const Camera&, const glm::vec3&)
-DELEGATE_CONST (bool, ToolUtilMovement, alongPrimaryPlane)
-DELEGATE1 (void, ToolUtilMovement, alongPrimaryPlane, bool)
-DELEGATE1 (void, ToolUtilMovement, alongFreePlane, const glm::vec3&)
+DELEGATE_CONST (bool, ToolUtilMovement, onPrimaryPlane)
+DELEGATE1 (void, ToolUtilMovement, onPrimaryPlane, bool)
+DELEGATE1 (void, ToolUtilMovement, onFreePlane, const glm::vec3&)
 DELEGATE_CONST (glm::vec3, ToolUtilMovement, delta)
 GETTER_CONST (const glm::vec3&, ToolUtilMovement, position)
 DELEGATE1 (bool, ToolUtilMovement, move, const ViewPointingEvent&)
