@@ -519,10 +519,10 @@ struct SketchMesh::Impl
     }
   }
 
-  void move (SketchNode& node, const glm::vec3& delta, bool withChildren, const Dimension* dim)
+  void move (SketchNode& node, const glm::vec3& delta, bool all, const Dimension* dim)
   {
-    auto moveNodes = [withChildren](SketchNode& node, const glm::vec3& delta) {
-      if (withChildren)
+    const auto moveNodes = [all](SketchNode& node, const glm::vec3& delta) {
+      if (all)
       {
         node.forEachNode (
           [&delta](SketchNode& n) { n.data ().center (n.data ().center () + delta); });
@@ -551,10 +551,10 @@ struct SketchMesh::Impl
     }
   }
 
-  void scale (SketchNode& node, float factor, bool withChildren, const Dimension* dim)
+  void scale (SketchNode& node, float factor, bool all, const Dimension* dim)
   {
-    auto scaleNodes = [factor, withChildren](SketchNode& node) {
-      if (withChildren)
+    const auto scaleNodes = [factor, all](SketchNode& node) {
+      if (all)
       {
         node.forEachNode (
           [factor](SketchNode& n) { n.data ().radius (n.data ().radius () * factor); });
