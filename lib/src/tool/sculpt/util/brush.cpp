@@ -180,7 +180,7 @@ struct SculptBrush::Impl
   bool         subdivide;
   DynamicMesh* _mesh;
   bool         hasPointOfAction;
-  glm::vec3    _lastPosition;
+  glm::vec3    _prevPosition;
   glm::vec3    _position;
   glm::vec3    _normal;
 
@@ -217,7 +217,7 @@ struct SculptBrush::Impl
   const glm::vec3& lastPosition () const
   {
     assert (this->hasPointOfAction);
-    return this->_lastPosition;
+    return this->_prevPosition;
   }
 
   const glm::vec3& position () const
@@ -235,7 +235,7 @@ struct SculptBrush::Impl
   glm::vec3 delta () const
   {
     assert (this->hasPointOfAction);
-    return this->_position - this->_lastPosition;
+    return this->_position - this->_prevPosition;
   }
 
   PrimSphere sphere () const
@@ -252,7 +252,7 @@ struct SculptBrush::Impl
   void setPointOfAction (DynamicMesh& mesh, const glm::vec3& p, const glm::vec3& n)
   {
     this->_mesh = &mesh;
-    this->_lastPosition = this->hasPointOfAction ? this->_position : p;
+    this->_prevPosition = this->hasPointOfAction ? this->_position : p;
     this->_position = p;
     this->_normal = n;
     this->hasPointOfAction = true;
@@ -273,7 +273,7 @@ struct SculptBrush::Impl
 
     if (this->hasPointOfAction)
     {
-      this->_lastPosition = plane.mirror (this->_lastPosition);
+      this->_prevPosition = plane.mirror (this->_prevPosition);
       this->_position = plane.mirror (this->_position);
       this->_normal = plane.mirrorDirection (this->_normal);
     }
