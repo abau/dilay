@@ -31,9 +31,9 @@ struct ViewTwoColumnGrid::Impl
     this->layout.setColumnStretch (1, 1);
   }
 
-  void add (QWidget& w)
+  void add (QWidget& widget)
   {
-    this->layout.addWidget (&w, this->numRows, 0, 1, 2);
+    this->layout.addWidget (&widget, this->numRows, 0, 1, 2);
     this->layout.setRowStretch (this->numRows, 0);
     this->numRows++;
   }
@@ -43,26 +43,12 @@ struct ViewTwoColumnGrid::Impl
     this->add (*new QLabel (labelLeft), *new QLabel (labelRight));
   }
 
-  void add (const QString& label, QWidget& w) { this->add (*new QLabel (label), w); }
+  void add (const QString& label, QWidget& widget) { this->add (*new QLabel (label), widget); }
 
   void add (QWidget& w1, QWidget& w2)
   {
     this->layout.addWidget (&w1, this->numRows, 0);
     this->layout.addWidget (&w2, this->numRows, 1);
-    this->layout.setRowStretch (this->numRows, 0);
-    this->numRows++;
-  }
-
-  void addStacked (const QString& l, QWidget& w)
-  {
-    QVBoxLayout& stack = *new QVBoxLayout;
-    QLabel&      label = *new QLabel (l);
-
-    label.setAlignment (Qt::AlignHCenter);
-    stack.addWidget (&label);
-    stack.addWidget (&w);
-
-    this->layout.addLayout (&stack, this->numRows, 0, 1, 2);
     this->layout.setRowStretch (this->numRows, 0);
     this->numRows++;
   }
@@ -73,6 +59,38 @@ struct ViewTwoColumnGrid::Impl
     {
       this->add (*button);
     }
+  }
+
+  void addStacked (const QString& labelText, QWidget& widget)
+  {
+    QVBoxLayout& stack = *new QVBoxLayout;
+    QLabel&      label = *new QLabel (labelText);
+
+    label.setAlignment (Qt::AlignHCenter);
+    stack.addWidget (&label);
+    stack.addWidget (&widget);
+
+    this->layout.addLayout (&stack, this->numRows, 0, 1, 2);
+    this->layout.setRowStretch (this->numRows, 0);
+    this->numRows++;
+  }
+
+  void addStacked (const QString& labelText, QButtonGroup& group)
+  {
+    QVBoxLayout& stack = *new QVBoxLayout;
+    QLabel&      label = *new QLabel (labelText);
+
+    label.setAlignment (Qt::AlignHCenter);
+    stack.addWidget (&label);
+
+    for (QAbstractButton* button : group.buttons ())
+    {
+      stack.addWidget (button);
+    }
+
+    this->layout.addLayout (&stack, this->numRows, 0, 1, 2);
+    this->layout.setRowStretch (this->numRows, 0);
+    this->numRows++;
   }
 
   void addLeft (const QString& label) { this->add (label, *new QWidget); }
@@ -105,8 +123,9 @@ DELEGATE1 (void, ViewTwoColumnGrid, add, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, const QString&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, const QString&, QWidget&)
 DELEGATE2 (void, ViewTwoColumnGrid, add, QWidget&, QWidget&)
-DELEGATE2 (void, ViewTwoColumnGrid, addStacked, const QString&, QWidget&)
 DELEGATE1 (void, ViewTwoColumnGrid, add, QButtonGroup&)
+DELEGATE2 (void, ViewTwoColumnGrid, addStacked, const QString&, QWidget&)
+DELEGATE2 (void, ViewTwoColumnGrid, addStacked, const QString&, QButtonGroup&)
 DELEGATE1 (void, ViewTwoColumnGrid, addLeft, const QString&)
 DELEGATE1 (void, ViewTwoColumnGrid, addCenter, const QString&)
 DELEGATE (void, ViewTwoColumnGrid, addStretcher)

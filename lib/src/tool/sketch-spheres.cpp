@@ -66,6 +66,8 @@ struct ToolSketchSpheres::Impl
                        [this](float d) { this->self->cache ().set ("height", d); });
     properties.addStacked (QObject::tr ("Height"), this->heightEdit);
 
+    properties.add (ViewUtil::horizontalLine ());
+
     QButtonGroup& smoothEffectEdit =
       ViewUtil::buttonGroup ({QObject::tr ("None"), QObject::tr ("Embed"),
                               QObject::tr ("Embed and adjust"), QObject::tr ("Pinch")});
@@ -73,7 +75,7 @@ struct ToolSketchSpheres::Impl
       this->smoothEffect = SketchPathSmoothEffect (id);
       this->self->cache ().set ("smooth-effect", id);
     });
-    properties.add (smoothEffectEdit);
+    properties.addStacked (QObject::tr ("Smoothing effect"), smoothEffectEdit);
   }
 
   void setupToolTip ()
