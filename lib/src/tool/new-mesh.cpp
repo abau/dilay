@@ -95,9 +95,6 @@ struct ToolNewMesh::Impl
       case MeshType::Cube:
         this->mesh = std::make_unique<DynamicMesh> (MeshUtil::cube (this->subdivision));
         break;
-
-      default:
-        DILAY_IMPOSSIBLE
     }
     this->self->state ().scene ().setupMesh (this->self->state ().config (), *this->mesh);
     this->self->updateGlWidget ();
