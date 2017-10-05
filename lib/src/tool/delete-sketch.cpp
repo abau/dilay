@@ -27,36 +27,6 @@ namespace
     DeleteNode,
     DeleteSpheres
   };
-
-  int fromMode (Mode m)
-  {
-    switch (m)
-    {
-      case Mode::DeleteSketch:
-        return 0;
-      case Mode::DeleteNode:
-        return 1;
-      case Mode::DeleteSpheres:
-        return 2;
-      default:
-        DILAY_IMPOSSIBLE;
-    }
-  }
-
-  Mode toMode (int m)
-  {
-    switch (m)
-    {
-      case 0:
-        return Mode::DeleteSketch;
-      case 1:
-        return Mode::DeleteNode;
-      case 2:
-        return Mode::DeleteSpheres;
-      default:
-        DILAY_IMPOSSIBLE;
-    }
-  }
 }
 
 struct ToolDeleteSketch::Impl
@@ -67,7 +37,7 @@ struct ToolDeleteSketch::Impl
 
   Impl (ToolDeleteSketch* s)
     : self (s)
-    , mode (toMode (s->cache ().get<int> ("mode", fromMode (Mode::DeleteNode))))
+    , mode (Mode (s->cache ().get<int> ("mode", int(Mode::DeleteNode))))
     , deleteChildren (s->cache ().get<bool> ("delete-children", false))
   {
   }
@@ -100,7 +70,7 @@ struct ToolDeleteSketch::Impl
       ViewUtil::radioButton (QObject::tr ("Delete sketch"), this->mode == Mode::DeleteSketch);
     ViewUtil::connect (deleteSketchEdit, [this, &deleteChildrenEdit, &mirrorEdit](bool m) {
       this->mode = Mode::DeleteSketch;
-      this->self->cache ().set ("mode", fromMode (this->mode));
+      this->self->cache ().set ("mode", int(this->mode));
 
       deleteChildrenEdit.setEnabled (!m);
       mirrorEdit.setEnabled (!m);
@@ -110,7 +80,7 @@ struct ToolDeleteSketch::Impl
       ViewUtil::radioButton (QObject::tr ("Delete node"), this->mode == Mode::DeleteNode);
     ViewUtil::connect (deleteNodeEdit, [this, &deleteChildrenEdit, &mirrorEdit](bool m) {
       this->mode = Mode::DeleteNode;
-      this->self->cache ().set ("mode", fromMode (this->mode));
+      this->self->cache ().set ("mode", int(this->mode));
 
       deleteChildrenEdit.setEnabled (m);
       mirrorEdit.setEnabled (m);
@@ -120,7 +90,7 @@ struct ToolDeleteSketch::Impl
       ViewUtil::radioButton (QObject::tr ("Delete spheres"), this->mode == Mode::DeleteSpheres);
     ViewUtil::connect (deleteSpheresEdit, [this, &deleteChildrenEdit, &mirrorEdit](bool m) {
       this->mode = Mode::DeleteSpheres;
-      this->self->cache ().set ("mode", fromMode (this->mode));
+      this->self->cache ().set ("mode", int(this->mode));
 
       deleteChildrenEdit.setEnabled (!m);
       mirrorEdit.setEnabled (m);
