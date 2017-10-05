@@ -18,7 +18,7 @@ public:
   SketchNode&      child () const;
   const glm::vec3& projectedPosition () const;
   bool             update (float, const glm::vec3&, const glm::vec3&, const glm::vec3&, SketchMesh&,
-               SketchNode&);
+                           SketchNode&);
 
 private:
   IMPLEMENTATION

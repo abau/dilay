@@ -111,8 +111,8 @@ struct ToolConvertSketch::Impl
         this->self->snapshotAll ();
         sMesh.optimizePaths ();
 
-        Mesh mesh = SketchConversion::convert (
-          sMesh, this->maxResolution + this->minResolution - this->resolution);
+        Mesh mesh = SketchConversion::convert (sMesh, this->maxResolution + this->minResolution -
+                                                        this->resolution);
         DynamicMesh& dMesh =
           this->self->state ().scene ().newDynamicMesh (this->self->state ().config (), mesh);
         if (this->moveToCenter)

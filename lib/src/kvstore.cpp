@@ -16,7 +16,7 @@
 struct KVStore::Impl
 {
   typedef Variant<float, int, bool, glm::vec3, glm::ivec2, Color> Value;
-  typedef std::unordered_map<std::string, Value> Map;
+  typedef std::unordered_map<std::string, Value>                  Map;
 
   const std::string root;
   Map               map;

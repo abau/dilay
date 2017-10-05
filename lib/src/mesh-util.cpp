@@ -99,7 +99,7 @@ namespace
     }
 
     unsigned int* findInSequence (std::vector<std::pair<unsigned int, unsigned int>>& sequence,
-                                  unsigned int i)
+                                  unsigned int                                        i)
     {
       for (auto& p : sequence)
       {
@@ -156,8 +156,9 @@ Mesh MeshUtil::cube (unsigned int numSubdivisions)
   };
 
   std::function<void(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int)>
-    subdivide = [&mesh, &subdivide, &addRefinedVertex, &vertexCache](
-      unsigned int s, unsigned int i1, unsigned int i2, unsigned int i3, unsigned int i4) -> void {
+    subdivide = [&mesh, &subdivide, &addRefinedVertex,
+                 &vertexCache](unsigned int s, unsigned int i1, unsigned int i2, unsigned int i3,
+                               unsigned int i4) -> void {
     if (s == 0)
     {
       MeshUtil::addFace (mesh, i1, i2, i3);

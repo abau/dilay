@@ -111,16 +111,16 @@ private:
     otherMethods                                      \
   };
 
-#define DECLARE_TOOL_RUN_RENDER void                    runRender () const;
-#define DECLARE_TOOL_RUN_PAINT void                     runPaint (QPainter&) const;
-#define DECLARE_TOOL_RUN_POINTING_EVENT ToolResponse    runPointingEvent (const ViewPointingEvent&);
-#define DECLARE_TOOL_RUN_PRESS_EVENT ToolResponse       runPressEvent (const ViewPointingEvent&);
-#define DECLARE_TOOL_RUN_MOVE_EVENT ToolResponse        runMoveEvent (const ViewPointingEvent&);
-#define DECLARE_TOOL_RUN_RELEASE_EVENT ToolResponse     runReleaseEvent (const ViewPointingEvent&);
+#define DECLARE_TOOL_RUN_RENDER void runRender () const;
+#define DECLARE_TOOL_RUN_PAINT void runPaint (QPainter&) const;
+#define DECLARE_TOOL_RUN_POINTING_EVENT ToolResponse runPointingEvent (const ViewPointingEvent&);
+#define DECLARE_TOOL_RUN_PRESS_EVENT ToolResponse runPressEvent (const ViewPointingEvent&);
+#define DECLARE_TOOL_RUN_MOVE_EVENT ToolResponse runMoveEvent (const ViewPointingEvent&);
+#define DECLARE_TOOL_RUN_RELEASE_EVENT ToolResponse runReleaseEvent (const ViewPointingEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT ToolResponse runWheelEvent (const QWheelEvent&);
-#define DECLARE_TOOL_RUN_CURSOR_UPDATE ToolResponse     runCursorUpdate (const glm::ivec2&);
-#define DECLARE_TOOL_RUN_CLOSE void                     runClose ();
-#define DECLARE_TOOL_RUN_FROM_CONFIG void               runFromConfig ();
+#define DECLARE_TOOL_RUN_CURSOR_UPDATE ToolResponse runCursorUpdate (const glm::ivec2&);
+#define DECLARE_TOOL_RUN_CLOSE void runClose ();
+#define DECLARE_TOOL_RUN_FROM_CONFIG void runFromConfig ();
 
 #define DELEGATE_TOOL(name)                                                    \
   DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, name::classKey ())) \

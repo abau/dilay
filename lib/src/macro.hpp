@@ -536,12 +536,12 @@
 #define SETTER(t, from, member) \
   void from::member (t a) { this->impl->member = a; }
 
-#define _MEMBER_GETTER_SETTER(type, name, pass_type) \
-public:                                              \
-  pass_type name () const { return this->_##name; }  \
-  void name (pass_type v) { this->_##name = v; }     \
-                                                     \
-private:                                             \
+#define _MEMBER_GETTER_SETTER(type, name, pass_type)  \
+public:                                               \
+  pass_type name () const { return this->_##name; }   \
+  void      name (pass_type v) { this->_##name = v; } \
+                                                      \
+private:                                              \
   type _##name;
 
 #define MEMBER_GETTER_SETTER(type, name) _MEMBER_GETTER_SETTER (type, name, type)
@@ -551,7 +551,7 @@ private:                                             \
 #define _MEMBER_GETTER_EXPLICIT_SETTER(type, name, pass_type) \
 public:                                                       \
   pass_type name () const { return this->_##name; }           \
-  void name (pass_type v);                                    \
+  void      name (pass_type v);                               \
                                                               \
 private:                                                      \
   type _##name;

@@ -148,12 +148,12 @@ struct ViewAxis::Impl
     camera.updateResolution (this->axisResolution);
 
     auto renderLabel = [this, &resolution, &painter, w, &camera](const glm::vec3& p,
-                                                                 const QString& l) {
+                                                                 const QString&   l) {
       this->coneMesh.position (p);
 
       glm::vec2 pos = camera.fromWorld (glm::vec3 (0.0f), this->coneMesh.modelMatrix (), true);
       QRect     rect (int(pos.x) - (w / 2),
-                  resolution.y - this->axisResolution.y + int(pos.y) - (w / 2), w, w);
+                      resolution.y - this->axisResolution.y + int(pos.y) - (w / 2), w, w);
 
       painter.drawText (rect, Qt::AlignCenter, l);
     };

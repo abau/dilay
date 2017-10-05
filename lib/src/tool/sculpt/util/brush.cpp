@@ -48,8 +48,8 @@ void SBDrawParameters::sculpt (const SculptBrush& brush, const DynamicFaces& fac
         const glm::vec3& oldPos = brush.mesh ().vertex (i);
         const float      factor = intensity * Util::linearStep (oldPos, brush.position (),
                                                            0.5f * brush.radius (), brush.radius ());
-        const float     distance = glm::min (0.0f, plane.distance (oldPos));
-        const glm::vec3 newPos = oldPos - (plane.normal () * factor * distance);
+        const float      distance = glm::min (0.0f, plane.distance (oldPos));
+        const glm::vec3  newPos = oldPos - (plane.normal () * factor * distance);
 
         brush.mesh ().vertex (i, newPos);
       });

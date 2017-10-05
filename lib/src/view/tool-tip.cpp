@@ -10,7 +10,7 @@
 struct ViewToolTip::Impl
 {
   typedef std::tuple<ViewInput::Event, ViewInput::Modifier, QString> Tip;
-  std::vector<Tip> tips;
+  std::vector<Tip>                                                   tips;
 
   void render (const std::function<void(const QString&, const QString&)>& f) const
   {

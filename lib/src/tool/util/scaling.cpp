@@ -68,7 +68,7 @@ struct ToolUtilScaling::Impl
 
     const PrimRay ray (this->camera.position (),
                        glm::normalize (reference - this->camera.position ()));
-    float t;
+    float         t;
 
     if (IntersectionUtil::intersects (ray, *this->plane, &t))
     {

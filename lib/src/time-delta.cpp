@@ -28,10 +28,10 @@ namespace TimeDelta
     }
   };
 
-  const unsigned int nameWidth = 80;
+  const unsigned int                        nameWidth = 80;
   std::unordered_map<std::string, TimeData> data;
-  std::clock_t globalTime;
-  std::clock_t startTime;
+  std::clock_t                              globalTime;
+  std::clock_t                              startTime;
 
   void printResults ()
   {

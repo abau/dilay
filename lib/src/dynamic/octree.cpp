@@ -42,11 +42,11 @@ namespace
 
   struct IndexOctreeNode
   {
-    const glm::vec3 center;
-    const float     width;
-    const int       depth;
-    const PrimAABox looseAABox;
-    std::array<Child, 8> children;
+    const glm::vec3                  center;
+    const float                      width;
+    const int                        depth;
+    const PrimAABox                  looseAABox;
+    std::array<Child, 8>             children;
     std::unordered_set<unsigned int> indices;
 
     static constexpr float relativeMinElementExtent = 0.1f;

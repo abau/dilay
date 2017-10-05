@@ -21,7 +21,7 @@ class DynamicOctree
 public:
   DECLARE_BIG4_EXPLICIT_COPY (DynamicOctree)
 
-  typedef std::function<void(unsigned int)> IntersectionCallback;
+  typedef std::function<void(unsigned int)>       IntersectionCallback;
   typedef std::function<void(bool, unsigned int)> ContainsIntersectionCallback;
 
   bool hasRoot () const;

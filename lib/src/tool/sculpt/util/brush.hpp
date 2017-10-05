@@ -120,9 +120,9 @@ public:
 
   bool             hasLockedPlane () const;
   const PrimPlane& lockedPlane () const;
-  void lockedPlane (const PrimPlane& p);
-  void resetLockedPlane ();
-  void mirror (const PrimPlane&) override;
+  void             lockedPlane (const PrimPlane& p);
+  void             resetLockedPlane ();
+  void             mirror (const PrimPlane&) override;
 
   MEMBER_GETTER_SETTER (bool, lockPlane);
 

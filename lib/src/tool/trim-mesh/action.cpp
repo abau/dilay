@@ -765,7 +765,7 @@ namespace
     TwoDVertexCRef findMutuallyVisibleVertex (const TwoDPolyline& outer, const TwoDPolyline& inner)
     {
       auto getIntersection = [&outer, &inner](TwoDVertexCRef v0,
-                                              glm::vec2& intersection) -> TwoDVertexCRef {
+                                              glm::vec2&     intersection) -> TwoDVertexCRef {
         TwoDVertexCRef   noCandidate = outer.end ();
         TwoDVertexCRef   v1 = outer.next (v0);
         TwoDVertexCRef   m = inner.maxX;
@@ -852,8 +852,9 @@ namespace
         return candidate;
       };
 
-      auto findClosestContainedConcaveVertex = [&outer, &inner](
-        const glm::vec2& intersection, TwoDVertexCRef candidate) -> TwoDVertexCRef {
+      auto findClosestContainedConcaveVertex =
+        [&outer, &inner](const glm::vec2& intersection,
+                         TwoDVertexCRef   candidate) -> TwoDVertexCRef {
 
         const glm::vec2 toCandidate = glm::normalize (candidate->position - inner.maxX->position);
 
