@@ -12,6 +12,7 @@ unix {
   format.CONFIG = recursive
   copyright.commands = find $$SUBDIRS \\( -name "*.cpp" -o -name "*.hpp" -o -name "*.hs" \\) -print0 | \
                        xargs -0 sed -i 's/Copyright\ ©\ 2015,2016/Copyright\ ©\ 2015-2017/'
+  icon.commands = pdflatex -shell-escape icon.tex && rm -f icon.log icon.aux
 
-  QMAKE_EXTRA_TARGETS += gdb valgrind leak format copyright
+  QMAKE_EXTRA_TARGETS += gdb valgrind leak format copyright icon
 }

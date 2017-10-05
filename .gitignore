@@ -19,3 +19,5 @@ test/Makefile.Release
 test/Makefile.Debug
 valgrind.log
 .qmake.stash
+icon.pdf
+icon.png
