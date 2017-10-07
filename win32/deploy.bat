@@ -26,5 +26,5 @@ mkdir win32deploy\Dilay\platforms
 
 xcopy %1\plugins\platforms\qwindows.dll win32deploy\Dilay\platforms
 
-"%ProgramFiles(x86)%\WiX Toolset v3.10\bin\candle.exe" -dDilayVersion=%4 -out win32deploy/dilay.wixobj %3\win32\installer.wix
-"%ProgramFiles(x86)%\WiX Toolset v3.10\bin\light.exe" -ext WixUIExtension -b win32deploy -cultures:en-US -out win32deploy/dilay-%4.msi win32deploy/dilay.wixobj
+"%ProgramFiles(x86)%\WiX Toolset v3.11\bin\candle.exe" -dDilayVersion=%4 -out win32deploy/dilay.wixobj %3\win32\installer.wix
+"%ProgramFiles(x86)%\WiX Toolset v3.11\bin\light.exe" -ext WixUIExtension -b win32deploy -cultures:en-US -out win32deploy/dilay-%4.msi win32deploy/dilay.wixobj
