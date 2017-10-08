@@ -133,5 +133,5 @@ struct ToolConvertSketch::Impl
   }
 };
 
-DELEGATE_TOOL (ToolConvertSketch)
+DELEGATE_TOOL (ToolConvertSketch, "convert-sketch")
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolConvertSketch)

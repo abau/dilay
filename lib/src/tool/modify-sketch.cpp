@@ -251,7 +251,7 @@ struct ToolModifySketch::Impl
   }
 };
 
-DELEGATE_TOOL (ToolModifySketch)
+DELEGATE_TOOL (ToolModifySketch, "modify-sketch")
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolModifySketch)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolModifySketch)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolModifySketch)

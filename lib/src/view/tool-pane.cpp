@@ -67,7 +67,7 @@ struct ViewToolPane::Impl
   template <typename T> void addToolButton (QLayout* layout, const QString& name)
   {
     QPushButton& button = ViewUtil::pushButton (name);
-    this->buttons.emplace (T::classKey (), &button);
+    this->buttons.emplace (T::classKey, &button);
     button.setCheckable (true);
 
     ViewUtil::connect (button, [this, &button]() {
@@ -126,7 +126,7 @@ struct ViewToolPane::Impl
 
   void forceWidth ()
   {
-    const auto it = this->buttons.find (ToolNewMesh::classKey ());
+    const auto it = this->buttons.find (ToolNewMesh::classKey);
     assert (it != this->buttons.end ());
 
     it->second->setText (QObject::tr ("New mesh"));

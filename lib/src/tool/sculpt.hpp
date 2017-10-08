@@ -46,13 +46,13 @@ private:
   virtual bool runSculptPointingEvent (const ViewPointingEvent&) = 0;
 };
 
-#define DECLARE_TOOL_SCULPT(name, theKey)                   \
+#define DECLARE_TOOL_SCULPT(name)                           \
   class name : public ToolSculpt                            \
   {                                                         \
   public:                                                   \
     DECLARE_BIG2 (name, State&)                             \
                                                             \
-    static const char* classKey () { return theKey; }       \
+    static const char* classKey;                            \
                                                             \
   private:                                                  \
     IMPLEMENTATION                                          \
@@ -63,12 +63,13 @@ private:
     bool runSculptPointingEvent (const ViewPointingEvent&); \
   };
 
-#define DELEGATE_TOOL_SCULPT(name)                                                   \
-  DELEGATE_BIG2_BASE (name, (State & s), (this), ToolSculpt, (s, name::classKey ())) \
-  DELEGATE1 (void, name, runSetupBrush, SculptBrush&);                               \
-  DELEGATE1 (void, name, runSetupCursor, ViewCursor&);                               \
-  DELEGATE1 (void, name, runSetupProperties, ViewTwoColumnGrid&);                    \
-  DELEGATE1 (void, name, runSetupToolTip, ViewToolTip&);                             \
+#define DELEGATE_TOOL_SCULPT(name, theKey)                                        \
+  const char* name::classKey = theKey;                                            \
+  DELEGATE_BIG2_BASE (name, (State & s), (this), ToolSculpt, (s, name::classKey)) \
+  DELEGATE1 (void, name, runSetupBrush, SculptBrush&);                            \
+  DELEGATE1 (void, name, runSetupCursor, ViewCursor&);                            \
+  DELEGATE1 (void, name, runSetupProperties, ViewTwoColumnGrid&);                 \
+  DELEGATE1 (void, name, runSetupToolTip, ViewToolTip&);                          \
   DELEGATE1 (bool, name, runSculptPointingEvent, const ViewPointingEvent&)
 
 #endif

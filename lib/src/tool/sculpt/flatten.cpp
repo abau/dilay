@@ -93,4 +93,4 @@ struct ToolSculptFlatten::Impl
   }
 };
 
-DELEGATE_TOOL_SCULPT (ToolSculptFlatten)
+DELEGATE_TOOL_SCULPT (ToolSculptFlatten, "smooth/flatten")

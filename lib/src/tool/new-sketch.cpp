@@ -29,4 +29,4 @@ struct ToolNewSketch::Impl
   }
 };
 
-DELEGATE_TOOL (ToolNewSketch)
+DELEGATE_TOOL (ToolNewSketch, "new-sketch")

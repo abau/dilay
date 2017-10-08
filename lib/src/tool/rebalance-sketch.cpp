@@ -52,6 +52,6 @@ struct ToolRebalanceSketch::Impl
   void runClose () { this->self->state ().scene ().renderWireframe (this->renderWireframe); }
 };
 
-DELEGATE_TOOL (ToolRebalanceSketch)
+DELEGATE_TOOL (ToolRebalanceSketch, "rebalance-sketch")
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRebalanceSketch)
 DELEGATE_TOOL_RUN_CLOSE (ToolRebalanceSketch)

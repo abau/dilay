@@ -53,4 +53,4 @@ struct ToolSculptReduce::Impl
   }
 };
 
-DELEGATE_TOOL_SCULPT (ToolSculptReduce)
+DELEGATE_TOOL_SCULPT (ToolSculptReduce, "tool/reduce")

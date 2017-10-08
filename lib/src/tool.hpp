@@ -97,18 +97,18 @@ private:
   virtual void runFromConfig () {}
 };
 
-#define DECLARE_TOOL(name, theKey, otherMethods)      \
-  class name : public Tool                            \
-  {                                                   \
-  public:                                             \
-    DECLARE_BIG2 (name, State&)                       \
-                                                      \
-    static const char* classKey () { return theKey; } \
-                                                      \
-  private:                                            \
-    IMPLEMENTATION                                    \
-    ToolResponse runInitialize ();                    \
-    otherMethods                                      \
+#define DECLARE_TOOL(name, otherMethods) \
+  class name : public Tool               \
+  {                                      \
+  public:                                \
+    DECLARE_BIG2 (name, State&)          \
+                                         \
+    static const char* classKey;         \
+                                         \
+  private:                               \
+    IMPLEMENTATION                       \
+    ToolResponse runInitialize ();       \
+    otherMethods                         \
   };
 
 #define DECLARE_TOOL_RUN_RENDER void runRender () const;
@@ -122,8 +122,9 @@ private:
 #define DECLARE_TOOL_RUN_CLOSE void runClose ();
 #define DECLARE_TOOL_RUN_FROM_CONFIG void runFromConfig ();
 
-#define DELEGATE_TOOL(name)                                                    \
-  DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, name::classKey ())) \
+#define DELEGATE_TOOL(name, theKey)                                         \
+  const char* name::classKey = theKey;                                      \
+  DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, name::classKey)) \
   DELEGATE (ToolResponse, name, runInitialize)
 
 #define DELEGATE_TOOL_RUN_RENDER(n) DELEGATE_CONST (void, n, runRender)

@@ -92,7 +92,7 @@ struct ToolMoveMesh::Impl
   }
 };
 
-DELEGATE_TOOL (ToolMoveMesh)
+DELEGATE_TOOL (ToolMoveMesh, "move-mesh")
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolMoveMesh)

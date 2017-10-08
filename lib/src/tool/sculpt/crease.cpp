@@ -65,4 +65,4 @@ struct ToolSculptCrease::Impl
   }
 };
 
-DELEGATE_TOOL_SCULPT (ToolSculptCrease)
+DELEGATE_TOOL_SCULPT (ToolSculptCrease, "sculpt/crease")

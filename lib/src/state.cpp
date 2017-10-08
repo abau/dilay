@@ -59,7 +59,7 @@ struct State::Impl
   {
     const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInput::Modifier::None);
 
-    tip.add (event, this->mainWindow.toolPane ().button (T::classKey ()).text ());
+    tip.add (event, this->mainWindow.toolPane ().button (T::classKey).text ());
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
     QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this]() {
@@ -151,18 +151,17 @@ struct State::Impl
         }
         else
         {
-          const bool nonSmoothSculptTool =
-            (this->toolPtr->key () == ToolSculptDraw::classKey ()) ||
-            (this->toolPtr->key () == ToolSculptCrease::classKey ()) ||
-            (this->toolPtr->key () == ToolSculptGrab::classKey ()) ||
-            (this->toolPtr->key () == ToolSculptFlatten::classKey ()) ||
-            (this->toolPtr->key () == ToolSculptPinch::classKey ()) ||
-            (this->toolPtr->key () == ToolSculptReduce::classKey ()) ||
-            (this->toolPtr->key () == ToolTrimMesh::classKey ());
+          const bool nonSmoothSculptTool = (this->toolPtr->key () == ToolSculptDraw::classKey) ||
+                                           (this->toolPtr->key () == ToolSculptCrease::classKey) ||
+                                           (this->toolPtr->key () == ToolSculptGrab::classKey) ||
+                                           (this->toolPtr->key () == ToolSculptFlatten::classKey) ||
+                                           (this->toolPtr->key () == ToolSculptPinch::classKey) ||
+                                           (this->toolPtr->key () == ToolSculptReduce::classKey) ||
+                                           (this->toolPtr->key () == ToolTrimMesh::classKey);
 
           const bool toggleBack = this->previousToolKey &&
-                                  (this->previousToolKey != ToolSculptSmooth::classKey ()) &&
-                                  (this->toolPtr->key () == ToolSculptSmooth::classKey ());
+                                  (this->previousToolKey != ToolSculptSmooth::classKey) &&
+                                  (this->toolPtr->key () == ToolSculptSmooth::classKey);
 
           if (nonSmoothSculptTool)
           {
