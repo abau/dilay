@@ -162,6 +162,7 @@ namespace
     {
       unsigned int n = this->indices.erase (index);
       assert (n > 0);
+      unused (n);
     }
 
     bool deleteEmptyChildren ()

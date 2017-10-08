@@ -130,8 +130,8 @@ namespace ImportExport
 
     std::vector<Mesh>        meshes;
     std::vector<SketchNode*> nodes;
-    SketchMesh*              sketch;
-    SketchPath*              sketchPath;
+    SketchMesh*              sketch = nullptr;
+    SketchPath*              sketchPath = nullptr;
     glm::vec3                intersectionFirst, intersectionLast;
 
     auto extractFirst = [](const std::string& string, unsigned int& value) -> bool {

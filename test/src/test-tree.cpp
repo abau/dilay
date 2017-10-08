@@ -53,6 +53,7 @@ void TestTree::test1 ()
   assert (copy.root ().data ().i == 0);
   assert (copy.root ().lastChild ().data ().i == 5);
   assert (copy.root ().lastChild ().parent () == &copy.root ());
+  unused (n2);
 }
 
 void TestTree::test2 ()

@@ -34,6 +34,7 @@ struct ToolTrimMeshBorder::Impl
   {
     assert (this->onBorder (p));
     assert (this->polylines.empty () == false);
+    unused (p);
 
     this->polylines.back ().emplace_back (index);
   }

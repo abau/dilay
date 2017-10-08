@@ -31,4 +31,5 @@ void TestDistance::test ()
                              glm::sqrt ((1.5f * 1.5f) + (2.0f * 2.0f)), eps));
   assert (glm::epsilonEqual (distance (cyl, glm::vec3 (2.0f, 2.0f, 0.0f)),
                              glm::sqrt ((1.5f * 1.5f) + (1.0f * 1.0f)), eps));
+  unused (eps);
 }

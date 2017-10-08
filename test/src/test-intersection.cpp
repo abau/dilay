@@ -12,6 +12,7 @@
 #include "primitive/sphere.hpp"
 #include "primitive/triangle.hpp"
 #include "test-intersection.hpp"
+#include "util.hpp"
 
 void TestIntersection::test ()
 {
@@ -91,4 +92,5 @@ void TestIntersection::test ()
   assert (intersects (cne, glm::vec3 (1.0f, 0.0f, 0.0f)));
   assert (intersects (cne, glm::vec3 (0.5f, 1.0f, 0.0f)));
   assert (intersects (cne, glm::vec3 (0.8f, 0.1f, 0.0f)));
+  unused (t);
 }

@@ -22,6 +22,8 @@
   }
 #define DILAY_IMPOSSIBLE DILAY_PANIC ("the impossible happend")
 
+#define unused(x) ((void) (x))
+
 typedef std::pair<unsigned int, unsigned int> ui_pair;
 
 namespace Util

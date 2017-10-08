@@ -758,6 +758,7 @@ namespace
                            unsigned int ambiguousFace, int dim) -> bool {
       assert (cube.nonManifoldConfig ());
       assert (dim == -3 || dim == -2 || dim == -1 || dim == 1 || dim == 2 || dim == 3);
+      unused (cube);
 
       Cube& other = params.grid.at (params.cubeIndex (dim == -1 ? x - 1 : (dim == 1 ? x + 1 : x),
                                                       dim == -2 ? y - 1 : (dim == 2 ? y + 1 : y),

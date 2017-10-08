@@ -326,6 +326,7 @@ namespace
     });
     const bool increasing = newF.applyToMesh (mesh, faces);
     assert (increasing);
+    unused (increasing);
 
     faces.commit ();
   }
@@ -373,6 +374,8 @@ namespace
 
         assert (newLeftFace == rightFace);
         assert (newRightFace == leftFace);
+        unused (newLeftFace);
+        unused (newRightFace);
       }
     }
   }
