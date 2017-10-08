@@ -11,6 +11,7 @@
 #include "opengl.hpp"
 #include "time-delta.hpp"
 #include "util.hpp"
+#include "view/log.hpp"
 #include "view/main-window.hpp"
 
 namespace
@@ -20,14 +21,10 @@ namespace
     return QStandardPaths::locate (QStandardPaths::ConfigLocation, "dilay.config");
   }
 
-  QString logPath () { return QDir::temp ().filePath ("dilay.log"); }
-
-  QString crashLogPath () { return QDir::temp ().filePath ("dilay-crash.log"); }
-
   void backupCrashLog ()
   {
-    QFile log (logPath ());
-    QFile crashLog (crashLogPath ());
+    QFile log (ViewLog::logPath ());
+    QFile crashLog (ViewLog::crashLogPath ());
 
     if (log.exists ())
     {
@@ -35,7 +32,7 @@ namespace
       {
         crashLog.remove ();
       }
-      log.rename (crashLogPath ());
+      log.rename (ViewLog::crashLogPath ());
     }
   }
 }
@@ -43,7 +40,7 @@ namespace
 int main (int argv, char** args)
 {
   backupCrashLog ();
-  Log::initialize (logPath ().toStdString ());
+  Log::initialize (ViewLog::logPath ().toStdString ());
   DILAY_INFO ("Version: %s", DILAY_VERSION);
   DILAY_INFO ("Architecture: %s", QSysInfo::buildCpuArchitecture ().toStdString ().c_str ());
   DILAY_INFO ("OS: %s", QSysInfo::prettyProductName ().toStdString ().c_str ());

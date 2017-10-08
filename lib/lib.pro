@@ -91,6 +91,7 @@ SOURCES += \
            src/view/info-pane/scene.cpp \
            src/view/input.cpp \
            src/view/light.cpp \
+           src/view/log.cpp \
            src/view/main-window.cpp \
            src/view/menu-bar.cpp \
            src/view/pointing-event.cpp \
@@ -177,6 +178,7 @@ HEADERS += \
            src/view/info-pane/scene.hpp \
            src/view/input.hpp \
            src/view/light.hpp \
+           src/view/log.hpp \
            src/view/main-window.hpp \
            src/view/menu-bar.hpp \
            src/view/pointing-event.hpp \
