@@ -187,7 +187,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
 
   addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::SHIFT + Qt::Key_C,
              [&glWidget]() { glWidget.toolMoveCamera ().snap (glWidget.state (), false); });
-  addAction (viewMenu, QObject::tr ("Reset &gaze point"), Qt::CTRL + Qt::Key_C,
+  addAction (viewMenu, QObject::tr ("Reset &gaze point"), Qt::ALT + Qt::Key_C,
              [&glWidget]() { glWidget.toolMoveCamera ().resetGazePoint (glWidget.state ()); });
 
   viewMenu.addSeparator ();
