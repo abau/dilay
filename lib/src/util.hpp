@@ -9,6 +9,7 @@
 #include <functional>
 #include <glm/fwd.hpp>
 #include <limits>
+#include <locale>
 #include <vector>
 #include "log.hpp"
 
@@ -55,8 +56,6 @@ namespace Util
   bool         fromString (const std::string&, float&);
   unsigned int countOnes (unsigned int);
   bool         hasSuffix (const std::string&, const std::string&);
-  void         setCLocale ();
-  void         setSystemLocale ();
 
   constexpr float epsilon () { return 0.0001f; }
 
@@ -87,12 +86,11 @@ namespace Util
 
   template <typename T> T withCLocale (const std::function<T ()>& f)
   {
-    setCLocale ();
-    T result = f ();
-    setSystemLocale ();
+    const std::locale prev = std::locale::global (std::locale::classic ());
+    T                 result = f ();
+    std::locale::global (prev);
     return result;
   }
-
   template <> void withCLocale (const std::function<void()>& f);
 
   template <typename T>

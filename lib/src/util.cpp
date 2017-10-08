@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <locale>
 #include <vector>
 #include "util.hpp"
 
@@ -276,16 +275,12 @@ bool Util::hasSuffix (const std::string& string, const std::string& suffix)
   }
 }
 
-void Util::setCLocale () { std::locale::global (std::locale::classic ()); }
-
-void Util::setSystemLocale () { std::locale::global (std::locale ("")); }
-
 namespace Util
 {
   template <> void withCLocale (const std::function<void()>& f)
   {
-    setCLocale ();
+    const std::locale prev = std::locale::global (std::locale::classic ());
     f ();
-    setSystemLocale ();
+    std::locale::global (prev);
   }
 }
