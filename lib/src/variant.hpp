@@ -108,12 +108,14 @@ namespace VariantDetails
     void copy (unsigned int i, const VariantUnion& other)
     {
       assert (i == 0);
+      (void) i;
       this->t = new T (*other.t);
     }
 
     void move (unsigned int i, VariantUnion&& other)
     {
       assert (i == 0);
+      (void) i;
       this->t = other.t;
       other.t = nullptr;
     }
@@ -121,6 +123,7 @@ namespace VariantDetails
     void release (unsigned int i)
     {
       assert (i == 0);
+      (void) i;
       delete this->t;
     }
 
@@ -135,6 +138,7 @@ namespace VariantDetails
     {
       assert (i == 0);
       assert ((std::is_same<T, U>::value));
+      (void) i;
       return *reinterpret_cast<U*> (this->t);
     }
 
@@ -142,6 +146,7 @@ namespace VariantDetails
     {
       assert (i == 0);
       assert ((std::is_same<T, U>::value));
+      (void) i;
       return *reinterpret_cast<U*> (this->t);
     }
 
