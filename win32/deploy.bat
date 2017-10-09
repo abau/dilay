@@ -19,8 +19,6 @@ xcopy %1\bin\Qt5Widgets.dll                win32deploy\Dilay
 xcopy %1\bin\Qt5Xml.dll                    win32deploy\Dilay
 xcopy %3\win32-data\icon.ico               win32deploy\Dilay
 xcopy %3\win32-data\LICENSE.rtf            win32deploy\Dilay
-xcopy %3\win32-data\banner1-compressed.bmp win32deploy\Dilay
-xcopy %3\win32-data\banner2-compressed.bmp win32deploy\Dilay
     
 mkdir win32deploy\Dilay\platforms
 

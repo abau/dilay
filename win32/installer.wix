@@ -1,6 +1,6 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" UpgradeCode="8e37a957-2019-4b44-b5b8-15e128f47df3"
-           Name="Dilay" Manufacturer="A.Bau" Language="1033"
+           Name="Dilay" Manufacturer="A. Bau" Language="1033"
            Version="$(var.DilayVersion)">
     <Package Compressed="yes"/>
     <Media Id="1" Cabinet="dilay.cab" EmbedCab="yes"/>
@@ -8,8 +8,6 @@
     <UIRef Id="WixUI_ErrorProgressText" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <WixVariable Id="WixUILicenseRtf" Value="Dilay\LICENSE.rtf" />
-    <WixVariable Id="WixUIBannerBmp" Value="Dilay\banner1-compressed.bmp" />
-    <WixVariable Id="WixUIDialogBmp" Value="Dilay\banner2-compressed.bmp" />
         
     <Icon Id="icon.ico" SourceFile="Dilay\icon.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
