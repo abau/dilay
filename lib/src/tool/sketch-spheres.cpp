@@ -41,7 +41,7 @@ struct ToolSketchSpheres::Impl
 
   Impl (ToolSketchSpheres* s)
     : self (s)
-    , radiusEdit (ViewUtil::slider (2, 0.01f, s->cache ().get<float> ("radius", 0.1f), 0.3f))
+    , radiusEdit (ViewUtil::slider (2, 0.01f, s->cache ().get<float> ("radius", 0.1f), 1.0f))
     , heightEdit (ViewUtil::slider (2, 0.01f, s->cache ().get<float> ("height", 0.2f), 0.45f))
     , smoothEffect (SketchPathSmoothEffect (
         s->cache ().get<int> ("smooth-effect", int(SketchPathSmoothEffect::Embed))))
