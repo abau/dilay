@@ -148,7 +148,7 @@ struct ToolSketchSpheres::Impl
 
           this->step.step (this->previousPosition, intersection.position (),
                            [this, &intersection](const glm::vec3& position) {
-                             this->mesh->smoothPath (
+                             intersection.mesh ().smoothPath (
                                intersection.path (),
                                PrimSphere (position, this->radiusEdit.doubleValue ()), 1,
                                this->smoothEffect, this->self->mirrorDimension ());
