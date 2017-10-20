@@ -206,7 +206,6 @@ struct ViewGlWidget::Impl
     {
       this->toolMoveCamera.wheelEvent (this->state (), *e);
       this->updateCursorInTool ();
-      this->floorPlane ().update (this->state ().camera ());
     }
     else if (this->state ().hasTool ())
     {

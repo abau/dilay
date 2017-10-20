@@ -13,6 +13,7 @@
 #include "state.hpp"
 #include "tool/move-camera.hpp"
 #include "util.hpp"
+#include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
@@ -133,6 +134,7 @@ struct ToolMoveCamera::Impl
         {
           state.camera ().stepAlongGaze (1.0f / this->zoomInFactor);
         }
+        state.mainWindow ().glWidget ().floorPlane ().update (state.camera ());
       }
       this->oldPos = newPos;
       state.mainWindow ().glWidget ().update ();
@@ -170,6 +172,7 @@ struct ToolMoveCamera::Impl
       {
         state.camera ().stepAlongGaze (1.0f / this->zoomInMouseWheelFactor);
       }
+      state.mainWindow ().glWidget ().floorPlane ().update (state.camera ());
       state.mainWindow ().glWidget ().update ();
     }
   }
