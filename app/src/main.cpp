@@ -46,6 +46,7 @@ int main (int argv, char** args)
   DILAY_INFO ("OS: %s", QSysInfo::prettyProductName ().toStdString ().c_str ());
   DILAY_INFO ("Qt: %s", QLibraryInfo::version ().toString ().toStdString ().c_str ());
 
+  QCoreApplication::setApplicationName ("Dilay");
   QCoreApplication::setAttribute (Qt::AA_UseDesktopOpenGL);
   OpenGL::setDefaultFormat ();
 
