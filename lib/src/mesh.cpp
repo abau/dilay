@@ -284,6 +284,17 @@ struct Mesh::Impl
     OpenGL::glDrawElements (OpenGL::Triangles (), this->numIndices (), OpenGL::UnsignedInt (),
                             nullptr);
 
+    if (this->renderMode.renderWireframe () && OpenGL::supportsGeometryShader () == false)
+    {
+      camera.renderer ().setColor (this->wireframeColor);
+      OpenGL::glPolygonMode (OpenGL::FrontAndBack (), OpenGL::Line ());
+
+      OpenGL::glDrawElements (OpenGL::Triangles (), this->numIndices (), OpenGL::UnsignedInt (),
+                              nullptr);
+
+      OpenGL::glPolygonMode (OpenGL::FrontAndBack (), OpenGL::Fill ());
+    }
+
     this->renderEnd ();
   }
 
