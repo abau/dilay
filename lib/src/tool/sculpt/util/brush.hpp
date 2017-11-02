@@ -61,6 +61,21 @@ public:
   MEMBER_GETTER_SETTER (bool, invert);
 };
 
+class SBDiscardBackParameter : virtual public SBParameters
+{
+public:
+  SBDiscardBackParameter ()
+    : _discardBack (true)
+  {
+  }
+
+  bool discardBack () const override { return this->_discardBack; }
+  void discardBack (bool d) { this->_discardBack = d; }
+
+private:
+  bool _discardBack;
+};
+
 class SBDrawParameters : public SBIntensityParameter, public SBInvertParameter
 {
 public:
@@ -75,19 +90,12 @@ public:
   MEMBER_GETTER_SETTER (bool, constantHeight);
 };
 
-class SBGrablikeParameters : public SBParameters
+class SBGrablikeParameters : public SBDiscardBackParameter
 {
 public:
-  SBGrablikeParameters ()
-    : _discardBack (true)
-  {
-  }
-
-  void sculpt (const SculptBrush&, const DynamicFaces&) const;
+  void sculpt (const SculptBrush&, const DynamicFaces&) const override;
 
   bool useLastPos () const override { return true; }
-
-  MEMBER_GETTER_SETTER (bool, discardBack);
 };
 
 class SBSmoothParameters : public SBIntensityParameter
@@ -108,7 +116,7 @@ class SBReduceParameters : public SBIntensityParameter
 public:
   bool reduce () const override { return true; }
 
-  void sculpt (const SculptBrush&, const DynamicFaces&) const;
+  void sculpt (const SculptBrush&, const DynamicFaces&) const override;
 };
 
 class SBFlattenParameters : public SBIntensityParameter
@@ -116,7 +124,7 @@ class SBFlattenParameters : public SBIntensityParameter
 public:
   SBFlattenParameters ();
 
-  void sculpt (const SculptBrush&, const DynamicFaces&) const;
+  void sculpt (const SculptBrush&, const DynamicFaces&) const override;
 
   bool             hasLockedPlane () const;
   const PrimPlane& lockedPlane () const;

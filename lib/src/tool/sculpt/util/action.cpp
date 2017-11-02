@@ -226,7 +226,7 @@ namespace
 
     NewFaces newF;
 
-    mesh.forEachFaceExt (faces, [&mesh, &newE, &faces, &newF](unsigned int f) {
+    mesh.forEachFaceExt (faces, [&mesh, &newE, &newF](unsigned int f) {
       unsigned int i1, i2, i3;
       mesh.vertexIndices (f, i1, i2, i3);
 

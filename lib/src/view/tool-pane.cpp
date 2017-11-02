@@ -70,7 +70,7 @@ struct ViewToolPane::Impl
     this->buttons.emplace (T::classKey, &button);
     button.setCheckable (true);
 
-    ViewUtil::connect (button, [this, &button]() {
+    ViewUtil::connect (button, [this]() {
       State& s = this->glWidget.state ();
       s.resetTool ();
       s.setTool (std::move (*new T (s)));

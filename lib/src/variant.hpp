@@ -153,6 +153,7 @@ namespace VariantDetails
     template <typename U> U caseOf (unsigned int i, const std::function<U (T&)>& branch) const
     {
       assert (i == 0);
+      (void) i;
       return branch (*this->t);
     }
   };

@@ -143,7 +143,7 @@ struct Scene::Impl
   template <typename TMesh, typename TIntersection, typename... Ts>
   bool intersectsT (const PrimRay& ray, TIntersection& intersection, Ts... args)
   {
-    this->forEachMesh ([this, &ray, &intersection, &args...](TMesh& m) {
+    this->forEachMesh ([&ray, &intersection, &args...](TMesh& m) {
       m.intersects (ray, intersection, std::forward<Ts> (args)...);
     });
     return intersection.isIntersection ();
@@ -339,7 +339,7 @@ struct Scene::Impl
   unsigned int numFaces () const
   {
     unsigned int n = 0;
-    this->forEachConstMesh ([this, &n](const DynamicMesh& mesh) { n += mesh.numFaces (); });
+    this->forEachConstMesh ([&n](const DynamicMesh& mesh) { n += mesh.numFaces (); });
     return n;
   }
 
@@ -385,8 +385,8 @@ struct Scene::Impl
 
   void runFromConfig (const Config& config)
   {
-    this->forEachMesh ([this, &config](DynamicMesh& mesh) { mesh.fromConfig (config); });
-    this->forEachMesh ([this, &config](SketchMesh& mesh) { mesh.fromConfig (config); });
+    this->forEachMesh ([&config](DynamicMesh& mesh) { mesh.fromConfig (config); });
+    this->forEachMesh ([&config](SketchMesh& mesh) { mesh.fromConfig (config); });
   }
 };
 

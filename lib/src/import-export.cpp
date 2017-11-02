@@ -51,10 +51,9 @@ namespace
 
     unsigned int childIndex = nodeIndex;
 
-    node.forEachConstChild (
-      [&stream, parentIndex, nodeIndex, &childIndex](const SketchNode& child) {
-        childIndex = toDlyFile (stream, child, nodeIndex, childIndex + 1);
-      });
+    node.forEachConstChild ([&stream, nodeIndex, &childIndex](const SketchNode& child) {
+      childIndex = toDlyFile (stream, child, nodeIndex, childIndex + 1);
+    });
     return childIndex;
   }
 

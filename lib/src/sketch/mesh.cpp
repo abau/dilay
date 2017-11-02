@@ -892,7 +892,7 @@ struct SketchMesh::Impl
       }
       if (this->tree.hasRoot ())
       {
-        this->tree.root ().forEachNode ([this, &p1](SketchNode& node) {
+        this->tree.root ().forEachNode ([&p1](SketchNode& node) {
           if (node.parent ())
           {
             const PrimConeSphere coneSphere (node.data (), node.parent ()->data ());

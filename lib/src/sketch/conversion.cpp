@@ -917,6 +917,10 @@ namespace
           iv = params.cubeIndex (x, y - 1, z);
           iuv = params.cubeIndex (x - 1, y - 1, z);
         }
+        else
+        {
+          DILAY_IMPOSSIBLE
+        }
         makeQuad (edge, s1 >= 0.0f, i, iu, iv, iuv);
       }
     };

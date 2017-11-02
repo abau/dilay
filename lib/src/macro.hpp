@@ -773,7 +773,7 @@ private:                                            \
   const t& operator= (t&&) = default;
 
 #define IMPLEMENTATION \
-  class Impl;          \
+  struct Impl;         \
   std::unique_ptr<Impl> impl;
 
 #define ESC_PARENS(...) __VA_ARGS__

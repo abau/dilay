@@ -345,8 +345,8 @@ namespace
         }
         else
         {
-          constexpr float bestAngle = glm::cos (glm::radians (60.0f));
-          const float     w = glm::abs (v->angle - bestAngle);
+          const float bestAngle = glm::cos (glm::radians (60.0f));
+          const float w = glm::abs (v->angle - bestAngle);
 
           if (w < weight)
           {

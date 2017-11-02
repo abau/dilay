@@ -44,7 +44,7 @@ void SBDrawParameters::sculpt (const SculptBrush& brush, const DynamicFaces& fac
       const glm::vec3 planePos = brush.position () + (planeNormal * intensity * brush.radius ());
       const PrimPlane plane (planePos, planeNormal);
 
-      brush.mesh ().forEachVertex (faces, [this, &brush, &plane, intensity](unsigned int i) {
+      brush.mesh ().forEachVertex (faces, [&brush, &plane, intensity](unsigned int i) {
         const glm::vec3& oldPos = brush.mesh ().vertex (i);
         const float      factor = intensity * Util::linearStep (oldPos, brush.position (),
                                                            0.5f * brush.radius (), brush.radius ());
@@ -59,7 +59,7 @@ void SBDrawParameters::sculpt (const SculptBrush& brush, const DynamicFaces& fac
       const float     intensity = 0.1f * this->intensity () * brush.radius ();
       const glm::vec3 avgDir = this->invert (brush.mesh ().averageNormal (faces));
 
-      brush.mesh ().forEachVertex (faces, [this, &brush, &avgDir, intensity](unsigned int i) {
+      brush.mesh ().forEachVertex (faces, [&brush, &avgDir, intensity](unsigned int i) {
         const glm::vec3& oldPos = brush.mesh ().vertex (i);
         const float      factor =
           intensity * Util::smoothStep (oldPos, brush.position (), 0.0f, brush.radius ());
@@ -73,7 +73,7 @@ void SBDrawParameters::sculpt (const SculptBrush& brush, const DynamicFaces& fac
 
 void SBGrablikeParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
 {
-  brush.mesh ().forEachVertex (faces, [this, &brush](unsigned int i) {
+  brush.mesh ().forEachVertex (faces, [&brush](unsigned int i) {
     const glm::vec3& oldPos = brush.mesh ().vertex (i);
     const float factor = Util::linearStep (oldPos, brush.lastPosition (), 0.0f, brush.radius ());
     const glm::vec3 newPos = oldPos + (factor * brush.delta ());
@@ -155,7 +155,7 @@ void SBCreaseParameters::sculpt (const SculptBrush& brush, const DynamicFaces& f
 
 void SBPinchParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
 {
-  brush.mesh ().forEachVertex (faces, [this, &brush](unsigned int i) {
+  brush.mesh ().forEachVertex (faces, [&brush](unsigned int i) {
     const glm::vec3& oldPos = brush.mesh ().vertex (i);
     const glm::vec3  delta = brush.position () - oldPos;
     const float      distance = glm::length (delta) / brush.radius ();

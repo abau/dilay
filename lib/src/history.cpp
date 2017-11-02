@@ -49,15 +49,13 @@ namespace
 
     if (config.snapshotDynamicMeshes)
     {
-      scene.forEachConstMesh ([&config, &snapshot](const DynamicMesh& mesh) {
-        snapshot.dynamicMeshes.emplace_back (mesh);
-      });
+      scene.forEachConstMesh (
+        [&snapshot](const DynamicMesh& mesh) { snapshot.dynamicMeshes.emplace_back (mesh); });
     }
     if (config.snapshotSketchMeshes)
     {
-      scene.forEachConstMesh ([&config, &snapshot](const SketchMesh& mesh) {
-        snapshot.sketchMeshes.emplace_back (mesh);
-      });
+      scene.forEachConstMesh (
+        [&snapshot](const SketchMesh& mesh) { snapshot.sketchMeshes.emplace_back (mesh); });
     }
     return snapshot;
   }
@@ -117,7 +115,7 @@ struct History::Impl
     {
       this->past.pop_back ();
     }
-    this->past.push_front (std::move (sceneSnapshot (scene, config)));
+    this->past.push_front (sceneSnapshot (scene, config));
   }
 
   void dropPastSnapshot ()
@@ -142,7 +140,7 @@ struct History::Impl
     {
       const SnapshotConfig& config = this->past.front ().config;
 
-      this->future.push_front (std::move (sceneSnapshot (state.scene (), config)));
+      this->future.push_front (sceneSnapshot (state.scene (), config));
       resetToSnapshot (this->past.front (), state);
       this->past.pop_front ();
     }
@@ -154,7 +152,7 @@ struct History::Impl
     {
       const SnapshotConfig& config = this->future.front ().config;
 
-      this->past.push_front (std::move (sceneSnapshot (state.scene (), config)));
+      this->past.push_front (sceneSnapshot (state.scene (), config));
       resetToSnapshot (this->future.front (), state);
       this->future.pop_front ();
     }

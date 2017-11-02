@@ -24,7 +24,7 @@
 
 namespace
 {
-  class IndexOctreeNode;
+  struct IndexOctreeNode;
   typedef Maybe<IndexOctreeNode> Child;
 
   struct IndexOctreeStatistics
