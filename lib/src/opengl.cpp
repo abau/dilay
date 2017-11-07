@@ -55,7 +55,7 @@ namespace OpenGL
     QSurfaceFormat::setDefaultFormat (format);
   }
 
-  void initializeFunctions ()
+  void initializeFunctions (bool initGeometryShader)
   {
     fun = QOpenGLContext::currentContext ()->versionFunctions<QOpenGLFunctions_2_1> ();
     if (fun == nullptr)
@@ -64,14 +64,19 @@ namespace OpenGL
     }
     fun->initializeOpenGLFunctions ();
 
-    if (OpenGL::supportsGeometryShader ())
+    if (initGeometryShader)
     {
-      gsFun = std::make_unique<QOpenGLExtension_EXT_geometry_shader4> ();
-      if (gsFun == nullptr)
+      const bool support =
+        QOpenGLContext::currentContext ()->hasExtension (QByteArray ("GL_EXT_geometry_shader4"));
+      if (support)
       {
-        DILAY_PANIC ("could not initialize GL_EXT_geometry_shader4 extension")
+        gsFun = std::make_unique<QOpenGLExtension_EXT_geometry_shader4> ();
+        if (gsFun == nullptr)
+        {
+          DILAY_PANIC ("could not initialize GL_EXT_geometry_shader4 extension")
+        }
+        gsFun->initializeOpenGLFunctions ();
       }
-      gsFun->initializeOpenGLFunctions ();
     }
 
     DILAY_INFO ("OpenGL version: %s", fun->glGetString (GL_VERSION));
@@ -155,10 +160,7 @@ namespace OpenGL
                 const void*)
   DELEGATE4_GL (void, glViewport, unsigned int, unsigned int, unsigned int, unsigned int)
 
-  bool supportsGeometryShader ()
-  {
-    return QOpenGLContext::currentContext ()->hasExtension (QByteArray ("GL_EXT_geometry_shader4"));
-  }
+  bool hasGeometryShader () { return bool(gsFun); }
 
   void glUniformVec3 (unsigned int id, const glm::vec3& v) { fun->glUniform3f (id, v.x, v.y, v.z); }
   void glUniformVec4 (unsigned int id, const glm::vec4& v)
@@ -241,7 +243,7 @@ namespace OpenGL
 
     if (loadGeometryShader)
     {
-      assert (OpenGL::supportsGeometryShader ());
+      assert (OpenGL::hasGeometryShader ());
 
       gmId = compileShader (GL_GEOMETRY_SHADER_EXT, Shader::geometryShader ());
       fun->glAttachShader (programId, gmId);

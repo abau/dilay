@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <glm/glm.hpp>
 #include "camera.hpp"
+#include "config.hpp"
 #include "mesh-util.hpp"
 #include "mesh.hpp"
 #include "opengl.hpp"
@@ -98,7 +99,7 @@ struct ViewGlWidget::Impl
 
   void initializeGL ()
   {
-    OpenGL::initializeFunctions ();
+    OpenGL::initializeFunctions (this->config.get<bool> ("editor/use-geometry-shader"));
 
     this->_state.reset (new State (this->mainWindow, this->config, this->cache));
     this->axis.reset (new ViewAxis (this->config));

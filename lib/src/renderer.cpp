@@ -133,7 +133,7 @@ struct Renderer::Impl
 
   void initalizeProgram (const RenderMode& renderMode)
   {
-    assert (renderMode.renderWireframe () == false || OpenGL::supportsGeometryShader ());
+    assert (renderMode.renderWireframe () == false || OpenGL::hasGeometryShader ());
 
     const unsigned int id = OpenGL::loadProgram (
       renderMode.vertexShader (), renderMode.fragmentShader (), renderMode.renderWireframe ());

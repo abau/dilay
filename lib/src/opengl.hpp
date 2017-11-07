@@ -12,7 +12,7 @@ namespace OpenGL
 {
   // QT related
   void setDefaultFormat ();
-  void initializeFunctions ();
+  void initializeFunctions (bool);
 
   // wrappers
   unsigned int Always ();
@@ -95,7 +95,7 @@ namespace OpenGL
     NormalIndex = 1
   };
 
-  bool         supportsGeometryShader ();
+  bool         hasGeometryShader ();
   void         glUniformVec3 (unsigned int, const glm::vec3&);
   void         glUniformVec4 (unsigned int, const glm::vec4&);
   void         safeDeleteBuffer (unsigned int&);

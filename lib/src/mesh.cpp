@@ -232,7 +232,7 @@ struct Mesh::Impl
 
   void renderBegin (Camera& camera) const
   {
-    if (this->renderMode.renderWireframe () && OpenGL::supportsGeometryShader () == false)
+    if (this->renderMode.renderWireframe () && OpenGL::hasGeometryShader () == false)
     {
       RenderMode nonWireframeRenderMode (this->renderMode);
       nonWireframeRenderMode.renderWireframe (false);
@@ -284,7 +284,7 @@ struct Mesh::Impl
     OpenGL::glDrawElements (OpenGL::Triangles (), this->numIndices (), OpenGL::UnsignedInt (),
                             nullptr);
 
-    if (this->renderMode.renderWireframe () && OpenGL::supportsGeometryShader () == false)
+    if (this->renderMode.renderWireframe () && OpenGL::hasGeometryShader () == false)
     {
       camera.renderer ().setColor (this->wireframeColor);
       OpenGL::glPolygonMode (OpenGL::FrontAndBack (), OpenGL::Line ());
