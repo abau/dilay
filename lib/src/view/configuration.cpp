@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <algorithm>
+#include <array>
 #include "../util.hpp"
 #include "color.hpp"
 #include "config.hpp"
@@ -22,7 +23,7 @@
 
 namespace
 {
-  const std::array<std::string, 1> requireRestart ({{"editor/use-geometry-shader"}});
+  const std::array<std::string, 1> requireRestart = {"editor/use-geometry-shader"};
 
   struct DialogData
   {
