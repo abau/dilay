@@ -40,7 +40,7 @@ struct Camera::Impl
 
   const glm::vec3& up () const
   {
-    static constexpr glm::vec3 up (0.0f, 1.0f, 0.0f);
+    static const glm::vec3 up (0.0f, 1.0f, 0.0f);
     return up;
   }
 

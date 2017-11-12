@@ -128,10 +128,10 @@ struct ToolTrimMesh::Impl
     const glm::ivec2& p1 = reverse ? this->points[1] : this->points[0];
     const glm::ivec2& p2 = reverse ? this->points[0] : this->points[1];
     const float       fOffset = 0.5f * float(offset);
-    const glm::ivec2  orth =
-      glm::ceil (glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1))) * fOffset);
-    const PrimRay ray1 = this->self->state ().camera ().ray (p1 + orth);
-    const PrimRay ray2 = this->self->state ().camera ().ray (p2 + orth);
+    const glm::vec2   normOrth = glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1)));
+    const glm::ivec2  orth = glm::ivec2 (glm::ceil (normOrth * fOffset));
+    const PrimRay     ray1 = this->self->state ().camera ().ray (p1 + orth);
+    const PrimRay     ray2 = this->self->state ().camera ().ray (p2 + orth);
 
     ToolTrimMeshBorder border (mesh, ray1, ray2);
 

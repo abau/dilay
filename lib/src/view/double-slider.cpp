@@ -14,7 +14,7 @@ struct ViewDoubleSlider::Impl
 
   Impl (ViewDoubleSlider* s, unsigned short numDecimals, unsigned short o)
     : self (s)
-    , factor (glm::pow (10, numDecimals))
+    , factor (glm::pow (10.0f, float(numDecimals)))
     , order (o)
   {
     assert (this->order > 0);
@@ -38,7 +38,7 @@ struct ViewDoubleSlider::Impl
       const double max = double(this->self->maximum ()) / this->factor;
       const double d = double(value) / this->factor;
       const double norm = (d - min) / (max - min);
-      const double result = min + (glm::pow (norm, float(o)) * (max - min));
+      const double result = min + (glm::pow (float(norm), float(o)) * (max - min));
 
       return result;
     }
@@ -57,7 +57,8 @@ struct ViewDoubleSlider::Impl
       const double min = double(this->self->minimum ()) / this->factor;
       const double max = double(this->self->maximum ()) / this->factor;
       const double norm = (value - min) / (max - min);
-      const double slope = norm <= Util::epsilon () ? 0.0f : glm::pow (norm, 1.0f / float(o));
+      const double slope =
+        norm <= Util::epsilon () ? 0.0f : glm::pow (float(norm), 1.0f / float(o));
 
       return int(std::round (this->factor * (min + (slope * (max - min)))));
     }

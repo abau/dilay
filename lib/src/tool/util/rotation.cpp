@@ -58,7 +58,7 @@ struct ToolUtilRotation::Impl
 
         if (Util::cross (this->direction, newDirection) > 0.0f)
         {
-          this->angle = glm::two_pi<float> () - this->angle;
+          this->angle = (2.0f * glm::pi<float> ()) - this->angle;
         }
       }
       this->direction = newDirection;

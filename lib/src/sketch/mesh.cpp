@@ -588,7 +588,7 @@ struct SketchMesh::Impl
       const glm::mat4x4 matrix = Util::rotation (node.data ().center (), axis, angle);
 
       node.forEachNode ([&matrix](SketchNode& n) {
-        n.data ().center (matrix * glm::vec4 (n.data ().center (), 1.0f));
+        n.data ().center (glm::vec3 (matrix * glm::vec4 (n.data ().center (), 1.0f)));
       });
     };
 
