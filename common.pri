@@ -8,7 +8,7 @@ QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 QMAKE_CXXFLAGS_DEBUG   += -Wall -Werror # -pg # -DDILAY_RENDER_OCTREE
 QMAKE_LFLAGS_DEBUG     += # -pg
 
-win32:INCLUDEPATH      += $$PWD/win32-data/glm/
+win32:INCLUDEPATH      += $$PWD/glm/
 
 unix {
   isEmpty (PREFIX) {
