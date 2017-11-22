@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Dilay
+Comment=A 3D sculpting application
+Exec=dilay
+Icon=dilay
+Terminal=false
+Categories=Graphics;3DGraphics;

@@ -30,7 +30,7 @@ win32 {
       PRE_TARGETDEPS += $$OUT_PWD/../lib/debug/dilay.lib
     }
   }
-  RC_ICONS = $$PWD/../win32-data/icon.ico
+  RC_ICONS = $$PWD/../win32/icon.ico
 
   QMAKE_POST_LINK += $$PWD/../win32/deploy.bat $$shell_path($$[QT_INSTALL_PREFIX]) \
                                                $$shell_path($$DESTDIR) \
@@ -44,6 +44,26 @@ unix {
 
   target.path     = $$PREFIX/bin/
   INSTALLS       += target
+
+  desktop.path    = $$PREFIX/share/applications/
+  desktop.files   = ../unix/dilay.desktop
+  INSTALLS       += desktop
+
+  icon16.path     = $$PREFIX/share/icons/hicolor/16x16/apps/
+  icon16.files    = ../unix/icon/16x16/dilay.png
+  INSTALLS       += icon16
+
+  icon32.path     = $$PREFIX/share/icons/hicolor/32x32/apps/
+  icon32.files    = ../unix/icon/32x32/dilay.png
+  INSTALLS       += icon32
+
+  icon48.path     = $$PREFIX/share/icons/hicolor/48x48/apps/
+  icon48.files    = ../unix/icon/48x48/dilay.png
+  INSTALLS       += icon48
+
+  icon256.path    = $$PREFIX/share/icons/hicolor/256x256/apps/
+  icon256.files   = ../unix/icon/256x256/dilay.png
+  INSTALLS       += icon256
 
   format.commands = clang-format -style=file -i $$SOURCES $$HEADERS
   QMAKE_EXTRA_TARGETS += format
