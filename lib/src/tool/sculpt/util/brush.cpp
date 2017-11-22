@@ -102,7 +102,7 @@ void SBFlattenParameters::sculpt (const SculptBrush& brush, const DynamicFaces& 
 {
   if (faces.isEmpty () == false)
   {
-    PrimPlane plane (glm::vec3 (0.0f), glm::vec3 (0.0f));
+    PrimPlane plane (glm::vec3 (0.0f), glm::vec3 (1.0f));
 
     if (this->hasLockedPlane ())
     {
