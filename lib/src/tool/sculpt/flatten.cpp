@@ -10,7 +10,6 @@
 #include "tool/sculpt/util/brush.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
-#include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
 #include "view/two-column-grid.hpp"
