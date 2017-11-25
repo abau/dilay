@@ -76,12 +76,12 @@ struct ToolMoveMesh::Impl
   {
     if (e.leftButton ())
     {
-      this->runCommit ();
+      return this->runCommit ();
     }
     return ToolResponse::None;
   }
 
-  void runCommit ()
+  ToolResponse runCommit ()
   {
     if (this->mesh)
     {
@@ -89,6 +89,7 @@ struct ToolMoveMesh::Impl
       this->mesh->bufferData ();
       this->mesh = nullptr;
     }
+    return ToolResponse::None;
   }
 };
 

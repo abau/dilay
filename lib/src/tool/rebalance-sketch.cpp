@@ -49,7 +49,11 @@ struct ToolRebalanceSketch::Impl
     return ToolResponse::None;
   }
 
-  void runCommit () { this->self->state ().scene ().renderWireframe (this->renderWireframe); }
+  ToolResponse runCommit ()
+  {
+    this->self->state ().scene ().renderWireframe (this->renderWireframe);
+    return ToolResponse::Redraw;
+  }
 };
 
 DELEGATE_TOOL (ToolRebalanceSketch, "rebalance-sketch")

@@ -87,7 +87,7 @@ struct Tool::Impl
 
   ToolResponse cursorUpdate (const glm::ivec2& pos) { return this->self->runCursorUpdate (pos); }
 
-  void commit () { return this->self->runCommit (); }
+  ToolResponse commit () { return this->self->runCommit (); }
 
   void fromConfig ()
   {
@@ -284,7 +284,7 @@ DELEGATE1_CONST (void, Tool, paint, QPainter&)
 DELEGATE1 (ToolResponse, Tool, pointingEvent, const ViewPointingEvent&)
 DELEGATE1 (ToolResponse, Tool, wheelEvent, const QWheelEvent&)
 DELEGATE1 (ToolResponse, Tool, cursorUpdate, const glm::ivec2&)
-DELEGATE (void, Tool, commit)
+DELEGATE (ToolResponse, Tool, commit)
 DELEGATE (void, Tool, fromConfig)
 GETTER_CONST (State&, Tool, state)
 DELEGATE (void, Tool, updateGlWidget)

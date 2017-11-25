@@ -53,13 +53,14 @@ struct ToolNewMesh::Impl
     }
   }
 
-  void runCommit ()
+  ToolResponse runCommit ()
   {
     if (this->mesh)
     {
       this->self->snapshotDynamicMeshes ();
       this->self->state ().scene ().newDynamicMesh (this->self->state ().config (), *this->mesh);
     }
+    return ToolResponse::None;
   }
 
   void setupProperties ()
