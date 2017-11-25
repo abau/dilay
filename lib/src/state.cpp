@@ -219,7 +219,7 @@ struct State::Impl
     {
       this->previousToolKey = this->toolPtr->key ();
       this->mainWindow.toolPane ().button (this->toolPtr->key ()).setChecked (false);
-      this->toolPtr->close ();
+      this->toolPtr->commit ();
       this->toolPtr.reset ();
 
       this->mainWindow.toolPane ().properties ().reset ();

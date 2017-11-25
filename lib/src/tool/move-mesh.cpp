@@ -76,12 +76,12 @@ struct ToolMoveMesh::Impl
   {
     if (e.leftButton ())
     {
-      this->runClose ();
+      this->runCommit ();
     }
     return ToolResponse::None;
   }
 
-  void runClose ()
+  void runCommit ()
   {
     if (this->mesh)
     {
@@ -96,4 +96,4 @@ DELEGATE_TOOL (ToolMoveMesh, "move-mesh")
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolMoveMesh)
-DELEGATE_TOOL_RUN_CLOSE (ToolMoveMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolMoveMesh)

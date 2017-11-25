@@ -110,12 +110,12 @@ struct ToolRotateMesh::Impl
   {
     if (e.leftButton ())
     {
-      this->runClose ();
+      this->runCommit ();
     }
     return ToolResponse::None;
   }
 
-  void runClose ()
+  void runCommit ()
   {
     if (this->mesh)
     {
@@ -130,4 +130,4 @@ DELEGATE_TOOL (ToolRotateMesh, "rotate-mesh")
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolRotateMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolRotateMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRotateMesh)
-DELEGATE_TOOL_RUN_CLOSE (ToolRotateMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolRotateMesh)

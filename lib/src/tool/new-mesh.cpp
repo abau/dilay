@@ -53,7 +53,7 @@ struct ToolNewMesh::Impl
     }
   }
 
-  void runClose ()
+  void runCommit ()
   {
     if (this->mesh)
     {
@@ -103,4 +103,4 @@ struct ToolNewMesh::Impl
 
 DELEGATE_TOOL (ToolNewMesh, "new-mesh")
 DELEGATE_TOOL_RUN_RENDER (ToolNewMesh)
-DELEGATE_TOOL_RUN_CLOSE (ToolNewMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolNewMesh)

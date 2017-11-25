@@ -42,7 +42,7 @@ public:
   ToolResponse pointingEvent (const ViewPointingEvent&);
   ToolResponse wheelEvent (const QWheelEvent&);
   ToolResponse cursorUpdate (const glm::ivec2&);
-  void         close ();
+  void         commit ();
   void         fromConfig ();
 
 protected:
@@ -92,7 +92,7 @@ private:
 
   virtual ToolResponse runCursorUpdate (const glm::ivec2&) { return ToolResponse::None; }
 
-  virtual void runClose () {}
+  virtual void runCommit () {}
 
   virtual void runFromConfig () {}
 };
@@ -119,7 +119,7 @@ private:
 #define DECLARE_TOOL_RUN_RELEASE_EVENT ToolResponse runReleaseEvent (const ViewPointingEvent&);
 #define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT ToolResponse runWheelEvent (const QWheelEvent&);
 #define DECLARE_TOOL_RUN_CURSOR_UPDATE ToolResponse runCursorUpdate (const glm::ivec2&);
-#define DECLARE_TOOL_RUN_CLOSE void runClose ();
+#define DECLARE_TOOL_RUN_COMMIT void runCommit ();
 #define DECLARE_TOOL_RUN_FROM_CONFIG void runFromConfig ();
 
 #define DELEGATE_TOOL(name, theKey)                                         \
@@ -141,7 +141,7 @@ private:
   DELEGATE1 (ToolResponse, n, runWheelEvent, const QWheelEvent&)
 #define DELEGATE_TOOL_RUN_CURSOR_UPDATE(n) \
   DELEGATE1 (ToolResponse, n, runCursorUpdate, const glm::ivec2&)
-#define DELEGATE_TOOL_RUN_CLOSE(n) DELEGATE (void, n, runClose)
+#define DELEGATE_TOOL_RUN_COMMIT(n) DELEGATE (void, n, runCommit)
 #define DELEGATE_TOOL_RUN_FROM_CONFIG(n) DELEGATE (void, n, runFromConfig)
 
 #endif
