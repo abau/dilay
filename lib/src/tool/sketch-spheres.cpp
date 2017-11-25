@@ -253,11 +253,7 @@ struct ToolSketchSpheres::Impl
     }
   }
 
-  ToolResponse runReleaseEvent (const ViewPointingEvent&)
-  {
-    this->mesh = nullptr;
-    return ToolResponse::None;
-  }
+  ToolResponse runReleaseEvent (const ViewPointingEvent&) { return this->runCommit (); }
 
   ToolResponse runWheelEvent (const QWheelEvent& e)
   {
@@ -292,6 +288,12 @@ struct ToolSketchSpheres::Impl
     return ToolResponse::Redraw;
   }
 
+  ToolResponse runCommit ()
+  {
+    this->mesh = nullptr;
+    return ToolResponse::None;
+  }
+
   void runFromConfig ()
   {
     const Config& config = this->self->config ();
@@ -308,4 +310,5 @@ DELEGATE_TOOL_RUN_PRESS_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_CURSOR_UPDATE (ToolSketchSpheres)
+DELEGATE_TOOL_RUN_COMMIT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_FROM_CONFIG (ToolSketchSpheres)

@@ -238,6 +238,12 @@ struct ToolSculpt::Impl
     return ToolResponse::Redraw;
   }
 
+  ToolResponse runCommit ()
+  {
+    this->brush.resetPointOfAction ();
+    return ToolResponse::None;
+  }
+
   void runFromConfig ()
   {
     const Config& config = this->self->config ();
@@ -520,4 +526,5 @@ DELEGATE_CONST (void, ToolSculpt, runRender)
 DELEGATE1 (ToolResponse, ToolSculpt, runPointingEvent, const ViewPointingEvent&)
 DELEGATE1 (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
 DELEGATE1 (ToolResponse, ToolSculpt, runCursorUpdate, const glm::ivec2&)
+DELEGATE (ToolResponse, ToolSculpt, runCommit)
 DELEGATE (void, ToolSculpt, runFromConfig)

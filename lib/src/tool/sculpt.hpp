@@ -37,6 +37,7 @@ private:
   ToolResponse runPointingEvent (const ViewPointingEvent&);
   ToolResponse runWheelEvent (const QWheelEvent&);
   ToolResponse runCursorUpdate (const glm::ivec2&);
+  ToolResponse runCommit ();
   void         runFromConfig ();
 
   virtual void runSetupBrush (SculptBrush&) = 0;

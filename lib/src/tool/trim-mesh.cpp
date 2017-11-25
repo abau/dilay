@@ -285,6 +285,12 @@ struct ToolTrimMesh::Impl
     }
   }
 
+  ToolResponse runCommit ()
+  {
+    this->points.clear ();
+    return ToolResponse::Redraw;
+  }
+
   void runPaint (QPainter& painter) const
   {
     const QPoint cursorPos (ViewUtil::toQPoint (this->self->cursorPosition ()));
@@ -312,3 +318,4 @@ DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_PAINT (ToolTrimMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolTrimMesh)

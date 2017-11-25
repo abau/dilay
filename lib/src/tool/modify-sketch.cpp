@@ -219,34 +219,41 @@ struct ToolModifySketch::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
   {
-    bool redraw = false;
-
     if (e.leftButton ())
     {
-      if (this->snap && this->mesh && this->self->hasMirror ())
-      {
-        PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
-
-        const auto isSnappable = [this, &mirrorPlane](const SketchNode& node) -> bool {
-          return mirrorPlane.absDistance (node.data ().center ()) <=
-                 (this->snapWidthEdit.value ()) * this->self->mirror ().width ();
-        };
-
-        if (this->node && isSnappable (*this->node))
-        {
-          this->mesh->snap (*this->node, *this->self->mirrorDimension ());
-          redraw = true;
-        }
-        if (this->parent && isSnappable (*this->parent))
-        {
-          this->mesh->snap (*this->parent, *this->self->mirrorDimension ());
-          redraw = true;
-        }
-      }
-      this->mesh = nullptr;
-      this->node = nullptr;
-      this->parent = nullptr;
+      return this->runCommit ();
     }
+    return ToolResponse::None;
+  }
+
+  ToolResponse runCommit ()
+  {
+    bool redraw = false;
+
+    if (this->snap && this->mesh && this->self->hasMirror ())
+    {
+      PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
+
+      const auto isSnappable = [this, &mirrorPlane](const SketchNode& node) -> bool {
+        return mirrorPlane.absDistance (node.data ().center ()) <=
+               (this->snapWidthEdit.value ()) * this->self->mirror ().width ();
+      };
+
+      if (this->node && isSnappable (*this->node))
+      {
+        this->mesh->snap (*this->node, *this->self->mirrorDimension ());
+        redraw = true;
+      }
+      if (this->parent && isSnappable (*this->parent))
+      {
+        this->mesh->snap (*this->parent, *this->self->mirrorDimension ());
+        redraw = true;
+      }
+    }
+    this->mesh = nullptr;
+    this->node = nullptr;
+    this->parent = nullptr;
+
     return redraw ? ToolResponse::Redraw : ToolResponse::None;
   }
 };
@@ -255,3 +262,4 @@ DELEGATE_TOOL (ToolModifySketch, "modify-sketch")
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolModifySketch)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolModifySketch)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolModifySketch)
+DELEGATE_TOOL_RUN_COMMIT (ToolModifySketch)
