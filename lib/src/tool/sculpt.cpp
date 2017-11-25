@@ -28,6 +28,17 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
+namespace
+{
+  enum class SculptState
+  {
+    None,
+    Started,
+    Sculpted,
+    Ended
+  };
+}
+
 struct ToolSculpt::Impl
 {
   ToolSculpt*       self;
@@ -37,7 +48,7 @@ struct ToolSculpt::Impl
   ViewDoubleSlider& radiusEdit;
   ViewDoubleSlider* secondarySlider;
   bool              absoluteRadius;
-  bool              sculpted;
+  SculptState       sculptState;
   ToolUtilStep      step;
 
   Impl (ToolSculpt* s)
@@ -47,7 +58,7 @@ struct ToolSculpt::Impl
         ViewUtil::slider (2, 0.01f, this->commonCache.get<float> ("radius", 0.1f), 1.0f, 3))
     , secondarySlider (nullptr)
     , absoluteRadius (this->commonCache.get<bool> ("absolute-radius", true))
-    , sculpted (false)
+    , sculptState (SculptState::None)
   {
   }
 
@@ -184,22 +195,26 @@ struct ToolSculpt::Impl
     else if (e.pressEvent () && e.leftButton ())
     {
       this->self->snapshotDynamicMeshes ();
-      this->sculpted = false;
+      this->sculptState = SculptState::Started;
     }
 
-    if (this->self->runSculptPointingEvent (e))
+    if (e.leftButton ())
     {
-      this->sculpted = true;
+      const bool doSculpt =
+        this->sculptState == SculptState::Started || this->sculptState == SculptState::Sculpted;
+      if (doSculpt && this->self->runSculptPointingEvent (e))
+      {
+        this->sculptState = SculptState::Sculpted;
+      }
+    }
+    else
+    {
+      this->self->runSculptPointingEvent (e);
     }
 
     if (e.releaseEvent () && e.leftButton ())
     {
-      this->brush.resetPointOfAction ();
-
-      if (this->sculpted == false)
-      {
-        this->self->state ().history ().dropPastSnapshot ();
-      }
+      this->runCommit ();
     }
     return ToolResponse::Redraw;
   }
@@ -241,6 +256,12 @@ struct ToolSculpt::Impl
   ToolResponse runCommit ()
   {
     this->brush.resetPointOfAction ();
+
+    if (this->sculptState == SculptState::Started)
+    {
+      this->self->state ().history ().dropPastSnapshot ();
+    }
+    this->sculptState = SculptState::None;
     return ToolResponse::None;
   }
 

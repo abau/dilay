@@ -245,6 +245,10 @@ struct State::Impl
 
   void undo ()
   {
+    if (this->hasTool ())
+    {
+      this->handleToolResponse (this->toolPtr->commit ());
+    }
     this->history.undo (*this->self);
     this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();
@@ -252,6 +256,10 @@ struct State::Impl
 
   void redo ()
   {
+    if (this->hasTool ())
+    {
+      this->handleToolResponse (this->toolPtr->commit ());
+    }
     this->history.redo (*this->self);
     this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();
