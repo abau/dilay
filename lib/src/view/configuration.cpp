@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <algorithm>
 #include <array>
+#include <functional>
 #include "../util.hpp"
 #include "color.hpp"
 #include "config.hpp"
