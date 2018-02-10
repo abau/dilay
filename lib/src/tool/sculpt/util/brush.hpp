@@ -101,14 +101,7 @@ public:
 class SBSmoothParameters : public SBIntensityParameter
 {
 public:
-  SBSmoothParameters ()
-    : _relaxOnly (false)
-  {
-  }
-
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
-
-  MEMBER_GETTER_SETTER (bool, relaxOnly);
 };
 
 class SBReduceParameters : public SBIntensityParameter
