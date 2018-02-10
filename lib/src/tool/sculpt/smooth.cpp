@@ -25,6 +25,8 @@ struct ToolSculptSmooth::Impl
 
     params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
     params.relaxOnly (this->self->cache ().get<bool> ("relax-only", false));
+
+    brush.subdivide (false);
   }
 
   void runSetupCursor (ViewCursor&) {}

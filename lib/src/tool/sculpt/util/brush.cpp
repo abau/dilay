@@ -191,7 +191,7 @@ struct SculptBrush::Impl
     , radius (0.0f)
     , detailFactor (0.0f)
     , stepWidthFactor (0.0f)
-    , subdivide (false)
+    , subdivide (true)
     , _mesh (nullptr)
     , hasPointOfAction (false)
   {

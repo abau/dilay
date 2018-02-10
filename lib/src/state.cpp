@@ -140,9 +140,9 @@ struct State::Impl
           this->addToolShortcut<ToolSculptDraw> (tip, ViewInput::Event::D);
           this->addToolShortcut<ToolSculptCrease> (tip, ViewInput::Event::C);
           this->addToolShortcut<ToolSculptGrab> (tip, ViewInput::Event::G);
-          this->addToolShortcut<ToolSculptFlatten> (tip, ViewInput::Event::F);
-          this->addToolShortcut<ToolSculptSmooth> (tip, ViewInput::Event::S);
           this->addToolShortcut<ToolSculptPinch> (tip, ViewInput::Event::P);
+          this->addToolShortcut<ToolSculptSmooth> (tip, ViewInput::Event::S);
+          this->addToolShortcut<ToolSculptFlatten> (tip, ViewInput::Event::F);
           this->addToolShortcut<ToolSculptReduce> (tip, ViewInput::Event::R);
           this->addToolShortcut<ToolTrimMesh> (tip, ViewInput::Event::T);
 #ifndef NDEBUG

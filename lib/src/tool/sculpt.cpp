@@ -142,14 +142,6 @@ struct ToolSculpt::Impl
     });
     properties.add (absRadiusEdit);
 
-    QCheckBox& subdivEdit =
-      ViewUtil::checkBox (QObject::tr ("Subdivide"), this->brush.subdivide ());
-    ViewUtil::connect (subdivEdit, [this](bool s) {
-      this->brush.subdivide (s);
-      this->commonCache.set ("subdivide", s);
-    });
-    properties.add (subdivEdit);
-
     this->self->addMirrorProperties (true);
     properties.add (ViewUtil::horizontalLine ());
 
