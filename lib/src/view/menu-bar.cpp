@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QDesktopServices>
@@ -227,7 +227,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
     ViewUtil::about (
       mainWindow,
       QString ("Dilay " DILAY_VERSION " - ") + QObject::tr ("a 3D sculpting application") +
-        QString ("\n\n") + QString ("Copyright © 2015-2017 Alexander Bau") + QString ("\n\n") +
+        QString ("\n\n") + QString ("Copyright © 2015-2018 Alexander Bau") + QString ("\n\n") +
         QObject::tr ("Use and redistribute under the terms of the GNU General Public License"));
   });
 }
