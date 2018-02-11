@@ -6,13 +6,12 @@
 #include <glm/gtx/norm.hpp>
 #include <thread>
 #include <vector>
-#include "../mesh.hpp"
 #include "distance.hpp"
+#include "isosurface-extraction.hpp"
 #include "mesh-util.hpp"
+#include "mesh.hpp"
+#include "primitive/aabox.hpp"
 #include "primitive/cone-sphere.hpp"
-#include "sketch/conversion.hpp"
-#include "sketch/mesh.hpp"
-#include "sketch/path.hpp"
 #include "util.hpp"
 
 /* vertex layout:          edge layout:          face layout:
@@ -31,6 +30,8 @@
  */
 namespace
 {
+  typedef IsosurfaceExtraction::DistanceCallback DistanceCallback;
+
   static glm::vec3 invalidVec3 = glm::vec3 (Util::minFloat ());
 
 #ifndef NDEBUG
@@ -428,15 +429,17 @@ namespace
 
   struct Parameters
   {
-    float              resolution;
-    glm::vec3          sampleOrigin;
-    glm::uvec3         numSamples;
-    std::vector<float> samples;
-    glm::uvec3         numCubes;
-    std::vector<Cube>  grid;
+    const DistanceCallback& getDistance;
+    float                   resolution;
+    glm::vec3               sampleOrigin;
+    glm::uvec3              numSamples;
+    std::vector<float>      samples;
+    glm::uvec3              numCubes;
+    std::vector<Cube>       grid;
 
-    Parameters ()
-      : resolution (0.0f)
+    Parameters (const DistanceCallback& d)
+      : getDistance (d)
+      , resolution (0.0f)
       , sampleOrigin (glm::vec3 (0.0f))
       , numSamples (glm::uvec3 (0))
     {
@@ -512,45 +515,7 @@ namespace
     }
   };
 
-  void setupSampling (const SketchMesh& mesh, Parameters& params)
-  {
-    glm::vec3 min, max;
-    mesh.minMax (min, max);
-
-    min = min - glm::vec3 (Util::epsilon () + params.resolution);
-    max = max + glm::vec3 (Util::epsilon () + params.resolution);
-
-    params.sampleOrigin = min;
-    params.numSamples = glm::vec3 (1.0f) + glm::ceil ((max - min) / glm::vec3 (params.resolution));
-  }
-
-  float sampleAt (const SketchMesh& mesh, const glm::vec3& pos)
-  {
-    float distance = Util::maxFloat ();
-
-    if (mesh.tree ().hasRoot ())
-    {
-      mesh.tree ().root ().forEachConstNode ([&pos, &distance](const SketchNode& node) {
-        const float d =
-          node.parent ()
-            ? Distance::distance (PrimConeSphere (node.data (), node.parent ()->data ()), pos)
-            : Distance::distance (node.data (), pos);
-
-        distance = glm::min (distance, d);
-      });
-    }
-    for (const SketchPath& p : mesh.paths ())
-    {
-      for (const PrimSphere& s : p.spheres ())
-      {
-        distance = glm::min (distance, Distance::distance (s, pos));
-      }
-    }
-    return distance;
-  }
-
-  void sampleThread (const SketchMesh& mesh, Parameters& params, unsigned int numThreads,
-                     unsigned int threadId)
+  void sampleThread (Parameters& params, unsigned int numThreads, unsigned int threadId)
   {
     for (unsigned int z = 0; z < params.numSamples.z; z++)
     {
@@ -565,7 +530,7 @@ namespace
             const glm::vec3 pos = params.samplePos (x, y, z);
 
             assert (params.samples.at (index) == Util::maxFloat ());
-            params.samples.at (index) = sampleAt (mesh, pos);
+            params.samples.at (index) = params.getDistance (pos);
 
             assert (Util::isNaN (params.samples.at (index)) == false);
             assert (params.samples.at (index) != Util::maxFloat ());
@@ -578,7 +543,7 @@ namespace
     }
   }
 
-  void sample (const SketchMesh& mesh, Parameters& params)
+  void sample (Parameters& params)
   {
     const unsigned int numSamples = params.numSamples.x * params.numSamples.y * params.numSamples.z;
     params.samples.resize (numSamples, Util::maxFloat ());
@@ -588,7 +553,7 @@ namespace
 
     for (unsigned int i = 0; i < numThreads; i++)
     {
-      threads.emplace_back (sampleThread, std::ref (mesh), std::ref (params), numThreads, i);
+      threads.emplace_back (sampleThread, std::ref (params), numThreads, i);
     }
     for (unsigned int i = 0; i < numThreads; i++)
     {
@@ -952,18 +917,20 @@ namespace
   }
 }
 
-Mesh SketchConversion::convert (const SketchMesh& mesh, float resolution)
+Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance, const PrimAABox& bounds,
+                                    float resolution)
 {
-  assert (mesh.isEmpty () == false);
+  const glm::vec3 min = bounds.minimum () - glm::vec3 (Util::epsilon () + resolution);
+  const glm::vec3 max = bounds.maximum () + glm::vec3 (Util::epsilon () + resolution);
 
-  Parameters params;
+  Parameters params (getDistance);
   params.resolution = resolution;
-
-  setupSampling (mesh, params);
+  params.sampleOrigin = min;
+  params.numSamples = glm::vec3 (1.0f) + glm::ceil ((max - min) / glm::vec3 (resolution));
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
   {
-    sample (mesh, params);
+    sample (params);
     makeGrid (params);
     resolveNonManifolds (params);
     return makeMesh (params);
