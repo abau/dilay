@@ -8,6 +8,7 @@
 #include "primitive/cone.hpp"
 #include "primitive/cylinder.hpp"
 #include "primitive/sphere.hpp"
+#include "primitive/triangle.hpp"
 #include "util.hpp"
 
 namespace
@@ -173,4 +174,173 @@ float Distance::distance (const PrimConeSphere& coneSphere, const glm::vec3& poi
   {
     return glm::sqrt ((x * x) + (y * y)) - r1;
   }
+}
+
+// cf. https://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
+float Distance::distance (const PrimTriangle& tri, const glm::vec3& point)
+{
+  const glm::vec3& P = point;
+  const glm::vec3& B = tri.vertex1 ();
+  const glm::vec3  E0 = tri.vertex2 () - tri.vertex1 ();
+  const glm::vec3  E1 = tri.vertex3 () - tri.vertex1 ();
+  const glm::vec3  D = B - P;
+
+  const float a = glm::dot (E0, E0);
+  const float b = glm::dot (E0, E1);
+  const float c = glm::dot (E1, E1);
+  const float d = glm::dot (E0, D);
+  const float e = glm::dot (E1, D);
+
+  float       s = (b * e) - (c * d);
+  float       t = (b * d) - (a * e);
+  const float det = (a * c) - (b * b);
+
+  if (s + t <= det)
+  {
+    if (s < 0.0f)
+    {
+      if (t < 0.0f)
+      {
+        // region 4
+        if (d < 0.0f)
+        {
+          t = 0.0f;
+          s = -d > a ? 1.0f : -d / a;
+        }
+        else
+        {
+          s = 0.0f;
+          if (e >= 0.0f)
+          {
+            t = 0.0f;
+          }
+          else if (-e >= c)
+          {
+            t = 1.0f;
+          }
+          else
+          {
+            t = -e / c;
+          }
+        }
+      }
+      else
+      {
+        // region 3
+        s = 0.0f;
+        if (e >= 0.0f)
+        {
+          t = 0.0f;
+        }
+        else if (-e >= c)
+        {
+          t = 1.0f;
+        }
+        else
+        {
+          t = -e / c;
+        }
+      }
+    }
+    else if (t < 0.0f)
+    {
+      // region 5
+      t = 0.0f;
+      if (d >= 0.0f)
+      {
+        s = 0.0f;
+      }
+      else if (-d >= a)
+      {
+        s = 1.0f;
+      }
+      else
+      {
+        s = -d / a;
+      }
+    }
+    else
+    {
+      // region 0
+      s /= det;
+      t /= det;
+    }
+  }
+  else
+  {
+    if (s < 0.0f)
+    {
+      // region 2
+      const float tmp0 = b + d;
+      const float tmp1 = c + e;
+      if (tmp1 > tmp0)
+      {
+        const float numer = tmp1 - tmp0;
+        const float denom = a - (2.0f * b) + c;
+        s = numer >= denom ? 1.0f : numer / denom;
+        t = 1.0f - s;
+      }
+      else
+      {
+        s = 0.0f;
+        if (tmp1 <= 0.0f)
+        {
+          t = 1.0f;
+        }
+        else if (e >= 0.0f)
+        {
+          t = 0.0f;
+        }
+        else
+        {
+          t = -e / c;
+        }
+      }
+    }
+    else if (t < 0.0f)
+    {
+      // region 6
+      const float tmp0 = b + e;
+      const float tmp1 = a + d;
+      if (tmp1 > tmp0)
+      {
+        const float numer = tmp1 - tmp0;
+        const float denom = a - (2.0f * b) + c;
+        t = numer >= denom ? 1.0f : numer / denom;
+        s = 1.0f - t;
+      }
+      else
+      {
+        t = 0.0f;
+        if (tmp1 <= 0.0f)
+        {
+          s = 1.0f;
+        }
+        else if (d >= 0.0f)
+        {
+          s = 0.0f;
+        }
+        else
+        {
+          s = -d / a;
+        }
+      }
+    }
+    else
+    {
+      // region 1
+      const float numer = (c + e) - (b + d);
+      if (numer <= 0.0f)
+      {
+        s = 0.0f;
+      }
+      else
+      {
+        const float denom = a - (2.0f * b) + c;
+        s = numer >= denom ? 1.0f : numer / denom;
+      }
+      t = 1.0f - s;
+    }
+  }
+  return glm::distance (point, B + (s * E0) + (t * E1));
 }

@@ -8,6 +8,7 @@
 #include <vector>
 #include "../mesh.hpp"
 #include "config.hpp"
+#include "distance.hpp"
 #include "dynamic/faces.hpp"
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
@@ -947,6 +948,12 @@ struct DynamicMesh::Impl
     return this->containsOrIntersectsT<PrimAABox> (box, faces);
   }
 
+  float distance (const glm::vec3& pos) const
+  {
+    return this->octree.distance (
+      pos, [this, &pos](unsigned int i) { return Distance::distance (this->face (i), pos); });
+  }
+
   void normalize ()
   {
     this->mesh.normalize ();
@@ -1028,6 +1035,7 @@ DELEGATE3_CONST (bool, DynamicMesh, intersects, const PrimRay&, bool, DynamicFac
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimPlane&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimSphere&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimAABox&, DynamicFaces&)
+DELEGATE1_CONST (float, DynamicMesh, distance, const glm::vec3&)
 
 DELEGATE (void, DynamicMesh, normalize)
 DELEGATE1_MEMBER (void, DynamicMesh, scale, mesh, const glm::vec3&)

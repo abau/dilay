@@ -248,6 +248,29 @@ namespace
       }
     }
 
+    void distance (PrimSphere& sphere, const DynamicOctree::DistanceCallback& getDistance) const
+    {
+      for (unsigned int i : this->indices)
+      {
+        const float distance = getDistance (i);
+        if (distance < sphere.radius ())
+        {
+          sphere.radius (distance);
+        }
+      }
+
+      if (this->hasChildren ())
+      {
+        for (const Child& c : this->children)
+        {
+          if (IntersectionUtil::intersects (sphere, c->looseAABox))
+          {
+            c->distance (sphere, getDistance);
+          }
+        }
+      }
+    }
+
     unsigned int numElements () const { return this->indices.size (); }
 
     void updateIndices (const std::vector<unsigned int>& indexMap)
@@ -616,6 +639,14 @@ struct DynamicOctree::Impl
     }
   }
 
+  float distance (const glm::vec3& p, const DistanceCallback& getDistance) const
+  {
+    assert (this->hasRoot ());
+    PrimSphere sphere (p, Util::maxFloat ());
+    this->root->distance (sphere, getDistance);
+    return sphere.radius ();
+  }
+
   void printStatistics () const
   {
     IndexOctreeStatistics stats{0,
@@ -658,4 +689,6 @@ DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimSphere&,
                  const DynamicOctree::ContainsIntersectionCallback&)
 DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimAABox&,
                  const DynamicOctree::ContainsIntersectionCallback&)
+DELEGATE2_CONST (float, DynamicOctree, distance, const glm::vec3&,
+                 const DynamicOctree::DistanceCallback&)
 DELEGATE_CONST (void, DynamicOctree, printStatistics)

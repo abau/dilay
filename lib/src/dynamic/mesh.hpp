@@ -89,12 +89,13 @@ public:
   const RenderMode& renderMode () const;
   RenderMode&       renderMode ();
 
-  bool intersects (const PrimRay&, Intersection&) const;
-  bool intersects (const PrimRay&, DynamicMeshIntersection&);
-  bool intersects (const PrimRay&, bool, DynamicFaces&) const;
-  bool intersects (const PrimPlane&, DynamicFaces&) const;
-  bool intersects (const PrimSphere&, DynamicFaces&) const;
-  bool intersects (const PrimAABox&, DynamicFaces&) const;
+  bool  intersects (const PrimRay&, Intersection&) const;
+  bool  intersects (const PrimRay&, DynamicMeshIntersection&);
+  bool  intersects (const PrimRay&, bool, DynamicFaces&) const;
+  bool  intersects (const PrimPlane&, DynamicFaces&) const;
+  bool  intersects (const PrimSphere&, DynamicFaces&) const;
+  bool  intersects (const PrimAABox&, DynamicFaces&) const;
+  float distance (const glm::vec3&) const;
 
   void               normalize ();
   void               scale (const glm::vec3&);
