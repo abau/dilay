@@ -430,19 +430,22 @@ namespace
   struct Parameters
   {
     const DistanceCallback& getDistance;
-    float                   resolution;
+    const float             resolution;
     glm::vec3               sampleOrigin;
     glm::uvec3              numSamples;
     std::vector<float>      samples;
     glm::uvec3              numCubes;
     std::vector<Cube>       grid;
 
-    Parameters (const DistanceCallback& d)
+    Parameters (const DistanceCallback& d, const PrimAABox& bounds, float r)
       : getDistance (d)
-      , resolution (0.0f)
-      , sampleOrigin (glm::vec3 (0.0f))
-      , numSamples (glm::uvec3 (0))
+      , resolution (r)
     {
+      const glm::vec3 min = bounds.minimum () - glm::vec3 (Util::epsilon () + resolution);
+      const glm::vec3 max = bounds.maximum () + glm::vec3 (Util::epsilon () + resolution);
+
+      this->sampleOrigin = min;
+      this->numSamples = glm::vec3 (1.0f) + glm::ceil ((max - min) / glm::vec3 (r));
     }
 
     glm::vec3 samplePos (unsigned int x, unsigned int y, unsigned int z) const
@@ -588,18 +591,6 @@ namespace
                                    params.samplePos (indices[4]), params.samplePos (indices[5]),
                                    params.samplePos (indices[6]), params.samplePos (indices[7])};
 
-    auto checkEdge = [&numCrossedEdges, &vertex, &samples, &positions](unsigned short vertex1,
-                                                                       unsigned short vertex2) {
-      if (isIntersecting (samples[vertex1], samples[vertex2]))
-      {
-        const float     factor = samples[vertex1] / (samples[vertex1] - samples[vertex2]);
-        const glm::vec3 delta = positions[vertex2] - positions[vertex1];
-
-        vertex += positions[vertex1] + (delta * factor);
-        numCrossedEdges++;
-      }
-    };
-
     assert (cube.configuration == Util::invalidIndex ());
 
     cube.configuration = 0;
@@ -617,7 +608,15 @@ namespace
       {
         cube.configuration |= (1 << vertex2);
       }
-      checkEdge (vertex1, vertex2);
+
+      if (isIntersecting (samples[vertex1], samples[vertex2]))
+      {
+        const float     factor = samples[vertex1] / (samples[vertex1] - samples[vertex2]);
+        const glm::vec3 delta = positions[vertex2] - positions[vertex1];
+
+        vertex += positions[vertex1] + (delta * factor);
+        numCrossedEdges++;
+      }
     }
     assert (cube.configuration < 256);
 
@@ -920,13 +919,7 @@ namespace
 Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance, const PrimAABox& bounds,
                                     float resolution)
 {
-  const glm::vec3 min = bounds.minimum () - glm::vec3 (Util::epsilon () + resolution);
-  const glm::vec3 max = bounds.maximum () + glm::vec3 (Util::epsilon () + resolution);
-
-  Parameters params (getDistance);
-  params.resolution = resolution;
-  params.sampleOrigin = min;
-  params.numSamples = glm::vec3 (1.0f) + glm::ceil ((max - min) / glm::vec3 (resolution));
+  Parameters params (getDistance, bounds, resolution);
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
   {
