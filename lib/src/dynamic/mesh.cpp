@@ -876,13 +876,18 @@ struct DynamicMesh::Impl
 
   bool intersects (const PrimRay& ray, Intersection& intersection) const
   {
-    this->octree.intersects (ray, [this, &ray, &intersection](unsigned int i) {
+    this->octree.intersects (ray, [this, &ray, &intersection](unsigned int i) -> float {
       const PrimTriangle tri = this->face (i);
       float              t;
 
       if (IntersectionUtil::intersects (ray, tri, false, &t))
       {
         intersection.update (t, ray.pointAt (t), tri.normal ());
+        return t;
+      }
+      else
+      {
+        return Util::maxFloat ();
       }
     });
     return intersection.isIntersection ();
@@ -890,13 +895,18 @@ struct DynamicMesh::Impl
 
   bool intersects (const PrimRay& ray, DynamicMeshIntersection& intersection)
   {
-    this->octree.intersects (ray, [this, &ray, &intersection](unsigned int i) {
+    this->octree.intersects (ray, [this, &ray, &intersection](unsigned int i) -> float {
       const PrimTriangle tri = this->face (i);
       float              t;
 
       if (IntersectionUtil::intersects (ray, tri, false, &t))
       {
         intersection.update (t, ray.pointAt (t), tri.normal (), i, *this->self);
+        return intersection.distance ();
+      }
+      else
+      {
+        return Util::maxFloat ();
       }
     });
     return intersection.isIntersection ();
@@ -926,11 +936,6 @@ struct DynamicMesh::Impl
       }
     });
     return faces.isEmpty () == false;
-  }
-
-  bool intersects (const PrimRay& ray, bool both, DynamicFaces& faces) const
-  {
-    return this->intersectsT<PrimRay> (ray, faces, both, nullptr);
   }
 
   bool intersects (const PrimPlane& plane, DynamicFaces& faces) const
@@ -1031,7 +1036,6 @@ DELEGATE_MEMBER (RenderMode&, DynamicMesh, renderMode, mesh)
 
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimRay&, Intersection&)
 DELEGATE2 (bool, DynamicMesh, intersects, const PrimRay&, DynamicMeshIntersection&)
-DELEGATE3_CONST (bool, DynamicMesh, intersects, const PrimRay&, bool, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimPlane&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimSphere&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimAABox&, DynamicFaces&)

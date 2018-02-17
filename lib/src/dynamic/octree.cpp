@@ -248,6 +248,26 @@ namespace
       }
     }
 
+    void intersects (const PrimRay& ray, float& distance,
+                     const DynamicOctree::RayIntersectionCallback& f) const
+    {
+      float t;
+      if (IntersectionUtil::intersects (ray, this->looseAABox, &t) && t < distance)
+      {
+        for (unsigned int index : this->indices)
+        {
+          distance = glm::min (f (index), distance);
+        }
+        if (this->hasChildren ())
+        {
+          for (const Child& c : this->children)
+          {
+            c->intersects (ray, distance, f);
+          }
+        }
+      }
+    }
+
     void distance (PrimSphere& sphere, const DynamicOctree::DistanceCallback& getDistance) const
     {
       for (unsigned int i : this->indices)
@@ -606,11 +626,12 @@ struct DynamicOctree::Impl
   void render (Camera&) const { DILAY_IMPOSSIBLE }
 #endif
 
-  void intersects (const PrimRay& ray, const DynamicOctree::IntersectionCallback& f) const
+  void intersects (const PrimRay& ray, const DynamicOctree::RayIntersectionCallback& f) const
   {
     if (this->hasRoot ())
     {
-      return this->root->intersectsT<PrimRay> (ray, f);
+      float distance = Util::maxFloat ();
+      return this->root->intersects (ray, distance, f);
     }
   }
 
@@ -682,7 +703,7 @@ DELEGATE (void, DynamicOctree, shrinkRoot)
 DELEGATE (void, DynamicOctree, reset)
 DELEGATE1_CONST (void, DynamicOctree, render, Camera&)
 DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimRay&,
-                 const DynamicOctree::IntersectionCallback&)
+                 const DynamicOctree::RayIntersectionCallback&)
 DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimPlane&,
                  const DynamicOctree::IntersectionCallback&)
 DELEGATE2_CONST (void, DynamicOctree, intersects, const PrimSphere&,

@@ -59,18 +59,20 @@ void TestIntersection::test ()
                       pln, &t));
   assert (t < 0.0f);
 
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx));
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx));
-  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx) ==
-          false);
-  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx) ==
-          false);
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
-                      abx) == false);
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx) ==
-          false);
-  assert (
-    intersects (PrimRay (true, glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx));
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx,
+                      nullptr));
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx,
+                      nullptr));
+  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (true, glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
+                      abx, nullptr));
 
   assert (intersects (PrimPlane (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 1.0f, 0.0f)), abx));
   assert (intersects (PrimPlane (glm::vec3 (0.0f, 0.4f, 0.0f), glm::vec3 (0.0f, 1.0f, 0.0f)), abx));

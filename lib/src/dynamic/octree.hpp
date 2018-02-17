@@ -22,6 +22,7 @@ public:
   DECLARE_BIG4_EXPLICIT_COPY (DynamicOctree)
 
   typedef std::function<void(unsigned int)>       IntersectionCallback;
+  typedef std::function<float(unsigned int)>      RayIntersectionCallback;
   typedef std::function<void(bool, unsigned int)> ContainsIntersectionCallback;
   typedef std::function<float(unsigned int)>      DistanceCallback;
 
@@ -35,7 +36,7 @@ public:
   void  shrinkRoot ();
   void  reset ();
   void  render (Camera&) const;
-  void  intersects (const PrimRay&, const IntersectionCallback&) const;
+  void  intersects (const PrimRay&, const RayIntersectionCallback&) const;
   void  intersects (const PrimPlane&, const IntersectionCallback&) const;
   void  intersects (const PrimSphere&, const ContainsIntersectionCallback&) const;
   void  intersects (const PrimAABox&, const ContainsIntersectionCallback&) const;

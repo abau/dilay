@@ -23,6 +23,7 @@ struct Intersection::Impl
 
   Impl ()
     : isIntersection (false)
+    , distance (Util::maxFloat ())
   {
   }
 
@@ -253,7 +254,7 @@ bool IntersectionUtil::intersects (const PrimRay& ray, const PrimTriangle& tri, 
   }
 }
 
-bool IntersectionUtil::intersects (const PrimRay& ray, const PrimAABox& box)
+bool IntersectionUtil::intersects (const PrimRay& ray, const PrimAABox& box, float* t)
 {
   const glm::vec3 invDir = glm::vec3 (1.0f) / ray.direction ();
   const glm::vec3 lowerTs = (box.minimum () - ray.origin ()) * invDir;
@@ -264,7 +265,15 @@ bool IntersectionUtil::intersects (const PrimRay& ray, const PrimAABox& box)
   const float tMin = glm::max (glm::max (min.x, min.y), min.z);
   const float tMax = glm::min (glm::min (max.x, max.y), max.z);
 
-  return (tMax >= 0.0f || ray.isLine ()) && tMin <= tMax;
+  if ((tMax >= 0.0f || ray.isLine ()) && tMin <= tMax)
+  {
+    Util::setIfNotNull (t, tMin);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool IntersectionUtil::intersects (const PrimRay& ray, const PrimCylinder& cylinder, float* tRay,
