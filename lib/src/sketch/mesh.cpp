@@ -161,11 +161,6 @@ struct SketchMesh::Impl
     return intersection.isIntersection ();
   }
 
-  bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection)
-  {
-    return this->intersects (ray, intersection, 0);
-  }
-
   bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection,
                    unsigned int numExcludedLastPaths)
   {
@@ -934,7 +929,6 @@ DELEGATE1 (void, SketchMesh, fromTree, const SketchTree&)
 DELEGATE (void, SketchMesh, reset)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
-DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE3 (bool, SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchPathIntersection&)
 DELEGATE1 (void, SketchMesh, render, Camera&)

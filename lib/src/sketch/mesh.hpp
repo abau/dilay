@@ -30,8 +30,7 @@ public:
   void               reset ();
   bool               intersects (const PrimRay&, SketchNodeIntersection&);
   bool               intersects (const PrimRay&, SketchBoneIntersection&);
-  bool               intersects (const PrimRay&, SketchMeshIntersection&);
-  bool               intersects (const PrimRay&, SketchMeshIntersection&, unsigned int);
+  bool               intersects (const PrimRay&, SketchMeshIntersection&, unsigned int = 0);
   bool               intersects (const PrimRay&, SketchPathIntersection&);
   void               render (Camera&);
   void               renderWireframe (bool);
