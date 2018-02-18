@@ -18,8 +18,11 @@ void TestIntersection::test ()
 {
   using IntersectionUtil::intersects;
 
-  PrimTriangle tri (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (2.0f, 0.0f, 0.0f),
-                    glm::vec3 (0.0f, 2.0f, 0.0f));
+  const glm::vec3 v1 (0.0f, 0.0f, 0.0f);
+  const glm::vec3 v2 (2.0f, 0.0f, 0.0f);
+  const glm::vec3 v3 (0.0f, 2.0f, 0.0f);
+
+  PrimTriangle tri (v1, v2, v3);
   PrimSphere   sph (glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f);
   PrimPlane    pln (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 1.0f, 0.0f));
   PrimAABox    abx (glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f);
@@ -28,11 +31,11 @@ void TestIntersection::test ()
 
   float t = 0.0f;
 
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
+  assert (intersects (PrimRay (glm::vec3 (0.1f, 0.1f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
                       false, nullptr));
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
+  assert (intersects (PrimRay (glm::vec3 (0.1f, 0.1f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
                       false, nullptr) == false);
-  assert (intersects (PrimRay (true, glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
+  assert (intersects (PrimRay (true, glm::vec3 (0.1f, 0.1f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
                       tri, false, nullptr));
 
   assert (
