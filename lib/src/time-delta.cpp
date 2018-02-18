@@ -37,15 +37,19 @@ namespace TimeDelta
   {
     if (data.empty () == false)
     {
+      const std::streamsize originalPrec = std::cout.precision ();
+
       std::cout << "##### time-delta (" << (float(globalTime) / CLOCKS_PER_SEC) << "s) ######\n";
 
       for (auto pair : data)
       {
         std::cout << std::setw (nameWidth + 1) << std::left << pair.first
                   << std::resetiosflags (std::ios_base::left)
-                  << (float(pair.second.localTime) / CLOCKS_PER_SEC) << "s ("
+                  << (float(pair.second.localTime) / CLOCKS_PER_SEC) << "s (" << std::fixed
+                  << std::setprecision (1)
                   << (100.0f * float(pair.second.localTime) / float(globalTime)) << "%) "
-                  << "(" << pair.second.numCalls << " calls -> "
+                  << std::defaultfloat << std::setprecision (originalPrec) << "("
+                  << pair.second.numCalls << " calls -> "
                   << (1000.0f * (float(pair.second.localTime) / CLOCKS_PER_SEC) /
                       float(pair.second.numCalls))
                   << "ms / call)\n";
