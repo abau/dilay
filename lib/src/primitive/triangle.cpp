@@ -20,9 +20,10 @@ glm::vec3 PrimTriangle::cross () const
 
 glm::vec3 PrimTriangle::normal () const
 {
-  const float l = glm::length (this->cross ());
+  const glm::vec3 c = this->cross ();
+  const float     l = glm::length (c);
 
-  return l > 0.0f ? (this->cross () / l) : glm::vec3 (0.0f);
+  return l > 0.0f ? (c / l) : glm::vec3 (0.0f);
 }
 
 glm::vec3 PrimTriangle::center () const
