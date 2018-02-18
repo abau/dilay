@@ -145,6 +145,7 @@ struct State::Impl
           this->addToolShortcut<ToolSculptFlatten> (tip, ViewInput::Event::F);
           this->addToolShortcut<ToolSculptReduce> (tip, ViewInput::Event::R);
           this->addToolShortcut<ToolTrimMesh> (tip, ViewInput::Event::T);
+          this->addToolShortcut<ToolRemesh> (tip, ViewInput::Event::M);
 #ifndef NDEBUG
           this->addExitToolShortcut (tip, ViewInput::Event::Esc);
 #endif
@@ -157,7 +158,8 @@ struct State::Impl
                                            (this->toolPtr->key () == ToolSculptFlatten::classKey) ||
                                            (this->toolPtr->key () == ToolSculptPinch::classKey) ||
                                            (this->toolPtr->key () == ToolSculptReduce::classKey) ||
-                                           (this->toolPtr->key () == ToolTrimMesh::classKey);
+                                           (this->toolPtr->key () == ToolTrimMesh::classKey) ||
+                                           (this->toolPtr->key () == ToolRemesh::classKey);
 
           const bool toggleBack = this->previousToolKey &&
                                   (this->previousToolKey != ToolSculptSmooth::classKey) &&

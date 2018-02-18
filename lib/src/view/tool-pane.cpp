@@ -98,6 +98,7 @@ struct ViewToolPane::Impl
     this->addToolButton<ToolSculptFlatten> (toolPaneLayout, QObject::tr ("Flatten"));
     this->addToolButton<ToolSculptReduce> (toolPaneLayout, QObject::tr ("Reduce"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
+    this->addToolButton<ToolRemesh> (toolPaneLayout, QObject::tr ("Remesh"));
     this->addToolButton<ToolTrimMesh> (toolPaneLayout, QObject::tr ("Trim"));
 
     toolPaneLayout->addStretch (1);

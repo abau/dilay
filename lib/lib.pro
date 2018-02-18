@@ -58,6 +58,7 @@ SOURCES += \
            src/tool/new-mesh.cpp \
            src/tool/new-sketch.cpp \
            src/tool/rebalance-sketch.cpp \
+           src/tool/remesh.cpp \
            src/tool/rotate-mesh.cpp \
            src/tool/sculpt.cpp \
            src/tool/sculpt/draw.cpp \

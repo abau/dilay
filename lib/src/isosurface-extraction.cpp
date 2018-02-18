@@ -14,6 +14,8 @@
 #include "primitive/cone-sphere.hpp"
 #include "util.hpp"
 
+#include "time-delta.hpp"
+
 /* vertex layout:          edge layout:          face layout:
  *
  *     2------------3          o-----3------o      - 0: bottom
@@ -31,8 +33,13 @@
 namespace
 {
   typedef IsosurfaceExtraction::DistanceCallback DistanceCallback;
+  typedef IsosurfaceExtraction::InsideCallback   InsideCallback;
 
-  static glm::vec3 invalidVec3 = glm::vec3 (Util::minFloat ());
+  static const glm::vec3 invalidVec3 = glm::vec3 (Util::minFloat ());
+  static const float     markInside = -0.5f;
+  static const float     markOutside = 0.5f;
+  static const float     markInsideToSample = -0.6f;
+  static const float     markOutsideToSample = 0.6f;
 
 #ifndef NDEBUG
   static unsigned int configurationBase[256] = {
@@ -430,6 +437,7 @@ namespace
   struct Parameters
   {
     const DistanceCallback& getDistance;
+    const InsideCallback*   isInside;
     const float             resolution;
     glm::vec3               sampleOrigin;
     glm::uvec3              numSamples;
@@ -437,8 +445,10 @@ namespace
     glm::uvec3              numCubes;
     std::vector<Cube>       grid;
 
-    Parameters (const DistanceCallback& d, const PrimAABox& bounds, float r)
+    Parameters (const DistanceCallback& d, const InsideCallback* i, const PrimAABox& bounds,
+                float r)
       : getDistance (d)
+      , isInside (i)
       , resolution (r)
     {
       const glm::vec3 min = bounds.minimum () - glm::vec3 (Util::epsilon () + resolution);
@@ -446,6 +456,14 @@ namespace
 
       this->sampleOrigin = min;
       this->numSamples = glm::vec3 (1.0f) + glm::ceil ((max - min) / glm::vec3 (r));
+      this->numCubes = this->numSamples - glm::uvec3 (1);
+
+      const unsigned int totalNumSamples =
+        this->numSamples.x * this->numSamples.y * this->numSamples.z;
+      const unsigned int totalNumCubes = this->numCubes.x * this->numCubes.y * this->numCubes.z;
+
+      this->samples.resize (totalNumSamples, Util::maxFloat ());
+      this->grid.resize (totalNumCubes);
     }
 
     glm::vec3 samplePos (unsigned int x, unsigned int y, unsigned int z) const
@@ -518,7 +536,7 @@ namespace
     }
   };
 
-  void sampleThread (Parameters& params, unsigned int numThreads, unsigned int threadId)
+  void sampleDistancesThread (Parameters& params, unsigned int numThreads, unsigned int threadId)
   {
     for (unsigned int z = 0; z < params.numSamples.z; z++)
     {
@@ -532,9 +550,26 @@ namespace
           {
             const glm::vec3 pos = params.samplePos (x, y, z);
 
-            assert (params.samples.at (index) == Util::maxFloat ());
-            params.samples.at (index) = params.getDistance (pos);
-
+            if (params.isInside)
+            {
+              if (params.samples.at (index) == markInsideToSample)
+              {
+                params.samples.at (index) = -params.getDistance (pos);
+              }
+              else if (params.samples.at (index) == markOutsideToSample)
+              {
+                params.samples.at (index) = params.getDistance (pos);
+              }
+              else
+              {
+                continue;
+              }
+            }
+            else
+            {
+              assert (params.samples.at (index) == Util::maxFloat ());
+              params.samples.at (index) = params.getDistance (pos);
+            }
             assert (Util::isNaN (params.samples.at (index)) == false);
             assert (params.samples.at (index) != Util::maxFloat ());
             assert ((x > 0 && x < params.numSamples.x - 1) || params.samples.at (index) > 0.0f);
@@ -546,17 +581,55 @@ namespace
     }
   }
 
-  void sample (Parameters& params)
+  void sampleDistances (Parameters& params)
   {
-    const unsigned int numSamples = params.numSamples.x * params.numSamples.y * params.numSamples.z;
-    params.samples.resize (numSamples, Util::maxFloat ());
-
     const unsigned int       numThreads = std::thread::hardware_concurrency ();
     std::vector<std::thread> threads;
 
     for (unsigned int i = 0; i < numThreads; i++)
     {
-      threads.emplace_back (sampleThread, std::ref (params), numThreads, i);
+      threads.emplace_back (sampleDistancesThread, std::ref (params), numThreads, i);
+    }
+    for (unsigned int i = 0; i < numThreads; i++)
+    {
+      threads.at (i).join ();
+    }
+  }
+
+  void sampleIsInsidesThread (Parameters& params, unsigned int numThreads, unsigned int threadId)
+  {
+    for (unsigned int z = 0; z < params.numSamples.z; z++)
+    {
+      for (unsigned int y = 0; y < params.numSamples.y; y++)
+      {
+        for (unsigned int x = 0; x < params.numSamples.x; x++)
+        {
+          const unsigned int index = params.sampleIndex (x, y, z);
+
+          if (index % numThreads == threadId)
+          {
+            assert (params.samples.at (index) == Util::maxFloat ());
+
+            const glm::vec3 pos = params.samplePos (x, y, z);
+            params.samples.at (index) = (*params.isInside) (pos) ? markInside : markOutside;
+
+            assert ((x > 0 && x < params.numSamples.x - 1) || params.samples.at (index) > 0.0f);
+            assert ((y > 0 && y < params.numSamples.y - 1) || params.samples.at (index) > 0.0f);
+            assert ((z > 0 && z < params.numSamples.z - 1) || params.samples.at (index) > 0.0f);
+          }
+        }
+      }
+    }
+  }
+
+  void sampleIsInsides (Parameters& params)
+  {
+    const unsigned int       numThreads = std::thread::hardware_concurrency ();
+    std::vector<std::thread> threads;
+
+    for (unsigned int i = 0; i < numThreads; i++)
+    {
+      threads.emplace_back (sampleIsInsidesThread, std::ref (params), numThreads, i);
     }
     for (unsigned int i = 0; i < numThreads; i++)
     {
@@ -567,6 +640,53 @@ namespace
   bool isIntersecting (float s1, float s2)
   {
     return (s1 < 0.0f && s2 >= 0.0f) || (s1 >= 0.0f && s2 < 0.0f);
+  }
+
+  void markSamplePositions (Parameters& params)
+  {
+    for (unsigned int z = 0; z < params.numCubes.z; z++)
+    {
+      for (unsigned int y = 0; y < params.numCubes.y; y++)
+      {
+        for (unsigned int x = 0; x < params.numCubes.x; x++)
+        {
+          const unsigned int cubeIndex = params.cubeIndex (x, y, z);
+
+          const unsigned int indices[] = {
+            params.sampleIndex (cubeIndex, 0), params.sampleIndex (cubeIndex, 1),
+            params.sampleIndex (cubeIndex, 2), params.sampleIndex (cubeIndex, 3),
+            params.sampleIndex (cubeIndex, 4), params.sampleIndex (cubeIndex, 5),
+            params.sampleIndex (cubeIndex, 6), params.sampleIndex (cubeIndex, 7)};
+
+          const float samples[] = {params.samples.at (indices[0]), params.samples.at (indices[1]),
+                                   params.samples.at (indices[2]), params.samples.at (indices[3]),
+                                   params.samples.at (indices[4]), params.samples.at (indices[5]),
+                                   params.samples.at (indices[6]), params.samples.at (indices[7])};
+
+          for (unsigned int edge = 0; edge < 12; edge++)
+          {
+            const unsigned int vertex1 = vertexIndicesByEdge[edge][0];
+            const unsigned int vertex2 = vertexIndicesByEdge[edge][1];
+
+            if (isIntersecting (samples[vertex1], samples[vertex2]))
+            {
+              for (unsigned int i = 0; i < 8; i++)
+              {
+                if (samples[i] == markInside)
+                {
+                  params.samples.at (indices[i]) = markInsideToSample;
+                }
+                else if (samples[i] == markOutside)
+                {
+                  params.samples.at (indices[i]) = markOutsideToSample;
+                }
+              }
+              break;
+            }
+          }
+        }
+      }
+    }
   }
 
   void setCubeVertex (Parameters& params, unsigned int cubeIndex)
@@ -658,11 +778,8 @@ namespace
     }
   }
 
-  void makeGrid (Parameters& params)
+  void setCubeVertices (Parameters& params)
   {
-    params.numCubes = params.numSamples - glm::uvec3 (1);
-    params.grid.resize (params.numCubes.x * params.numCubes.y * params.numCubes.z);
-
     for (unsigned int z = 0; z < params.numCubes.z; z++)
     {
       for (unsigned int y = 0; y < params.numCubes.y; y++)
@@ -919,13 +1036,34 @@ namespace
 Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance, const PrimAABox& bounds,
                                     float resolution)
 {
-  Parameters params (getDistance, bounds, resolution);
+  Parameters params (getDistance, nullptr, bounds, resolution);
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
   {
-    sample (params);
-    makeGrid (params);
+    sampleDistances (params);
+    setCubeVertices (params);
     resolveNonManifolds (params);
+    return makeMesh (params);
+  }
+  else
+  {
+    return Mesh ();
+  }
+}
+
+Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance,
+                                    const InsideCallback& isInside, const PrimAABox& bounds,
+                                    float resolution)
+{
+  Parameters params (getDistance, &isInside, bounds, resolution);
+
+  if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
+  {
+    TIME_DELTA (sampleIsInsides (params);)
+    TIME_DELTA (markSamplePositions (params);)
+    TIME_DELTA (sampleDistances (params);)
+    TIME_DELTA (setCubeVertices (params);)
+    TIME_DELTA (resolveNonManifolds (params);)
     return makeMesh (params);
   }
   else

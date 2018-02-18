@@ -874,13 +874,13 @@ struct DynamicMesh::Impl
 #endif
   }
 
-  bool intersects (const PrimRay& ray, Intersection& intersection) const
+  bool intersects (const PrimRay& ray, Intersection& intersection, bool bothSides) const
   {
-    this->octree.intersects (ray, [this, &ray, &intersection](unsigned int i) -> float {
+    this->octree.intersects (ray, [this, &ray, &intersection, bothSides](unsigned int i) -> float {
       const PrimTriangle tri = this->face (i);
       float              t;
 
-      if (IntersectionUtil::intersects (ray, tri, false, &t))
+      if (IntersectionUtil::intersects (ray, tri, bothSides, &t))
       {
         intersection.update (t, ray.pointAt (t), tri.normal ());
         return t;
@@ -953,7 +953,7 @@ struct DynamicMesh::Impl
     return this->containsOrIntersectsT<PrimAABox> (box, faces);
   }
 
-  float distance (const glm::vec3& pos) const
+  float unsignedDistance (const glm::vec3& pos) const
   {
     return this->octree.distance (
       pos, [this, &pos](unsigned int i) { return Distance::distance (this->face (i), pos); });
@@ -1034,12 +1034,12 @@ DELEGATE1_CONST (void, DynamicMesh, render, Camera&)
 DELEGATE_MEMBER_CONST (const RenderMode&, DynamicMesh, renderMode, mesh)
 DELEGATE_MEMBER (RenderMode&, DynamicMesh, renderMode, mesh)
 
-DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimRay&, Intersection&)
+DELEGATE3_CONST (bool, DynamicMesh, intersects, const PrimRay&, Intersection&, bool)
 DELEGATE2 (bool, DynamicMesh, intersects, const PrimRay&, DynamicMeshIntersection&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimPlane&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimSphere&, DynamicFaces&)
 DELEGATE2_CONST (bool, DynamicMesh, intersects, const PrimAABox&, DynamicFaces&)
-DELEGATE1_CONST (float, DynamicMesh, distance, const glm::vec3&)
+DELEGATE1_CONST (float, DynamicMesh, unsignedDistance, const glm::vec3&)
 
 DELEGATE (void, DynamicMesh, normalize)
 DELEGATE1_MEMBER (void, DynamicMesh, scale, mesh, const glm::vec3&)
