@@ -281,11 +281,17 @@ namespace
 
       if (this->hasChildren ())
       {
-        for (const Child& c : this->children)
+        const unsigned int first = this->childIndex (sphere.center ());
+        if (IntersectionUtil::intersects (sphere, this->children[first]->looseAABox))
         {
-          if (IntersectionUtil::intersects (sphere, c->looseAABox))
+          this->children[first]->distance (sphere, getDistance);
+        }
+
+        for (unsigned int i = 0; i < 8; i++)
+        {
+          if (i != first && IntersectionUtil::intersects (sphere, this->children[i]->looseAABox))
           {
-            c->distance (sphere, getDistance);
+            this->children[i]->distance (sphere, getDistance);
           }
         }
       }
