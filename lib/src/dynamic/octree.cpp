@@ -98,27 +98,11 @@ namespace
       return index;
     }
 
-    bool hasChildren () const { return bool(this->children.at (0)); }
-
-    void makeChildren ()
+    bool hasChildren () const
     {
-      assert (this->hasChildren () == false);
-
-      const float q = this->width * 0.25f;
-      const float childWidth = this->width * 0.5f;
-      const int   childDepth = this->depth + 1;
-
-      auto add = [this, childWidth, childDepth](unsigned int i, const glm::vec3& offset) {
-        this->children.at (i) = Child::make (this->center + offset, childWidth, childDepth);
-      };
-      add (0, glm::vec3 (-q, -q, -q));  // order is crucial
-      add (1, glm::vec3 (-q, -q, q));
-      add (2, glm::vec3 (-q, q, -q));
-      add (3, glm::vec3 (-q, q, q));
-      add (4, glm::vec3 (q, -q, -q));
-      add (5, glm::vec3 (q, -q, q));
-      add (6, glm::vec3 (q, q, -q));
-      add (7, glm::vec3 (q, q, q));
+      return bool(this->children[0]) || bool(this->children[1]) || bool(this->children[2]) ||
+             bool(this->children[3]) || bool(this->children[4]) || bool(this->children[5]) ||
+             bool(this->children[6]) || bool(this->children[7]);
     }
 
     bool insertIntoChild (float maxDimExtent) const
@@ -129,16 +113,43 @@ namespace
     IndexOctreeNode& insertIntoChild (unsigned int index, const glm::vec3& position,
                                       float maxDimExtent)
     {
-      if (this->hasChildren () == false)
+      const unsigned int childIndex = this->childIndex (position);
+
+      if (this->children[childIndex] == false)
       {
-        this->makeChildren ();
-        return this->insertIntoChild (index, position, maxDimExtent);
+        const float q = this->width * 0.25f;
+        const float width = this->width * 0.5f;
+        const int   depth = this->depth + 1;
+
+        switch (childIndex)
+        {
+          case 0:
+            this->children[0] = Child::make (this->center + glm::vec3 (-q, -q, -q), width, depth);
+            break;
+          case 1:
+            this->children[1] = Child::make (this->center + glm::vec3 (-q, -q, +q), width, depth);
+            break;
+          case 2:
+            this->children[2] = Child::make (this->center + glm::vec3 (-q, +q, -q), width, depth);
+            break;
+          case 3:
+            this->children[3] = Child::make (this->center + glm::vec3 (-q, +q, +q), width, depth);
+            break;
+          case 4:
+            this->children[4] = Child::make (this->center + glm::vec3 (+q, -q, -q), width, depth);
+            break;
+          case 5:
+            this->children[5] = Child::make (this->center + glm::vec3 (+q, -q, +q), width, depth);
+            break;
+          case 6:
+            this->children[6] = Child::make (this->center + glm::vec3 (+q, +q, -q), width, depth);
+            break;
+          case 7:
+            this->children[7] = Child::make (this->center + glm::vec3 (+q, +q, +q), width, depth);
+            break;
+        }
       }
-      else
-      {
-        const unsigned int cIndex = this->childIndex (position);
-        return this->children.at (cIndex)->addElement (index, position, maxDimExtent);
-      }
+      return this->children[childIndex]->addElement (index, position, maxDimExtent);
     }
 
     IndexOctreeNode& addElement (unsigned int index, const glm::vec3& position, float maxDimExtent)
@@ -169,25 +180,30 @@ namespace
     {
       bool allChildrenEmpty = true;
 
-      if (this->hasChildren ())
+      for (unsigned int i = 0; i < 8; i++)
       {
-        for (Child& c : this->children)
+        if (this->children[i])
         {
-          if (c->deleteEmptyChildren () == false)
+          if (this->children[i]->deleteEmptyChildren ())
+          {
+            this->children[i].reset ();
+          }
+          else
           {
             allChildrenEmpty = false;
           }
         }
-        if (allChildrenEmpty)
-        {
-          for (Child& c : this->children)
-          {
-            c.reset ();
-          }
-          assert (this->hasChildren () == false);
-        }
       }
-      return this->isEmpty ();
+
+      if (allChildrenEmpty)
+      {
+        assert (this->hasChildren () == false);
+        return this->indices.empty ();
+      }
+      else
+      {
+        return false;
+      }
     }
 
 #ifdef DILAY_RENDER_OCTREE
@@ -197,11 +213,11 @@ namespace
       nodeMesh.scaling (glm::vec3 (this->width * 0.5f));
       nodeMesh.renderLines (camera);
 
-      if (this->hasChildren ())
+      for (unsigned int i = 0; i < 8; i++)
       {
-        for (const Child& c : this->children)
+        if (this->children[i])
         {
-          c->render (camera, nodeMesh);
+          this->children[i]->render (camera, nodeMesh);
         }
       }
     }
@@ -219,11 +235,11 @@ namespace
         {
           f (contains, index);
         }
-        if (this->hasChildren ())
+        for (unsigned int i = 0; i < 8; i++)
         {
-          for (const Child& c : this->children)
+          if (this->children[i])
           {
-            c->containsOrIntersectsT<T> (t, f);
+            this->children[i]->containsOrIntersectsT<T> (t, f);
           }
         }
       }
@@ -238,11 +254,11 @@ namespace
         {
           f (index);
         }
-        if (this->hasChildren ())
+        for (unsigned int i = 0; i < 8; i++)
         {
-          for (const Child& c : this->children)
+          if (this->children[i])
           {
-            c->intersectsT<T> (t, f);
+            this->children[i]->intersectsT<T> (t, f);
           }
         }
       }
@@ -258,11 +274,11 @@ namespace
         {
           distance = glm::min (f (index), distance);
         }
-        if (this->hasChildren ())
+        for (unsigned int i = 0; i < 8; i++)
         {
-          for (const Child& c : this->children)
+          if (this->children[i])
           {
-            c->intersects (ray, distance, f);
+            this->children[i]->intersects (ray, distance, f);
           }
         }
       }
@@ -279,20 +295,19 @@ namespace
         }
       }
 
-      if (this->hasChildren ())
+      const unsigned int first = this->childIndex (sphere.center ());
+      const bool         hasFirst = bool(this->children[first]);
+      if (hasFirst && IntersectionUtil::intersects (sphere, this->children[first]->looseAABox))
       {
-        const unsigned int first = this->childIndex (sphere.center ());
-        if (IntersectionUtil::intersects (sphere, this->children[first]->looseAABox))
-        {
-          this->children[first]->distance (sphere, getDistance);
-        }
+        this->children[first]->distance (sphere, getDistance);
+      }
 
-        for (unsigned int i = 0; i < 8; i++)
+      for (unsigned int i = 0; i < 8; i++)
+      {
+        const bool hasChild = i != first && bool(this->children[i]);
+        if (hasChild && IntersectionUtil::intersects (sphere, this->children[i]->looseAABox))
         {
-          if (i != first && IntersectionUtil::intersects (sphere, this->children[i]->looseAABox))
-          {
-            this->children[i]->distance (sphere, getDistance);
-          }
+          this->children[i]->distance (sphere, getDistance);
         }
       }
     }
@@ -311,11 +326,11 @@ namespace
       }
       this->indices = std::move (newIndices);
 
-      if (this->hasChildren ())
+      for (unsigned int i = 0; i < 8; i++)
       {
-        for (Child& c : this->children)
+        if (this->children[i])
         {
-          c->updateIndices (indexMap);
+          this->children[i]->updateIndices (indexMap);
         }
       }
     }
@@ -346,11 +361,11 @@ namespace
       {
         e->second = e->second + 1;
       }
-      if (this->hasChildren ())
+      for (unsigned int i = 0; i < 8; i++)
       {
-        for (const Child& c : this->children)
+        if (this->children[i])
         {
-          c->updateStatistics (stats);
+          this->children[i]->updateStatistics (stats);
         }
       }
     }
@@ -385,11 +400,11 @@ struct DynamicOctree::Impl
       {
         this->addToElementNodeMap (i, node);
       }
-      if (node.hasChildren ())
+      for (unsigned int i = 0; i < 8; i++)
       {
-        for (Child& c : node.children)
+        if (node.children[i])
         {
-          traverse (*c);
+          traverse (*node.children[i]);
         }
       }
     };
@@ -443,7 +458,6 @@ struct DynamicOctree::Impl
 
     IndexOctreeNode* newRoot =
       new IndexOctreeNode (parentCenter, rootWidth * 2.0f, this->root->depth - 1);
-    newRoot->makeChildren ();
     newRoot->children[index] = std::move (this->root);
     this->root.reset (newRoot);
   }
@@ -543,7 +557,7 @@ struct DynamicOctree::Impl
       int singleNonEmptyChildIndex = -1;
       for (int i = 0; i < 8; i++)
       {
-        if (this->root->children.at (i)->isEmpty () == false)
+        if (this->root->children[i] && this->root->children[i]->isEmpty () == false)
         {
           if (singleNonEmptyChildIndex == -1)
           {
@@ -557,7 +571,7 @@ struct DynamicOctree::Impl
       }
       if (singleNonEmptyChildIndex != -1)
       {
-        this->root = std::move (this->root->children.at (singleNonEmptyChildIndex));
+        this->root = std::move (this->root->children[singleNonEmptyChildIndex]);
         this->shrinkRoot ();
       }
     }
