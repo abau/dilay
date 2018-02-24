@@ -49,7 +49,7 @@ namespace
     std::array<Child, 8>             children;
     std::unordered_set<unsigned int> indices;
 
-    static constexpr float relativeMinElementExtent = 0.1f;
+    static constexpr float relativeMinElementExtent = 0.25f;
 
     IndexOctreeNode (const glm::vec3& c, float w, int d)
       : center (c)
