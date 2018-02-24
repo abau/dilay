@@ -7,11 +7,13 @@
 #include <thread>
 #include <vector>
 #include "distance.hpp"
+#include "intersection.hpp"
 #include "isosurface-extraction.hpp"
 #include "mesh-util.hpp"
 #include "mesh.hpp"
 #include "primitive/aabox.hpp"
 #include "primitive/cone-sphere.hpp"
+#include "primitive/ray.hpp"
 #include "util.hpp"
 
 #include "time-delta.hpp"
@@ -32,8 +34,9 @@
  */
 namespace
 {
-  typedef IsosurfaceExtraction::DistanceCallback DistanceCallback;
-  typedef IsosurfaceExtraction::InsideCallback   InsideCallback;
+  typedef IsosurfaceExtraction::DistanceCallback     DistanceCallback;
+  typedef IsosurfaceExtraction::InsideCallback       InsideCallback;
+  typedef IsosurfaceExtraction::IntersectionCallback IntersectionCallback;
 
   static const glm::vec3 invalidVec3 = glm::vec3 (Util::minFloat ());
   static const float     markInside = -0.5f;
@@ -436,19 +439,21 @@ namespace
 
   struct Parameters
   {
-    const DistanceCallback& getDistance;
-    const InsideCallback*   isInside;
-    const float             resolution;
-    glm::vec3               sampleOrigin;
-    glm::uvec3              numSamples;
-    std::vector<float>      samples;
-    glm::uvec3              numCubes;
-    std::vector<Cube>       grid;
+    const DistanceCallback&     getDistance;
+    const IntersectionCallback* getIntersection;
+    const InsideCallback*       isInside;
+    const float                 resolution;
+    glm::vec3                   sampleOrigin;
+    glm::uvec3                  numSamples;
+    std::vector<float>          samples;
+    glm::uvec3                  numCubes;
+    std::vector<Cube>           grid;
 
-    Parameters (const DistanceCallback& d, const InsideCallback* i, const PrimAABox& bounds,
-                float r)
+    Parameters (const DistanceCallback& d, const IntersectionCallback* i, const InsideCallback* ii,
+                const PrimAABox& bounds, float r)
       : getDistance (d)
-      , isInside (i)
+      , getIntersection (i)
+      , isInside (ii)
       , resolution (r)
     {
       const glm::vec3 min = bounds.minimum () - glm::vec3 (Util::epsilon () + resolution);
@@ -550,7 +555,7 @@ namespace
           {
             const glm::vec3 pos = params.samplePos (x, y, z);
 
-            if (params.isInside)
+            if (params.getIntersection)
             {
               if (params.samples.at (index) == markInsideToSample)
               {
@@ -596,40 +601,68 @@ namespace
     }
   }
 
-  void sampleIsInsidesThread (Parameters& params, unsigned int numThreads, unsigned int threadId)
+  void sampleIntersectionsThread (Parameters& params, unsigned int numThreads,
+                                  unsigned int threadId)
   {
-    for (unsigned int z = 0; z < params.numSamples.z; z++)
+    assert (params.getIntersection);
+
+    for (unsigned int y = 0; y < params.numSamples.y; y++)
     {
-      for (unsigned int y = 0; y < params.numSamples.y; y++)
+      for (unsigned int x = 0; x < params.numSamples.x; x++)
       {
-        for (unsigned int x = 0; x < params.numSamples.x; x++)
+        if (params.sampleIndex (x, y, 0) % numThreads == threadId)
         {
-          const unsigned int index = params.sampleIndex (x, y, z);
+          const glm::vec3 dir (0.0f, 0.0f, 1.0f);
+          bool            inside = false;
+          unsigned int    z = 0;
+          Intersection    intersection;
+          PrimRay         ray (params.samplePos (x, y, 0.0f) - (dir * Util::epsilon ()), dir);
 
-          if (index % numThreads == threadId)
+          while ((*params.getIntersection) (ray, intersection))
           {
+            assert (inside == (glm::dot (dir, intersection.normal ()) > 0.0f));
+
+            const float d2 = intersection.distance () * intersection.distance ();
+
+            while (glm::distance2 (params.samplePos (x, y, z), ray.origin ()) < d2)
+            {
+              const unsigned int index = params.sampleIndex (x, y, z);
+
+              assert (params.samples.at (index) == Util::maxFloat ());
+              params.samples.at (index) = inside ? markInside : markOutside;
+
+              assert ((*params.isInside) (params.samplePos (x, y, z)) == inside);
+              z++;
+            }
+            inside = not inside;
+            ray.origin (intersection.position () + (dir * Util::epsilon ()));
+            intersection.reset ();
+          }
+          // assert (inside == false);
+          assert (z < params.numSamples.z - 1);
+
+          for (; z < params.numSamples.z; z++)
+          {
+            const unsigned int index = params.sampleIndex (x, y, z);
+
             assert (params.samples.at (index) == Util::maxFloat ());
+            params.samples.at (index) = markOutside;
 
-            const glm::vec3 pos = params.samplePos (x, y, z);
-            params.samples.at (index) = (*params.isInside) (pos) ? markInside : markOutside;
-
-            assert ((x > 0 && x < params.numSamples.x - 1) || params.samples.at (index) > 0.0f);
-            assert ((y > 0 && y < params.numSamples.y - 1) || params.samples.at (index) > 0.0f);
-            assert ((z > 0 && z < params.numSamples.z - 1) || params.samples.at (index) > 0.0f);
+            assert ((*params.isInside) (params.samplePos (x, y, z)) == false);
           }
         }
       }
     }
   }
 
-  void sampleIsInsides (Parameters& params)
+  void sampleIntersections (Parameters& params)
   {
     const unsigned int       numThreads = std::thread::hardware_concurrency ();
     std::vector<std::thread> threads;
 
     for (unsigned int i = 0; i < numThreads; i++)
     {
-      threads.emplace_back (sampleIsInsidesThread, std::ref (params), numThreads, i);
+      threads.emplace_back (sampleIntersectionsThread, std::ref (params), numThreads, i);
     }
     for (unsigned int i = 0; i < numThreads; i++)
     {
@@ -1036,7 +1069,7 @@ namespace
 Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance, const PrimAABox& bounds,
                                     float resolution)
 {
-  Parameters params (getDistance, nullptr, bounds, resolution);
+  Parameters params (getDistance, nullptr, nullptr, bounds, resolution);
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
   {
@@ -1051,19 +1084,20 @@ Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance, const P
   }
 }
 
-Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance,
+Mesh IsosurfaceExtraction::extract (const DistanceCallback&     getDistance,
+                                    const IntersectionCallback& getIntersection,
                                     const InsideCallback& isInside, const PrimAABox& bounds,
                                     float resolution)
 {
-  Parameters params (getDistance, &isInside, bounds, resolution);
+  Parameters params (getDistance, &getIntersection, &isInside, bounds, resolution);
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
   {
-    TIME_DELTA (sampleIsInsides (params);)
-    TIME_DELTA (markSamplePositions (params);)
+    sampleIntersections (params);
+    markSamplePositions (params);
     TIME_DELTA (sampleDistances (params);)
-    TIME_DELTA (setCubeVertices (params);)
-    TIME_DELTA (resolveNonManifolds (params);)
+    setCubeVertices (params);
+    resolveNonManifolds (params);
     return makeMesh (params);
   }
   else

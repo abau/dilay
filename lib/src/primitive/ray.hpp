@@ -17,13 +17,15 @@ public:
   const glm::vec3& origin () const { return this->_origin; }
   const glm::vec3& direction () const { return this->_direction; }
 
+  void origin (const glm::vec3& o) { this->_origin = o; }
+
   glm::vec3 pointAt (float) const;
   float     distance (const glm::vec3&) const;
   bool      onRay (const glm::vec3&) const;
 
 private:
   const bool      _isLine;
-  const glm::vec3 _origin;
+  glm::vec3       _origin;
   const glm::vec3 _direction;
 };
 

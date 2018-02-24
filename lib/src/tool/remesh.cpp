@@ -57,6 +57,11 @@ struct ToolRemesh::Impl
     glm::vec3 min, max;
     mesh.mesh ().minMax (min, max);
 
+    const IsosurfaceExtraction::IntersectionCallback getIntersection =
+      [&mesh](const PrimRay& ray, Intersection& intersection) {
+        return mesh.intersects (ray, intersection, true);
+      };
+
     const IsosurfaceExtraction::InsideCallback isInside = [&mesh](const glm::vec3& pos) {
       const PrimRay ray (pos, glm::vec3 (1.0f, 0.0f, 0.0f));
       Intersection  intersection;
@@ -75,7 +80,8 @@ struct ToolRemesh::Impl
     };
 
     const PrimAABox bounds (min, max);
-    Mesh newMesh = IsosurfaceExtraction::extract (getDistance, isInside, bounds, resolution);
+    Mesh            newMesh =
+      IsosurfaceExtraction::extract (getDistance, getIntersection, isInside, bounds, resolution);
 
     State& state = this->self->state ();
     state.scene ().deleteMesh (mesh);
