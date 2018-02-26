@@ -33,7 +33,6 @@
 namespace
 {
   typedef IsosurfaceExtraction::DistanceCallback     DistanceCallback;
-  typedef IsosurfaceExtraction::InsideCallback       InsideCallback;
   typedef IsosurfaceExtraction::IntersectionCallback IntersectionCallback;
 
   static const glm::vec3 invalidVec3 = glm::vec3 (Util::minFloat ());
@@ -439,7 +438,6 @@ namespace
   {
     const DistanceCallback&     getDistance;
     const IntersectionCallback* getIntersection;
-    const InsideCallback*       isInside;
     const float                 resolution;
     glm::vec3                   sampleOrigin;
     glm::uvec3                  numSamples;
@@ -447,11 +445,10 @@ namespace
     glm::uvec3                  numCubes;
     std::vector<Cube>           grid;
 
-    Parameters (const DistanceCallback& d, const IntersectionCallback* i, const InsideCallback* ii,
-                const PrimAABox& bounds, float r)
+    Parameters (const DistanceCallback& d, const IntersectionCallback* i, const PrimAABox& bounds,
+                float r)
       : getDistance (d)
       , getIntersection (i)
-      , isInside (ii)
       , resolution (r)
     {
       const glm::vec3 min = bounds.minimum () - glm::vec3 (Util::epsilon () + resolution);
@@ -629,7 +626,6 @@ namespace
               assert (params.samples.at (index) == Util::maxFloat ());
               params.samples.at (index) = inside ? markInside : markOutside;
 
-              assert ((*params.isInside) (params.samplePos (x, y, z)) == inside);
               z++;
             }
             inside = not inside;
@@ -645,8 +641,6 @@ namespace
 
             assert (params.samples.at (index) == Util::maxFloat ());
             params.samples.at (index) = markOutside;
-
-            assert ((*params.isInside) (params.samplePos (x, y, z)) == false);
           }
         }
       }
@@ -1067,7 +1061,7 @@ namespace
 Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance, const PrimAABox& bounds,
                                     float resolution)
 {
-  Parameters params (getDistance, nullptr, nullptr, bounds, resolution);
+  Parameters params (getDistance, nullptr, bounds, resolution);
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
   {
@@ -1084,10 +1078,9 @@ Mesh IsosurfaceExtraction::extract (const DistanceCallback& getDistance, const P
 
 Mesh IsosurfaceExtraction::extract (const DistanceCallback&     getDistance,
                                     const IntersectionCallback& getIntersection,
-                                    const InsideCallback& isInside, const PrimAABox& bounds,
-                                    float resolution)
+                                    const PrimAABox& bounds, float resolution)
 {
-  Parameters params (getDistance, &getIntersection, &isInside, bounds, resolution);
+  Parameters params (getDistance, &getIntersection, bounds, resolution);
 
   if (params.numSamples.x > 0 && params.numSamples.y > 0 && params.numSamples.z > 0)
   {
