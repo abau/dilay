@@ -16,8 +16,6 @@
 #include "primitive/ray.hpp"
 #include "util.hpp"
 
-#include "time-delta.hpp"
-
 /* vertex layout:          edge layout:          face layout:
  *
  *     2------------3          o-----3------o      - 0: bottom
@@ -1095,7 +1093,7 @@ Mesh IsosurfaceExtraction::extract (const DistanceCallback&     getDistance,
   {
     sampleIntersections (params);
     markSamplePositions (params);
-    TIME_DELTA (sampleDistances (params);)
+    sampleDistances (params);
     setCubeVertices (params);
     resolveNonManifolds (params);
     return makeMesh (params);
