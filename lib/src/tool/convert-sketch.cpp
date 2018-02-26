@@ -47,7 +47,6 @@ struct ToolConvertSketch::Impl
   const float        maxResolution;
   float              resolution;
   bool               moveToCenter;
-  bool               smoothMesh;
 
   Impl (ToolConvertSketch* s)
     : self (s)
@@ -55,7 +54,6 @@ struct ToolConvertSketch::Impl
     , maxResolution (0.1f)
     , resolution (s->cache ().get<float> ("resolution", 0.06))
     , moveToCenter (s->cache ().get<bool> ("move-to-center", true))
-    , smoothMesh (s->cache ().get<bool> ("smooth-mesh", true))
   {
   }
 
@@ -86,13 +84,6 @@ struct ToolConvertSketch::Impl
       this->self->cache ().set ("move-to-center", m);
     });
     properties.add (moveToCenterEdit);
-
-    QCheckBox& smoothMeshEdit = ViewUtil::checkBox (QObject::tr ("Smooth mesh"), this->smoothMesh);
-    ViewUtil::connect (smoothMeshEdit, [this](bool s) {
-      this->smoothMesh = s;
-      this->self->cache ().set ("smooth-mesh", s);
-    });
-    properties.add (smoothMeshEdit);
   }
 
   void setupToolTip ()
@@ -160,10 +151,7 @@ struct ToolConvertSketch::Impl
           dMesh.normalize ();
           dMesh.bufferData ();
         }
-        if (this->smoothMesh)
-        {
-          ToolSculptAction::smoothMesh (dMesh);
-        }
+        ToolSculptAction::smoothMesh (dMesh);
         this->self->state ().scene ().deleteMesh (sMesh);
         return ToolResponse::Redraw;
       }
