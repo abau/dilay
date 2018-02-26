@@ -3,12 +3,7 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QPainter>
-#include <QSlider>
-#include <QWheelEvent>
 #include "cache.hpp"
-#include "camera.hpp"
-#include "color.hpp"
-#include "config.hpp"
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
 #include "isosurface-extraction.hpp"
@@ -17,8 +12,9 @@
 #include "primitive/ray.hpp"
 #include "scene.hpp"
 #include "state.hpp"
+#include "tool/sculpt/util/action.hpp"
 #include "tools.hpp"
-#include "view/main-window.hpp"
+#include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
@@ -27,13 +23,30 @@
 struct ToolRemesh::Impl
 {
   ToolRemesh* self;
+  const float minResolution;
+  const float maxResolution;
+  float       resolution;
 
   Impl (ToolRemesh* s)
     : self (s)
+    , minResolution (0.02f)
+    , maxResolution (0.1f)
+    , resolution (s->cache ().get<float> ("resolution", 0.04))
   {
   }
 
-  void setupProperties () {}
+  void setupProperties ()
+  {
+    ViewTwoColumnGrid& properties = this->self->properties ();
+
+    ViewDoubleSlider& resolutionEdit =
+      ViewUtil::slider (2, this->minResolution, this->resolution, this->maxResolution);
+    ViewUtil::connect (resolutionEdit, [this](float r) {
+      this->resolution = r;
+      this->self->cache ().set ("resolution", r);
+    });
+    properties.addStacked (QObject::tr ("Resolution"), resolutionEdit);
+  }
 
   void setupToolTip ()
   {
@@ -52,8 +65,6 @@ struct ToolRemesh::Impl
 
   void remesh (DynamicMesh& mesh)
   {
-    const float resolution = 0.05f;
-
     glm::vec3 min, max;
     mesh.mesh ().minMax (min, max);
 
@@ -79,13 +90,15 @@ struct ToolRemesh::Impl
       return mesh.unsignedDistance (pos);
     };
 
+    const float     resolution = this->maxResolution + this->minResolution - this->resolution;
     const PrimAABox bounds (min, max);
     Mesh            newMesh =
       IsosurfaceExtraction::extract (getDistance, getIntersection, isInside, bounds, resolution);
 
     State& state = this->self->state ();
     state.scene ().deleteMesh (mesh);
-    state.scene ().newDynamicMesh (state.config (), newMesh);
+    DynamicMesh& dMesh = state.scene ().newDynamicMesh (state.config (), newMesh);
+    ToolSculptAction::smoothMesh (dMesh);
   }
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
