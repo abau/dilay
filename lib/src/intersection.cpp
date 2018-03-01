@@ -53,6 +53,14 @@ struct Intersection::Impl
       return b;
     }
   }
+
+  static void sort (Intersection& a, Intersection& b)
+  {
+    if (b.isIntersection () && (a.isIntersection () == false || b.distance () < a.distance ()))
+    {
+      std::swap (a, b);
+    }
+  }
 };
 
 DELEGATE_BIG6 (Intersection)
@@ -63,6 +71,7 @@ GETTER_CONST (const glm::vec3&, Intersection, position)
 GETTER_CONST (const glm::vec3&, Intersection, normal)
 DELEGATE3 (bool, Intersection, update, float, const glm::vec3&, const glm::vec3&)
 DELEGATE2_STATIC (Intersection&, Intersection, min, Intersection&, Intersection&)
+DELEGATE2_STATIC (void, Intersection, sort, Intersection&, Intersection&)
 
 namespace
 {

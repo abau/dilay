@@ -17,7 +17,8 @@ int main ()
 {
   QCoreApplication::setApplicationName ("dilay");
 
-  TestIntersection::test ();
+  TestIntersection::test1 ();
+  TestIntersection::test2 ();
   TestMaybe::test1 ();
   TestMaybe::test2 ();
   TestMaybe::test3 ();

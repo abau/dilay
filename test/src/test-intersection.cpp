@@ -14,7 +14,7 @@
 #include "test-intersection.hpp"
 #include "util.hpp"
 
-void TestIntersection::test ()
+void TestIntersection::test1 ()
 {
   using IntersectionUtil::intersects;
 
@@ -98,4 +98,22 @@ void TestIntersection::test ()
   assert (intersects (cne, glm::vec3 (0.5f, 1.0f, 0.0f)));
   assert (intersects (cne, glm::vec3 (0.8f, 0.1f, 0.0f)));
   unused (t);
+}
+
+void TestIntersection::test2 ()
+{
+  Intersection i1, i2;
+
+  i1.update (2.0f, glm::vec3 (2.0f), glm::vec3 (2.0f));
+  i2.update (1.0f, glm::vec3 (1.0f), glm::vec3 (1.0f));
+
+  Intersection::sort (i1, i2);
+
+  assert (i1.distance () == 1.0f);
+  assert (i1.position () == glm::vec3 (1.0f));
+  assert (i1.normal () == glm::vec3 (1.0f));
+
+  assert (i2.distance () == 2.0f);
+  assert (i2.position () == glm::vec3 (2.0f));
+  assert (i2.normal () == glm::vec3 (2.0f));
 }

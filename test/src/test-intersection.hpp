@@ -7,7 +7,8 @@
 
 namespace TestIntersection
 {
-  void test ();
+  void test1 ();
+  void test2 ();
 }
 
 #endif

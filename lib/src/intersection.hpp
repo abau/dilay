@@ -29,6 +29,7 @@ public:
   bool             update (float, const glm::vec3&, const glm::vec3&);
 
   static Intersection& min (Intersection&, Intersection&);
+  static void          sort (Intersection&, Intersection&);
 
 private:
   IMPLEMENTATION
