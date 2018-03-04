@@ -6,21 +6,21 @@
 #define DILAY_DYNAMIC_MESH_INTERSECTION
 
 #include "intersection.hpp"
-#include "macro.hpp"
 
 class DynamicMesh;
 
 class DynamicMeshIntersection : public Intersection
 {
 public:
-  DECLARE_BIG6 (DynamicMeshIntersection)
+  DynamicMeshIntersection ();
 
   DynamicMesh& mesh () const;
   unsigned int faceIndex () const;
   bool         update (float, const glm::vec3&, const glm::vec3&, unsigned int, DynamicMesh&);
 
 private:
-  IMPLEMENTATION
+  unsigned int _faceIndex;
+  DynamicMesh* _mesh;
 };
 
 #endif

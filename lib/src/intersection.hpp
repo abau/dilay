@@ -5,8 +5,7 @@
 #ifndef DILAY_INTERSECTION
 #define DILAY_INTERSECTION
 
-#include <glm/fwd.hpp>
-#include "macro.hpp"
+#include <glm/glm.hpp>
 
 class PrimAABox;
 class PrimCone;
@@ -19,20 +18,24 @@ class PrimTriangle;
 class Intersection
 {
 public:
-  DECLARE_BIG6_VIRTUAL (Intersection)
+  Intersection ();
 
-  void             reset ();
   bool             isIntersection () const;
   const glm::vec3& position () const;
   const glm::vec3& normal () const;
   float            distance () const;
-  bool             update (float, const glm::vec3&, const glm::vec3&);
+
+  void reset ();
+  bool update (float, const glm::vec3&, const glm::vec3&);
 
   static Intersection& min (Intersection&, Intersection&);
   static void          sort (Intersection&, Intersection&);
 
 private:
-  IMPLEMENTATION
+  bool      _isIntersection;
+  float     _distance;
+  glm::vec3 _position;
+  glm::vec3 _normal;
 };
 
 namespace IntersectionUtil

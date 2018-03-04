@@ -5,56 +5,44 @@
 #include "sketch/bone-intersection.hpp"
 #include "sketch/mesh.hpp"
 
-struct SketchBoneIntersection::Impl
+SketchBoneIntersection::SketchBoneIntersection ()
+  : _child (nullptr)
 {
-  SketchBoneIntersection* self;
-  SketchNode*             _child;
-  glm::vec3               projectedPosition;
+}
 
-  Impl (SketchBoneIntersection* s)
-    : self (s)
-  {
-  }
-
-  bool update (float d, const glm::vec3& p, const glm::vec3& projP, const glm::vec3& n,
-               SketchMesh& mesh, SketchNode& child)
-  {
-    assert (child.parent ());
-
-    if (this->self->SketchMeshIntersection::update (d, p, n, mesh))
-    {
-      this->_child = &child;
-      this->projectedPosition = projP;
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  SketchNode& parent () const
-  {
-    assert (this->self->isIntersection ());
-    assert (this->_child);
-    return *this->_child->parent ();
-  }
-
-  SketchNode& child () const
-  {
-    assert (this->self->isIntersection ());
-    assert (this->_child);
-    return *this->_child;
-  }
-};
-
-DELEGATE_BIG6_BASE (SketchBoneIntersection, (), (this), SketchMeshIntersection, ())
-DELEGATE_CONST (SketchNode&, SketchBoneIntersection, parent)
-DELEGATE_CONST (SketchNode&, SketchBoneIntersection, child)
-GETTER_CONST (const glm::vec3&, SketchBoneIntersection, projectedPosition)
-
-bool SketchBoneIntersection::update (float a1, const glm::vec3& a2, const glm::vec3& a3,
-                                     const glm::vec3& a4, SketchMesh& a5, SketchNode& a6)
+bool SketchBoneIntersection::update (float d, const glm::vec3& p, const glm::vec3& projP,
+                                     const glm::vec3& n, SketchMesh& mesh, SketchNode& child)
 {
-  return this->impl->update (a1, a2, a3, a4, a5, a6);
+  assert (child.parent ());
+
+  if (this->SketchMeshIntersection::update (d, p, n, mesh))
+  {
+    this->_child = &child;
+    this->_projectedPosition = projP;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+SketchNode& SketchBoneIntersection::parent () const
+{
+  assert (this->isIntersection ());
+  assert (this->_child);
+  return *this->_child->parent ();
+}
+
+SketchNode& SketchBoneIntersection::child () const
+{
+  assert (this->isIntersection ());
+  assert (this->_child);
+  return *this->_child;
+}
+
+const glm::vec3& SketchBoneIntersection::projectedPosition () const
+{
+  assert (this->isIntersection ());
+  return this->_projectedPosition;
 }

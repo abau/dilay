@@ -6,43 +6,36 @@
 #include "dynamic/mesh.hpp"
 #include "util.hpp"
 
-struct DynamicMeshIntersection::Impl
+DynamicMeshIntersection::DynamicMeshIntersection ()
+  : _faceIndex (Util::invalidIndex ())
+  , _mesh (nullptr)
 {
-  DynamicMeshIntersection* self;
-  unsigned int             faceIndex;
-  DynamicMesh*             _mesh;
+}
 
-  Impl (DynamicMeshIntersection* s)
-    : self (s)
-    , faceIndex (Util::invalidIndex ())
-    , _mesh (nullptr)
+bool DynamicMeshIntersection::update (float d, const glm::vec3& p, const glm::vec3& n,
+                                      unsigned int i, DynamicMesh& mesh)
+{
+  if (this->Intersection::update (d, p, n))
   {
+    this->_mesh = &mesh;
+    this->_faceIndex = i;
+    return true;
   }
-
-  bool update (float d, const glm::vec3& p, const glm::vec3& n, unsigned int i, DynamicMesh& mesh)
+  else
   {
-    if (this->self->Intersection::update (d, p, n))
-    {
-      this->_mesh = &mesh;
-      this->faceIndex = i;
-      return true;
-    }
-    else
-    {
-      return false;
-    }
+    return false;
   }
+}
 
-  DynamicMesh& mesh () const
-  {
-    assert (this->self->isIntersection ());
-    assert (this->_mesh);
-    return *this->_mesh;
-  }
-};
+unsigned int DynamicMeshIntersection::faceIndex () const
+{
+  assert (this->isIntersection ());
+  return this->_faceIndex;
+}
 
-DELEGATE_BIG6_BASE (DynamicMeshIntersection, (), (this), Intersection, ())
-DELEGATE_CONST (DynamicMesh&, DynamicMeshIntersection, mesh)
-GETTER_CONST (unsigned int, DynamicMeshIntersection, faceIndex)
-DELEGATE5 (bool, DynamicMeshIntersection, update, float, const glm::vec3&, const glm::vec3&,
-           unsigned int, DynamicMesh&)
+DynamicMesh& DynamicMeshIntersection::mesh () const
+{
+  assert (this->isIntersection ());
+  assert (this->_mesh);
+  return *this->_mesh;
+}
