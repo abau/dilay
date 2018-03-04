@@ -613,28 +613,38 @@ namespace
           Intersection    intersection;
           PrimRay         ray (params.samplePos (x, y, 0.0f) - (dir * Util::epsilon ()), dir);
 
-          while ((*params.getIntersection) (ray, intersection))
+          while (true)
           {
-            assert (inside == (glm::dot (dir, intersection.normal ()) > 0.0f));
-
-            const float d2 = intersection.distance () * intersection.distance ();
-
-            while (glm::distance2 (params.samplePos (x, y, z), ray.origin ()) < d2)
-            {
-              const unsigned int index = params.sampleIndex (x, y, z);
-
-              assert (params.samples.at (index) == Util::maxFloat ());
-              params.samples.at (index) = inside ? markInside : markOutside;
-
-              z++;
-            }
-            inside = not inside;
-            ray.origin (intersection.position () + (dir * Util::epsilon ()));
             intersection.reset ();
-          }
-          // assert (inside == false);
-          assert (z < params.numSamples.z - 1);
+            IsosurfaceExtraction::Intersection i = (*params.getIntersection) (ray, intersection);
 
+            if (i == IsosurfaceExtraction::Intersection::None)
+            {
+              break;
+            }
+            else
+            {
+              const float d2 = intersection.distance () * intersection.distance ();
+
+              while (glm::distance2 (params.samplePos (x, y, z), ray.origin ()) < d2)
+              {
+                const unsigned int index = params.sampleIndex (x, y, z);
+
+                assert (params.samples.at (index) == Util::maxFloat ());
+                params.samples.at (index) = inside ? markInside : markOutside;
+
+                z++;
+              }
+              ray.origin (intersection.position () + (dir * Util::epsilon ()));
+
+              if (i == IsosurfaceExtraction::Intersection::Sample)
+              {
+                inside = not inside;
+              }
+            }
+          }
+
+          assert (z < params.numSamples.z - 1);
           for (; z < params.numSamples.z; z++)
           {
             const unsigned int index = params.sampleIndex (x, y, z);
@@ -1052,8 +1062,7 @@ namespace
         }
       }
     }
-
-    assert (MeshUtil::checkConsistency (mesh));
+    assert (mesh.numIndices () == 0 || MeshUtil::checkConsistency (mesh));
     return mesh;
   }
 }

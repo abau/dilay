@@ -15,8 +15,15 @@ class PrimRay;
 
 namespace IsosurfaceExtraction
 {
-  typedef std::function<float(const glm::vec3&)>             DistanceCallback;
-  typedef std::function<bool(const PrimRay&, Intersection&)> IntersectionCallback;
+  enum class Intersection
+  {
+    None,
+    Sample,
+    Continue
+  };
+
+  typedef std::function<float(const glm::vec3&)>                        DistanceCallback;
+  typedef std::function<Intersection (const PrimRay&, ::Intersection&)> IntersectionCallback;
 
   Mesh extract (const DistanceCallback&, const PrimAABox&, float);
   Mesh extract (const DistanceCallback&, const IntersectionCallback&, const PrimAABox&, float);
