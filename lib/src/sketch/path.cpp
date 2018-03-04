@@ -89,14 +89,17 @@ struct SketchPath::Impl
   {
     const PrimAABox aabox (this->minimum, this->maximum);
     float           t;
-    if (IntersectionUtil::intersects (ray, aabox, &t) && t < intersection.distance ())
+    if (IntersectionUtil::intersects (ray, aabox, &t))
     {
-      for (const PrimSphere& s : this->spheres)
+      if (intersection.isIntersection () == false || t < intersection.distance ())
       {
-        if (IntersectionUtil::intersects (ray, s, &t))
+        for (const PrimSphere& s : this->spheres)
         {
-          intersection.update (t, ray.pointAt (t), glm::normalize (ray.pointAt (t) - s.center ()),
-                               mesh, *this->self);
+          if (IntersectionUtil::intersects (ray, s, &t))
+          {
+            intersection.update (t, ray.pointAt (t), glm::normalize (ray.pointAt (t) - s.center ()),
+                                 mesh, *this->self);
+          }
         }
       }
     }
