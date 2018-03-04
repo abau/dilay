@@ -285,12 +285,6 @@ struct ToolTrimMesh::Impl
     }
   }
 
-  ToolResponse runCommit ()
-  {
-    this->points.clear ();
-    return ToolResponse::Redraw;
-  }
-
   void runPaint (QPainter& painter) const
   {
     const QPoint cursorPos (ViewUtil::toQPoint (this->self->cursorPosition ()));
@@ -310,6 +304,12 @@ struct ToolTrimMesh::Impl
       }
       painter.drawLine (ViewUtil::toQPoint (this->points[this->points.size () - 1]), cursorPos);
     }
+  }
+
+  ToolResponse runCommit ()
+  {
+    this->points.clear ();
+    return ToolResponse::Redraw;
   }
 };
 
