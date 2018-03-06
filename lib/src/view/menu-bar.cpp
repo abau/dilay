@@ -220,9 +220,6 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
   addAction (helpMenu, QObject::tr ("&View log..."), QKeySequence (),
              [&mainWindow]() { ViewLog::show (mainWindow); });
 
-  addAction (helpMenu, QObject::tr ("&Thanks..."), QKeySequence (),
-             []() { QDesktopServices::openUrl (QUrl ("http://abau.org/dilay/thanks.html")); });
-
   addAction (helpMenu, QObject::tr ("&About Dilay..."), QKeySequence (), [&mainWindow]() {
     ViewUtil::about (
       mainWindow,
