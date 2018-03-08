@@ -226,7 +226,7 @@ struct ToolRemesh::Impl
       };
 
     const IsosurfaceExtraction::IntersectionCallback getDifferenceIntersection =
-      [&meshA, &meshB](const PrimRay& ray, Intersection& intersection) {
+      [this, &meshA, &meshB](const PrimRay& ray, Intersection& intersection) {
 
         assert (this->mode == Mode::Difference);
 
