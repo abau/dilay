@@ -3,7 +3,7 @@ CONFIG                 += debug_and_release warn_on object_parallel_to_source or
 QT                     += widgets opengl openglextensions xml
 MOC_DIR                 = moc
 OBJECTS_DIR             = obj
-QMAKE_CXXFLAGS         += -DDILAY_VERSION=\\\"$$VERSION\\\" -DGLM_FORCE_RADIANS
+QMAKE_CXXFLAGS         += -DDILAY_VERSION=\\\"$$VERSION\\\" -DGLM_FORCE_RADIANS -DGLM_ENABLE_EXPERIMENTAL
 QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 QMAKE_CXXFLAGS_DEBUG   += -Wall -Werror # -pg # -DDILAY_RENDER_OCTREE
 QMAKE_LFLAGS_DEBUG     += # -pg
