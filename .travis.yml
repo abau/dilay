@@ -9,8 +9,8 @@ before_install:
     - sudo apt-get update -qq
 
 install:
-    - sudo apt-get -y install qt59base gcc-4.9 g++-4.9 libglm-dev
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+    - sudo apt-get -y install qt59base libglm-dev g++-5 libgl1-mesa-dev
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 20
     - source /opt/qt*/bin/qt*-env.sh
 
 script:
