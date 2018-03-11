@@ -30,6 +30,6 @@ int main ()
   TestDistance::test ();
   TestPrune::test ();
 
-  std::cout << "all tests run successfully\n";
+  std::cout << "all tests ran successfully\n";
   return 0;
 }
