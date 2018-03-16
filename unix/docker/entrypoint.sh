@@ -1,7 +1,5 @@
 #!/bin/bash
 
-BRANCH=$(cd /dilay && git symbolic-ref -q HEAD)
-
 cd /tmp
 git clone --depth=1 file:///dilay 
 
