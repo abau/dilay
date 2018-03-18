@@ -13,7 +13,7 @@ unix {
   copyright.commands = find $$SUBDIRS \\( -name "*.cpp" -o -name "*.hpp" -o -name "*.hs" \\) -print0 | \
                        xargs -0 sed -i 's/Copyright\ ©\ 2015-2017/Copyright\ ©\ 2015-2018/'
 
-  docker.commands = docker build -t dilay-$(IMAGE) -f unix/docker/$(IMAGE)/Dockerfile unix/docker && \
+  docker.commands = docker build -t dilay-$(IMAGE) unix/docker/$(IMAGE) && \
                     docker run --rm --mount type=bind,src=$$(PWD),dst=/dilay dilay-$(IMAGE)
 
   QMAKE_EXTRA_TARGETS += gdb valgrind leak format copyright icon docker
