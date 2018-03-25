@@ -855,7 +855,6 @@ namespace
       auto findClosestContainedConcaveVertex =
         [&outer, &inner](const glm::vec2& intersection,
                          TwoDVertexCRef   candidate) -> TwoDVertexCRef {
-
         const glm::vec2 toCandidate = glm::normalize (candidate->position - inner.maxX->position);
 
         TwoDVertexCRef closest = outer.end ();
