@@ -21,6 +21,7 @@ SOURCES += \
            src/import-export.cpp \
            src/intersection.cpp \
            src/isosurface-extraction.cpp \
+           src/isosurface-extraction/grid.cpp \
            src/kvstore.cpp \
            src/log.cpp \
            src/mesh.cpp \
@@ -121,6 +122,7 @@ HEADERS += \
            src/import-export.hpp \
            src/intersection.hpp \
            src/isosurface-extraction.hpp \
+           src/isosurface-extraction/grid.hpp \
            src/kvstore.hpp \
            src/log.hpp \
            src/macro.hpp \
