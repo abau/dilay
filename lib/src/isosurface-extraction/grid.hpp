@@ -14,7 +14,7 @@ class PrimAABox;
 class IsosurfaceExtractionGrid
 {
 public:
-  static int vertexIndicesByEdge[12][2];
+  static const int vertexIndicesByEdge[12][2];
 
   struct Cube
   {
