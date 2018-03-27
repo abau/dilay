@@ -15,6 +15,7 @@
 #include "dynamic/octree.hpp"
 #include "intersection.hpp"
 #include "mesh-util.hpp"
+#include "primitive/aabox.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "primitive/triangle.hpp"
@@ -474,14 +475,11 @@ struct DynamicMesh::Impl
   {
     assert (this->octree.hasRoot () == false);
 
-    glm::vec3 minVertex, maxVertex;
-    mesh.minMax (minVertex, maxVertex);
-
-    const glm::vec3 center = (maxVertex + minVertex) * glm::vec3 (0.5f);
-    const glm::vec3 delta = maxVertex - minVertex;
+    const PrimAABox bounds = mesh.bounds ();
+    const glm::vec3 delta = bounds.maximum () - bounds.minimum ();
     const float     width = glm::max (glm::max (delta.x, delta.y), delta.z);
 
-    this->octree.setupRoot (center, width);
+    this->octree.setupRoot (bounds.center (), width);
   }
 
   unsigned int addVertex (const glm::vec3& vertex, const glm::vec3& normal)
@@ -1059,7 +1057,6 @@ DELEGATE2_MEMBER (void, DynamicMesh, rotate, mesh, const glm::vec3&, float)
 DELEGATE1_MEMBER (void, DynamicMesh, rotateX, mesh, float)
 DELEGATE1_MEMBER (void, DynamicMesh, rotateY, mesh, float)
 DELEGATE1_MEMBER (void, DynamicMesh, rotateZ, mesh, float)
-DELEGATE_MEMBER_CONST (glm::vec3, DynamicMesh, center, mesh)
 DELEGATE_MEMBER_CONST (const Color&, DynamicMesh, color, mesh)
 DELEGATE1_MEMBER (void, DynamicMesh, color, mesh, const Color&)
 DELEGATE_MEMBER_CONST (const Color&, DynamicMesh, wireframeColor, mesh)

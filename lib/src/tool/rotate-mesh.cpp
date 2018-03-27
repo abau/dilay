@@ -6,6 +6,8 @@
 #include "cache.hpp"
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
+#include "mesh.hpp"
+#include "primitive/aabox.hpp"
 #include "state.hpp"
 #include "tool/util/rotation.hpp"
 #include "tools.hpp"
@@ -94,7 +96,7 @@ struct ToolRotateMesh::Impl
             this->rotation.reset (intersection.position ());
             break;
           case RotationOrigin::Center:
-            this->rotation.reset (this->mesh->center ());
+            this->rotation.reset (this->mesh->mesh ().bounds ().center ());
             break;
           case RotationOrigin::Origin:
             this->rotation.reset (glm::vec3 (0.0f));

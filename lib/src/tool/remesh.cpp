@@ -96,9 +96,6 @@ struct ToolRemesh::Impl
 
   void remesh (DynamicMesh& mesh)
   {
-    glm::vec3 min, max;
-    mesh.mesh ().minMax (min, max);
-
     const IsosurfaceExtraction::IntersectionCallback getIntersection =
       [&mesh](const PrimRay& ray, Intersection& intersection) {
         if (mesh.intersects (ray, intersection, true))
@@ -116,7 +113,7 @@ struct ToolRemesh::Impl
     };
 
     const float     resolution = this->maxResolution + this->minResolution - this->resolution;
-    const PrimAABox bounds (min, max);
+    const PrimAABox bounds = mesh.mesh ().bounds ();
     Mesh newMesh = IsosurfaceExtraction::extract (getDistance, getIntersection, bounds, resolution);
 
     State& state = this->self->state ();
@@ -310,13 +307,14 @@ struct ToolRemesh::Impl
       return glm::min (meshA.unsignedDistance (pos), meshB.unsignedDistance (pos));
     };
 
-    glm::vec3 minA, maxA, minB, maxB;
-    meshA.mesh ().minMax (minA, maxA);
-    meshB.mesh ().minMax (minB, maxB);
+    const PrimAABox boundsA = meshA.mesh ().bounds ();
+    const PrimAABox boundsB = meshB.mesh ().bounds ();
+    const glm::vec3 min = glm::min (boundsA.minimum (), boundsB.minimum ());
+    const glm::vec3 max = glm::max (boundsA.maximum (), boundsB.maximum ());
+    const PrimAABox bounds (min, max);
 
-    const float     resolution = this->maxResolution + this->minResolution - this->resolution;
-    const PrimAABox bounds (glm::min (minA, minB), glm::max (maxA, maxB));
-    Mesh            newMesh;
+    const float resolution = this->maxResolution + this->minResolution - this->resolution;
+    Mesh        newMesh;
     if (this->mode == Mode::Difference)
     {
       newMesh =

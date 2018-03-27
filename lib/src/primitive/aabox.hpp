@@ -15,9 +15,7 @@ public:
   PrimAABox (const glm::vec3&, float);
 
   const glm::vec3& maximum () const { return this->_maximum; }
-
   const glm::vec3& minimum () const { return this->_minimum; }
-
   const glm::vec3& center () const { return this->_center; }
 
   glm::vec3 halfWidth () const;

@@ -11,6 +11,7 @@
 #include "mesh.hpp"
 #include "opengl-buffer-id.hpp"
 #include "opengl.hpp"
+#include "primitive/aabox.hpp"
 #include "render-mode.hpp"
 #include "renderer.hpp"
 #include "util.hpp"
@@ -388,25 +389,17 @@ struct Mesh::Impl
     this->rotationMatrix = glm::mat4x4 (1.0f);
   }
 
-  glm::vec3 center () const
+  PrimAABox bounds () const
   {
-    glm::vec3 min, max;
-
-    this->minMax (min, max);
-
-    return (min + max) * 0.5f;
-  }
-
-  void minMax (glm::vec3& min, glm::vec3& max) const
-  {
-    min = glm::vec3 (Util::maxFloat ());
-    max = glm::vec3 (Util::minFloat ());
+    glm::vec3 min = glm::vec3 (Util::maxFloat ());
+    glm::vec3 max = glm::vec3 (Util::minFloat ());
 
     for (unsigned int i = 0; i < this->numVertices (); i++)
     {
       min = glm::min (min, this->vertices.get (i));
       max = glm::max (max, this->vertices.get (i));
     }
+    return PrimAABox (min, max);
   }
 };
 
@@ -459,8 +452,7 @@ DELEGATE1 (void, Mesh, rotateX, float)
 DELEGATE1 (void, Mesh, rotateY, float)
 DELEGATE1 (void, Mesh, rotateZ, float)
 DELEGATE (void, Mesh, normalize)
-DELEGATE_CONST (glm::vec3, Mesh, center)
-DELEGATE2_CONST (void, Mesh, minMax, glm::vec3&, glm::vec3&)
+DELEGATE_CONST (PrimAABox, Mesh, bounds)
 GETTER_CONST (const Color&, Mesh, color)
 SETTER (const Color&, Mesh, color)
 GETTER_CONST (const Color&, Mesh, wireframeColor)

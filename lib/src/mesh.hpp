@@ -10,6 +10,7 @@
 
 class Camera;
 class Color;
+class PrimAABox;
 class RenderFlags;
 class RenderMode;
 
@@ -65,8 +66,7 @@ public:
   void               rotateY (float);
   void               rotateZ (float);
   void               normalize ();
-  glm::vec3          center () const;
-  void               minMax (glm::vec3&, glm::vec3&) const;
+  PrimAABox          bounds () const;
   const Color&       color () const;
   void               color (const Color&);
   const Color&       wireframeColor () const;
