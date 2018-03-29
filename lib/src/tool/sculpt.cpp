@@ -264,7 +264,7 @@ struct ToolSculpt::Impl
     this->brush.detailFactor (config.get<float> ("editor/tool/sculpt/detail-factor"));
     this->brush.stepWidthFactor (config.get<float> ("editor/tool/sculpt/step-width-factor"));
 
-    this->cursor.color (this->self->config ().get<Color> ("editor/tool/sculpt/cursor-color"));
+    this->cursor.color (this->self->config ().get<Color> ("editor/tool/cursor-color"));
   }
 
   void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode)

@@ -181,13 +181,13 @@ namespace
     widget->setLayout (layout);
 
     ViewTwoColumnGrid* gridSculpt = new ViewTwoColumnGrid;
+    gridSculpt->addLeft (QObject::tr ("General"));
+    addColorButton (data, *gridSculpt, "editor/tool/cursor-color", QObject::tr ("Cursor color"));
     gridSculpt->addLeft (QObject::tr ("Sculpt"));
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/detail-factor",
                   QObject::tr ("Detail factor"), Util::epsilon (), 1.0f);
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/step-width-factor",
                   QObject::tr ("Step width factor"), Util::epsilon (), 1.0f);
-    addColorButton (data, *gridSculpt, "editor/tool/sculpt/cursor-color",
-                    QObject::tr ("Cursor color"));
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/max-absolute-radius",
                   QObject::tr ("Maximum absolute radius"), Util::epsilon (), 100.0f);
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/mirror/width",
@@ -200,8 +200,6 @@ namespace
     gridSketch->addLeft (QObject::tr ("Sketch"));
     addFloatEdit (data, *gridSketch, "editor/tool/sketch-spheres/step-width-factor",
                   QObject::tr ("Step width factor"), Util::epsilon (), 1.0f);
-    addColorButton (data, *gridSketch, "editor/tool/sketch-spheres/cursor-color",
-                    QObject::tr ("Cursor color"));
     gridSketch->addStretcher ();
 
     layout->addWidget (gridSculpt);

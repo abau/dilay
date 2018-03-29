@@ -298,7 +298,7 @@ struct ToolSketchSpheres::Impl
   {
     const Config& config = this->self->config ();
 
-    this->cursor.color (config.get<Color> ("editor/tool/sketch-spheres/cursor-color"));
+    this->cursor.color (config.get<Color> ("editor/tool/cursor-color"));
     this->stepWidthFactor = config.get<float> ("editor/tool/sketch-spheres/step-width-factor");
   }
 };
