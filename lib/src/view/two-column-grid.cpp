@@ -95,7 +95,13 @@ struct ViewTwoColumnGrid::Impl
 
   void addLeft (const QString& label) { this->add (label, *new QWidget); }
 
-  void addCenter (const QString& label) { this->add (*new QLabel (label)); }
+  void addCenter (const QString& labelText)
+  {
+    QLabel& label = *new QLabel (labelText);
+    label.setAlignment (Qt::AlignHCenter);
+
+    this->add (label);
+  }
 
   void addStretcher ()
   {
