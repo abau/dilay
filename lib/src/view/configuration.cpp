@@ -132,13 +132,13 @@ namespace
     widget->setLayout (layout);
 
     ViewTwoColumnGrid* grid1 = new ViewTwoColumnGrid;
-    grid1->addLeft (QObject::tr ("Light 1"));
+    grid1->addCenter (QObject::tr ("Light 1"));
     addVectorEdit (data, *grid1, "editor/light/light1/direction", QObject::tr ("Direction"));
     addColorButton (data, *grid1, "editor/light/light1/color", QObject::tr ("Color"));
     grid1->addStretcher ();
 
     ViewTwoColumnGrid* grid2 = new ViewTwoColumnGrid;
-    grid2->addLeft (QObject::tr ("Light 2"));
+    grid2->addCenter (QObject::tr ("Light 2"));
     addVectorEdit (data, *grid2, "editor/light/light2/direction", QObject::tr ("Direction"));
     addColorButton (data, *grid2, "editor/light/light2/color", QObject::tr ("Color"));
     grid2->addStretcher ();
@@ -181,9 +181,9 @@ namespace
     widget->setLayout (layout);
 
     ViewTwoColumnGrid* gridSculpt = new ViewTwoColumnGrid;
-    gridSculpt->addLeft (QObject::tr ("General"));
+    gridSculpt->addCenter (QObject::tr ("General"));
     addColorButton (data, *gridSculpt, "editor/tool/cursor-color", QObject::tr ("Cursor color"));
-    gridSculpt->addLeft (QObject::tr ("Sculpt"));
+    gridSculpt->addCenter (QObject::tr ("Sculpt"));
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/detail-factor",
                   QObject::tr ("Detail factor"), Util::epsilon (), 1.0f);
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/step-width-factor",
@@ -197,7 +197,7 @@ namespace
     gridSculpt->addStretcher ();
 
     ViewTwoColumnGrid* gridSketch = new ViewTwoColumnGrid;
-    gridSketch->addLeft (QObject::tr ("Sketch"));
+    gridSketch->addCenter (QObject::tr ("Sketch"));
     addFloatEdit (data, *gridSketch, "editor/tool/sketch-spheres/step-width-factor",
                   QObject::tr ("Step width factor"), Util::epsilon (), 1.0f);
     gridSketch->addStretcher ();
