@@ -4,40 +4,45 @@
  */
 #include <glm/glm.hpp>
 #include "tool/util/step.hpp"
+#include "util.hpp"
+
+namespace
+{
+  const glm::vec3 invalidPosition (Util::maxFloat ());
+}
 
 struct ToolUtilStep::Impl
 {
-  float stepWidth;
+  glm::vec3 position;
+  float     stepWidth;
 
   Impl ()
-    : stepWidth (0.0f)
+    : position (invalidPosition)
+    , stepWidth (0.0f)
   {
   }
 
-  glm::vec3 step (const glm::vec3& from, const glm::vec3& to,
-                  const std::function<bool(const glm::vec3&)>& f)
+  void step (const glm::vec3& to, const std::function<bool(const glm::vec3&)>& f)
   {
+    assert (this->position != invalidPosition);
     assert (this->stepWidth >= 0.0f);
-
-    glm::vec3 position = from;
 
     do
     {
-      const glm::vec3 direction = to - position;
+      const glm::vec3 direction = to - this->position;
       const float     distance = glm::length (direction);
 
       if (distance < this->stepWidth)
       {
         break;
       }
-      position += direction * (this->stepWidth / distance);
-    } while (f (position));
-
-    return position;
+      this->position += direction * (this->stepWidth / distance);
+    } while (f (this->position));
   }
 };
 
 DELEGATE_BIG3 (ToolUtilStep)
+GETTER_CONST (const glm::vec3&, ToolUtilStep, position)
+SETTER (const glm::vec3&, ToolUtilStep, position)
 SETTER (float, ToolUtilStep, stepWidth)
-DELEGATE3 (glm::vec3, ToolUtilStep, step, const glm::vec3&, const glm::vec3&,
-           const std::function<bool(const glm::vec3&)>&)
+DELEGATE2 (void, ToolUtilStep, step, const glm::vec3&, const std::function<bool(const glm::vec3&)>&)

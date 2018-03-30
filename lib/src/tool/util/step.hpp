@@ -14,8 +14,10 @@ class ToolUtilStep
 public:
   DECLARE_BIG3 (ToolUtilStep)
 
-  void      stepWidth (float);
-  glm::vec3 step (const glm::vec3&, const glm::vec3&, const std::function<bool(const glm::vec3&)>&);
+  const glm::vec3& position () const;
+  void             position (const glm::vec3&);
+  void             stepWidth (float);
+  void             step (const glm::vec3&, const std::function<bool(const glm::vec3&)>&);
 
 private:
   IMPLEMENTATION

@@ -388,7 +388,8 @@ struct ToolSculpt::Impl
       if (this->brush.hasPointOfAction ())
       {
         this->step.stepWidth (this->brush.stepWidth ());
-        this->step.step (this->brush.position (), cursorIntersection.position (),
+        this->step.position (this->brush.position ());
+        this->step.step (cursorIntersection.position (),
                          [this, useRecentMesh](const glm::vec3& brushStep) {
                            if (this->brush.hasPointOfAction ())
                            {

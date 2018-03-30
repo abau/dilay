@@ -35,7 +35,6 @@ struct ToolSketchSpheres::Impl
   ViewDoubleSlider&      heightEdit;
   SketchPathSmoothEffect smoothEffect;
   float                  stepWidthFactor;
-  glm::vec3              previousPosition;
   SketchMesh*            mesh;
   ToolUtilStep           step;
 
@@ -146,14 +145,13 @@ struct ToolSketchSpheres::Impl
           this->cursor.enable ();
           this->cursor.position (intersection.position ());
 
-          this->previousPosition = this->step.step (
-            this->previousPosition, intersection.position (),
-            [this, &intersection](const glm::vec3& position) {
-              intersection.mesh ().smoothPath (
-                intersection.path (), PrimSphere (position, this->radiusEdit.doubleValue ()), 1,
-                this->smoothEffect, this->self->mirrorDimension ());
-              return true;
-            });
+          this->step.step (intersection.position (), [this,
+                                                      &intersection](const glm::vec3& position) {
+            intersection.mesh ().smoothPath (intersection.path (),
+                                             PrimSphere (position, this->radiusEdit.doubleValue ()),
+                                             1, this->smoothEffect, this->self->mirrorDimension ());
+            return true;
+          });
 
           this->mesh = &intersection.mesh ();
         }
@@ -169,7 +167,7 @@ struct ToolSketchSpheres::Impl
           const Camera&   camera = this->self->state ().camera ();
           const PrimRay   ray = camera.ray (e.position ());
           const PrimPlane plane =
-            PrimPlane (this->previousPosition, DimensionUtil::vector (camera.primaryDimension ()));
+            PrimPlane (this->step.position (), DimensionUtil::vector (camera.primaryDimension ()));
           float t;
           if (IntersectionUtil::intersects (ray, plane, &t))
           {
@@ -180,16 +178,15 @@ struct ToolSketchSpheres::Impl
 
         if (intersection.isIntersection ())
         {
-          this->previousPosition = this->step.step (
-            this->previousPosition, intersection.position (),
-            [this, considerHeight, &intersection](const glm::vec3& position) {
-              this->mesh->addSphere (
-                false, intersection.position (),
-                this->newSpherePosition (considerHeight, position, intersection.normal ()),
-                this->radiusEdit.doubleValue (), this->self->mirrorDimension ());
+          this->step.step (intersection.position (), [this, considerHeight,
+                                                      &intersection](const glm::vec3& position) {
+            this->mesh->addSphere (
+              false, intersection.position (),
+              this->newSpherePosition (considerHeight, position, intersection.normal ()),
+              this->radiusEdit.doubleValue (), this->self->mirrorDimension ());
 
-              return true;
-            });
+            return true;
+          });
         }
       }
       return ToolResponse::Redraw;
@@ -209,7 +206,7 @@ struct ToolSketchSpheres::Impl
       this->self->snapshotSketchMeshes ();
 
       this->mesh = &intersection.mesh ();
-      this->previousPosition = intersection.position ();
+      this->step.position (intersection.position ());
     };
 
     if (e.leftButton ())
