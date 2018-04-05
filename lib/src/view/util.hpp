@@ -25,6 +25,7 @@ class QSpinBox;
 class QString;
 class QTabWidget;
 class QToolButton;
+class QWidget;
 
 namespace ViewUtil
 {
