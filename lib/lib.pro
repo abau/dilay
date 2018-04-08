@@ -97,6 +97,7 @@ SOURCES += \
            src/view/main-window.cpp \
            src/view/menu-bar.cpp \
            src/view/pointing-event.cpp \
+           src/view/resolution-slider.cpp \
            src/view/tool-pane.cpp \
            src/view/tool-tip.cpp \
            src/view/two-column-grid.cpp \
@@ -185,6 +186,7 @@ HEADERS += \
            src/view/main-window.hpp \
            src/view/menu-bar.hpp \
            src/view/pointing-event.hpp \
+           src/view/resolution-slider.hpp \
            src/view/tool-pane.hpp \
            src/view/tool-tip.hpp \
            src/view/two-column-grid.hpp \

@@ -17,8 +17,8 @@
 #include "state.hpp"
 #include "tool/sculpt/util/action.hpp"
 #include "tools.hpp"
-#include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
+#include "view/resolution-slider.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
@@ -43,15 +43,11 @@ namespace
 struct ToolConvertSketch::Impl
 {
   ToolConvertSketch* self;
-  const float        minResolution;
-  const float        maxResolution;
   float              resolution;
   bool               moveToCenter;
 
   Impl (ToolConvertSketch* s)
     : self (s)
-    , minResolution (0.01f)
-    , maxResolution (0.1f)
     , resolution (s->cache ().get<float> ("resolution", 0.06))
     , moveToCenter (s->cache ().get<bool> ("move-to-center", true))
   {
@@ -69,8 +65,8 @@ struct ToolConvertSketch::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    ViewDoubleSlider& resolutionEdit =
-      ViewUtil::slider (2, this->minResolution, this->resolution, this->maxResolution);
+    ViewResolutionSlider& resolutionEdit =
+      ViewUtil::resolutionSlider (0.01f, this->resolution, 0.1f);
     ViewUtil::connect (resolutionEdit, [this](float r) {
       this->resolution = r;
       this->self->cache ().set ("resolution", r);
@@ -95,8 +91,6 @@ struct ToolConvertSketch::Impl
 
   DynamicMesh& convert (SketchMesh& sketch)
   {
-    const float resolution = this->maxResolution + this->minResolution - this->resolution;
-
     glm::vec3 min, max;
     sketch.minMax (min, max);
 
@@ -125,7 +119,7 @@ struct ToolConvertSketch::Impl
     };
 
     sketch.optimizePaths ();
-    Mesh mesh = IsosurfaceExtraction::extract (getDistance, PrimAABox (min, max), resolution);
+    Mesh mesh = IsosurfaceExtraction::extract (getDistance, PrimAABox (min, max), this->resolution);
 
     State& state = this->self->state ();
     return state.scene ().newDynamicMesh (state.config (), mesh);

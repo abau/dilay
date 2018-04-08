@@ -18,7 +18,21 @@
 #include <glm/glm.hpp>
 #include "../util.hpp"
 #include "view/double-slider.hpp"
+#include "view/resolution-slider.hpp"
 #include "view/util.hpp"
+
+namespace
+{
+  void setupDoubleSlider (ViewDoubleSlider& slider, float min, float value, float max)
+  {
+    slider.setDoubleRange (min, max);
+    slider.setDoubleValue (value);
+    slider.setDoubleSingleStep ((max - min) / 10.0f);
+    slider.setDoublePageStep ((max - min) / 10.0f);
+    slider.setTracking (true);
+    slider.setOrientation (Qt::Horizontal);
+  }
+}
 
 QSpinBox& ViewUtil::spinBox (int min, int value, int max, int stepSize)
 {
@@ -83,12 +97,14 @@ ViewDoubleSlider& ViewUtil::slider (unsigned short numDecimals, float min, float
                                     unsigned short order)
 {
   ViewDoubleSlider& slider = *new ViewDoubleSlider (numDecimals, order);
-  slider.setDoubleRange (min, max);
-  slider.setDoubleValue (value);
-  slider.setDoubleSingleStep ((max - min) / 10.0f);
-  slider.setDoublePageStep ((max - min) / 10.0f);
-  slider.setTracking (true);
-  slider.setOrientation (Qt::Horizontal);
+  setupDoubleSlider (slider, min, value, max);
+  return slider;
+}
+
+ViewResolutionSlider& ViewUtil::resolutionSlider (float min, float value, float max)
+{
+  ViewResolutionSlider& slider = *new ViewResolutionSlider (min, max);
+  setupDoubleSlider (slider, min, max + min - value, max);
   return slider;
 }
 
@@ -212,6 +228,11 @@ void ViewUtil::connect (const QRadioButton& r, const std::function<void(bool)>& 
 void ViewUtil::connect (const QSlider& s, const std::function<void(int)>& f)
 {
   QObject::connect (&s, &QSlider::valueChanged, f);
+}
+
+void ViewUtil::connect (const ViewResolutionSlider& s, const std::function<void(float)>& f)
+{
+  QObject::connect (&s, &ViewResolutionSlider::resolutionChanged, f);
 }
 
 void ViewUtil::connect (const ViewDoubleSlider& s, const std::function<void(float)>& f)

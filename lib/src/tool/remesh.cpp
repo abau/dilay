@@ -17,8 +17,8 @@
 #include "state.hpp"
 #include "tool/sculpt/util/action.hpp"
 #include "tools.hpp"
-#include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
+#include "view/resolution-slider.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
@@ -37,16 +37,12 @@ namespace
 struct ToolRemesh::Impl
 {
   ToolRemesh*       self;
-  const float       minResolution;
-  const float       maxResolution;
   float             resolution;
   Mode              mode;
   Maybe<glm::ivec2> pressPoint;
 
   Impl (ToolRemesh* s)
     : self (s)
-    , minResolution (0.02f)
-    , maxResolution (0.1f)
     , resolution (s->cache ().get<float> ("resolution", 0.06))
     , mode (Mode (s->cache ().get<int> ("mode", int(Mode::Normal))))
   {
@@ -65,8 +61,8 @@ struct ToolRemesh::Impl
     });
     properties.add (modeEdit);
 
-    ViewDoubleSlider& resolutionEdit =
-      ViewUtil::slider (2, this->minResolution, this->resolution, this->maxResolution);
+    ViewResolutionSlider& resolutionEdit =
+      ViewUtil::resolutionSlider (0.02f, this->resolution, 0.1f);
     ViewUtil::connect (resolutionEdit, [this](float r) {
       this->resolution = r;
       this->self->cache ().set ("resolution", r);
@@ -112,9 +108,9 @@ struct ToolRemesh::Impl
       return mesh.unsignedDistance (pos);
     };
 
-    const float     resolution = this->maxResolution + this->minResolution - this->resolution;
     const PrimAABox bounds = mesh.mesh ().bounds ();
-    Mesh newMesh = IsosurfaceExtraction::extract (getDistance, getIntersection, bounds, resolution);
+    Mesh            newMesh =
+      IsosurfaceExtraction::extract (getDistance, getIntersection, bounds, this->resolution);
 
     State& state = this->self->state ();
     state.scene ().deleteMesh (mesh);
@@ -313,17 +309,16 @@ struct ToolRemesh::Impl
     const glm::vec3 max = glm::max (boundsA.maximum (), boundsB.maximum ());
     const PrimAABox bounds (min, max);
 
-    const float resolution = this->maxResolution + this->minResolution - this->resolution;
-    Mesh        newMesh;
+    Mesh newMesh;
     if (this->mode == Mode::Difference)
     {
-      newMesh =
-        IsosurfaceExtraction::extract (getDistance, getDifferenceIntersection, bounds, resolution);
+      newMesh = IsosurfaceExtraction::extract (getDistance, getDifferenceIntersection, bounds,
+                                               this->resolution);
     }
     else
     {
-      newMesh =
-        IsosurfaceExtraction::extract (getDistance, getCommutativeIntersection, bounds, resolution);
+      newMesh = IsosurfaceExtraction::extract (getDistance, getCommutativeIntersection, bounds,
+                                               this->resolution);
     }
 
     State& state = this->self->state ();
