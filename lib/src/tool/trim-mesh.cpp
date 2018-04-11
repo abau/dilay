@@ -69,7 +69,7 @@ struct ToolTrimMesh::Impl
     ViewUtil::connect (trimModeEdit, int(this->trimMode), [this](int id) {
       this->trimMode = TrimMode (id);
       this->self->cache ().set ("trim-mode", id);
-      widthEdit.setEnabled (this->trimMode != TrimMode::Normal);
+      this->widthEdit.setEnabled (this->trimMode != TrimMode::Normal);
     });
     properties.add (trimModeEdit);
 
