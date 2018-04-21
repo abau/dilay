@@ -697,13 +697,19 @@ struct SketchMesh::Impl
 
       std::function<void(SketchNode&)> mirrorNode = [this, &mirrorPlane, &requiresMirroring,
                                                      &mirrorNode](SketchNode& node) {
-        node.forEachChild ([this, &mirrorPlane, &requiresMirroring, &mirrorNode](SketchNode& c) {
-          if (requiresMirroring (c))
-          {
-            this->addMirroredNode (c, mirrorPlane);
-          }
-          mirrorNode (c);
-        });
+        unsigned int numChildren = node.numChildren ();
+        node.forEachChild (
+          [this, &mirrorPlane, &requiresMirroring, &mirrorNode, &numChildren](SketchNode& c) {
+            if (numChildren > 0)
+            {
+              if (requiresMirroring (c))
+              {
+                this->addMirroredNode (c, mirrorPlane);
+              }
+              mirrorNode (c);
+              numChildren--;
+            }
+          });
       };
 
       this->tree.root ().forEachNode ([&mirrorPlane](SketchNode& parent) {
@@ -712,20 +718,7 @@ struct SketchMesh::Impl
         });
       });
 
-      unsigned int numC = this->tree.root ().numChildren ();
-
-      this->tree.root ().forEachChild (
-        [this, &requiresMirroring, &mirrorNode, &mirrorPlane, &numC](SketchNode& child) {
-          if (numC > 0)
-          {
-            if (requiresMirroring (child))
-            {
-              this->addMirroredNode (child, mirrorPlane);
-            }
-            mirrorNode (child);
-            numC--;
-          }
-        });
+      mirrorNode (this->tree.root ());
     }
   }
 
