@@ -73,6 +73,11 @@ struct DynamicMesh::Impl
   std::vector<unsigned int>  freeFaceIndices;
   DynamicOctree              octree;
 
+  Impl (DynamicMesh* s)
+    : self (s)
+  {
+  }
+
   Impl (DynamicMesh* s, const Mesh& m)
     : self (s)
   {
@@ -469,19 +474,6 @@ struct DynamicMesh::Impl
     return (glm::distance2 (v1, v2) + glm::distance2 (v1, v3) + glm::distance2 (v2, v3)) / 3.0f;
   }
 
-  void setupOctreeRoot () { this->setupOctreeRoot (this->mesh); }
-
-  void setupOctreeRoot (const Mesh& mesh)
-  {
-    assert (this->octree.hasRoot () == false);
-
-    const PrimAABox bounds = mesh.bounds ();
-    const glm::vec3 delta = bounds.maximum () - bounds.minimum ();
-    const float     width = glm::max (glm::max (delta.x, delta.y), delta.z);
-
-    this->octree.setupRoot (bounds.center (), width);
-  }
-
   unsigned int addVertex (const glm::vec3& vertex, const glm::vec3& normal)
   {
     assert (this->vertexData.size () == this->mesh.numVertices ());
@@ -552,6 +544,11 @@ struct DynamicMesh::Impl
   void addFaceToOctree (unsigned int i)
   {
     const PrimTriangle tri = this->face (i);
+
+    if (this->octree.hasRoot () == false)
+    {
+      this->octree.setupRoot (tri.center (), tri.maxDimExtent ());
+    }
 
     this->octree.addElement (i, tri.center (), tri.maxDimExtent ());
   }
@@ -628,7 +625,6 @@ struct DynamicMesh::Impl
   void fromMesh (const Mesh& mesh)
   {
     this->reset ();
-    this->setupOctreeRoot (mesh);
     this->mesh.reserveVertices (mesh.numVertices ());
 
     for (unsigned int i = 0; i < mesh.numVertices (); i++)
@@ -961,7 +957,6 @@ struct DynamicMesh::Impl
   {
     this->mesh.normalize ();
     this->octree.reset ();
-    this->setupOctreeRoot (this->mesh);
 
     this->forEachFace ([this](unsigned int i) { this->addFaceToOctree (i); });
   }
@@ -975,7 +970,8 @@ struct DynamicMesh::Impl
   }
 };
 
-DELEGATE1_BIG4_COPY_SELF (DynamicMesh, const Mesh&)
+DELEGATE_BIG4_COPY_SELF (DynamicMesh)
+DELEGATE1_CONSTRUCTOR_SELF (DynamicMesh, const Mesh&)
 DELEGATE_CONST (unsigned int, DynamicMesh, numVertices)
 DELEGATE_CONST (unsigned int, DynamicMesh, numFaces)
 DELEGATE_CONST (bool, DynamicMesh, isEmpty)
@@ -1009,7 +1005,6 @@ DELEGATE1_CONST (glm::vec3, DynamicMesh, averageNormal, const DynamicFaces&)
 DELEGATE1_CONST (glm::vec3, DynamicMesh, averageNormal, unsigned int)
 DELEGATE1_CONST (float, DynamicMesh, averageEdgeLengthSqr, const DynamicFaces&)
 DELEGATE1_CONST (float, DynamicMesh, averageEdgeLengthSqr, unsigned int)
-DELEGATE (void, DynamicMesh, setupOctreeRoot)
 DELEGATE2 (unsigned int, DynamicMesh, addVertex, const glm::vec3&, const glm::vec3&)
 DELEGATE3 (unsigned int, DynamicMesh, addFace, unsigned int, unsigned int, unsigned int)
 DELEGATE1 (void, DynamicMesh, deleteVertex, unsigned int)

@@ -48,11 +48,6 @@ namespace
         mesh.deleteFace (i);
       }
 
-      if (mesh.isEmpty ())
-      {
-        mesh.setupOctreeRoot ();
-      }
-
       for (unsigned int i = 0; i < this->vertexIndices.size (); i += 3)
       {
         const unsigned int f = mesh.addFace (this->vertexIndices[i + 0], this->vertexIndices[i + 1],

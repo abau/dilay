@@ -27,7 +27,8 @@ class RenderMode;
 class DynamicMesh : public Configurable
 {
 public:
-  DECLARE_BIG4_EXPLICIT_COPY (DynamicMesh, const Mesh&);
+  DECLARE_BIG4_EXPLICIT_COPY (DynamicMesh);
+  DynamicMesh (const Mesh&);
 
   unsigned int     numVertices () const;
   unsigned int     numFaces () const;
@@ -62,7 +63,6 @@ public:
   float     averageEdgeLengthSqr (unsigned int) const;
 
   const Mesh&  mesh () const;
-  void         setupOctreeRoot ();
   unsigned int addVertex (const glm::vec3&, const glm::vec3&);
   unsigned int addFace (unsigned int, unsigned int, unsigned int);
   void         deleteVertex (unsigned int);
