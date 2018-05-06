@@ -80,7 +80,8 @@ public:
   void realignAllFaces ();
   void sanitize ();
   void prune (std::vector<unsigned int>* = nullptr, std::vector<unsigned int>* = nullptr);
-  bool pruneAndCheckConsistency ();
+  bool pruneAndCheckConsistency (std::vector<unsigned int>* = nullptr,
+                                 std::vector<unsigned int>* = nullptr);
   bool mirror (const PrimPlane&);
   void bufferData ();
 

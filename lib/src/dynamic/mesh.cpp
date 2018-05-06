@@ -758,9 +758,10 @@ struct DynamicMesh::Impl
     }
   }
 
-  bool pruneAndCheckConsistency ()
+  bool pruneAndCheckConsistency (std::vector<unsigned int>* pVertexIndexMap,
+                                 std::vector<unsigned int>* pFaceIndexMap)
   {
-    this->prune (nullptr, nullptr);
+    this->prune (pVertexIndexMap, pFaceIndexMap);
     this->bufferData ();
 
     if (MeshUtil::checkConsistency (this->mesh))
@@ -786,7 +787,7 @@ struct DynamicMesh::Impl
 
   bool mirror (const PrimPlane& plane)
   {
-    assert (this->pruneAndCheckConsistency ());
+    assert (this->pruneAndCheckConsistency (nullptr, nullptr));
 
     const auto inBorder = [this, &plane](unsigned int f) {
       unsigned int i1, i2, i3;
@@ -813,7 +814,7 @@ struct DynamicMesh::Impl
         break;
       }
     } while (ToolSculptAction::deleteFaces (*this->self, faces));
-    assert (this->pruneAndCheckConsistency ());
+    assert (this->pruneAndCheckConsistency (nullptr, nullptr));
 
     this->prune (nullptr, nullptr);
 
@@ -826,7 +827,7 @@ struct DynamicMesh::Impl
     else
     {
       this->fromMesh (mirrored);
-      assert (this->pruneAndCheckConsistency ());
+      assert (this->pruneAndCheckConsistency (nullptr, nullptr));
       return true;
     }
   }
@@ -1020,7 +1021,8 @@ DELEGATE1 (void, DynamicMesh, realignFaces, const DynamicFaces&)
 DELEGATE (void, DynamicMesh, realignAllFaces)
 DELEGATE (void, DynamicMesh, sanitize)
 DELEGATE2 (void, DynamicMesh, prune, std::vector<unsigned int>*, std::vector<unsigned int>*)
-DELEGATE (bool, DynamicMesh, pruneAndCheckConsistency)
+DELEGATE2 (bool, DynamicMesh, pruneAndCheckConsistency, std::vector<unsigned int>*,
+           std::vector<unsigned int>*)
 DELEGATE1 (bool, DynamicMesh, mirror, const PrimPlane&)
 DELEGATE (void, DynamicMesh, bufferData)
 DELEGATE1_CONST (void, DynamicMesh, render, Camera&)
