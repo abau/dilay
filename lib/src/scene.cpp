@@ -109,28 +109,8 @@ struct Scene::Impl
 
   void deleteEmptyMeshes ()
   {
-    for (auto it = this->dynamicMeshes.begin (); it != this->dynamicMeshes.end ();)
-    {
-      if (it->isEmpty ())
-      {
-        it = this->dynamicMeshes.erase (it);
-      }
-      else
-      {
-        ++it;
-      }
-    }
-    for (auto it = this->sketchMeshes.begin (); it != this->sketchMeshes.end ();)
-    {
-      if (it->isEmpty ())
-      {
-        it = this->sketchMeshes.erase (it);
-      }
-      else
-      {
-        ++it;
-      }
-    }
+    this->dynamicMeshes.remove_if ([](const auto& mesh) { return mesh.isEmpty (); });
+    this->sketchMeshes.remove_if ([](const auto& mesh) { return mesh.isEmpty (); });
     this->resetIfEmpty ();
   }
 
