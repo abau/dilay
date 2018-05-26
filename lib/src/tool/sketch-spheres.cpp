@@ -19,7 +19,6 @@
 #include "state.hpp"
 #include "tool/util/step.hpp"
 #include "tools.hpp"
-#include "util.hpp"
 #include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
