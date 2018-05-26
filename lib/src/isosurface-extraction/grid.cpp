@@ -49,7 +49,7 @@ namespace
     false, true,  false, true,  false, false, false, false, false, false, false, false, true,
     false, false, true,  false, false, false, false, false, false};
 
-  static int vertexIndicesByConfiguration[256][12] = {
+  static char vertexIndicesByConfiguration[256][12] = {
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
     {0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1},
     {0, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1},
@@ -307,19 +307,17 @@ namespace
     {0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1},
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
 
-  static int edgeIndicesByFace[6][4] = {{0, 2, 5, 6},   {3, 8, 9, 11}, {1, 2, 7, 8},
-                                        {4, 5, 10, 11}, {0, 1, 3, 4},  {6, 7, 9, 10}};
+  static unsigned char edgeIndicesByFace[6][4] = {{0, 2, 5, 6},   {3, 8, 9, 11}, {1, 2, 7, 8},
+                                                  {4, 5, 10, 11}, {0, 1, 3, 4},  {6, 7, 9, 10}};
 
-  unsigned int numVertices (unsigned int configuration)
+  unsigned char numVertices (unsigned char configuration)
   {
-    assert (configuration < 256);
-
-    int n = -1;
-    for (unsigned int i = 0; i < 12; i++)
+    char n = -1;
+    for (unsigned char i = 0; i < 12; i++)
     {
-      n = glm::max (n, vertexIndicesByConfiguration[configuration][i]);
+      n = std::max (n, vertexIndicesByConfiguration[configuration][i]);
     }
-    return n + 1;
+    return (unsigned char) (n + 1);
   }
 
   bool isIntersecting (float s1, float s2)
@@ -329,7 +327,7 @@ namespace
 
   struct Cube
   {
-    unsigned int              configuration;
+    unsigned char             configuration;
     glm::vec3                 vertex;
     std::vector<unsigned int> vertexIndicesInMesh;
     bool                      nonManifold;
@@ -341,53 +339,46 @@ namespace
     {
     }
 
-    bool nonManifoldConfig () const
-    {
-      assert (this->configuration < 256);
-      return ::nonManifoldConfig[this->configuration];
-    }
+    bool nonManifoldConfig () const { return ::nonManifoldConfig[this->configuration]; }
 
     bool collapseNonManifoldConfig () const
     {
       return this->nonManifoldConfig () && this->nonManifold == false;
     }
 
-    unsigned int vertexIndex (unsigned int edge) const
+    unsigned int vertexIndex (unsigned char edge) const
     {
       assert (edge < 12);
-      assert (this->configuration < 256);
       assert (vertexIndicesByConfiguration[this->configuration][edge] >= 0);
       assert (this->nonManifold == false || this->nonManifoldConfig ());
 
-      const unsigned int i =
-        this->collapseNonManifoldConfig ()
-          ? 0
-          : (unsigned int) vertexIndicesByConfiguration[this->configuration][edge];
+      const unsigned char i = this->collapseNonManifoldConfig ()
+                                ? 0
+                                : vertexIndicesByConfiguration[this->configuration][edge];
       assert (i < this->vertexIndicesInMesh.size ());
 
       return this->vertexIndicesInMesh.at (i);
     }
 
-    unsigned int getAmbiguousFaceOfNonManifoldConfig () const
+    unsigned char getAmbiguousFaceOfNonManifoldConfig () const
     {
-      assert (this->configuration < 256);
       assert (this->nonManifoldConfig ());
 
       for (unsigned int i = 0; i < 6; i++)
       {
-        const unsigned int edge1 = edgeIndicesByFace[i][0];
-        const unsigned int edge2 = edgeIndicesByFace[i][1];
-        const unsigned int edge3 = edgeIndicesByFace[i][2];
-        const unsigned int edge4 = edgeIndicesByFace[i][3];
+        const unsigned char edge1 = edgeIndicesByFace[i][0];
+        const unsigned char edge2 = edgeIndicesByFace[i][1];
+        const unsigned char edge3 = edgeIndicesByFace[i][2];
+        const unsigned char edge4 = edgeIndicesByFace[i][3];
 
-        const int vertex1 = vertexIndicesByConfiguration[this->configuration][edge1];
-        const int vertex2 = vertexIndicesByConfiguration[this->configuration][edge2];
-        const int vertex3 = vertexIndicesByConfiguration[this->configuration][edge3];
-        const int vertex4 = vertexIndicesByConfiguration[this->configuration][edge4];
+        const char vertex1 = vertexIndicesByConfiguration[this->configuration][edge1];
+        const char vertex2 = vertexIndicesByConfiguration[this->configuration][edge2];
+        const char vertex3 = vertexIndicesByConfiguration[this->configuration][edge3];
+        const char vertex4 = vertexIndicesByConfiguration[this->configuration][edge4];
 
         if (vertex1 != -1 && vertex2 != -1 && vertex3 != -1 && vertex4 != -1)
         {
-          return i;
+          return (unsigned char) i;
         }
       }
       DILAY_IMPOSSIBLE
@@ -395,7 +386,7 @@ namespace
   };
 }
 
-const int IsosurfaceExtractionGrid::vertexIndicesByEdge[12][2] = {
+const unsigned char IsosurfaceExtractionGrid::vertexIndicesByEdge[12][2] = {
   {0, 1}, {0, 2}, {0, 4}, {2, 3}, {1, 3}, {1, 5}, {4, 5}, {4, 6}, {2, 6}, {6, 7}, {5, 7}, {3, 7}};
 
 struct IsosurfaceExtractionGrid::Impl
@@ -455,7 +446,7 @@ struct IsosurfaceExtractionGrid::Impl
     return (z * this->numSamples.x * this->numSamples.y) + (y * this->numSamples.x) + x;
   }
 
-  unsigned int sampleIndex (unsigned int cubeIndex, unsigned int vertex) const
+  unsigned int sampleIndex (unsigned int cubeIndex, unsigned char vertex) const
   {
     assert (vertex < 8);
 
@@ -495,9 +486,9 @@ struct IsosurfaceExtractionGrid::Impl
     return (z * this->numCubes.x * this->numCubes.y) + (y * this->numCubes.x) + x;
   }
 
-  unsigned int cubeVertexIndex (unsigned int cubeIndex, unsigned int vertexIndex) const
+  unsigned int cubeVertexIndex (unsigned int cubeIndex, unsigned char edge) const
   {
-    return this->cubes.at (cubeIndex).vertexIndex (vertexIndex);
+    return this->cubes.at (cubeIndex).vertexIndex (edge);
   }
 
   void setCubeVertex (unsigned int cubeIndex)
@@ -523,10 +514,10 @@ struct IsosurfaceExtractionGrid::Impl
                                    this->samplePos (indices[6]), this->samplePos (indices[7])};
 
     cube.configuration = 0;
-    for (unsigned int edge = 0; edge < 12; edge++)
+    for (unsigned char edge = 0; edge < 12; edge++)
     {
-      const unsigned int vertex1 = vertexIndicesByEdge[edge][0];
-      const unsigned int vertex2 = vertexIndicesByEdge[edge][1];
+      const unsigned char vertex1 = vertexIndicesByEdge[edge][0];
+      const unsigned char vertex2 = vertexIndicesByEdge[edge][1];
 
       if (samples[vertex1] < 0.0f)
       {
@@ -547,13 +538,12 @@ struct IsosurfaceExtractionGrid::Impl
         numCrossedEdges++;
       }
     }
-    assert (cube.configuration < 256);
 
 #ifndef NDEBUG
-    for (unsigned int edge = 0; edge < 12; edge++)
+    for (unsigned char edge = 0; edge < 12; edge++)
     {
-      const unsigned int vertex1 = vertexIndicesByEdge[edge][0];
-      const unsigned int vertex2 = vertexIndicesByEdge[edge][1];
+      const unsigned char vertex1 = vertexIndicesByEdge[edge][0];
+      const unsigned char vertex2 = vertexIndicesByEdge[edge][1];
 
       if (samples[vertex1] < 0.0f)
       {
@@ -606,11 +596,11 @@ struct IsosurfaceExtractionGrid::Impl
       {
         for (unsigned int x = 0; x < this->numCubes.x; x++)
         {
-          unsigned int config = this->cubes.at (this->cubeIndex (x, y, z)).configuration;
+          unsigned char config = this->cubes.at (this->cubeIndex (x, y, z)).configuration;
 
           if (x > 0)
           {
-            unsigned int left = this->cubes.at (this->cubeIndex (x - 1, y, z)).configuration;
+            unsigned char left = this->cubes.at (this->cubeIndex (x - 1, y, z)).configuration;
 
             assert (((config & (1 << 0)) == 0) == ((left & (1 << 1)) == 0));
             assert (((config & (1 << 2)) == 0) == ((left & (1 << 3)) == 0));
@@ -619,7 +609,7 @@ struct IsosurfaceExtractionGrid::Impl
           }
           if (y > 0)
           {
-            unsigned int below = this->cubes.at (this->cubeIndex (x, y - 1, z)).configuration;
+            unsigned char below = this->cubes.at (this->cubeIndex (x, y - 1, z)).configuration;
 
             assert (((config & (1 << 0)) == 0) == ((below & (1 << 2)) == 0));
             assert (((config & (1 << 1)) == 0) == ((below & (1 << 3)) == 0));
@@ -628,7 +618,7 @@ struct IsosurfaceExtractionGrid::Impl
           }
           if (z > 0)
           {
-            unsigned int behind = this->cubes.at (this->cubeIndex (x, y, z - 1)).configuration;
+            unsigned char behind = this->cubes.at (this->cubeIndex (x, y, z - 1)).configuration;
 
             assert (((config & (1 << 0)) == 0) == ((behind & (1 << 4)) == 0));
             assert (((config & (1 << 1)) == 0) == ((behind & (1 << 5)) == 0));
@@ -642,7 +632,7 @@ struct IsosurfaceExtractionGrid::Impl
   }
 
   bool hasAmbiguousNeighbor (const Cube& cube, unsigned int x, unsigned int y, unsigned int z,
-                             unsigned int ambiguousFace, int dim)
+                             unsigned char ambiguousFace, char dim)
   {
     assert (cube.nonManifoldConfig ());
     assert (dim == -3 || dim == -2 || dim == -1 || dim == 1 || dim == 2 || dim == 3);
@@ -653,7 +643,7 @@ struct IsosurfaceExtractionGrid::Impl
                                                    dim == -3 ? z - 1 : (dim == 3 ? z + 1 : z)));
     if (other.nonManifoldConfig ())
     {
-      const unsigned int otherAmbiguousFace = other.getAmbiguousFaceOfNonManifoldConfig ();
+      const unsigned char otherAmbiguousFace = other.getAmbiguousFaceOfNonManifoldConfig ();
 
       const bool nx = dim == -1 && ambiguousFace == 2 && otherAmbiguousFace == 3;
       const bool px = dim == 1 && ambiguousFace == 3 && otherAmbiguousFace == 2;
@@ -676,7 +666,7 @@ struct IsosurfaceExtractionGrid::Impl
 
     if (cube.nonManifoldConfig ())
     {
-      const unsigned int ambiguousFace = cube.getAmbiguousFaceOfNonManifoldConfig ();
+      const unsigned char ambiguousFace = cube.getAmbiguousFaceOfNonManifoldConfig ();
 
       const bool nx = x > 0 && this->hasAmbiguousNeighbor (cube, x, y, z, ambiguousFace, -1);
       const bool px =
@@ -738,7 +728,7 @@ struct IsosurfaceExtractionGrid::Impl
     }
   }
 
-  void makeFaces (DynamicMesh& mesh, unsigned int edge, unsigned int x, unsigned int y,
+  void makeFaces (DynamicMesh& mesh, unsigned char edge, unsigned int x, unsigned int y,
                   unsigned int z)
   {
     assert (edge == 0 || edge == 1 || edge == 2);
@@ -855,9 +845,7 @@ DELEGATE3_CONST (glm::vec3, IsosurfaceExtractionGrid, samplePos, unsigned int, u
 DELEGATE1_CONST (glm::vec3, IsosurfaceExtractionGrid, samplePos, unsigned int)
 DELEGATE3_CONST (unsigned int, IsosurfaceExtractionGrid, sampleIndex, unsigned int, unsigned int,
                  unsigned int)
-DELEGATE2_CONST (unsigned int, IsosurfaceExtractionGrid, sampleIndex, unsigned int, unsigned int)
+DELEGATE2_CONST (unsigned int, IsosurfaceExtractionGrid, sampleIndex, unsigned int, unsigned char)
 DELEGATE3_CONST (unsigned int, IsosurfaceExtractionGrid, cubeIndex, unsigned int, unsigned int,
-                 unsigned int)
-DELEGATE2_CONST (unsigned int, IsosurfaceExtractionGrid, cubeVertexIndex, unsigned int,
                  unsigned int)
 DELEGATE1 (void, IsosurfaceExtractionGrid, makeMesh, DynamicMesh&)

@@ -211,8 +211,8 @@ namespace
 
           for (unsigned int edge = 0; edge < 12; edge++)
           {
-            const unsigned int vertex1 = IsosurfaceExtractionGrid::vertexIndicesByEdge[edge][0];
-            const unsigned int vertex2 = IsosurfaceExtractionGrid::vertexIndicesByEdge[edge][1];
+            const unsigned char vertex1 = IsosurfaceExtractionGrid::vertexIndicesByEdge[edge][0];
+            const unsigned char vertex2 = IsosurfaceExtractionGrid::vertexIndicesByEdge[edge][1];
 
             if (isIntersecting (cubeSamples[vertex1], cubeSamples[vertex2]))
             {

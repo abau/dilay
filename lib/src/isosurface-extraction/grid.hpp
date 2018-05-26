@@ -15,7 +15,7 @@ class PrimAABox;
 class IsosurfaceExtractionGrid
 {
 public:
-  static const int vertexIndicesByEdge[12][2];
+  static const unsigned char vertexIndicesByEdge[12][2];
 
   DECLARE_BIG4_EXPLICIT_COPY (IsosurfaceExtractionGrid, const PrimAABox&, float)
 
@@ -27,9 +27,8 @@ public:
   glm::vec3    samplePos (unsigned int, unsigned int, unsigned int) const;
   glm::vec3    samplePos (unsigned int) const;
   unsigned int sampleIndex (unsigned int, unsigned int, unsigned int) const;
-  unsigned int sampleIndex (unsigned int, unsigned int) const;
+  unsigned int sampleIndex (unsigned int, unsigned char) const;
   unsigned int cubeIndex (unsigned int, unsigned int, unsigned int) const;
-  unsigned int cubeVertexIndex (unsigned int, unsigned int) const;
 
   void makeMesh (DynamicMesh&);
 
