@@ -491,14 +491,14 @@ struct IsosurfaceExtractionGrid::Impl
 
   unsigned int cubeVertexIndex (unsigned int cubeIndex, unsigned char edge) const
   {
-    return this->cubes.at (cubeIndex).vertexIndex (edge);
+    return this->cubes[cubeIndex].vertexIndex (edge);
   }
 
   void setCubeVertex (unsigned int cubeIndex)
   {
     glm::vec3    vertex = glm::vec3 (0.0f);
     unsigned int numCrossedEdges = 0;
-    Cube&        cube = this->cubes.at (cubeIndex);
+    Cube&        cube = this->cubes[cubeIndex];
 
     const unsigned int indices[] = {
       this->sampleIndex (cubeIndex, 0), this->sampleIndex (cubeIndex, 1),
@@ -506,10 +506,10 @@ struct IsosurfaceExtractionGrid::Impl
       this->sampleIndex (cubeIndex, 4), this->sampleIndex (cubeIndex, 5),
       this->sampleIndex (cubeIndex, 6), this->sampleIndex (cubeIndex, 7)};
 
-    const float samples[] = {this->samples.at (indices[0]), this->samples.at (indices[1]),
-                             this->samples.at (indices[2]), this->samples.at (indices[3]),
-                             this->samples.at (indices[4]), this->samples.at (indices[5]),
-                             this->samples.at (indices[6]), this->samples.at (indices[7])};
+    const float samples[] = {this->samples[indices[0]], this->samples[indices[1]],
+                             this->samples[indices[2]], this->samples[indices[3]],
+                             this->samples[indices[4]], this->samples[indices[5]],
+                             this->samples[indices[6]], this->samples[indices[7]]};
 
     const glm::vec3 positions[] = {this->samplePos (indices[0]), this->samplePos (indices[1]),
                                    this->samplePos (indices[2]), this->samplePos (indices[3]),
@@ -603,11 +603,11 @@ struct IsosurfaceExtractionGrid::Impl
       {
         for (unsigned int x = 0; x < this->numCubes.x; x++)
         {
-          unsigned char config = this->cubes.at (this->cubeIndex (x, y, z)).configuration;
+          unsigned char config = this->cubes[this->cubeIndex (x, y, z)].configuration;
 
           if (x > 0)
           {
-            unsigned char left = this->cubes.at (this->cubeIndex (x - 1, y, z)).configuration;
+            unsigned char left = this->cubes[this->cubeIndex (x - 1, y, z)].configuration;
 
             assert (((config & (1 << 0)) == 0) == ((left & (1 << 1)) == 0));
             assert (((config & (1 << 2)) == 0) == ((left & (1 << 3)) == 0));
@@ -616,7 +616,7 @@ struct IsosurfaceExtractionGrid::Impl
           }
           if (y > 0)
           {
-            unsigned char below = this->cubes.at (this->cubeIndex (x, y - 1, z)).configuration;
+            unsigned char below = this->cubes[this->cubeIndex (x, y - 1, z)].configuration;
 
             assert (((config & (1 << 0)) == 0) == ((below & (1 << 2)) == 0));
             assert (((config & (1 << 1)) == 0) == ((below & (1 << 3)) == 0));
@@ -625,7 +625,7 @@ struct IsosurfaceExtractionGrid::Impl
           }
           if (z > 0)
           {
-            unsigned char behind = this->cubes.at (this->cubeIndex (x, y, z - 1)).configuration;
+            unsigned char behind = this->cubes[this->cubeIndex (x, y, z - 1)].configuration;
 
             assert (((config & (1 << 0)) == 0) == ((behind & (1 << 4)) == 0));
             assert (((config & (1 << 1)) == 0) == ((behind & (1 << 5)) == 0));
@@ -645,9 +645,9 @@ struct IsosurfaceExtractionGrid::Impl
     assert (dim == -3 || dim == -2 || dim == -1 || dim == 1 || dim == 2 || dim == 3);
     unused (cube);
 
-    Cube& other = this->cubes.at (this->cubeIndex (dim == -1 ? x - 1 : (dim == 1 ? x + 1 : x),
-                                                   dim == -2 ? y - 1 : (dim == 2 ? y + 1 : y),
-                                                   dim == -3 ? z - 1 : (dim == 3 ? z + 1 : z)));
+    Cube& other = this->cubes[this->cubeIndex (dim == -1 ? x - 1 : (dim == 1 ? x + 1 : x),
+                                               dim == -2 ? y - 1 : (dim == 2 ? y + 1 : y),
+                                               dim == -3 ? z - 1 : (dim == 3 ? z + 1 : z))];
     if (other.nonManifoldConfig ())
     {
       const unsigned char otherAmbiguousFace = other.getAmbiguousFaceOfNonManifoldConfig ();
@@ -669,7 +669,7 @@ struct IsosurfaceExtractionGrid::Impl
 
   void resolveNonManifold (unsigned int x, unsigned int y, unsigned int z)
   {
-    Cube& cube = this->cubes.at (this->cubeIndex (x, y, z));
+    Cube& cube = this->cubes[this->cubeIndex (x, y, z)];
 
     if (cube.nonManifoldConfig ())
     {
@@ -745,9 +745,9 @@ struct IsosurfaceExtractionGrid::Impl
   {
     assert (edge == 0 || edge == 1 || edge == 2);
 
-    const float s1 = this->samples.at (this->sampleIndex (x, y, z));
-    const float s2 = this->samples.at (
-      this->sampleIndex (edge == 0 ? x + 1 : x, edge == 1 ? y + 1 : y, edge == 2 ? z + 1 : z));
+    const float s1 = this->samples[this->sampleIndex (x, y, z)];
+    const float s2 = this->samples[this->sampleIndex (edge == 0 ? x + 1 : x, edge == 1 ? y + 1 : y,
+                                                      edge == 2 ? z + 1 : z)];
 
     if (isIntersecting (s1, s2))
     {
