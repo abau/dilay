@@ -330,7 +330,7 @@ const int IsosurfaceExtractionGrid::vertexIndicesByEdge[12][2] = {
   {0, 1}, {0, 2}, {0, 4}, {2, 3}, {1, 3}, {1, 5}, {4, 5}, {4, 6}, {2, 6}, {6, 7}, {5, 7}, {3, 7}};
 
 IsosurfaceExtractionGrid::Cube::Cube ()
-  : configuration (Util::invalidIndex ())
+  : configuration (0)
   , vertex (invalidVec3)
   , nonManifold (false)
 {
@@ -505,8 +505,6 @@ void IsosurfaceExtractionGrid::setCubeVertex (unsigned int cubeIndex)
                                  this->samplePos (indices[4]), this->samplePos (indices[5]),
                                  this->samplePos (indices[6]), this->samplePos (indices[7])};
 
-  assert (cube.configuration == Util::invalidIndex ());
-
   cube.configuration = 0;
   for (unsigned int edge = 0; edge < 12; edge++)
   {
@@ -569,6 +567,10 @@ void IsosurfaceExtractionGrid::setCubeVertex (unsigned int cubeIndex)
   {
     cube.vertex = vertex / float(numCrossedEdges);
     cube.vertexIndicesInMesh.resize (numVertices (cube.configuration), Util::invalidIndex ());
+  }
+  else
+  {
+    cube.vertexIndicesInMesh.clear ();
   }
 }
 
