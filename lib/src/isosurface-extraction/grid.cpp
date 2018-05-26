@@ -327,14 +327,16 @@ namespace
 
   struct Cube
   {
-    unsigned char             configuration;
-    glm::vec3                 vertex;
-    std::vector<unsigned int> vertexIndicesInMesh;
-    bool                      nonManifold;
+    unsigned char               configuration;
+    glm::vec3                   vertex;
+    unsigned char               numVertexIndicesInMesh;
+    std::array<unsigned int, 3> vertexIndicesInMesh;
+    bool                        nonManifold;
 
     Cube ()
       : configuration (0)
       , vertex (invalidVec3)
+      , numVertexIndicesInMesh (0)
       , nonManifold (false)
     {
     }
@@ -356,8 +358,9 @@ namespace
                                 ? 0
                                 : vertexIndicesByConfiguration[this->configuration][edge];
       assert (i < this->vertexIndicesInMesh.size ());
+      assert (i < this->numVertexIndicesInMesh);
 
-      return this->vertexIndicesInMesh.at (i);
+      return this->vertexIndicesInMesh[i];
     }
 
     unsigned char getAmbiguousFaceOfNonManifoldConfig () const
@@ -574,6 +577,10 @@ struct IsosurfaceExtractionGrid::Impl
     {
       cube.vertex = vertex / float(numCrossedEdges);
     }
+    else
+    {
+      assert (numVertices (cube.configuration) == 0);
+    }
   }
 
   void setCubeVertices ()
@@ -702,14 +709,19 @@ struct IsosurfaceExtractionGrid::Impl
 
   void addCubeVerticesToMesh (Cube& cube, DynamicMesh& mesh)
   {
-    const unsigned int n = cube.collapseNonManifoldConfig () ? 1 : numVertices (cube.configuration);
+    cube.numVertexIndicesInMesh =
+      cube.collapseNonManifoldConfig () ? 1 : numVertices (cube.configuration);
 
-    cube.vertexIndicesInMesh.resize (n, Util::invalidIndex ());
-
-    for (unsigned int i = 0; i < cube.vertexIndicesInMesh.size (); i++)
+    for (unsigned char i = 0; i < cube.numVertexIndicesInMesh; i++)
     {
       cube.vertexIndicesInMesh[i] = mesh.addVertex (cube.vertex, glm::vec3 (0.0f));
     }
+#ifndef NDEBUG
+    for (unsigned char i = cube.numVertexIndicesInMesh; i < cube.vertexIndicesInMesh.size (); i++)
+    {
+      cube.vertexIndicesInMesh[i] = Util::invalidIndex ();
+    }
+#endif
   }
 
   void addQuadToMesh (DynamicMesh& mesh, unsigned int i, unsigned int iu, unsigned int iv,
@@ -823,10 +835,10 @@ struct IsosurfaceExtractionGrid::Impl
     {
       if (vertexIndexMap.empty () == false)
       {
-        for (unsigned int& i : c.vertexIndicesInMesh)
+        for (unsigned char i = 0; i < c.numVertexIndicesInMesh; i++)
         {
-          i = vertexIndexMap.at (i);
-          assert (i != Util::invalidIndex ());
+          c.vertexIndicesInMesh[i] = vertexIndexMap[c.vertexIndicesInMesh[i]];
+          assert (c.vertexIndicesInMesh[i] != Util::invalidIndex ());
         }
       }
     }
