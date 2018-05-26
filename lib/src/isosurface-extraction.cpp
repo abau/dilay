@@ -243,24 +243,24 @@ namespace
 
       if (edge == 0)
       {
-        v1 = grid.cubes ().at (i).vertexIndex (0);
-        v2 = grid.cubes ().at (iu).vertexIndex (3);
-        v3 = grid.cubes ().at (iuv).vertexIndex (9);
-        v4 = grid.cubes ().at (iv).vertexIndex (6);
+        v1 = grid.cubeVertexIndex (i, 0);
+        v2 = grid.cubeVertexIndex (iu, 3);
+        v3 = grid.cubeVertexIndex (iuv, 9);
+        v4 = grid.cubeVertexIndex (iv, 6);
       }
       else if (edge == 1)
       {
-        v1 = grid.cubes ().at (i).vertexIndex (1);
-        v2 = grid.cubes ().at (iu).vertexIndex (7);
-        v3 = grid.cubes ().at (iuv).vertexIndex (10);
-        v4 = grid.cubes ().at (iv).vertexIndex (4);
+        v1 = grid.cubeVertexIndex (i, 1);
+        v2 = grid.cubeVertexIndex (iu, 7);
+        v3 = grid.cubeVertexIndex (iuv, 10);
+        v4 = grid.cubeVertexIndex (iv, 4);
       }
       else if (edge == 2)
       {
-        v1 = grid.cubes ().at (i).vertexIndex (2);
-        v2 = grid.cubes ().at (iu).vertexIndex (5);
-        v3 = grid.cubes ().at (iuv).vertexIndex (11);
-        v4 = grid.cubes ().at (iv).vertexIndex (8);
+        v1 = grid.cubeVertexIndex (i, 2);
+        v2 = grid.cubeVertexIndex (iu, 5);
+        v3 = grid.cubeVertexIndex (iuv, 11);
+        v4 = grid.cubeVertexIndex (iv, 8);
       }
       else
       {
