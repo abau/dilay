@@ -522,15 +522,8 @@ struct IsosurfaceExtractionGrid::Impl
       const unsigned char vertex1 = vertexIndicesByEdge[edge][0];
       const unsigned char vertex2 = vertexIndicesByEdge[edge][1];
 
-      if (samples[vertex1] < 0.0f)
-      {
-        cube.configuration |= (1 << vertex1);
-      }
-
-      if (samples[vertex2] < 0.0f)
-      {
-        cube.configuration |= (1 << vertex2);
-      }
+      cube.configuration |= ((samples[vertex1] < 0.0f) << vertex1);
+      cube.configuration |= ((samples[vertex2] < 0.0f) << vertex2);
 
       if (isIntersecting (samples[vertex1], samples[vertex2]))
       {
