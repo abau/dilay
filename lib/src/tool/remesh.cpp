@@ -109,12 +109,13 @@ struct ToolRemesh::Impl
     };
 
     const PrimAABox bounds = mesh.mesh ().bounds ();
-    Mesh            newMesh =
-      IsosurfaceExtraction::extract (getDistance, getIntersection, bounds, this->resolution);
+    DynamicMesh     extractedMesh;
+    IsosurfaceExtraction::extract (getDistance, getIntersection, bounds, this->resolution,
+                                   extractedMesh);
 
     State& state = this->self->state ();
     state.scene ().deleteMesh (mesh);
-    DynamicMesh& dMesh = state.scene ().newDynamicMesh (state.config (), newMesh);
+    DynamicMesh& dMesh = state.scene ().newDynamicMesh (state.config (), extractedMesh);
     ToolSculptAction::smoothMesh (dMesh);
   }
 
@@ -309,25 +310,25 @@ struct ToolRemesh::Impl
     const glm::vec3 max = glm::max (boundsA.maximum (), boundsB.maximum ());
     const PrimAABox bounds (min, max);
 
-    Mesh newMesh;
+    DynamicMesh extractedMesh;
     if (this->mode == Mode::Difference)
     {
-      newMesh = IsosurfaceExtraction::extract (getDistance, getDifferenceIntersection, bounds,
-                                               this->resolution);
+      IsosurfaceExtraction::extract (getDistance, getDifferenceIntersection, bounds,
+                                     this->resolution, extractedMesh);
     }
     else
     {
-      newMesh = IsosurfaceExtraction::extract (getDistance, getCommutativeIntersection, bounds,
-                                               this->resolution);
+      IsosurfaceExtraction::extract (getDistance, getCommutativeIntersection, bounds,
+                                     this->resolution, extractedMesh);
     }
 
     State& state = this->self->state ();
     state.scene ().deleteMesh (meshA);
     state.scene ().deleteMesh (meshB);
 
-    if (newMesh.numIndices () > 0)
+    if (extractedMesh.isEmpty () == false)
     {
-      DynamicMesh& dMesh = state.scene ().newDynamicMesh (state.config (), newMesh);
+      DynamicMesh& dMesh = state.scene ().newDynamicMesh (state.config (), extractedMesh);
       ToolSculptAction::smoothMesh (dMesh);
     }
   }

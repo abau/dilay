@@ -2,6 +2,8 @@
  * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <glm/gtx/norm.hpp>
+#include "dynamic/mesh.hpp"
 #include "isosurface-extraction/grid.hpp"
 #include "mesh.hpp"
 #include "primitive/aabox.hpp"
@@ -498,12 +500,6 @@ struct IsosurfaceExtractionGrid::Impl
     return this->cubes.at (cubeIndex).vertexIndex (vertexIndex);
   }
 
-  void setSample (unsigned int index, float sample)
-  {
-    assert (index < this->samples.size ());
-    this->samples[index] = sample;
-  }
-
   void setCubeVertex (unsigned int cubeIndex)
   {
     glm::vec3    vertex = glm::vec3 (0.0f);
@@ -587,11 +583,6 @@ struct IsosurfaceExtractionGrid::Impl
     if (numCrossedEdges > 0)
     {
       cube.vertex = vertex / float(numCrossedEdges);
-      cube.vertexIndicesInMesh.resize (numVertices (cube.configuration), Util::invalidIndex ());
-    }
-    else
-    {
-      cube.vertexIndicesInMesh.clear ();
     }
   }
 
@@ -650,35 +641,177 @@ struct IsosurfaceExtractionGrid::Impl
 #endif
   }
 
+  bool hasAmbiguousNeighbor (const Cube& cube, unsigned int x, unsigned int y, unsigned int z,
+                             unsigned int ambiguousFace, int dim)
+  {
+    assert (cube.nonManifoldConfig ());
+    assert (dim == -3 || dim == -2 || dim == -1 || dim == 1 || dim == 2 || dim == 3);
+    unused (cube);
+
+    Cube& other = this->cubes.at (this->cubeIndex (dim == -1 ? x - 1 : (dim == 1 ? x + 1 : x),
+                                                   dim == -2 ? y - 1 : (dim == 2 ? y + 1 : y),
+                                                   dim == -3 ? z - 1 : (dim == 3 ? z + 1 : z)));
+    if (other.nonManifoldConfig ())
+    {
+      const unsigned int otherAmbiguousFace = other.getAmbiguousFaceOfNonManifoldConfig ();
+
+      const bool nx = dim == -1 && ambiguousFace == 2 && otherAmbiguousFace == 3;
+      const bool px = dim == 1 && ambiguousFace == 3 && otherAmbiguousFace == 2;
+      const bool ny = dim == -2 && ambiguousFace == 0 && otherAmbiguousFace == 1;
+      const bool py = dim == 2 && ambiguousFace == 1 && otherAmbiguousFace == 0;
+      const bool nz = dim == -3 && ambiguousFace == 4 && otherAmbiguousFace == 5;
+      const bool pz = dim == 3 && ambiguousFace == 5 && otherAmbiguousFace == 4;
+
+      return nx || px || ny || py || nz || pz;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  void resolveNonManifold (unsigned int x, unsigned int y, unsigned int z)
+  {
+    Cube& cube = this->cubes.at (this->cubeIndex (x, y, z));
+
+    if (cube.nonManifoldConfig ())
+    {
+      const unsigned int ambiguousFace = cube.getAmbiguousFaceOfNonManifoldConfig ();
+
+      const bool nx = x > 0 && this->hasAmbiguousNeighbor (cube, x, y, z, ambiguousFace, -1);
+      const bool px =
+        x < this->numCubes.x - 1 && this->hasAmbiguousNeighbor (cube, x, y, z, ambiguousFace, 1);
+      const bool ny = y > 0 && this->hasAmbiguousNeighbor (cube, x, y, z, ambiguousFace, -2);
+      const bool py =
+        y < this->numCubes.y - 1 && this->hasAmbiguousNeighbor (cube, x, y, z, ambiguousFace, 2);
+      const bool nz = z > 0 && this->hasAmbiguousNeighbor (cube, x, y, z, ambiguousFace, -3);
+      const bool pz =
+        z < this->numCubes.z - 1 && this->hasAmbiguousNeighbor (cube, x, y, z, ambiguousFace, 3);
+
+      cube.nonManifold = nx || px || ny || py || nz || pz;
+    }
+    else
+    {
+      cube.nonManifold = false;
+    }
+  }
+
   void resolveNonManifolds ()
   {
-    auto check = [this](const Cube& cube, unsigned int x, unsigned int y, unsigned int z,
-                        unsigned int ambiguousFace, int dim) -> bool {
-      assert (cube.nonManifoldConfig ());
-      assert (dim == -3 || dim == -2 || dim == -1 || dim == 1 || dim == 2 || dim == 3);
-      unused (cube);
-
-      Cube& other = this->cubes.at (this->cubeIndex (dim == -1 ? x - 1 : (dim == 1 ? x + 1 : x),
-                                                     dim == -2 ? y - 1 : (dim == 2 ? y + 1 : y),
-                                                     dim == -3 ? z - 1 : (dim == 3 ? z + 1 : z)));
-      if (other.nonManifoldConfig ())
+    for (unsigned int z = 0; z < this->numCubes.z; z++)
+    {
+      for (unsigned int y = 0; y < this->numCubes.y; y++)
       {
-        const unsigned int otherAmbiguousFace = other.getAmbiguousFaceOfNonManifoldConfig ();
+        for (unsigned int x = 0; x < this->numCubes.x; x++)
+        {
+          this->resolveNonManifold (x, y, z);
+        }
+      }
+    }
+  }
 
-        const bool nx = dim == -1 && ambiguousFace == 2 && otherAmbiguousFace == 3;
-        const bool px = dim == 1 && ambiguousFace == 3 && otherAmbiguousFace == 2;
-        const bool ny = dim == -2 && ambiguousFace == 0 && otherAmbiguousFace == 1;
-        const bool py = dim == 2 && ambiguousFace == 1 && otherAmbiguousFace == 0;
-        const bool nz = dim == -3 && ambiguousFace == 4 && otherAmbiguousFace == 5;
-        const bool pz = dim == 3 && ambiguousFace == 5 && otherAmbiguousFace == 4;
+  void addCubeVerticesToMesh (Cube& cube, DynamicMesh& mesh)
+  {
+    const unsigned int n = cube.collapseNonManifoldConfig () ? 1 : numVertices (cube.configuration);
 
-        return nx || px || ny || py || nz || pz;
+    cube.vertexIndicesInMesh.resize (n, Util::invalidIndex ());
+
+    for (unsigned int i = 0; i < cube.vertexIndicesInMesh.size (); i++)
+    {
+      cube.vertexIndicesInMesh[i] = mesh.addVertex (cube.vertex, glm::vec3 (0.0f));
+    }
+  }
+
+  void addQuadToMesh (DynamicMesh& mesh, unsigned int i, unsigned int iu, unsigned int iv,
+                      unsigned int iuv)
+  {
+    if (glm::distance2 (mesh.vertex (i), mesh.vertex (iuv)) <=
+        glm::distance2 (mesh.vertex (iu), mesh.vertex (iv)))
+    {
+      mesh.addFace (i, iu, iuv);
+      mesh.addFace (i, iuv, iv);
+    }
+    else
+    {
+      mesh.addFace (iu, iuv, iv);
+      mesh.addFace (iu, iv, i);
+    }
+  }
+
+  void makeFaces (DynamicMesh& mesh, unsigned int edge, unsigned int x, unsigned int y,
+                  unsigned int z)
+  {
+    assert (edge == 0 || edge == 1 || edge == 2);
+
+    const float s1 = this->samples.at (this->sampleIndex (x, y, z));
+    const float s2 = this->samples.at (
+      this->sampleIndex (edge == 0 ? x + 1 : x, edge == 1 ? y + 1 : y, edge == 2 ? z + 1 : z));
+
+    if (isIntersecting (s1, s2))
+    {
+      unsigned int i, iu, iv, iuv;
+
+      if (edge == 0)
+      {
+        i = this->cubeVertexIndex (this->cubeIndex (x, y, z), 0);
+        iu = this->cubeVertexIndex (this->cubeIndex (x, y - 1, z), 3);
+        iuv = this->cubeVertexIndex (this->cubeIndex (x, y - 1, z - 1), 9);
+        iv = this->cubeVertexIndex (this->cubeIndex (x, y, z - 1), 6);
+      }
+      else if (edge == 1)
+      {
+        i = this->cubeVertexIndex (this->cubeIndex (x, y, z), 1);
+        iu = this->cubeVertexIndex (this->cubeIndex (x, y, z - 1), 7);
+        iuv = this->cubeVertexIndex (this->cubeIndex (x - 1, y, z - 1), 10);
+        iv = this->cubeVertexIndex (this->cubeIndex (x - 1, y, z), 4);
+      }
+      else if (edge == 2)
+      {
+        i = this->cubeVertexIndex (this->cubeIndex (x, y, z), 2);
+        iu = this->cubeVertexIndex (this->cubeIndex (x - 1, y, z), 5);
+        iuv = this->cubeVertexIndex (this->cubeIndex (x - 1, y - 1, z), 11);
+        iv = this->cubeVertexIndex (this->cubeIndex (x, y - 1, z), 8);
       }
       else
       {
-        return false;
+        DILAY_IMPOSSIBLE
       }
-    };
+
+      if (s1 >= 0.0f)
+      {
+        std::swap (iu, iv);
+      }
+
+      this->addQuadToMesh (mesh, i, iu, iv, iuv);
+    }
+  }
+
+  void makeFaces (DynamicMesh& mesh, unsigned int x, unsigned int y, unsigned int z)
+  {
+    if (y > 0 && z > 0)
+    {
+      this->makeFaces (mesh, 0, x, y, z);
+    }
+    if (x > 0 && z > 0)
+    {
+      this->makeFaces (mesh, 1, x, y, z);
+    }
+    if (x > 0 && y > 0)
+    {
+      this->makeFaces (mesh, 2, x, y, z);
+    }
+  }
+
+  void makeMesh (DynamicMesh& mesh)
+  {
+    this->setCubeVertices ();
+    this->resolveNonManifolds ();
+
+    mesh.reset ();
+    for (Cube& cube : this->cubes)
+    {
+      this->addCubeVerticesToMesh (cube, mesh);
+    }
 
     for (unsigned int z = 0; z < this->numCubes.z; z++)
     {
@@ -686,44 +819,29 @@ struct IsosurfaceExtractionGrid::Impl
       {
         for (unsigned int x = 0; x < this->numCubes.x; x++)
         {
-          Cube& cube = this->cubes.at (this->cubeIndex (x, y, z));
-
-          if (cube.nonManifoldConfig ())
-          {
-            const unsigned int ambiguousFace = cube.getAmbiguousFaceOfNonManifoldConfig ();
-
-            const bool nx = x > 0 && check (cube, x, y, z, ambiguousFace, -1);
-            const bool px = x < this->numCubes.x - 1 && check (cube, x, y, z, ambiguousFace, 1);
-            const bool ny = y > 0 && check (cube, x, y, z, ambiguousFace, -2);
-            const bool py = y < this->numCubes.y - 1 && check (cube, x, y, z, ambiguousFace, 2);
-            const bool nz = z > 0 && check (cube, x, y, z, ambiguousFace, -3);
-            const bool pz = z < this->numCubes.z - 1 && check (cube, x, y, z, ambiguousFace, 3);
-
-            cube.nonManifold = nx || px || ny || py || nz || pz;
-          }
-          else
-          {
-            cube.nonManifold = false;
-          }
+          this->makeFaces (mesh, x, y, z);
         }
       }
     }
-  }
+    mesh.setAllNormals ();
 
-  void addCubeVerticesToMesh (Mesh& mesh)
-  {
-    for (Cube& cube : this->cubes)
+#ifndef NDEBUG
+    std::vector<unsigned int> vertexIndexMap, faceIndexMap;
+    assert (mesh.numFaces () == 0 || mesh.pruneAndCheckConsistency (&vertexIndexMap, nullptr));
+
+    for (Cube& c : this->cubes)
     {
-      for (unsigned int i = 0; i < cube.vertexIndicesInMesh.size (); i++)
+      if (vertexIndexMap.empty () == false)
       {
-        cube.vertexIndicesInMesh.at (i) = mesh.addVertex (cube.vertex);
-
-        if (cube.collapseNonManifoldConfig ())
+        for (unsigned int& i : c.vertexIndicesInMesh)
         {
-          break;
+          i = vertexIndexMap.at (i);
+          assert (i != Util::invalidIndex ());
         }
       }
     }
+#endif
+    mesh.bufferData ();
   }
 };
 
@@ -731,7 +849,7 @@ DELEGATE2_BIG4_COPY (IsosurfaceExtractionGrid, const PrimAABox&, float)
 GETTER_CONST (float, IsosurfaceExtractionGrid, resolution)
 GETTER_CONST (const glm::uvec3&, IsosurfaceExtractionGrid, numSamples)
 GETTER_CONST (const glm::uvec3&, IsosurfaceExtractionGrid, numCubes)
-GETTER_CONST (const std::vector<float>&, IsosurfaceExtractionGrid, samples)
+GETTER (std::vector<float>&, IsosurfaceExtractionGrid, samples)
 DELEGATE3_CONST (glm::vec3, IsosurfaceExtractionGrid, samplePos, unsigned int, unsigned int,
                  unsigned int)
 DELEGATE1_CONST (glm::vec3, IsosurfaceExtractionGrid, samplePos, unsigned int)
@@ -742,7 +860,4 @@ DELEGATE3_CONST (unsigned int, IsosurfaceExtractionGrid, cubeIndex, unsigned int
                  unsigned int)
 DELEGATE2_CONST (unsigned int, IsosurfaceExtractionGrid, cubeVertexIndex, unsigned int,
                  unsigned int)
-DELEGATE2 (void, IsosurfaceExtractionGrid, setSample, unsigned int, float)
-DELEGATE (void, IsosurfaceExtractionGrid, setCubeVertices)
-DELEGATE (void, IsosurfaceExtractionGrid, resolveNonManifolds)
-DELEGATE1 (void, IsosurfaceExtractionGrid, addCubeVerticesToMesh, Mesh&)
+DELEGATE1 (void, IsosurfaceExtractionGrid, makeMesh, DynamicMesh&)

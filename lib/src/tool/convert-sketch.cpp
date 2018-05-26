@@ -119,7 +119,8 @@ struct ToolConvertSketch::Impl
     };
 
     sketch.optimizePaths ();
-    Mesh mesh = IsosurfaceExtraction::extract (getDistance, PrimAABox (min, max), this->resolution);
+    DynamicMesh mesh;
+    IsosurfaceExtraction::extract (getDistance, PrimAABox (min, max), this->resolution, mesh);
 
     State& state = this->self->state ();
     return state.scene ().newDynamicMesh (state.config (), mesh);

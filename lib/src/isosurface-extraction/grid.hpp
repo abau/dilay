@@ -9,7 +9,7 @@
 #include <vector>
 #include "macro.hpp"
 
-class Mesh;
+class DynamicMesh;
 class PrimAABox;
 
 class IsosurfaceExtractionGrid
@@ -19,10 +19,10 @@ public:
 
   DECLARE_BIG4_EXPLICIT_COPY (IsosurfaceExtractionGrid, const PrimAABox&, float)
 
-  float                     resolution () const;
-  const glm::uvec3&         numSamples () const;
-  const glm::uvec3&         numCubes () const;
-  const std::vector<float>& samples () const;
+  float               resolution () const;
+  const glm::uvec3&   numSamples () const;
+  const glm::uvec3&   numCubes () const;
+  std::vector<float>& samples ();
 
   glm::vec3    samplePos (unsigned int, unsigned int, unsigned int) const;
   glm::vec3    samplePos (unsigned int) const;
@@ -31,10 +31,7 @@ public:
   unsigned int cubeIndex (unsigned int, unsigned int, unsigned int) const;
   unsigned int cubeVertexIndex (unsigned int, unsigned int) const;
 
-  void setSample (unsigned int, float);
-  void setCubeVertices ();
-  void resolveNonManifolds ();
-  void addCubeVerticesToMesh (Mesh&);
+  void makeMesh (DynamicMesh&);
 
 private:
   IMPLEMENTATION
