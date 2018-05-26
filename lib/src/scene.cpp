@@ -183,12 +183,12 @@ struct Scene::Impl
     this->forEachConstMesh ([](const DynamicMesh& mesh) { mesh.printStatistics (); });
   }
 
-  void forEachMesh (const std::function<void(DynamicMesh&)>& f)
+  template <typename T> void forEachMeshT (std::list<T>& list, const std::function<void(T&)>& f)
   {
-    const unsigned int n = this->dynamicMeshes.size ();
+    const unsigned int n = list.size ();
     unsigned int       i = 0;
 
-    for (DynamicMesh& m : this->dynamicMeshes)
+    for (T& mesh : list)
     {
       if (i >= n)
       {
@@ -196,67 +196,50 @@ struct Scene::Impl
       }
       else
       {
-        f (m);
+        f (mesh);
         i++;
       }
     }
+  }
+
+  template <typename T>
+  void forEachConstMeshT (const std::list<T>& list, const std::function<void(const T&)>& f) const
+  {
+    const unsigned int n = list.size ();
+    unsigned int       i = 0;
+
+    for (const T& mesh : list)
+    {
+      if (i >= n)
+      {
+        break;
+      }
+      else
+      {
+        f (mesh);
+        i++;
+      }
+    }
+  }
+
+  void forEachMesh (const std::function<void(DynamicMesh&)>& f)
+  {
+    this->forEachMeshT<DynamicMesh> (this->dynamicMeshes, f);
   }
 
   void forEachMesh (const std::function<void(SketchMesh&)>& f)
   {
-    const unsigned int n = this->sketchMeshes.size ();
-    unsigned int       i = 0;
-
-    for (SketchMesh& m : this->sketchMeshes)
-    {
-      if (i >= n)
-      {
-        break;
-      }
-      else
-      {
-        f (m);
-        i++;
-      }
-    }
+    this->forEachMeshT<SketchMesh> (this->sketchMeshes, f);
   }
 
   void forEachConstMesh (const std::function<void(const DynamicMesh&)>& f) const
   {
-    const unsigned int n = this->dynamicMeshes.size ();
-    unsigned int       i = 0;
-
-    for (const DynamicMesh& m : this->dynamicMeshes)
-    {
-      if (i >= n)
-      {
-        break;
-      }
-      else
-      {
-        f (m);
-        i++;
-      }
-    }
+    this->forEachConstMeshT<DynamicMesh> (this->dynamicMeshes, f);
   }
 
   void forEachConstMesh (const std::function<void(const SketchMesh&)>& f) const
   {
-    const unsigned int n = this->sketchMeshes.size ();
-    unsigned int       i = 0;
-
-    for (const SketchMesh& m : this->sketchMeshes)
-    {
-      if (i >= n)
-      {
-        break;
-      }
-      else
-      {
-        f (m);
-        i++;
-      }
-    }
+    this->forEachConstMeshT<SketchMesh> (this->sketchMeshes, f);
   }
 
   void sanitizeMeshes ()
