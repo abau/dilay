@@ -5,6 +5,7 @@
 #include <QCheckBox>
 #include <QSlider>
 #include "cache.hpp"
+#include "camera.hpp"
 #include "mirror.hpp"
 #include "primitive/plane.hpp"
 #include "scene.hpp"
@@ -21,20 +22,20 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-struct ToolModifySketch::Impl
+struct ToolEditSketch::Impl
 {
-  ToolModifySketch* self;
-  SketchMesh*       mesh;
-  SketchNode*       node;
-  SketchNode*       parent;
-  ToolUtilMovement  movement;
-  ToolUtilScaling   scaling;
-  ToolUtilRotation  rotation;
-  bool              transformChildren;
-  bool              snap;
-  QSlider&          snapWidthEdit;
+  ToolEditSketch*  self;
+  SketchMesh*      mesh;
+  SketchNode*      node;
+  SketchNode*      parent;
+  ToolUtilMovement movement;
+  ToolUtilScaling  scaling;
+  ToolUtilRotation rotation;
+  bool             transformChildren;
+  bool             snap;
+  QSlider&         snapWidthEdit;
 
-  Impl (ToolModifySketch* s)
+  Impl (ToolEditSketch* s)
     : self (s)
     , mesh (nullptr)
     , node (nullptr)
@@ -95,6 +96,8 @@ struct ToolModifySketch::Impl
                  QObject::tr ("Drag node to scale"));
     toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Ctrl,
                  QObject::tr ("Drag node to rotate"));
+    toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Alt,
+                 QObject::tr ("Drag to add sketch"));
     toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Alt,
                  QObject::tr ("Drag node to add child"));
     this->self->showToolTip (toolTip);
@@ -213,6 +216,19 @@ struct ToolModifySketch::Impl
       {
         handleBoneIntersection (boneIntersection);
       }
+      else if (e.modifiers () == Qt::AltModifier)
+      {
+        this->self->snapshotSketchMeshes ();
+
+        State&     state = this->self->state ();
+        SketchTree tree;
+        tree.emplaceRoot (state.camera ().viewPlaneIntersection (e.position ()), 0.1f);
+
+        this->mesh = &state.scene ().newSketchMesh (state.config (), tree);
+        this->parent = nullptr;
+
+        return ToolResponse::Redraw;
+      }
     }
     return ToolResponse::None;
   }
@@ -258,8 +274,8 @@ struct ToolModifySketch::Impl
   }
 };
 
-DELEGATE_TOOL (ToolModifySketch, "modify-sketch")
-DELEGATE_TOOL_RUN_MOVE_EVENT (ToolModifySketch)
-DELEGATE_TOOL_RUN_PRESS_EVENT (ToolModifySketch)
-DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolModifySketch)
-DELEGATE_TOOL_RUN_COMMIT (ToolModifySketch)
+DELEGATE_TOOL (ToolEditSketch, "edit-sketch")
+DELEGATE_TOOL_RUN_MOVE_EVENT (ToolEditSketch)
+DELEGATE_TOOL_RUN_PRESS_EVENT (ToolEditSketch)
+DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolEditSketch)
+DELEGATE_TOOL_RUN_COMMIT (ToolEditSketch)

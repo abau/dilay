@@ -112,8 +112,7 @@ struct ViewToolPane::Impl
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
     toolPane->setLayout (toolPaneLayout);
-    this->addToolButton<ToolNewSketch> (toolPaneLayout, QObject::tr ("New sketch"));
-    this->addToolButton<ToolModifySketch> (toolPaneLayout, QObject::tr ("Modify sketch"));
+    this->addToolButton<ToolEditSketch> (toolPaneLayout, QObject::tr ("Edit sketch"));
     this->addToolButton<ToolDeleteSketch> (toolPaneLayout, QObject::tr ("Delete sketch"));
     this->addToolButton<ToolRebalanceSketch> (toolPaneLayout, QObject::tr ("Rebalance sketch"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());

@@ -42,6 +42,8 @@ public:
   float     toWorld (float, float = 0.0f) const;
   PrimRay   ray (const glm::ivec2&) const;
   Dimension primaryDimension () const;
+  glm::vec3 viewPlaneIntersection (const glm::ivec2&) const;
+  glm::vec3 primaryPlaneIntersection (const glm::ivec2&) const;
 
 private:
   IMPLEMENTATION

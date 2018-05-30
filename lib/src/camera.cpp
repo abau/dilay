@@ -8,7 +8,9 @@
 #include "camera.hpp"
 #include "config.hpp"
 #include "dimension.hpp"
+#include "intersection.hpp"
 #include "opengl.hpp"
+#include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "renderer.hpp"
 #include "util.hpp"
@@ -194,6 +196,34 @@ struct Camera::Impl
     return Dimension::Z;
   }
 
+  glm::vec3 planeIntersection (const glm::ivec2& p, const PrimPlane& plane) const
+  {
+    const PrimRay ray = this->ray (p);
+    float         t;
+
+    if (IntersectionUtil::intersects (ray, plane, &t))
+    {
+      return ray.pointAt (t);
+    }
+    else
+    {
+      DILAY_WARN ("No view-plane intersection");
+      return plane.point ();
+    }
+  }
+
+  glm::vec3 viewPlaneIntersection (const glm::ivec2& p) const
+  {
+    const PrimPlane plane (this->gazePoint, this->toEyePoint);
+    return this->planeIntersection (p, plane);
+  }
+
+  glm::vec3 primaryPlaneIntersection (const glm::ivec2& p) const
+  {
+    const PrimPlane plane (this->gazePoint, DimensionUtil::vector (this->primaryDimension ()));
+    return this->planeIntersection (p, plane);
+  }
+
   void runFromConfig (const Config& config)
   {
     this->renderer.fromConfig (config);
@@ -230,4 +260,6 @@ DELEGATE2_CONST (glm::vec3, Camera, toWorld, const glm::ivec2&, float)
 DELEGATE2_CONST (float, Camera, toWorld, float, float)
 DELEGATE1_CONST (PrimRay, Camera, ray, const glm::ivec2&)
 DELEGATE_CONST (Dimension, Camera, primaryDimension)
+DELEGATE1_CONST (glm::vec3, Camera, viewPlaneIntersection, const glm::ivec2&)
+DELEGATE1_CONST (glm::vec3, Camera, primaryPlaneIntersection, const glm::ivec2&)
 DELEGATE1 (void, Camera, runFromConfig, const Config&)

@@ -53,11 +53,10 @@ SOURCES += \
            src/tool/convert-sketch.cpp \
            src/tool/delete-mesh.cpp \
            src/tool/delete-sketch.cpp \
-           src/tool/modify-sketch.cpp \
+           src/tool/edit-sketch.cpp \
            src/tool/move-mesh.cpp \
            src/tool/move-camera.cpp \
            src/tool/new-mesh.cpp \
-           src/tool/new-sketch.cpp \
            src/tool/rebalance-sketch.cpp \
            src/tool/remesh.cpp \
            src/tool/rotate-mesh.cpp \
