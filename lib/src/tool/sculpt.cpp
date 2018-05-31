@@ -524,7 +524,7 @@ struct ToolSculpt::Impl
   }
 };
 
-DELEGATE_BIG2_BASE (ToolSculpt, (State & s, const char* k), (this), Tool, (s, k))
+DELEGATE_BIG2_BASE (ToolSculpt, (State & s, const char* c), (this), Tool, (s, c))
 GETTER (SculptBrush&, ToolSculpt, brush)
 GETTER (ViewCursor&, ToolSculpt, cursor)
 DELEGATE2_CONST (void, ToolSculpt, addDefaultToolTip, ViewToolTip&, bool)

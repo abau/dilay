@@ -129,7 +129,7 @@ struct ToolRotateMesh::Impl
   }
 };
 
-DELEGATE_TOOL (ToolRotateMesh, "rotate-mesh")
+DELEGATE_TOOL (ToolRotateMesh)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolRotateMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolRotateMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRotateMesh)

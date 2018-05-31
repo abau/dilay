@@ -55,4 +55,4 @@ struct ToolSculptGrab::Impl
   }
 };
 
-DELEGATE_TOOL_SCULPT (ToolSculptGrab, "sculpt/grab")
+DELEGATE_TOOL_SCULPT (ToolSculptGrab)

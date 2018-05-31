@@ -8,6 +8,7 @@
 #include <glm/fwd.hpp>
 #include "macro.hpp"
 #include "sketch/fwd.hpp"
+#include "tool/key.hpp"
 
 class CacheProxy;
 class Config;
@@ -35,7 +36,8 @@ class Tool
 public:
   DECLARE_BIG3_VIRTUAL (Tool, State&, const char*)
 
-  const char*  key () const;
+  virtual ToolKey getKey () const = 0;
+
   ToolResponse initialize ();
   void         render () const;
   void         paint (QPainter&) const;
@@ -97,18 +99,19 @@ private:
   virtual void runFromConfig () {}
 };
 
-#define DECLARE_TOOL(name, otherMethods) \
-  class name : public Tool               \
-  {                                      \
-  public:                                \
-    DECLARE_BIG2 (name, State&)          \
-                                         \
-    static const char* classKey;         \
-                                         \
-  private:                               \
-    IMPLEMENTATION                       \
-    ToolResponse runInitialize ();       \
-    otherMethods                         \
+#define DECLARE_TOOL(name, otherMethods)                     \
+  class Tool##name : public Tool                             \
+  {                                                          \
+  public:                                                    \
+    DECLARE_BIG2 (Tool##name, State&)                        \
+                                                             \
+    static ToolKey getKey_ () { return ToolKey::name; }      \
+    ToolKey        getKey () const { return ToolKey::name; } \
+                                                             \
+  private:                                                   \
+    IMPLEMENTATION                                           \
+    ToolResponse runInitialize ();                           \
+    otherMethods                                             \
   };
 
 #define DECLARE_TOOL_RUN_RENDER void runRender () const;
@@ -122,9 +125,8 @@ private:
 #define DECLARE_TOOL_RUN_COMMIT ToolResponse runCommit ();
 #define DECLARE_TOOL_RUN_FROM_CONFIG void runFromConfig ();
 
-#define DELEGATE_TOOL(name, theKey)                                         \
-  const char* name::classKey = theKey;                                      \
-  DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, name::classKey)) \
+#define DELEGATE_TOOL(name)                                        \
+  DELEGATE_BIG2_BASE (name, (State & s), (this), Tool, (s, #name)) \
   DELEGATE (ToolResponse, name, runInitialize)
 
 #define DELEGATE_TOOL_RUN_RENDER(n) DELEGATE_CONST (void, n, runRender)

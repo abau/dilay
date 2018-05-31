@@ -420,7 +420,7 @@ struct ToolRemesh::Impl
   ToolResponse runCommit () { return ToolResponse::Redraw; }
 };
 
-DELEGATE_TOOL (ToolRemesh, "remesh")
+DELEGATE_TOOL (ToolRemesh)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolRemesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolRemesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRemesh)

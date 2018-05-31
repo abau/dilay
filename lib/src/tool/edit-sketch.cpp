@@ -274,7 +274,7 @@ struct ToolEditSketch::Impl
   }
 };
 
-DELEGATE_TOOL (ToolEditSketch, "edit-sketch")
+DELEGATE_TOOL (ToolEditSketch)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolEditSketch)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolEditSketch)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolEditSketch)

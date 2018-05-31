@@ -162,5 +162,5 @@ struct ToolDeleteSketch::Impl
   }
 };
 
-DELEGATE_TOOL (ToolDeleteSketch, "delete-sketch")
+DELEGATE_TOOL (ToolDeleteSketch)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolDeleteSketch)

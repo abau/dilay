@@ -8,6 +8,7 @@
 #include <QDockWidget>
 #include "macro.hpp"
 
+enum class ToolKey;
 class QPushButton;
 class ViewGlWidget;
 class ViewTwoColumnGrid;
@@ -26,7 +27,7 @@ public:
   ViewTwoColumnGrid&    properties ();
   void                  forceWidth ();
   ViewToolPaneSelection selection () const;
-  QPushButton&          button (const char*);
+  QPushButton&          button (ToolKey);
 
 private:
   IMPLEMENTATION

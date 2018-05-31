@@ -56,4 +56,4 @@ struct ToolSculptSmooth::Impl
   }
 };
 
-DELEGATE_TOOL_SCULPT (ToolSculptSmooth, "sculpt/smooth")
+DELEGATE_TOOL_SCULPT (ToolSculptSmooth)

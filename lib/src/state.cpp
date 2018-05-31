@@ -31,7 +31,7 @@ struct State::Impl
   History                 history;
   Scene                   scene;
   std::unique_ptr<Tool>   toolPtr;
-  const char*             previousToolKey;
+  ToolKey                 previousToolKey;
   std::vector<QShortcut*> shortcuts;
 
   Impl (State* s, ViewMainWindow& mW, Config& cfg, Cache& cch)
@@ -42,7 +42,7 @@ struct State::Impl
     , camera (this->config)
     , history (this->config)
     , scene (this->config)
-    , previousToolKey (nullptr)
+    , previousToolKey (ToolKey::SculptSmooth)
   {
     this->resetTool ();
   }
@@ -59,7 +59,7 @@ struct State::Impl
   {
     const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInput::Modifier::None);
 
-    tip.add (event, this->mainWindow.toolPane ().button (T::classKey).text ());
+    tip.add (event, this->mainWindow.toolPane ().button (T::getKey_ ()).text ());
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
     QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this]() {
@@ -76,7 +76,6 @@ struct State::Impl
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
     QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this]() {
-      assert (this->previousToolKey);
       this->mainWindow.toolPane ().button (this->previousToolKey).click ();
     });
   }
@@ -152,18 +151,18 @@ struct State::Impl
         }
         else
         {
-          const bool nonSmoothSculptTool = (this->toolPtr->key () == ToolSculptDraw::classKey) ||
-                                           (this->toolPtr->key () == ToolSculptCrease::classKey) ||
-                                           (this->toolPtr->key () == ToolSculptGrab::classKey) ||
-                                           (this->toolPtr->key () == ToolSculptFlatten::classKey) ||
-                                           (this->toolPtr->key () == ToolSculptPinch::classKey) ||
-                                           (this->toolPtr->key () == ToolSculptReduce::classKey) ||
-                                           (this->toolPtr->key () == ToolTrimMesh::classKey) ||
-                                           (this->toolPtr->key () == ToolRemesh::classKey);
+          const bool nonSmoothSculptTool =
+            (this->toolPtr->getKey () == ToolSculptDraw::getKey_ ()) ||
+            (this->toolPtr->getKey () == ToolSculptCrease::getKey_ ()) ||
+            (this->toolPtr->getKey () == ToolSculptGrab::getKey_ ()) ||
+            (this->toolPtr->getKey () == ToolSculptFlatten::getKey_ ()) ||
+            (this->toolPtr->getKey () == ToolSculptPinch::getKey_ ()) ||
+            (this->toolPtr->getKey () == ToolSculptReduce::getKey_ ()) ||
+            (this->toolPtr->getKey () == ToolTrimMesh::getKey_ ()) ||
+            (this->toolPtr->getKey () == ToolRemesh::getKey_ ());
 
-          const bool toggleBack = this->previousToolKey &&
-                                  (this->previousToolKey != ToolSculptSmooth::classKey) &&
-                                  (this->toolPtr->key () == ToolSculptSmooth::classKey);
+          const bool toggleBack = (this->previousToolKey != ToolSculptSmooth::getKey_ ()) &&
+                                  (this->toolPtr->getKey () == ToolSculptSmooth::getKey_ ());
 
           if (nonSmoothSculptTool)
           {
@@ -197,7 +196,7 @@ struct State::Impl
     assert (this->hasTool () == false);
 
     this->toolPtr.reset (&tool);
-    this->mainWindow.toolPane ().button (this->toolPtr->key ()).setChecked (true);
+    this->mainWindow.toolPane ().button (this->toolPtr->getKey ()).setChecked (true);
     this->resetToolTip ();
 
     ToolResponse initResponse = tool.initialize ();
@@ -219,8 +218,8 @@ struct State::Impl
   {
     if (this->hasTool ())
     {
-      this->previousToolKey = this->toolPtr->key ();
-      this->mainWindow.toolPane ().button (this->toolPtr->key ()).setChecked (false);
+      this->previousToolKey = this->toolPtr->getKey ();
+      this->mainWindow.toolPane ().button (this->toolPtr->getKey ()).setChecked (false);
       this->toolPtr->commit ();
       this->toolPtr.reset ();
 

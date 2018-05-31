@@ -84,4 +84,4 @@ struct ToolSculptDraw::Impl
   }
 };
 
-DELEGATE_TOOL_SCULPT (ToolSculptDraw, "sculpt/draw")
+DELEGATE_TOOL_SCULPT (ToolSculptDraw)

@@ -154,6 +154,7 @@ HEADERS += \
            src/state.hpp \
            src/time-delta.hpp \
            src/tool.hpp \
+           src/tool/key.hpp \
            src/tool/move-camera.hpp \
            src/tool/sculpt.hpp \
            src/tool/sculpt/util/action.hpp \

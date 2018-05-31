@@ -30,19 +30,17 @@
 
 struct Tool::Impl
 {
-  Tool*             self;
-  const char* const key;
-  State&            state;
-  CacheProxy        _cache;
-  Maybe<Mirror>     _mirror;
-  bool              renderMirror;
-  glm::ivec2        prevPointingEventPosition;
+  Tool*         self;
+  State&        state;
+  CacheProxy    _cache;
+  Maybe<Mirror> _mirror;
+  bool          renderMirror;
+  glm::ivec2    prevPointingEventPosition;
 
-  Impl (Tool* s, State& st, const char* k)
+  Impl (Tool* s, State& st, const char* cacheKey)
     : self (s)
-    , key (k)
     , state (st)
-    , _cache (this->cache (this->key))
+    , _cache (this->cache (cacheKey))
     , renderMirror (false)
   {
   }
@@ -277,7 +275,6 @@ struct Tool::Impl
 };
 
 DELEGATE2_BIG3_SELF (Tool, State&, const char*)
-GETTER_CONST (const char*, Tool, key)
 DELEGATE (ToolResponse, Tool, initialize)
 DELEGATE_CONST (void, Tool, render)
 DELEGATE1_CONST (void, Tool, paint, QPainter&)

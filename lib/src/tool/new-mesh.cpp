@@ -102,6 +102,6 @@ struct ToolNewMesh::Impl
   }
 };
 
-DELEGATE_TOOL (ToolNewMesh, "new-mesh")
+DELEGATE_TOOL (ToolNewMesh)
 DELEGATE_TOOL_RUN_RENDER (ToolNewMesh)
 DELEGATE_TOOL_RUN_COMMIT (ToolNewMesh)

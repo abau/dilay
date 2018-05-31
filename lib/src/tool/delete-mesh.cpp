@@ -45,5 +45,5 @@ struct ToolDeleteMesh::Impl
   }
 };
 
-DELEGATE_TOOL (ToolDeleteMesh, "delete-mesh")
+DELEGATE_TOOL (ToolDeleteMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolDeleteMesh)

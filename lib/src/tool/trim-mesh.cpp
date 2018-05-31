@@ -313,7 +313,7 @@ struct ToolTrimMesh::Impl
   }
 };
 
-DELEGATE_TOOL (ToolTrimMesh, "trim-mesh")
+DELEGATE_TOOL (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolTrimMesh)

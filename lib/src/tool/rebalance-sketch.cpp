@@ -56,6 +56,6 @@ struct ToolRebalanceSketch::Impl
   }
 };
 
-DELEGATE_TOOL (ToolRebalanceSketch, "rebalance-sketch")
+DELEGATE_TOOL (ToolRebalanceSketch)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRebalanceSketch)
 DELEGATE_TOOL_RUN_COMMIT (ToolRebalanceSketch)

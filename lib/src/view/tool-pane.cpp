@@ -16,7 +16,7 @@
 
 struct ViewToolPane::Impl
 {
-  typedef std::unordered_map<const char*, QPushButton*> Buttons;
+  typedef std::unordered_map<ToolKey, QPushButton*> Buttons;
 
   ViewToolPane*      self;
   ViewGlWidget&      glWidget;
@@ -67,7 +67,7 @@ struct ViewToolPane::Impl
   template <typename T> void addToolButton (QLayout* layout, const QString& name)
   {
     QPushButton& button = ViewUtil::pushButton (name);
-    this->buttons.emplace (T::classKey, &button);
+    this->buttons.emplace (T::getKey_ (), &button);
     button.setCheckable (true);
 
     ViewUtil::connect (button, [this]() {
@@ -127,7 +127,7 @@ struct ViewToolPane::Impl
 
   void forceWidth ()
   {
-    const auto it = this->buttons.find (ToolNewMesh::classKey);
+    const auto it = this->buttons.find (ToolNewMesh::getKey_ ());
     assert (it != this->buttons.end ());
 
     it->second->setText (QObject::tr ("New mesh"));
@@ -146,7 +146,7 @@ struct ViewToolPane::Impl
     }
   }
 
-  QPushButton& button (const char* key)
+  QPushButton& button (ToolKey key)
   {
     auto it = this->buttons.find (key);
     assert (it != this->buttons.end ());
@@ -158,4 +158,4 @@ DELEGATE_BIG2_BASE (ViewToolPane, (ViewGlWidget & g, QWidget* p), (this, g), QDo
 GETTER (ViewTwoColumnGrid&, ViewToolPane, properties)
 DELEGATE (void, ViewToolPane, forceWidth)
 DELEGATE_CONST (ViewToolPaneSelection, ViewToolPane, selection)
-DELEGATE1 (QPushButton&, ViewToolPane, button, const char*)
+DELEGATE1 (QPushButton&, ViewToolPane, button, ToolKey)

@@ -299,7 +299,7 @@ struct ToolSketchSpheres::Impl
   }
 };
 
-DELEGATE_TOOL (ToolSketchSpheres, "sketch-spheres")
+DELEGATE_TOOL (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_RENDER (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolSketchSpheres)
