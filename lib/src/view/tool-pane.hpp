@@ -27,7 +27,8 @@ public:
   ViewTwoColumnGrid&    properties ();
   void                  forceWidth ();
   ViewToolPaneSelection selection () const;
-  QPushButton&          button (ToolKey);
+  void                  setButtonState (ToolKey, bool);
+  QString               buttonText (ToolKey) const;
 
 private:
   IMPLEMENTATION

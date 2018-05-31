@@ -15,6 +15,7 @@ class Id;
 class Mesh;
 class Scene;
 class Tool;
+enum class ToolKey;
 enum class ToolResponse;
 class ViewMainWindow;
 
@@ -31,7 +32,7 @@ public:
   Scene&          scene ();
   bool            hasTool ();
   Tool&           tool ();
-  void            setTool (Tool&&);
+  void            setTool (ToolKey);
   void            resetTool ();
   void            fromConfig ();
   void            undo ();

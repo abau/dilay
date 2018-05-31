@@ -71,9 +71,8 @@ struct ViewToolPane::Impl
     button.setCheckable (true);
 
     ViewUtil::connect (button, [this]() {
-      State& s = this->glWidget.state ();
-      s.resetTool ();
-      s.setTool (std::move (*new T (s)));
+      this->glWidget.state ().resetTool ();
+      this->glWidget.state ().setTool (T::getKey_ ());
     });
     layout->addWidget (&button);
   }
@@ -146,11 +145,18 @@ struct ViewToolPane::Impl
     }
   }
 
-  QPushButton& button (ToolKey key)
+  void setButtonState (ToolKey key, bool state)
   {
     auto it = this->buttons.find (key);
     assert (it != this->buttons.end ());
-    return *it->second;
+    it->second->setChecked (state);
+  }
+
+  QString buttonText (ToolKey key) const
+  {
+    auto it = this->buttons.find (key);
+    assert (it != this->buttons.end ());
+    return it->second->text ();
   }
 };
 
@@ -158,4 +164,5 @@ DELEGATE_BIG2_BASE (ViewToolPane, (ViewGlWidget & g, QWidget* p), (this, g), QDo
 GETTER (ViewTwoColumnGrid&, ViewToolPane, properties)
 DELEGATE (void, ViewToolPane, forceWidth)
 DELEGATE_CONST (ViewToolPaneSelection, ViewToolPane, selection)
-DELEGATE1 (QPushButton&, ViewToolPane, button, ToolKey)
+DELEGATE2 (void, ViewToolPane, setButtonState, ToolKey, bool)
+DELEGATE1_CONST (QString, ViewToolPane, buttonText, ToolKey)

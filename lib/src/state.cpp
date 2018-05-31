@@ -2,7 +2,6 @@
  * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
-#include <QPushButton>
 #include <QShortcut>
 #include <memory>
 #include "cache.hpp"
@@ -59,12 +58,12 @@ struct State::Impl
   {
     const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInput::Modifier::None);
 
-    tip.add (event, this->mainWindow.toolPane ().button (T::getKey_ ()).text ());
+    tip.add (event, this->mainWindow.toolPane ().buttonText (T::getKey_ ()));
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
     QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this]() {
       this->resetTool ();
-      this->setTool (std::move (*new T (*this->self)));
+      this->setTool (T::getKey_ ());
     });
   }
 
@@ -75,9 +74,8 @@ struct State::Impl
     tip.add (event, QObject::tr ("Toggle back"));
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
-    QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this]() {
-      this->mainWindow.toolPane ().button (this->previousToolKey).click ();
-    });
+    QObject::connect (this->shortcuts.back (), &QShortcut::activated,
+                      [this]() { this->setTool (this->previousToolKey); });
   }
 
   void addExitToolShortcut (ViewToolTip& tip, ViewInput::Event event)
@@ -191,15 +189,41 @@ struct State::Impl
     this->mainWindow.infoPane ().addToolTip (tip);
   }
 
-  void setTool (Tool&& tool)
+  void setTool (ToolKey key)
   {
     assert (this->hasTool () == false);
+#define SET_TOOL(name)                                  \
+  case ToolKey::name:                                   \
+    this->toolPtr.reset (new Tool##name (*this->self)); \
+    break;
 
-    this->toolPtr.reset (&tool);
-    this->mainWindow.toolPane ().button (this->toolPtr->getKey ()).setChecked (true);
+    switch (key)
+    {
+      SET_TOOL (MoveMesh)
+      SET_TOOL (RotateMesh)
+      SET_TOOL (DeleteMesh)
+      SET_TOOL (NewMesh)
+      SET_TOOL (SculptDraw)
+      SET_TOOL (SculptGrab)
+      SET_TOOL (SculptSmooth)
+      SET_TOOL (SculptFlatten)
+      SET_TOOL (SculptCrease)
+      SET_TOOL (SculptPinch)
+      SET_TOOL (SculptReduce)
+      SET_TOOL (EditSketch)
+      SET_TOOL (DeleteSketch)
+      SET_TOOL (RebalanceSketch)
+      SET_TOOL (ConvertSketch)
+      SET_TOOL (SketchSpheres)
+      SET_TOOL (TrimMesh)
+      SET_TOOL (Remesh)
+    }
+#undef SET_TOOL
+
+    this->mainWindow.toolPane ().setButtonState (this->toolPtr->getKey (), true);
     this->resetToolTip ();
 
-    ToolResponse initResponse = tool.initialize ();
+    ToolResponse initResponse = this->toolPtr->initialize ();
     this->addSelectionToolTip ();
     this->addPermanentToolTip ();
 
@@ -219,7 +243,7 @@ struct State::Impl
     if (this->hasTool ())
     {
       this->previousToolKey = this->toolPtr->getKey ();
-      this->mainWindow.toolPane ().button (this->toolPtr->getKey ()).setChecked (false);
+      this->mainWindow.toolPane ().setButtonState (this->toolPtr->getKey (), false);
       this->toolPtr->commit ();
       this->toolPtr.reset ();
 
@@ -296,7 +320,7 @@ GETTER (History&, State, history)
 GETTER (Scene&, State, scene)
 DELEGATE (bool, State, hasTool)
 DELEGATE (Tool&, State, tool)
-DELEGATE1 (void, State, setTool, Tool&&)
+DELEGATE1 (void, State, setTool, ToolKey)
 DELEGATE (void, State, resetTool)
 DELEGATE (void, State, fromConfig)
 DELEGATE (void, State, undo)
