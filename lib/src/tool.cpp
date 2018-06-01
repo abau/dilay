@@ -20,7 +20,6 @@
 #include "tool.hpp"
 #include "tool/util/movement.hpp"
 #include "view/gl-widget.hpp"
-#include "view/info-pane.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-pane.hpp"
@@ -103,11 +102,7 @@ struct Tool::Impl
     return this->state.mainWindow ().toolPane ().properties ();
   }
 
-  void showToolTip (const ViewToolTip& toolTip)
-  {
-    this->state.mainWindow ().infoPane ().resetToolTip ();
-    this->state.mainWindow ().infoPane ().addToolTip (toolTip);
-  }
+  void showToolTip (const ViewToolTip& toolTip) { this->state.setToolTip (&toolTip); }
 
   Config& config () const { return this->state.config (); }
 

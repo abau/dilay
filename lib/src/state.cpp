@@ -102,7 +102,7 @@ struct State::Impl
     });
   }
 
-  void resetToolTip ()
+  void setToolTip (const ViewToolTip* toolSpecificToolTip)
   {
     for (QShortcut* s : this->shortcuts)
     {
@@ -110,24 +110,12 @@ struct State::Impl
     }
     this->shortcuts.clear ();
     this->mainWindow.infoPane ().resetToolTip ();
-  }
 
-  void addPermanentToolTip ()
-  {
-    ViewToolTip tip;
-    tip.add (ViewInput::Event::MouseMiddle, QObject::tr ("Drag to rotate"));
-    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Shift,
-             QObject::tr ("Drag to move"));
-    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Alt, QObject::tr ("Gaze"));
-    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Ctrl,
-             QObject::tr ("Drag to zoom"));
-    tip.add (ViewInput::Event::MouseWheel, QObject::tr ("Zoom"));
+    if (toolSpecificToolTip)
+    {
+      this->mainWindow.infoPane ().addToolTip (*toolSpecificToolTip);
+    }
 
-    this->mainWindow.infoPane ().addToolTip (tip);
-  }
-
-  void addSelectionToolTip ()
-  {
     ViewToolTip tip;
     switch (this->mainWindow.toolPane ().selection ())
     {
@@ -186,6 +174,17 @@ struct State::Impl
         break;
     }
     this->mainWindow.infoPane ().addToolTip (tip);
+    tip.reset ();
+
+    tip.add (ViewInput::Event::MouseMiddle, QObject::tr ("Drag to rotate"));
+    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Shift,
+             QObject::tr ("Drag to move"));
+    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Alt, QObject::tr ("Gaze"));
+    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Ctrl,
+             QObject::tr ("Drag to zoom"));
+    tip.add (ViewInput::Event::MouseWheel, QObject::tr ("Zoom"));
+
+    this->mainWindow.infoPane ().addToolTip (tip);
   }
 
   void setTool (ToolKey key)
@@ -220,12 +219,8 @@ struct State::Impl
 #undef SET_TOOL
 
     this->mainWindow.toolPane ().setButtonState (this->toolPtr->getKey (), true);
-    this->resetToolTip ();
 
     ToolResponse initResponse = this->toolPtr->initialize ();
-    this->addSelectionToolTip ();
-    this->addPermanentToolTip ();
-
     switch (initResponse)
     {
       case ToolResponse::None:
@@ -250,9 +245,7 @@ struct State::Impl
       this->mainWindow.infoPane ().scene ().updateInfo ();
       this->mainWindow.update ();
     }
-    this->resetToolTip ();
-    this->addSelectionToolTip ();
-    this->addPermanentToolTip ();
+    this->setToolTip (nullptr);
   }
 
   void fromConfig ()
@@ -320,6 +313,7 @@ GETTER (Scene&, State, scene)
 DELEGATE (bool, State, hasTool)
 DELEGATE (Tool&, State, tool)
 DELEGATE1 (void, State, setTool, ToolKey)
+DELEGATE1 (void, State, setToolTip, const ViewToolTip*)
 DELEGATE (void, State, resetTool)
 DELEGATE (void, State, fromConfig)
 DELEGATE (void, State, undo)

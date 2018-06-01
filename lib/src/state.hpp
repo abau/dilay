@@ -18,6 +18,7 @@ class Tool;
 enum class ToolKey;
 enum class ToolResponse;
 class ViewMainWindow;
+class ViewToolTip;
 
 class State
 {
@@ -33,6 +34,7 @@ public:
   bool            hasTool ();
   Tool&           tool ();
   void            setTool (ToolKey);
+  void            setToolTip (const ViewToolTip*);
   void            resetTool ();
   void            fromConfig ();
   void            undo ();
