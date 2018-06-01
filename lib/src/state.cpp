@@ -54,16 +54,16 @@ struct State::Impl
     return *this->toolPtr;
   }
 
-  template <typename T> void addToolShortcut (ViewToolTip& tip, ViewInput::Event event)
+  void addToolShortcut (ToolKey key, ViewToolTip& tip, ViewInput::Event event)
   {
     const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInput::Modifier::None);
 
-    tip.add (event, this->mainWindow.toolPane ().buttonText (T::getKey_ ()));
+    tip.add (event, this->mainWindow.toolPane ().buttonText (key));
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
-    QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this]() {
+    QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this, key]() {
       this->resetTool ();
-      this->setTool (T::getKey_ ());
+      this->setTool (key);
     });
   }
 
@@ -134,37 +134,36 @@ struct State::Impl
       case ViewToolPaneSelection::Sculpt:
         if (this->hasTool () == false)
         {
-          this->addToolShortcut<ToolSculptDraw> (tip, ViewInput::Event::D);
-          this->addToolShortcut<ToolSculptCrease> (tip, ViewInput::Event::C);
-          this->addToolShortcut<ToolSculptGrab> (tip, ViewInput::Event::G);
-          this->addToolShortcut<ToolSculptPinch> (tip, ViewInput::Event::P);
-          this->addToolShortcut<ToolSculptSmooth> (tip, ViewInput::Event::S);
-          this->addToolShortcut<ToolSculptFlatten> (tip, ViewInput::Event::F);
-          this->addToolShortcut<ToolSculptReduce> (tip, ViewInput::Event::R);
-          this->addToolShortcut<ToolTrimMesh> (tip, ViewInput::Event::T);
-          this->addToolShortcut<ToolRemesh> (tip, ViewInput::Event::M);
+          this->addToolShortcut (ToolKey::SculptDraw, tip, ViewInput::Event::D);
+          this->addToolShortcut (ToolKey::SculptCrease, tip, ViewInput::Event::C);
+          this->addToolShortcut (ToolKey::SculptGrab, tip, ViewInput::Event::G);
+          this->addToolShortcut (ToolKey::SculptPinch, tip, ViewInput::Event::P);
+          this->addToolShortcut (ToolKey::SculptSmooth, tip, ViewInput::Event::S);
+          this->addToolShortcut (ToolKey::SculptFlatten, tip, ViewInput::Event::F);
+          this->addToolShortcut (ToolKey::SculptReduce, tip, ViewInput::Event::R);
+          this->addToolShortcut (ToolKey::TrimMesh, tip, ViewInput::Event::T);
+          this->addToolShortcut (ToolKey::Remesh, tip, ViewInput::Event::M);
 #ifndef NDEBUG
           this->addExitToolShortcut (tip, ViewInput::Event::Esc);
 #endif
         }
         else
         {
-          const bool nonSmoothSculptTool =
-            (this->toolPtr->getKey () == ToolSculptDraw::getKey_ ()) ||
-            (this->toolPtr->getKey () == ToolSculptCrease::getKey_ ()) ||
-            (this->toolPtr->getKey () == ToolSculptGrab::getKey_ ()) ||
-            (this->toolPtr->getKey () == ToolSculptFlatten::getKey_ ()) ||
-            (this->toolPtr->getKey () == ToolSculptPinch::getKey_ ()) ||
-            (this->toolPtr->getKey () == ToolSculptReduce::getKey_ ()) ||
-            (this->toolPtr->getKey () == ToolTrimMesh::getKey_ ()) ||
-            (this->toolPtr->getKey () == ToolRemesh::getKey_ ());
+          const bool nonSmoothSculptTool = (this->toolPtr->getKey () == ToolKey::SculptDraw) ||
+                                           (this->toolPtr->getKey () == ToolKey::SculptCrease) ||
+                                           (this->toolPtr->getKey () == ToolKey::SculptGrab) ||
+                                           (this->toolPtr->getKey () == ToolKey::SculptFlatten) ||
+                                           (this->toolPtr->getKey () == ToolKey::SculptPinch) ||
+                                           (this->toolPtr->getKey () == ToolKey::SculptReduce) ||
+                                           (this->toolPtr->getKey () == ToolKey::TrimMesh) ||
+                                           (this->toolPtr->getKey () == ToolKey::Remesh);
 
-          const bool toggleBack = (this->previousToolKey != ToolSculptSmooth::getKey_ ()) &&
-                                  (this->toolPtr->getKey () == ToolSculptSmooth::getKey_ ());
+          const bool toggleBack = (this->previousToolKey != ToolKey::SculptSmooth) &&
+                                  (this->toolPtr->getKey () == ToolKey::SculptSmooth);
 
           if (nonSmoothSculptTool)
           {
-            this->addToolShortcut<ToolSculptSmooth> (tip, ViewInput::Event::S);
+            this->addToolShortcut (ToolKey::SculptSmooth, tip, ViewInput::Event::S);
           }
           else if (toggleBack)
           {

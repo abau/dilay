@@ -99,19 +99,18 @@ private:
   virtual void runFromConfig () {}
 };
 
-#define DECLARE_TOOL(name, otherMethods)                     \
-  class Tool##name : public Tool                             \
-  {                                                          \
-  public:                                                    \
-    DECLARE_BIG2 (Tool##name, State&)                        \
-                                                             \
-    static ToolKey getKey_ () { return ToolKey::name; }      \
-    ToolKey        getKey () const { return ToolKey::name; } \
-                                                             \
-  private:                                                   \
-    IMPLEMENTATION                                           \
-    ToolResponse runInitialize ();                           \
-    otherMethods                                             \
+#define DECLARE_TOOL(keyName, otherMethods)              \
+  class Tool##keyName : public Tool                      \
+  {                                                      \
+  public:                                                \
+    DECLARE_BIG2 (Tool##keyName, State&)                 \
+                                                         \
+    ToolKey getKey () const { return ToolKey::keyName; } \
+                                                         \
+  private:                                               \
+    IMPLEMENTATION                                       \
+    ToolResponse runInitialize ();                       \
+    otherMethods                                         \
   };
 
 #define DECLARE_TOOL_RUN_RENDER void runRender () const;

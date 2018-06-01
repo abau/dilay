@@ -47,22 +47,21 @@ private:
   virtual bool runSculptPointingEvent (const ViewPointingEvent&) = 0;
 };
 
-#define DECLARE_TOOL_SCULPT(name)                            \
-  class Tool##name : public ToolSculpt                       \
-  {                                                          \
-  public:                                                    \
-    DECLARE_BIG2 (Tool##name, State&)                        \
-                                                             \
-    static ToolKey getKey_ () { return ToolKey::name; }      \
-    ToolKey        getKey () const { return ToolKey::name; } \
-                                                             \
-  private:                                                   \
-    IMPLEMENTATION                                           \
-    void runSetupBrush (SculptBrush&);                       \
-    void runSetupCursor (ViewCursor&);                       \
-    void runSetupProperties (ViewTwoColumnGrid&);            \
-    void runSetupToolTip (ViewToolTip&);                     \
-    bool runSculptPointingEvent (const ViewPointingEvent&);  \
+#define DECLARE_TOOL_SCULPT(keyName)                        \
+  class Tool##keyName : public ToolSculpt                   \
+  {                                                         \
+  public:                                                   \
+    DECLARE_BIG2 (Tool##keyName, State&)                    \
+                                                            \
+    ToolKey getKey () const { return ToolKey::keyName; }    \
+                                                            \
+  private:                                                  \
+    IMPLEMENTATION                                          \
+    void runSetupBrush (SculptBrush&);                      \
+    void runSetupCursor (ViewCursor&);                      \
+    void runSetupProperties (ViewTwoColumnGrid&);           \
+    void runSetupToolTip (ViewToolTip&);                    \
+    bool runSculptPointingEvent (const ViewPointingEvent&); \
   };
 
 #define DELEGATE_TOOL_SCULPT(name)                                       \

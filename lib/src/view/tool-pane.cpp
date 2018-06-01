@@ -64,15 +64,15 @@ struct ViewToolPane::Impl
     });
   }
 
-  template <typename T> void addToolButton (QLayout* layout, const QString& name)
+  void addToolButton (ToolKey key, QLayout* layout, const QString& name)
   {
     QPushButton& button = ViewUtil::pushButton (name);
-    this->buttons.emplace (T::getKey_ (), &button);
+    this->buttons.emplace (key, &button);
     button.setCheckable (true);
 
-    ViewUtil::connect (button, [this]() {
+    ViewUtil::connect (button, [this, key]() {
       this->glWidget.state ().resetTool ();
-      this->glWidget.state ().setTool (T::getKey_ ());
+      this->glWidget.state ().setTool (key);
     });
     layout->addWidget (&button);
   }
@@ -83,22 +83,22 @@ struct ViewToolPane::Impl
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
     toolPane->setLayout (toolPaneLayout);
-    this->addToolButton<ToolNewMesh> (toolPaneLayout, QObject::tr ("01234567890123456789"));
-    this->addToolButton<ToolDeleteMesh> (toolPaneLayout, QObject::tr ("Delete mesh"));
-    this->addToolButton<ToolMoveMesh> (toolPaneLayout, QObject::tr ("Move mesh"));
-    this->addToolButton<ToolRotateMesh> (toolPaneLayout, QObject::tr ("Rotate mesh"));
+    this->addToolButton (ToolKey::NewMesh, toolPaneLayout, QObject::tr ("01234567890123456789"));
+    this->addToolButton (ToolKey::DeleteMesh, toolPaneLayout, QObject::tr ("Delete mesh"));
+    this->addToolButton (ToolKey::MoveMesh, toolPaneLayout, QObject::tr ("Move mesh"));
+    this->addToolButton (ToolKey::RotateMesh, toolPaneLayout, QObject::tr ("Rotate mesh"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
-    this->addToolButton<ToolSculptDraw> (toolPaneLayout, QObject::tr ("Draw"));
-    this->addToolButton<ToolSculptCrease> (toolPaneLayout, QObject::tr ("Crease"));
-    this->addToolButton<ToolSculptGrab> (toolPaneLayout, QObject::tr ("Grab"));
-    this->addToolButton<ToolSculptPinch> (toolPaneLayout, QObject::tr ("Pinch"));
+    this->addToolButton (ToolKey::SculptDraw, toolPaneLayout, QObject::tr ("Draw"));
+    this->addToolButton (ToolKey::SculptCrease, toolPaneLayout, QObject::tr ("Crease"));
+    this->addToolButton (ToolKey::SculptGrab, toolPaneLayout, QObject::tr ("Grab"));
+    this->addToolButton (ToolKey::SculptPinch, toolPaneLayout, QObject::tr ("Pinch"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
-    this->addToolButton<ToolSculptSmooth> (toolPaneLayout, QObject::tr ("Smooth"));
-    this->addToolButton<ToolSculptFlatten> (toolPaneLayout, QObject::tr ("Flatten"));
-    this->addToolButton<ToolSculptReduce> (toolPaneLayout, QObject::tr ("Reduce"));
+    this->addToolButton (ToolKey::SculptSmooth, toolPaneLayout, QObject::tr ("Smooth"));
+    this->addToolButton (ToolKey::SculptFlatten, toolPaneLayout, QObject::tr ("Flatten"));
+    this->addToolButton (ToolKey::SculptReduce, toolPaneLayout, QObject::tr ("Reduce"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
-    this->addToolButton<ToolRemesh> (toolPaneLayout, QObject::tr ("Remesh"));
-    this->addToolButton<ToolTrimMesh> (toolPaneLayout, QObject::tr ("Trim"));
+    this->addToolButton (ToolKey::Remesh, toolPaneLayout, QObject::tr ("Remesh"));
+    this->addToolButton (ToolKey::TrimMesh, toolPaneLayout, QObject::tr ("Trim"));
 
     toolPaneLayout->addStretch (1);
 
@@ -111,13 +111,14 @@ struct ViewToolPane::Impl
     QVBoxLayout* toolPaneLayout = new QVBoxLayout;
 
     toolPane->setLayout (toolPaneLayout);
-    this->addToolButton<ToolEditSketch> (toolPaneLayout, QObject::tr ("Edit sketch"));
-    this->addToolButton<ToolDeleteSketch> (toolPaneLayout, QObject::tr ("Delete sketch"));
-    this->addToolButton<ToolRebalanceSketch> (toolPaneLayout, QObject::tr ("Rebalance sketch"));
+    this->addToolButton (ToolKey::EditSketch, toolPaneLayout, QObject::tr ("Edit sketch"));
+    this->addToolButton (ToolKey::DeleteSketch, toolPaneLayout, QObject::tr ("Delete sketch"));
+    this->addToolButton (ToolKey::RebalanceSketch, toolPaneLayout,
+                         QObject::tr ("Rebalance sketch"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
-    this->addToolButton<ToolSketchSpheres> (toolPaneLayout, QObject::tr ("Sketch spheres"));
+    this->addToolButton (ToolKey::SketchSpheres, toolPaneLayout, QObject::tr ("Sketch spheres"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
-    this->addToolButton<ToolConvertSketch> (toolPaneLayout, QObject::tr ("Convert sketch"));
+    this->addToolButton (ToolKey::ConvertSketch, toolPaneLayout, QObject::tr ("Convert sketch"));
 
     toolPaneLayout->addStretch (1);
 
@@ -126,7 +127,7 @@ struct ViewToolPane::Impl
 
   void forceWidth ()
   {
-    const auto it = this->buttons.find (ToolNewMesh::getKey_ ());
+    const auto it = this->buttons.find (ToolKey::NewMesh);
     assert (it != this->buttons.end ());
 
     it->second->setText (QObject::tr ("New mesh"));
