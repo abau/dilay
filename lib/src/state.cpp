@@ -61,10 +61,8 @@ struct State::Impl
     tip.add (event, this->mainWindow.toolPane ().buttonText (key));
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
-    QObject::connect (this->shortcuts.back (), &QShortcut::activated, [this, key]() {
-      this->resetTool ();
-      this->setTool (key);
-    });
+    QObject::connect (this->shortcuts.back (), &QShortcut::activated,
+                      [this, key]() { this->setTool (key); });
   }
 
   void addToggleToolShortcut (ViewToolTip& tip, ViewInput::Event event)
@@ -189,7 +187,10 @@ struct State::Impl
 
   void setTool (ToolKey key)
   {
-    assert (this->hasTool () == false);
+    if (this->hasTool ())
+    {
+      this->resetTool ();
+    }
 #define SET_TOOL(name)                                  \
   case ToolKey::name:                                   \
     this->toolPtr.reset (new Tool##name (*this->self)); \

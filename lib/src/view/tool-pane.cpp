@@ -70,10 +70,7 @@ struct ViewToolPane::Impl
     this->buttons.emplace (key, &button);
     button.setCheckable (true);
 
-    ViewUtil::connect (button, [this, key]() {
-      this->glWidget.state ().resetTool ();
-      this->glWidget.state ().setTool (key);
-    });
+    ViewUtil::connect (button, [this, key]() { this->glWidget.state ().setTool (key); });
     layout->addWidget (&button);
   }
 
