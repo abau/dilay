@@ -23,7 +23,7 @@ struct ToolDeleteMesh::Impl
   {
     ViewToolTip toolTip;
     toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Delete selection"));
-    this->self->showToolTip (toolTip);
+    this->self->setToolTip (toolTip);
 
     return ToolResponse::None;
   }

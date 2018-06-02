@@ -158,7 +158,7 @@ struct ToolSculpt::Impl
     toolTip.add (ViewInput::Event::MouseRight, ViewInput::Modifier::Shift,
                  QObject::tr ("Drag to change radius"));
 
-    this->self->showToolTip (toolTip);
+    this->self->setToolTip (toolTip);
   }
 
   void runRender () const

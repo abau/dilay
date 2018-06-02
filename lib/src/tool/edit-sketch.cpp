@@ -100,7 +100,7 @@ struct ToolEditSketch::Impl
                  QObject::tr ("Drag to add sketch"));
     toolTip.add (ViewInput::Event::MouseLeft, ViewInput::Modifier::Alt,
                  QObject::tr ("Drag node to add child"));
-    this->self->showToolTip (toolTip);
+    this->self->setToolTip (toolTip);
   }
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)

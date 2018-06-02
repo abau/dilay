@@ -29,7 +29,7 @@ struct ToolRebalanceSketch::Impl
 
     ViewToolTip toolTip;
     toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Set new root"));
-    this->self->showToolTip (toolTip);
+    this->self->setToolTip (toolTip);
 
     return ToolResponse::None;
   }

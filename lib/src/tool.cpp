@@ -102,7 +102,7 @@ struct Tool::Impl
     return this->state.mainWindow ().toolPane ().properties ();
   }
 
-  void showToolTip (const ViewToolTip& toolTip) { this->state.setToolTip (&toolTip); }
+  void setToolTip (const ViewToolTip& toolTip) { this->state.setToolTip (&toolTip); }
 
   Config& config () const { return this->state.config (); }
 
@@ -281,7 +281,7 @@ DELEGATE (void, Tool, fromConfig)
 GETTER_CONST (State&, Tool, state)
 DELEGATE (void, Tool, updateGlWidget)
 DELEGATE_CONST (ViewTwoColumnGrid&, Tool, properties)
-DELEGATE1 (void, Tool, showToolTip, const ViewToolTip&)
+DELEGATE1 (void, Tool, setToolTip, const ViewToolTip&)
 DELEGATE_CONST (Config&, Tool, config)
 DELEGATE (CacheProxy&, Tool, cache)
 DELEGATE1_CONST (CacheProxy, Tool, cache, const char*)
