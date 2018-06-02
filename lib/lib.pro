@@ -54,12 +54,10 @@ SOURCES += \
            src/tool/delete-mesh.cpp \
            src/tool/delete-sketch.cpp \
            src/tool/edit-sketch.cpp \
-           src/tool/move-mesh.cpp \
            src/tool/move-camera.cpp \
            src/tool/new-mesh.cpp \
            src/tool/rebalance-sketch.cpp \
            src/tool/remesh.cpp \
-           src/tool/rotate-mesh.cpp \
            src/tool/sculpt.cpp \
            src/tool/sculpt/draw.cpp \
            src/tool/sculpt/crease.cpp \
@@ -72,6 +70,7 @@ SOURCES += \
            src/tool/sculpt/util/brush.cpp \
            src/tool/sculpt/util/edge-collection.cpp \
            src/tool/sketch-spheres.cpp \
+           src/tool/transform-mesh.cpp \
            src/tool/trim-mesh.cpp \
            src/tool/trim-mesh/action.cpp \
            src/tool/trim-mesh/border.cpp \

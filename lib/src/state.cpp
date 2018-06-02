@@ -198,8 +198,7 @@ struct State::Impl
 
     switch (key)
     {
-      SET_TOOL (MoveMesh)
-      SET_TOOL (RotateMesh)
+      SET_TOOL (TransformMesh)
       SET_TOOL (DeleteMesh)
       SET_TOOL (NewMesh)
       SET_TOOL (SculptDraw)

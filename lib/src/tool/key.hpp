@@ -7,8 +7,7 @@
 
 enum class ToolKey
 {
-  MoveMesh,
-  RotateMesh,
+  TransformMesh,
   DeleteMesh,
   NewMesh,
   SculptDraw,

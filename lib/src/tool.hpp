@@ -18,6 +18,7 @@ class Mirror;
 class PrimRay;
 class QPainter;
 class QWheelEvent;
+class QWidget;
 class State;
 class ToolUtilMovement;
 class ViewPointingEvent;
@@ -67,7 +68,7 @@ protected:
   void               renderMirror (bool);
   const Dimension*   mirrorDimension () const;
   void               addMirrorProperties (bool);
-  void               addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
+  QWidget&           addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
 
   template <typename T, typename... Ts> bool intersectsScene (const PrimRay&, T&, Ts...);
   template <typename T, typename... Ts> bool intersectsScene (const glm::ivec2&, T&, Ts...);
