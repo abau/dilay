@@ -16,8 +16,8 @@ public:
 
   void render (const std::function<void(const QString&, const QString&)>&) const;
 
-  void add (ViewInput::Event, ViewInput::Modifier, const QString&);
-  void add (ViewInput::Event, const QString&);
+  void add (ViewInputEvent, ViewInputModifier, const QString&);
+  void add (ViewInputEvent, const QString&);
   void reset ();
   bool isEmpty () const;
 

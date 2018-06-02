@@ -54,9 +54,9 @@ struct State::Impl
     return *this->toolPtr;
   }
 
-  void addToolShortcut (ToolKey key, ViewToolTip& tip, ViewInput::Event event)
+  void addToolShortcut (ToolKey key, ViewToolTip& tip, ViewInputEvent event)
   {
-    const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInput::Modifier::None);
+    const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInputModifier::None);
 
     tip.add (event, this->mainWindow.toolPane ().buttonText (key));
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
@@ -65,9 +65,9 @@ struct State::Impl
                       [this, key]() { this->setTool (key); });
   }
 
-  void addToggleToolShortcut (ViewToolTip& tip, ViewInput::Event event)
+  void addToggleToolShortcut (ViewToolTip& tip, ViewInputEvent event)
   {
-    const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInput::Modifier::None);
+    const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInputModifier::None);
 
     tip.add (event, QObject::tr ("Toggle back"));
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
@@ -76,9 +76,9 @@ struct State::Impl
                       [this]() { this->setTool (this->previousToolKey); });
   }
 
-  void addExitToolShortcut (ViewToolTip& tip, ViewInput::Event event)
+  void addExitToolShortcut (ViewToolTip& tip, ViewInputEvent event)
   {
-    const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInput::Modifier::None);
+    const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInputModifier::None);
 
     tip.add (event, QObject::tr ("Exit"));
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
@@ -120,17 +120,17 @@ struct State::Impl
       case ViewToolPaneSelection::Sculpt:
         if (this->hasTool () == false)
         {
-          this->addToolShortcut (ToolKey::SculptDraw, tip, ViewInput::Event::D);
-          this->addToolShortcut (ToolKey::SculptCrease, tip, ViewInput::Event::C);
-          this->addToolShortcut (ToolKey::SculptGrab, tip, ViewInput::Event::G);
-          this->addToolShortcut (ToolKey::SculptPinch, tip, ViewInput::Event::P);
-          this->addToolShortcut (ToolKey::SculptSmooth, tip, ViewInput::Event::S);
-          this->addToolShortcut (ToolKey::SculptFlatten, tip, ViewInput::Event::F);
-          this->addToolShortcut (ToolKey::SculptReduce, tip, ViewInput::Event::R);
-          this->addToolShortcut (ToolKey::TrimMesh, tip, ViewInput::Event::T);
-          this->addToolShortcut (ToolKey::Remesh, tip, ViewInput::Event::M);
+          this->addToolShortcut (ToolKey::SculptDraw, tip, ViewInputEvent::D);
+          this->addToolShortcut (ToolKey::SculptCrease, tip, ViewInputEvent::C);
+          this->addToolShortcut (ToolKey::SculptGrab, tip, ViewInputEvent::G);
+          this->addToolShortcut (ToolKey::SculptPinch, tip, ViewInputEvent::P);
+          this->addToolShortcut (ToolKey::SculptSmooth, tip, ViewInputEvent::S);
+          this->addToolShortcut (ToolKey::SculptFlatten, tip, ViewInputEvent::F);
+          this->addToolShortcut (ToolKey::SculptReduce, tip, ViewInputEvent::R);
+          this->addToolShortcut (ToolKey::TrimMesh, tip, ViewInputEvent::T);
+          this->addToolShortcut (ToolKey::Remesh, tip, ViewInputEvent::M);
 #ifndef NDEBUG
-          this->addExitToolShortcut (tip, ViewInput::Event::Esc);
+          this->addExitToolShortcut (tip, ViewInputEvent::Esc);
 #endif
         }
         else
@@ -149,38 +149,36 @@ struct State::Impl
 
           if (nonSmoothSculptTool)
           {
-            this->addToolShortcut (ToolKey::SculptSmooth, tip, ViewInput::Event::S);
+            this->addToolShortcut (ToolKey::SculptSmooth, tip, ViewInputEvent::S);
           }
           else if (toggleBack)
           {
-            this->addToggleToolShortcut (tip, ViewInput::Event::S);
+            this->addToggleToolShortcut (tip, ViewInputEvent::S);
           }
-          this->addExitToolShortcut (tip, ViewInput::Event::Esc);
+          this->addExitToolShortcut (tip, ViewInputEvent::Esc);
         }
         break;
       case ViewToolPaneSelection::Sketch:
         if (this->hasTool () == false)
         {
 #ifndef NDEBUG
-          this->addExitToolShortcut (tip, ViewInput::Event::Esc);
+          this->addExitToolShortcut (tip, ViewInputEvent::Esc);
 #endif
         }
         else
         {
-          this->addExitToolShortcut (tip, ViewInput::Event::Esc);
+          this->addExitToolShortcut (tip, ViewInputEvent::Esc);
         }
         break;
     }
     this->mainWindow.infoPane ().addToolTip (tip);
     tip.reset ();
 
-    tip.add (ViewInput::Event::MouseMiddle, QObject::tr ("Drag to rotate"));
-    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Shift,
-             QObject::tr ("Drag to move"));
-    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Alt, QObject::tr ("Gaze"));
-    tip.add (ViewInput::Event::MouseMiddle, ViewInput::Modifier::Ctrl,
-             QObject::tr ("Drag to zoom"));
-    tip.add (ViewInput::Event::MouseWheel, QObject::tr ("Zoom"));
+    tip.add (ViewInputEvent::MouseMiddle, QObject::tr ("Drag to rotate"));
+    tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Shift, QObject::tr ("Drag to move"));
+    tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Alt, QObject::tr ("Gaze"));
+    tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Ctrl, QObject::tr ("Drag to zoom"));
+    tip.add (ViewInputEvent::MouseWheel, QObject::tr ("Zoom"));
 
     this->mainWindow.infoPane ().addToolTip (tip);
   }

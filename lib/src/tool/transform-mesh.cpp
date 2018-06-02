@@ -123,11 +123,11 @@ struct ToolTransformMesh::Impl
     switch (this->mode)
     {
       case Mode::Move:
-        toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Drag to move"));
+        toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to move"));
         break;
 
       case Mode::Rotate:
-        toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Drag to rotate"));
+        toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to rotate"));
         break;
     }
     this->self->setToolTip (toolTip);

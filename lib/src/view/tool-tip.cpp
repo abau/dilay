@@ -9,8 +9,8 @@
 
 struct ViewToolTip::Impl
 {
-  typedef std::tuple<ViewInput::Event, ViewInput::Modifier, QString> Tip;
-  std::vector<Tip>                                                   tips;
+  typedef std::tuple<ViewInputEvent, ViewInputModifier, QString> Tip;
+  std::vector<Tip>                                               tips;
 
   void render (const std::function<void(const QString&, const QString&)>& f) const
   {
@@ -20,14 +20,14 @@ struct ViewToolTip::Impl
     }
   }
 
-  void add (ViewInput::Event event, ViewInput::Modifier modifier, const QString& tip)
+  void add (ViewInputEvent event, ViewInputModifier modifier, const QString& tip)
   {
     this->tips.push_back (std::make_tuple (event, modifier, tip));
   }
 
-  void add (ViewInput::Event event, const QString& tip)
+  void add (ViewInputEvent event, const QString& tip)
   {
-    this->add (event, ViewInput::Modifier::None, tip);
+    this->add (event, ViewInputModifier::None, tip);
   }
 
   void reset () { this->tips.clear (); }
@@ -38,7 +38,7 @@ struct ViewToolTip::Impl
 DELEGATE_BIG6 (ViewToolTip)
 DELEGATE1_CONST (void, ViewToolTip, render,
                  const std::function<void(const QString&, const QString&)>&)
-DELEGATE3 (void, ViewToolTip, add, ViewInput::Event, ViewInput::Modifier, const QString&)
-DELEGATE2 (void, ViewToolTip, add, ViewInput::Event, const QString&)
+DELEGATE3 (void, ViewToolTip, add, ViewInputEvent, ViewInputModifier, const QString&)
+DELEGATE2 (void, ViewToolTip, add, ViewInputEvent, const QString&)
 DELEGATE (void, ViewToolTip, reset)
 DELEGATE_CONST (bool, ViewToolTip, isEmpty)

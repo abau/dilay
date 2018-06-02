@@ -85,7 +85,7 @@ struct ToolConvertSketch::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Convert selection"));
+    toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Convert selection"));
     this->self->setToolTip (toolTip);
   }
 

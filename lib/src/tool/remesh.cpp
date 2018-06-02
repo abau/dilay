@@ -73,7 +73,7 @@ struct ToolRemesh::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Remesh selection"));
+    toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Remesh selection"));
     this->self->setToolTip (toolTip);
   }
 

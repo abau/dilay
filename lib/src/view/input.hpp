@@ -8,55 +8,55 @@
 class QKeySequence;
 class QString;
 
+enum class ViewInputEvent
+{
+  A,
+  B,
+  C,
+  D,
+  E,
+  F,
+  G,
+  H,
+  I,
+  J,
+  K,
+  L,
+  M,
+  N,
+  O,
+  P,
+  Q,
+  R,
+  S,
+  T,
+  U,
+  V,
+  W,
+  X,
+  Y,
+  Z,
+  Esc,
+  MouseLeft,
+  MouseMiddle,
+  MouseWheel,
+  MouseRight
+};
+
+enum class ViewInputModifier
+{
+  None,
+  Ctrl,
+  Shift,
+  Alt
+};
+
 namespace ViewInput
 {
-  enum class Event
-  {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P,
-    Q,
-    R,
-    S,
-    T,
-    U,
-    V,
-    W,
-    X,
-    Y,
-    Z,
-    Esc,
-    MouseLeft,
-    MouseMiddle,
-    MouseWheel,
-    MouseRight
-  };
-
-  enum class Modifier
-  {
-    None,
-    Ctrl,
-    Shift,
-    Alt
-  };
-
-  QKeySequence toQKeySequence (Event, Modifier);
-  QString      toQString (Event);
-  QString      toQString (Modifier);
-  QString      toQString (Event, Modifier);
+  QKeySequence toQKeySequence (ViewInputEvent, ViewInputModifier);
+  QString      toQString (ViewInputEvent);
+  QString      toQString (ViewInputModifier);
+  QString      toQString (ViewInputEvent, ViewInputModifier);
 }
 
 #endif

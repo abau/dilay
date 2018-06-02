@@ -107,7 +107,7 @@ struct ToolDeleteSketch::Impl
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Delete selection"));
+    toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Delete selection"));
     this->self->setToolTip (toolTip);
   }
 

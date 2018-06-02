@@ -9,106 +9,106 @@
 
 namespace ViewInput
 {
-  QKeySequence toQKeySequence (ViewInput::Event event, ViewInput::Modifier modifier)
+  QKeySequence toQKeySequence (ViewInputEvent event, ViewInputModifier modifier)
   {
     unsigned int value = 0;
 
     switch (modifier)
     {
-      case ViewInput::Modifier::None:
+      case ViewInputModifier::None:
         break;
-      case ViewInput::Modifier::Ctrl:
+      case ViewInputModifier::Ctrl:
         value += Qt::CTRL;
         break;
-      case ViewInput::Modifier::Shift:
+      case ViewInputModifier::Shift:
         value += Qt::SHIFT;
         break;
-      case ViewInput::Modifier::Alt:
+      case ViewInputModifier::Alt:
         value += Qt::ALT;
         break;
     }
 
     switch (event)
     {
-      case ViewInput::Event::A:
+      case ViewInputEvent::A:
         value += Qt::Key_A;
         break;
-      case ViewInput::Event::B:
+      case ViewInputEvent::B:
         value += Qt::Key_B;
         break;
-      case ViewInput::Event::C:
+      case ViewInputEvent::C:
         value += Qt::Key_C;
         break;
-      case ViewInput::Event::D:
+      case ViewInputEvent::D:
         value += Qt::Key_D;
         break;
-      case ViewInput::Event::E:
+      case ViewInputEvent::E:
         value += Qt::Key_E;
         break;
-      case ViewInput::Event::F:
+      case ViewInputEvent::F:
         value += Qt::Key_F;
         break;
-      case ViewInput::Event::G:
+      case ViewInputEvent::G:
         value += Qt::Key_G;
         break;
-      case ViewInput::Event::H:
+      case ViewInputEvent::H:
         value += Qt::Key_H;
         break;
-      case ViewInput::Event::I:
+      case ViewInputEvent::I:
         value += Qt::Key_I;
         break;
-      case ViewInput::Event::J:
+      case ViewInputEvent::J:
         value += Qt::Key_J;
         break;
-      case ViewInput::Event::K:
+      case ViewInputEvent::K:
         value += Qt::Key_K;
         break;
-      case ViewInput::Event::L:
+      case ViewInputEvent::L:
         value += Qt::Key_L;
         break;
-      case ViewInput::Event::M:
+      case ViewInputEvent::M:
         value += Qt::Key_M;
         break;
-      case ViewInput::Event::N:
+      case ViewInputEvent::N:
         value += Qt::Key_N;
         break;
-      case ViewInput::Event::O:
+      case ViewInputEvent::O:
         value += Qt::Key_O;
         break;
-      case ViewInput::Event::P:
+      case ViewInputEvent::P:
         value += Qt::Key_P;
         break;
-      case ViewInput::Event::Q:
+      case ViewInputEvent::Q:
         value += Qt::Key_Q;
         break;
-      case ViewInput::Event::R:
+      case ViewInputEvent::R:
         value += Qt::Key_R;
         break;
-      case ViewInput::Event::S:
+      case ViewInputEvent::S:
         value += Qt::Key_S;
         break;
-      case ViewInput::Event::T:
+      case ViewInputEvent::T:
         value += Qt::Key_T;
         break;
-      case ViewInput::Event::U:
+      case ViewInputEvent::U:
         value += Qt::Key_U;
         break;
-      case ViewInput::Event::V:
+      case ViewInputEvent::V:
         value += Qt::Key_V;
         break;
-      case ViewInput::Event::W:
+      case ViewInputEvent::W:
         value += Qt::Key_W;
         break;
-      case ViewInput::Event::X:
+      case ViewInputEvent::X:
         value += Qt::Key_X;
         break;
-      case ViewInput::Event::Y:
+      case ViewInputEvent::Y:
         value += Qt::Key_Y;
         break;
-      case ViewInput::Event::Z:
+      case ViewInputEvent::Z:
         value += Qt::Key_Z;
         break;
-      case ViewInput::Event::Esc:
+      case ViewInputEvent::Esc:
         value += Qt::Key_Escape;
         break;
       default:
@@ -117,95 +117,95 @@ namespace ViewInput
     return QKeySequence (value);
   }
 
-  QString toQString (ViewInput::Event event)
+  QString toQString (ViewInputEvent event)
   {
     switch (event)
     {
-      case ViewInput::Event::A:
+      case ViewInputEvent::A:
         return QObject::tr ("A");
-      case ViewInput::Event::B:
+      case ViewInputEvent::B:
         return QObject::tr ("B");
-      case ViewInput::Event::C:
+      case ViewInputEvent::C:
         return QObject::tr ("C");
-      case ViewInput::Event::D:
+      case ViewInputEvent::D:
         return QObject::tr ("D");
-      case ViewInput::Event::E:
+      case ViewInputEvent::E:
         return QObject::tr ("E");
-      case ViewInput::Event::F:
+      case ViewInputEvent::F:
         return QObject::tr ("F");
-      case ViewInput::Event::G:
+      case ViewInputEvent::G:
         return QObject::tr ("G");
-      case ViewInput::Event::H:
+      case ViewInputEvent::H:
         return QObject::tr ("H");
-      case ViewInput::Event::I:
+      case ViewInputEvent::I:
         return QObject::tr ("I");
-      case ViewInput::Event::J:
+      case ViewInputEvent::J:
         return QObject::tr ("J");
-      case ViewInput::Event::K:
+      case ViewInputEvent::K:
         return QObject::tr ("K");
-      case ViewInput::Event::L:
+      case ViewInputEvent::L:
         return QObject::tr ("L");
-      case ViewInput::Event::M:
+      case ViewInputEvent::M:
         return QObject::tr ("M");
-      case ViewInput::Event::N:
+      case ViewInputEvent::N:
         return QObject::tr ("N");
-      case ViewInput::Event::O:
+      case ViewInputEvent::O:
         return QObject::tr ("O");
-      case ViewInput::Event::P:
+      case ViewInputEvent::P:
         return QObject::tr ("P");
-      case ViewInput::Event::Q:
+      case ViewInputEvent::Q:
         return QObject::tr ("Q");
-      case ViewInput::Event::R:
+      case ViewInputEvent::R:
         return QObject::tr ("R");
-      case ViewInput::Event::S:
+      case ViewInputEvent::S:
         return QObject::tr ("S");
-      case ViewInput::Event::T:
+      case ViewInputEvent::T:
         return QObject::tr ("T");
-      case ViewInput::Event::U:
+      case ViewInputEvent::U:
         return QObject::tr ("U");
-      case ViewInput::Event::V:
+      case ViewInputEvent::V:
         return QObject::tr ("V");
-      case ViewInput::Event::W:
+      case ViewInputEvent::W:
         return QObject::tr ("W");
-      case ViewInput::Event::X:
+      case ViewInputEvent::X:
         return QObject::tr ("X");
-      case ViewInput::Event::Y:
+      case ViewInputEvent::Y:
         return QObject::tr ("Y");
-      case ViewInput::Event::Z:
+      case ViewInputEvent::Z:
         return QObject::tr ("Z");
-      case ViewInput::Event::Esc:
+      case ViewInputEvent::Esc:
         return QObject::tr ("Esc");
-      case ViewInput::Event::MouseLeft:
+      case ViewInputEvent::MouseLeft:
         return QObject::tr ("Left");
-      case ViewInput::Event::MouseMiddle:
+      case ViewInputEvent::MouseMiddle:
         return QObject::tr ("Middle");
-      case ViewInput::Event::MouseWheel:
+      case ViewInputEvent::MouseWheel:
         return QObject::tr ("Wheel");
-      case ViewInput::Event::MouseRight:
+      case ViewInputEvent::MouseRight:
         return QObject::tr ("Right");
       default:
         DILAY_IMPOSSIBLE;
     }
   }
 
-  QString toQString (ViewInput::Modifier modifier)
+  QString toQString (ViewInputModifier modifier)
   {
     switch (modifier)
     {
-      case ViewInput::Modifier::None:
+      case ViewInputModifier::None:
         return "";
-      case ViewInput::Modifier::Ctrl:
+      case ViewInputModifier::Ctrl:
         return QObject::tr ("Ctrl");
-      case ViewInput::Modifier::Shift:
+      case ViewInputModifier::Shift:
         return QObject::tr ("Shift");
-      case ViewInput::Modifier::Alt:
+      case ViewInputModifier::Alt:
         return QObject::tr ("Alt");
       default:
         DILAY_IMPOSSIBLE;
     }
   }
 
-  QString toQString (ViewInput::Event event, ViewInput::Modifier modifier)
+  QString toQString (ViewInputEvent event, ViewInputModifier modifier)
   {
     const QString sEvent = toQString (event);
     const QString sModifier = toQString (modifier);
