@@ -21,6 +21,7 @@
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
 #include "view/info-pane/scene.hpp"
+#include "view/key-event.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-pane.hpp"
@@ -229,6 +230,30 @@ struct ViewGlWidget::Impl
     this->pointingEvent (pointingEvent);
   }
 
+  void keyPressEvent (QKeyEvent* e)
+  {
+    const ViewKeyEvent keyEvent (*e, true);
+
+    if (this->state ().hasTool ())
+    {
+      this->state ().tool ().keyEvent (keyEvent);
+    }
+    this->self->QOpenGLWidget::keyPressEvent (e);
+  }
+
+  void keyReleaseEvent (QKeyEvent* e)
+  {
+    const ViewKeyEvent keyEvent (*e, false);
+
+    if (this->state ().hasTool ())
+    {
+      this->state ().tool ().keyEvent (keyEvent);
+    }
+    this->self->QOpenGLWidget::keyReleaseEvent (e);
+  }
+
+  void enterEvent (QEvent*) { this->self->setFocus (); }
+
   void updateCursorInTool ()
   {
     if (this->state ().hasTool ())
@@ -253,3 +278,6 @@ DELEGATE1 (void, ViewGlWidget, mousePressEvent, QMouseEvent*)
 DELEGATE1 (void, ViewGlWidget, mouseReleaseEvent, QMouseEvent*)
 DELEGATE1 (void, ViewGlWidget, wheelEvent, QWheelEvent*)
 DELEGATE1 (void, ViewGlWidget, tabletEvent, QTabletEvent*)
+DELEGATE1 (void, ViewGlWidget, keyPressEvent, QKeyEvent*)
+DELEGATE1 (void, ViewGlWidget, keyReleaseEvent, QKeyEvent*)
+DELEGATE1 (void, ViewGlWidget, enterEvent, QEvent*)

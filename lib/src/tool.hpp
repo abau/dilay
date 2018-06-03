@@ -21,6 +21,7 @@ class QWheelEvent;
 class QWidget;
 class State;
 class ToolUtilMovement;
+class ViewKeyEvent;
 class ViewPointingEvent;
 class ViewToolTip;
 class ViewTwoColumnGrid;
@@ -42,6 +43,7 @@ public:
   ToolResponse initialize ();
   void         render () const;
   void         paint (QPainter&) const;
+  void         keyEvent (const ViewKeyEvent&);
   ToolResponse pointingEvent (const ViewPointingEvent&);
   ToolResponse wheelEvent (const QWheelEvent&);
   ToolResponse cursorUpdate (const glm::ivec2&);
@@ -68,6 +70,7 @@ protected:
   const Dimension*   mirrorDimension () const;
   void               addMirrorProperties (bool);
   QWidget&           addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
+  bool               onKeymap (char) const;
 
   template <typename T, typename... Ts> bool intersectsScene (const PrimRay&, T&, Ts...);
   template <typename T, typename... Ts> bool intersectsScene (const glm::ivec2&, T&, Ts...);

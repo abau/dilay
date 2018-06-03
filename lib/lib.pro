@@ -90,6 +90,7 @@ SOURCES += \
            src/view/info-pane.cpp \
            src/view/info-pane/scene.cpp \
            src/view/input.cpp \
+           src/view/key-event.cpp \
            src/view/light.cpp \
            src/view/log.cpp \
            src/view/main-window.cpp \
@@ -181,6 +182,7 @@ HEADERS += \
            src/view/info-pane.hpp \
            src/view/info-pane/scene.hpp \
            src/view/input.hpp \
+           src/view/key-event.hpp \
            src/view/light.hpp \
            src/view/log.hpp \
            src/view/main-window.hpp \

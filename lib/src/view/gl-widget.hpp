@@ -38,6 +38,9 @@ protected:
   void mouseReleaseEvent (QMouseEvent*);
   void wheelEvent (QWheelEvent*);
   void tabletEvent (QTabletEvent*);
+  void keyPressEvent (QKeyEvent*);
+  void keyReleaseEvent (QKeyEvent*);
+  void enterEvent (QEvent*);
 
 private:
   IMPLEMENTATION

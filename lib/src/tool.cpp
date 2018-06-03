@@ -4,6 +4,7 @@
  */
 #include <QCheckBox>
 #include <QPushButton>
+#include <array>
 #include "cache.hpp"
 #include "camera.hpp"
 #include "dimension.hpp"
@@ -20,6 +21,7 @@
 #include "tool.hpp"
 #include "tool/util/movement.hpp"
 #include "view/gl-widget.hpp"
+#include "view/key-event.hpp"
 #include "view/main-window.hpp"
 #include "view/pointing-event.hpp"
 #include "view/tool-pane.hpp"
@@ -29,12 +31,13 @@
 
 struct Tool::Impl
 {
-  Tool*         self;
-  State&        state;
-  CacheProxy    _cache;
-  Maybe<Mirror> _mirror;
-  bool          renderMirror;
-  glm::ivec2    prevPointingEventPosition;
+  Tool*                self;
+  State&               state;
+  CacheProxy           _cache;
+  Maybe<Mirror>        _mirror;
+  bool                 renderMirror;
+  glm::ivec2           prevPointingEventPosition;
+  std::array<bool, 26> keymap;
 
   Impl (Tool* s, State& st, const char* cacheKey)
     : self (s)
@@ -42,6 +45,7 @@ struct Tool::Impl
     , _cache (this->cache (cacheKey))
     , renderMirror (false)
   {
+    this->keymap.fill (false);
   }
 
   ToolResponse initialize ()
@@ -61,6 +65,15 @@ struct Tool::Impl
   }
 
   void paint (QPainter& painter) const { this->self->runPaint (painter); }
+
+  void keyEvent (const ViewKeyEvent& e)
+  {
+    const int index = int(e.key ()) - int(Qt::Key_A);
+    if (index >= 0 && size_t (index) < this->keymap.size ())
+    {
+      this->keymap[index] = e.pressEvent ();
+    }
+  }
 
   ToolResponse pointingEvent (const ViewPointingEvent& e)
   {
@@ -231,6 +244,19 @@ struct Tool::Impl
     return edit;
   }
 
+  bool onKeymap (char c) const
+  {
+    const int index = int(c) - int('a');
+    if (index >= 0 && size_t (index) < this->keymap.size ())
+    {
+      return this->keymap[index];
+    }
+    else
+    {
+      return false;
+    }
+  }
+
   template <typename T, typename... Ts>
   bool intersectsScene (const PrimRay& ray, T& intersection, Ts... args)
   {
@@ -272,6 +298,7 @@ DELEGATE2_BIG3_SELF (Tool, State&, const char*)
 DELEGATE (ToolResponse, Tool, initialize)
 DELEGATE_CONST (void, Tool, render)
 DELEGATE1_CONST (void, Tool, paint, QPainter&)
+DELEGATE1 (void, Tool, keyEvent, const ViewKeyEvent&)
 DELEGATE1 (ToolResponse, Tool, pointingEvent, const ViewPointingEvent&)
 DELEGATE1 (ToolResponse, Tool, wheelEvent, const QWheelEvent&)
 DELEGATE1 (ToolResponse, Tool, cursorUpdate, const glm::ivec2&)
@@ -296,6 +323,7 @@ SETTER (bool, Tool, renderMirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
 DELEGATE1 (void, Tool, addMirrorProperties, bool)
 DELEGATE1 (QWidget&, Tool, addMoveOnPrimaryPlaneProperties, ToolUtilMovement&)
+DELEGATE1_CONST (bool, Tool, onKeymap, char)
 DELEGATE1 (ToolResponse, Tool, runPointingEvent, const ViewPointingEvent&)
 
 template <typename T, typename... Ts>
