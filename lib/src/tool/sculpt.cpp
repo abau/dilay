@@ -153,10 +153,7 @@ struct ToolSculpt::Impl
     ViewToolTip toolTip;
 
     this->self->runSetupToolTip (toolTip);
-    toolTip.add (ViewInputEvent::MouseWheel, ViewInputModifier::Shift,
-                 QObject::tr ("Change radius"));
-    toolTip.add (ViewInputEvent::MouseRight, ViewInputModifier::Shift,
-                 QObject::tr ("Drag to change radius"));
+    toolTip.add (ViewInputEvent::R, QObject::tr ("Drag to change radius"));
 
     this->self->state ().setToolTip (&toolTip);
   }
@@ -173,67 +170,37 @@ struct ToolSculpt::Impl
 
   ToolResponse runPointingEvent (const ViewPointingEvent& e)
   {
-    if (e.moveEvent () && e.rightButton ())
+    if (this->self->onKeymap ('r') && e.moveEvent ())
     {
-      if (e.modifiers () == Qt::ShiftModifier)
-      {
-        this->radiusEdit.setIntValue (this->radiusEdit.intValue () + e.delta ().x);
-      }
-      else if (this->secondarySlider && e.modifiers () == Qt::ControlModifier)
-      {
-        this->secondarySlider->setIntValue (this->secondarySlider->intValue () + e.delta ().x);
-      }
+      this->radiusEdit.setIntValue (this->radiusEdit.intValue () + e.delta ().x);
     }
-    else if (e.pressEvent () && e.leftButton ())
+    else if (this->secondarySlider && this->self->onKeymap ('i') && e.moveEvent ())
     {
-      this->self->snapshotDynamicMeshes ();
-      this->sculptState = SculptState::Started;
+      this->secondarySlider->setIntValue (this->secondarySlider->intValue () + e.delta ().x);
     }
+    else if (e.leftButton ())
+    {
+      if (e.pressEvent ())
+      {
+        this->self->snapshotDynamicMeshes ();
+        this->sculptState = SculptState::Started;
+      }
 
-    if (e.leftButton ())
-    {
       const bool doSculpt =
         this->sculptState == SculptState::Started || this->sculptState == SculptState::Sculpted;
       if (doSculpt && this->self->runSculptPointingEvent (e))
       {
         this->sculptState = SculptState::Sculpted;
       }
+
+      if (e.releaseEvent ())
+      {
+        this->runCommit ();
+      }
     }
     else
     {
       this->self->runSculptPointingEvent (e);
-    }
-
-    if (e.releaseEvent () && e.leftButton ())
-    {
-      this->runCommit ();
-    }
-    return ToolResponse::Redraw;
-  }
-
-  ToolResponse runWheelEvent (const QWheelEvent& e)
-  {
-    auto updateSlider = [&e](ViewDoubleSlider& slider) {
-      if (e.delta () > 0)
-      {
-        slider.setIntValue (slider.intValue () + slider.intSingleStep ());
-      }
-      else if (e.delta () < 0)
-      {
-        slider.setIntValue (slider.intValue () - slider.intSingleStep ());
-      }
-    };
-
-    if (e.orientation () == Qt::Vertical)
-    {
-      if (e.modifiers () == Qt::ShiftModifier)
-      {
-        updateSlider (this->radiusEdit);
-      }
-      else if (this->secondarySlider && e.modifiers () == Qt::ControlModifier)
-      {
-        updateSlider (*this->secondarySlider);
-      }
     }
     return ToolResponse::Redraw;
   }
@@ -267,7 +234,7 @@ struct ToolSculpt::Impl
     this->cursor.color (this->self->config ().get<Color> ("editor/tool/cursor-color"));
   }
 
-  void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode)
+  void addDefaultToolTip (ViewToolTip& toolTip, bool hasInvertedMode, bool hasIntensity)
   {
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to sculpt"));
 
@@ -276,13 +243,11 @@ struct ToolSculpt::Impl
       toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Shift,
                    QObject::tr ("Drag to sculpt inverted"));
     }
-  }
 
-  void addSecSliderWheelToolTip (ViewToolTip& toolTip, const QString& label,
-                                 const QString& dragLabel)
-  {
-    toolTip.add (ViewInputEvent::MouseWheel, ViewInputModifier::Ctrl, label);
-    toolTip.add (ViewInputEvent::MouseRight, ViewInputModifier::Ctrl, dragLabel);
+    if (hasIntensity)
+    {
+      toolTip.add (ViewInputEvent::I, QObject::tr ("Drag to change intensity"));
+    }
   }
 
   void sculpt ()
@@ -527,9 +492,7 @@ struct ToolSculpt::Impl
 DELEGATE_BIG2_BASE (ToolSculpt, (State & s, const char* c), (this), Tool, (s, c))
 GETTER (SculptBrush&, ToolSculpt, brush)
 GETTER (ViewCursor&, ToolSculpt, cursor)
-DELEGATE2_CONST (void, ToolSculpt, addDefaultToolTip, ViewToolTip&, bool)
-DELEGATE3_CONST (void, ToolSculpt, addSecSliderWheelToolTip, ViewToolTip&, const QString&,
-                 const QString&)
+DELEGATE3_CONST (void, ToolSculpt, addDefaultToolTip, ViewToolTip&, bool, bool)
 DELEGATE (void, ToolSculpt, sculpt)
 DELEGATE3 (bool, ToolSculpt, drawlikeStroke, const ViewPointingEvent&, bool,
            const std::function<void()>*)
@@ -538,7 +501,6 @@ DELEGATE1 (void, ToolSculpt, registerSecondarySlider, ViewDoubleSlider&)
 DELEGATE (ToolResponse, ToolSculpt, runInitialize)
 DELEGATE_CONST (void, ToolSculpt, runRender)
 DELEGATE1 (ToolResponse, ToolSculpt, runPointingEvent, const ViewPointingEvent&)
-DELEGATE1 (ToolResponse, ToolSculpt, runWheelEvent, const QWheelEvent&)
 DELEGATE1 (ToolResponse, ToolSculpt, runCursorUpdate, const glm::ivec2&)
 DELEGATE (ToolResponse, ToolSculpt, runCommit)
 DELEGATE (void, ToolSculpt, runFromConfig)

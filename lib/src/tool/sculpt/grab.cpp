@@ -47,7 +47,10 @@ struct ToolSculptGrab::Impl
     properties.add (discardEdit);
   }
 
-  void runSetupToolTip (ViewToolTip& toolTip) { this->self->addDefaultToolTip (toolTip, false); }
+  void runSetupToolTip (ViewToolTip& toolTip)
+  {
+    this->self->addDefaultToolTip (toolTip, false, false);
+  }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e)
   {

@@ -39,7 +39,10 @@ struct ToolSculptPinch::Impl
     properties.add (invertEdit);
   }
 
-  void runSetupToolTip (ViewToolTip& toolTip) { this->self->addDefaultToolTip (toolTip, true); }
+  void runSetupToolTip (ViewToolTip& toolTip)
+  {
+    this->self->addDefaultToolTip (toolTip, true, false);
+  }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e)
   {

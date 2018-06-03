@@ -51,9 +51,7 @@ struct ToolSculptCrease::Impl
 
   void runSetupToolTip (ViewToolTip& toolTip)
   {
-    this->self->addDefaultToolTip (toolTip, true);
-    this->self->addSecSliderWheelToolTip (toolTip, QObject::tr ("Change intensity"),
-                                          QObject::tr ("Drag to change intensity"));
+    this->self->addDefaultToolTip (toolTip, true, true);
   }
 
   bool runSculptPointingEvent (const ViewPointingEvent& e)
