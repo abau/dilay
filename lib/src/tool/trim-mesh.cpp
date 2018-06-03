@@ -70,6 +70,7 @@ struct ToolTrimMesh::Impl
       this->trimMode = TrimMode (id);
       this->self->cache ().set ("trim-mode", id);
       this->widthEdit.setEnabled (this->trimMode != TrimMode::Normal);
+      this->setupToolTip ();
     });
     properties.add (trimModeEdit);
 
@@ -80,8 +81,10 @@ struct ToolTrimMesh::Impl
   {
     ViewToolTip toolTip;
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to trim"));
-    toolTip.add (ViewInputEvent::MouseWheel, ViewInputModifier::Shift,
-                 QObject::tr ("Change slice/cut width"));
+    if (this->widthEdit.isEnabled ())
+    {
+      toolTip.add (ViewInputEvent::R, QObject::tr ("Drag to change width"));
+    }
     this->self->state ().setToolTip (&toolTip);
   }
 
@@ -95,30 +98,15 @@ struct ToolTrimMesh::Impl
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)
   {
-    if (e.rightButton () && e.modifiers () == Qt::ShiftModifier)
+    if (this->widthEdit.isEnabled () && this->self->onKeymap ('r') && e.moveEvent ())
+    {
+      this->widthEdit.setValue (this->widthEdit.value () + e.delta ().x);
+    }
+    else if (e.rightButton () && e.modifiers () == Qt::ShiftModifier)
     {
       this->widthEdit.setValue (this->widthEdit.value () + e.delta ().x);
     }
     return this->points.empty () ? ToolResponse::None : ToolResponse::Redraw;
-  }
-
-  ToolResponse runWheelEvent (const QWheelEvent& e)
-  {
-    if (e.orientation () == Qt::Vertical)
-    {
-      if (e.modifiers () == Qt::ShiftModifier)
-      {
-        if (e.delta () > 0)
-        {
-          this->widthEdit.setValue (this->widthEdit.value () + this->widthEdit.singleStep ());
-        }
-        else if (e.delta () < 0)
-        {
-          this->widthEdit.setValue (this->widthEdit.value () - this->widthEdit.singleStep ());
-        }
-      }
-    }
-    return ToolResponse::Redraw;
   }
 
   TrimStatus trimMesh (DynamicMesh& mesh, int offset, bool reverse)
@@ -316,6 +304,5 @@ struct ToolTrimMesh::Impl
 DELEGATE_TOOL (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
-DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_PAINT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_COMMIT (ToolTrimMesh)
