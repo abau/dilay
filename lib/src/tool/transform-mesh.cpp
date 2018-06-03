@@ -15,6 +15,7 @@
 #include "tool/util/rotation.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
+#include "view/shortcut.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
@@ -130,7 +131,14 @@ struct ToolTransformMesh::Impl
         toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to rotate"));
         break;
     }
-    this->self->state ().setToolTip (&toolTip);
+
+    const auto moveShortcut = ViewShortcut (ViewInputEvent::M, QObject::tr ("Move"),
+                                            [this]() { this->setMode (Mode::Move); });
+
+    const auto rotateShortcut = ViewShortcut (ViewInputEvent::R, QObject::tr ("Rotate"),
+                                              [this]() { this->setMode (Mode::Rotate); });
+
+    this->self->state ().setToolTip (&toolTip, {moveShortcut, rotateShortcut});
   }
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)

@@ -5,6 +5,7 @@
 #ifndef DILAY_STATE
 #define DILAY_STATE
 
+#include <initializer_list>
 #include "macro.hpp"
 
 class Cache;
@@ -18,11 +19,14 @@ class Tool;
 enum class ToolKey;
 enum class ToolResponse;
 class ViewMainWindow;
+class ViewShortcut;
 class ViewToolTip;
 
 class State
 {
 public:
+  typedef std::initializer_list<ViewShortcut> ViewShortcuts;
+
   DECLARE_BIG2 (State, ViewMainWindow&, Config&, Cache&)
 
   ViewMainWindow& mainWindow ();
@@ -34,6 +38,7 @@ public:
   bool            hasTool ();
   Tool&           tool ();
   void            setTool (ToolKey);
+  void            setToolTip (const ViewToolTip*, const ViewShortcuts&);
   void            setToolTip (const ViewToolTip*);
   void            resetTool ();
   void            fromConfig ();

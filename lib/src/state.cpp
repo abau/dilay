@@ -16,9 +16,15 @@
 #include "view/info-pane.hpp"
 #include "view/info-pane/scene.hpp"
 #include "view/main-window.hpp"
+#include "view/shortcut.hpp"
 #include "view/tool-pane.hpp"
 #include "view/tool-tip.hpp"
 #include "view/two-column-grid.hpp"
+
+namespace
+{
+  typedef State::ViewShortcuts ViewShortcuts;
+}
 
 struct State::Impl
 {
@@ -52,6 +58,12 @@ struct State::Impl
   {
     assert (this->hasTool ());
     return *this->toolPtr;
+  }
+
+  void addToolShortcut (const ViewShortcut& shortcut, ViewToolTip& tip)
+  {
+    tip.add (shortcut.event (), shortcut.modifier (), shortcut.label ());
+    this->shortcuts.push_back (&shortcut.toQShortcut (this->mainWindow));
   }
 
   void addToolShortcut (ToolKey key, ViewToolTip& tip, ViewInputEvent event)
@@ -100,7 +112,7 @@ struct State::Impl
     });
   }
 
-  void setToolTip (const ViewToolTip* toolSpecificToolTip)
+  void setToolTip (const ViewToolTip* toolSpecificToolTip, const ViewShortcuts& shortcuts)
   {
     for (QShortcut* s : this->shortcuts)
     {
@@ -115,6 +127,11 @@ struct State::Impl
     }
 
     ViewToolTip tip;
+    for (const ViewShortcut& s : shortcuts)
+    {
+      this->addToolShortcut (s, tip);
+    }
+
     switch (this->mainWindow.toolPane ().selection ())
     {
       case ViewToolPaneSelection::Sculpt:
@@ -181,6 +198,11 @@ struct State::Impl
     tip.add (ViewInputEvent::MouseWheel, QObject::tr ("Zoom"));
 
     this->mainWindow.infoPane ().addToolTip (tip);
+  }
+
+  void setToolTip (const ViewToolTip* toolSpecificToolTip)
+  {
+    this->setToolTip (toolSpecificToolTip, {});
   }
 
   void setTool (ToolKey key)
@@ -311,6 +333,7 @@ GETTER (Scene&, State, scene)
 DELEGATE (bool, State, hasTool)
 DELEGATE (Tool&, State, tool)
 DELEGATE1 (void, State, setTool, ToolKey)
+DELEGATE2 (void, State, setToolTip, const ViewToolTip*, const ViewShortcuts&)
 DELEGATE1 (void, State, setToolTip, const ViewToolTip*)
 DELEGATE (void, State, resetTool)
 DELEGATE (void, State, fromConfig)
