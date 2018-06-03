@@ -130,7 +130,7 @@ struct ToolTransformMesh::Impl
         toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to rotate"));
         break;
     }
-    this->self->setToolTip (toolTip);
+    this->self->state ().setToolTip (&toolTip);
   }
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)

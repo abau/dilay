@@ -82,7 +82,7 @@ struct ToolTrimMesh::Impl
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to trim"));
     toolTip.add (ViewInputEvent::MouseWheel, ViewInputModifier::Shift,
                  QObject::tr ("Change slice/cut width"));
-    this->self->setToolTip (toolTip);
+    this->self->state ().setToolTip (&toolTip);
   }
 
   ToolResponse runInitialize ()

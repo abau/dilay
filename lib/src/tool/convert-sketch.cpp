@@ -86,7 +86,7 @@ struct ToolConvertSketch::Impl
   {
     ViewToolTip toolTip;
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Convert selection"));
-    this->self->setToolTip (toolTip);
+    this->self->state ().setToolTip (&toolTip);
   }
 
   DynamicMesh& convert (SketchMesh& sketch)

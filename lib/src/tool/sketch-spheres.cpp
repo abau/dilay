@@ -84,7 +84,7 @@ struct ToolSketchSpheres::Impl
                  QObject::tr ("Drag to smooth"));
     toolTip.add (ViewInputEvent::MouseWheel, ViewInputModifier::Shift,
                  QObject::tr ("Change radius"));
-    this->self->setToolTip (toolTip);
+    this->self->state ().setToolTip (&toolTip);
   }
 
   void setupCursor ()

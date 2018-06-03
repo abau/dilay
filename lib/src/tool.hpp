@@ -52,7 +52,6 @@ protected:
   State&             state () const;
   void               updateGlWidget ();
   ViewTwoColumnGrid& properties () const;
-  void               setToolTip (const ViewToolTip&);
   Config&            config () const;
   CacheProxy&        cache ();
   CacheProxy         cache (const char*) const;
