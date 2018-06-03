@@ -173,7 +173,7 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
   addAction (editMenu, QObject::tr ("&Configuration..."), QKeySequence (),
              [&mainWindow, &glWidget]() { ViewConfiguration::show (mainWindow, glWidget); });
 
-  addAction (viewMenu, QObject::tr ("Toggle &info pane"), Qt::Key_I, [&mainWindow]() {
+  addAction (viewMenu, QObject::tr ("Toggle &info pane"), Qt::CTRL + Qt::Key_I, [&mainWindow]() {
     if (mainWindow.infoPane ().isVisible ())
     {
       mainWindow.infoPane ().close ();
