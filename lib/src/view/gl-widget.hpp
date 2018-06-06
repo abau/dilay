@@ -22,7 +22,7 @@ class ViewGlWidget : public QOpenGLWidget
 public:
   DECLARE_BIG2 (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
 
-  ToolMoveCamera& toolMoveCamera ();
+  ToolMoveCamera& immediateMoveCamera ();
   State&          state ();
   ViewFloorPlane& floorPlane ();
   glm::ivec2      cursorPosition ();

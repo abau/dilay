@@ -111,6 +111,9 @@ namespace ViewInput
       case ViewInputEvent::Esc:
         value += Qt::Key_Escape;
         break;
+      case ViewInputEvent::Space:
+        value += Qt::Key_Space;
+        break;
       default:
         DILAY_IMPOSSIBLE;
     }
@@ -175,6 +178,8 @@ namespace ViewInput
         return QObject::tr ("Z");
       case ViewInputEvent::Esc:
         return QObject::tr ("Esc");
+      case ViewInputEvent::Space:
+        return QObject::tr ("Space");
       case ViewInputEvent::MouseLeft:
         return QObject::tr ("Left");
       case ViewInputEvent::MouseMiddle:

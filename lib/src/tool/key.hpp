@@ -23,7 +23,8 @@ enum class ToolKey
   ConvertSketch,
   SketchSpheres,
   TrimMesh,
-  Remesh
+  Remesh,
+  MoveCamera
 };
 
 #endif

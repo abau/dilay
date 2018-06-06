@@ -22,7 +22,7 @@ public:
   const glm::uvec2&  resolution () const;
   const glm::vec3&   gazePoint () const;
   const glm::vec3&   toEyePoint () const;
-  const glm::vec3&   up () const;
+  glm::vec3          realUp () const;
   const glm::vec3&   right () const;
   const glm::mat4x4& view () const;
   const glm::mat4x4& viewRotation () const;

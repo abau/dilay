@@ -38,6 +38,7 @@ public:
   bool            hasTool ();
   Tool&           tool ();
   void            setTool (ToolKey);
+  void            setPreviousTool ();
   void            setToolTip (const ViewToolTip*, const ViewShortcuts&);
   void            setToolTip (const ViewToolTip*);
   void            resetTool ();

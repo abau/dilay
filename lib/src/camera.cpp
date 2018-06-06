@@ -46,6 +46,8 @@ struct Camera::Impl
     return up;
   }
 
+  glm::vec3 realUp () const { return glm::normalize (glm::cross (this->toEyePoint, this->right)); }
+
   glm::vec3 position () const { return this->gazePoint + this->toEyePoint; }
 
   glm::mat4x4 world () const
@@ -175,10 +177,10 @@ struct Camera::Impl
 
   void updateView ()
   {
-    const glm::vec3 realUp = glm::normalize (glm::cross (this->toEyePoint, this->right));
+    const glm::vec3 up = this->realUp ();
 
-    this->view = glm::lookAt (this->position (), this->gazePoint, realUp);
-    this->viewRotation = glm::lookAt (glm::normalize (this->toEyePoint), glm::vec3 (0.0f), realUp);
+    this->view = glm::lookAt (this->position (), this->gazePoint, up);
+    this->viewRotation = glm::lookAt (glm::normalize (this->toEyePoint), glm::vec3 (0.0f), up);
     this->renderer.setEyePoint (this->position ());
   }
 
@@ -242,7 +244,7 @@ GETTER_CONST (Renderer&, Camera, renderer)
 GETTER_CONST (const glm::uvec2&, Camera, resolution)
 GETTER_CONST (const glm::vec3&, Camera, gazePoint)
 GETTER_CONST (const glm::vec3&, Camera, toEyePoint)
-DELEGATE_CONST (const glm::vec3&, Camera, up)
+DELEGATE_CONST (glm::vec3, Camera, realUp)
 GETTER_CONST (const glm::vec3&, Camera, right)
 GETTER_CONST (const glm::mat4x4&, Camera, view)
 GETTER_CONST (const glm::mat4x4&, Camera, viewRotation)

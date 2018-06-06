@@ -8,6 +8,7 @@
 #include "camera.hpp"
 #include "config.hpp"
 #include "history.hpp"
+#include "maybe.hpp"
 #include "scene.hpp"
 #include "state.hpp"
 #include "tool.hpp"
@@ -36,7 +37,7 @@ struct State::Impl
   History                 history;
   Scene                   scene;
   std::unique_ptr<Tool>   toolPtr;
-  ToolKey                 previousToolKey;
+  Maybe<ToolKey>          previousToolKey;
   std::vector<QShortcut*> shortcuts;
 
   Impl (State* s, ViewMainWindow& mW, Config& cfg, Cache& cch)
@@ -47,7 +48,6 @@ struct State::Impl
     , camera (this->config)
     , history (this->config)
     , scene (this->config)
-    , previousToolKey (ToolKey::SculptSmooth)
   {
     this->resetTool ();
   }
@@ -66,15 +66,20 @@ struct State::Impl
     this->shortcuts.push_back (&shortcut.toQShortcut (this->mainWindow));
   }
 
-  void addToolShortcut (ToolKey key, ViewToolTip& tip, ViewInputEvent event)
+  void addToolShortcut (ToolKey key, ViewToolTip& tip, ViewInputEvent event, const QString& label)
   {
     const QKeySequence keys = ViewInput::toQKeySequence (event, ViewInputModifier::None);
 
-    tip.add (event, this->mainWindow.toolPane ().buttonText (key));
+    tip.add (event, label);
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
     QObject::connect (this->shortcuts.back (), &QShortcut::activated,
                       [this, key]() { this->setTool (key); });
+  }
+
+  void addToolShortcut (ToolKey key, ViewToolTip& tip, ViewInputEvent event)
+  {
+    this->addToolShortcut (key, tip, event, this->mainWindow.toolPane ().buttonText (key));
   }
 
   void addToggleToolShortcut (ViewToolTip& tip, ViewInputEvent event)
@@ -85,7 +90,7 @@ struct State::Impl
     this->shortcuts.push_back (new QShortcut (keys, &this->mainWindow));
 
     QObject::connect (this->shortcuts.back (), &QShortcut::activated,
-                      [this]() { this->setTool (this->previousToolKey); });
+                      [this]() { this->setPreviousTool (); });
   }
 
   void addExitToolShortcut (ViewToolTip& tip, ViewInputEvent event)
@@ -132,6 +137,12 @@ struct State::Impl
       this->addToolShortcut (s, tip);
     }
 
+    if (this->hasTool () == false || this->toolPtr->getKey () != ToolKey::MoveCamera)
+    {
+      this->addToolShortcut (ToolKey::MoveCamera, tip, ViewInputEvent::Space,
+                             QObject::tr ("Camera mode"));
+    }
+
     switch (this->mainWindow.toolPane ().selection ())
     {
       case ViewToolPaneSelection::Sculpt:
@@ -152,23 +163,24 @@ struct State::Impl
         }
         else
         {
-          const bool nonSmoothSculptTool = (this->toolPtr->getKey () == ToolKey::SculptDraw) ||
-                                           (this->toolPtr->getKey () == ToolKey::SculptCrease) ||
-                                           (this->toolPtr->getKey () == ToolKey::SculptGrab) ||
-                                           (this->toolPtr->getKey () == ToolKey::SculptFlatten) ||
-                                           (this->toolPtr->getKey () == ToolKey::SculptPinch) ||
-                                           (this->toolPtr->getKey () == ToolKey::SculptReduce) ||
-                                           (this->toolPtr->getKey () == ToolKey::TrimMesh) ||
-                                           (this->toolPtr->getKey () == ToolKey::Remesh);
+          const bool smoothShortcut = (this->toolPtr->getKey () == ToolKey::SculptDraw) ||
+                                      (this->toolPtr->getKey () == ToolKey::SculptCrease) ||
+                                      (this->toolPtr->getKey () == ToolKey::SculptGrab) ||
+                                      (this->toolPtr->getKey () == ToolKey::SculptFlatten) ||
+                                      (this->toolPtr->getKey () == ToolKey::SculptPinch) ||
+                                      (this->toolPtr->getKey () == ToolKey::SculptReduce) ||
+                                      (this->toolPtr->getKey () == ToolKey::TrimMesh) ||
+                                      (this->toolPtr->getKey () == ToolKey::Remesh);
 
-          const bool toggleBack = (this->previousToolKey != ToolKey::SculptSmooth) &&
-                                  (this->toolPtr->getKey () == ToolKey::SculptSmooth);
+          const bool toggleBackFromSmooth = (this->toolPtr->getKey () == ToolKey::SculptSmooth) &&
+                                            this->previousToolKey &&
+                                            (*this->previousToolKey != ToolKey::SculptSmooth);
 
-          if (nonSmoothSculptTool)
+          if (smoothShortcut)
           {
             this->addToolShortcut (ToolKey::SculptSmooth, tip, ViewInputEvent::S);
           }
-          else if (toggleBack)
+          else if (toggleBackFromSmooth)
           {
             this->addToggleToolShortcut (tip, ViewInputEvent::S);
           }
@@ -189,15 +201,17 @@ struct State::Impl
         break;
     }
     this->mainWindow.infoPane ().addToolTip (tip);
-    tip.reset ();
 
-    tip.add (ViewInputEvent::MouseMiddle, QObject::tr ("Drag to rotate"));
-    tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Shift, QObject::tr ("Drag to move"));
-    tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Alt, QObject::tr ("Gaze"));
-    tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Ctrl, QObject::tr ("Drag to zoom"));
-    tip.add (ViewInputEvent::MouseWheel, QObject::tr ("Zoom"));
-
-    this->mainWindow.infoPane ().addToolTip (tip);
+    if (this->hasTool () == false || this->toolPtr->getKey () != ToolKey::MoveCamera)
+    {
+      tip.reset ();
+      tip.add (ViewInputEvent::MouseMiddle, QObject::tr ("Drag to rotate"));
+      tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Shift, QObject::tr ("Drag to move"));
+      tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Ctrl, QObject::tr ("Drag to zoom"));
+      tip.add (ViewInputEvent::MouseMiddle, ViewInputModifier::Alt, QObject::tr ("Gaze"));
+      tip.add (ViewInputEvent::MouseWheel, QObject::tr ("Zoom"));
+      this->mainWindow.infoPane ().addToolTip (tip);
+    }
   }
 
   void setToolTip (const ViewToolTip* toolSpecificToolTip)
@@ -235,6 +249,7 @@ struct State::Impl
       SET_TOOL (SketchSpheres)
       SET_TOOL (TrimMesh)
       SET_TOOL (Remesh)
+      SET_TOOL (MoveCamera)
     }
 #undef SET_TOOL
 
@@ -252,11 +267,26 @@ struct State::Impl
     }
   }
 
+  void setPreviousTool ()
+  {
+    if (this->previousToolKey)
+    {
+      this->setTool (*this->previousToolKey);
+    }
+    else
+    {
+      this->resetTool ();
+    }
+  }
+
   void resetTool ()
   {
     if (this->hasTool ())
     {
-      this->previousToolKey = this->toolPtr->getKey ();
+      if (this->toolPtr->getKey () != ToolKey::MoveCamera)
+      {
+        this->previousToolKey = this->toolPtr->getKey ();
+      }
       this->mainWindow.toolPane ().setButtonState (this->toolPtr->getKey (), false);
       this->toolPtr->commit ();
       this->toolPtr.reset ();
@@ -304,8 +334,6 @@ struct State::Impl
 
   void handleToolResponse (ToolResponse response)
   {
-    assert (this->hasTool ());
-
     this->mainWindow.infoPane ().scene ().updateInfo ();
 
     switch (response)
@@ -333,6 +361,7 @@ GETTER (Scene&, State, scene)
 DELEGATE (bool, State, hasTool)
 DELEGATE (Tool&, State, tool)
 DELEGATE1 (void, State, setTool, ToolKey)
+DELEGATE (void, State, setPreviousTool)
 DELEGATE2 (void, State, setToolTip, const ViewToolTip*, const ViewShortcuts&)
 DELEGATE1 (void, State, setToolTip, const ViewToolTip*)
 DELEGATE (void, State, resetTool)

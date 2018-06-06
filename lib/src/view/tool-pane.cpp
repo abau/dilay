@@ -145,8 +145,10 @@ struct ViewToolPane::Impl
   void setButtonState (ToolKey key, bool state)
   {
     auto it = this->buttons.find (key);
-    assert (it != this->buttons.end ());
-    it->second->setChecked (state);
+    if (it != this->buttons.end ())
+    {
+      it->second->setChecked (state);
+    }
   }
 
   QString buttonText (ToolKey key) const

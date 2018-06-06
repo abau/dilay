@@ -161,8 +161,6 @@ namespace
                   Util::epsilon (), 100.0f);
     addFloatEdit (data, *grid, "editor/camera/movement-factor", QObject::tr ("Movement factor"),
                   Util::epsilon (), 100.0f);
-    addFloatEdit (data, *grid, "editor/camera/zoom-in-factor", QObject::tr ("Zoom factor"),
-                  Util::epsilon (), 1.0f);
     addFloatEdit (data, *grid, "editor/camera/zoom-in-mouse-wheel-factor",
                   QObject::tr ("Zoom factor (mouse wheel)"), Util::epsilon (), 1.0f);
     addFloatEdit (data, *grid, "editor/camera/field-of-view", QObject::tr ("Field of view"),

@@ -5,30 +5,28 @@
 #ifndef DILAY_TOOL_MOVE_CAMERA
 #define DILAY_TOOL_MOVE_CAMERA
 
-#include <glm/fwd.hpp>
-#include "configurable.hpp"
+#include "tool.hpp"
 
-class Config;
-class State;
-class QWheelEvent;
-class ViewPointingEvent;
-
-class ToolMoveCamera : public Configurable
+class ToolMoveCamera : public Tool
 {
 public:
-  DECLARE_BIG3 (ToolMoveCamera, const Config&)
+  DECLARE_BIG2 (ToolMoveCamera, State&)
 
-  void snap (State&, bool);
-  void resetGazePoint (State&);
+  ToolMoveCamera (State&, bool);
 
-  void moveEvent (State&, const ViewPointingEvent&);
-  void pressEvent (State&, const ViewPointingEvent&);
-  void wheelEvent (State&, const QWheelEvent&);
+  ToolKey getKey () const { return ToolKey::MoveCamera; }
+
+  void snap ();
+  void resetGazePoint ();
 
 private:
   IMPLEMENTATION
 
-  void runFromConfig (const Config&);
+  ToolResponse runInitialize ();
+  ToolResponse runMoveEvent (const ViewPointingEvent&);
+  ToolResponse runPressEvent (const ViewPointingEvent&);
+  ToolResponse runWheelEvent (const QWheelEvent&);
+  void         runFromConfig ();
 };
 
 #endif

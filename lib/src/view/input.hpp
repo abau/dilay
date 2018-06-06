@@ -37,6 +37,7 @@ enum class ViewInputEvent
   Y,
   Z,
   Esc,
+  Space,
   MouseLeft,
   MouseMiddle,
   MouseWheel,

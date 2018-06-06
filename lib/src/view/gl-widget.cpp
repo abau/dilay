@@ -14,7 +14,6 @@
 #include "renderer.hpp"
 #include "scene.hpp"
 #include "state.hpp"
-#include "tool.hpp"
 #include "tool/move-camera.hpp"
 #include "view/axis.hpp"
 #include "view/floor-plane.hpp"
@@ -29,29 +28,26 @@
 
 struct ViewGlWidget::Impl
 {
+  typedef std::unique_ptr<ToolMoveCamera> ToolMoveCameraPtr;
   typedef std::unique_ptr<State>          StatePtr;
   typedef std::unique_ptr<ViewAxis>       AxisPtr;
   typedef std::unique_ptr<ViewFloorPlane> FloorPlanePtr;
 
-  ViewGlWidget*   self;
-  ViewMainWindow& mainWindow;
-  Config&         config;
-  Cache&          cache;
-  ToolMoveCamera  toolMoveCamera;
-  StatePtr        _state;
-  AxisPtr         axis;
-  FloorPlanePtr   _floorPlane;
-  bool            tabletPressed;
+  ViewGlWidget*     self;
+  ViewMainWindow&   mainWindow;
+  Config&           config;
+  Cache&            cache;
+  ToolMoveCameraPtr _immediateMoveCamera;
+  StatePtr          _state;
+  AxisPtr           axis;
+  FloorPlanePtr     _floorPlane;
+  bool              tabletPressed;
 
   Impl (ViewGlWidget* s, ViewMainWindow& mW, Config& cfg, Cache& cch)
     : self (s)
     , mainWindow (mW)
     , config (cfg)
     , cache (cch)
-    , toolMoveCamera (cfg)
-    , _state (nullptr)
-    , axis (nullptr)
-    , _floorPlane (nullptr)
     , tabletPressed (false)
   {
     this->self->setAutoFillBackground (false);
@@ -66,6 +62,12 @@ struct ViewGlWidget::Impl
     this->_floorPlane.reset (nullptr);
 
     this->self->doneCurrent ();
+  }
+
+  ToolMoveCamera& immediateMoveCamera ()
+  {
+    assert (this->_immediateMoveCamera);
+    return *this->_immediateMoveCamera;
   }
 
   State& state ()
@@ -88,6 +90,7 @@ struct ViewGlWidget::Impl
   void fromConfig ()
   {
     assert (this->axis);
+    assert (this->_immediateMoveCamera);
 
     this->state ().fromConfig ();
     this->axis->fromConfig (this->config);
@@ -95,7 +98,7 @@ struct ViewGlWidget::Impl
     this->floorPlane ().fromConfig (this->config);
     this->floorPlane ().update (this->state ().camera ());
 
-    this->toolMoveCamera.fromConfig (this->config);
+    this->_immediateMoveCamera->fromConfig ();
   }
 
   void initializeGL ()
@@ -105,6 +108,8 @@ struct ViewGlWidget::Impl
     this->_state.reset (new State (this->mainWindow, this->config, this->cache));
     this->axis.reset (new ViewAxis (this->config));
     this->_floorPlane.reset (new ViewFloorPlane (this->config, this->state ().camera ()));
+    this->_immediateMoveCamera.reset (new ToolMoveCamera (this->state (), true));
+    this->_immediateMoveCamera->initialize ();
 
     this->self->setMouseTracking (true);
     this->self->setTabletTracking (true);
@@ -161,17 +166,13 @@ struct ViewGlWidget::Impl
   {
     if (e.valid ())
     {
-      if (e.middleButton () && e.moveEvent ())
+      if (this->_immediateMoveCamera->pointingEvent (e) == ToolResponse::Redraw)
       {
-        this->toolMoveCamera.moveEvent (this->state (), e);
+        this->state ().handleToolResponse (ToolResponse::Redraw);
         this->updateCursorInTool ();
       }
-      else if (e.middleButton () && e.pressEvent ())
-      {
-        this->toolMoveCamera.pressEvent (this->state (), e);
-        this->updateCursorInTool ();
-      }
-      else if (this->state ().hasTool ())
+
+      if (this->state ().hasTool ())
       {
         this->state ().handleToolResponse (this->state ().tool ().pointingEvent (e));
       }
@@ -204,12 +205,13 @@ struct ViewGlWidget::Impl
 
   void wheelEvent (QWheelEvent* e)
   {
-    if (e->modifiers () == Qt::NoModifier)
+    if (this->_immediateMoveCamera->wheelEvent (*e) == ToolResponse::Redraw)
     {
-      this->toolMoveCamera.wheelEvent (this->state (), *e);
+      this->state ().handleToolResponse (ToolResponse::Redraw);
       this->updateCursorInTool ();
     }
-    else if (this->state ().hasTool ())
+
+    if (this->state ().hasTool ())
     {
       this->state ().handleToolResponse (this->state ().tool ().wheelEvent (*e));
     }
@@ -265,7 +267,7 @@ struct ViewGlWidget::Impl
 };
 
 DELEGATE3_BIG2_SELF (ViewGlWidget, ViewMainWindow&, Config&, Cache&)
-GETTER (ToolMoveCamera&, ViewGlWidget, toolMoveCamera)
+DELEGATE (ToolMoveCamera&, ViewGlWidget, immediateMoveCamera)
 DELEGATE (State&, ViewGlWidget, state)
 DELEGATE (ViewFloorPlane&, ViewGlWidget, floorPlane)
 DELEGATE (glm::ivec2, ViewGlWidget, cursorPosition)

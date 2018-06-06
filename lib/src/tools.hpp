@@ -6,6 +6,7 @@
 #define DILAY_TOOLS
 
 #include "tool.hpp"
+#include "tool/move-camera.hpp"
 #include "tool/sculpt.hpp"
 
 DECLARE_TOOL (TransformMesh, DECLARE_TOOL_RUN_MOVE_EVENT DECLARE_TOOL_RUN_PRESS_EVENT
