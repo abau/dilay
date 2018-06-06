@@ -153,7 +153,7 @@ struct ToolSculpt::Impl
     ViewToolTip toolTip;
 
     this->self->runSetupToolTip (toolTip);
-    toolTip.add (ViewInputEvent::R, QObject::tr ("Drag to change radius"));
+    toolTip.add (ViewInputEvent::R, QObject::tr ("Move to change radius"));
 
     this->self->state ().setToolTip (&toolTip);
   }
@@ -246,7 +246,7 @@ struct ToolSculpt::Impl
 
     if (hasIntensity)
     {
-      toolTip.add (ViewInputEvent::I, QObject::tr ("Drag to change intensity"));
+      toolTip.add (ViewInputEvent::I, QObject::tr ("Move to change intensity"));
     }
   }
 
