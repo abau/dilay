@@ -78,6 +78,7 @@ struct ToolTransformMesh::Impl
     assert (this->rotationOriginEdit != nullptr);
 
     this->mode = m;
+    this->self->cache ().set ("mode", int (this->mode));
 
     this->modeEdit->button (int(Mode::Move))->setChecked (m == Mode::Move);
     this->modeEdit->button (int(Mode::Rotate))->setChecked (m == Mode::Rotate);
@@ -113,7 +114,6 @@ struct ToolTransformMesh::Impl
     properties.add (*this->rotationOriginEdit);
 
     ViewUtil::connect (*this->modeEdit, int(this->mode), [this](int id) {
-      this->self->cache ().set ("mode", id);
       this->setMode (Mode (id));
     });
   }
