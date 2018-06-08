@@ -45,21 +45,13 @@ struct ToolTransformMesh::Impl
   ToolUtilRotation   rotation;
   RotationOrigin     rotationOrigin;
 
-  QButtonGroup* modeEdit;
-  QWidget*      moveEdit;
-  QButtonGroup* rotationOriginEdit;
-
   Impl (ToolTransformMesh* s)
     : self (s)
     , mesh (nullptr)
-    , mode (Mode (s->cache ().get<int> ("mode", int(Mode::Move))))
     , movement (s->state ().camera (), false)
     , rotation (s->state ().camera ())
     , rotationOrigin (
         RotationOrigin (s->cache ().get<int> ("rotation-rigin", int(RotationOrigin::Center))))
-    , modeEdit (nullptr)
-    , moveEdit (nullptr)
-    , rotationOriginEdit (nullptr)
   {
   }
 
@@ -71,74 +63,31 @@ struct ToolTransformMesh::Impl
     return ToolResponse::None;
   }
 
-  void setMode (Mode m)
-  {
-    assert (this->modeEdit != nullptr);
-    assert (this->moveEdit != nullptr);
-    assert (this->rotationOriginEdit != nullptr);
-
-    this->mode = m;
-    this->self->cache ().set ("mode", int (this->mode));
-
-    this->modeEdit->button (int(Mode::Move))->setChecked (m == Mode::Move);
-    this->modeEdit->button (int(Mode::Rotate))->setChecked (m == Mode::Rotate);
-
-    this->moveEdit->setVisible (m == Mode::Move);
-    for (QAbstractButton* button : this->rotationOriginEdit->buttons ())
-    {
-      button->setVisible (m == Mode::Rotate);
-    }
-    this->setupToolTip ();
-  };
-
   void setupProperties ()
   {
-    assert (this->modeEdit == nullptr);
-    assert (this->moveEdit == nullptr);
-    assert (this->rotationOriginEdit == nullptr);
-
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    this->modeEdit = &ViewUtil::buttonGroup ({QObject::tr ("Move"), QObject::tr ("Rotate")});
-    properties.add (*modeEdit);
+    this->self->addMoveOnPrimaryPlaneProperties (this->movement);
+
     properties.addSeparator ();
 
-    this->moveEdit = &this->self->addMoveOnPrimaryPlaneProperties (this->movement);
-
-    this->rotationOriginEdit = &ViewUtil::buttonGroup (
+    QButtonGroup& rotationOriginEdit = ViewUtil::buttonGroup (
       {QObject::tr ("Intersection"), QObject::tr ("Center"), QObject::tr ("Origin")});
-    ViewUtil::connect (*this->rotationOriginEdit, int(this->rotationOrigin), [this](int id) {
+    ViewUtil::connect (rotationOriginEdit, int(rotationOrigin), [this](int id) {
       this->rotationOrigin = RotationOrigin (id);
       this->self->cache ().set ("rotation-rigin", id);
     });
-    properties.add (*this->rotationOriginEdit);
-
-    ViewUtil::connect (*this->modeEdit, int(this->mode), [this](int id) {
-      this->setMode (Mode (id));
-    });
+    properties.addStacked (QObject::tr ("Rotation"), rotationOriginEdit);
   }
 
   void setupToolTip ()
   {
     ViewToolTip toolTip;
-    switch (this->mode)
-    {
-      case Mode::Move:
-        toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to move"));
-        break;
+    toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to move"));
+    toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Shift,
+                 QObject::tr ("Drag to rotate"));
 
-      case Mode::Rotate:
-        toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to rotate"));
-        break;
-    }
-
-    const auto moveShortcut = ViewShortcut (ViewInputEvent::M, QObject::tr ("Move"),
-                                            [this]() { this->setMode (Mode::Move); });
-
-    const auto rotateShortcut = ViewShortcut (ViewInputEvent::R, QObject::tr ("Rotate"),
-                                              [this]() { this->setMode (Mode::Rotate); });
-
-    this->self->state ().setToolTip (&toolTip, {moveShortcut, rotateShortcut});
+    this->self->state ().setToolTip (&toolTip);
   }
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)
@@ -167,11 +116,12 @@ struct ToolTransformMesh::Impl
       if (this->self->intersectsScene (e, intersection))
       {
         this->mesh = &intersection.mesh ();
-        if (this->mode == Mode::Move)
+        if (e.modifiers () == Qt::NoModifier)
         {
           this->movement.reset (intersection.position ());
+          this->mode = Mode::Move;
         }
-        else if (this->mode == Mode::Rotate)
+        else if (e.modifiers () == Qt::ShiftModifier)
         {
           switch (this->rotationOrigin)
           {
@@ -185,6 +135,7 @@ struct ToolTransformMesh::Impl
               this->rotation.reset (glm::vec3 (0.0f));
               break;
           }
+          this->mode = Mode::Rotate;
         }
         this->self->snapshotDynamicMeshes ();
       }
