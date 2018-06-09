@@ -26,6 +26,7 @@ int main ()
   TestBitset::test ();
   TestTree::test1 ();
   TestTree::test2 ();
+  TestTree::test3 ();
   TestMisc::test ();
   TestDistance::test ();
   TestPrune::test ();

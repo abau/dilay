@@ -76,3 +76,29 @@ void TestTree::test2 ()
   assert (t.root ().lastChild ().lastChild ().data () == 2);
   assert (t.root ().lastChild ().lastChild ().lastChild ().data () == 1);
 }
+
+void TestTree::test3 ()
+{
+  Tree<int> t1;
+
+  TreeNode<int>& node1 = t1.emplaceRoot (1).emplaceChild (2).emplaceChild (3);
+  node1.emplaceChild (4);
+
+  Tree<int> t2 = t1.split (node1);
+
+  assert (t1.root ().numNodes () == 2);
+  assert (t1.root ().data () == 1);
+  assert (t1.root ().lastChild ().data () == 2);
+
+  assert (t2.root ().numNodes () == 2);
+  assert (t2.root ().data () == 3);
+  assert (t2.root ().lastChild ().data () == 4);
+
+  Tree<int> t3 = t1.split (t1.root ());
+
+  assert (t1.hasRoot () == false);
+
+  assert (t3.root ().numNodes () == 2);
+  assert (t3.root ().data () == 1);
+  assert (t3.root ().lastChild ().data () == 2);
+}

@@ -195,6 +195,22 @@ public:
     this->_root = std::move (newRoot);
   }
 
+  Tree<T> split (TreeNode<T>& node)
+  {
+    Tree<T> tree;
+    tree._root = node;
+
+    if (node.parent ())
+    {
+      node.parent ()->deleteChild (node);
+    }
+    else if (&node == this->_root.get ())
+    {
+      this->reset ();
+    }
+    return tree;
+  }
+
 private:
   Maybe<TreeNode<T>> _root;
 };
