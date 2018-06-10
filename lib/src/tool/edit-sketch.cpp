@@ -112,11 +112,13 @@ struct ToolEditSketch::Impl
     ViewToolTip toolTip;
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Add new sketch"));
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag node to move"));
-    toolTip.add (ViewInputEvent::R, QObject::tr ("Click to set new root"));
+    toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Shift,
+                 QObject::tr ("Drag node to scale"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Ctrl,
                  QObject::tr ("Drag node to rotate"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Alt,
                  QObject::tr ("Drag node to add child"));
+    toolTip.add (ViewInputEvent::R, QObject::tr ("Click to set new root"));
     this->self->state ().setToolTip (&toolTip);
   }
 
