@@ -3,7 +3,6 @@
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QFrame>
-#include <QWheelEvent>
 #include "cache.hpp"
 #include "camera.hpp"
 #include "config.hpp"
@@ -82,8 +81,7 @@ struct ToolSketchSpheres::Impl
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to sketch"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Shift,
                  QObject::tr ("Drag to smooth"));
-    toolTip.add (ViewInputEvent::MouseWheel, ViewInputModifier::Shift,
-                 QObject::tr ("Change radius"));
+    toolTip.add (ViewInputEvent::R, QObject::tr ("Move to change radius"));
     this->self->state ().setToolTip (&toolTip);
   }
 
@@ -192,6 +190,10 @@ struct ToolSketchSpheres::Impl
     }
     else
     {
+      if (this->self->onKeymap ('r'))
+      {
+        this->radiusEdit.setIntValue (this->radiusEdit.intValue () + e.delta ().x);
+      }
       return this->runCursorUpdate (e.position ());
     }
   }
@@ -203,6 +205,7 @@ struct ToolSketchSpheres::Impl
       this->cursor.position (intersection.position ());
 
       this->self->snapshotSketchMeshes ();
+      this->self->mirrorPosition (intersection.mesh ().tree ().root ().data ().center ());
 
       this->mesh = &intersection.mesh ();
       this->step.position (intersection.position ());
@@ -251,24 +254,6 @@ struct ToolSketchSpheres::Impl
 
   ToolResponse runReleaseEvent (const ViewPointingEvent&) { return this->runCommit (); }
 
-  ToolResponse runWheelEvent (const QWheelEvent& e)
-  {
-    if (e.orientation () == Qt::Vertical && e.modifiers () == Qt::ShiftModifier)
-    {
-      if (e.delta () > 0)
-      {
-        this->radiusEdit.setDoubleValue (this->radiusEdit.doubleValue () +
-                                         this->radiusEdit.doubleSingleStep ());
-      }
-      else if (e.delta () < 0)
-      {
-        this->radiusEdit.setDoubleValue (this->radiusEdit.doubleValue () -
-                                         this->radiusEdit.doubleSingleStep ());
-      }
-    }
-    return ToolResponse::Redraw;
-  }
-
   ToolResponse runCursorUpdate (const glm::ivec2& pos)
   {
     SketchMeshIntersection intersection;
@@ -304,7 +289,6 @@ DELEGATE_TOOL_RUN_RENDER (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolSketchSpheres)
-DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_CURSOR_UPDATE (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_COMMIT (ToolSketchSpheres)
 DELEGATE_TOOL_RUN_FROM_CONFIG (ToolSketchSpheres)
