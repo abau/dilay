@@ -175,6 +175,9 @@ struct ToolSketchSpheres::Impl
 
         if (intersection.isIntersection ())
         {
+          this->cursor.enable ();
+          this->cursor.position (intersection.position ());
+
           this->step.step (intersection.position (), [this, considerHeight,
                                                       &intersection](const glm::vec3& position) {
             this->mesh->addSphere (
