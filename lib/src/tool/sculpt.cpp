@@ -142,7 +142,7 @@ struct ToolSculpt::Impl
     });
     properties.add (absRadiusEdit);
 
-    this->self->addMirrorProperties (true);
+    this->self->addMirrorProperties ();
     properties.add (ViewUtil::horizontalLine ());
 
     this->self->runSetupProperties (properties);

@@ -205,17 +205,18 @@ struct Tool::Impl
       [this](SketchMesh& mesh) { mesh.mirror (*this->mirrorDimension ()); });
   }
 
-  void addMirrorProperties (bool dynamicMesh)
+  void addMirrorProperties ()
   {
     QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
-    ViewUtil::connect (syncButton, [this, dynamicMesh]() {
-      if (dynamicMesh)
+    ViewUtil::connect (syncButton, [this]() {
+      switch (this->state.mainWindow ().toolPane ().selection ())
       {
-        this->mirrorDynamicMeshes ();
-      }
-      else
-      {
-        this->mirrorSketchMeshes ();
+        case ViewToolPaneSelection::Sculpt:
+          this->mirrorDynamicMeshes ();
+          break;
+        case ViewToolPaneSelection::Sketch:
+          this->mirrorSketchMeshes ();
+          break;
       }
       this->updateGlWidget ();
     });
@@ -320,7 +321,7 @@ DELEGATE_CONST (const Mirror&, Tool, mirror)
 DELEGATE1 (void, Tool, mirror, bool)
 SETTER (bool, Tool, renderMirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
-DELEGATE1 (void, Tool, addMirrorProperties, bool)
+DELEGATE (void, Tool, addMirrorProperties)
 DELEGATE1 (void, Tool, addMoveOnPrimaryPlaneProperties, ToolUtilMovement&)
 DELEGATE1_CONST (bool, Tool, onKeymap, char)
 DELEGATE1 (ToolResponse, Tool, runPointingEvent, const ViewPointingEvent&)

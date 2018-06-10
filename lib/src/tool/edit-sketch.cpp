@@ -63,7 +63,7 @@ struct ToolEditSketch::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    this->self->addMirrorProperties (false);
+    this->self->addMirrorProperties ();
     this->self->addMoveOnPrimaryPlaneProperties (this->movement);
 
     QCheckBox& transformCEdit =

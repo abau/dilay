@@ -68,7 +68,7 @@ protected:
   void               mirror (bool);
   void               renderMirror (bool);
   const Dimension*   mirrorDimension () const;
-  void               addMirrorProperties (bool);
+  void               addMirrorProperties ();
   void               addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
   bool               onKeymap (char) const;
 

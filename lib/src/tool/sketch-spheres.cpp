@@ -52,7 +52,7 @@ struct ToolSketchSpheres::Impl
   {
     ViewTwoColumnGrid& properties = this->self->properties ();
 
-    this->self->addMirrorProperties (false);
+    this->self->addMirrorProperties ();
 
     ViewUtil::connect (this->radiusEdit, [this](float r) {
       this->cursor.radius (r);
