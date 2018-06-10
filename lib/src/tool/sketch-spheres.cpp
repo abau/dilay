@@ -95,7 +95,7 @@ struct ToolSketchSpheres::Impl
 
   ToolResponse runInitialize ()
   {
-    this->self->renderMirror (true);
+    this->self->supportsMirror ();
 
     this->setupProperties ();
     this->setupToolTip ();
@@ -158,7 +158,7 @@ struct ToolSketchSpheres::Impl
       else if (this->mesh)
       {
         SketchMeshIntersection intersection;
-        const unsigned int     numExcludedLastPaths = this->self->hasMirror () ? 2 : 1;
+        const unsigned int     numExcludedLastPaths = this->self->mirrorEnabled () ? 2 : 1;
         bool                   considerHeight = true;
 
         if (this->self->intersectsScene (e, intersection, numExcludedLastPaths) == false)

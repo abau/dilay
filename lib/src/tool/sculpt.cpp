@@ -64,7 +64,7 @@ struct ToolSculpt::Impl
 
   ToolResponse runInitialize ()
   {
-    this->self->renderMirror (true);
+    this->self->supportsMirror ();
 
     this->setupBrush ();
     this->setupCursor ();
@@ -255,7 +255,7 @@ struct ToolSculpt::Impl
     assert (this->brush.hasPointOfAction ());
 
     ToolSculptAction::sculpt (this->brush);
-    if (this->self->hasMirror () && this->brush.mesh ().isEmpty () == false)
+    if (this->self->mirrorEnabled () && this->brush.mesh ().isEmpty () == false)
     {
       this->brush.mirror (this->self->mirror ().plane ());
       ToolSculptAction::sculpt (this->brush);

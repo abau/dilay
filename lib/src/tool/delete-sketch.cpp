@@ -44,6 +44,8 @@ struct ToolDeleteSketch::Impl
 
   ToolResponse runInitialize ()
   {
+    this->self->supportsMirror ();
+
     this->setupProperties ();
     this->setupToolTip ();
 
@@ -62,46 +64,45 @@ struct ToolDeleteSketch::Impl
     });
     deleteChildrenEdit.setEnabled (this->mode == Mode::DeleteNode);
 
-    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->self->hasMirror ());
-    ViewUtil::connect (mirrorEdit, [this](bool m) { this->self->mirror (m); });
-    mirrorEdit.setEnabled (this->mode != Mode::DeleteSketch);
-
     QRadioButton& deleteSketchEdit =
       ViewUtil::radioButton (QObject::tr ("Delete sketch"), this->mode == Mode::DeleteSketch);
-    ViewUtil::connect (deleteSketchEdit, [this, &deleteChildrenEdit, &mirrorEdit](bool m) {
+    ViewUtil::connect (deleteSketchEdit, [this, &deleteChildrenEdit](bool m) {
       this->mode = Mode::DeleteSketch;
       this->self->cache ().set ("mode", int(this->mode));
 
       deleteChildrenEdit.setEnabled (!m);
-      mirrorEdit.setEnabled (!m);
+      this->self->enableMirrorProperties (!m);
     });
 
     QRadioButton& deleteNodeEdit =
       ViewUtil::radioButton (QObject::tr ("Delete node"), this->mode == Mode::DeleteNode);
-    ViewUtil::connect (deleteNodeEdit, [this, &deleteChildrenEdit, &mirrorEdit](bool m) {
+    ViewUtil::connect (deleteNodeEdit, [this, &deleteChildrenEdit](bool m) {
       this->mode = Mode::DeleteNode;
       this->self->cache ().set ("mode", int(this->mode));
 
       deleteChildrenEdit.setEnabled (m);
-      mirrorEdit.setEnabled (m);
+      this->self->enableMirrorProperties (m);
     });
 
     QRadioButton& deleteSpheresEdit =
       ViewUtil::radioButton (QObject::tr ("Delete spheres"), this->mode == Mode::DeleteSpheres);
-    ViewUtil::connect (deleteSpheresEdit, [this, &deleteChildrenEdit, &mirrorEdit](bool m) {
+    ViewUtil::connect (deleteSpheresEdit, [this, &deleteChildrenEdit](bool m) {
       this->mode = Mode::DeleteSpheres;
       this->self->cache ().set ("mode", int(this->mode));
 
       deleteChildrenEdit.setEnabled (!m);
-      mirrorEdit.setEnabled (m);
+      this->self->enableMirrorProperties (m);
     });
 
     properties.add (deleteSketchEdit);
     properties.add (deleteNodeEdit);
     properties.add (deleteSpheresEdit);
     properties.add (ViewUtil::horizontalLine ());
+
+    this->self->addMirrorProperties ();
+    this->self->enableMirrorProperties (this->mode != Mode::DeleteSketch);
+
     properties.add (deleteChildrenEdit);
-    properties.add (mirrorEdit);
   }
 
   void setupToolTip ()

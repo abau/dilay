@@ -35,7 +35,8 @@ struct Tool::Impl
   State&               state;
   CacheProxy           _cache;
   Maybe<Mirror>        _mirror;
-  bool                 renderMirror;
+  QCheckBox*           mirrorCheckBox;
+  QPushButton*         mirrorSyncButton;
   glm::ivec2           prevPointingEventPosition;
   std::array<bool, 26> keymap;
 
@@ -43,22 +44,28 @@ struct Tool::Impl
     : self (s)
     , state (st)
     , _cache (this->cache (cacheKey))
-    , renderMirror (false)
+    , mirrorCheckBox (nullptr)
+    , mirrorSyncButton (nullptr)
   {
     this->keymap.fill (false);
   }
 
   ToolResponse initialize ()
   {
-    this->mirror (this->hasMirror ());
     this->fromConfig ();
+#ifndef NDEBUG
+    const ToolResponse response = this->self->runInitialize ();
+    assert (bool(this->_mirror) == false || (this->mirrorCheckBox && this->mirrorSyncButton));
+    return response;
+#else
     return this->self->runInitialize ();
+#endif
   }
 
   void render () const
   {
     this->self->runRender ();
-    if (this->_mirror && this->renderMirror)
+    if (this->mirrorEnabled ())
     {
       this->_mirror->render (this->state.camera ());
     }
@@ -101,7 +108,7 @@ struct Tool::Impl
 
   void fromConfig ()
   {
-    if (this->hasMirror ())
+    if (this->_mirror)
     {
       this->_mirror->fromConfig (this->config ());
     }
@@ -152,39 +159,33 @@ struct Tool::Impl
     return this->intersectsRecentDynamicMesh (this->state.camera ().ray (pos), intersection);
   }
 
-  bool hasMirror () const { return this->state.cache ().get ("editor/tool/mirror", true); }
+  void supportsMirror ()
+  {
+    assert (bool(this->_mirror) == false);
+    this->_mirror = Maybe<Mirror>::make (this->config (), Dimension::X);
+  }
+
+  bool mirrorEnabled () const
+  {
+    return this->_mirror && this->state.cache ().get ("editor/tool/mirror", true);
+  }
 
   const Mirror& mirror () const
   {
-    assert (this->hasMirror ());
+    assert (this->mirrorEnabled ());
     return *this->_mirror;
-  }
-
-  void mirror (bool m)
-  {
-    this->state.cache ().set ("editor/tool/mirror", m);
-
-    if (m)
-    {
-      this->_mirror = Maybe<Mirror>::make (this->config (), Dimension::X);
-    }
-    else
-    {
-      this->_mirror.reset ();
-    }
-    this->updateGlWidget ();
   }
 
   const Dimension* mirrorDimension () const
   {
     const static Dimension d = Dimension::X;
 
-    return this->hasMirror () ? &d : nullptr;
+    return this->mirrorEnabled () ? &d : nullptr;
   }
 
   void mirrorDynamicMeshes ()
   {
-    assert (this->hasMirror ());
+    assert (this->mirrorEnabled ());
 
     this->snapshotDynamicMeshes ();
     this->state.scene ().forEachMesh ([this](DynamicMesh& mesh) {
@@ -198,7 +199,7 @@ struct Tool::Impl
 
   void mirrorSketchMeshes ()
   {
-    assert (this->hasMirror ());
+    assert (this->mirrorEnabled ());
 
     this->snapshotSketchMeshes ();
     this->state.scene ().forEachMesh (
@@ -207,8 +208,17 @@ struct Tool::Impl
 
   void addMirrorProperties ()
   {
-    QPushButton& syncButton = ViewUtil::pushButton (QObject::tr ("Sync"));
-    ViewUtil::connect (syncButton, [this]() {
+    assert (this->_mirror);
+
+    this->mirrorCheckBox = &ViewUtil::checkBox (QObject::tr ("Mirror"), this->mirrorEnabled ());
+    ViewUtil::connect (*this->mirrorCheckBox, [this](bool m) {
+      this->state.cache ().set ("editor/tool/mirror", m);
+      this->mirrorSyncButton->setEnabled (m);
+      this->updateGlWidget ();
+    });
+
+    this->mirrorSyncButton = &ViewUtil::pushButton (QObject::tr ("Sync"));
+    ViewUtil::connect (*this->mirrorSyncButton, [this]() {
       switch (this->state.mainWindow ().toolPane ().selection ())
       {
         case ViewToolPaneSelection::Sculpt:
@@ -220,14 +230,18 @@ struct Tool::Impl
       }
       this->updateGlWidget ();
     });
-    syncButton.setEnabled (this->hasMirror ());
+    this->mirrorSyncButton->setEnabled (this->mirrorEnabled ());
 
-    QCheckBox& mirrorEdit = ViewUtil::checkBox (QObject::tr ("Mirror"), this->hasMirror ());
-    ViewUtil::connect (mirrorEdit, [this, &syncButton](bool m) {
-      this->mirror (m);
-      syncButton.setEnabled (m);
-    });
-    this->properties ().add (mirrorEdit, syncButton);
+    this->properties ().add (*this->mirrorCheckBox, *this->mirrorSyncButton);
+  }
+
+  void enableMirrorProperties (bool state)
+  {
+    assert (this->mirrorCheckBox);
+    assert (this->mirrorSyncButton);
+
+    this->mirrorCheckBox->setEnabled (state);
+    this->mirrorSyncButton->setEnabled (state);
   }
 
   void addMoveOnPrimaryPlaneProperties (ToolUtilMovement& movement)
@@ -316,12 +330,12 @@ DELEGATE (void, Tool, snapshotDynamicMeshes)
 DELEGATE (void, Tool, snapshotSketchMeshes)
 DELEGATE2_CONST (bool, Tool, intersectsRecentDynamicMesh, const PrimRay&, Intersection&)
 DELEGATE2_CONST (bool, Tool, intersectsRecentDynamicMesh, const glm::ivec2&, Intersection&)
-DELEGATE_CONST (bool, Tool, hasMirror)
+DELEGATE (void, Tool, supportsMirror)
+DELEGATE_CONST (bool, Tool, mirrorEnabled)
 DELEGATE_CONST (const Mirror&, Tool, mirror)
-DELEGATE1 (void, Tool, mirror, bool)
-SETTER (bool, Tool, renderMirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
 DELEGATE (void, Tool, addMirrorProperties)
+DELEGATE1 (void, Tool, enableMirrorProperties, bool)
 DELEGATE1 (void, Tool, addMoveOnPrimaryPlaneProperties, ToolUtilMovement&)
 DELEGATE1_CONST (bool, Tool, onKeymap, char)
 DELEGATE1 (ToolResponse, Tool, runPointingEvent, const ViewPointingEvent&)

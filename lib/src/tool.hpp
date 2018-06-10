@@ -63,12 +63,12 @@ protected:
   void               snapshotSketchMeshes ();
   bool               intersectsRecentDynamicMesh (const PrimRay&, Intersection&) const;
   bool               intersectsRecentDynamicMesh (const glm::ivec2&, Intersection&) const;
-  bool               hasMirror () const;
+  void               supportsMirror ();
+  bool               mirrorEnabled () const;
   const Mirror&      mirror () const;
-  void               mirror (bool);
-  void               renderMirror (bool);
   const Dimension*   mirrorDimension () const;
   void               addMirrorProperties ();
+  void               enableMirrorProperties (bool = true);
   void               addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
   bool               onKeymap (char) const;
 

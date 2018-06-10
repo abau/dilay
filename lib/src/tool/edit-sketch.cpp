@@ -51,7 +51,7 @@ struct ToolEditSketch::Impl
 
   ToolResponse runInitialize ()
   {
-    this->self->renderMirror (true);
+    this->self->supportsMirror ();
 
     this->setupProperties ();
     this->setupToolTip ();
@@ -246,7 +246,7 @@ struct ToolEditSketch::Impl
   {
     bool redraw = false;
 
-    if (this->snap && this->mesh && this->self->hasMirror ())
+    if (this->snap && this->mesh && this->self->mirrorEnabled ())
     {
       PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
 
