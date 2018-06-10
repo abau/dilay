@@ -365,6 +365,7 @@ bool Tool::intersectsScene (const ViewPointingEvent& e, T& intersection, Ts... a
 
 TOOL_INTERSECTS_SCENE (DynamicMeshIntersection&)
 TOOL_INTERSECTS_SCENE (SketchNodeIntersection&)
+TOOL_INTERSECTS_SCENE (SketchNodeIntersection&, const SketchNode*)
 TOOL_INTERSECTS_SCENE (SketchBoneIntersection&)
 TOOL_INTERSECTS_SCENE (SketchMeshIntersection&)
 TOOL_INTERSECTS_SCENE (SketchMeshIntersection&, unsigned int)

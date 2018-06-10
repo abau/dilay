@@ -116,13 +116,14 @@ struct SketchMesh::Impl
 
   void reset () { this->tree.reset (); }
 
-  bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection)
+  bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection,
+                   const SketchNode* exclude = nullptr)
   {
     if (this->tree.hasRoot ())
     {
-      this->tree.root ().forEachNode ([this, &ray, &intersection](SketchNode& node) {
+      this->tree.root ().forEachNode ([this, &ray, &intersection, exclude](SketchNode& node) {
         float t;
-        if (IntersectionUtil::intersects (ray, node.data (), &t))
+        if (&node != exclude && IntersectionUtil::intersects (ray, node.data (), &t))
         {
           const glm::vec3 p = ray.pointAt (t);
           intersection.update (t, p, glm::normalize (p - node.data ().center ()), *this->self,
@@ -920,7 +921,7 @@ GETTER_CONST (const SketchPaths&, SketchMesh, paths)
 DELEGATE_CONST (bool, SketchMesh, isEmpty)
 DELEGATE1 (void, SketchMesh, fromTree, const SketchTree&)
 DELEGATE (void, SketchMesh, reset)
-DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
+DELEGATE3 (bool, SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&, const SketchNode*)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE3 (bool, SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchPathIntersection&)

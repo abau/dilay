@@ -32,6 +32,7 @@ struct ToolEditSketch::Impl
   ToolUtilScaling  scaling;
   ToolUtilRotation rotation;
   bool             transformChildren;
+  bool             splitAndJoin;
   bool             snap;
   QSlider&         snapWidthEdit;
 
@@ -44,6 +45,7 @@ struct ToolEditSketch::Impl
     , scaling (s->state ().camera ())
     , rotation (s->state ().camera ())
     , transformChildren (s->cache ().get<bool> ("transform-children", false))
+    , splitAndJoin (s->cache ().get<bool> ("split-and-join", false))
     , snap (s->cache ().get<bool> ("snap", true))
     , snapWidthEdit (ViewUtil::slider (1, s->cache ().get<int> ("snap-width", 5), 10))
   {
@@ -64,6 +66,8 @@ struct ToolEditSketch::Impl
     ViewTwoColumnGrid& properties = this->self->properties ();
 
     this->self->addMirrorProperties ();
+    this->self->enableMirrorProperties (not this->splitAndJoin);
+
     this->self->addMoveOnPrimaryPlaneProperties (this->movement);
 
     QCheckBox& transformCEdit =
@@ -72,7 +76,12 @@ struct ToolEditSketch::Impl
       this->transformChildren = m;
       this->self->cache ().set ("transform-children", m);
     });
+    transformCEdit.setEnabled (not this->splitAndJoin);
     properties.add (transformCEdit);
+
+    QCheckBox& splitAndJoinEdit =
+      ViewUtil::checkBox (QObject::tr ("Split and join"), this->splitAndJoin);
+    properties.add (splitAndJoinEdit);
 
     QCheckBox& snapEdit = ViewUtil::checkBox (QObject::tr ("Snap"), this->snap);
     ViewUtil::connect (snapEdit, [this](bool s) {
@@ -80,24 +89,33 @@ struct ToolEditSketch::Impl
       this->snapWidthEdit.setEnabled (s);
       this->self->cache ().set ("snap", s);
     });
+    snapEdit.setEnabled (not this->splitAndJoin);
     properties.add (snapEdit);
 
-    this->snapWidthEdit.setEnabled (this->snap);
     ViewUtil::connect (this->snapWidthEdit,
                        [this](int w) { this->self->cache ().set ("snap-width", w); });
+    this->snapWidthEdit.setEnabled (this->snap && not this->splitAndJoin);
     properties.addStacked (QObject::tr ("Snap width"), this->snapWidthEdit);
+
+    ViewUtil::connect (splitAndJoinEdit, [this, &transformCEdit, &snapEdit](bool s) {
+      this->splitAndJoin = s;
+      this->self->cache ().set ("split-and-join", s);
+      transformCEdit.setEnabled (not this->splitAndJoin);
+      snapEdit.setEnabled (not this->splitAndJoin);
+      this->snapWidthEdit.setEnabled (not this->splitAndJoin);
+      this->self->enableMirrorProperties (not this->splitAndJoin);
+    });
   }
 
   void setupToolTip ()
   {
     ViewToolTip toolTip;
+    toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Add new sketch"));
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag node to move"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Shift,
                  QObject::tr ("Drag node to scale"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Ctrl,
                  QObject::tr ("Drag node to rotate"));
-    toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Alt,
-                 QObject::tr ("Drag to add sketch"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Alt,
                  QObject::tr ("Drag node to add child"));
     this->self->state ().setToolTip (&toolTip);
@@ -135,7 +153,9 @@ struct ToolEditSketch::Impl
           this->mesh->move (*this->parent, this->movement.delta (), false,
                             this->self->mirrorDimension ());
         }
-        this->mesh->move (*this->node, this->movement.delta (), this->transformChildren,
+
+        const bool transformChildren = this->transformChildren || this->splitAndJoin;
+        this->mesh->move (*this->node, this->movement.delta (), transformChildren,
                           this->self->mirrorDimension ());
       }
       return ToolResponse::Redraw;
@@ -158,7 +178,17 @@ struct ToolEditSketch::Impl
       this->mesh = &intersection.mesh ();
       this->parent = nullptr;
 
-      if (e.modifiers () == Qt::AltModifier)
+      if (e.modifiers () == Qt::NoModifier && this->splitAndJoin && intersection.node ().parent ())
+      {
+        SketchTree tree = intersection.mesh ().tree ().split (intersection.node ());
+
+        State&      state = this->self->state ();
+        SketchMesh& mesh = state.scene ().newSketchMesh (state.config (), tree);
+
+        this->mesh = &mesh;
+        this->node = &mesh.tree ().root ();
+      }
+      else if (e.modifiers () == Qt::AltModifier)
       {
         SketchNode& iNode = intersection.node ();
 
@@ -211,12 +241,14 @@ struct ToolEditSketch::Impl
       if (this->self->intersectsScene (e, nodeIntersection))
       {
         handleNodeIntersection (nodeIntersection);
+        return ToolResponse::Redraw;
       }
       else if (this->self->intersectsScene (e, boneIntersection))
       {
         handleBoneIntersection (boneIntersection);
+        return ToolResponse::Redraw;
       }
-      else if (e.modifiers () == Qt::AltModifier)
+      else if (e.modifiers () == Qt::NoModifier)
       {
         this->self->snapshotSketchMeshes ();
 
@@ -224,10 +256,9 @@ struct ToolEditSketch::Impl
         SketchTree tree;
         tree.emplaceRoot (state.camera ().viewPlaneIntersection (e.position ()), 0.1f);
 
-        this->mesh = &state.scene ().newSketchMesh (state.config (), tree);
-        this->parent = nullptr;
+        state.scene ().newSketchMesh (state.config (), tree);
 
-        return ToolResponse::Redraw;
+        return this->runPressEvent (e);
       }
     }
     return ToolResponse::None;
@@ -237,6 +268,20 @@ struct ToolEditSketch::Impl
   {
     if (e.leftButton ())
     {
+      if (this->splitAndJoin)
+      {
+        SketchNodeIntersection nodeIntersection;
+        if (this->self->intersectsScene (e, nodeIntersection, (const SketchNode*) this->node))
+        {
+          this->self->snapshotSketchMeshes ();
+
+          this->node->forEachChild (
+            [&nodeIntersection](SketchNode& child) { nodeIntersection.node ().addChild (child); });
+          this->self->state ().scene ().deleteMesh (*this->mesh);
+          this->node = &nodeIntersection.node ();
+          this->mesh = &nodeIntersection.mesh ();
+        }
+      }
       return this->runCommit ();
     }
     return ToolResponse::None;
@@ -244,8 +289,6 @@ struct ToolEditSketch::Impl
 
   ToolResponse runCommit ()
   {
-    bool redraw = false;
-
     if (this->snap && this->mesh && this->self->mirrorEnabled ())
     {
       PrimPlane mirrorPlane = this->mesh->mirrorPlane (*this->self->mirrorDimension ());
@@ -258,19 +301,18 @@ struct ToolEditSketch::Impl
       if (this->node && isSnappable (*this->node))
       {
         this->mesh->snap (*this->node, *this->self->mirrorDimension ());
-        redraw = true;
       }
+
       if (this->parent && isSnappable (*this->parent))
       {
         this->mesh->snap (*this->parent, *this->self->mirrorDimension ());
-        redraw = true;
       }
     }
     this->mesh = nullptr;
     this->node = nullptr;
     this->parent = nullptr;
 
-    return redraw ? ToolResponse::Redraw : ToolResponse::None;
+    return ToolResponse::Redraw;
   }
 };
 

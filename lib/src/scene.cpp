@@ -134,9 +134,10 @@ struct Scene::Impl
     return this->intersectsT<DynamicMesh> (ray, intersection);
   }
 
-  bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection)
+  bool intersects (const PrimRay& ray, SketchNodeIntersection& intersection,
+                   const SketchNode* exclude)
   {
-    return this->intersectsT<SketchMesh> (ray, intersection);
+    return this->intersectsT<SketchMesh> (ray, intersection, exclude);
   }
 
   bool intersects (const PrimRay& ray, SketchBoneIntersection& intersection)
@@ -368,7 +369,7 @@ DELEGATE (void, Scene, deleteSketchMeshes)
 DELEGATE (void, Scene, deleteEmptyMeshes)
 DELEGATE1 (void, Scene, render, Camera&)
 DELEGATE2 (bool, Scene, intersects, const PrimRay&, DynamicMeshIntersection&)
-DELEGATE2 (bool, Scene, intersects, const PrimRay&, SketchNodeIntersection&)
+DELEGATE3 (bool, Scene, intersects, const PrimRay&, SketchNodeIntersection&, const SketchNode*)
 DELEGATE2 (bool, Scene, intersects, const PrimRay&, SketchBoneIntersection&)
 DELEGATE2 (bool, Scene, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE3 (bool, Scene, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
