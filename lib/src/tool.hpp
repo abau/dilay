@@ -65,6 +65,8 @@ protected:
   bool               intersectsRecentDynamicMesh (const glm::ivec2&, Intersection&) const;
   void               supportsMirror ();
   bool               mirrorEnabled () const;
+  void               mirrorPosition (const glm::vec3&);
+  void               mirrorDefaultPosition ();
   const Mirror&      mirror () const;
   const Dimension*   mirrorDimension () const;
   void               addMirrorProperties ();

@@ -178,6 +178,8 @@ struct ToolEditSketch::Impl
       this->mesh = &intersection.mesh ();
       this->parent = nullptr;
 
+      this->self->mirrorPosition (intersection.mesh ().tree ().root ().data ().center ());
+
       if (e.modifiers () == Qt::NoModifier && this->splitAndJoin && intersection.node ().parent ())
       {
         SketchTree tree = intersection.mesh ().tree ().split (intersection.node ());
@@ -215,6 +217,8 @@ struct ToolEditSketch::Impl
       this->rotation.reset (intersection.projectedPosition (), axis);
 
       this->mesh = &intersection.mesh ();
+
+      this->self->mirrorPosition (intersection.mesh ().tree ().root ().data ().center ());
 
       if (e.modifiers () == Qt::AltModifier)
       {
@@ -308,6 +312,18 @@ struct ToolEditSketch::Impl
         this->mesh->snap (*this->parent, *this->self->mirrorDimension ());
       }
     }
+
+    if (this->mesh)
+    {
+      const bool selectedRootNode = this->node->parent () == nullptr;
+      const bool selectedRootBone = this->parent && this->parent->parent () == nullptr;
+
+      if (selectedRootNode || selectedRootBone)
+      {
+        this->self->mirrorPosition (this->mesh->tree ().root ().data ().center ());
+      }
+    }
+
     this->mesh = nullptr;
     this->node = nullptr;
     this->parent = nullptr;

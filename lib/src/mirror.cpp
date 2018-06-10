@@ -33,20 +33,30 @@ struct Mirror::Impl
   }
 
   Dimension dimension () const { return this->_dimension; }
-  void      dimension (Dimension d)
+
+  void dimension (Dimension d)
   {
     this->_dimension = d;
     this->_plane = std::make_unique<PrimPlane> (glm::vec3 (0.0f), DimensionUtil::vector (d));
   }
 
+  void position (const glm::vec3& p)
+  {
+    this->_plane =
+      std::make_unique<PrimPlane> (glm::vec3 (p), DimensionUtil::vector (this->_dimension));
+    this->mirrorMesh.position (p);
+  }
+
   const PrimPlane& plane () const { return *this->_plane; }
-  void             render (Camera& camera) const
+
+  void render (Camera& camera) const
   {
     const glm::vec3 pos = camera.position ();
     const float     width2 = this->width * 0.5f;
-    const bool      inside = (this->_dimension == Dimension::X && glm::abs (pos.x) <= width2) ||
-                        (this->_dimension == Dimension::Y && glm::abs (pos.y) <= width2) ||
-                        (this->_dimension == Dimension::Z && glm::abs (pos.z) <= width2);
+    const bool      inside =
+      (this->_dimension == Dimension::X && glm::abs (pos.x - this->_plane->point ().x) <= width2) ||
+      (this->_dimension == Dimension::Y && glm::abs (pos.y - this->_plane->point ().y) <= width2) ||
+      (this->_dimension == Dimension::Z && glm::abs (pos.z - this->_plane->point ().z) <= width2);
 
     OpenGL::glClear (OpenGL::StencilBufferBit ());
     OpenGL::glDepthMask (false);
@@ -125,6 +135,7 @@ DELEGATE2_BIG2 (Mirror, const Config&, Dimension)
 DELEGATE_CONST (Dimension, Mirror, dimension)
 GETTER_CONST (float, Mirror, width)
 DELEGATE1 (void, Mirror, dimension, Dimension)
+DELEGATE1 (void, Mirror, position, const glm::vec3&)
 DELEGATE_CONST (const PrimPlane&, Mirror, plane)
 DELEGATE1_CONST (void, Mirror, render, Camera&)
 DELEGATE1 (void, Mirror, runFromConfig, const Config&)

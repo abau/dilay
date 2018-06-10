@@ -5,6 +5,7 @@
 #ifndef DILAY_MIRROR
 #define DILAY_MIRROR
 
+#include <glm/fwd.hpp>
 #include "configurable.hpp"
 #include "macro.hpp"
 
@@ -22,6 +23,7 @@ public:
   const PrimPlane& plane () const;
 
   void dimension (Dimension);
+  void position (const glm::vec3&);
   void render (Camera&) const;
 
 private:

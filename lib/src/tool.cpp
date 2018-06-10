@@ -163,11 +163,40 @@ struct Tool::Impl
   {
     assert (bool(this->_mirror) == false);
     this->_mirror = Maybe<Mirror>::make (this->config (), Dimension::X);
+    this->mirrorDefaultPosition ();
   }
 
   bool mirrorEnabled () const
   {
     return this->_mirror && this->state.cache ().get ("editor/tool/mirror", true);
+  }
+
+  void mirrorPosition (const glm::vec3& p)
+  {
+    assert (this->_mirror);
+    this->_mirror->position (p);
+  }
+
+  void mirrorDefaultPosition ()
+  {
+    switch (this->state.mainWindow ().toolPane ().selection ())
+    {
+      case ViewToolPaneSelection::Sculpt:
+        this->mirrorPosition (glm::vec3 (0.0f));
+        break;
+      case ViewToolPaneSelection::Sketch:
+        if (this->state.scene ().numSketchMeshes () == 1)
+        {
+          this->state.scene ().forEachMesh ([this](const SketchMesh& mesh) {
+            this->mirrorPosition (mesh.tree ().root ().data ().center ());
+          });
+        }
+        else
+        {
+          this->mirrorPosition (glm::vec3 (0.0f));
+        }
+        break;
+    }
   }
 
   const Mirror& mirror () const
@@ -332,6 +361,8 @@ DELEGATE2_CONST (bool, Tool, intersectsRecentDynamicMesh, const PrimRay&, Inters
 DELEGATE2_CONST (bool, Tool, intersectsRecentDynamicMesh, const glm::ivec2&, Intersection&)
 DELEGATE (void, Tool, supportsMirror)
 DELEGATE_CONST (bool, Tool, mirrorEnabled)
+DELEGATE1 (void, Tool, mirrorPosition, const glm::vec3&)
+DELEGATE (void, Tool, mirrorDefaultPosition)
 DELEGATE_CONST (const Mirror&, Tool, mirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
 DELEGATE (void, Tool, addMirrorProperties)
