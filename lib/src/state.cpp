@@ -244,7 +244,6 @@ struct State::Impl
       SET_TOOL (SculptReduce)
       SET_TOOL (EditSketch)
       SET_TOOL (DeleteSketch)
-      SET_TOOL (RebalanceSketch)
       SET_TOOL (ConvertSketch)
       SET_TOOL (SketchSpheres)
       SET_TOOL (TrimMesh)

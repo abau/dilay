@@ -112,8 +112,7 @@ struct ToolEditSketch::Impl
     ViewToolTip toolTip;
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Add new sketch"));
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag node to move"));
-    toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Shift,
-                 QObject::tr ("Drag node to scale"));
+    toolTip.add (ViewInputEvent::R, QObject::tr ("Click to set new root"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Ctrl,
                  QObject::tr ("Drag node to rotate"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Alt,
@@ -175,10 +174,7 @@ struct ToolEditSketch::Impl
       this->scaling.reset (intersection.node ().data ().center (), intersection.position ());
       this->rotation.reset (intersection.node ().data ().center ());
 
-      this->mesh = &intersection.mesh ();
       this->parent = nullptr;
-
-      this->self->mirrorPosition (intersection.mesh ().tree ().root ().data ().center ());
 
       if (e.modifiers () == Qt::NoModifier && this->splitAndJoin && intersection.node ().parent ())
       {
@@ -189,6 +185,15 @@ struct ToolEditSketch::Impl
 
         this->mesh = &mesh;
         this->node = &mesh.tree ().root ();
+        this->self->mirrorPosition (this->mesh->tree ().root ().data ().center ());
+      }
+      else if (e.modifiers () == Qt::NoModifier && this->self->onKeymap ('r'))
+      {
+        intersection.mesh ().rebalance (intersection.node ());
+
+        this->mesh = nullptr;
+        this->node = nullptr;
+        this->self->mirrorPosition (intersection.mesh ().tree ().root ().data ().center ());
       }
       else if (e.modifiers () == Qt::AltModifier)
       {
@@ -197,12 +202,16 @@ struct ToolEditSketch::Impl
         const float radius =
           iNode.numChildren () > 0 ? iNode.lastChild ().data ().radius () : iNode.data ().radius ();
 
+        this->mesh = &intersection.mesh ();
         this->node = &this->mesh->addChild (iNode, iNode.data ().center (), radius,
                                             this->self->mirrorDimension ());
+        this->self->mirrorPosition (this->mesh->tree ().root ().data ().center ());
       }
       else
       {
+        this->mesh = &intersection.mesh ();
         this->node = &intersection.node ();
+        this->self->mirrorPosition (this->mesh->tree ().root ().data ().center ());
       }
     };
 

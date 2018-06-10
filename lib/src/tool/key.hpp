@@ -19,7 +19,6 @@ enum class ToolKey
   SculptReduce,
   EditSketch,
   DeleteSketch,
-  RebalanceSketch,
   ConvertSketch,
   SketchSpheres,
   TrimMesh,

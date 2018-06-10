@@ -109,8 +109,6 @@ struct ViewToolPane::Impl
     toolPane->setLayout (toolPaneLayout);
     this->addToolButton (ToolKey::EditSketch, toolPaneLayout, QObject::tr ("Edit sketch"));
     this->addToolButton (ToolKey::DeleteSketch, toolPaneLayout, QObject::tr ("Delete sketch"));
-    this->addToolButton (ToolKey::RebalanceSketch, toolPaneLayout,
-                         QObject::tr ("Rebalance sketch"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
     this->addToolButton (ToolKey::SketchSpheres, toolPaneLayout, QObject::tr ("Sketch spheres"));
     toolPaneLayout->addWidget (&ViewUtil::horizontalLine ());
