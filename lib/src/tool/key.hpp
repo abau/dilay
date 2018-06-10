@@ -5,6 +5,8 @@
 #ifndef DILAY_TOOL_KEY
 #define DILAY_TOOL_KEY
 
+#include <functional>
+
 enum class ToolKey
 {
   TransformMesh,
@@ -25,5 +27,13 @@ enum class ToolKey
   Remesh,
   MoveCamera
 };
+
+namespace std
+{
+  template <> struct hash<ToolKey>
+  {
+    size_t operator() (const ToolKey& key) const { return std::hash<int> () (int(key)); }
+  };
+}
 
 #endif
