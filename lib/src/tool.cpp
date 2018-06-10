@@ -344,25 +344,17 @@ bool Tool::intersectsScene (const ViewPointingEvent& e, T& intersection, Ts... a
   return this->impl->intersectsScene (e, intersection, std::forward<Ts> (args)...);
 }
 
-template bool Tool::intersectsScene (const PrimRay&, DynamicMeshIntersection&);
-template bool Tool::intersectsScene (const glm::ivec2&, DynamicMeshIntersection&);
-template bool Tool::intersectsScene (const ViewPointingEvent&, DynamicMeshIntersection&);
-template bool Tool::intersectsScene (const PrimRay&, SketchNodeIntersection&);
-template bool Tool::intersectsScene (const glm::ivec2&, SketchNodeIntersection&);
-template bool Tool::intersectsScene (const ViewPointingEvent&, SketchNodeIntersection&);
-template bool Tool::intersectsScene (const PrimRay&, SketchBoneIntersection&);
-template bool Tool::intersectsScene (const glm::ivec2&, SketchBoneIntersection&);
-template bool Tool::intersectsScene (const ViewPointingEvent&, SketchBoneIntersection&);
-template bool Tool::intersectsScene (const PrimRay&, SketchMeshIntersection&);
-template bool Tool::intersectsScene (const glm::ivec2&, SketchMeshIntersection&);
-template bool Tool::intersectsScene (const ViewPointingEvent&, SketchMeshIntersection&);
-template bool Tool::intersectsScene (const PrimRay&, SketchMeshIntersection&, unsigned int);
-template bool Tool::intersectsScene (const glm::ivec2&, SketchMeshIntersection&, unsigned int);
-template bool Tool::intersectsScene (const ViewPointingEvent&, SketchMeshIntersection&,
-                                     unsigned int);
-template bool Tool::intersectsScene (const PrimRay&, SketchPathIntersection&);
-template bool Tool::intersectsScene (const glm::ivec2&, SketchPathIntersection&);
-template bool Tool::intersectsScene (const ViewPointingEvent&, SketchPathIntersection&);
-template bool Tool::intersectsScene (const PrimRay&, Intersection&);
-template bool Tool::intersectsScene (const glm::ivec2&, Intersection&);
-template bool Tool::intersectsScene (const ViewPointingEvent&, Intersection&);
+#define TOOL_INTERSECTS_SCENE(...)                                      \
+  template bool Tool::intersectsScene (const PrimRay&, __VA_ARGS__);    \
+  template bool Tool::intersectsScene (const glm::ivec2&, __VA_ARGS__); \
+  template bool Tool::intersectsScene (const ViewPointingEvent&, __VA_ARGS__);
+
+TOOL_INTERSECTS_SCENE (DynamicMeshIntersection&)
+TOOL_INTERSECTS_SCENE (SketchNodeIntersection&)
+TOOL_INTERSECTS_SCENE (SketchBoneIntersection&)
+TOOL_INTERSECTS_SCENE (SketchMeshIntersection&)
+TOOL_INTERSECTS_SCENE (SketchMeshIntersection&, unsigned int)
+TOOL_INTERSECTS_SCENE (SketchPathIntersection&)
+TOOL_INTERSECTS_SCENE (Intersection&)
+
+#undef TOOL_INTERSECTS_SCENE
