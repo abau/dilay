@@ -229,7 +229,7 @@ struct Tool::Impl
     this->properties ().add (mirrorEdit, syncButton);
   }
 
-  QWidget& addMoveOnPrimaryPlaneProperties (ToolUtilMovement& movement)
+  void addMoveOnPrimaryPlaneProperties (ToolUtilMovement& movement)
   {
     const bool init =
       this->cache ().get<bool> ("move-on-primary-plane", movement.onPrimaryPlane ());
@@ -241,7 +241,6 @@ struct Tool::Impl
       this->cache ().set ("move-on-primary-plane", p);
     });
     this->properties ().add (edit);
-    return edit;
   }
 
   bool onKeymap (char c) const
@@ -322,7 +321,7 @@ DELEGATE1 (void, Tool, mirror, bool)
 SETTER (bool, Tool, renderMirror)
 DELEGATE_CONST (const Dimension*, Tool, mirrorDimension)
 DELEGATE1 (void, Tool, addMirrorProperties, bool)
-DELEGATE1 (QWidget&, Tool, addMoveOnPrimaryPlaneProperties, ToolUtilMovement&)
+DELEGATE1 (void, Tool, addMoveOnPrimaryPlaneProperties, ToolUtilMovement&)
 DELEGATE1_CONST (bool, Tool, onKeymap, char)
 DELEGATE1 (ToolResponse, Tool, runPointingEvent, const ViewPointingEvent&)
 

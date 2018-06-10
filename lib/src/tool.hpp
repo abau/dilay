@@ -69,7 +69,7 @@ protected:
   void               renderMirror (bool);
   const Dimension*   mirrorDimension () const;
   void               addMirrorProperties (bool);
-  QWidget&           addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
+  void               addMoveOnPrimaryPlaneProperties (ToolUtilMovement&);
   bool               onKeymap (char) const;
 
   template <typename T, typename... Ts> bool intersectsScene (const PrimRay&, T&, Ts...);
