@@ -7,6 +7,8 @@
 
 #include "tool.hpp"
 
+class QWheelEvent;
+
 class ToolMoveCamera : public Tool
 {
 public:
@@ -16,8 +18,9 @@ public:
 
   ToolKey getKey () const { return ToolKey::MoveCamera; }
 
-  void snap ();
-  void resetGazePoint ();
+  ToolResponse wheelEvent (const QWheelEvent&);
+  void         snap ();
+  void         resetGazePoint ();
 
 private:
   IMPLEMENTATION
@@ -25,7 +28,6 @@ private:
   ToolResponse runInitialize ();
   ToolResponse runMoveEvent (const ViewPointingEvent&);
   ToolResponse runPressEvent (const ViewPointingEvent&);
-  ToolResponse runWheelEvent (const QWheelEvent&);
   void         runFromConfig ();
 };
 

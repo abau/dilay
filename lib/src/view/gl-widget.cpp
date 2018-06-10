@@ -210,11 +210,6 @@ struct ViewGlWidget::Impl
       this->state ().handleToolResponse (ToolResponse::Redraw);
       this->updateCursorInTool ();
     }
-
-    if (this->state ().hasTool ())
-    {
-      this->state ().handleToolResponse (this->state ().tool ().wheelEvent (*e));
-    }
   }
 
   void tabletEvent (QTabletEvent* e)

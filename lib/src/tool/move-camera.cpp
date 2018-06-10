@@ -133,7 +133,16 @@ struct ToolMoveCamera::Impl
     return ToolResponse::None;
   }
 
-  ToolResponse runWheelEvent (const QWheelEvent& e)
+  void runFromConfig ()
+  {
+    const Config& config = this->self->config ();
+
+    this->rotationFactor = config.get<float> ("editor/camera/rotation-factor");
+    this->movementFactor = config.get<float> ("editor/camera/movement-factor");
+    this->zoomInMouseWheelFactor = config.get<float> ("editor/camera/zoom-in-mouse-wheel-factor");
+  }
+
+  ToolResponse wheelEvent (const QWheelEvent& e)
   {
     if (this->isImmediateTool && e.modifiers () == Qt::NoModifier &&
         e.orientation () == Qt::Vertical)
@@ -152,15 +161,6 @@ struct ToolMoveCamera::Impl
       return ToolResponse::Redraw;
     }
     return ToolResponse::None;
-  }
-
-  void runFromConfig ()
-  {
-    const Config& config = this->self->config ();
-
-    this->rotationFactor = config.get<float> ("editor/camera/rotation-factor");
-    this->movementFactor = config.get<float> ("editor/camera/movement-factor");
-    this->zoomInMouseWheelFactor = config.get<float> ("editor/camera/zoom-in-mouse-wheel-factor");
   }
 
   void snap ()
@@ -216,7 +216,7 @@ DELEGATE_CONSTRUCTOR_BASE (ToolMoveCamera, (State & s, bool i), (this, i), Tool,
 DELEGATE_TOOL (ToolMoveCamera)
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolMoveCamera)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolMoveCamera)
-DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolMoveCamera)
 DELEGATE_TOOL_RUN_FROM_CONFIG (ToolMoveCamera)
+DELEGATE1 (ToolResponse, ToolMoveCamera, wheelEvent, const QWheelEvent&)
 DELEGATE (void, ToolMoveCamera, snap)
 DELEGATE (void, ToolMoveCamera, resetGazePoint)

@@ -17,7 +17,6 @@ class Intersection;
 class Mirror;
 class PrimRay;
 class QPainter;
-class QWheelEvent;
 class QWidget;
 class State;
 class ToolUtilMovement;
@@ -45,7 +44,6 @@ public:
   void         paint (QPainter&) const;
   void         keyEvent (const ViewKeyEvent&);
   ToolResponse pointingEvent (const ViewPointingEvent&);
-  ToolResponse wheelEvent (const QWheelEvent&);
   ToolResponse cursorUpdate (const glm::ivec2&);
   ToolResponse commit ();
   void         fromConfig ();
@@ -95,8 +93,6 @@ private:
 
   virtual ToolResponse runReleaseEvent (const ViewPointingEvent&) { return ToolResponse::None; }
 
-  virtual ToolResponse runWheelEvent (const QWheelEvent&) { return ToolResponse::None; }
-
   virtual ToolResponse runCursorUpdate (const glm::ivec2&) { return ToolResponse::None; }
 
   virtual ToolResponse runCommit () { return ToolResponse::None; }
@@ -124,7 +120,6 @@ private:
 #define DECLARE_TOOL_RUN_PRESS_EVENT ToolResponse runPressEvent (const ViewPointingEvent&);
 #define DECLARE_TOOL_RUN_MOVE_EVENT ToolResponse runMoveEvent (const ViewPointingEvent&);
 #define DECLARE_TOOL_RUN_RELEASE_EVENT ToolResponse runReleaseEvent (const ViewPointingEvent&);
-#define DECLARE_TOOL_RUN_MOUSE_WHEEL_EVENT ToolResponse runWheelEvent (const QWheelEvent&);
 #define DECLARE_TOOL_RUN_CURSOR_UPDATE ToolResponse runCursorUpdate (const glm::ivec2&);
 #define DECLARE_TOOL_RUN_COMMIT ToolResponse runCommit ();
 #define DECLARE_TOOL_RUN_FROM_CONFIG void runFromConfig ();
@@ -143,8 +138,6 @@ private:
   DELEGATE1 (ToolResponse, n, runMoveEvent, const ViewPointingEvent&)
 #define DELEGATE_TOOL_RUN_RELEASE_EVENT(n) \
   DELEGATE1 (ToolResponse, n, runReleaseEvent, const ViewPointingEvent&)
-#define DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT(n) \
-  DELEGATE1 (ToolResponse, n, runWheelEvent, const QWheelEvent&)
 #define DELEGATE_TOOL_RUN_CURSOR_UPDATE(n) \
   DELEGATE1 (ToolResponse, n, runCursorUpdate, const glm::ivec2&)
 #define DELEGATE_TOOL_RUN_COMMIT(n) DELEGATE (ToolResponse, n, runCommit)
