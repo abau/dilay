@@ -2,6 +2,7 @@
  * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
+#include <array>
 #include <glm/gtx/norm.hpp>
 #include "dynamic/mesh.hpp"
 #include "isosurface-extraction/grid.hpp"
