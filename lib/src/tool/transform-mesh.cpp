@@ -51,7 +51,7 @@ struct ToolTransformMesh::Impl
     , movement (s->state ().camera (), false)
     , rotation (s->state ().camera ())
     , rotationOrigin (
-        RotationOrigin (s->cache ().get<int> ("rotation-rigin", int(RotationOrigin::Center))))
+        RotationOrigin (s->cache ().get<int> ("rotation-origin", int(RotationOrigin::Center))))
   {
   }
 
@@ -75,7 +75,7 @@ struct ToolTransformMesh::Impl
       {QObject::tr ("Intersection"), QObject::tr ("Center"), QObject::tr ("Origin")});
     ViewUtil::connect (rotationOriginEdit, int(rotationOrigin), [this](int id) {
       this->rotationOrigin = RotationOrigin (id);
-      this->self->cache ().set ("rotation-rigin", id);
+      this->self->cache ().set ("rotation-origin", id);
     });
     properties.addStacked (QObject::tr ("Rotation"), rotationOriginEdit);
   }
