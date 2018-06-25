@@ -22,14 +22,44 @@ struct ToolUtilScaling::Impl
   {
   }
 
+  float factor (float previousDistance, float distance) const
+  {
+    if (Util::almostEqual (previousDistance, 0.0f))
+    {
+      return 1.0f;
+    }
+    else
+    {
+      return glm::clamp (distance / previousDistance, 0.75f, 1.25f);
+    }
+  }
+
   float factor () const
   {
     assert (this->plane);
 
-    const float d = glm::distance (this->position, this->plane->point ());
     const float pd = glm::distance (this->previousPosition, this->plane->point ());
+    const float d = glm::distance (this->position, this->plane->point ());
 
-    return pd <= Util::epsilon () ? 1.0f : d / pd;
+    return this->factor (pd, d);
+  }
+
+  float factorRight () const
+  {
+    const glm::vec3  prevDelta = this->previousPosition - this->plane->point ();
+    const glm::vec3  delta = this->position - this->plane->point ();
+    const glm::vec3& right = this->camera.right ();
+
+    return this->factor (glm::dot (right, prevDelta), glm::dot (right, delta));
+  }
+
+  float factorUp () const
+  {
+    const glm::vec3  prevDelta = this->previousPosition - this->plane->point ();
+    const glm::vec3  delta = this->position - this->plane->point ();
+    const glm::vec3& up = this->camera.realUp ();
+
+    return this->factor (glm::dot (up, prevDelta), glm::dot (up, delta));
   }
 
   bool intersects (const glm::ivec2& p, glm::vec3& i) const
@@ -72,8 +102,8 @@ struct ToolUtilScaling::Impl
 
     if (IntersectionUtil::intersects (ray, *this->plane, &t))
     {
-      this->previousPosition = origin;
-      this->position = origin;
+      this->previousPosition = ray.pointAt (t);
+      this->position = ray.pointAt (t);
     }
     else
     {
@@ -84,5 +114,7 @@ struct ToolUtilScaling::Impl
 
 DELEGATE1_BIG3 (ToolUtilScaling, const Camera&)
 DELEGATE_CONST (float, ToolUtilScaling, factor)
+DELEGATE_CONST (float, ToolUtilScaling, factorRight)
+DELEGATE_CONST (float, ToolUtilScaling, factorUp)
 DELEGATE1 (bool, ToolUtilScaling, move, const ViewPointingEvent&)
 DELEGATE2 (void, ToolUtilScaling, reset, const glm::vec3&, const glm::vec3&)

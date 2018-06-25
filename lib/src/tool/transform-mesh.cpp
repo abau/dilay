@@ -6,6 +6,8 @@
 #include <QButtonGroup>
 #include <glm/glm.hpp>
 #include "cache.hpp"
+#include "camera.hpp"
+#include "dimension.hpp"
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
 #include "mesh.hpp"
@@ -13,6 +15,7 @@
 #include "state.hpp"
 #include "tool/util/movement.hpp"
 #include "tool/util/rotation.hpp"
+#include "tool/util/scaling.hpp"
 #include "tools.hpp"
 #include "view/pointing-event.hpp"
 #include "view/shortcut.hpp"
@@ -25,7 +28,8 @@ namespace
   enum class Mode
   {
     Move,
-    Rotate
+    Rotate,
+    Scale
   };
 
   enum class RotationOrigin
@@ -33,6 +37,12 @@ namespace
     Intersection,
     Center,
     Origin
+  };
+
+  enum class ScalingMode
+  {
+    Uniform,
+    PrimaryPlane
   };
 }
 
@@ -42,6 +52,9 @@ struct ToolTransformMesh::Impl
   DynamicMesh*       mesh;
   Mode               mode;
   ToolUtilMovement   movement;
+  ToolUtilScaling    scaling;
+  ScalingMode        scalingMode;
+  glm::vec3          scalingSize;
   ToolUtilRotation   rotation;
   RotationOrigin     rotationOrigin;
 
@@ -49,6 +62,8 @@ struct ToolTransformMesh::Impl
     : self (s)
     , mesh (nullptr)
     , movement (s->state ().camera (), false)
+    , scaling (s->state ().camera ())
+    , scalingMode (ScalingMode (s->cache ().get<int> ("scaling-mode", int(ScalingMode::Uniform))))
     , rotation (s->state ().camera ())
     , rotationOrigin (
         RotationOrigin (s->cache ().get<int> ("rotation-origin", int(RotationOrigin::Center))))
@@ -71,13 +86,24 @@ struct ToolTransformMesh::Impl
 
     properties.addSeparator ();
 
-    QButtonGroup& rotationOriginEdit = ViewUtil::buttonGroup (
-      {QObject::tr ("Intersection"), QObject::tr ("Center"), QObject::tr ("Origin")});
-    ViewUtil::connect (rotationOriginEdit, int(rotationOrigin), [this](int id) {
+    QButtonGroup& scalingModeEdit = ViewUtil::buttonGroup (
+      {QObject::tr ("Scale uniformly"), QObject::tr ("Scale on primary plane")});
+    ViewUtil::connect (scalingModeEdit, int(this->scalingMode), [this](int id) {
+      this->scalingMode = ScalingMode (id);
+      this->self->cache ().set ("scaling-mode", id);
+    });
+    properties.add (scalingModeEdit);
+
+    properties.addSeparator ();
+
+    QButtonGroup& rotationOriginEdit =
+      ViewUtil::buttonGroup ({QObject::tr ("Rotate at intersection"),
+                              QObject::tr ("Rotate at center"), QObject::tr ("Rotate at origin")});
+    ViewUtil::connect (rotationOriginEdit, int(this->rotationOrigin), [this](int id) {
       this->rotationOrigin = RotationOrigin (id);
       this->self->cache ().set ("rotation-origin", id);
     });
-    properties.addStacked (QObject::tr ("Rotation"), rotationOriginEdit);
+    properties.add (rotationOriginEdit);
   }
 
   void setupToolTip ()
@@ -85,9 +111,58 @@ struct ToolTransformMesh::Impl
     ViewToolTip toolTip;
     toolTip.add (ViewInputEvent::MouseLeft, QObject::tr ("Drag to move"));
     toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Shift,
+                 QObject::tr ("Drag to scale"));
+    toolTip.add (ViewInputEvent::MouseLeft, ViewInputModifier::Ctrl,
                  QObject::tr ("Drag to rotate"));
 
     this->self->state ().setToolTip (&toolTip);
+  }
+
+  glm::vec3 scalingVector () const
+  {
+    assert (this->mesh);
+
+    const float     minExtent = 0.01f;
+    const glm::vec3 extent = this->scalingSize * this->mesh->scaling ();
+    glm::vec3       scaling = glm::vec3 (1.0f);
+
+    switch (this->scalingMode)
+    {
+      case ScalingMode::Uniform:
+        scaling = glm::vec3 (this->scaling.factor ());
+        break;
+
+      case ScalingMode::PrimaryPlane:
+        switch (this->self->state ().camera ().primaryDimension ())
+        {
+          case Dimension::X:
+            scaling.z = this->scaling.factorRight ();
+            scaling.y = this->scaling.factorUp ();
+            break;
+          case Dimension::Y:
+            scaling.x = this->scaling.factorRight ();
+            scaling.z = this->scaling.factorUp ();
+            break;
+          case Dimension::Z:
+            scaling.x = this->scaling.factorRight ();
+            scaling.y = this->scaling.factorUp ();
+            break;
+        }
+    }
+
+    if (scaling.x * extent.x < minExtent)
+    {
+      scaling.x = 1.0f;
+    }
+    if (scaling.y * extent.y < minExtent)
+    {
+      scaling.y = 1.0f;
+    }
+    if (scaling.z * extent.z < minExtent)
+    {
+      scaling.z = 1.0f;
+    }
+    return scaling;
   }
 
   ToolResponse runMoveEvent (const ViewPointingEvent& e)
@@ -97,6 +172,11 @@ struct ToolTransformMesh::Impl
       if (this->mode == Mode::Move && this->movement.move (e))
       {
         this->mesh->translate (this->movement.delta ());
+        return ToolResponse::Redraw;
+      }
+      else if (this->mode == Mode::Scale && this->scaling.move (e))
+      {
+        this->mesh->scale (this->scalingVector ());
         return ToolResponse::Redraw;
       }
       else if (this->mode == Mode::Rotate && this->rotation.rotate (e))
@@ -118,11 +198,30 @@ struct ToolTransformMesh::Impl
         this->mesh = &intersection.mesh ();
         if (e.modifiers () == Qt::NoModifier)
         {
+          this->self->snapshotDynamicMeshes ();
+
           this->movement.reset (intersection.position ());
           this->mode = Mode::Move;
         }
         else if (e.modifiers () == Qt::ShiftModifier)
         {
+          this->self->snapshotDynamicMeshes ();
+
+          const PrimAABox bounds = this->mesh->mesh ().bounds ();
+          this->scalingSize = bounds.maximum () - bounds.minimum ();
+          this->scaling.reset (bounds.center (), intersection.position ());
+
+          this->mesh->position (-bounds.center ());
+          this->mesh->normalize ();
+          this->mesh->bufferData ();
+          this->mesh->position (bounds.center ());
+
+          this->mode = Mode::Scale;
+        }
+        else if (e.modifiers () == Qt::ControlModifier)
+        {
+          this->self->snapshotDynamicMeshes ();
+
           switch (this->rotationOrigin)
           {
             case RotationOrigin::Intersection:
@@ -137,7 +236,6 @@ struct ToolTransformMesh::Impl
           }
           this->mode = Mode::Rotate;
         }
-        this->self->snapshotDynamicMeshes ();
       }
     }
     return ToolResponse::None;

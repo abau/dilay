@@ -17,6 +17,8 @@ public:
   DECLARE_BIG3 (ToolUtilScaling, const Camera&)
 
   float factor () const;
+  float factorRight () const;
+  float factorUp () const;
   bool  move (const ViewPointingEvent&);
   void  reset (const glm::vec3&, const glm::vec3&);
 
