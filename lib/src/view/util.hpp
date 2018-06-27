@@ -17,7 +17,9 @@ class QButtonGroup;
 class QCheckBox;
 class QDoubleSpinBox;
 class QFrame;
+class QKeySequence;
 class QLineEdit;
+class QMenu;
 class QPoint;
 class QPushButton;
 class QRadioButton;
@@ -70,6 +72,9 @@ namespace ViewUtil
   void                  error (QWidget&, const QString&);
   void                  about (QWidget&, const QString&);
   void                  info (QWidget&, const QString&);
+  QAction& addAction (QMenu&, const QString&, const QKeySequence&, const std::function<void()>&);
+  QAction& addCheckableAction (QMenu&, const QString&, const QKeySequence&, bool,
+                               const std::function<void(bool)>&);
 };
 
 #endif

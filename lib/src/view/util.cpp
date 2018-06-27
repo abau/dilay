@@ -9,6 +9,7 @@
 #include <QDoubleValidator>
 #include <QIntValidator>
 #include <QLineEdit>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
@@ -320,4 +321,27 @@ void ViewUtil::about (QWidget& parent, const QString& label)
 void ViewUtil::info (QWidget& parent, const QString& label)
 {
   QMessageBox::information (&parent, QObject::tr ("Information"), label);
+}
+
+QAction& ViewUtil::addAction (QMenu& menu, const QString& label, const QKeySequence& keySequence,
+                              const std::function<void()>& f)
+{
+  QAction* a = new QAction (label, &menu);
+  a->setShortcut (keySequence);
+  menu.addAction (a);
+  QObject::connect (a, &QAction::triggered, f);
+  return *a;
+}
+
+QAction& ViewUtil::addCheckableAction (QMenu& menu, const QString& label,
+                                       const QKeySequence& keySequence, bool state,
+                                       const std::function<void(bool)>& f)
+{
+  QAction* a = new QAction (label, &menu);
+  a->setShortcut (keySequence);
+  a->setCheckable (true);
+  a->setChecked (state);
+  menu.addAction (a);
+  QObject::connect (a, &QAction::toggled, f);
+  return *a;
 }

@@ -22,28 +22,6 @@
 
 namespace
 {
-  QAction& addAction (QMenu& menu, const QString& label, const QKeySequence& keySequence,
-                      const std::function<void()>& f)
-  {
-    QAction* a = new QAction (label, &menu);
-    a->setShortcut (keySequence);
-    menu.addAction (a);
-    QObject::connect (a, &QAction::triggered, f);
-    return *a;
-  }
-
-  QAction& addCheckableAction (QMenu& menu, const QString& label, const QKeySequence& keySequence,
-                               bool state, const std::function<void(bool)>& f)
-  {
-    QAction* a = new QAction (label, &menu);
-    a->setShortcut (keySequence);
-    a->setCheckable (true);
-    a->setChecked (state);
-    menu.addAction (a);
-    QObject::connect (a, &QAction::toggled, f);
-    return *a;
-  }
-
   QString getFileDialogPath (const Scene& scene)
   {
     return scene.hasFileName ()
@@ -87,18 +65,20 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
   QMenu&    viewMenu = *menuBar.addMenu (QObject::tr ("&View"));
   QMenu&    helpMenu = *menuBar.addMenu (QObject::tr ("&Help"));
 
-  addAction (fileMenu, QObject::tr ("&Open..."), QKeySequence::Open, [&mainWindow, &glWidget]() {
-    Scene&            scene = glWidget.state ().scene ();
-    QString           filter = filterAllFiles ();
-    const std::string fileName =
-      QFileDialog::getOpenFileName (&mainWindow, QObject::tr ("Open"), getFileDialogPath (scene),
-                                    fileDialogFilters (), &filter, QFileDialog::DontUseNativeDialog)
-        .toStdString ();
-    if (fileName.empty () == false)
-    {
+  ViewUtil::addAction (
+    fileMenu, QObject::tr ("&Open..."), QKeySequence::Open, [&mainWindow, &glWidget]() {
+      Scene&            scene = glWidget.state ().scene ();
+      QString           filter = filterAllFiles ();
+      const std::string fileName =
+        QFileDialog::getOpenFileName (&mainWindow, QObject::tr ("Open"), getFileDialogPath (scene),
+                                      fileDialogFilters (), &filter,
+                                      QFileDialog::DontUseNativeDialog)
+          .toStdString ();
+      if (fileName.empty () == false)
+      {
 #ifndef NDEBUG
-      scene.reset ();
-      glWidget.state ().history ().reset ();
+        scene.reset ();
+        glWidget.state ().history ().reset ();
 #else
       if (scene.isEmpty () == false) {
         if (ViewUtil::question (mainWindow, QObject::tr ("Replace existent scene?"))) {
@@ -110,16 +90,16 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
         }
       }
 #endif
-      if (scene.fromDlyFile (glWidget.state ().config (), fileName) == false)
-      {
-        ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
+        if (scene.fromDlyFile (glWidget.state ().config (), fileName) == false)
+        {
+          ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
+        }
+        mainWindow.infoPane ().scene ().updateInfo ();
+        mainWindow.update ();
       }
-      mainWindow.infoPane ().scene ().updateInfo ();
-      mainWindow.update ();
-    }
-  });
+    });
 
-  QAction& saveAsAction = addAction (
+  QAction& saveAsAction = ViewUtil::addAction (
     fileMenu, QObject::tr ("Save &as..."), QKeySequence::SaveAs, [&mainWindow, &glWidget]() {
       Scene&            scene = glWidget.state ().scene ();
       QString           filter = selectedFilter (scene);
@@ -144,83 +124,90 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
       }
     });
 
-  addAction (fileMenu, QObject::tr ("&Save"), QKeySequence::Save,
-             [&mainWindow, &glWidget, &saveAsAction]() {
-               Scene& scene = glWidget.state ().scene ();
-               if (scene.hasFileName ())
-               {
-                 const bool saveAsObj = Util::hasSuffix (scene.fileName (), ".obj");
+  ViewUtil::addAction (fileMenu, QObject::tr ("&Save"), QKeySequence::Save,
+                       [&mainWindow, &glWidget, &saveAsAction]() {
+                         Scene& scene = glWidget.state ().scene ();
+                         if (scene.hasFileName ())
+                         {
+                           const bool saveAsObj = Util::hasSuffix (scene.fileName (), ".obj");
 
-                 if (scene.toDlyFile (saveAsObj) == false)
-                 {
-                   ViewUtil::error (mainWindow, QObject::tr ("Could not save to file."));
-                 }
-               }
-               else
-               {
-                 saveAsAction.trigger ();
-               }
-             });
+                           if (scene.toDlyFile (saveAsObj) == false)
+                           {
+                             ViewUtil::error (mainWindow, QObject::tr ("Could not save to file."));
+                           }
+                         }
+                         else
+                         {
+                           saveAsAction.trigger ();
+                         }
+                       });
 
   fileMenu.addSeparator ();
 
-  addAction (fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit,
-             [&mainWindow]() { mainWindow.close (); });
-  addAction (editMenu, QObject::tr ("&Undo"), QKeySequence::Undo,
-             [&glWidget]() { glWidget.state ().undo (); });
-  addAction (editMenu, QObject::tr ("&Redo"), QKeySequence::Redo,
-             [&glWidget]() { glWidget.state ().redo (); });
-  addAction (editMenu, QObject::tr ("&Configuration..."), QKeySequence (),
-             [&mainWindow, &glWidget]() { ViewConfiguration::show (mainWindow, glWidget); });
+  ViewUtil::addAction (fileMenu, QObject::tr ("&Quit"), QKeySequence::Quit,
+                       [&mainWindow]() { mainWindow.close (); });
 
-  addAction (viewMenu, QObject::tr ("Toggle &info pane"), Qt::CTRL + Qt::Key_I, [&mainWindow]() {
-    if (mainWindow.infoPane ().isVisible ())
-    {
-      mainWindow.infoPane ().close ();
-    }
-    else
-    {
-      mainWindow.infoPane ().show ();
-    }
-  });
+  ViewUtil::addAction (editMenu, QObject::tr ("&Undo"), QKeySequence::Undo,
+                       [&glWidget]() { glWidget.state ().undo (); });
 
-  viewMenu.addSeparator ();
+  ViewUtil::addAction (editMenu, QObject::tr ("&Redo"), QKeySequence::Redo,
+                       [&glWidget]() { glWidget.state ().redo (); });
 
-  addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::SHIFT + Qt::Key_C,
-             [&glWidget]() { glWidget.immediateMoveCamera ().snap (); });
-  addAction (viewMenu, QObject::tr ("Reset &gaze point"), Qt::ALT + Qt::Key_C,
-             [&glWidget]() { glWidget.immediateMoveCamera ().resetGazePoint (); });
+  ViewUtil::addAction (
+    editMenu, QObject::tr ("&Configuration..."), QKeySequence (),
+    [&mainWindow, &glWidget]() { ViewConfiguration::show (mainWindow, glWidget); });
+
+  ViewUtil::addAction (viewMenu, QObject::tr ("Toggle &info pane"), Qt::CTRL + Qt::Key_I,
+                       [&mainWindow]() {
+                         if (mainWindow.infoPane ().isVisible ())
+                         {
+                           mainWindow.infoPane ().close ();
+                         }
+                         else
+                         {
+                           mainWindow.infoPane ().show ();
+                         }
+                       });
 
   viewMenu.addSeparator ();
 
-  addAction (viewMenu, QObject::tr ("Toggle &wireframe"), Qt::Key_W, [&mainWindow, &glWidget]() {
-    glWidget.state ().scene ().toggleWireframe ();
-    mainWindow.update ();
-  });
+  ViewUtil::addAction (viewMenu, QObject::tr ("&Snap camera"), Qt::SHIFT + Qt::Key_C,
+                       [&glWidget]() { glWidget.immediateMoveCamera ().snap (); });
 
-  addAction (viewMenu, QObject::tr ("Toggle &shading"), Qt::SHIFT + Qt::Key_W,
-             [&mainWindow, &glWidget]() {
-               glWidget.state ().scene ().toggleShading ();
-               mainWindow.update ();
-             });
+  ViewUtil::addAction (viewMenu, QObject::tr ("Reset &gaze point"), Qt::ALT + Qt::Key_C,
+                       [&glWidget]() { glWidget.immediateMoveCamera ().resetGazePoint (); });
 
-  addCheckableAction (viewMenu, QObject::tr ("Show &floor plane"), QKeySequence (), false,
-                      [&mainWindow, &glWidget](bool a) {
-                        glWidget.floorPlane ().isActive (a);
-                        mainWindow.update ();
-                      });
+  viewMenu.addSeparator ();
 
-  addAction (helpMenu, QObject::tr ("&Manual..."), QKeySequence (), [&mainWindow]() {
+  ViewUtil::addAction (viewMenu, QObject::tr ("Toggle &wireframe"), Qt::Key_W,
+                       [&mainWindow, &glWidget]() {
+                         glWidget.state ().scene ().toggleWireframe ();
+                         mainWindow.update ();
+                       });
+
+  ViewUtil::addAction (viewMenu, QObject::tr ("Toggle &shading"), Qt::SHIFT + Qt::Key_W,
+                       [&mainWindow, &glWidget]() {
+                         glWidget.state ().scene ().toggleShading ();
+                         mainWindow.update ();
+                       });
+
+  ViewUtil::addCheckableAction (viewMenu, QObject::tr ("Show &floor plane"), QKeySequence (), false,
+                                [&mainWindow, &glWidget](bool a) {
+                                  glWidget.floorPlane ().isActive (a);
+                                  mainWindow.update ();
+                                });
+
+  ViewUtil::addAction (helpMenu, QObject::tr ("&Manual..."), QKeySequence (), [&mainWindow]() {
     if (QDesktopServices::openUrl (QUrl ("http://abau.org/dilay/manual.html")) == false)
     {
       ViewUtil::error (mainWindow, QObject::tr ("Could not open manual."));
     }
   });
 
-  addAction (helpMenu, QObject::tr ("&View log..."), QKeySequence (),
-             [&mainWindow]() { ViewLog::show (mainWindow); });
+  ViewUtil::addAction (helpMenu, QObject::tr ("&View log..."), QKeySequence (),
+                       [&mainWindow]() { ViewLog::show (mainWindow); });
 
-  addAction (helpMenu, QObject::tr ("&About Dilay..."), QKeySequence (), [&mainWindow]() {
+  ViewUtil::addAction (helpMenu, QObject::tr ("&About Dilay..."), QKeySequence (), [&mainWindow]() {
     ViewUtil::about (
       mainWindow,
       QString ("Dilay " DILAY_VERSION " - ") + QObject::tr ("a 3D sculpting application") +
