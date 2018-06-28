@@ -45,7 +45,7 @@ public:
   Spheres::iterator deleteSphere (Spheres::const_iterator);
   void              render (Camera&, Mesh&) const;
   bool              intersects (const PrimRay&, SketchMesh&, SketchPathIntersection&);
-  SketchPath        mirror (const PrimPlane&);
+  SketchPath        mirrorPositive (const PrimPlane&);
   void smooth (const PrimSphere&, unsigned int, SketchPathSmoothEffect, const PrimSphere*,
                const PrimSphere*);
 

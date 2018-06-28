@@ -44,7 +44,7 @@ public:
   void        rotate (SketchNode&, const glm::vec3&, float, const Dimension*);
   void        deleteNode (SketchNode&, bool, const Dimension*);
   void        deletePath (SketchPath&, const Dimension*);
-  void        mirror (Dimension);
+  void        mirrorPositive (Dimension);
   void        rebalance (SketchNode&);
   SketchNode& snap (SketchNode&, Dimension);
   void        minMax (glm::vec3&, glm::vec3&) const;

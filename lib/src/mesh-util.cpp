@@ -425,7 +425,7 @@ Mesh MeshUtil::cylinder (unsigned int numVertices)
   return withDefaultNormals (mesh);
 }
 
-Mesh MeshUtil::mirror (const Mesh& mesh, const PrimPlane& plane)
+Mesh MeshUtil::mirrorPositive (const Mesh& mesh, const PrimPlane& plane)
 {
   assert (MeshUtil::checkConsistency (mesh));
 

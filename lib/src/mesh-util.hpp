@@ -19,7 +19,7 @@ namespace MeshUtil
   Mesh cone (unsigned int);
   Mesh cylinder (unsigned int);
 
-  Mesh mirror (const Mesh&, const PrimPlane&);
+  Mesh mirrorPositive (const Mesh&, const PrimPlane&);
   bool checkConsistency (const Mesh&);
 };
 

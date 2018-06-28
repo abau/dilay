@@ -216,7 +216,7 @@ struct Tool::Impl
 
     this->snapshotDynamicMeshes ();
     this->state.scene ().forEachMesh ([this](DynamicMesh& mesh) {
-      if (mesh.mirror (this->mirror ().plane ()) == false)
+      if (mesh.mirrorPositive (this->mirror ().plane ()) == false)
       {
         ViewUtil::error (this->state.mainWindow (), QObject::tr ("Could not mirror mesh."));
       }
@@ -230,7 +230,7 @@ struct Tool::Impl
 
     this->snapshotSketchMeshes ();
     this->state.scene ().forEachMesh (
-      [this](SketchMesh& mesh) { mesh.mirror (*this->mirrorDimension ()); });
+      [this](SketchMesh& mesh) { mesh.mirrorPositive (*this->mirrorDimension ()); });
   }
 
   void addMirrorProperties ()

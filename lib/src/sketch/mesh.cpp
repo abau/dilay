@@ -684,7 +684,7 @@ struct SketchMesh::Impl
     }
   }
 
-  void mirrorTree (Dimension dim)
+  void mirrorPositiveTree (Dimension dim)
   {
     if (this->tree.hasRoot ())
     {
@@ -696,22 +696,22 @@ struct SketchMesh::Impl
                (mirrorPlane.absDistance (node.parent ()->data ().center ()) > Util::epsilon ());
       };
 
-      std::function<void(SketchNode&)> mirrorNode = [this, &mirrorPlane, &requiresMirroring,
-                                                     &mirrorNode](SketchNode& node) {
-        unsigned int numChildren = node.numChildren ();
-        node.forEachChild (
-          [this, &mirrorPlane, &requiresMirroring, &mirrorNode, &numChildren](SketchNode& c) {
+      std::function<void(SketchNode&)> mirrorPositiveNode =
+        [this, &mirrorPlane, &requiresMirroring, &mirrorPositiveNode](SketchNode& node) {
+          unsigned int numChildren = node.numChildren ();
+          node.forEachChild ([this, &mirrorPlane, &requiresMirroring, &mirrorPositiveNode,
+                              &numChildren](SketchNode& c) {
             if (numChildren > 0)
             {
               if (requiresMirroring (c))
               {
                 this->addMirroredNode (c, mirrorPlane);
               }
-              mirrorNode (c);
+              mirrorPositiveNode (c);
               numChildren--;
             }
           });
-      };
+        };
 
       this->tree.root ().forEachNode ([&mirrorPlane](SketchNode& parent) {
         parent.deleteChildIf ([&mirrorPlane](const SketchNode& child) {
@@ -719,11 +719,11 @@ struct SketchMesh::Impl
         });
       });
 
-      mirrorNode (this->tree.root ());
+      mirrorPositiveNode (this->tree.root ());
     }
   }
 
-  void mirrorPaths (Dimension dim)
+  void mirrorPositivePaths (Dimension dim)
   {
     const PrimPlane mPlane = this->mirrorPlane (dim);
     SketchPaths     oldPaths = std::move (this->paths);
@@ -732,7 +732,7 @@ struct SketchMesh::Impl
 
     for (SketchPath& p : oldPaths)
     {
-      SketchPath mirrored = p.mirror (mPlane);
+      SketchPath mirrored = p.mirrorPositive (mPlane);
 
       if (p.isEmpty () == false)
       {
@@ -742,10 +742,10 @@ struct SketchMesh::Impl
     }
   }
 
-  void mirror (Dimension dim)
+  void mirrorPositive (Dimension dim)
   {
-    this->mirrorTree (dim);
-    this->mirrorPaths (dim);
+    this->mirrorPositiveTree (dim);
+    this->mirrorPositivePaths (dim);
   }
 
   void rebalance (SketchNode& newRoot)
@@ -940,7 +940,7 @@ DELEGATE4 (void, SketchMesh, scale, SketchNode&, float, bool, const Dimension*)
 DELEGATE4 (void, SketchMesh, rotate, SketchNode&, const glm::vec3&, float, const Dimension*)
 DELEGATE3 (void, SketchMesh, deleteNode, SketchNode&, bool, const Dimension*)
 DELEGATE2 (void, SketchMesh, deletePath, SketchPath&, const Dimension*)
-DELEGATE1 (void, SketchMesh, mirror, Dimension)
+DELEGATE1 (void, SketchMesh, mirrorPositive, Dimension)
 DELEGATE1 (void, SketchMesh, rebalance, SketchNode&)
 DELEGATE2 (SketchNode&, SketchMesh, snap, SketchNode&, Dimension)
 DELEGATE2_CONST (void, SketchMesh, minMax, glm::vec3&, glm::vec3&)

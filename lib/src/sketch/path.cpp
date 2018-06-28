@@ -106,7 +106,7 @@ struct SketchPath::Impl
     return intersection.isIntersection ();
   }
 
-  SketchPath mirror (const PrimPlane& mPlane)
+  SketchPath mirrorPositive (const PrimPlane& mPlane)
   {
     SketchPath::Spheres oldSpheres (std::move (this->spheres));
     const glm::vec3     oldIntersectionFirst (this->intersectionFirst);
@@ -234,6 +234,6 @@ DELEGATE1 (SketchPath::Spheres::iterator, SketchPath, deleteSphere,
            SketchPath::Spheres::const_iterator)
 DELEGATE2_CONST (void, SketchPath, render, Camera&, Mesh&)
 DELEGATE3 (bool, SketchPath, intersects, const PrimRay&, SketchMesh&, SketchPathIntersection&)
-DELEGATE1 (SketchPath, SketchPath, mirror, const PrimPlane&)
+DELEGATE1 (SketchPath, SketchPath, mirrorPositive, const PrimPlane&)
 DELEGATE5 (void, SketchPath, smooth, const PrimSphere&, unsigned int, SketchPathSmoothEffect,
            const PrimSphere*, const PrimSphere*)

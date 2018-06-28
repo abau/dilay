@@ -785,7 +785,7 @@ struct DynamicMesh::Impl
     }
   }
 
-  bool mirror (const PrimPlane& plane)
+  bool mirrorPositive (const PrimPlane& plane)
   {
     assert (this->pruneAndCheckConsistency (nullptr, nullptr));
 
@@ -818,7 +818,7 @@ struct DynamicMesh::Impl
 
     this->prune (nullptr, nullptr);
 
-    Mesh mirrored = MeshUtil::mirror (this->mesh, plane);
+    Mesh mirrored = MeshUtil::mirrorPositive (this->mesh, plane);
     if (mirrored.numVertices () == 0)
     {
       this->setAllNormals ();
@@ -1023,7 +1023,7 @@ DELEGATE (void, DynamicMesh, sanitize)
 DELEGATE2 (void, DynamicMesh, prune, std::vector<unsigned int>*, std::vector<unsigned int>*)
 DELEGATE2 (bool, DynamicMesh, pruneAndCheckConsistency, std::vector<unsigned int>*,
            std::vector<unsigned int>*)
-DELEGATE1 (bool, DynamicMesh, mirror, const PrimPlane&)
+DELEGATE1 (bool, DynamicMesh, mirrorPositive, const PrimPlane&)
 DELEGATE (void, DynamicMesh, bufferData)
 DELEGATE1_CONST (void, DynamicMesh, render, Camera&)
 DELEGATE_MEMBER_CONST (const RenderMode&, DynamicMesh, renderMode, mesh)
