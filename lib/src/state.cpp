@@ -291,7 +291,6 @@ struct State::Impl
       this->toolPtr.reset ();
 
       this->mainWindow.toolPane ().properties ().reset ();
-      this->mainWindow.infoPane ().scene ().updateInfo ();
       this->mainWindow.update ();
     }
     this->setToolTip (nullptr);
@@ -316,7 +315,6 @@ struct State::Impl
       this->handleToolResponse (this->toolPtr->commit ());
     }
     this->history.undo (*this->self);
-    this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();
   }
 
@@ -327,14 +325,11 @@ struct State::Impl
       this->handleToolResponse (this->toolPtr->commit ());
     }
     this->history.redo (*this->self);
-    this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();
   }
 
   void handleToolResponse (ToolResponse response)
   {
-    this->mainWindow.infoPane ().scene ().updateInfo ();
-
     switch (response)
     {
       case ToolResponse::None:

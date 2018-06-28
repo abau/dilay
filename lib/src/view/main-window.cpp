@@ -5,6 +5,7 @@
 #include <QCloseEvent>
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
+#include "view/info-pane/scene.hpp"
 #include "view/main-window.hpp"
 #include "view/menu-bar.hpp"
 #include "view/tool-pane.hpp"
@@ -34,6 +35,7 @@ struct ViewMainWindow::Impl
   {
     this->self->QMainWindow::update ();
     this->glWidget.update ();
+    this->infoPane.scene ().updateInfo ();
   }
 
   void closeEvent (QCloseEvent* e)

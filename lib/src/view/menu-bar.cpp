@@ -94,7 +94,6 @@ void ViewMenuBar::setup (ViewMainWindow& mainWindow, ViewGlWidget& glWidget)
         {
           ViewUtil::error (mainWindow, QObject::tr ("Could not open file."));
         }
-        mainWindow.infoPane ().scene ().updateInfo ();
         mainWindow.update ();
       }
     });

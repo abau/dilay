@@ -132,7 +132,7 @@ struct ViewGlWidget::Impl
     {
       this->state ().scene ().newDynamicMesh (this->config, MeshUtil::icosphere (4));
     }
-    this->mainWindow.infoPane ().scene ().updateInfo ();
+    this->mainWindow.update ();
   }
 
   void paintGL ()
