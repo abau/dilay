@@ -832,6 +832,13 @@ struct DynamicMesh::Impl
     }
   }
 
+  void mirror (const PrimPlane& plane)
+  {
+    MeshUtil::mirror (this->mesh, plane);
+    this->realignAllFaces ();
+    this->bufferData ();
+  }
+
   void bufferData ()
   {
     const auto findNonFreeFaceIndex = [this]() -> unsigned int {
@@ -1024,6 +1031,7 @@ DELEGATE2 (void, DynamicMesh, prune, std::vector<unsigned int>*, std::vector<uns
 DELEGATE2 (bool, DynamicMesh, pruneAndCheckConsistency, std::vector<unsigned int>*,
            std::vector<unsigned int>*)
 DELEGATE1 (bool, DynamicMesh, mirrorPositive, const PrimPlane&)
+DELEGATE1 (void, DynamicMesh, mirror, const PrimPlane&)
 DELEGATE (void, DynamicMesh, bufferData)
 DELEGATE1_CONST (void, DynamicMesh, render, Camera&)
 DELEGATE_MEMBER_CONST (const RenderMode&, DynamicMesh, renderMode, mesh)

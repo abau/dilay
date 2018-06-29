@@ -747,6 +747,26 @@ Mesh MeshUtil::mirrorPositive (const Mesh& mesh, const PrimPlane& plane)
   return m;
 }
 
+void MeshUtil::mirror (Mesh& mesh, const PrimPlane& plane)
+{
+  for (unsigned int i = 0; i < mesh.numVertices (); i++)
+  {
+    mesh.vertex (i, plane.mirror (mesh.vertex (i)));
+    mesh.normal (i, plane.mirrorDirection (mesh.normal (i)));
+  }
+
+  assert (mesh.numIndices () % 3 == 0);
+
+  for (unsigned int i = 0; i < mesh.numIndices (); i += 3)
+  {
+    const unsigned int i2 = mesh.index (i + 1);
+    const unsigned int i3 = mesh.index (i + 2);
+
+    mesh.index (i + 1, i3);
+    mesh.index (i + 2, i2);
+  }
+}
+
 bool MeshUtil::checkConsistency (const Mesh& mesh)
 {
   if (mesh.numVertices () == 0)

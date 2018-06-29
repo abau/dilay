@@ -83,6 +83,7 @@ public:
   bool pruneAndCheckConsistency (std::vector<unsigned int>* = nullptr,
                                  std::vector<unsigned int>* = nullptr);
   bool mirrorPositive (const PrimPlane&);
+  void mirror (const PrimPlane&);
   void bufferData ();
 
   void render (Camera&) const;
