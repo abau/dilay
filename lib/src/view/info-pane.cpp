@@ -13,15 +13,15 @@
 struct ViewInfoPane::Impl
 {
   ViewInfoPane*      self;
-  ViewGlWidget&      glWidget;
+  ViewMainWindow&    mainWindow;
   ViewTwoColumnGrid& toolTip;
   ViewInfoPaneScene& scene;
 
-  Impl (ViewInfoPane* s, ViewGlWidget& g)
+  Impl (ViewInfoPane* s, ViewMainWindow& m)
     : self (s)
-    , glWidget (g)
+    , mainWindow (m)
     , toolTip (*new ViewTwoColumnGrid)
-    , scene (*new ViewInfoPaneScene (g))
+    , scene (*new ViewInfoPaneScene (m))
   {
     QScrollArea* scrollArea = new QScrollArea;
     QTabWidget*  tabWidget = new QTabWidget;
@@ -75,7 +75,7 @@ struct ViewInfoPane::Impl
   void resetToolTip () { this->toolTip.reset (); }
 };
 
-DELEGATE_BIG2_BASE (ViewInfoPane, (ViewGlWidget & g, QWidget* p), (this, g), QDockWidget, (p))
+DELEGATE_BIG2_BASE (ViewInfoPane, (ViewMainWindow & m, QWidget* p), (this, m), QDockWidget, (p))
 GETTER (ViewInfoPaneScene&, ViewInfoPane, scene)
 DELEGATE1 (void, ViewInfoPane, addToolTip, const ViewToolTip&)
 DELEGATE (void, ViewInfoPane, resetToolTip)

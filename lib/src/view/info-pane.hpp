@@ -8,14 +8,14 @@
 #include <QDockWidget>
 #include "macro.hpp"
 
-class ViewGlWidget;
 class ViewInfoPaneScene;
+class ViewMainWindow;
 class ViewToolTip;
 
 class ViewInfoPane : public QDockWidget
 {
 public:
-  DECLARE_BIG2 (ViewInfoPane, ViewGlWidget&, QWidget* = nullptr)
+  DECLARE_BIG2 (ViewInfoPane, ViewMainWindow&, QWidget* = nullptr)
 
   ViewInfoPaneScene& scene ();
   void               addToolTip (const ViewToolTip&);

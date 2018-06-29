@@ -8,12 +8,12 @@
 #include <QWidget>
 #include "macro.hpp"
 
-class ViewGlWidget;
+class ViewMainWindow;
 
 class ViewInfoPaneScene : public QWidget
 {
 public:
-  DECLARE_BIG2 (ViewInfoPaneScene, ViewGlWidget&, QWidget* = nullptr)
+  DECLARE_BIG2 (ViewInfoPaneScene, ViewMainWindow&, QWidget* = nullptr)
 
   void updateInfo ();
 

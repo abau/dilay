@@ -22,7 +22,7 @@ struct ViewMainWindow::Impl
     : self (s)
     , glWidget (*new ViewGlWidget (*this->self, config, cache))
     , toolPane (*new ViewToolPane (this->glWidget))
-    , infoPane (*new ViewInfoPane (this->glWidget))
+    , infoPane (*new ViewInfoPane (*this->self))
   {
     this->self->setCentralWidget (&this->glWidget);
     this->self->addDockWidget (Qt::LeftDockWidgetArea, &this->toolPane);
