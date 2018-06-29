@@ -23,33 +23,14 @@
 #include "view/two-column-grid.hpp"
 #include "view/util.hpp"
 
-namespace
-{
-  glm::vec3 computeCenter (const SketchMesh& mesh)
-  {
-    if (mesh.tree ().hasRoot ())
-    {
-      return mesh.tree ().root ().data ().center ();
-    }
-    else
-    {
-      glm::vec3 min, max;
-      mesh.minMax (min, max);
-      return ((min + max) * 0.5f);
-    }
-  }
-}
-
 struct ToolConvertSketch::Impl
 {
   ToolConvertSketch* self;
   float              resolution;
-  bool               moveToCenter;
 
   Impl (ToolConvertSketch* s)
     : self (s)
     , resolution (s->cache ().get<float> ("resolution", 0.06))
-    , moveToCenter (s->cache ().get<bool> ("move-to-center", true))
   {
   }
 
@@ -72,14 +53,6 @@ struct ToolConvertSketch::Impl
       this->self->cache ().set ("resolution", r);
     });
     properties.addStacked (QObject::tr ("Resolution"), resolutionEdit);
-
-    QCheckBox& moveToCenterEdit =
-      ViewUtil::checkBox (QObject::tr ("Move to center"), this->moveToCenter);
-    ViewUtil::connect (moveToCenterEdit, [this](bool m) {
-      this->moveToCenter = m;
-      this->self->cache ().set ("move-to-center", m);
-    });
-    properties.add (moveToCenterEdit);
   }
 
   void setupToolTip ()
@@ -134,19 +107,10 @@ struct ToolConvertSketch::Impl
       if (this->self->intersectsScene (e, intersection))
       {
         SketchMesh& sMesh = intersection.mesh ();
-        glm::vec3   center = computeCenter (sMesh);
 
         this->self->snapshotAll ();
 
-        DynamicMesh& dMesh = this->convert (sMesh);
-
-        if (this->moveToCenter)
-        {
-          dMesh.translate (-center);
-          dMesh.normalize ();
-          dMesh.bufferData ();
-        }
-        ToolSculptAction::smoothMesh (dMesh);
+        ToolSculptAction::smoothMesh (this->convert (sMesh));
         this->self->state ().scene ().deleteMesh (sMesh);
         return ToolResponse::Redraw;
       }
