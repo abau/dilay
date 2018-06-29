@@ -84,6 +84,8 @@ public:
                                  std::vector<unsigned int>* = nullptr);
   bool mirrorPositive (const PrimPlane&);
   void mirror (const PrimPlane&);
+  void moveToCenter ();
+  void normalizeScaling ();
   void bufferData ();
 
   void render (Camera&) const;

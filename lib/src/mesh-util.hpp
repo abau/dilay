@@ -21,6 +21,9 @@ namespace MeshUtil
 
   Mesh mirrorPositive (const Mesh&, const PrimPlane&);
   void mirror (Mesh&, const PrimPlane&);
+
+  void moveToCenter (Mesh&);
+  void normalizeScaling (Mesh&);
   bool checkConsistency (const Mesh&);
 };
 

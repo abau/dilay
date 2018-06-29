@@ -126,12 +126,23 @@ struct ViewInfoPaneScene::Impl
                              this->mainWindow.update ();
                            });
 
-      ViewUtil::addAction (
-        menu, QObject::tr ("Mirror mesh"), QKeySequence (), [this, &scene, &config, meshItem]() {
-          const PrimPlane plane (glm::vec3 (0.0f), DimensionUtil::vector (Dimension::X));
-          meshItem->mesh->mirror (plane);
-          this->mainWindow.update ();
-        });
+      ViewUtil::addAction (menu, QObject::tr ("Mirror mesh"), QKeySequence (), [this, meshItem]() {
+        const PrimPlane plane (glm::vec3 (0.0f), DimensionUtil::vector (Dimension::X));
+        meshItem->mesh->mirror (plane);
+        this->mainWindow.update ();
+      });
+
+      ViewUtil::addAction (menu, QObject::tr ("Move mesh to center"), QKeySequence (),
+                           [this, meshItem]() {
+                             meshItem->mesh->moveToCenter ();
+                             this->mainWindow.update ();
+                           });
+
+      ViewUtil::addAction (menu, QObject::tr ("Normalize scaling"), QKeySequence (),
+                           [this, meshItem]() {
+                             meshItem->mesh->normalizeScaling ();
+                             this->mainWindow.update ();
+                           });
 
       ViewUtil::addAction (menu, QObject::tr ("Delete mesh"), QKeySequence (),
                            [this, &scene, meshItem]() {

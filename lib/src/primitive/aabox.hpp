@@ -19,6 +19,7 @@ public:
   const glm::vec3& center () const { return this->_center; }
 
   glm::vec3 halfWidth () const;
+  float     maxDimExtent () const;
   bool      contains (const PrimAABox&) const;
 
 private:

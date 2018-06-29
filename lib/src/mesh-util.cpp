@@ -12,6 +12,7 @@
 #include "intersection.hpp"
 #include "mesh-util.hpp"
 #include "mesh.hpp"
+#include "primitive/aabox.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "util.hpp"
@@ -764,6 +765,28 @@ void MeshUtil::mirror (Mesh& mesh, const PrimPlane& plane)
 
     mesh.index (i + 1, i3);
     mesh.index (i + 2, i2);
+  }
+}
+
+void MeshUtil::moveToCenter (Mesh& mesh)
+{
+  const PrimAABox bounds = mesh.bounds ();
+
+  mesh.translate (-bounds.center ());
+  mesh.normalize ();
+}
+
+void MeshUtil::normalizeScaling (Mesh& mesh)
+{
+  const PrimAABox  bounds = mesh.bounds ();
+  const glm::vec3& center = bounds.center ();
+  const float      factor = 2.0f / bounds.maxDimExtent ();
+
+  for (unsigned int i = 0; i < mesh.numVertices (); i++)
+  {
+    const glm::vec3& v = mesh.vertex (i);
+
+    mesh.vertex (i, (factor * (v - center)) + center);
   }
 }
 
