@@ -82,6 +82,7 @@ SOURCES += \
            src/view/axis.cpp \
            src/view/color-button.cpp \
            src/view/configuration.cpp \
+           src/view/context-menu.cpp \
            src/view/cursor.cpp \
            src/view/double-slider.cpp \
            src/view/floor-plane.cpp \
@@ -174,6 +175,7 @@ HEADERS += \
            src/view/axis.hpp \
            src/view/color-button.hpp \
            src/view/configuration.hpp \
+           src/view/context-menu.hpp \
            src/view/cursor.hpp \
            src/view/double-slider.hpp \
            src/view/floor-plane.cpp \

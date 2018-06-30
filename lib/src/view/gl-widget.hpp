@@ -41,6 +41,7 @@ protected:
   void keyPressEvent (QKeyEvent*);
   void keyReleaseEvent (QKeyEvent*);
   void enterEvent (QEvent*);
+  void contextMenuEvent (QContextMenuEvent*);
 
 private:
   IMPLEMENTATION

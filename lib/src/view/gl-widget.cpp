@@ -16,6 +16,7 @@
 #include "state.hpp"
 #include "tool/move-camera.hpp"
 #include "view/axis.hpp"
+#include "view/context-menu.hpp"
 #include "view/floor-plane.hpp"
 #include "view/gl-widget.hpp"
 #include "view/info-pane.hpp"
@@ -251,6 +252,14 @@ struct ViewGlWidget::Impl
 
   void enterEvent (QEvent*) { this->self->setFocus (); }
 
+  void contextMenuEvent (QContextMenuEvent* event)
+  {
+    this->state ().resetTool ();
+
+    ViewContextMenu menu (this->mainWindow, ViewUtil::toIVec2 (event->pos ()));
+    menu.exec (this->self->mapToGlobal (event->pos ()));
+  }
+
   void updateCursorInTool ()
   {
     if (this->state ().hasTool ())
@@ -278,3 +287,4 @@ DELEGATE1 (void, ViewGlWidget, tabletEvent, QTabletEvent*)
 DELEGATE1 (void, ViewGlWidget, keyPressEvent, QKeyEvent*)
 DELEGATE1 (void, ViewGlWidget, keyReleaseEvent, QKeyEvent*)
 DELEGATE1 (void, ViewGlWidget, enterEvent, QEvent*)
+DELEGATE1 (void, ViewGlWidget, contextMenuEvent, QContextMenuEvent*)

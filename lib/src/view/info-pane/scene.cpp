@@ -6,16 +6,14 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include "../../scene.hpp"
-#include "dimension.hpp"
 #include "dynamic/mesh.hpp"
-#include "primitive/plane.hpp"
 #include "sketch/mesh.hpp"
 #include "sketch/path.hpp"
 #include "state.hpp"
+#include "view/context-menu.hpp"
 #include "view/gl-widget.hpp"
 #include "view/info-pane/scene.hpp"
 #include "view/main-window.hpp"
-#include "view/util.hpp"
 
 namespace
 {
@@ -111,65 +109,19 @@ struct ViewInfoPaneScene::Impl
   void showMenu (const QPoint& point)
   {
     QTreeWidgetItem* item = this->tree->itemAt (point);
-    Scene&           scene = this->mainWindow.glWidget ().state ().scene ();
-    Config&          config = this->mainWindow.glWidget ().state ().config ();
 
     if (item && item->type () == MeshType)
     {
-      MeshItem* meshItem = static_cast<MeshItem*> (item);
+      this->mainWindow.glWidget ().state ().resetTool ();
 
-      QMenu menu;
-
-      ViewUtil::addAction (menu, QObject::tr ("Copy mesh"), QKeySequence (),
-                           [this, &scene, &config, meshItem]() {
-                             scene.newDynamicMesh (config, *meshItem->mesh);
-                             this->mainWindow.update ();
-                           });
-
-      ViewUtil::addAction (menu, QObject::tr ("Mirror mesh"), QKeySequence (), [this, meshItem]() {
-        const PrimPlane plane (glm::vec3 (0.0f), DimensionUtil::vector (Dimension::X));
-        meshItem->mesh->mirror (plane);
-        this->mainWindow.update ();
-      });
-
-      ViewUtil::addAction (menu, QObject::tr ("Move mesh to center"), QKeySequence (),
-                           [this, meshItem]() {
-                             meshItem->mesh->moveToCenter ();
-                             this->mainWindow.update ();
-                           });
-
-      ViewUtil::addAction (menu, QObject::tr ("Normalize scaling"), QKeySequence (),
-                           [this, meshItem]() {
-                             meshItem->mesh->normalizeScaling ();
-                             this->mainWindow.update ();
-                           });
-
-      ViewUtil::addAction (menu, QObject::tr ("Delete mesh"), QKeySequence (),
-                           [this, &scene, meshItem]() {
-                             scene.deleteMesh (*meshItem->mesh);
-                             this->mainWindow.update ();
-                           });
-
+      ViewContextMenu menu (this->mainWindow, *static_cast<MeshItem*> (item)->mesh);
       menu.exec (this->tree->viewport ()->mapToGlobal (point));
     }
     else if (item && item->type () == SketchType)
     {
-      SketchItem* sketchItem = static_cast<SketchItem*> (item);
+      this->mainWindow.glWidget ().state ().resetTool ();
 
-      QMenu menu;
-
-      ViewUtil::addAction (menu, QObject::tr ("Copy sketch"), QKeySequence (),
-                           [this, &scene, &config, sketchItem]() {
-                             scene.newSketchMesh (config, *sketchItem->sketch);
-                             this->mainWindow.update ();
-                           });
-
-      ViewUtil::addAction (menu, QObject::tr ("Delete sketch"), QKeySequence (),
-                           [this, &scene, sketchItem]() {
-                             scene.deleteMesh (*sketchItem->sketch);
-                             this->mainWindow.update ();
-                           });
-
+      ViewContextMenu menu (this->mainWindow, *static_cast<SketchItem*> (item)->sketch);
       menu.exec (this->tree->viewport ()->mapToGlobal (point));
     }
   }
