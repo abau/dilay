@@ -6,6 +6,8 @@
 #include "dimension.hpp"
 #include "dynamic/mesh-intersection.hpp"
 #include "dynamic/mesh.hpp"
+#include "mesh.hpp"
+#include "primitive/aabox.hpp"
 #include "primitive/plane.hpp"
 #include "primitive/ray.hpp"
 #include "scene.hpp"
@@ -31,7 +33,8 @@ namespace
 
     ViewUtil::addAction (
       menu, QObject::tr ("Mirror mesh"), QKeySequence (), [&mainWindow, &mesh]() {
-        const PrimPlane plane (glm::vec3 (0.0f), DimensionUtil::vector (Dimension::X));
+        const PrimAABox bounds = mesh.mesh ().bounds ();
+        const PrimPlane plane (bounds.center (), DimensionUtil::vector (Dimension::X));
         mesh.mirror (plane);
         mainWindow.update ();
       });
