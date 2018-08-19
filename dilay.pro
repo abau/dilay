@@ -5,6 +5,14 @@ SUBDIRS      = lib app test
 app.depends  = lib
 test.depends = lib
 
+disable-test {
+  SUBDIRS -= test
+}
+
+disable-app {
+  SUBDIRS -= app
+}
+
 unix {
   gdb.commands = gdb -ex run ./dilay_debug
   valgrind.commands = valgrind ./dilay_debug &> valgrind.log
