@@ -80,13 +80,12 @@ class SBDrawParameters : public SBIntensityParameter, public SBInvertParameter
 {
 public:
   SBDrawParameters ()
-    : _flat (true)
+    : _constantHeight (false)
   {
   }
 
   void sculpt (const SculptBrush&, const DynamicFaces&) const;
 
-  MEMBER_GETTER_SETTER (bool, flat);
   MEMBER_GETTER_SETTER (bool, constantHeight);
 };
 
