@@ -7,6 +7,7 @@
 #include <array>
 #include "cache.hpp"
 #include "camera.hpp"
+#include "config.hpp"
 #include "dimension.hpp"
 #include "dynamic/mesh.hpp"
 #include "history.hpp"
@@ -65,7 +66,7 @@ struct Tool::Impl
   void render () const
   {
     this->self->runRender ();
-    if (this->mirrorEnabled ())
+    if (this->mirrorEnabled () && this->config ().get<bool> ("editor/tool/sculpt/mirror/render"))
     {
       this->_mirror->render (this->state.camera ());
     }

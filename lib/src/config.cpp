@@ -83,6 +83,7 @@ void Config::restoreDefaults ()
   this->set ("editor/tool/sculpt/detail-factor", 0.75f);
   this->set ("editor/tool/sculpt/step-width-factor", 0.3f);
   this->set ("editor/tool/sculpt/max-absolute-radius", 2.0f);
+  this->set ("editor/tool/sculpt/mirror/render", false);
   this->set ("editor/tool/sculpt/mirror/width", 0.02f);
   this->set ("editor/tool/sculpt/mirror/color", Color (0.8f, 0.8f, 0.8f));
 

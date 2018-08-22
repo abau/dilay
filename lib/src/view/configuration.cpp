@@ -188,6 +188,8 @@ namespace
                   QObject::tr ("Step width factor"), Util::epsilon (), 1.0f);
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/max-absolute-radius",
                   QObject::tr ("Maximum absolute radius"), Util::epsilon (), 100.0f);
+    addBoolEdit (data, *gridSculpt, "editor/tool/sculpt/mirror/render",
+                 QObject::tr ("Render mirror"));
     addFloatEdit (data, *gridSculpt, "editor/tool/sculpt/mirror/width",
                   QObject::tr ("Mirror width"), Util::epsilon (), 1.0f);
     addColorButton (data, *gridSculpt, "editor/tool/sculpt/mirror/color",
