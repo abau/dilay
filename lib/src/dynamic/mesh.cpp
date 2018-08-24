@@ -213,7 +213,7 @@ struct DynamicMesh::Impl
     return this->vertexData[i].adjacentFaces;
   }
 
-  void forEachVertex (const std::function<void(unsigned int)>& f)
+  void forEachVertex (const std::function<void(unsigned int)>& f) const
   {
     for (unsigned int i = 0; i < this->vertexData.size (); i++)
     {
@@ -329,7 +329,7 @@ struct DynamicMesh::Impl
     f (i3);
   }
 
-  void forEachFace (const std::function<void(unsigned int)>& f)
+  void forEachFace (const std::function<void(unsigned int)>& f) const
   {
     for (unsigned int i = 0; i < this->faceData.size (); i++)
     {
@@ -1008,7 +1008,7 @@ DELEGATE1_CONST (const glm::vec3&, DynamicMesh, vertexNormal, unsigned int)
 DELEGATE1_CONST (glm::vec3, DynamicMesh, faceNormal, unsigned int)
 DELEGATE1_CONST (const std::vector<unsigned int>&, DynamicMesh, adjacentFaces, unsigned int)
 GETTER_CONST (const Mesh&, DynamicMesh, mesh)
-DELEGATE1 (void, DynamicMesh, forEachVertex, const std::function<void(unsigned int)>&)
+DELEGATE1_CONST (void, DynamicMesh, forEachVertex, const std::function<void(unsigned int)>&)
 DELEGATE2 (void, DynamicMesh, forEachVertex, const DynamicFaces&,
            const std::function<void(unsigned int)>&)
 DELEGATE2 (void, DynamicMesh, forEachVertexExt, const DynamicFaces&,
@@ -1017,7 +1017,7 @@ DELEGATE2_CONST (void, DynamicMesh, forEachVertexAdjacentToVertex, unsigned int,
                  const std::function<void(unsigned int)>&)
 DELEGATE2_CONST (void, DynamicMesh, forEachVertexAdjacentToFace, unsigned int,
                  const std::function<void(unsigned int)>&)
-DELEGATE1 (void, DynamicMesh, forEachFace, const std::function<void(unsigned int)>&)
+DELEGATE1_CONST (void, DynamicMesh, forEachFace, const std::function<void(unsigned int)>&)
 DELEGATE2 (void, DynamicMesh, forEachFaceExt, const DynamicFaces&,
            const std::function<void(unsigned int)>&)
 DELEGATE3_CONST (void, DynamicMesh, average, const DynamicFaces&, glm::vec3&, glm::vec3&)

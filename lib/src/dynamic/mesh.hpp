@@ -46,12 +46,12 @@ public:
 
   const std::vector<unsigned int>& adjacentFaces (unsigned int) const;
 
-  void forEachVertex (const std::function<void(unsigned int)>&);
+  void forEachVertex (const std::function<void(unsigned int)>&) const;
   void forEachVertex (const DynamicFaces&, const std::function<void(unsigned int)>&);
   void forEachVertexExt (const DynamicFaces&, const std::function<void(unsigned int)>&);
   void forEachVertexAdjacentToVertex (unsigned int, const std::function<void(unsigned int)>&) const;
   void forEachVertexAdjacentToFace (unsigned int, const std::function<void(unsigned int)>&) const;
-  void forEachFace (const std::function<void(unsigned int)>&);
+  void forEachFace (const std::function<void(unsigned int)>&) const;
   void forEachFaceExt (const DynamicFaces&, const std::function<void(unsigned int)>&);
 
   void      average (const DynamicFaces&, glm::vec3&, glm::vec3&) const;
