@@ -2,4 +2,4 @@
 
 **Project website:** https://abau.org/dilay
 
-**Building instructions:** https://abau.org/dilay/manual#installing
+**Building instructions:** https://abau.org/dilay/manual.html#installing
